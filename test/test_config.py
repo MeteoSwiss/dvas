@@ -4,47 +4,41 @@
 
 # Import python packages and modules
 from pathlib import Path
-from jsonschema import validate, exceptions
+from jsonschema import validate
 import pytest
+
 
 from mdtpyhelper.check import CheckfuncAttributeError
 
 from uaii2021.config import ConfigManager
+from uaii2021.config import ConfigReadError, ConfigItemError
 
 
 class TestConfigManager:
 
     document = {
-        'raw_data': """ 
-            master:
-                idx_unit: ms
-                dt_format:
-                delimiter: ;
-                usecols: [0, 1, 2, 3, 4, 5, 6]
-                namecols: ['idx', 'T', 'RH', 'P', 'A', 'WF', 'WD']
-                x_dec: -3
-                x_a: 1.0
-                x_b: 0.0
-                type_name: None
-                skiprows: 0
+        'raw_data_ok': """
             '00':
                 idx_unit: dt
                 dt_format: YY
+                x_a: 2.0
+            '99':
+                usecols: [0, 1, 3]
+                namecols: ['idx', 'T', 'RH']
+            '10':
+                delimiter: ','
+                # Convert knots to m/s
+                WF_a: 0.51546
+            """,
+        'raw_data_valid_err': """
+            '0':
+                idx_unit: dt
             """
     }
 
-    def test_validate_document(self):
-        assert ConfigManager.validate_document([1, 2], {"maxItems": 2}) is None
-
-        with pytest.raises(exceptions.ValidationError):
-            ConfigManager.validate_document([1, 2, 3], {"maxItems": 2})
-
-        with pytest.raises(exceptions.SchemaError):
-            ConfigManager.validate_document([1, 2], {"maxItems": '2'})
-
     def test_instanciate_all_childs(self, tmp_path):
         tmp_path = Path(tmp_path.as_posix())
-        cfg_mngrs = ConfigManager.instantiate_all_childs(Path(tmp_path))
+        cfg_mngrs = ConfigManager.instantiate_all_childs(tmp_path)
 
         return cfg_mngrs
 
@@ -53,12 +47,55 @@ class TestConfigManager:
         for key, cfg_mngr in self.test_instanciate_all_childs(tmp_path).items():
             assert hasattr(cfg_mngr, 'JSONSCHEMA') is True
 
+    def test_master(self, tmp_path):
+
+        for key, cfg_mngr in self.test_instanciate_all_childs(tmp_path).items():
+            assert hasattr(cfg_mngr, 'MASTER') is True
+            assert type(cfg_mngr.MASTER) is dict
+            assert (len(cfg_mngr.MASTER.keys()) == 1)
+            assert 'master' in cfg_mngr.MASTER.keys()
+            assert validate(instance=cfg_mngr.MASTER, schema=cfg_mngr.JSONSCHEMA) is None
+
     def test_get_document(self, tmp_path):
 
         for key, cfg_mngr in self.test_instanciate_all_childs(tmp_path).items():
             file_path = tmp_path / cfg_mngr.config_file_name
 
             with file_path.open('w') as fid:
-                fid.write(self.document[key])
+                fid.write(self.document[key + '_ok'])
 
-            assert type(cfg_mngr.get_document()) is dict
+            cfg_mngr.read()
+
+            assert type(cfg_mngr.data) is dict
+
+            with file_path.open('w') as fid:
+                fid.write(self.document[key + '_valid_err'])
+
+            with pytest.raises(ConfigReadError):
+                cfg_mngr.update()
+
+    def test_getitem(self, tmp_path):
+
+        for key, cfg_mngr in self.test_instanciate_all_childs(tmp_path).items():
+            file_path = tmp_path / cfg_mngr.config_file_name
+
+            with file_path.open('w') as fid:
+                fid.write(self.document[key + '_ok'])
+
+            cfg_mngr.read()
+
+            assert cfg_mngr['T_a'] == 1.0
+            assert cfg_mngr['00.T_a'] == 2.0
+            assert cfg_mngr[['99', 'usecols']] == [0, 1, 3]
+
+            with pytest.raises(ConfigItemError):
+                cfg_mngr['99']
+
+            with pytest.raises(ConfigItemError):
+                cfg_mngr['usecol']
+
+            with pytest.raises(CheckfuncAttributeError):
+                cfg_mngr[0]
+
+            with pytest.raises(CheckfuncAttributeError):
+                cfg_mngr['']
