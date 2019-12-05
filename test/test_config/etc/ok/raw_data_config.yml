@@ -1,0 +1,15 @@
+
+instr_type_00:
+    param:
+        idx_unit: dt
+        dt_format: '%H:%M:%S'
+        idx_b: 2.1222
+    instr_22:
+        param:
+            delimiter: '.'
+instr_type_11:
+    instr_22:
+        flight_33:
+            batch_4:
+                param:
+                    x_a: 3.0
