@@ -17,6 +17,7 @@ mdtpyhelper = "*"
 dotty-dict = "*"
 ruamel-yaml = "*"
 pampy = "*"
+scipy = "*"
 
 [requires]
 python_version = "3.7.5"

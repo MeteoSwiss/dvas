@@ -2,14 +2,14 @@
 # Import
 from . import RAW_DATA_CONFIG_PARAM
 from . import CONFIG_NAN_EQ
-from . import PARAM_KEY_NM
+from . import CONST_KEY_NM
 
 # Define node order
 NODE_ORDER = ['flight', 'batch', 'instr']
 
 # Define root parameters
 ROOT_PARAMS_DEF = {
-    PARAM_KEY_NM: {
+    CONST_KEY_NM: {
         'idx': None,
         'rep_param': 'x',
         'rep_val': CONFIG_NAN_EQ

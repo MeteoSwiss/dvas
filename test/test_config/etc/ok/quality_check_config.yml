@@ -1,6 +1,6 @@
 
 flight_00:
-  param:
+  const:
     idx:
       -
         - 1
@@ -12,7 +12,7 @@ flight_00:
     rep_val: 88.1
 flight_10:
   batch_1:
-    param:
+    const:
       idx:
         -
           - 20

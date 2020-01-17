@@ -1,6 +1,6 @@
 
 tutu_flight:
-  parameters:
+  const:
     idx:
       -
         - 1

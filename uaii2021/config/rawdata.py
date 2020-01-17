@@ -2,14 +2,14 @@
 # Import
 from . import RAW_DATA_CONFIG_PARAM
 from . import RAW_DATA_CONFIG_PARAM_NO_X
-from . import PARAM_KEY_NM
+from . import CONST_KEY_NM
 
 # Define node order
-NODE_ORDER = ['instr_type', 'instr', 'flight', 'batch']
+NODE_ORDER = ['type', 'instr', 'flight', 'batch']
 
 # Define default root parameters
 ROOT_PARAMS_DEF = {
-    PARAM_KEY_NM: {
+    CONST_KEY_NM: {
         'idx_unit': 'ms',
         'dt_format': None,
         'delimiter': ';',

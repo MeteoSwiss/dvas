@@ -12,7 +12,8 @@ from mdtpyhelper.check import CheckfuncAttributeError
 
 from pampy import match, ANY
 
-from uaii2021.config import PARAM_KEY_NM, NODE_PAT_DICT
+from uaii2021.config import CONST_KEY_NM, CONFIG_ITEM_PATTERN
+from uaii2021.config.config import IdentifierManager
 from uaii2021.config.config import ConfigManager
 from uaii2021.config.config import ConfigReadError
 from uaii2021.config.config import ConfigItemKeyError
@@ -21,14 +22,14 @@ from uaii2021.config.config import ConfigNodeError
 # Define
 ITEM_OK = {
     'raw_data': {
-        'instr_type_11.param.delimiter': ';',
-        'instr_type_11.instr_22.flight_33.batch_4.param.x_a': 3.0,
-        'instr_type_11.instr_22.flight_33.batch_4.param.T_a': 3.0,
+        'type_11.const.delimiter': ';',
+        'type_11.instr_22.flight_33.batch_4.const.x_a': 3.0,
+        'type_11.instr_22.flight_33.batch_4.const.T_a': 3.0,
     },
     'quality_check': {
-        'flight_00.param.idx': [[1, 2], [1, 3]],
+        'flight_00.const.idx': [[1, 2], [1, 3]],
         'flight_00': {
-            'param': {
+            'const': {
                 'idx': [[1, 2], [1, 3]], 'rep_param': 'T', 'rep_val': 88.1
             }
         }
@@ -37,12 +38,12 @@ ITEM_OK = {
 ITEM_KO = {
     'raw_data': [
         '99zz',
-        'param.99zz',
-        'instr_type_11.instr_3',
+        'const.99zz',
+        'type_11.instr_3',
     ],
     'quality_check': [
         '99zz',
-        'param.99zz',
+        'const.99zz',
     ],
 }
 
@@ -62,7 +63,7 @@ def test_config_manager_ok(datafiles):
 
     # Test attribute exception
     with pytest.raises(CheckfuncAttributeError):
-        ConfigManager.instantiate_all_childs('.')
+        ConfigManager.instantiate_all_childs('mytutupath')
 
     # Instantiate all managers
     cfg_mngrs = ConfigManager.instantiate_all_childs(Path(datafiles))
@@ -75,7 +76,7 @@ def test_config_manager_ok(datafiles):
             cfg_mngr.PARAMETER_SCHEMA, {"type": "object", "patternProperties": ANY, "additionalProperties": False},
             True, default=False) is True
         assert match(
-            cfg_mngr.ROOT_PARAMS_DEF, {PARAM_KEY_NM: ANY},
+            cfg_mngr.ROOT_PARAMS_DEF, {CONST_KEY_NM: ANY},
             True, default=False) is True
 
         # Test default root parameter
@@ -129,61 +130,41 @@ def test_config_manager_ko_b(datafiles):
             cfg_mngr.read()
 
 
-def test_check_dict_nodes():
+class TestIdentifierManager:
 
-    assert ConfigManager._check_dict_nodes(
-        {'flight0': {'param': 1}, 'flight1': {'batch': {'param': 1}}},
-        [re.compile(arg) for arg in [r'^flight\w$', '^batch$']],
-        re.compile('^param$')
-    ) is None
+    # Instantiate test class
+    inst = IdentifierManager(['flight', 'batch', 'ms'])
 
-    assert ConfigManager._check_dict_nodes(
-        {'flight0': {'param': 1}, 'flight1': {'batch': {'param': 1}}},
-        [r'^flight\w$', '^batch$'],
-        '^param$'
-    ) is None
+    def test_check_dict_nodes(self):
 
-    with pytest.raises(ConfigNodeError):
-        ConfigManager._check_dict_nodes(
-            {'flight0': {'param': 1}, 'flight1': {'tutu': {'param': 1}}},
-            [re.compile(arg) for arg in [r'^flight\w$', '^batch$']],
-            re.compile('^param$')
-        )
+        end_node_pat = r'const'
 
-    with pytest.raises(ConfigNodeError):
-        ConfigManager._check_dict_nodes(
-            {'flight0': {'param': 1}, 'flight1': {'batch': {'tutu': {'param': 1}}}},
-            [re.compile(arg) for arg in [r'^flight\w$', '^batch$']],
-            re.compile('^param$')
-        )
+        for arg in [re.compile(end_node_pat), end_node_pat]:
+            assert self.inst.check_dict_node(
+                {'const': 2,
+                 'flight_0': {'const': 1},
+                 'flight_1': {'batch_0': {'const': 1},
+                              'batch_1': {'ms_0': {'const': 2}}}},
+                arg
+            ) is None
 
-    with pytest.raises(ConfigNodeError):
-        ConfigManager._check_dict_nodes(
-            {'flight0': {'params': 1}, 'flight1': {'batch': {'param': 1}}},
-            [re.compile(arg) for arg in [r'^flight\w$', '^batch$']],
-            re.compile('^param$')
-        )
+        with pytest.raises(Exception):
+            self.inst.check_dict_node(
+                {'flight_0': {'const': 1},
+                 'flight_1': {'tutu': {'const': 1}}},
+                end_node_pat
+            )
 
-def test_check_list_item():
+        with pytest.raises(Exception):
+            self.inst.check_dict_node(
+                {'flight_0': {'const': 1},
+                 'batch_1': {'ms_1': {'const': 1}}},
+                end_node_pat
+            )
 
-    assert ConfigManager._check_list_item(
-        ['flight0', 'batch'],
-        [re.compile(arg) for arg in [r'^flight\w$', '^batch$']]
-    ) is None
-
-    assert ConfigManager._check_list_item(
-        ['flight0'],
-        [r'^flight\w$', '^batch$']
-    ) is None
-
-    with pytest.raises(ConfigItemKeyError):
-        ConfigManager._check_list_item(
-            ['flight'],
-            [r'^flight\w$', '^batch$']
-        )
-
-    with pytest.raises(ConfigItemKeyError):
-        ConfigManager._check_list_item(
-            ['flight0', 'batch', 'tutu'],
-            [r'^flight\w$', '^batch$']
-        )
+        with pytest.raises(Exception):
+            self.inst.check_dict_node(
+                {'flight_0': {'const': 1},
+                 'flight_0': {'batch_1': {'ms_1': 1}}},
+                end_node_pat
+            )
