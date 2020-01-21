@@ -17,7 +17,7 @@ from uaii2021.config.config import IdentifierManager
 from uaii2021.config.config import ConfigManager
 from uaii2021.config.config import ConfigReadError
 from uaii2021.config.config import ConfigItemKeyError
-from uaii2021.config.config import ConfigNodeError
+from uaii2021.config.config import IDNodeError
 
 # Define
 ITEM_OK = {
@@ -62,10 +62,13 @@ def test_config_manager_ok(datafiles):
     """Test ConfigManager for OK config file"""
 
     # Test attribute exception
-    with pytest.raises(CheckfuncAttributeError):
+    with pytest.raises(AssertionError):
         ConfigManager.instantiate_all_childs('mytutupath')
+    with pytest.raises(AssertionError):
+        ConfigManager.instantiate_all_childs(Path('mytutupath'))
 
     # Instantiate all managers
+    cfg_mngrs = ConfigManager.instantiate_all_childs(Path(datafiles).as_posix())
     cfg_mngrs = ConfigManager.instantiate_all_childs(Path(datafiles))
 
     # Loop for each manager
@@ -92,15 +95,9 @@ def test_config_manager_ok(datafiles):
 
         # Test item KO
         for itm_key in ITEM_KO[key]:
-
             with pytest.raises(ConfigItemKeyError):
                 cfg_mngr[itm_key]
 
-            with pytest.raises(CheckfuncAttributeError):
-                cfg_mngr[0]
-
-            with pytest.raises(CheckfuncAttributeError):
-                cfg_mngr['']
 
 
 @pytest.mark.datafiles(os.path.join(KO_FIXTURE_DIR, 'a'))
@@ -135,6 +132,9 @@ class TestIdentifierManager:
     # Instantiate test class
     inst = IdentifierManager(['flight', 'batch', 'ms'])
 
+    with pytest.raises(AssertionError):
+        IdentifierManager(['tutu_test'])
+
     def test_check_dict_nodes(self):
 
         end_node_pat = r'const'
@@ -148,23 +148,23 @@ class TestIdentifierManager:
                 arg
             ) is None
 
-        with pytest.raises(Exception):
+        with pytest.raises(IDNodeError):
             self.inst.check_dict_node(
                 {'flight_0': {'const': 1},
                  'flight_1': {'tutu': {'const': 1}}},
                 end_node_pat
             )
 
-        with pytest.raises(Exception):
+        with pytest.raises(IDNodeError):
             self.inst.check_dict_node(
                 {'flight_0': {'const': 1},
                  'batch_1': {'ms_1': {'const': 1}}},
                 end_node_pat
             )
 
-        with pytest.raises(Exception):
+        with pytest.raises(IDNodeError):
             self.inst.check_dict_node(
                 {'flight_0': {'const': 1},
-                 'flight_0': {'batch_1': {'ms_1': 1}}},
+                 'flight_1': {'batch_1': {'ms_1': 1}}},
                 end_node_pat
             )

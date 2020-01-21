@@ -36,8 +36,20 @@ class IdentifierManager:
 
     __ITEM_SEPARATOR = '.'
 
-    @check_arg(1, check_list_item, CONFIG_ITEM_PATTERN.keys())
     def __init__(self, node_order):
+        """
+
+        Parameters
+        ----------
+        node_order: list
+            Must be item of CONFIG_ITEM_PATTERN.keys()
+        """
+        # Check node_order
+        assert all([arg in CONFIG_ITEM_PATTERN.keys() for arg in node_order]) is True, (
+            f'{node_order} not all in {CONFIG_ITEM_PATTERN.keys()}')
+
+
+        # Set protected attributes
         self._node_order = node_order
         self._node_pat = [
             CONFIG_ITEM_PATTERN[key] for key in self.node_order
@@ -61,15 +73,29 @@ class IdentifierManager:
         """Construct node order string pattern"""
         return self._node_str_pat
 
-    @check_arg(1, check_type, (list, str))
+    @classmethod
     def split_sep(self, item):
-        """Split str by item separator"""
-        return item.split(self.__ITEM_SEPARATOR) if type(item) is str else item
+        """Split str by item separator into list
 
-    @check_arg(1, check_type, list)
-    @check_arg('strict', check_type, bool)
-    def create_id(self, id_source, strict=True):
+        Parameters
+        ----------
+        item: str | list
+
+        Returns
+        -------
+        list of str
+
+        Examples
+        --------
+        >>>IdentifierManager.split_sep('test.foo')
+        ['test','foo']
+        >>>IdentifierManager.split_sep(['test', 'foo'])
+        ['test','foo']
         """
+        return item.split(IdentifierManager.__ITEM_SEPARATOR) if isinstance(item, str) else item
+
+    def create_id(self, id_source, strict=True):
+        """Create default id
 
         Parameters
         ----------
@@ -78,7 +104,7 @@ class IdentifierManager:
 
         Returns
         -------
-
+        list of str
         """
 
         # Init
@@ -98,57 +124,54 @@ class IdentifierManager:
         # Check for id with same node name
         check = [arg[0] for arg in a if arg[1] >= 2]
         if check:
-            raise Exception(check[0])
+            raise IDNodeError(f"Many identical pattern id in {id_source}")
 
         out = list(takewhile(lambda arg: arg[1] == 1, a))
 
         if not out:
-            raise Exception('No match')
+            raise IDNodeError('No match')
 
         if strict:
             if len(out) != len(self.node_order):
-                raise Exception('Not strict')
+                raise IDNodeError('Strict condition not fulfilled')
 
         out = [arg[2][0] for arg in out]
 
         return out
 
-    @check_arg(1, check_type, dict)
     def check_dict_node(self, document, end_node_pat):
-        """Check dict key node order
+        """Check dictionary key node order. End node must match end_node_pat.
 
         Parameters
         ----------
         document: dict
             Document to be check
         end_node_pat: str | re.Pattern
-
+            End node pattern
         """
 
-        @check_arg(0, check_type, dict)
         def scan_nodes(doc, id_source):
+            if isinstance(doc, dict) is False:
+                raise IDNodeError(f"Missing end node patter {end_node_pat}")
             for key, sub_doc in doc.items():
                 if re.fullmatch(end_node_pat, key):
                     if not id_source:
                         continue
                     id_out = self.create_id(id_source, strict=False)
                     if len(id_source) != len(id_out):
-                        raise Exception
+                        raise IDNodeError(f"Error in key {key}")
                 else:
                     id_source_sub = id_source.copy()
                     id_source_sub.append(key)
                     scan_nodes(sub_doc, id_source_sub.copy())
 
-        try:
-            scan_nodes(document, [])
-        except Exception as e:
-            raise Exception(e)
+        scan_nodes(document, [])
 
 
 class ConfigManager(ABC):
     """Abstract class for managing YAML config"""
 
-    @check_arg(1, check_path)
+    @abstractmethod
     def __init__(self, config_dir_path, id_node_order):
         """
         Parameters
@@ -158,14 +181,27 @@ class ConfigManager(ABC):
         id_node_order: list of str
             IdentifierManager node order
         """
-        self._id_mngr = IdentifierManager(id_node_order)
-        self.data = {}
-        self.config_dir_path = Path(config_dir_path)
 
-    @check_arg(1, check_notempty)
-    @check_arg(1, check_type, (str, list))
+        # Convert to Path
+        config_dir_path = Path(config_dir_path)
+
+        # Set protected attributes
+        self._id_mngr = IdentifierManager(id_node_order)
+        self._config_dir_path = config_dir_path
+
+        # Set public attributes
+        self.data = {}
+
     def __getitem__(self, item):
         """Return config item value
+
+        Parameters
+        ----------
+        item: str | list of str
+
+        Returns
+        -------
+        object
         """
 
         # Define
@@ -222,8 +258,8 @@ class ConfigManager(ABC):
         return self._data
 
     @data.setter
-    @check_arg(1, check_type, dict)
     def data(self, val):
+        assert isinstance(val, dict)
         self._data = val
 
     @property
@@ -244,11 +280,6 @@ class ConfigManager(ABC):
     @property
     def config_file_path(self):
         return self.config_dir_path / self.config_file_name
-
-    @config_dir_path.setter
-    @check_arg(1, check_path)
-    def config_dir_path(self, value):
-        self._config_dir_path = value
 
     @property
     @abstractmethod
@@ -365,13 +396,12 @@ class ConfigManager(ABC):
         return keys
 
     @staticmethod
-    @check_arg(0, check_path)
     def instantiate_all_childs(config_dir_path):
         """Generate a dictionary with instances of all ConfigManager childs
 
         Parameters
         ----------
-        config_dir_path: pathlib.Path
+        config_dir_path: str | pathlib.Path
             Config files directory path. Directory must exist.
 
         Returns
@@ -380,6 +410,12 @@ class ConfigManager(ABC):
             key, snake name of ConfigManager child instance
             value: ConfigManager child instance
         """
+
+        # Test
+        assert isinstance(config_dir_path, (str, Path)) is True
+        assert Path(config_dir_path).exists() is True
+
+        # Create instances
         inst = set()
         for subclass in ConfigManager.__subclasses__():
             inst.add(subclass(config_dir_path))
@@ -419,7 +455,7 @@ class ConfigReadError(Exception):
     pass
 
 
-class ConfigNodeError(ConfigReadError):
+class IDNodeError(Exception):
     pass
 
 
