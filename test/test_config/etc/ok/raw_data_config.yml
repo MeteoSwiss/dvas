@@ -1,15 +1,13 @@
 
-type_00:
+vai-rs41:
     const:
-        idx_unit: dt
+        idx_unit: 'dt'
         dt_format: '%H:%M:%S'
         idx_b: 2.1222
-    instr_22:
+    i22:
         const:
             delimiter: '.'
-type_11:
-    instr_22:
-        flight_33:
-            batch_4:
-                const:
-                    x_a: 3.0
+vai-rs92:
+    i11:
+        const:
+            x_a: 3.0

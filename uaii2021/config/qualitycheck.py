@@ -1,26 +1,25 @@
 
 # Import
+from . import X_CHAR
 from . import RAW_DATA_CONFIG_PARAM
 from . import CONFIG_NAN_EQ
 from . import CONST_KEY_NM
 
 # Define node order
-NODE_ORDER = ['flight', 'batch', 'instr']
+NODE_ORDER = ['flight', 'batch', 'type', 'instr']
 
 # Define root parameters
 ROOT_PARAMS_DEF = {
-    CONST_KEY_NM: {
-        'idx': None,
-        'rep_param': 'x',
-        'rep_val': CONFIG_NAN_EQ
-    }
+    'idx_val': None,
+    'rep_param': f'{X_CHAR}',
+    'rep_val': CONFIG_NAN_EQ
 }
 
 # Define parameter JSON_SCHEMA
 PARAMETER_SCHEMA = {
     "type": "object",
     "patternProperties": {
-        r"^idx$": {
+        r"^idx_val$": {
             'anyOf': [
                 {"type": "null"},
                 {

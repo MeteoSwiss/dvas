@@ -1,26 +1,29 @@
 
 # Import
+from . import X_CHAR, ID_NAME
 from . import RAW_DATA_CONFIG_PARAM
 from . import RAW_DATA_CONFIG_PARAM_NO_X
 from . import CONST_KEY_NM
 
 # Define node order
-NODE_ORDER = ['type', 'instr', 'flight', 'batch']
+NODE_ORDER = ['type', 'instr']
 
 # Define default root parameters
 ROOT_PARAMS_DEF = {
-    CONST_KEY_NM: {
-        'idx_unit': 'ms',
-        'dt_format': None,
-        'delimiter': ';',
-        'usecols': list(range(len(RAW_DATA_CONFIG_PARAM_NO_X))),
-        'namecols': RAW_DATA_CONFIG_PARAM_NO_X,
-        'x_dec': -3,
-        'x_a': 1.0,
-        'x_b': 0.0,
-        'type_name': None,
-        'skiprows': 0
-    }
+    'idx_unit': 'ms',
+    'dt_format': None,
+    'delimiter': ';',
+    'index_col': ID_NAME,
+    'header': None,
+    'usecols': list(range(len(RAW_DATA_CONFIG_PARAM_NO_X))),
+    'names': RAW_DATA_CONFIG_PARAM_NO_X,
+    f'{X_CHAR}_dec': -3,
+    f'{X_CHAR}_a': 1.0,
+    f'{X_CHAR}_b': 0.0,
+    'type_name': None,
+    'skiprows': 0,
+    'skip_blank_lines': True,
+    'delim_whitespace': False
 }
 
 # Define parameter JSON_SCHEMA
@@ -29,7 +32,7 @@ PARAMETER_SCHEMA = {
     "patternProperties": {
         r"^idx_unit$": {
             "type": "string",
-            "enum": ['dt', 'ms', 'meters']
+            "enum": ['dt', 's', 'ms', 'meters']
         },
         r"^dt_format$": {
             'anyOf': [
@@ -37,7 +40,21 @@ PARAMETER_SCHEMA = {
                 {"type": 'string'}
             ]
         },
-        r"^delimiter$": {"type": 'string'},
+        r"^delimiter$": {
+            'anyOf': [
+                {"type": "null"},
+                {"type": 'string'}
+            ]
+        },
+        r"^index_col$": {
+            "type": "string",
+            "enum": [ID_NAME]},
+        r"^header$": {
+            'anyOf': [
+                {"type": "null"},
+                {"type": 'integer'}
+            ]
+        },
         r"^usecols$": {
             "type": 'array',
             "items": {
@@ -47,7 +64,7 @@ PARAMETER_SCHEMA = {
             "minItems": 1,
             "uniqueItems": True
         },
-        r"^namecols$": {
+        r"^names$": {
             "type": 'array',
             "items": {
                 "type": "string",
@@ -56,15 +73,15 @@ PARAMETER_SCHEMA = {
             "minItems": 1,
             "uniqueItems": True
         },
-        r"^({})_dec$".format('|'.join(RAW_DATA_CONFIG_PARAM)): {
+        rf"^({'|'.join(RAW_DATA_CONFIG_PARAM)})_dec$": {
             "type": 'integer',
             "maximum": 3,
             "minimum": -4
         },
-        r"^({})_a$".format('|'.join(RAW_DATA_CONFIG_PARAM)): {
+        rf"^({'|'.join(RAW_DATA_CONFIG_PARAM)})_a$": {
             "type": 'number'
         },
-        r"^({})_b$".format('|'.join(RAW_DATA_CONFIG_PARAM)): {
+        rf"^({'|'.join(RAW_DATA_CONFIG_PARAM)})_b$": {
             "type": 'number'
         },
         r"^type_name$": {
@@ -78,7 +95,10 @@ PARAMETER_SCHEMA = {
                 {"type": "integer", 'minimum': 0},
                 {"type": 'string'}
             ]
-        }
+        },
+        r"^skip_blank_lines$": {"type": "boolean"},
+        r"^delim_whitespace$": {"type": "boolean"}
+
     },
     "additionalProperties": False
 }

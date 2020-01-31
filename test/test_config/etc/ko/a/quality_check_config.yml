@@ -1,12 +1,12 @@
 
-tutu_flight:
-  const:
-    idx:
-      -
-        - 1
-        - 2
-      -
-        - 1
-        - 3
-    rep_param: 'T'
-    rep_val: 88.1
+f0:
+    const:
+        idx:
+            -
+              - 1
+              - 2
+            -
+              - 1
+              - 3
+        rep_param: 'trepros1'
+        rep_val: 88.1

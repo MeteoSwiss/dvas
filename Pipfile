@@ -7,6 +7,7 @@ verify_ssl = true
 pipenv = "*"
 pytest = "*"
 pytest-datafiles = "*"
+matplotlib = "*"
 
 [packages]
 tinydb = "*"
@@ -18,6 +19,8 @@ dotty-dict = "*"
 ruamel-yaml = "*"
 pampy = "*"
 scipy = "*"
+pint = "*"
+numericalunits = "*"
 
 [requires]
 python_version = "3.7.5"
