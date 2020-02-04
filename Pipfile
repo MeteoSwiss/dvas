@@ -21,6 +21,7 @@ pampy = "*"
 scipy = "*"
 pint = "*"
 numericalunits = "*"
+plotly = "*"
 
 [requires]
 python_version = "3.7.5"

@@ -96,7 +96,7 @@ class IdentifierManager:
 
     @classmethod
     def join(cls, item):
-        """Split str by item separator into list
+        """Join list by item into str
 
         Parameters
         ----------

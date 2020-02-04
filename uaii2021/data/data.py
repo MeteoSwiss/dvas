@@ -4,8 +4,10 @@
 
 from abc import ABC, abstractmethod
 from operator import itemgetter
+import copy
 import numpy as np
 import pandas as pd
+from enum import Enum, unique
 
 from dataclasses import dataclass, field
 from typing import List
@@ -15,70 +17,57 @@ from ..config.config import RawData
 from .linker import LocalDBLinker, CSVLinker, ManufacturerCSVLinker
 
 
-class TimeSeriesManager(pd.Series):
+class TimeSeriesManager:
 
-    _metadata = ['_load_order', '_offset']
-
-    @abstractmethod
-    def __init__(self, load_order, offset=0):
+    def __init__(self, data, id_source, index_lag=pd.Timedelta('0s')):
         """
 
         Parameters
         ----------
-        id_source: list of str | str
-        load_order: list of DataLinker instances
-
+        data: pd.Series with index of type pd.TimedeltaIndex
+        id_source
+        index_lag: pd.Timedelta
         """
+        # Test
+        assert isinstance(data, pd.Series)
+        assert isinstance(data.index, pd.TimedeltaIndex)
+        assert isinstance(index_lag, pd.Timedelta)
 
-        super().__init__()
-        self._load_order = load_order
-        self._offset = offset
+        # Init properties
+        self._id_mngr = IdentifierManager(['ms', 'param', 'qc_status'])
+        self._index_lag = index_lag
 
-    @property
-    def _constructor(self):
-        return TimeSeriesManager
-
-    @property
-    def id_source(self):
-        return self.name
-
-    @property
-    def load_order(self):
-        return self._load_order
+        data.name = self.id_mngr.join(id_source)
+        data.index.name = None
+        self._data = data
 
     @property
-    def offset(self):
-        return self._offset
+    def id_mngr(self):
+        return self._id_mngr
 
-    def load(self):
-        for data_linker in self.load_order:
-            data = data_linker.load(self.id_source)
+    @property
+    def index_lag(self):
+        return self._index_lag
+
+    @property
+    def data(self):
+        return self._data
+
+    @staticmethod
+    def load(id_source, load_order):
+        for data_linker in load_order:
+            data = data_linker.load(id_source)
             if data is not None:
-                assert isinstance(data, pd.Series)
-                assert isinstance(data.index, pd.TimedeltaIndex)
-                assert data.index[0] == pd.Timedelta('0s')
-                super().__init__(data)
-                break
+                return TimeSeriesManager(data, id_source)
 
-    def save(self):
-        LocalDBLinker.save(self.id_source, self.data)
-
-    def shift(self, lag):
-        """
-
-        Parameters
-        ----------
-        lag: int
-            Periods shift
-
-        """
-        super().__init__(self.data.shift(period=lag))
-        self._offset += lag
+    def save(self, linker):
+        linker.save(self.data.name, self.data)
 
     def interpolate(self):
         #TODO
-        # Add interpolate of wind direct
-        super().interpolate(method='index', inplace=True)
+        # Add interpolate of wind direction
+        self._data = self.data.interpolate(method='index')
+        return self
 
     def resample(self, interval='1s'):
         """
@@ -90,16 +79,31 @@ class TimeSeriesManager(pd.Series):
 
         Returns
         -------
+        TimeSeriesManager
 
         """
         #TODO
         # Add resample of wind direction
         # Add sum function
-        self.data = self.data.resample(interval, label='right', closed='right').mean()
+        out = self.data.resample(interval, label='right', closed='right').mean()
 
         # Interpolate if oversampling
-        if self.data.isna().any():
-            self.interpolate()
+        if out.isna().any():
+            out = out.interpolate(method='index')
+
+        self._data = out
+        return self
+
+    def reset_index(self):
+        """Set index start at 0s
+        """
+        self._data = self.data.reindex(self.data.index - self.data.index[0])
+        return self
+
+    def shift(self, periods):
+        self._index_lag -= pd.Timedelta(periods, self.data.index.freq.name)
+        self._data = self.data.shift(periods)
+        return self
 
     def layering(self):
         pass
@@ -107,48 +111,25 @@ class TimeSeriesManager(pd.Series):
     def change_index_unit(self, new_unit: str):
         pass
 
-
-class TimeDataFrameManager:
-
-    def __init__(self, profile_series):
-        """
-
-        Parameters
-        ----------
-        profile_series: list of ProfileSeries
-        """
-
-        self._id_sources = [[arg.id_source for arg in profile_series]]
-        self._data = pd.concat(
-            [arg.data for arg in profile_series],
-            join='inner',
-            names=range(len(profile_series)))
-
-    @property
-    def id_sources(self):
-        return self._id_sources
-
-    @property
-    def data(self):
-        return self._data
-
     @staticmethod
     def synchronise(profile_series, i_start=0, n_corr=300, window=30, i_ref=0):
         """
 
         Parameters
         ----------
-        profile_series: list of ProfileSeries
+        profile_series: list of TimeSeriesManager
 
         Returns
         -------
 
         """
 
+        # Copy
+        profile_series = copy.deepcopy(profile_series)
+
         # Interpolate and resample
-        for pf in profile_series:
-            pf.interpolate()
-            pf.resample()
+        for i, pf in enumerate(profile_series):
+            pf.interpolate().resample().reset_index()
 
         ref_data = profile_series[i_ref]
 
@@ -156,7 +137,7 @@ class TimeDataFrameManager:
         window_values = range(-window, window)
         for test_data in profile_series:
             corr_res = [
-                TimeDataFrameManager.crosscorr(
+                TimeSeriesManager.crosscorr(
                     ref_data.data.iloc[i_start:i_start+n_corr],
                     test_data.data.iloc[i_start:i_start+n_corr],
                     lag=w)
@@ -188,3 +169,44 @@ class TimeDataFrameManager:
             return datax.corr(shiftedy, method=method)
         else:
             return datax.corr(datay.shift(lag), method=method)
+
+class TimeDataFrameManager:
+
+    def __init__(self, data):
+
+        # Test
+        assert isinstance(data, pd.DataFrame)
+        assert isinstance(data.index, pd.TimedeltaIndex)
+
+        self._data = data
+
+    @property
+    def data(self):
+        return self._data
+
+
+
+    @staticmethod
+    def concat(profile_series):
+        """
+
+        Parameters
+        ----------
+        profile_series: list of TimeSeriesManger
+
+        Returns
+        -------
+
+        """
+
+        return TimeDataFrameManager(pd.concat([pf.data for pf in profile_series], axis=1))
+
+    @staticmethod
+    def load():
+        #TODO
+        # Method to load multiple data Series of same flight and same parameter
+        pass
+
+    def save(self, linker):
+        for _, data in self.iteritems():
+            data.save(linker)

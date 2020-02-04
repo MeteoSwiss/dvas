@@ -20,11 +20,15 @@ class DataLinker(ABC):
     def __init__(self):
         self._id_mngr = IdentifierManager(['ms', 'param', 'flight', 'batch', 'instr'])
 
+    @property
+    def id_mngr(self):
+        return self._id_mngr
+
     def create_id(self, id_source):
-        return self._id_mngr.create_id(id_source)
+        return self.id_mngr.create_id(id_source)
 
     def get_item_id(self, id_source, item_key):
-        return self._id_mngr.get_item_id(id_source, item_key)
+        return self.id_mngr.get_item_id(id_source, item_key)
 
     @abstractmethod
     def load(self, id_source):
@@ -196,7 +200,7 @@ class ManufacturerCSVLinker(CSVLinker):
 
         # Redefine index
         idx_unit = raw_cfg_param['idx_unit']
-        data.index = pd.to_timedelta(data.index, idx_unit) - pd.Timedelta(data.index[0], idx_unit)
+        data.index = pd.to_timedelta(data.index, idx_unit)
 
         return data
 

@@ -26,6 +26,8 @@ def test_init_const():
     """Test init.py"""
 
     test_str_OK = [
+        'qc0',
+        'qc1',
         '2010-01-20T001020Z',
         '2022-12-31T235959Z',
         'tre200s0',
@@ -40,6 +42,7 @@ def test_init_const():
         'i12']
 
     test_str_KO = [
+        'qc-0',
         '2010-1-20T001020Z',
         '2022-1231T235959Z',
         '2022-12-31T2359Z',
