@@ -166,7 +166,7 @@ class ManufacturerCSVLinker(CSVLinker):
         """
 
         # Create file name pattern
-        manu_id_mngr = IdentifierManager(['ms', 'flight', 'batch', 'instr', 'ref_dt', 'type'])
+        manu_id_mngr = IdentifierManager(['ms', 'flight', 'batch', 'instr', 'ref_dt', 'instr_type'])
         file_nm_pat = manu_id_mngr.join(manu_id_mngr.create_id(id_source, strict=False)) + '*.csv'
 
         # Search file
@@ -197,6 +197,9 @@ class ManufacturerCSVLinker(CSVLinker):
 
         # Convert to dict of pd.Series
         data = data[prm_nm]
+
+        # Apply linear correction
+        data = data * raw_cfg_param[f"{prm_nm}_a"] + raw_cfg_param[f"{prm_nm}_b"]
 
         # Redefine index
         idx_unit = raw_cfg_param['idx_unit']

@@ -20,8 +20,6 @@ CONST_KEY_NM = 'const'
 CONST_KEY_PATTERN = re.compile(rf'{CONST_KEY_NM}')
 CONFIG_ITEM_PATTERN = {
     key: re.compile(rf"^{val}$") for key, val in {
-        # Quality check status
-        'qc_status': r"qc[01]{1,16}",
         # Reference datetime (e.g. 2020-02-28T000000Z)
         'ref_dt': r"(\d{4})\-([0-1]\d)\-([0-3]\d)T([0-2]\d)([0-6]\d)([0-6]\d)Z",
         # Data parameter (e.g. trepros1, dklpros1)
@@ -29,7 +27,7 @@ CONFIG_ITEM_PATTERN = {
         # Meassite reference id (e.g. PAY, PAY_1, PAY_L1)
         'ms': r"[A-Z]{3}(_[A-Z0-9]+)?",
         # Instrument type reference id (e.g. vai-rs92)
-        'type': r"[a-z0-9]{3,}\-[a-z0-9]+",
+        'instr_type': r"[a-z0-9]{3,}\-[a-z0-9]+",
         # Batch reference id (e.g b0, b1)
         'batch': r"b[01]",
         # Flight reference id (e.g f00, f01, f12, f34)

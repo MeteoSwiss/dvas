@@ -6,7 +6,7 @@ from . import CONFIG_NAN_EQ
 from . import CONST_KEY_NM
 
 # Define node order
-NODE_ORDER = ['flight', 'batch', 'type', 'instr']
+NODE_ORDER = ['flight', 'batch', 'instr_type', 'instr']
 
 # Define root parameters
 ROOT_PARAMS_DEF = {

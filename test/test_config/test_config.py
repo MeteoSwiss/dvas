@@ -8,7 +8,6 @@ import re
 from pathlib import Path
 from jsonschema import validate
 import pytest
-from mdtpyhelper.check import CheckfuncAttributeError
 import numpy as np
 
 from pampy import match, ANY
@@ -16,7 +15,7 @@ from pampy import match, ANY
 from uaii2021.config import ITEM_SEPARATOR
 from uaii2021.config import CONST_KEY_NM, CONFIG_ITEM_PATTERN
 from uaii2021.config.config import IdentifierManager
-from uaii2021.config.config import ConfigManager
+from uaii2021.config.config import ConfigManager, RawData
 from uaii2021.config.config import ConfigReadError
 from uaii2021.config.config import ConfigItemKeyError
 from uaii2021.config.config import IDNodeError
@@ -26,8 +25,6 @@ def test_init_const():
     """Test init.py"""
 
     test_str_OK = [
-        'qc0',
-        'qc1',
         '2010-01-20T001020Z',
         '2022-12-31T235959Z',
         'tre200s0',
@@ -42,7 +39,6 @@ def test_init_const():
         'i12']
 
     test_str_KO = [
-        'qc-0',
         '2010-1-20T001020Z',
         '2022-1231T235959Z',
         '2022-12-31T2359Z',
@@ -82,6 +78,10 @@ ITEM_OK = {
                 'idx_val': [[1, 2], [1, 3]], 'rep_param': 'trepros1', 'rep_val': 88.1
             }
         }
+    },
+    'instrument_type': {
+        f'vai-rs41{ITEM_SEPARATOR}const{ITEM_SEPARATOR}instr': ['i00', 'i01'],
+        f'metlab-c50{ITEM_SEPARATOR}const{ITEM_SEPARATOR}instr': ['dummy']
     }
 }
 ITEM_KO = {
@@ -94,6 +94,9 @@ ITEM_KO = {
         '99zz',
         f'const{ITEM_SEPARATOR}99zz',
     ],
+    'instrument_type': [
+        '99zz'
+    ]
 }
 
 OK_FIXTURE_DIR = os.path.join(
@@ -167,26 +170,20 @@ def test_config_manager_ko_a(datafiles):
     """Test for bad config file"""
 
     # Instantiate all managers
-    cfg_mngrs = ConfigManager.instantiate_all_childs(Path(datafiles))
+    cfg_mngr = RawData(Path(datafiles))
 
-    # Loop for each manager
-    for key, cfg_mngr in cfg_mngrs.items():
-
-        with pytest.raises(ConfigReadError):
-            cfg_mngr.read()
+    with pytest.raises(ConfigReadError):
+        cfg_mngr.read()
 
 
 @pytest.mark.datafiles(os.path.join(KO_FIXTURE_DIR, 'b'))
 def test_config_manager_ko_b(datafiles):
 
     # Instantiate all managers
-    cfg_mngrs = ConfigManager.instantiate_all_childs(Path(datafiles))
+    cfg_mngr = RawData(Path(datafiles))
 
-    # Loop for each manager
-    for key, cfg_mngr in cfg_mngrs.items():
-
-        with pytest.raises(ConfigReadError):
-            cfg_mngr.read()
+    with pytest.raises(ConfigReadError):
+        cfg_mngr.read()
 
 
 class TestIdentifierManager:

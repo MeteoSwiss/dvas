@@ -6,7 +6,7 @@ from . import RAW_DATA_CONFIG_PARAM_NO_X
 from . import CONST_KEY_NM
 
 # Define node order
-NODE_ORDER = ['type', 'instr']
+NODE_ORDER = ['instr_type', 'instr']
 
 # Define default root parameters
 ROOT_PARAMS_DEF = {

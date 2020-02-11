@@ -17,7 +17,22 @@ from ..config.config import RawData
 from .linker import LocalDBLinker, CSVLinker, ManufacturerCSVLinker
 
 
+# Define
+FLAG = 'flag'
+VALUE = 'value'
+
+
+@unique
+class Flag(Enum):
+    RAW = 0
+    RAW_NAN = 1
+    INTERPOLATED = 2
+    SYNCHRONIZED = 3
+
+
 class TimeSeriesManager:
+
+    _COL_NAME = [VALUE, FLAG]
 
     def __init__(self, data, id_source, index_lag=pd.Timedelta('0s')):
         """
@@ -28,16 +43,26 @@ class TimeSeriesManager:
         id_source
         index_lag: pd.Timedelta
         """
+
         # Test
-        assert isinstance(data, pd.Series)
+        assert isinstance(data, pd.DataFrame)
         assert isinstance(data.index, pd.TimedeltaIndex)
         assert isinstance(index_lag, pd.Timedelta)
 
+        # Set flag
+        if all(data.columns == self._COL_NAME):
+            pass
+        elif all(data.columns == VALUE):
+            self._set_flag(Flag.RAW.value)
+            self._set_flag(Flag.RAW_NAN.value, np.isnan)
+        else:
+            raise AttributeError('Bad Dataframe format')
+
         # Init properties
-        self._id_mngr = IdentifierManager(['ms', 'param', 'qc_status'])
+        self._id_mngr = IdentifierManager(['ms', 'param', 'flight', 'batch'])
         self._index_lag = index_lag
 
-        data.name = self.id_mngr.join(id_source)
+        data.columns.name = self.id_mngr.join(self.id_mngr.create_id(id_source))
         data.index.name = None
         self._data = data
 
@@ -60,16 +85,47 @@ class TimeSeriesManager:
             if data is not None:
                 return TimeSeriesManager(data, id_source)
 
+    def __len__(self):
+        return len(self.data)
+
     def save(self, linker):
         linker.save(self.data.name, self.data)
+
+    def _set_flag(self, bit_val, data_fct=None):
+        if data_fct is None:
+            idx_data = np.ndarray(len(self), bool)
+            idx_data.fill(True)
+        else:
+            idx_data = data_fct(self._data[VALUE])
+
+        self._data.loc[idx_data, FLAG] = np.bitwise_or(
+            self._data.loc[idx_data, FLAG],
+            1 << bit_val)
+
+    def _reset_flag(self, bit_val, data_fct=None):
+        if data_fct is None:
+            idx_data = np.ndarray(len(self), bool)
+            idx_data.fill(True)
+        else:
+            idx_data = data_fct(self._data[VALUE])
+
+        self._data.loc[idx_data, FLAG] = np.bitwise_and(
+                self._data.loc[idx_data, FLAG],
+                np.bitwise_not(1 << bit_val))
+
+    def _get_flag(self, bit_val):
+        return np.bitwise_and(
+            self._data.loc[FLAG],
+            1 << bit_val)
 
     def interpolate(self):
         #TODO
         # Add interpolate of wind direction
+        self._set_flag(Flag.INTERPOLATED.value, np.isnan)
         self._data = self.data.interpolate(method='index')
         return self
 
-    def resample(self, interval='1s'):
+    def _resample(self, interval='1s'):
         """
 
         Parameters
@@ -85,7 +141,7 @@ class TimeSeriesManager:
         #TODO
         # Add resample of wind direction
         # Add sum function
-        out = self.data.resample(interval, label='right', closed='right').mean()
+        out = self.data._resample(interval, label='right', closed='right').mean()
 
         # Interpolate if oversampling
         if out.isna().any():
@@ -94,13 +150,14 @@ class TimeSeriesManager:
         self._data = out
         return self
 
-    def reset_index(self):
+    def _reset_index(self):
         """Set index start at 0s
         """
         self._data = self.data.reindex(self.data.index - self.data.index[0])
+        self._set_flag()
         return self
 
-    def shift(self, periods):
+    def _shift(self, periods):
         self._index_lag -= pd.Timedelta(periods, self.data.index.freq.name)
         self._data = self.data.shift(periods)
         return self
@@ -129,7 +186,7 @@ class TimeSeriesManager:
 
         # Interpolate and resample
         for i, pf in enumerate(profile_series):
-            pf.interpolate().resample().reset_index()
+            pf.interpolate()._resample()._reset_index()
 
         ref_data = profile_series[i_ref]
 
@@ -145,7 +202,11 @@ class TimeSeriesManager:
             ]
             idx_offset.append(np.argmax(corr_res))
 
-        return [arg.shift(window_values[idx_offset[i]]) for i, arg in enumerate(profile_series)]
+        for i, arg in enumerate(profile_series):
+            arg._shift(window_values[idx_offset[i]])
+            arg.set_flag(Flag.SYNCHRONIZED.value)
+
+        return
 
     @staticmethod
     def crosscorr(datax, datay, lag=0, wrap=False, method='kendall'):
@@ -170,6 +231,7 @@ class TimeSeriesManager:
         else:
             return datax.corr(datay.shift(lag), method=method)
 
+
 class TimeDataFrameManager:
 
     def __init__(self, data):
@@ -183,8 +245,6 @@ class TimeDataFrameManager:
     @property
     def data(self):
         return self._data
-
-
 
     @staticmethod
     def concat(profile_series):

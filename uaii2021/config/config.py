@@ -17,9 +17,6 @@ from ruamel.yaml import YAML
 from ruamel.yaml.error import YAMLError
 
 import numpy as np
-from mdtpyhelper.check import check_arg, check_type, check_list_item
-from mdtpyhelper.check import check_path, check_notempty
-from mdtpyhelper.check import CheckfuncAttributeError
 from mdtpyhelper.misc import camel_to_snake
 from mdtpyhelper.misc import get_by_path
 from mdtpyhelper.misc import timer
@@ -30,6 +27,7 @@ from . import CONST_KEY_NM, CONST_KEY_PATTERN, CONFIG_ITEM_PATTERN
 from . import RAW_DATA_CONFIG_PARAM_NO_X
 from . import rawdata
 from . import qualitycheck
+from . import instrtype
 
 
 class IdentifierManager:
@@ -325,7 +323,6 @@ class ConfigManager(object, metaclass=ConfigManagerMeta):
 
         return out
 
-    @check_arg(1, check_type, (str, list))
     def get_all(self, nested_key):
 
         # Get all parameters
@@ -528,6 +525,17 @@ class QualityCheck(ConfigManager):
         # Set required attributes
         self._parameter_schema = qualitycheck.PARAMETER_SCHEMA
         self._root_params_def = qualitycheck.ROOT_PARAMS_DEF
+
+
+class InstrumentType(ConfigManager):
+
+    def __init__(self, config_dir_path):
+        # Init super class
+        super().__init__(config_dir_path, instrtype.NODE_ORDER)
+
+        # Set required attributes
+        self._parameter_schema = instrtype.PARAMETER_SCHEMA
+        self._root_params_def = instrtype.ROOT_PARAMS_DEF
 
 
 class ConfigReadError(Exception):
