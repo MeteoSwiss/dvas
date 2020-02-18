@@ -1,7 +1,7 @@
-# Created by https://www.gitignore.io/api/python,pycharm
-# Edit at https://www.gitignore.io/?templates=python,pycharm
+# Created by https://www.gitignore.io/api/venv,python,pycharm+all
+# Edit at https://www.gitignore.io/?templates=venv,python,pycharm+all
 
-### PyCharm ###
+### PyCharm+all ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and WebStorm
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
@@ -71,23 +71,21 @@ fabric.properties
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
 
-### PyCharm Patch ###
-# Comment Reason: https://github.com/joeblau/gitignore.io/issues/186#issuecomment-215987721
+### PyCharm+all Patch ###
+# Ignores the whole .idea folder and all .iml files
+# See https://github.com/joeblau/gitignore.io/issues/186 and https://github.com/joeblau/gitignore.io/issues/360
 
-# *.iml
-# modules.xml
-# .idea/misc.xml
-# *.ipr
+.idea/
+
+# Reason: https://github.com/joeblau/gitignore.io/issues/186#issuecomment-249601023
+
+*.iml
+modules.xml
+.idea/misc.xml
+*.ipr
 
 # Sonarlint plugin
-.idea/**/sonarlint/
-
-# SonarQube Plugin
-.idea/**/sonarIssues.xml
-
-# Markdown Navigator plugin
-.idea/**/markdown-navigator.xml
-.idea/**/markdown-navigator/
+.idea/sonarlint
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
@@ -194,4 +192,67 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# End of https://www.gitignore.io/api/python,pycharm
+### venv ###
+# Virtualenv
+# http://iamzed.com/2009/05/07/a-primer-on-virtualenv/
+pyvenv.cfg
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+pip-selfcheck.json
+
+# End of https://www.gitignore.io/api/venv,python,pycharm+all
+.idea/codeStyles/
+.idea/inspectionProfiles/
+.idea/modules.xml
+.idea/uaii2021.iml
+.idea/vcs.xml
+.venv/Include/
+.venv/LICENSE.txt
+.venv/Scripts/activate
+.venv/Scripts/activate.bat
+.venv/Scripts/activate.ps1
+.venv/Scripts/activate.xsh
+.venv/Scripts/activate_this.py
+.venv/Scripts/deactivate.bat
+.venv/Scripts/easy_install-3.7.exe
+.venv/Scripts/easy_install.exe
+.venv/Scripts/f2py.exe
+.venv/Scripts/jsonschema.exe
+.venv/Scripts/pip.exe
+.venv/Scripts/pip3.7.exe
+.venv/Scripts/pip3.exe
+.venv/Scripts/pipenv-resolver.exe
+.venv/Scripts/pipenv.exe
+.venv/Scripts/pwiz.py
+.venv/Scripts/py.test.exe
+.venv/Scripts/pytest.exe
+.venv/Scripts/python.exe
+.venv/Scripts/python3.dll
+.venv/Scripts/python37.dll
+.venv/Scripts/pythonw.exe
+.venv/Scripts/virtualenv-clone.exe
+.venv/Scripts/virtualenv.exe
+.venv/Scripts/wheel.exe
+.venv/etc/
+.venv/share/
+.venv/src/
+.venv/tcl/
+db.json
+expl_tmp.py
+local_db.sqlite
+test/test_data/raw_csv/2018-04-05T0.csv
+test/test_data/raw_csv/PAY_RS.f00.b0.i00.2016-11-30T000006Z.vai-rs41.csv
+test/test_data/raw_csv/PAY_RS.f00.b0.i11.2016-11-30T000000Z.metlab-c50.csv
+test/test_data/raw_csv/PAY_RS.f01.b0.i00.2019-11-19T105500Z.vai-rs41.csv
+test/test_data/raw_csv/PAY_RS.f01.b0.i01.2019-11-19T105500.metlab-c34.csv
+test/test_data/raw_csv/PAY_RS.f01.b0.i02.2019-11-19T105500.metlab-c50.csv
+test/test_data/raw_csv/PAY_RS.f01.b0.i03.2019-11-19T105500.vai-rs92.csv
+this_file_of_result.txt
+tiny_vs_mongo.py
+tut.csv
+uaii2021/database/database.py

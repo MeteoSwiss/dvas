@@ -65,38 +65,18 @@ def test_init_const():
 # Define
 ITEM_OK = {
     'raw_data': {
-        f'vai-rs41{ITEM_SEPARATOR}const{ITEM_SEPARATOR}delimiter': ';',
-        f'vai-rs41{ITEM_SEPARATOR}i22{ITEM_SEPARATOR}const{ITEM_SEPARATOR}delimiter': '.',
-        f'vai-rs92{ITEM_SEPARATOR}i11{ITEM_SEPARATOR}const.x_a': 3.0,
-        f'vai-rs92{ITEM_SEPARATOR}i11{ITEM_SEPARATOR}const{ITEM_SEPARATOR}trepros1_a': 3.0,
+        f'vai-rs41{ITEM_SEPARATOR}config_values{ITEM_SEPARATOR}delimiter': ';',
+        f'vai-rs41{ITEM_SEPARATOR}i22{ITEM_SEPARATOR}config_values{ITEM_SEPARATOR}delimiter': '.',
+        f'vai-rs92{ITEM_SEPARATOR}i11{ITEM_SEPARATOR}config_values{ITEM_SEPARATOR}x_func': 'lambda x: 3 * x',
+        f'vai-rs92{ITEM_SEPARATOR}i11{ITEM_SEPARATOR}config_values{ITEM_SEPARATOR}trepros1_func': 'lambda x: 3 * x',
     },
-    'quality_check': {
-        f'f00{ITEM_SEPARATOR}const{ITEM_SEPARATOR}idx_val': [[1, 2], [1, 3]],
-        f'f10{ITEM_SEPARATOR}b1{ITEM_SEPARATOR}const{ITEM_SEPARATOR}rep_val': np.nan,
-        'f00': {
-            'const': {
-                'idx_val': [[1, 2], [1, 3]], 'rep_param': 'trepros1', 'rep_val': 88.1
-            }
-        }
-    },
-    'instrument_type': {
-        f'vai-rs41{ITEM_SEPARATOR}const{ITEM_SEPARATOR}instr': ['i00', 'i01'],
-        f'metlab-c50{ITEM_SEPARATOR}const{ITEM_SEPARATOR}instr': ['dummy']
-    }
 }
 ITEM_KO = {
     'raw_data': [
         '99zz',
-        f'const{ITEM_SEPARATOR}99zz',
+        f'config_values{ITEM_SEPARATOR}99zz',
         f'vai-rs92{ITEM_SEPARATOR}i3',
     ],
-    'quality_check': [
-        '99zz',
-        f'const{ITEM_SEPARATOR}99zz',
-    ],
-    'instrument_type': [
-        '99zz'
-    ]
 }
 
 OK_FIXTURE_DIR = os.path.join(

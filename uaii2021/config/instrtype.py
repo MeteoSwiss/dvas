@@ -5,29 +5,19 @@ from . import RAW_DATA_CONFIG_PARAM
 from . import RAW_DATA_CONFIG_PARAM_NO_X
 
 # Define node order
-NODE_ORDER = ['instr_type', 'instr']
+NODE_ORDER = ['instr_type']
 
 # Define default root parameters
 ROOT_PARAMS_DEF = {
-    'idx_unit': 'ms',
-    'dt_format': None,
-    'delimiter': ';',
-    'index_col': ID_NAME,
-    'header': None,
-    'usecols': list(range(len(RAW_DATA_CONFIG_PARAM_NO_X))),
-    'names': RAW_DATA_CONFIG_PARAM_NO_X,
-    f'{X_CHAR}_func': 'lambda x: x',
-    'type_name': None,
-    'skiprows': 0,
-    'skip_blank_lines': True,
-    'delim_whitespace': False
+    'name': '',
+    'desc': '',
 }
 
 # Define parameter JSON_SCHEMA
 PARAMETER_SCHEMA = {
     "type": "object",
     "patternProperties": {
-        r"^idx_unit$": {
+        r"^name$": {
             "type": "string",
             "enum": ['dt', 's', 'ms', 'meters']
         },

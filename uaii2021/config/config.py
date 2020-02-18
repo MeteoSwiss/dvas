@@ -26,8 +26,6 @@ from . import CONFIG_NAN_EQ, X_CHAR
 from . import CONST_KEY_NM, CONST_KEY_PATTERN, CONFIG_ITEM_PATTERN
 from . import RAW_DATA_CONFIG_PARAM_NO_X
 from . import rawdata
-from . import qualitycheck
-from . import instrtype
 
 
 class IdentifierManager:
@@ -240,7 +238,7 @@ class IdentifierManager:
 
 class ConfigManagerMeta(ABCMeta):
     REQUIRED_ATTRIBUTES = []
-    instances = []
+
     def __call__(cls, *args, **kwargs):
         obj = super(ConfigManagerMeta, cls).__call__(*args, **kwargs)
         for attr_name in obj.REQUIRED_ATTRIBUTES:
@@ -514,28 +512,6 @@ class RawData(ConfigManager):
         # Set required attributes
         self._parameter_schema = rawdata.PARAMETER_SCHEMA
         self._root_params_def = rawdata.ROOT_PARAMS_DEF
-
-
-class QualityCheck(ConfigManager):
-
-    def __init__(self, config_dir_path):
-        # Init super class
-        super().__init__(config_dir_path, qualitycheck.NODE_ORDER)
-
-        # Set required attributes
-        self._parameter_schema = qualitycheck.PARAMETER_SCHEMA
-        self._root_params_def = qualitycheck.ROOT_PARAMS_DEF
-
-
-class InstrumentType(ConfigManager):
-
-    def __init__(self, config_dir_path):
-        # Init super class
-        super().__init__(config_dir_path, instrtype.NODE_ORDER)
-
-        # Set required attributes
-        self._parameter_schema = instrtype.PARAMETER_SCHEMA
-        self._root_params_def = instrtype.ROOT_PARAMS_DEF
 
 
 class ConfigReadError(Exception):

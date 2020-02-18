@@ -1,13 +1,13 @@
 
 vai-rs41:
-    const:
+    config_values:
         idx_unit: 'dt'
         dt_format: '%H:%M:%S'
-        idx_b: 2.1222
+        idx_func: 'lambda x: 3 * x'
     i22:
-        const:
+        config_values:
             delimiter: '.'
 vai-rs92:
     i11:
-        const:
-            x_a: 3.0
+        config_values:
+            x_func: 'lambda x: 3 * x'
