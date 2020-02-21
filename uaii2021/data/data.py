@@ -12,7 +12,7 @@ from enum import Enum, unique
 from dataclasses import dataclass, field
 from typing import List
 
-from ..config.config import IdentifierManager, ConfigManagerMeta
+from ..config.config import ConfigManagerMeta
 from ..config.config import RawData
 from .linker import LocalDBLinker, CSVLinker, ManufacturerCSVLinker
 

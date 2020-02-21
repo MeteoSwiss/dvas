@@ -1,0 +1,12 @@
+
+_flight_0:
+    id: 'f0'
+    day_flight: True
+    launch_dt: '2020-01-02T00:20:22Z'
+    batch_amount: 2
+
+_flight_1:
+    id: 'f1'
+    day_flight: True
+    launch_dt: '2020-01-02T00:20:22Z'
+    batch_amount: 1

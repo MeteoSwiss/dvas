@@ -1,13 +1,11 @@
 
-vai-rs41:
-    config_values:
-        idx_unit: 'dt'
-        dt_format: '%H:%M:%S'
-        idx_func: 'lambda x: 3 * x'
-    i22:
-        config_values:
-            delimiter: '.'
-vai-rs92:
-    i11:
-        config_values:
-            x_func: 'lambda x: 3 * x'
+_vai-rs41:
+    idx_unit: 'dt'
+    dt_format: '%H:%M:%S'
+    idx_func: 'lambda x: 3 * x'
+
+    _i22:
+        delimiter: '.'
+_vai-rs92:
+    _i11:
+        x_func: 'lambda x: 3 * x'

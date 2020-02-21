@@ -26,214 +26,229 @@ from . import CONFIG_NAN_EQ, X_CHAR
 from . import CONST_KEY_NM, CONST_KEY_PATTERN, CONFIG_ITEM_PATTERN
 from . import RAW_DATA_CONFIG_PARAM_NO_X
 from . import rawdata
+from . import instrtype
+from . import instrument
+from . import flight
 
+#TODO
+# Delete this class
 
-class IdentifierManager:
-    """Abstract class for managing unique identifier"""
-
-    __ITEM_SEPARATOR = ITEM_SEPARATOR
-
-    def __init__(self, node_order):
-        """
-
-        Parameters
-        ----------
-        node_order: list
-            Must be item of CONFIG_ITEM_PATTERN.keys()
-        """
-        # Check node_order
-        assert all([arg in CONFIG_ITEM_PATTERN.keys() for arg in node_order]) is True, (
-            f'{node_order} not all in {CONFIG_ITEM_PATTERN.keys()}')
-
-        # Set protected attributes
-        self._node_order = node_order
-        self._node_pat = [
-            CONFIG_ITEM_PATTERN[key] for key in self.node_order
-        ]
-        self._node_str_pat = [
-            key.pattern for key in self.node_pat
-        ]
-
-    @property
-    def node_order(self):
-        """Identifier node order. Must be key of CONFIG_ITEM_PATTERN"""
-        return self._node_order
-
-    @property
-    def node_pat(self):
-        """Construct node order compiled pattern"""
-        return self._node_pat
-
-    @property
-    def node_str_pat(self):
-        """Construct node order string pattern"""
-        return self._node_str_pat
-
-    @classmethod
-    def split(cls, item):
-        """Split str by item separator into list
-
-        Parameters
-        ----------
-        item: str | list
-
-        Returns
-        -------
-        list of str
-
-        Examples
-        --------
-        >>>IdentifierManager.split('test.foo')
-        ['test','foo']
-        >>>IdentifierManager.split(['test', 'foo'])
-        ['test','foo']
-        """
-        return item.split(cls.__ITEM_SEPARATOR) if isinstance(item, str) else item
-
-    @classmethod
-    def join(cls, item):
-        """Join list by item into str
-
-        Parameters
-        ----------
-        item: str | list of str
-
-        Returns
-        -------
-        str
-
-        Examples
-        --------
-        >>>IdentifierManager.split(['test', 'foo'])
-        'test.foo'
-        >>>IdentifierManager.split('test.foo')
-        'test.foo'
-        """
-        return cls.__ITEM_SEPARATOR.join(item) if isinstance(item, list) else item
-
-    def get_item_id(self, id_source, item_key):
-        """Return item key corresponding id
-
-        Parameters
-        ----------
-        id_source: str | list of str
-        item_key: str
-            Item key. Must be element of node_order
-
-        Returns
-        -------
-        str
-        """
-
-        # Init
-        id_source = self.split(id_source)
-
-        item_pat = self.node_pat[self.node_order.index(item_key)]
-
-        a = (
-            (item_key,) +
-            self.count_match([re.fullmatch(item_pat, id_src_arg) for id_src_arg in id_source])
-        )
-
-        if a[1] >= 2:
-            raise IDNodeError(f"Many identical pattern id in {id_source}")
-
-        out = list(takewhile(lambda arg: arg[1] == 1, [a]))
-
-        if not out:
-            raise IDNodeError(f'No match in {id_source}')
-
-        return out[0][2][0]
-
-    def create_id(self, id_source, strict=True):
-        """Create default id
-
-        Parameters
-        ----------
-        id_source: list of str
-        strict: bool (default: True)
-
-        Returns
-        -------
-        list of str
-        """
-
-        # Init
-        id_source = self.split(id_source)
-
-        a = [
-            (node_nm,) + self.count_match([re.fullmatch(node_pat_arg, id_src_arg) for id_src_arg in id_source])
-            for node_nm, node_pat_arg in zip(self.node_order, self.node_pat)
-        ]
-
-        # Check for id with multiple node name
-        check = [arg[0] for arg in a if arg[1] >= 2]
-        if check:
-            raise IDNodeError(f"Many identical pattern id in {id_source}")
-
-        out = list(takewhile(lambda arg: arg[1] == 1, a))
-
-        if not out:
-            raise IDNodeError('No match')
-
-        if strict:
-            if len(out) != len(self.node_order):
-                found_keys = list(zip(*out))
-                out_not_fullfilled = [
-                    arg for arg in self.node_order if arg not in found_keys[0]
-                ]
-                errmsg = f'Strict condition not fulfilled for {out_not_fullfilled}'
-                raise IDNodeError(errmsg)
-
-        out = [arg[2][0] for arg in out]
-
-        return out
-
-    def check_dict_node(self, document, end_node_pat):
-        """Check dictionary key node order. End node must match end_node_pat.
-
-        Parameters
-        ----------
-        document: dict
-            Document to be check
-        end_node_pat: str | re.Pattern
-            End node pattern
-        """
-
-        def scan_nodes(doc, id_source):
-            if isinstance(doc, dict) is False:
-                raise IDNodeError(f"Missing end node patter {end_node_pat}")
-            for key, sub_doc in doc.items():
-                if re.fullmatch(end_node_pat, key):
-                    if not id_source:
-                        continue
-                    id_out = self.create_id(id_source, strict=False)
-                    if len(id_source) != len(id_out):
-                        raise IDNodeError(f"Error in key {key}")
-                else:
-                    id_source_sub = id_source.copy()
-                    id_source_sub.append(key)
-                    scan_nodes(sub_doc, id_source_sub.copy())
-
-        scan_nodes(document, [])
-
-    @staticmethod
-    def count_match(matches):
-        """Return (count of match, list of match group(0)) in matches
-
-        Parameters
-        ----------
-        matches: list
-            Result of re.match or re.fullmatch for a list of str
-
-        Returns
-        -------
-        tuple
-        """
-
-        val_flag = [arg is not None for arg in matches]
-        val_grp = [arg.group(0) for arg in matches if arg is not None]
-        return sum(val_flag), val_grp
+# class IdentifierManager:
+#     """Abstract class for managing unique identifier"""
+#
+#     __ITEM_SEPARATOR = ITEM_SEPARATOR
+#
+#     def __init__(self, node_order):
+#         """
+#
+#         Parameters
+#         ----------
+#         node_order: list
+#             Must be item of CONFIG_ITEM_PATTERN.keys()
+#         """
+#         # Check node_order
+#         assert all([arg in CONFIG_ITEM_PATTERN.keys() for arg in node_order]) is True, (
+#             f'{node_order} not all in {CONFIG_ITEM_PATTERN.keys()}')
+#
+#         # Set protected attributes
+#         self._node_order = node_order
+#         self._node_pat = [
+#             CONFIG_ITEM_PATTERN[key] for key in self.node_order
+#         ]
+#         self._node_str_pat = [
+#             key.pattern for key in self.node_pat
+#         ]
+#
+#     @property
+#     def node_order(self):
+#         """Identifier node order. Must be key of CONFIG_ITEM_PATTERN"""
+#         return self._node_order
+#
+#     @property
+#     def node_pat(self):
+#         """Construct node order compiled pattern"""
+#         return self._node_pat
+#
+#     @property
+#     def node_str_pat(self):
+#         """Construct node order string pattern"""
+#         return self._node_str_pat
+#
+#     @classmethod
+#     def split(cls, item):
+#         """Split str by item separator into list
+#
+#         Parameters
+#         ----------
+#         item: str | list
+#
+#         Returns
+#         -------
+#         list of str
+#
+#         Examples
+#         --------
+#         >>>IdentifierManager.split('test.foo')
+#         ['test','foo']
+#         >>>IdentifierManager.split(['test', 'foo'])
+#         ['test','foo']
+#         """
+#         return item.split(cls.__ITEM_SEPARATOR) if isinstance(item, str) else item
+#
+#     @classmethod
+#     def join(cls, item):
+#         """Join list by item into str
+#
+#         Parameters
+#         ----------
+#         item: str | list of str
+#
+#         Returns
+#         -------
+#         str
+#
+#         Examples
+#         --------
+#         >>>IdentifierManager.split(['test', 'foo'])
+#         'test.foo'
+#         >>>IdentifierManager.split('test.foo')
+#         'test.foo'
+#         """
+#         return cls.__ITEM_SEPARATOR.join(item) if isinstance(item, list) else item
+#
+#     def get_item_id(self, id_source, item_key):
+#         """Return item key corresponding id
+#
+#         Parameters
+#         ----------
+#         id_source: str | list of str
+#         item_key: str
+#             Item key. Must be element of node_order
+#
+#         Returns
+#         -------
+#         str
+#         """
+#
+#         # Init
+#         id_source = self.split(id_source)
+#
+#         item_pat = self.node_pat[self.node_order.index(item_key)]
+#
+#         a = (
+#             (item_key,) +
+#             self.count_match([re.fullmatch(item_pat, id_src_arg) for id_src_arg in id_source])
+#         )
+#
+#         if a[1] >= 2:
+#             raise IDNodeError(f"Many identical pattern id in {id_source}")
+#
+#         out = list(takewhile(lambda arg: arg[1] == 1, [a]))
+#
+#         if not out:
+#             raise IDNodeError(f'No match in {id_source}')
+#
+#         return out[0][2][0]
+#
+#     def create_id(self, id_source, strict=True):
+#         """Create default id
+#
+#         Parameters
+#         ----------
+#         id_source: list of str
+#         strict: bool (default: True)
+#
+#         Returns
+#         -------
+#         list of str
+#         """
+#
+#         # Init
+#         id_source = self.split(id_source)
+#
+#         a = [
+#             (node_nm,) + self.count_match([re.fullmatch(node_pat_arg, id_src_arg) for id_src_arg in id_source])
+#             for node_nm, node_pat_arg in zip(self.node_order, self.node_pat)
+#         ]
+#
+#         # Check for id with multiple node name
+#         check = [arg[0] for arg in a if arg[1] >= 2]
+#         if check:
+#             raise IDNodeError(f"Many identical pattern id in {id_source}")
+#
+#         out = list(takewhile(lambda arg: arg[1] == 1, a))
+#
+#         if not out:
+#             raise IDNodeError('No match')
+#
+#         if strict:
+#             if len(out) != len(self.node_order):
+#                 found_keys = list(zip(*out))
+#                 out_not_fullfilled = [
+#                     arg for arg in self.node_order if arg not in found_keys[0]
+#                 ]
+#                 errmsg = f'Strict condition not fulfilled for {out_not_fullfilled}'
+#                 raise IDNodeError(errmsg)
+#
+#         out = [arg[2][0] for arg in out]
+#
+#         return out
+#
+#     @staticmethod
+#     def _check_dict_nodes(document, node_pat):
+#         """Check document key node order
+#
+#         Parameters
+#         ----------
+#         document: dict
+#             Document to be check
+#         node_pat: list of str | list of re.Pattern
+#             Ordered node pattern as regular expression
+#
+#         """
+#
+#         def check_single_node(doc, pat):
+#             if type(doc) is dict:
+#
+#                 for key, sub_doc in doc.items():
+#
+#                     # Skip if key doesn't begin by '_'
+#                     if re.match(r'^[^_]', key):
+#                         continue
+#
+#                     if not pat:
+#                         err_msg = "Bad node. No key to match in {}".format(doc)
+#                         raise ConfigNodeError(err_msg)
+#
+#                     if re.fullmatch(rf"_{pat[0]}", key) is None:
+#                         err_msg = "Bad node. '{}' didn't match key in {}".format(pat[0], doc)
+#                         raise ConfigNodeError(err_msg)
+#                     else:
+#                         check_single_node(sub_doc, pat[1:])
+#
+#             else:
+#                 err_msg = "Bad node. '{}' isn't of type dict".format(doc)
+#                 raise ConfigNodeError(err_msg)
+#
+#         check_single_node(document, node_pat)
+#
+#     @staticmethod
+#     def count_match(matches):
+#         """Return (count of match, list of match group(0)) in matches
+#
+#         Parameters
+#         ----------
+#         matches: list
+#             Result of re.match or re.fullmatch for a list of str
+#
+#         Returns
+#         -------
+#         tuple
+#         """
+#
+#         val_flag = [arg is not None for arg in matches]
+#         val_grp = [arg.group(0) for arg in matches if arg is not None]
+#         return sum(val_flag), val_grp
 
 
 class ConfigManagerMeta(ABCMeta):
@@ -250,35 +265,33 @@ class ConfigManagerMeta(ABCMeta):
 class ConfigManager(object, metaclass=ConfigManagerMeta):
     """Abstract class for managing YAML config"""
 
-    REQUIRED_ATTRIBUTES = ['_parameter_schema', '_root_params_def']
+    REQUIRED_ATTRIBUTES = [
+        '_parameter_pattern_prop', '_root_params_def', '_node_pattern']
 
     @abstractmethod
-    def __init__(self, config_dir_path, id_node_order):
+    def __init__(self, config_dir_path):
         """
         Parameters
         ----------
         config_dir_path: pathlib.Path | str
             Config files directory path. Directory must exist.
-        id_node_order: list of str
-            IdentifierManager node_order argument
         """
 
         # Convert to Path
         config_dir_path = Path(config_dir_path)
 
         # Set protected attributes
-        self._id_mngr = IdentifierManager(id_node_order)
         self._config_dir_path = config_dir_path
 
         # Set public attributes
-        self.data = {}
+        self.document = {}
 
     def __getitem__(self, item):
         """Return config item value
 
         Parameters
         ----------
-        item: str | list of str
+        item: list of str
 
         Returns
         -------
@@ -286,20 +299,17 @@ class ConfigManager(object, metaclass=ConfigManagerMeta):
         """
 
         # Define
-        errmsg = "Bad item '{}' in __getitem__({})".format(item, self.data)
-
-        # Split str by item separator
-        item = self._id_mngr.split(item)
+        errmsg = "Bad item '{}' in __getitem__({})".format(item, self.document)
 
         # Define nested function
         def find_val(nested_item):
             try:
-                return get_by_path(self.data, nested_item)
+                return get_by_path(self.document, ['_' + arg for arg in nested_item[:-1]] + nested_item[-1::])
 
             except (KeyError, TypeError, IndexError):
-                if len(nested_item) <= 2:
+                if len(nested_item) <= 1:
                     raise KeyError
-                return find_val(nested_item[:-3] + nested_item[-2:])
+                return find_val(nested_item[:-2] + nested_item[-1:])
 
         # Get for item
         try:
@@ -326,21 +336,31 @@ class ConfigManager(object, metaclass=ConfigManagerMeta):
         # Get all parameters
         param_keys = self._get_parameter_keys()
 
-        nested_key = self._id_mngr.create_id(nested_key, strict=False)
+        out = {key: self[nested_key + [key]] for key in param_keys}
 
-        out = {key: self[nested_key + [CONST_KEY_NM] + [key]] for key in param_keys}
+        return out
+
+    def get_first_layer(self):
+
+        # Get all parameters
+        param_keys = self._get_parameter_keys()
+
+        out = [
+            {key: self[[node_key[1:], key]] for key in param_keys}
+            for node_key in self.document.keys() if re.match(r'^_', node_key)
+        ]
 
         return out
 
     @property
-    def data(self):
+    def document(self):
         """Data"""
-        return self._data
+        return self._document
 
-    @data.setter
-    def data(self, val):
+    @document.setter
+    def document(self, val):
         assert isinstance(val, dict)
-        self._data = val
+        self._document = val
 
     @property
     def snake_name(self):
@@ -362,27 +382,34 @@ class ConfigManager(object, metaclass=ConfigManagerMeta):
         return self.config_dir_path / self.config_file_name
 
     @property
-    def parameter_schema(self):
+    def parameter_pattern_prop(self):
         """JSON parameter schema. Constant value.
         Must be a dict like {"type": "object", "patternProperties": ANY, "additionalProperties": False}
         """
-        return self._parameter_schema
+        return self._parameter_pattern_prop
+
+    @property
+    def node_pattern(self):
+        """
+        """
+        return self._node_pattern
 
     @property
     def json_schema(self):
         """JSON schema. Constant value"""
 
+        node_pattern_prop = {
+            rf"^_(({')|('.join(self.node_pattern)}))$": {"$ref": "#/nodeItem"}
+        }
+
+        pattern_prop = dict(**node_pattern_prop, **self.parameter_pattern_prop)
+
         return {
             "$schema": "http://json-schema.org/draft-07/schema#",
 
-            "parametersItem": self.parameter_schema,
-
             "nodeItem": {
                 "type": 'object',
-                "patternProperties": {
-                    rf"^({CONST_KEY_PATTERN.pattern})$": {"$ref": "#/parametersItem"},
-                    rf"({')|('.join(self._id_mngr.node_str_pat)})": {"$ref": "#/nodeItem"}
-                },
+                "patternProperties": pattern_prop,
                 "additionalProperties": False
             },
 
@@ -399,11 +426,9 @@ class ConfigManager(object, metaclass=ConfigManagerMeta):
         """
         return self._root_params_def
 
-    def update(self):
-        self.read()
-
     def read(self):
-        self.data = self._get_document()
+        """Read config"""
+        self.document = self._get_document()
 
     def _get_document(self):
         """Get YAML document as python dict
@@ -433,9 +458,7 @@ class ConfigManager(object, metaclass=ConfigManagerMeta):
             raise ConfigReadError(e)
 
         # Append ROOT_PARAMS
-        document.update({CONST_KEY_NM: self.root_params_def})
-
-        self.doc_tmp = document
+        document.update(self.root_params_def)
 
         # Check json schema validity
         try:
@@ -448,10 +471,7 @@ class ConfigManager(object, metaclass=ConfigManagerMeta):
             raise ConfigReadError(f"Error in {self.__class__.__name__}.json_schema\n{e}")
 
         # Check node order
-        try:
-            self._id_mngr.check_dict_node(document, CONST_KEY_PATTERN)
-        except Exception as e:
-            raise ConfigReadError(f"Error in '{self.config_file_path}'\n{e}")
+        self._check_dict_nodes(document, self.node_pattern)
 
         return document
 
@@ -476,13 +496,52 @@ class ConfigManager(object, metaclass=ConfigManagerMeta):
         return keys
 
     @staticmethod
-    def instantiate_all_childs(config_dir_path):
+    def _check_dict_nodes(document, node_pat):
+        """Check document key node order
+
+        Parameters
+        ----------
+        document: dict
+            Document to be check
+        node_pat: list of str | list of re.Pattern
+            Ordered node pattern as regular expression
+
+        """
+
+        def check_single_node(doc, pat):
+            if type(doc) is dict:
+
+                for key, sub_doc in doc.items():
+
+                    # Skip if key doesn't begin by '_'
+                    if re.match(r'^[^_]', key):
+                        continue
+
+                    if not pat:
+                        err_msg = "Bad node. No key to match in {}".format(doc)
+                        raise ConfigNodeError(err_msg)
+
+                    if re.fullmatch(rf"_{pat[0]}", key) is None:
+                        err_msg = "Bad node. '{}' didn't match key in {}".format(pat[0], doc)
+                        raise ConfigNodeError(err_msg)
+                    else:
+                        check_single_node(sub_doc, pat[1:])
+
+            else:
+                err_msg = "Bad node. '{}' isn't of type dict".format(doc)
+                raise ConfigNodeError(err_msg)
+
+        check_single_node(document, node_pat)
+
+    @staticmethod
+    def instantiate_all_childs(config_dir_path, read=True):
         """Generate a dictionary with instances of all ConfigManager childs
 
         Parameters
         ----------
         config_dir_path: str | pathlib.Path
             Config files directory path. Directory must exist.
+        read: bool
 
         Returns
         -------
@@ -496,25 +555,71 @@ class ConfigManager(object, metaclass=ConfigManagerMeta):
         assert Path(config_dir_path).exists() is True
 
         # Create instances
-        inst = set()
+        instances = set()
         for subclass in ConfigManager.__subclasses__():
-            inst.add(subclass(config_dir_path))
+            instances.add(subclass(config_dir_path))
 
-        return {arg.snake_name: arg for arg in inst}
+        # Read
+        if read:
+            for inst in instances:
+                inst.read()
+
+        return {arg.snake_name: arg for arg in instances}
 
 
 class RawData(ConfigManager):
 
     def __init__(self, config_dir_path):
         # Init super class
-        super().__init__(config_dir_path, rawdata.NODE_ORDER)
+        super().__init__(config_dir_path)
 
         # Set required attributes
-        self._parameter_schema = rawdata.PARAMETER_SCHEMA
+        self._parameter_pattern_prop = rawdata.PARAMETER_PATTERN_PROP
         self._root_params_def = rawdata.ROOT_PARAMS_DEF
+        self._node_pattern = rawdata.NODE_PATTERN
+
+
+class InstrType(ConfigManager):
+
+    def __init__(self, config_dir_path):
+        # Init super class
+        super().__init__(config_dir_path)
+
+        # Set required attributes
+        self._parameter_pattern_prop = instrtype.PARAMETER_PATTERN_PROP
+        self._root_params_def = instrtype.ROOT_PARAMS_DEF
+        self._node_pattern = instrtype.NODE_PATTERN
+
+
+class Instrument(ConfigManager):
+
+    def __init__(self, config_dir_path):
+        # Init super class
+        super().__init__(config_dir_path)
+
+        # Set required attributes
+        self._parameter_pattern_prop = instrument.PARAMETER_PATTERN_PROP
+        self._root_params_def = instrument.ROOT_PARAMS_DEF
+        self._node_pattern = instrument.NODE_PATTERN
+
+
+class Flight(ConfigManager):
+
+    def __init__(self, config_dir_path):
+        # Init super class
+        super().__init__(config_dir_path)
+
+        # Set required attributes
+        self._parameter_pattern_prop = flight.PARAMETER_PATTERN_PROP
+        self._root_params_def = flight.ROOT_PARAMS_DEF
+        self._node_pattern = flight.NODE_PATTERN
 
 
 class ConfigReadError(Exception):
+    pass
+
+
+class ConfigNodeError(Exception):
     pass
 
 

@@ -77,7 +77,7 @@ class MetadataModel(Model):
 
 
 class InstrumentType(MetadataModel):
-    id = AutoField(primary_key=True)
+    _id = AutoField(primary_key=True)
     name = CharField(
         null=False, unique=True,
         constraints=[

@@ -1,0 +1,10 @@
+
+_instrument_0:
+    id: 'i0'
+    instr_type: 'vai-rs41'
+
+_instrument_1:
+    id: 'i1'
+    instr_type: 'vai-rs92'
+    desc: 'Reference 1'
+    remark: 'Modified firmware 4.1'
