@@ -8,6 +8,8 @@ pipenv = "*"
 pytest = "*"
 pytest-datafiles = "*"
 matplotlib = "*"
+pipenv-setup = "*"
+twine = "*"
 
 [packages]
 tinydb = "*"
