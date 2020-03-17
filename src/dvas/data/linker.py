@@ -1,125 +1,150 @@
+"""
 
+"""
 from abc import ABC, abstractmethod
 from pathlib import Path
 import inspect
 from operator import itemgetter
 from glob import glob
+from itertools import takewhile
 
 import pandas as pd
 
-from ..config import ID_NAME
-from ..config.config import IdentifierManager
-from ..config.config import RawData
+# Import from current package
+from ..dvas_environ import orig_data_path as env_orig_data_path
+from ..dvas_environ import config_dir_path as env_cfg_dir_path
+from ..database.model import Data
+from ..database.database import db_mngr
+
+from ..config.pattern import EVENT_KEY, INSTR_KEY, ORIGMETA_KEY
+from ..config.config import OrigData, OrigMeta
 
 
+
+# Pandas csv_read method arguments
 PD_CSV_READ_ARGS = inspect.getfullargspec(pd.read_csv).args[1:]
 
 
 class DataLinker(ABC):
-
-    def __init__(self):
-        self._id_mngr = IdentifierManager(['ms', 'param', 'flight', 'batch', 'instr'])
-
-    @property
-    def id_mngr(self):
-        return self._id_mngr
-
-    def create_id(self, id_source):
-        return self.id_mngr.create_id(id_source)
-
-    def get_item_id(self, id_source, item_key):
-        return self.id_mngr.get_item_id(id_source, item_key)
+    """ """
 
     @abstractmethod
-    def load(self, id_source):
+    def load(self):
         """Data loading method"""
         pass
 
     @abstractmethod
-    def save(self, id_source, data):
+    def save(self):
         """Data saving method"""
         pass
 
 
 class LocalDBLinker(DataLinker):
+    """ """
 
     def __init__(self):
         super().__init__()
 
-    def load(self, id_source):
-        pass
+    def load(self, search):
+        """
 
-    def save(self, id_source, data):
-        pass
+        Args:
+            search (str):
 
+        Returns:
+
+        """
+
+        return db_mngr.get_data(where=search)
+
+    def save(self, data_list):
+        """
+
+        Args:
+          data_list (list of dict): {'data': pd.Series, 'event': EventManager'}
+
+        Returns:
+
+
+        """
+
+        for args in data_list:
+            db_mngr.add_data(**args)
 
 class CSVLinker(DataLinker):
-    """
-
-    """
+    """ """
 
     def __init__(self, repo):
-        """
-
-        Parameters
-        ----------
-        repo: pathlib.Path | str
-            CSV repository path. Path must exists
-        """
-
-        super().__init__()
-
-        # Convert to path
-        repo = repo if isinstance(repo, Path) else Path(repo)
-
-        # Test
-        assert repo.exists(), f'{repo} does not exist'
+        """ """
 
         # Set attributes
-        self._repo = repo
+        self.repo = repo
 
     @property
     def repo(self):
+        """ """
         return self._repo
 
-    def get_file_path(self, id_source):
+    @repo.setter
+    def repo(self, value):
+        # Convert to path
+        value = value if isinstance(value, Path) else Path(value)
+
+        # Test
+        assert value.exists(), f'{value} does not exist'
+
+        self._repo = value
+
+    def load(self):
+        """Data loading method"""
+        raise NotImplementedError(
+            f'Please implement {self.__class__.__name__}.load()')
+
+    def save(self):
+        """Data saving method"""
+        raise NotImplementedError(
+            f'Please implement {self.__class__.__name__}.save()')
+
+
+class CSVOutputLinker(CSVLinker):
+    """ """
+
+    _INDEX_KEY_ORDER = []
+
+    def __init__(self):
+        super().__init__(OUTPUT_PATH)
+
+    def get_file_path(self, index):
+        """
+
+        Args:
+          id_source:
+
+        Returns:
+
+
+        """
         identifier = self.create_id(id_source)
         filename = self._id_mngr.join(identifier) + '.csv'
         path = self.repo / Path('/'.join(self._id_mngr.split(identifier)))
         return path, filename
 
-    def load(self, id_source):
-        """
-
-        Parameters
-        ----------
-        id_source: list of str | str
-
-        Returns
-        -------
-        pd.Series
-            Return None if file is missing
-
-        """
-        # Define
-        path, filename = self.get_file_path(id_source)
-
-        # Load
-        try:
-            data = pd.read_csv(path / filename, header=None, index_col=0, squeeze=True)
-            data.name = None
-            data.indax.name = None
-            return data
-        except FileNotFoundError:
-            return
+    def load(self):
+        errmsg = (
+            f"Save method for {self.__class__.__name__} is not implemented. " +
+            f"No load of standardized CSV file data is implemented."
+        )
+        raise NotImplementedError(errmsg)
 
     def save(self, id_source, data):
         """
 
-        Parameters
-        ----------
-        id_source: list of str | str
-        data: pd.Series
+        Args:
+          id_source:
+          data:
+
+        Returns:
+
 
         """
 
@@ -136,34 +161,73 @@ class CSVLinker(DataLinker):
         data.to_csv(path / filename, header=False, index=True)
 
 
-class ManufacturerCSVLinker(CSVLinker):
+class OriginalCSVLinker(CSVLinker):
 
-    def __init__(self, repo, raw_config_mngr):
-        """
+    def __init__(self):
+        super().__init__(env_orig_data_path)
 
-        Parameters
-        ----------
-        repo: pathlib.Path | str
-        raw_config_mngr: RawData
-        """
-        super().__init__(repo)
-        self._raw_config_mngr = raw_config_mngr
+        # Set attributes
+        self._origdata_config_mngr = OrigData(env_cfg_dir_path)
 
     @property
-    def raw_config_mngr(self):
-        return self._raw_config_mngr
+    def origdata_config_mngr(self):
+        """ """
+        return self._origdata_config_mngr
 
-    def load(self, id_source):
+    def load(self, exclude_file_name=[]):
         """
 
-        Parameters
-        ----------
-        id_source
+        Args:
+            exclude_file_name (list of str | list of Path): Already load data file to be excluded
 
-        Returns
-        -------
+        Returns:
 
         """
+
+        # Convert
+        exclude_file_name = [Path(arg) for arg in exclude_file_name]
+
+        # Scan recursively CSV files in directory
+        origdata_file_path_list = [
+            arg for arg in Path(self.repo).rglob("*.csv")
+            if arg not in exclude_file_name
+        ]
+
+        for i, origdata_file_path in enumerate(origdata_file_path_list):
+
+            # Define metadata path
+            metadata_file_path = origdata_file_path
+            for ext in ['.txt', '.yml']:
+                try:
+                    new_fn = next(
+                        Path(metadata_file_path.parent).glob(
+                            '*' + metadata_file_path.stem + '*' + ext
+                        )
+                    )
+                except StopIteration:
+                    pass
+                else:
+                    metadata_file_path = new_fn
+                    break
+
+            # Read metadata
+            with metadata_file_path.open(mode='r') as fid:
+                if metadata_file_path.suffix == '.csv':
+                    res = ''.join(
+                        [arg[1:] for arg in
+                         takewhile(lambda x: x[0] in ['#', '%'], fid)
+                         ]
+                    )
+                else:
+                    res = fid.read()
+
+            # Read YAML config
+            origmeta_cfg_mngr = OrigMeta()
+            origmeta_cfg_mngr.read(res)
+
+            print(origmeta_cfg_mngr.document)
+
+        return
 
         # Create file name pattern
         manu_id_mngr = IdentifierManager(['ms', 'flight', 'batch', 'instr', 'ref_dt', 'instr_type'])
@@ -207,9 +271,9 @@ class ManufacturerCSVLinker(CSVLinker):
 
         return data
 
-    def save(self, id_source, data):
+    def save(self, *args, **kwargs):
+        """ """
         errmsg = (
-            f"Save method for {self.__class__.__name__} is not implemented. " +
-            f"No overwrite of original data"
+            f"Save method for {self.__class__.__name__} should not be implemented."
         )
         raise NotImplementedError(errmsg)

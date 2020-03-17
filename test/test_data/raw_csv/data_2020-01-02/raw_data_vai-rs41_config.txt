@@ -1,0 +1,5 @@
+meas_site: PAY_RS
+flight: f1
+batch: b1
+instrument: i1
+datetime: 2020-01-02T000000Z

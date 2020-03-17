@@ -26,7 +26,6 @@ setup(
         "tinydb",
         "pandas",
         "jsonschema",
-        "pyyaml",
         "mdtpyhelper",
         "dotty-dict",
         "ruamel-yaml",
@@ -65,7 +64,7 @@ setup(
     include_package_data=True,  # So that non .py files make it onto pypi, and then back !
     package_data={
         'pytest_cfg': ['pytest.ini'],
-        'test_files': ['test/*'],
+        'test_files': ['./test/*'],
         #'docs': ['../docs/build']
     }
 

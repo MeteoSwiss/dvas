@@ -1,0 +1,6 @@
+
+_instrument_2:
+    instr_id: 'i2'
+    instr_type: 'vai-rs92'
+    sn: '92-0000'
+    remark: 'Modified firmware 4.1'

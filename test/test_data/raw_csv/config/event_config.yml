@@ -1,0 +1,11 @@
+# Flight configuration file
+
+_event_1:
+    id: 'e1'
+    day_event: False
+    launch_dt: '2020-01-02T00:00:00Z'
+
+_event_2:
+    id: 'e2'
+    day_event: True
+    launch_dt: '2020-01-02T12:00:00Z'

@@ -13,9 +13,8 @@ from dataclasses import dataclass, field
 from typing import List
 
 from ..config.config import ConfigManagerMeta
-from ..config.config import RawData
-from .linker import LocalDBLinker, CSVLinker, ManufacturerCSVLinker
-
+from ..config.config import OrigData
+from .linker import LocalDBLinker, CSVOutputLinker, OriginalCSVLinker
 
 # Define
 FLAG = 'flag'
@@ -24,6 +23,7 @@ VALUE = 'value'
 
 @unique
 class Flag(Enum):
+    """ """
     RAW = 0
     RAW_NAN = 1
     INTERPOLATED = 2
@@ -31,16 +31,17 @@ class Flag(Enum):
 
 
 class TimeSeriesManager:
+    """ """
 
     _COL_NAME = [VALUE, FLAG]
 
-    def __init__(self, data, id_source, index_lag=pd.Timedelta('0s')):
+    def __init__(self, data, event_mngr, index_lag=pd.Timedelta('0s')):
         """
 
         Parameters
         ----------
         data: pd.Series with index of type pd.TimedeltaIndex
-        id_source
+        event_mngr
         index_lag: pd.Timedelta
         """
 
@@ -59,39 +60,79 @@ class TimeSeriesManager:
             raise AttributeError('Bad Dataframe format')
 
         # Init properties
-        self._id_mngr = IdentifierManager(['ms', 'param', 'flight', 'batch'])
+        self._event_mngr = event_mngr
         self._index_lag = index_lag
-
-        data.columns.name = self.id_mngr.join(self.id_mngr.create_id(id_source))
-        data.index.name = None
         self._data = data
 
     @property
-    def id_mngr(self):
-        return self._id_mngr
+    def event_mngr(self):
+        """ """
+        return self._event_mngr
 
     @property
     def index_lag(self):
+        """ """
         return self._index_lag
 
     @property
     def data(self):
+        """ """
         return self._data
-
-    @staticmethod
-    def load(id_source, load_order):
-        for data_linker in load_order:
-            data = data_linker.load(id_source)
-            if data is not None:
-                return TimeSeriesManager(data, id_source)
 
     def __len__(self):
         return len(self.data)
 
-    def save(self, linker):
-        linker.save(self.data.name, self.data)
+    @staticmethod
+    def load(search):
+        """
+
+        Args:
+            search (str): Data loader search criterion
+
+        Returns:
+
+
+        """
+
+        # Init
+        db_linker = LocalDBLinker()
+
+        # Load data
+        out = []
+        for data in db_linker.load(search):
+            out.append(
+                TimeSeriesManager(
+                    data['data'],
+                    data['event'])
+            )
+
+        return out
+
+    def update_db(self):
+        """
+
+        Returns:
+
+        """
+
+        db_linker = LocalDBLinker()
+        orig_data_linker = OriginalCSVLinker()
+
+        orig_data_linker.load()
+
+        db_linker.save()
 
     def _set_flag(self, bit_val, data_fct=None):
+        """
+
+        Args:
+          bit_val:
+          data_fct:  (Default value = None)
+
+        Returns:
+
+
+        """
         if data_fct is None:
             idx_data = np.ndarray(len(self), bool)
             idx_data.fill(True)
@@ -103,6 +144,16 @@ class TimeSeriesManager:
             1 << bit_val)
 
     def _reset_flag(self, bit_val, data_fct=None):
+        """
+
+        Args:
+          bit_val:
+          data_fct:  (Default value = None)
+
+        Returns:
+
+
+        """
         if data_fct is None:
             idx_data = np.ndarray(len(self), bool)
             idx_data.fill(True)
@@ -114,11 +165,21 @@ class TimeSeriesManager:
                 np.bitwise_not(1 << bit_val))
 
     def _get_flag(self, bit_val):
+        """
+
+        Args:
+          bit_val:
+
+        Returns:
+
+
+        """
         return np.bitwise_and(
             self._data.loc[FLAG],
             1 << bit_val)
 
     def interpolate(self):
+        """ """
         #TODO
         # Add interpolate of wind direction
         self._set_flag(Flag.INTERPOLATED.value, np.isnan)
@@ -128,14 +189,11 @@ class TimeSeriesManager:
     def _resample(self, interval='1s'):
         """
 
-        Parameters
-        ----------
-        interval: str
-            Resample interval
+        Args:
+          interval(str, optional): Resample interval (Default value = '1s')
 
-        Returns
-        -------
-        TimeSeriesManager
+        Returns:
+
 
         """
         #TODO
@@ -151,33 +209,54 @@ class TimeSeriesManager:
         return self
 
     def _reset_index(self):
-        """Set index start at 0s
-        """
+        """Set index start at 0s"""
         self._data = self.data.reindex(self.data.index - self.data.index[0])
         self._set_flag()
         return self
 
     def _shift(self, periods):
+        """
+
+        Args:
+          periods:
+
+        Returns:
+
+
+        """
         self._index_lag -= pd.Timedelta(periods, self.data.index.freq.name)
         self._data = self.data.shift(periods)
         return self
 
     def layering(self):
+        """ """
         pass
 
     def change_index_unit(self, new_unit: str):
+        """
+
+        Args:
+          new_unit: str:
+
+        Returns:
+
+
+        """
         pass
 
     @staticmethod
     def synchronise(profile_series, i_start=0, n_corr=300, window=30, i_ref=0):
         """
 
-        Parameters
-        ----------
-        profile_series: list of TimeSeriesManager
+        Args:
+          profile_series(list of TimeSeriesManager):
+          i_start:  (Default value = 0)
+          n_corr:  (Default value = 300)
+          window:  (Default value = 30)
+          i_ref:  (Default value = 0)
 
-        Returns
-        -------
+        Returns:
+
 
         """
 
@@ -210,19 +289,20 @@ class TimeSeriesManager:
 
     @staticmethod
     def crosscorr(datax, datay, lag=0, wrap=False, method='kendall'):
-        """ Lag-N cross correlation.
+        """Lag-N cross correlation.
         Shifted data filled with NaNs
 
-        Parameters
-        ----------
-        lag : int, default 0
-        datax, datay : pandas.Series objects of equal length
-        method: str
-            kendall, pearson, spearman
+        Args:
+          lag(int, default 0, optional):  (Default value = 0)
+          datax, datay(pandas.Series objects of equal length):
+          method(str, optional): kendall, pearson, spearman (Default value = 'kendall')
+          datax:
+          datay:
+          wrap:  (Default value = False)
 
-        Returns
-        ----------
-        crosscorr : float
+        Returns:
+
+
         """
         if wrap:
             shiftedy = datay.shift(lag)
@@ -233,6 +313,7 @@ class TimeSeriesManager:
 
 
 class TimeDataFrameManager:
+    """ """
 
     def __init__(self, data):
 
@@ -244,18 +325,18 @@ class TimeDataFrameManager:
 
     @property
     def data(self):
+        """ """
         return self._data
 
     @staticmethod
     def concat(profile_series):
         """
 
-        Parameters
-        ----------
-        profile_series: list of TimeSeriesManger
+        Args:
+          profile_series(list of TimeSeriesManger):
 
-        Returns
-        -------
+        Returns:
+
 
         """
 
@@ -263,10 +344,20 @@ class TimeDataFrameManager:
 
     @staticmethod
     def load():
+        """ """
         #TODO
         # Method to load multiple data Series of same flight and same parameter
         pass
 
     def save(self, linker):
+        """
+
+        Args:
+          linker:
+
+        Returns:
+
+
+        """
         for _, data in self.iteritems():
             data.save(linker)

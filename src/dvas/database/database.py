@@ -1,33 +1,72 @@
+"""
 
+"""
 
+# Import from python packages
+from datetime import datetime
+import pytz
+from dataclasses import dataclass, field, asdict
+from math import floor
 from functools import wraps
-
+import pandas as pd
+from threading import Thread
+from mdtpyhelper.misc import timer
+import peewee
+from peewee import chunked
 from playhouse.shortcuts import model_to_dict
 
-import pandas as pd
+# Import from current package
+from .model import db, DATABASE_FILE_PATH
+from .model import Instrument, InstrType, EventsInstrumentsParameters
+from .model import Parameter, Flag, OrgiDataInfo, Data
+from ..config.pattern import PARAM_KEY, INSTR_KEY
+from ..config.pattern import INSTR_TYPE_KEY, EVENT_KEY
+from ..config.pattern import FLAG_KEY
+from ..config.config import instantiate_config_managers
+
+SQLITE_MAX_VARIABLE_NUMBER = 999
+
+INDEX_NM = Data.index.name
+VALUE_NM = Data.value.name
+EVENT_DT_NM = EventsInstrumentsParameters.event_dt.name
+EVENT_INSTR_NM = EventsInstrumentsParameters.instrument.id.name
+EVENT_PARAM_NM = EventsInstrumentsParameters.param.prm_abbr.name
+EVENT_ID_NM = EventsInstrumentsParameters.event_id
+EVENT_BATCH_NM = EventsInstrumentsParameters.batch_id.name
 
 
-from .model import db, PARAMETER_NAMES, FLAG_NAMES
-from .model import Instrument, InstrumentType, FlightsInstruments
-from .model import Flight, Parameter, FlagBits, Data
+# TODO
+#  Remove verbose?
+#  Add log?
+def db_context(verbose=False):
+    """ """
 
-
-def db_context(verbose=True):
     def decorator(func):
+        """
+
+        Args:
+            func:
+
+        Returns:
+
+        """
+
         @wraps(func)
         def wrapper(*args, **kwargs):
+            """
 
-            # Test class
-            assert isinstance(args[0], DatabaseManager)
+            Args:
+                *args:
+                **kwargs:
 
+            Returns:
+
+            """
             try:
                 with db.connection_context():
                     return func(*args, **kwargs)
             except Exception as e:
-                if verbose:
-                    #TODO
-                    # Replace print by log???
-                    print(f"Unsuccessful execution of {func.__name__}(*{args[1:]}, **{kwargs}): {e}")
+                raise Exception(e)
 
         return wrapper
     return decorator
@@ -39,160 +78,440 @@ class DatabaseManager:
     def __init__(self):
 
         if DatabaseManager._INSTANCES > 0:
-            raise Exception(f'More than one instance of class {self.__class__.__name__} has been created')
+            errmsg = f'More than one instance of class {self.__class__.__name__} has been created'
+            raise Exception(errmsg)
         else:
             DatabaseManager._INSTANCES += 1
 
+    def create_db(self):
+        """
+
+        Args:
+            cfg_linker:
+
+        Returns:
+
+        """
+
+        # Create config linker instance
+        cfg_linker = ConfigLinker()
+
+        # Erase db
+        if DATABASE_FILE_PATH.exists():
+            DATABASE_FILE_PATH.unlink()
+
+        # Create db
         self._create_tables()
-        self._create_parameters()
-        self._create_flag()
 
-    @db_context()
-    def add_instr_type(self, name, desc=''):
-        InstrumentType.get_or_create(name=name, desc=desc)
+        # Fill parameters
+        self._fill_table(Parameter, cfg_linker.get_parameters())
 
-    @db_context()
-    def del_instr_type(self, name):
-        raise NotImplementedError(f"Please implements {self.__class__.del_instr_type}")
+        # Fill instr_types
+        self._fill_table(InstrType, cfg_linker.get_instr_types())
 
-    @db_context()
-    def add_instr(self, instr_id, instr_type_name, remark=''):
-        instr_type = InstrumentType.get_or_none(InstrumentType.name == instr_type_name)
-        if instr_type:
-            Instrument.get_or_create(id=instr_id, instr_type=instr_type, remark=remark)
-
-    @db_context()
-    def add_flight(self, flight_id, launch_dt, day_flight, batch_amount, instr_id):
-
-        instr = Instrument.get_or_none(Instrument.id == instr_id)
-        if not instr:
-            raise Exception(f'{instr_id} not found')
-
-        if isinstance(launch_dt, pd.Timestamp):
-            launch_dt = launch_dt.to_pydatetime()
-
-        Flight.get_or_create(
-            id=flight_id, launch_dt=launch_dt,
-            day_flight=day_flight, batch_amount=batch_amount,
-            ref_instr=instr
+        # File instruments
+        self._fill_table(
+            Instrument, cfg_linker.get_instruments(),
+            foreign_constraint=[
+                {'attr': 'instr_type', 'class': InstrType, 'foreign_attr': 'name'},
+            ]
         )
 
-    @db_context()
-    def link_instr_flight(self, flight_id, instr_id, batch_id):
+        # Fill Flag table
+        self._fill_table(Flag, cfg_linker.get_flags())
 
-        flight = Flight.get_or_none(Flight.id == flight_id)
-        if not flight:
-            raise Exception(f'{flight_id} not found')
-
-        instr = Instrument.get_or_none(Instrument.id == instr_id)
-        if not instr:
-            raise Exception(f'{instr_id} not found')
-
-        FlightsInstruments.get_or_create(flight=flight, instrument=instr, batch_id=batch_id)
-
-        # Check
-        flight_instr = FlightsInstruments.get(flight=flight, instrument=instr, batch_id=batch_id)
-        if flight_instr.batch_id_no >= flight.batch_amount:
-            db.rollback()
-            raise Exception(f"batch_id number must be < {flight.batch_amount}")
-
-    @db_context()
-    def get_instr(self, instr_id=None):
-        if instr_id:
-            qry = Instrument.select().where(Instrument.id.in_(instr_id))
-        else:
-            qry = Instrument.select()
-        return [model_to_dict(arg) for arg in qry]
-
-    @db_context()
-    def get_flight(self, flight_id=None):
-        if flight_id:
-            qry = Flight.select().where(Flight.id.in_(flight_id))
-        else:
-            qry = Flight.select()
-        return [model_to_dict(arg) for arg in qry]
-
-    @db_context()
-    def get_flight_instr(self, flight_id=None, instr_id=None):
-        if (flight_id is None) and (instr_id is None):
-            qry = FlightsInstruments.select()
-        elif instr_id is None:
-            qry = (
-                FlightsInstruments
-                .select()
-                .join(Flight)
-                .where(
-                    Flight.id.in_(flight_id))
-            )
-        elif flight_id is None:
-            qry = (
-                FlightsInstruments
-                .select()
-                .join(Instrument)
-                .where(
-                    Instrument.id.in_(instr_id)
-                )
-            )
-        else:
-            qry = (
-                FlightsInstruments
-                .select()
-                .join(Instrument)
-                .switch(FlightsInstruments)
-                .join(Flight)
-                .where(
-                    Instrument.id.in_(instr_id) & Flight.id.in_(flight_id)
-                )
-            )
-        return [model_to_dict(arg) for arg in qry]
-
-    @db_context()
-    def get_parameter(self, parameter_id=None):
-        if parameter_id:
-            qry = Parameter.select().where(Parameter.id.in_(parameter_id))
-        else:
-            qry = Parameter.select()
-        return [model_to_dict(arg) for arg in qry]
+    @staticmethod
+    def _model_to_dict(query, recurse=False):
+        return [model_to_dict(qry, recurse=recurse) for qry in query]
 
     @db_context()
     def _create_tables(self):
         db.create_tables(
-            [Flight, InstrumentType, Instrument,
-             FlightsInstruments, Parameter, FlagBits,
-             Data]
+            [InstrType, Instrument,
+             EventsInstrumentsParameters, Parameter,
+             Flag, Data, OrgiDataInfo],
+            safe=True
         )
 
-    @db_context(False)
-    def _create_parameters(self):
-        Parameter.insert_many(PARAMETER_NAMES).execute()
+    @db_context()
+    def _fill_table(self, table, document, foreign_constraint=None):
+        """
 
-    @db_context(False)
-    def _create_flag(self):
-        FlagBits.insert_many(FLAG_NAMES).execute()
+        Args:
+            table:
+            document:
+            foreign_constraint:
 
-    def print(self):
+        Returns:
 
-        print(Instrument.__name__)
-        for arg in self.get_instr():
-            print(arg)
+        """
 
-        print()
+        # get foreign constraint attribute
+        if foreign_constraint:
+            for doc in document:
+                for arg in foreign_constraint:
+                    mdl_cls = arg['class']
+                    cmp_res = getattr(mdl_cls, arg['foreign_attr']) == doc[arg['attr']]
+                    doc[arg['attr']] = mdl_cls.get_or_none(cmp_res)
 
-        print(Flight.__name__)
-        for arg in self.get_flight():
-            print(arg)
+        # Insert
+        table.insert_many(document).execute()
 
-        print()
+    @db_context()
+    def _get_table(self, table, search=None, recurse=False):
+        """
 
-        print(FlightsInstruments.__name__)
-        for arg in self.get_flight_instr():
-            print(arg)
+        Args:
+            table:
+            search: [join_order (optional), where]
 
-        print()
+        Returns:
 
-        print(Parameter.__name__)
-        for arg in self.get_parameter():
-            print(arg)
+        """
+
+        qry = table.select()
+        if search:
+
+            if 'join_order' not in search.keys():
+                search['join_order'] = []
+
+            for jointbl in search['join_order']:
+                qry = qry.join(jointbl)
+                qry = qry.switch(table)
+            qry = qry.where(search['where'])
+
+        return self._model_to_dict(qry, recurse=recurse)
+
+    @timer
+    @db_context()
+    def add_data(self, data, event):
+        """
+
+        Args:
+            data (pd.Series):
+            event (EventManager):
+
+        """
+
+        # Get/Check instrument
+        instr = Instrument.get_or_none(Instrument.instr_id == event.instr_id)
+        if not instr:
+            raise Exception(f'{event.instr_id} not found')
+
+        # Get/Check parameter
+        param = Parameter.get_or_none(Parameter.prm_abbr == event.prm_abbr)
+        if not param:
+            raise Exception(f'{event.prm_abbr} not found')
+
+        # Create original data information
+        orig_data_info, _ = OrgiDataInfo.get_or_create(
+            source=event.source_info)
+
+        # Create event-instr-param
+        event_instr_param, created = EventsInstrumentsParameters.get_or_create(
+            event_dt=event.event_dt, instrument=instr,
+            param=param, event_id=event.event_id,
+            batch_id=event.batch_id, day_event=event.day_event,
+            orig_data_info=orig_data_info
+        )
+
+        # Insert data
+        if created:
+
+            # Format series as list of tuples
+            n_data = len(data)
+            data = pd.DataFrame(data, columns=[VALUE_NM])
+            data.index.name = INDEX_NM
+            data.reset_index(inplace=True)
+            data = data.to_dict(orient='list')
+            data = list(zip(
+                data[INDEX_NM],
+                data[VALUE_NM],
+                [event_instr_param]*n_data)
+            )
+
+            # Create batch index
+            fields = [Data.index, Data.value, Data.event_instr_param]
+            N_MAX = floor(SQLITE_MAX_VARIABLE_NUMBER / len(fields))
+
+            # Insert to db
+            for batch in chunked(data, N_MAX):
+                Data.insert_many(batch, fields=fields).execute()
+
+    @db_context()
+    def _get_eventinstrprm(self, where):
+        """ """
+
+        # Replace field in string
+        where = where.replace('event_dt', 'EventsInstrumentsParameters.event_dt')
+        where = where.replace('instr_id', 'Instrument.id')
+        where = where.replace('prm_abbr', 'Parameter.prm_abbr')
+        where = where.replace('event_id', 'EventsInstrumentsParameters.event_id')
+        where = where.replace('batch_id', 'EventsInstrumentsParameters.batch_id')
+        where = where.replace('day_event', 'EventsInstrumentsParameters.day_event')
+
+        where_arg = eval(where)
+
+        # Create query
+        qry = (
+            EventsInstrumentsParameters.
+            select().
+            join(Instrument).
+            switch(EventsInstrumentsParameters).
+            join(Parameter).
+            where(where_arg)
+        )
+
+        return [arg for arg in qry.iterator()]
+
+    @timer
+    def get_data(self, where):
+
+        eventinstrprm_list = self._get_eventinstrprm(where)
+
+        if not eventinstrprm_list:
+            raise peewee.DoesNotExist()
+
+        class Queryer(Thread):
+
+            def __init__(self, eventinstrprm):
+                super().__init__()
+                self.eventinstrprm = eventinstrprm
+                self.res = None
+                self.exc = None
+
+            @db_context()
+            def run(self):
+                try:
+                    qry = (
+                        Data.
+                        select(Data.index, Data.value).
+                        where(Data.event_instr_param == self.eventinstrprm)
+                    )
+
+                    # Convert to data frame
+                    data = [arg for arg in qry.tuples().iterator()]
+                    data = pd.DataFrame(
+                        data,
+                        columns=[INDEX_NM, VALUE_NM]
+                    )
+                    self.res = {
+                        'event': EventManager(
+                            event_dt=self.eventinstrprm.event_dt,
+                            instr_id=self.eventinstrprm.instrument.id,
+                            prm_abbr=self.eventinstrprm.param.prm_abbr,
+                            event_id=self.eventinstrprm.event_id,
+                            batch_id=self.eventinstrprm.batch_id,
+                            source_info=self.eventinstrprm.orig_data_info.source
+                        ),
+                        'data': data
+                    }
+
+                except Exception as ex:
+                    self.exc = Exception(ex)
+
+            def join(self):
+                super().join()
+
+                # Test exception attribute
+                if self.exc:
+                    raise self.exc
+
+        # Query data
+        qryer = []
+        for eventinstrprm in eventinstrprm_list:
+            qryer.append(Queryer(eventinstrprm))
+
+        for qry in qryer:
+            qry.start()
+            qry.join()
+
+        # Group data
+        out = []
+        for qry in qryer:
+            out.append(qry.res)
+
+        return out
+
+    def __str__(self, recurse=False, print_tables=None):
+        """
+
+        Args:
+            recurse:
+            print_tables:
+
+        Returns:
+
+        """
+
+        # Init
+        out = "Database content\n"
+        out += f"{'*' * len(out)}\n"
+
+        if not print_tables:
+            print_tables = [
+                InstrType, Instrument, Flag,
+                Parameter, Data, EventsInstrumentsParameters,
+                OrgiDataInfo
+            ]
+
+        for print_tbl in print_tables:
+            out += f"{print_tbl.__name__}\n"
+            for arg in self._get_table(print_tbl, recurse=recurse):
+                out += f"{arg}\n"
+            out += "\n"
+
+        return out
 
 
 db_mngr = DatabaseManager()
+
+
+class ConfigLinker:
+
+    def __init__(self):
+
+        self._cfg_mngr = instantiate_config_managers(
+            [Parameter, InstrType, Instrument, Flag]
+        )
+
+    @property
+    def cfg_mngr(self):
+        """ """
+        return self._cfg_mngr
+
+    def get_parameters(self):
+        """ """
+        return self.cfg_mngr[PARAM_KEY].get_first_layer()
+
+    def get_instr_types(self):
+        """ """
+        return self.cfg_mngr[INSTR_TYPE_KEY].get_first_layer()
+
+    def get_instruments(self):
+        """ """
+        return self.cfg_mngr[INSTR_KEY].get_first_layer()
+
+    def get_flags(self):
+        """ """
+        return self.cfg_mngr[FLAG_KEY].get_first_layer()
+
+
+class EventManager:
+    """Class for create an uniform event identifier"""
+
+    def __init__(
+        self, event_dt, instr_id, prm_abbr,
+        event_id=None, batch_id=None, day_event=None,
+        source_info=None
+    ):
+        """
+
+        Args:
+            event_dt (str | datetime | pd.Timestamp):
+            instr_id (str):
+            prm_abbr (str):
+            event_id (str | None):
+            batch_id (str | None):
+            day_event (bool | None):
+            source_info (str | None):
+
+        """
+
+        # Set attributes
+        self.event_dt = event_dt
+        self._instr_id = instr_id
+        self._prm_abbr = prm_abbr
+        self._event_id = event_id
+        self._batch_id = batch_id
+        self._day_event = day_event
+        self._source_info = source_info
+
+    @property
+    def event_dt(self):
+        return self._event_dt
+
+    @event_dt.setter
+    def event_dt(self, value):
+
+        # Convert to datetime
+        if isinstance(value, pd.Timestamp):
+            value = value.to_pydatetime()
+        elif isinstance(value, str):
+            value = pd.to_datetime(value).to_pydatetime()
+
+        # Check time zone (UTC)
+        assert value.tzinfo == pytz.UTC
+
+        self._event_dt = value
+
+    @property
+    def instr_id(self):
+        return self._instr_id
+
+    @property
+    def prm_abbr(self):
+        return self._prm_abbr
+
+    @property
+    def event_id(self):
+        return self._event_id
+
+    @property
+    def batch_id(self):
+        return self._batch_id
+
+    @property
+    def day_event(self):
+        return self._day_event
+
+    @property
+    def source_info(self):
+        return self._source_info
+
+    def __repr__(self):
+        return str(self.as_dict())
+
+    def as_dict(self):
+        out = {
+            key: self.__getattribute__(key)
+            for key in [
+                'event_dt', 'instr_id', 'prm_abbr',
+                'event_id', 'batch_id', 'day_event',
+                'source_info'
+            ]
+        }
+        return out
+
+    @staticmethod
+    def sort(event_list):
+        """
+
+        Args:
+            event_list (list of EventManager):
+
+        Returns:
+
+        """
+        event_list.sort()
+
+    def get_ordered_list(self):
+        return [self.event_dt, self.instr_id]
+
+    def __eq__(self, other):
+        return self.get_ordered_list() == other.get_ordered_list()
+
+    def __ne__(self, other):
+        return self.get_ordered_list() != other.get_ordered_list()
+
+    def __lt__(self, other):
+        return self.get_ordered_list() < other.get_ordered_list()
+
+    def __le__(self, other):
+        return self.get_ordered_list() <= other.get_ordered_list()
+
+    def __gt__(self, other):
+        return self.get_ordered_list() > other.get_ordered_list()
+
+    def __ge__(self, other):
+        return self.get_ordered_list() >= other.get_ordered_list()

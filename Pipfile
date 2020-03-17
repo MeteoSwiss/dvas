@@ -4,27 +4,13 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-pipenv = "*"
-pytest = "*"
-pytest-datafiles = "*"
-matplotlib = "*"
-pipenv-setup = "*"
-twine = "*"
+sphinx = "*"
+pyment = "*"
+pytest-env = "*"
 
 [packages]
-tinydb = "*"
-pandas = "*"
-jsonschema = "*"
-pyyaml = "*"
-mdtpyhelper = "*"
-dotty-dict = "*"
-ruamel-yaml = "*"
-pampy = "*"
-scipy = "*"
-pint = "*"
-numericalunits = "*"
-plotly = "*"
-peewee = "*"
+dvas = {editable = true,path = "."}
+sqlalchemy = "*"
 
 [requires]
-python_version = "3.7.5"
+python_version = "3.7"

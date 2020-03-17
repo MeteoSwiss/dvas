@@ -1,8 +1,8 @@
 
-_instr_type_0:
+_instr_type_1:
     name: 'vai-rs41'
     desc: 'Vaisala RS-41'
 
-_instr_type_1:
+_instr_type_2:
     name: 'vai-rs92'
     desc: 'Vaisala RS-92'

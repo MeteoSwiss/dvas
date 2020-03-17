@@ -1,0 +1,44 @@
+_vai-rs92:
+    idx_unit: 's'
+    delimiter:
+    delim_whitespace: True
+    header: 0
+    skiprows: 1
+
+    _trepros1:
+        usecols:
+            - 0
+            - 1
+
+_vai-rs41:
+    idx_unit: 's'
+    delimiter: ';'
+    skiprows: 1
+    header: 0
+
+    _trepros1:
+        usecols:
+            - 0
+            - 2
+
+_metlab-c34:
+    idx_unit: 's'
+    delimiter: ';'
+    skiprows: 0
+    header: 0
+
+    _trepros1:
+        usecols:
+            - 0
+            - 2
+
+_metlab-c50:
+    idx_unit: 's'
+    delimiter: ';'
+    skiprows: 10
+    header: 0
+
+    _trepros1:
+        usecols:
+            - 0
+            - 3
