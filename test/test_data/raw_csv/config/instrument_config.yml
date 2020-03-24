@@ -1,21 +1,17 @@
 
-_instrument_1:
-    instr_id: 'i1'
-    instr_type: 'vai-rs41'
-    sn: '41-0000'
+- instr_id: 'i1'
+  instr_type: 'vai-rs41'
+  sn: '41-0000'
 
-_instrument_2:
-    instr_id: 'i2'
-    instr_type: 'vai-rs92'
-    sn: '92-0000'
-    remark: 'Modified firmware 4.1'
+- instr_id: 'i2'
+  instr_type: 'vai-rs92'
+  sn: '92-0000'
+  remark: 'Modified firmware, version 4.1'
 
-_instrument_3:
-    instr_id: 'i3'
-    instr_type: 'metlab-c34'
-    sn: '34-0000'
+- instr_id: 'i3'
+  instr_type: 'metlab-c34'
+  sn: '34-0000'
 
-_instrument_4:
-    instr_id: 'i4'
-    instr_type: 'metlab-c50'
-    sn: '50-0000'
+- instr_id: 'i4'
+  instr_type: 'metlab-c50'
+  remark: 'No SN'

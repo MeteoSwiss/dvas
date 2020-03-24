@@ -3,6 +3,7 @@
 """
 
 # Import from python packages
+import pprint
 from datetime import datetime
 import pytz
 from dataclasses import dataclass, field, asdict
@@ -12,7 +13,7 @@ import pandas as pd
 from threading import Thread
 from mdtpyhelper.misc import timer
 import peewee
-from peewee import chunked
+from peewee import chunked, DoesNotExist
 from playhouse.shortcuts import model_to_dict
 
 # Import from current package
@@ -20,9 +21,13 @@ from .model import db, DATABASE_FILE_PATH
 from .model import Instrument, InstrType, EventsInstrumentsParameters
 from .model import Parameter, Flag, OrgiDataInfo, Data
 from ..config.pattern import PARAM_KEY, INSTR_KEY
-from ..config.pattern import INSTR_TYPE_KEY, EVENT_KEY
+from ..config.pattern import INSTR_TYPE_KEY
 from ..config.pattern import FLAG_KEY
 from ..config.config import instantiate_config_managers
+from ..config.config import InstrType as CfgInstrType
+from ..config.config import Instrument as CfgInstrument
+from ..config.config import Parameter as CfgParameter
+from ..config.config import Flag as CfgFlag
 
 SQLITE_MAX_VARIABLE_NUMBER = 999
 
@@ -113,12 +118,41 @@ class DatabaseManager:
         self._fill_table(
             Instrument, cfg_linker.get_instruments(),
             foreign_constraint=[
-                {'attr': 'instr_type', 'class': InstrType, 'foreign_attr': 'name'},
+                {'attr': Instrument.instr_type.name,
+                 'class': InstrType,
+                 'foreign_attr': InstrType.type_name.name
+                 },
             ]
         )
 
         # Fill Flag table
         self._fill_table(Flag, cfg_linker.get_flags())
+
+    @db_context()
+    def get_or_none(self, table, search, attr):
+        """ """
+
+        qry = table.select()
+        if search:
+
+            if 'join_order' not in search.keys():
+                search['join_order'] = []
+
+            for jointbl in search['join_order']:
+                qry = qry.join(jointbl)
+                qry = qry.switch(table)
+            qry = qry.where(search['where'])
+
+        try:
+            out = qry.get()
+
+            for arg in attr:
+                out = getattr(out, arg)
+
+        except DoesNotExist:
+            out = None
+
+        return out
 
     @staticmethod
     def _model_to_dict(query, recurse=False):
@@ -182,9 +216,8 @@ class DatabaseManager:
 
         return self._model_to_dict(qry, recurse=recurse)
 
-    @timer
     @db_context()
-    def add_data(self, data, event):
+    def add_data(self, data, event, source_info=None):
         """
 
         Args:
@@ -205,7 +238,7 @@ class DatabaseManager:
 
         # Create original data information
         orig_data_info, _ = OrgiDataInfo.get_or_create(
-            source=event.source_info)
+            source=source_info)
 
         # Create event-instr-param
         event_instr_param, created = EventsInstrumentsParameters.get_or_create(
@@ -239,16 +272,21 @@ class DatabaseManager:
                 Data.insert_many(batch, fields=fields).execute()
 
     @db_context()
-    def _get_eventinstrprm(self, where):
+    def _get_eventinstrprm(self, where, prm_abbr):
         """ """
 
         # Replace field in string
-        where = where.replace('event_dt', 'EventsInstrumentsParameters.event_dt')
-        where = where.replace('instr_id', 'Instrument.id')
-        where = where.replace('prm_abbr', 'Parameter.prm_abbr')
-        where = where.replace('event_id', 'EventsInstrumentsParameters.event_id')
-        where = where.replace('batch_id', 'EventsInstrumentsParameters.batch_id')
-        where = where.replace('day_event', 'EventsInstrumentsParameters.day_event')
+        where = where.replace(
+            'event_dt', 'EventsInstrumentsParameters.event_dt')
+        where = where.replace(
+            'instr_id', 'Instrument.id')
+        where = where.replace(
+            'event_id', 'EventsInstrumentsParameters.event_id')
+        where = where.replace(
+            'batch_id', 'EventsInstrumentsParameters.batch_id')
+        where = where.replace(
+            'day_event', 'EventsInstrumentsParameters.day_event')
+        where += f" and (Parameter.prm_abbr == '{prm_abbr}')"
 
         where_arg = eval(where)
 
@@ -264,10 +302,9 @@ class DatabaseManager:
 
         return [arg for arg in qry.iterator()]
 
-    @timer
-    def get_data(self, where):
+    def get_data(self, where, prm_abbr):
 
-        eventinstrprm_list = self._get_eventinstrprm(where)
+        eventinstrprm_list = self._get_eventinstrprm(where, prm_abbr)
 
         if not eventinstrprm_list:
             raise peewee.DoesNotExist()
@@ -300,9 +337,10 @@ class DatabaseManager:
                             event_dt=self.eventinstrprm.event_dt,
                             instr_id=self.eventinstrprm.instrument.id,
                             prm_abbr=self.eventinstrprm.param.prm_abbr,
-                            event_id=self.eventinstrprm.event_id,
                             batch_id=self.eventinstrprm.batch_id,
-                            source_info=self.eventinstrprm.orig_data_info.source
+                            day_event=self.eventinstrprm.day_event,
+                            event_id=self.eventinstrprm.event_id,
+
                         ),
                         'data': data
                     }
@@ -351,8 +389,7 @@ class DatabaseManager:
         if not print_tables:
             print_tables = [
                 InstrType, Instrument, Flag,
-                Parameter, Data, EventsInstrumentsParameters,
-                OrgiDataInfo
+                Parameter, EventsInstrumentsParameters, OrgiDataInfo
             ]
 
         for print_tbl in print_tables:
@@ -363,6 +400,9 @@ class DatabaseManager:
 
         return out
 
+    def get_flags(self):
+        return self._get_table(Flag)
+
 
 db_mngr = DatabaseManager()
 
@@ -372,7 +412,9 @@ class ConfigLinker:
     def __init__(self):
 
         self._cfg_mngr = instantiate_config_managers(
-            [Parameter, InstrType, Instrument, Flag]
+            [CfgParameter, CfgInstrType,
+             CfgInstrument, CfgFlag
+             ]
         )
 
     @property
@@ -382,19 +424,19 @@ class ConfigLinker:
 
     def get_parameters(self):
         """ """
-        return self.cfg_mngr[PARAM_KEY].get_first_layer()
+        return self.cfg_mngr[PARAM_KEY].document
 
     def get_instr_types(self):
         """ """
-        return self.cfg_mngr[INSTR_TYPE_KEY].get_first_layer()
+        return self.cfg_mngr[INSTR_TYPE_KEY].document
 
     def get_instruments(self):
         """ """
-        return self.cfg_mngr[INSTR_KEY].get_first_layer()
+        return self.cfg_mngr[INSTR_KEY].document
 
     def get_flags(self):
         """ """
-        return self.cfg_mngr[FLAG_KEY].get_first_layer()
+        return self.cfg_mngr[FLAG_KEY].document
 
 
 class EventManager:
@@ -402,8 +444,7 @@ class EventManager:
 
     def __init__(
         self, event_dt, instr_id, prm_abbr,
-        event_id=None, batch_id=None, day_event=None,
-        source_info=None
+        batch_id, day_event, event_id=None,
     ):
         """
 
@@ -414,7 +455,6 @@ class EventManager:
             event_id (str | None):
             batch_id (str | None):
             day_event (bool | None):
-            source_info (str | None):
 
         """
 
@@ -425,7 +465,6 @@ class EventManager:
         self._event_id = event_id
         self._batch_id = batch_id
         self._day_event = day_event
-        self._source_info = source_info
 
     @property
     def event_dt(self):
@@ -465,12 +504,9 @@ class EventManager:
     def day_event(self):
         return self._day_event
 
-    @property
-    def source_info(self):
-        return self._source_info
-
     def __repr__(self):
-        return str(self.as_dict())
+        pp = pprint.PrettyPrinter()
+        return pp.pformat(self.as_dict())
 
     def as_dict(self):
         out = {
@@ -478,7 +514,6 @@ class EventManager:
             for key in [
                 'event_dt', 'instr_id', 'prm_abbr',
                 'event_id', 'batch_id', 'day_event',
-                'source_info'
             ]
         }
         return out

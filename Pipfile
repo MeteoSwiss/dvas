@@ -11,6 +11,8 @@ pytest-env = "*"
 [packages]
 dvas = {editable = true,path = "."}
 sqlalchemy = "*"
+aenum = "*"
+plotly = "*"
 
 [requires]
 python_version = "3.7"

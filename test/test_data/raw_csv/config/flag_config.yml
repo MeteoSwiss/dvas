@@ -1,3 +1,4 @@
 
-- bit_number: 1
-  desc: 'Interpolated'
+- bit_number: 6
+  flag_abbr: 'user_qc'
+  desc: 'User QC flag'

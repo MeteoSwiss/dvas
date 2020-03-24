@@ -53,10 +53,10 @@ class MetadataModel(Model):
 class InstrType(MetadataModel):
     """ """
     id = AutoField(primary_key=True)
-    name = CharField(
+    type_name = CharField(
         null=False, unique=True,
         constraints=[
-            Check(f"re_fullmatch('{INSTR_TYPE_PAT}', name)")
+            Check(f"re_fullmatch('{INSTR_TYPE_PAT}', type_name)")
         ]
     )
     desc = TextField()
@@ -95,6 +95,7 @@ class Flag(MetadataModel):
         null=False,
         unique=True,
         constraints=[Check("bit_number >= 0")])
+    flag_abbr = CharField(null=False)
     desc = TextField(null=False)
 
 
@@ -107,12 +108,15 @@ class EventsInstrumentsParameters(MetadataModel):
     """ """
     id = AutoField(primary_key=True)
     event_dt = DateTimeField(null=False)
-    instrument = ForeignKeyField(Instrument, backref='event_instrs_params')
-    param = ForeignKeyField(Parameter, backref='event_instrs_params')
+    instrument = ForeignKeyField(
+        Instrument, backref='event_instrs_params')
+    param = ForeignKeyField(
+        Parameter, backref='event_instrs_params')
     event_id = CharField(null=True)
-    batch_id = CharField(null=True)
-    day_event = BooleanField(null=True)
-    orig_data_info = ForeignKeyField(OrgiDataInfo, backref='event_instrs_params')
+    batch_id = CharField(null=False)
+    day_event = BooleanField(null=False)
+    orig_data_info = ForeignKeyField(
+        OrgiDataInfo, backref='event_instrs_params')
 
 
 class Data(MetadataModel):
@@ -122,4 +126,4 @@ class Data(MetadataModel):
         EventsInstrumentsParameters,
         backref='datas')
     index = FloatField(null=False)
-    value = FloatField()
+    value = FloatField(null=True)

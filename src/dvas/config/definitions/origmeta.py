@@ -11,29 +11,32 @@ from ..pattern import INSTR_TYPE_KEY, INSTR_TYPE_PAT
 from ..pattern import INSTR_KEY, INSTR_PAT
 from ..pattern import EVENT_KEY, EVENT_PAT, BATCH_KEY, BATCH_PAT
 from ..pattern import PROFILEDT_KEY, MS_KEY
+from ...database.model import EventsInstrumentsParameters as eip
+from ...database.model import InstrType, Instrument
+
+# Define default root parameters
+NODE_PARAMS_DEF = {
+    eip.event_id.name: None,
+}
 
 # Define parameter JSON_SCHEMA
 PARAMETER_PATTERN_PROP = {
-    rf"^{INSTR_TYPE_KEY}$": {
+    rf"^{eip.event_dt.name}$": {
         "type": 'string',
-        "pattern": INSTR_TYPE_PAT
     },
-    rf"^{INSTR_KEY}$": {
+    rf"^{Instrument.instr_id.name}$": {
         "type": 'string',
         "pattern": INSTR_PAT
     },
-    rf"^{EVENT_KEY}$": {
+    rf"^{eip.event_id.name}$": {
         "type": 'string',
         "pattern": EVENT_PAT
     },
-    rf"^{BATCH_KEY}$": {
+    rf"^{eip.batch_id.name}$": {
         "type": 'string',
         "pattern": BATCH_PAT
     },
-    rf"^{PROFILEDT_KEY}$": {
-        "type": "string",
-    },
-    rf"^{MS_KEY}$": {
-        "type": "string",
+    rf"^{eip.day_event.name}$": {
+        "type": "boolean",
     },
 }

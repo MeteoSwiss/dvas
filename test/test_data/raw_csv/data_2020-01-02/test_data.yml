@@ -1,8 +1,5 @@
-meas_site: PAY_RS
-
-batch: b1
-flight : f1
-
-instrument: i2
-instr_type : vai-rs92
-datetime: 2020-01-02T000000Z
+event_dt: 2020-01-02T000000Z
+batch_id: b1
+instr_id: i2
+event_id: e1
+day_event: False

@@ -1,6 +1,8 @@
 """
 
 """
+from mdtpyhelper.misc import timer
+
 from abc import ABC, abstractmethod
 from pathlib import Path
 import inspect
@@ -14,12 +16,15 @@ import pandas as pd
 from ..dvas_environ import orig_data_path as env_orig_data_path
 from ..dvas_environ import config_dir_path as env_cfg_dir_path
 from ..database.model import Data
-from ..database.database import db_mngr
+from ..database.database import db_mngr, EventManager, InstrType, Instrument
 
 from ..config.pattern import EVENT_KEY, INSTR_KEY, ORIGMETA_KEY
 from ..config.config import OrigData, OrigMeta
 
 
+# Define
+INDEX_NM = Data.index.name
+VALUE_NM = Data.value.name
 
 # Pandas csv_read method arguments
 PD_CSV_READ_ARGS = inspect.getfullargspec(pd.read_csv).args[1:]
@@ -45,7 +50,7 @@ class LocalDBLinker(DataLinker):
     def __init__(self):
         super().__init__()
 
-    def load(self, search):
+    def load(self, search, prm_abbr):
         """
 
         Args:
@@ -55,7 +60,15 @@ class LocalDBLinker(DataLinker):
 
         """
 
-        return db_mngr.get_data(where=search)
+        # Retrieve data from DB
+        data = db_mngr.get_data(where=search, prm_abbr=prm_abbr)
+
+        # Format dataframe index
+        for arg in data:
+            arg['data'][INDEX_NM] = pd.TimedeltaIndex(arg['data'][INDEX_NM], 's')
+            arg['data'] = arg['data'].set_index([INDEX_NM])[VALUE_NM]
+
+        return data
 
     def save(self, data_list):
         """
@@ -169,12 +182,16 @@ class OriginalCSVLinker(CSVLinker):
         # Set attributes
         self._origdata_config_mngr = OrigData(env_cfg_dir_path)
 
+        # Init origdata config manager
+        self._origdata_config_mngr.read()
+
     @property
     def origdata_config_mngr(self):
         """ """
         return self._origdata_config_mngr
 
-    def load(self, exclude_file_name=[]):
+    @timer
+    def load(self, prm_abr, exclude_file_name=[]):
         """
 
         Args:
@@ -183,6 +200,12 @@ class OriginalCSVLinker(CSVLinker):
         Returns:
 
         """
+
+        # Init
+        out = []
+
+        # Define
+        origmeta_cfg_mngr = OrigMeta()
 
         # Convert
         exclude_file_name = [Path(arg) for arg in exclude_file_name]
@@ -213,63 +236,61 @@ class OriginalCSVLinker(CSVLinker):
             # Read metadata
             with metadata_file_path.open(mode='r') as fid:
                 if metadata_file_path.suffix == '.csv':
-                    res = ''.join(
+                    meta_raw = ''.join(
                         [arg[1:] for arg in
                          takewhile(lambda x: x[0] in ['#', '%'], fid)
                          ]
                     )
                 else:
-                    res = fid.read()
+                    meta_raw = fid.read()
 
             # Read YAML config
-            origmeta_cfg_mngr = OrigMeta()
-            origmeta_cfg_mngr.read(res)
+            origmeta_cfg_mngr.read(meta_raw)
 
-            print(origmeta_cfg_mngr.document)
+            # Create event
+            event = EventManager(
+                event_dt=origmeta_cfg_mngr.document['event_dt'],
+                instr_id=origmeta_cfg_mngr.document['instr_id'],
+                prm_abbr=prm_abr,
+                event_id=origmeta_cfg_mngr.document['event_id'],
+                batch_id=origmeta_cfg_mngr.document['event_id'],
+                day_event=origmeta_cfg_mngr.document['day_event'],
+            )
 
-        return
+            # Get instr_type name
+            instr_type_name = db_mngr.get_or_none(
+                Instrument,
+                search={
+                    'join_order': [InstrType],
+                    'where': Instrument.instr_id == event.instr_id
+                },
+                attr=['instr_type', 'type_name']
+            )
 
-        # Create file name pattern
-        manu_id_mngr = IdentifierManager(['ms', 'flight', 'batch', 'instr', 'ref_dt', 'instr_type'])
-        file_nm_pat = manu_id_mngr.join(manu_id_mngr.create_id(id_source, strict=False)) + '*.csv'
+            if not instr_type_name:
+                raise Exception('Missing instr_id')
 
-        # Search file
-        file_path_search = glob(str(self.repo / file_nm_pat))
-        if len(file_path_search) != 1:
-            raise FileNotFoundError('No file or multiple pattern')
+            # Get origdata config params
+            origdata_cfg_prm = self.origdata_config_mngr.get_all(
+                [instr_type_name, prm_abr, event.instr_id]
+            )
 
-        # Get raw data config param
-        raw_cfg_param = self.raw_config_mngr.get_all(id_source)
-        raw_csv_read_args = {
-            key: val for key, val in raw_cfg_param.items()
-            if key in PD_CSV_READ_ARGS}
+            # Get raw data config param
+            raw_csv_read_args = {
+                key: val for key, val in origdata_cfg_prm.items()
+                if key in PD_CSV_READ_ARGS}
 
-        # Get parameter name
-        prm_nm = self.get_item_id(id_source, 'param')
+            # Read raw csv
+            try:
+                data = pd.read_csv(origdata_file_path, **raw_csv_read_args)
+            except Exception as e:
+                raise Exception(
+                    f"Error while reading CSV data in {origdata_file_path}"
+                )
 
-        # Modifiy names and usecols
-        idx_arg_index = raw_csv_read_args['names'].index(ID_NAME)
-        prm_arg_index = raw_csv_read_args['names'].index(prm_nm)
-        raw_csv_read_args['usecols'] = itemgetter(idx_arg_index, prm_arg_index)(raw_csv_read_args['usecols'])
-        raw_csv_read_args['names'] = itemgetter(idx_arg_index, prm_arg_index)(raw_csv_read_args['names'])
+            out.append({'event': event, 'data': data})
 
-        # Read raw csv
-        try:
-            data = pd.read_csv(file_path_search[0], **raw_csv_read_args)
-        except Exception as e:
-            raise Exception(f"{id_source} / {e}")
-
-        # Convert to dict of pd.Series
-        data = data[prm_nm]
-
-        # Apply linear correction
-        data = data * raw_cfg_param[f"{prm_nm}_a"] + raw_cfg_param[f"{prm_nm}_b"]
-
-        # Redefine index
-        idx_unit = raw_cfg_param['idx_unit']
-        data.index = pd.to_timedelta(data.index, idx_unit)
-
-        return data
+        return out
 
     def save(self, *args, **kwargs):
         """ """

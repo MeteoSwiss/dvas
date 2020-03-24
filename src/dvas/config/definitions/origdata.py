@@ -6,6 +6,9 @@ Created February 2020, L. Modolo - mol@meteoswiss.ch
 
 """
 
+# Import python packages and modules
+import numpy as np
+
 # Import from current packages modules
 from ..pattern import INSTR_TYPE_PAT, INSTR_PAT, PARAM_PAT
 from ...database.model import Data
@@ -23,6 +26,8 @@ DTYPE_NM = 'dtype'
 SKIPROWS_NM = 'skiprows'
 SKIP_BLANK_LINES_NM = 'skip_blank_lines'
 DELIM_WHITESPACE_NM = 'delim_whitespace'
+COMMENT_NM = 'comment'
+NA_VALUES = 'na_values'
 
 INDEX_NM = Data.index.name
 VALUE_NM = Data.value.name
@@ -31,19 +36,20 @@ VALUE_NM = Data.value.name
 NODE_PATTERN = [INSTR_TYPE_PAT, PARAM_PAT, INSTR_PAT]
 
 # Define default root parameters
-ROOT_PARAMS_DEF = {
+NODE_PARAMS_DEF = {
     IDX_UNIT_NM: 'ms',
     DT_FORMAT_NM: None,
     LAMBDA_NM: 'lambda x: x',
     DELIMITER_NM: ';',
     INDEX_COL_NM: INDEX_NM,
     HEADER_NM: 'infer',
-    USECOLS: [0, 1],
+    USECOLS: [],
     NAMES_NM: [INDEX_NM, VALUE_NM],
-    DTYPE_NM: ['np.int64', 'np.float64'],
     SKIPROWS_NM: 0,
     SKIP_BLANK_LINES_NM: True,
-    DELIM_WHITESPACE_NM: False
+    DELIM_WHITESPACE_NM: False,
+    COMMENT_NM: '#',
+    NA_VALUES: ['/']
 }
 
 # Define parameter JSON_SCHEMA
@@ -100,14 +106,6 @@ PARAMETER_PATTERN_PROP = {
         "maxItems": 2,
         "uniqueItems": True
     },
-    rf"^{DTYPE_NM}$": {
-        "type": "array",
-        "items": {
-            "type": "string",
-        },
-        "minItems": 2,
-        "maxItems": 2
-    },
     rf"^{SKIPROWS_NM}$": {
         "type": "integer",
         'minimum': 0,
@@ -117,5 +115,17 @@ PARAMETER_PATTERN_PROP = {
     },
     rf"^{DELIM_WHITESPACE_NM}$": {
         "type": "boolean"
-    }
+    },
+    rf"^{COMMENT_NM}$": {
+        "type": "string",
+        "enum": ['#']
+    },
+    rf"^{NA_VALUES}$": {
+        "type": 'array',
+        "items": {
+            "type": "string"
+        },
+        "minItems": 1,
+        "uniqueItems": True
+    },
 }

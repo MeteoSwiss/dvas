@@ -7,16 +7,11 @@ Created February 2020, L. Modolo - mol@meteoswiss.ch
 """
 
 # Import current packages modules
-from ..pattern import INSTR_NODE_PAT, INSTR_PAT, INSTR_TYPE_PAT
+from ..pattern import INSTR_PAT, INSTR_TYPE_PAT
 from ...database.model import Instrument
 
-# Define node order
-NODE_PATTERN = [INSTR_NODE_PAT]
-
 # Define default root parameters
-ROOT_PARAMS_DEF = {
-    Instrument.instr_id.name: '',
-    Instrument.instr_type.name: '',
+NODE_PARAMS_DEF = {
     Instrument.sn.name: '',
     Instrument.remark.name: ''
 }

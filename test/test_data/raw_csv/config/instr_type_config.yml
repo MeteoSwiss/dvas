@@ -1,16 +1,12 @@
 
-_instr_type_1:
-    name: 'vai-rs41'
-    desc: 'Vaisala RS-41'
+- type_name: 'vai-rs41'
+  desc: 'Vaisala RS-41'
 
-_instr_type_2:
-    name: 'vai-rs92'
-    desc: 'Vaisala RS-92'
+- type_name: 'vai-rs92'
+  desc: 'Vaisala RS-92'
 
-_instr_type_3:
-    name: 'metlab-c34'
-    desc: 'MeteoLabor C34'
+- type_name: 'metlab-c34'
+  desc: 'MeteoLabor C34'
 
-_instr_type_4:
-    name: 'metlab-c50'
-    desc: 'MeteoLabor C50'
+- type_name: 'metlab-c50'
+  desc: 'MeteoLabor C50'
