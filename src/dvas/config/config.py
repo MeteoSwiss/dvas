@@ -80,6 +80,8 @@ class ConfigManagerMeta(ABCMeta):
         return obj
 
 
+#TODO
+# Replace object with ABC
 class OneLayerConfigManager(object, metaclass=ConfigManagerMeta):
     """Abstract class for managing YAML config"""
 

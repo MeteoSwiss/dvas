@@ -2,8 +2,10 @@ from setuptools import setup, find_packages  # Always prefer setuptools over dis
 from pathlib import Path
 
 # Run the version file
-v = open(Path('.') / 'src' / 'dvas' / 'dvas_version.py')
-version = [l.split("'")[1] for l in v.readlines() if '__version__' in l][0]
+with open(Path('.') / 'src' / 'dvas' / 'dvas_version.py') as fid:
+    version = next(
+        line.split("'")[1] for line in fid.readlines() if 'VERSION' in line
+    )
 
 setup(
     dependency_links=[],

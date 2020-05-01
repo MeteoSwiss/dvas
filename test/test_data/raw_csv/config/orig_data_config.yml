@@ -21,6 +21,17 @@ _vai-rs41:
             - 0
             - 4
 
+    _altpros1:
+        usecols:
+            - 0
+            - 2
+
+    _prepros1:
+        usecols:
+            - 0
+            - 3
+
+
 _metlab-c34:
     idx_unit: 's'
     delimiter: ';'

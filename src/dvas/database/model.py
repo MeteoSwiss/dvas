@@ -13,6 +13,7 @@ from peewee import DateTimeField, TextField, CharField
 from peewee import ForeignKeyField, CompositeKey
 from playhouse.hybrid import hybrid_property
 from playhouse.shortcuts import fn
+from playhouse.sqliteq import SqliteQueueDatabase
 
 
 # Import from current package
@@ -25,15 +26,21 @@ from ..config.pattern import PARAM_PAT
 DATABASE_PATH = os.getenv(LOCAL_DB_PATH_NM)
 DATABASE_FILE_PATH = Path(DATABASE_PATH) / 'local_db.sqlite'
 
-db = SqliteDatabase(
+#SqliteDatabase
+#SqliteQueueDatabase
+db = SqliteQueueDatabase(
     DATABASE_FILE_PATH,
     pragmas={
         'foreign_keys': True,
-
         # Set cache to 10MB
         'cache_size': -10*1024
     },
-    autoconnect=False)
+    autoconnect=False,
+    use_gevent=False,  # Use the standard library "threading" module.
+    autostart=False,  # The worker thread now must be started manually.
+    queue_max_size=64,  # Max. # of pending writes that can accumulate.
+    results_timeout=5.0  # Max. time to wait for query to be executed.
+)
 
 
 @db.func('re_fullmatch')
@@ -109,14 +116,17 @@ class EventsInstrumentsParameters(MetadataModel):
     id = AutoField(primary_key=True)
     event_dt = DateTimeField(null=False)
     instrument = ForeignKeyField(
-        Instrument, backref='event_instrs_params')
+        Instrument, backref='event_instrs_params'
+    )
     param = ForeignKeyField(
-        Parameter, backref='event_instrs_params')
-    event_id = CharField(null=True)
+        Parameter, backref='event_instrs_params'
+    )
     batch_id = CharField(null=False)
     day_event = BooleanField(null=False)
+    event_id = CharField(null=True)
     orig_data_info = ForeignKeyField(
-        OrgiDataInfo, backref='event_instrs_params')
+        OrgiDataInfo, backref='event_instrs_params'
+    )
 
 
 class Data(MetadataModel):

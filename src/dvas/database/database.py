@@ -17,7 +17,8 @@ from peewee import chunked, DoesNotExist
 from playhouse.shortcuts import model_to_dict
 
 # Import from current package
-from .model import db, DATABASE_FILE_PATH
+from .model import db
+from .model import DATABASE_FILE_PATH
 from .model import Instrument, InstrType, EventsInstrumentsParameters
 from .model import Parameter, Flag, OrgiDataInfo, Data
 from ..config.pattern import PARAM_KEY, INSTR_KEY
@@ -28,6 +29,8 @@ from ..config.config import InstrType as CfgInstrType
 from ..config.config import Instrument as CfgInstrument
 from ..config.config import Parameter as CfgParameter
 from ..config.config import Flag as CfgFlag
+
+from ..dvas_helper import DBAccess
 
 SQLITE_MAX_VARIABLE_NUMBER = 999
 
@@ -40,50 +43,17 @@ EVENT_ID_NM = EventsInstrumentsParameters.event_id
 EVENT_BATCH_NM = EventsInstrumentsParameters.batch_id.name
 
 
-# TODO
-#  Remove verbose?
-#  Add log?
-def db_context(verbose=False):
-    """ """
-
-    def decorator(func):
-        """
-
-        Args:
-            func:
-
-        Returns:
-
-        """
-
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            """
-
-            Args:
-                *args:
-                **kwargs:
-
-            Returns:
-
-            """
-            try:
-                with db.connection_context():
-                    return func(*args, **kwargs)
-            except Exception as e:
-                raise Exception(e)
-
-        return wrapper
-    return decorator
-
-
 class DatabaseManager:
     _INSTANCES = 0
+    _MAX_INSTANCES = 1
 
     def __init__(self):
 
-        if DatabaseManager._INSTANCES > 0:
-            errmsg = f'More than one instance of class {self.__class__.__name__} has been created'
+        if DatabaseManager._INSTANCES >= DatabaseManager._MAX_INSTANCES:
+            errmsg = (
+                f'More than {DatabaseManager._MAX_INSTANCES} instance of ' +
+                f'class {self.__class__.__name__} has been created'
+            )
             raise Exception(errmsg)
         else:
             DatabaseManager._INSTANCES += 1
@@ -105,60 +75,60 @@ class DatabaseManager:
         if DATABASE_FILE_PATH.exists():
             DATABASE_FILE_PATH.unlink()
 
-        # Create db
-        self._create_tables()
+        with DBAccess(db) as _:
+            # Create db
+            self._create_tables()
 
-        # Fill parameters
-        self._fill_table(Parameter, cfg_linker.get_parameters())
+            # Fill parameters
+            self._fill_table(Parameter, cfg_linker.get_parameters())
 
-        # Fill instr_types
-        self._fill_table(InstrType, cfg_linker.get_instr_types())
+            # Fill instr_types
+            self._fill_table(InstrType, cfg_linker.get_instr_types())
 
-        # File instruments
-        self._fill_table(
-            Instrument, cfg_linker.get_instruments(),
-            foreign_constraint=[
-                {'attr': Instrument.instr_type.name,
-                 'class': InstrType,
-                 'foreign_attr': InstrType.type_name.name
-                 },
-            ]
-        )
+            # File instruments
+            self._fill_table(
+                Instrument, cfg_linker.get_instruments(),
+                foreign_constraint=[
+                    {'attr': Instrument.instr_type.name,
+                     'class': InstrType,
+                     'foreign_attr': InstrType.type_name.name
+                    },
+                ]
+            )
 
-        # Fill Flag table
-        self._fill_table(Flag, cfg_linker.get_flags())
+            # Fill Flag table
+            self._fill_table(Flag, cfg_linker.get_flags())
 
-    @db_context()
-    def get_or_none(self, table, search, attr):
-        """ """
-
-        qry = table.select()
-        if search:
-
-            if 'join_order' not in search.keys():
-                search['join_order'] = []
-
-            for jointbl in search['join_order']:
-                qry = qry.join(jointbl)
-                qry = qry.switch(table)
-            qry = qry.where(search['where'])
-
-        try:
-            out = qry.get()
-
-            for arg in attr:
-                out = getattr(out, arg)
-
-        except DoesNotExist:
-            out = None
-
-        return out
+    # def get_or_none(self, table, search={}, attr=[]):
+    #     """ """
+    #
+    #     qry = table.select()
+    #     if search:
+    #
+    #         if 'join_order' not in search.keys():
+    #             search['join_order'] = []
+    #
+    #         for jointbl in search['join_order']:
+    #             qry = qry.join(jointbl)
+    #             qry = qry.switch(table)
+    #         qry = qry.where(search['where'])
+    #
+    #     try:
+    #         with DBAccess(db) as _:
+    #             out = qry.get()
+    #
+    #         for arg in attr:
+    #             out = getattr(out, arg)
+    #
+    #     except DoesNotExist:
+    #         out = None
+    #
+    #     return out
 
     @staticmethod
     def _model_to_dict(query, recurse=False):
         return [model_to_dict(qry, recurse=recurse) for qry in query]
 
-    @db_context()
     def _create_tables(self):
         db.create_tables(
             [InstrType, Instrument,
@@ -167,7 +137,6 @@ class DatabaseManager:
             safe=True
         )
 
-    @db_context()
     def _fill_table(self, table, document, foreign_constraint=None):
         """
 
@@ -191,7 +160,7 @@ class DatabaseManager:
         # Insert
         table.insert_many(document).execute()
 
-    @db_context()
+    @DBAccess(db)
     def _get_table(self, table, search=None, recurse=False):
         """
 
@@ -216,62 +185,67 @@ class DatabaseManager:
 
         return self._model_to_dict(qry, recurse=recurse)
 
-    @db_context()
     def add_data(self, data, event, source_info=None):
         """
 
         Args:
             data (pd.Series):
             event (EventManager):
-
+            source_info (str, optional): Data source
         """
 
-        # Get/Check instrument
-        instr = Instrument.get_or_none(Instrument.instr_id == event.instr_id)
-        if not instr:
-            raise Exception(f'{event.instr_id} not found')
+        with DBAccess(db):
 
-        # Get/Check parameter
-        param = Parameter.get_or_none(Parameter.prm_abbr == event.prm_abbr)
-        if not param:
-            raise Exception(f'{event.prm_abbr} not found')
+            # Get/Check instrument
+            instr = Instrument.get_or_none(
+                Instrument.instr_id == event.instr_id
+            )
+            if not instr:
+                raise Exception(f'{event.instr_id} not found')
 
-        # Create original data information
-        orig_data_info, _ = OrgiDataInfo.get_or_create(
-            source=source_info)
+            # Get/Check parameter
+            param = Parameter.get_or_none(
+                Parameter.prm_abbr == event.prm_abbr
+            )
+            if not param:
+                raise Exception(f'{event.prm_abbr} not found')
 
-        # Create event-instr-param
-        event_instr_param, created = EventsInstrumentsParameters.get_or_create(
-            event_dt=event.event_dt, instrument=instr,
-            param=param, event_id=event.event_id,
-            batch_id=event.batch_id, day_event=event.day_event,
-            orig_data_info=orig_data_info
-        )
+            # Create original data information
+            orig_data_info, _ = OrgiDataInfo.get_or_create(
+                source=source_info)
 
-        # Insert data
-        if created:
-
-            # Format series as list of tuples
-            n_data = len(data)
-            data = pd.DataFrame(data, columns=[VALUE_NM])
-            data.index.name = INDEX_NM
-            data.reset_index(inplace=True)
-            data = data.to_dict(orient='list')
-            data = list(zip(
-                data[INDEX_NM],
-                data[VALUE_NM],
-                [event_instr_param]*n_data)
+            # Create event-instr-param
+            event_instr_param, created = EventsInstrumentsParameters.get_or_create(
+                event_dt=event.event_dt, instrument=instr,
+                param=param, event_id=event.event_id,
+                batch_id=event.batch_id, day_event=event.day_event,
+                orig_data_info=orig_data_info
             )
 
-            # Create batch index
-            fields = [Data.index, Data.value, Data.event_instr_param]
-            N_MAX = floor(SQLITE_MAX_VARIABLE_NUMBER / len(fields))
+            # Insert data
+            if created:
 
-            # Insert to db
-            for batch in chunked(data, N_MAX):
-                Data.insert_many(batch, fields=fields).execute()
+                # Format series as list of tuples
+                n_data = len(data)
+                data = pd.DataFrame(data, columns=[VALUE_NM])
+                data.index.name = INDEX_NM
+                data.reset_index(inplace=True)
+                data = data.to_dict(orient='list')
+                data = list(zip(
+                    data[INDEX_NM],
+                    data[VALUE_NM],
+                    [event_instr_param]*n_data)
+                )
 
-    @db_context()
+                # Create batch index
+                fields = [Data.index, Data.value, Data.event_instr_param]
+                N_MAX = floor(SQLITE_MAX_VARIABLE_NUMBER / len(fields))
+
+                # Insert to db
+                for batch in chunked(data, N_MAX):
+                    Data.insert_many(batch, fields=fields).execute()
+
+    @DBAccess(db)
     def _get_eventinstrprm(self, where, prm_abbr):
         """ """
 
@@ -279,13 +253,13 @@ class DatabaseManager:
         where = where.replace(
             'event_dt', 'EventsInstrumentsParameters.event_dt')
         where = where.replace(
-            'instr_id', 'Instrument.id')
-        where = where.replace(
-            'event_id', 'EventsInstrumentsParameters.event_id')
+            'instr_id', 'Instrument.instr_id')
         where = where.replace(
             'batch_id', 'EventsInstrumentsParameters.batch_id')
         where = where.replace(
             'day_event', 'EventsInstrumentsParameters.day_event')
+        where = where.replace(
+            'event_id', 'EventsInstrumentsParameters.event_id')
         where += f" and (Parameter.prm_abbr == '{prm_abbr}')"
 
         where_arg = eval(where)
@@ -317,9 +291,11 @@ class DatabaseManager:
                 self.res = None
                 self.exc = None
 
-            @db_context()
+            @DBAccess(db, close_by_exit=False)
             def run(self):
+
                 try:
+
                     qry = (
                         Data.
                         select(Data.index, Data.value).
@@ -357,12 +333,14 @@ class DatabaseManager:
 
         # Query data
         qryer = []
+
         for eventinstrprm in eventinstrprm_list:
             qryer.append(Queryer(eventinstrprm))
 
-        for qry in qryer:
-            qry.start()
-            qry.join()
+        with DBAccess(db):
+            for qry in qryer:
+                qry.start()
+                qry.join()
 
         # Group data
         out = []
@@ -440,11 +418,11 @@ class ConfigLinker:
 
 
 class EventManager:
-    """Class for create an uniform event identifier"""
+    """Class for create an unique event identifier"""
 
     def __init__(
         self, event_dt, instr_id, prm_abbr,
-        batch_id, day_event, event_id=None,
+        batch_id, day_event, event_id='',
     ):
         """
 
@@ -452,9 +430,9 @@ class EventManager:
             event_dt (str | datetime | pd.Timestamp):
             instr_id (str):
             prm_abbr (str):
-            event_id (str | None):
-            batch_id (str | None):
-            day_event (bool | None):
+            batch_id (str):
+            day_event (bool):
+            event_id (str, optional):
 
         """
 
@@ -493,16 +471,16 @@ class EventManager:
         return self._prm_abbr
 
     @property
-    def event_id(self):
-        return self._event_id
-
-    @property
     def batch_id(self):
         return self._batch_id
 
     @property
     def day_event(self):
         return self._day_event
+
+    @property
+    def event_id(self):
+        return self._event_id
 
     def __repr__(self):
         pp = pprint.PrettyPrinter()
