@@ -1,0 +1,8 @@
+To generate the HTML files from the source, one needs to type the following in a terminal:
+
+ cd doc
+ mkdir build
+ make html
+
+This will create all the pages in the build folder, which eventually should be uploaded onto the gh-pages branch of the dvas repository (where it will become public immediately!). 
+
