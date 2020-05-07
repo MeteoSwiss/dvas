@@ -148,7 +148,7 @@ coverage.xml
 .scrapy
 
 # Sphinx documentation
-docs/_build/
+doc/build/
 
 # PyBuilder
 target/
@@ -256,3 +256,6 @@ this_file_of_result.txt
 tiny_vs_mongo.py
 tut.csv
 uaii2021/database/database.py
+
+# VOF stuff
+*.DS_Store
