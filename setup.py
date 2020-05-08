@@ -25,17 +25,14 @@ setup(
     description="Data Visualisation and Analysis Software for meteorological radiosounding",
     python_requires='>=3.7.5',
     install_requires=[
-        "tinydb",
         "pandas",
         "jsonschema",
-        "mdtpyhelper",
         "dotty-dict",
         "ruamel-yaml",
         "pampy",
         "scipy",
-        "pint",
         "numericalunits",
-        "plotly",
+        "matplotlib",
         "peewee",
     ],
 

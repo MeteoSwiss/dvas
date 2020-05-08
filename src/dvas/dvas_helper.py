@@ -7,18 +7,37 @@ from datetime import datetime
 from functools import wraps
 from abc import ABC, abstractmethod
 from peewee import PeeweeException
+from inspect import getmodule
 
 
 class ContextDecorator(ABC):
     """Use this class as superclass of a context manager to convert it into
     a decorator.
     """
+
+    @abstractmethod
+    def __init__(self):
+        self._func = None
+
     def __call__(self, func):
+
         @wraps(func)
         def decorated(*args, **kwargs):
+            self.func = func
             with self:
                 return func(*args, **kwargs)
         return decorated
+
+    @property
+    def func(self):
+        """callable: Contain the decorated function. Set automatically only
+        when class is used as decorated. Default to None.
+        """
+        return self._func
+
+    @func.setter
+    def func(self, val):
+        self._func = val
 
     @abstractmethod
     def __enter__(self):
@@ -32,15 +51,29 @@ class ContextDecorator(ABC):
 class TimeIt(ContextDecorator):
     """Code elapsed time calculator context manager/decorator"""
 
+    def __init__(self, header_msg=''):
+        super().__init__()
+        self._head_msg = header_msg
+
     def __enter__(self):
         self._start = datetime.now()
 
+        # Set msg header
+        if (self.func is None) and (self._head_msg is ''):
+            self._head_msg = 'Execution time'
+        elif self.func is not None:
+            self._head_msg = (
+                '{}.{} execution time'
+            ).format(
+                getmodule(self.func).__name__,
+                self.func.__qualname__
+            )
+        else:
+            self._head_msg += 'execution time'
+
     def __exit__(self, exc_type, exc_val, exc_tb):
         delta = datetime.now() - self._start
-        print(
-            'Elapsed time: {} sec'.format(delta.total_seconds()),
-            flush=True
-        )
+        print(f'{self._head_msg}: {delta}', flush=True)
 
 
 class DBAccess(ContextDecorator):
@@ -52,6 +85,7 @@ class DBAccess(ContextDecorator):
             db (peewee.SqliteDatabase): PeeWee Sqlite DB object
             close_by_exit (bool): Close by exiting
         """
+        super().__init__()
         self._db = db
         self._close_by_exit = close_by_exit
 
@@ -84,8 +118,8 @@ class DBAccessQ(ContextDecorator):
         """
         Args:
             db (peewee.SqliteDatabase): PeeWee Sqlite DB object
-            close_by_exit (bool): Close by exiting
         """
+        super().__init__()
         self._db = db
 
     def __call__(self, func):

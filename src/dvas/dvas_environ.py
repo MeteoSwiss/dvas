@@ -6,18 +6,19 @@ Created February 2020, L. Modolo - mol@meteoswiss.ch
 """
 
 # Import Python packages and module
-import os
+from pathlib import Path
 
-#: str: Environment variable used to define orig data directory path
-ORIG_DATA_PATH_NM = 'DVAS_ORIG_DATA_PATH'
-orig_data_path = os.getenv(ORIG_DATA_PATH_NM)
+# Define package path
+package_path = Path(__file__).parent
 
-#: str: Environment variable used to define package's config directory path
-CONFIG_PATH_NM = 'DVAS_CONFIG_PATH'
-config_dir_path = os.getenv(CONFIG_PATH_NM)
+#: pathlib.Path: Original data directory path
+orig_data_path = package_path / 'examples' / 'data'
 
-#: str: Environment variable used to define package's local DB directory path
-LOCAL_DB_PATH_NM = 'DVAS_LOCAL_DB_PATH'
+#: pathlib.Path: Config directory path
+config_dir_path = package_path / 'examples' / 'config'
 
-#: str: Environment variable used to define output directory path
-OUTPUT_PATH_NM = 'DVAS_OUTPUT_PATH'
+#: pathlib.Path: Local DB directory path
+local_db_path = Path('.') / 'dvas_db'
+
+#: pathlib.Path: Output directory path
+output_path = Path('.') / 'output'

@@ -4,16 +4,13 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-sphinx = "*"
 pyment = "*"
+pytest = "*"
 pytest-env = "*"
 pylint = "*"
 
 [packages]
 dvas = {editable = true,path = "."}
-sqlalchemy = "*"
-aenum = "*"
-plotly = "*"
 
 [requires]
 python_version = "3.7"

@@ -17,29 +17,42 @@ from playhouse.sqliteq import SqliteQueueDatabase
 
 
 # Import from current package
-from ..dvas_environ import LOCAL_DB_PATH_NM
+from ..dvas_environ import local_db_path
 from ..config.pattern import EVENT_PAT, BATCH_PAT
 from ..config.pattern import INSTR_TYPE_PAT, INSTR_PAT
 from ..config.pattern import PARAM_PAT
 
-# Define
-DATABASE_PATH = os.getenv(LOCAL_DB_PATH_NM)
-DATABASE_FILE_PATH = Path(DATABASE_PATH) / 'local_db.sqlite'
+# Create db path
+local_db_path.mkdir(mode=777, parents=True, exist_ok=True)
 
-#SqliteDatabase
-#SqliteQueueDatabase
-db = SqliteQueueDatabase(
-    DATABASE_FILE_PATH,
+# Define db path
+db_file_path = Path(local_db_path) / 'local_db.sqlite'
+
+
+# TODO
+# Test peewee sqlite queue module
+# db = SqliteQueueDatabase(
+#     db_file_path,
+#     pragmas={
+#         'foreign_keys': True,
+#         # Set cache to 10MB
+#         'cache_size': -10*1024
+#     },
+#     autoconnect=False,
+#     use_gevent=False,  # Use the standard library "threading" module.
+#     autostart=False,  # The worker thread now must be started manually.
+#     queue_max_size=64,  # Max. # of pending writes that can accumulate.
+#     results_timeout=5.0  # Max. time to wait for query to be executed.
+# )
+
+db = SqliteDatabase(
+    db_file_path,
     pragmas={
         'foreign_keys': True,
         # Set cache to 10MB
         'cache_size': -10*1024
     },
-    autoconnect=False,
-    use_gevent=False,  # Use the standard library "threading" module.
-    autostart=False,  # The worker thread now must be started manually.
-    queue_max_size=64,  # Max. # of pending writes that can accumulate.
-    results_timeout=5.0  # Max. time to wait for query to be executed.
+    autoconnect=False
 )
 
 
@@ -121,7 +134,12 @@ class EventsInstrumentsParameters(MetadataModel):
     param = ForeignKeyField(
         Parameter, backref='event_instrs_params'
     )
-    batch_id = CharField(null=False)
+    batch_id = CharField(
+        null=False,
+        constraints=[
+            Check(f"re_fullmatch('{BATCH_PAT}', batch_id)")
+        ]
+    )
     day_event = BooleanField(null=False)
     event_id = CharField(null=True)
     orig_data_info = ForeignKeyField(

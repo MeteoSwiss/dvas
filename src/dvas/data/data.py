@@ -26,12 +26,14 @@ from ..database.model import Flag
 from ..database.database import ConfigLinker
 from .math import crosscorr
 
-from mdtpyhelper.misc import timer
+from ..dvas_helper import TimeIt
+
 
 # Define
 FLAG = 'flag'
 VALUE = 'value'
 cfg_linker = ConfigLinker()
+
 
 class FlagManager:
 
@@ -206,6 +208,7 @@ class TimeProfileManager:
         """
         pass
 
+@TimeIt()
 def load(search, prm_abbr):
     """
 
@@ -331,7 +334,6 @@ class MultiTimeProfileManager(list):
 
         return out
 
-    @timer
     def plot(self):
         """ """
 

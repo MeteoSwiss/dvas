@@ -21,7 +21,7 @@ INSTR_PREFIX = INSTR_KEY[0]
 
 #: str: Instrument pattern (e.g. i1, i10, i203)
 INSTR_PAT = rf'{INSTR_PREFIX}([1-9]\d*)'
-INSTR_RE = re.compile(INSTR_PAT)
+instr_re = re.compile(INSTR_PAT)
 
 #: str: Event key name
 EVENT_KEY = 'event'
@@ -29,7 +29,7 @@ EVENT_PREFIX = EVENT_KEY[0]
 
 #: str: Event pattern (e.g. e1, e10, e203)
 EVENT_PAT = rf'{EVENT_PREFIX}[1-9]\d*'
-EVENT_RE = re.compile(EVENT_PAT)
+event_re = re.compile(EVENT_PAT)
 
 #: str: Batch key name
 BATCH_KEY = 'batch'
@@ -37,14 +37,14 @@ BATCH_PREFIX = BATCH_KEY[0]
 
 #: str: Batch pattern (e.g. b1, b20, b205)
 BATCH_PAT = rf'{BATCH_PREFIX}[1-9]\d*'
-BATCH_RE = re.compile(BATCH_PAT)
+batch_re = re.compile(BATCH_PAT)
 
 #: str: Parameter key name
 PARAM_KEY = 'parameter'
 
 #: str: Parameter pattern (e.g. tre200s0, uorprot1)
 PARAM_PAT = r"[a-z0-9]{8}"
-PARAM_RE = re.compile(PARAM_PAT)
+param_re = re.compile(PARAM_PAT)
 
 #: str: Raw data key name
 ORIGDATA_KEY = 'orig_data'
