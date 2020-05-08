@@ -10,23 +10,19 @@ from peewee import SqliteDatabase, Model, Check
 from peewee import AutoField
 from peewee import IntegerField, BooleanField, FloatField
 from peewee import DateTimeField, TextField, CharField
-from peewee import ForeignKeyField, CompositeKey
-from playhouse.hybrid import hybrid_property
-from playhouse.shortcuts import fn
-from playhouse.sqliteq import SqliteQueueDatabase
-
+from peewee import ForeignKeyField
 
 # Import from current package
-from ..dvas_environ import local_db_path
-from ..config.pattern import EVENT_PAT, BATCH_PAT
+from ..dvas_environ import path_var as env_path_var
+from ..config.pattern import BATCH_PAT
 from ..config.pattern import INSTR_TYPE_PAT, INSTR_PAT
 from ..config.pattern import PARAM_PAT
 
 # Create db path
-local_db_path.mkdir(mode=777, parents=True, exist_ok=True)
+env_path_var.local_db_path.mkdir(mode=777, parents=True, exist_ok=True)
 
 # Define db path
-db_file_path = Path(local_db_path) / 'local_db.sqlite'
+db_file_path = env_path_var.local_db_path / 'local_db.sqlite'
 
 
 # TODO

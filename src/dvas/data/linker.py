@@ -12,9 +12,7 @@ from itertools import takewhile
 import pandas as pd
 
 # Import from current package
-from ..dvas_environ import orig_data_path as env_orig_data_path
-from ..dvas_environ import config_dir_path as env_cfg_dir_path
-from ..dvas_environ import output_path as env_output_path
+from ..dvas_environ import path_var as env_path_var
 from ..database.model import Data
 from ..database.database import db_mngr, EventManager, InstrType, Instrument
 
@@ -127,7 +125,7 @@ class CSVOutputLinker(CSVLinker):
     _INDEX_KEY_ORDER = []
 
     def __init__(self):
-        super().__init__(env_output_path)
+        super().__init__(env_path_var.output_path)
 
     def get_file_path(self, index):
         """
@@ -179,10 +177,10 @@ class CSVOutputLinker(CSVLinker):
 class OriginalCSVLinker(CSVLinker):
 
     def __init__(self):
-        super().__init__(env_orig_data_path)
+        super().__init__(env_path_var.orig_data_path)
 
         # Set attributes
-        self._origdata_config_mngr = OrigData(env_cfg_dir_path)
+        self._origdata_config_mngr = OrigData(env_path_var.config_dir_path)
 
         # Init origdata config manager
         self._origdata_config_mngr.read()

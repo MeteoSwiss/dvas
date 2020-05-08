@@ -5,9 +5,45 @@
 # Import external packages and modules
 from datetime import datetime
 from functools import wraps
-from abc import ABC, abstractmethod
+from abc import ABC, ABCMeta, abstractmethod
 from peewee import PeeweeException
 from inspect import getmodule
+
+
+class SingleInstanceMetaClass(type):
+    def __init__(self, name, bases, dic):
+        self.__single_instance = None
+        super().__init__(name, bases, dic)
+
+    def __call__(cls, *args, **kwargs):
+        if cls.__single_instance:
+            return cls.__single_instance
+        single_obj = cls.__new__(cls)
+        single_obj.__init__(*args, **kwargs)
+        cls.__single_instance = single_obj
+        return single_obj
+
+
+class RequiredAttrMeta(ABCMeta):
+    """Meta class for requiring specific attribute to abstract parent class"""
+    REQUIRED_ATTRIBUTES = []
+
+    def __call__(cls, *args, **kwargs):
+        obj = super(RequiredAttrMeta, cls).__call__(*args, **kwargs)
+
+        for attr_name, dtype in obj.REQUIRED_ATTRIBUTES.items():
+
+            if not hasattr(obj, attr_name):
+                errstr = "required attribute '{}' not defined in class {}"
+                errmsg = errstr.format(attr_name, obj)
+                raise ValueError(errmsg)
+
+            if not isinstance(getattr(obj, attr_name), dtype):
+                errstr = "required attribute '{}' bad set in class {}"
+                errmsg = errstr.format(attr_name, obj)
+                raise ValueError(errmsg)
+
+        return obj
 
 
 class ContextDecorator(ABC):

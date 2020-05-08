@@ -8,7 +8,6 @@ import re
 import pprint
 from abc import abstractmethod, ABCMeta
 
-from glob import glob
 from pathlib import Path
 
 import json
@@ -30,7 +29,7 @@ from .definitions import instrument
 from .definitions import event
 from .definitions import parameter
 from .definitions import flag
-from ..dvas_environ import config_dir_path as env_cfg_dir_path
+from ..dvas_environ import path_var as env_path_var
 
 # Define
 NODE_ESCAPE_CHAR = '_'
@@ -126,8 +125,8 @@ class OneLayerConfigManager(object, metaclass=ConfigManagerMeta):
     def config_dir_path(self, value):
 
         # Set environement settings if None
-        if not value:
-            value = env_cfg_dir_path
+        if value is None:
+            value = env_path_var.config_dir_path
 
         # Convert to Path
         value = Path(value)

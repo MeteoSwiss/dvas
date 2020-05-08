@@ -6,12 +6,9 @@
 import pprint
 from datetime import datetime
 import pytz
-from dataclasses import dataclass, field, asdict
 from math import floor
-from functools import wraps
 import pandas as pd
 from threading import Thread
-from mdtpyhelper.misc import timer
 import peewee
 from peewee import chunked, DoesNotExist
 from playhouse.shortcuts import model_to_dict
@@ -30,7 +27,7 @@ from ..config.config import Instrument as CfgInstrument
 from ..config.config import Parameter as CfgParameter
 from ..config.config import Flag as CfgFlag
 
-from ..dvas_helper import DBAccess
+from ..dvas_helper import DBAccess, SingleInstanceMetaClass
 
 from ..dvas_helper import TimeIt
 
@@ -45,20 +42,7 @@ EVENT_ID_NM = EventsInstrumentsParameters.event_id
 EVENT_BATCH_NM = EventsInstrumentsParameters.batch_id.name
 
 
-class DatabaseManager:
-    _INSTANCES = 0
-    _MAX_INSTANCES = 1
-
-    def __init__(self):
-
-        if DatabaseManager._INSTANCES >= DatabaseManager._MAX_INSTANCES:
-            errmsg = (
-                f'More than {DatabaseManager._MAX_INSTANCES} instance of ' +
-                f'class {self.__class__.__name__} has been created'
-            )
-            raise Exception(errmsg)
-        else:
-            DatabaseManager._INSTANCES += 1
+class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
     def create_db(self):
         """
@@ -403,6 +387,7 @@ class DatabaseManager:
         return self._get_table(Flag)
 
 
+#: DatabaseManager: Local SQLite database manager
 db_mngr = DatabaseManager()
 
 
