@@ -1,0 +1,18 @@
+# Adapted from: https://github.com/PyCQA/pylint/pull/2758#issuecomment-561164761
+
+name: dvas-CI-pylint
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master, develop ]
+
+jobs:
+  Pylint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-python@v1
+      - run: pip install pylint  # -r requirements.txt
+      - run: pylint **/*.py
