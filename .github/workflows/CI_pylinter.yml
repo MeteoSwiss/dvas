@@ -1,0 +1,32 @@
+# Inspired from: https://github.com/PyCQA/pylint/pull/2758#issuecomment-561164761
+
+name: CI_pylinter
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master, develop ]
+
+jobs:
+  pylinter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v1
+      - name: Install dependancies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pylint
+      - name: Look for Exception-raising errors
+        run: |
+          python ./.github/workflows/pylinter.py --restrict E     # All errors are bad
+                                                            C0112 # empty docstrings
+                                                            C0115 # missing-class-docstring
+                                                            C0116 # missing-function-docstring
+                                                            C0411 # wrong-import-order
+                                                            W0511 # fixme
+                                                            W0611 # unused-import
+                                                            W0612 # unused-variable
+      - name: Look for all other pylint complaints
+        run: python ./.github/workflows/pylinter.py
