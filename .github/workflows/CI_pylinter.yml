@@ -1,4 +1,5 @@
 # Inspired from: https://github.com/PyCQA/pylint/pull/2758#issuecomment-561164761
+# Created May 2020; F.P.A. Vogt; frederic.vogt@alumni.anu.edu.au
 
 name: CI_pylinter
 
@@ -12,18 +13,25 @@ jobs:
   pylinter:
     runs-on: ubuntu-latest
     steps:
+      # Checkout our repository
       - uses: actions/checkout@v2
+
+      # Set up Python
       - uses: actions/setup-python@v1
+
+      # Install any dependency we require
       - name: Install dependancies
         run: |
           python -m pip install --upgrade pip
           pip install pylint
+
+      # Lauch a home-made python script with in-line arguments split over multiple lines.
+      # Here I use bash line breaks to feed each error codes on their own line. that way, I can
+      # comment on each of them. The comments are included by hijacking the bash backtick's command
+      # substituion. Inspired from https://stackoverflow.com/questions/9522631/
+      # how-to-put-a-line-comment-for-a-multi-line-command
       - name: Look for Exception-raising errors
         run: |
-          # Here I use bash line breaks to feed each error codes on its own line, so that I can
-          # comment on it. The comments are included by hijacking the bash backtick's command
-          # substituion. Inspired from https://stackoverflow.com/questions/9522631/
-          # how-to-put-a-line-comment-for-a-multi-line-command
           python ./.github/workflows/pylinter.py --restrict E `# All errors are bad` \
                                                             C0112 `# empty docstrings` \
                                                             C0115 `# missing-class-docstring` \
@@ -32,5 +40,8 @@ jobs:
                                                             W0511 `# fixme` \
                                                             W0611 `# unused-import` \
                                                             W0612 `# unused-variable` \
-      - name: Look for all other pylint complaints
-        run: python ./.github/workflows/pylinter.py
+
+      # Do it again. But this time, just run the script for all possible pylint errors without
+      # issuing any exception.
+      - name: Look for all other pylint issue with a failure score threshold of 8
+        run: python ./.github/workflows/pylinter.py --min_score 8
