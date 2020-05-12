@@ -1,6 +1,6 @@
 # Adapted from: https://github.com/PyCQA/pylint/pull/2758#issuecomment-561164761
 
-name: dvas-CI_pylint
+name: dvas-CI_pylinter
 
 on:
   push:
@@ -9,9 +9,9 @@ on:
     branches: [ master, develop ]
 
 jobs:
-  Pylint:
+  pylinter:
     runs-on: ubuntu-latest
-    steps:./.github/workflows/pylinter.py
+    steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-python@v1
       - run: pip install pylint
