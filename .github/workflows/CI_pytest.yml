@@ -1,0 +1,47 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python 
+# versions. For more information see: 
+# https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+# Adapted from: https://github.com/actions/starter-workflows/blob/master/ci/python-package.yml
+# Created May 2020; F.P.A. Vogt; frederic.vogt@alumni.anu.edu.au
+
+name: CI_pytest
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master, develop ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8]
+
+    steps:
+    # Checkout the repository
+    - uses: actions/checkout@v2
+
+    # Setup python
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest
+
+    # Here, let's install our module to make sure all the dependencies specified in setup.py are
+    # also installed
+    - name: Install our module
+      run: pip install .
+
+    # Read to run all the tests !
+    - name: Test dvas with pytest
+      run: |
+        pytest
+
