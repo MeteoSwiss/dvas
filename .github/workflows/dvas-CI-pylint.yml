@@ -15,4 +15,4 @@ jobs:
       - uses: actions/checkout@v1
       - uses: actions/setup-python@v1
       - run: pip install pylint
-      - run: python pylinter.py --restrict C0330
+      - run: python ./.github/workflows/pylinter.py --restrict C0330
