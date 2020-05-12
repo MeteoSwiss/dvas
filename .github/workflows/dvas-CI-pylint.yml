@@ -11,8 +11,16 @@ on:
 jobs:
   Pylint:
     runs-on: ubuntu-latest
-    steps:
+    steps:./.github/workflows/pylinter.py
       - uses: actions/checkout@v1
       - uses: actions/setup-python@v1
       - run: pip install pylint
-      - run: python ./.github/workflows/pylinter.py --restrict C0330
+      - run: python ./.github/workflows/pylinter.py --restrict E     # All errors are bad
+                                                               C0112 # empty docstrings
+                                                               C0115 # missing-class-docstring
+                                                               C0116 # missing-function-docstring
+                                                               C0411 # wrong-import-order
+                                                               W0511 # fixme
+                                                               W0611 # unused-import
+                                                               W0612 # unused-variable
+      - run: python ./.github/workflows/pylinter.py
