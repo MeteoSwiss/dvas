@@ -22,7 +22,6 @@ jobs:
         shell: bash
         # Use the magical Github REST API to access all the files in the pull_request
         # https://developer.github.com/v3/pulls/#list-pull-requests-files
-        #   python ./.github/workflows/fmod_checker.py --filename CHANGELOG
         run: |
            URL="https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files"
            FILES=$(curl -s -X GET -G -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" $URL | jq -r '.[] | .filename')
