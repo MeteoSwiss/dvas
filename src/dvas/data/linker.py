@@ -1,7 +1,6 @@
 """
 
 """
-from mdtpyhelper.misc import timer
 
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -13,14 +12,14 @@ from itertools import takewhile
 import pandas as pd
 
 # Import from current package
-from ..dvas_environ import orig_data_path as env_orig_data_path
-from ..dvas_environ import config_dir_path as env_cfg_dir_path
+from ..dvas_environ import path_var as env_path_var
 from ..database.model import Data
 from ..database.database import db_mngr, EventManager, InstrType, Instrument
 
 from ..config.pattern import EVENT_KEY, INSTR_KEY, ORIGMETA_KEY
 from ..config.config import OrigData, OrigMeta
 
+from ..dvas_helper import TimeIt
 
 # Define
 INDEX_NM = Data.index.name
@@ -84,6 +83,7 @@ class LocalDBLinker(DataLinker):
         for args in data_list:
             db_mngr.add_data(**args)
 
+
 class CSVLinker(DataLinker):
     """ """
 
@@ -125,7 +125,7 @@ class CSVOutputLinker(CSVLinker):
     _INDEX_KEY_ORDER = []
 
     def __init__(self):
-        super().__init__(OUTPUT_PATH)
+        super().__init__(env_path_var.output_path)
 
     def get_file_path(self, index):
         """
@@ -177,10 +177,10 @@ class CSVOutputLinker(CSVLinker):
 class OriginalCSVLinker(CSVLinker):
 
     def __init__(self):
-        super().__init__(env_orig_data_path)
+        super().__init__(env_path_var.orig_data_path)
 
         # Set attributes
-        self._origdata_config_mngr = OrigData(env_cfg_dir_path)
+        self._origdata_config_mngr = OrigData(env_path_var.config_dir_path)
 
         # Init origdata config manager
         self._origdata_config_mngr.read()
@@ -190,7 +190,7 @@ class OriginalCSVLinker(CSVLinker):
         """ """
         return self._origdata_config_mngr
 
-    @timer
+    @TimeIt()
     def load(self, prm_abr, exclude_file_name=[]):
         """
 
@@ -252,9 +252,9 @@ class OriginalCSVLinker(CSVLinker):
                 event_dt=origmeta_cfg_mngr.document['event_dt'],
                 instr_id=origmeta_cfg_mngr.document['instr_id'],
                 prm_abbr=prm_abr,
-                event_id=origmeta_cfg_mngr.document['event_id'],
-                batch_id=origmeta_cfg_mngr.document['event_id'],
+                batch_id=origmeta_cfg_mngr.document['batch_id'],
                 day_event=origmeta_cfg_mngr.document['day_event'],
+                event_id=origmeta_cfg_mngr.document['event_id']
             )
 
             # Get instr_type name

@@ -4,34 +4,27 @@ Module containing class and function for data management
 
 """
 
-from abc import ABC, abstractmethod
-from operator import itemgetter
 import copy
 import numpy as np
 import pandas as pd
-from enum import Enum, unique
-from functools import wraps
 import matplotlib.pyplot as plt
 
-from dataclasses import dataclass, field
-from typing import List
-
-from ..config.config import ConfigManagerMeta
-from ..config.config import OrigData
 from ..config.definitions.flag import RAWNA_ABBR, RESMPL_ABBR, UPSMPL_ABBR
 from ..config.definitions.flag import INTERP_ABBR, SYNC_ABBR, AUTOQC_ABBR
-from .linker import LocalDBLinker, CSVOutputLinker, OriginalCSVLinker
+from .linker import LocalDBLinker, OriginalCSVLinker
 from ..database.database import db_mngr
 from ..database.model import Flag
 from ..database.database import ConfigLinker
 from .math import crosscorr
 
-from mdtpyhelper.misc import timer
+from ..dvas_helper import TimeIt
+
 
 # Define
 FLAG = 'flag'
 VALUE = 'value'
 cfg_linker = ConfigLinker()
+
 
 class FlagManager:
 
@@ -206,6 +199,7 @@ class TimeProfileManager:
         """
         pass
 
+@TimeIt()
 def load(search, prm_abbr):
     """
 
@@ -331,7 +325,6 @@ class MultiTimeProfileManager(list):
 
         return out
 
-    @timer
     def plot(self):
         """ """
 

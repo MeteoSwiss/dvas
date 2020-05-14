@@ -6,23 +6,20 @@
 import pprint
 from datetime import datetime
 import pytz
-from dataclasses import dataclass, field, asdict
 from math import floor
-from functools import wraps
 import pandas as pd
 from threading import Thread
-from mdtpyhelper.misc import timer
 import peewee
 from peewee import chunked, DoesNotExist
 from playhouse.shortcuts import model_to_dict
 
 # Import from current package
 from .model import db
-from .model import DATABASE_FILE_PATH
+from .model import db_file_path
 from .model import Instrument, InstrType, EventsInstrumentsParameters
 from .model import Parameter, Flag, OrgiDataInfo, Data
-from ..config.pattern import PARAM_KEY, INSTR_KEY
-from ..config.pattern import INSTR_TYPE_KEY
+from ..config.pattern import PARAM_KEY, INSTR_KEY, batch_re
+from ..config.pattern import INSTR_TYPE_KEY, instr_re, param_re
 from ..config.pattern import FLAG_KEY
 from ..config.config import instantiate_config_managers
 from ..config.config import InstrType as CfgInstrType
@@ -30,7 +27,9 @@ from ..config.config import Instrument as CfgInstrument
 from ..config.config import Parameter as CfgParameter
 from ..config.config import Flag as CfgFlag
 
-from ..dvas_helper import DBAccess
+from ..dvas_helper import DBAccess, SingleInstanceMetaClass
+
+from ..dvas_helper import TimeIt
 
 SQLITE_MAX_VARIABLE_NUMBER = 999
 
@@ -43,20 +42,7 @@ EVENT_ID_NM = EventsInstrumentsParameters.event_id
 EVENT_BATCH_NM = EventsInstrumentsParameters.batch_id.name
 
 
-class DatabaseManager:
-    _INSTANCES = 0
-    _MAX_INSTANCES = 1
-
-    def __init__(self):
-
-        if DatabaseManager._INSTANCES >= DatabaseManager._MAX_INSTANCES:
-            errmsg = (
-                f'More than {DatabaseManager._MAX_INSTANCES} instance of ' +
-                f'class {self.__class__.__name__} has been created'
-            )
-            raise Exception(errmsg)
-        else:
-            DatabaseManager._INSTANCES += 1
+class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
     def create_db(self):
         """
@@ -72,8 +58,8 @@ class DatabaseManager:
         cfg_linker = ConfigLinker()
 
         # Erase db
-        if DATABASE_FILE_PATH.exists():
-            DATABASE_FILE_PATH.unlink()
+        if db_file_path.exists():
+            db_file_path.unlink()
 
         with DBAccess(db) as _:
             # Create db
@@ -99,31 +85,31 @@ class DatabaseManager:
             # Fill Flag table
             self._fill_table(Flag, cfg_linker.get_flags())
 
-    # def get_or_none(self, table, search={}, attr=[]):
-    #     """ """
-    #
-    #     qry = table.select()
-    #     if search:
-    #
-    #         if 'join_order' not in search.keys():
-    #             search['join_order'] = []
-    #
-    #         for jointbl in search['join_order']:
-    #             qry = qry.join(jointbl)
-    #             qry = qry.switch(table)
-    #         qry = qry.where(search['where'])
-    #
-    #     try:
-    #         with DBAccess(db) as _:
-    #             out = qry.get()
-    #
-    #         for arg in attr:
-    #             out = getattr(out, arg)
-    #
-    #     except DoesNotExist:
-    #         out = None
-    #
-    #     return out
+    def get_or_none(self, table, search={}, attr=[]):
+        """ """
+
+        qry = table.select()
+        if search:
+
+            if 'join_order' not in search.keys():
+                search['join_order'] = []
+
+            for jointbl in search['join_order']:
+                qry = qry.join(jointbl)
+                qry = qry.switch(table)
+            qry = qry.where(search['where'])
+
+        try:
+            with DBAccess(db):
+                out = qry.get()
+
+                for arg in attr:
+                    out = getattr(out, arg)
+
+        except DoesNotExist:
+            out = None
+
+        return out
 
     @staticmethod
     def _model_to_dict(query, recurse=False):
@@ -260,8 +246,16 @@ class DatabaseManager:
             'day_event', 'EventsInstrumentsParameters.day_event')
         where = where.replace(
             'event_id', 'EventsInstrumentsParameters.event_id')
-        where += f" and (Parameter.prm_abbr == '{prm_abbr}')"
 
+        # Replace logical operators
+        where = where.replace(' and ', ' & ')
+        where = where.replace(' or ', ' | ')
+        where = where.replace('not(', '~(')
+
+        # Add paramerter field
+        where = f"({where}) & (Parameter.prm_abbr == '{prm_abbr}')"
+
+        # Evaluate
         where_arg = eval(where)
 
         # Create query
@@ -271,13 +265,24 @@ class DatabaseManager:
             join(Instrument).
             switch(EventsInstrumentsParameters).
             join(Parameter).
+            switch(EventsInstrumentsParameters).
             where(where_arg)
         )
 
         return [arg for arg in qry.iterator()]
 
+    @TimeIt()
     def get_data(self, where, prm_abbr):
+        """
 
+        Args:
+            where:
+            prm_abbr:
+
+        Returns:
+
+        """
+        # Get event intrument parameter id
         eventinstrprm_list = self._get_eventinstrprm(where, prm_abbr)
 
         if not eventinstrprm_list:
@@ -311,7 +316,7 @@ class DatabaseManager:
                     self.res = {
                         'event': EventManager(
                             event_dt=self.eventinstrprm.event_dt,
-                            instr_id=self.eventinstrprm.instrument.id,
+                            instr_id=self.eventinstrprm.instrument.instr_id,
                             prm_abbr=self.eventinstrprm.param.prm_abbr,
                             batch_id=self.eventinstrprm.batch_id,
                             day_event=self.eventinstrprm.day_event,
@@ -382,6 +387,7 @@ class DatabaseManager:
         return self._get_table(Flag)
 
 
+#: DatabaseManager: Local SQLite database manager
 db_mngr = DatabaseManager()
 
 
@@ -427,40 +433,56 @@ class EventManager:
         """
 
         Args:
-            event_dt (str | datetime | pd.Timestamp):
+            event_dt (str | datetime | pd.Timestamp): UTC datetime
             instr_id (str):
             prm_abbr (str):
             batch_id (str):
             day_event (bool):
-            event_id (str, optional):
+            event_id (str, optional): Default to ''
 
         """
 
         # Set attributes
-        self.event_dt = event_dt
-        self._instr_id = instr_id
-        self._prm_abbr = prm_abbr
+        # --------------
+
+        # Set datetime
+        if isinstance(event_dt, pd.Timestamp):
+            value = event_dt.to_pydatetime()
+        elif isinstance(event_dt, str):
+            value = pd.to_datetime(event_dt).to_pydatetime()
+        else:
+            raise AttributeError('Bad type')
+
+        # Check time zone (UTC)
+        assert value.tzinfo == pytz.UTC, ('Not UTC datetime')
+        self._event_dt = event_dt
+
+        # Set instrument id
+        if instr_re.match(instr_id) is None:
+            raise AttributeError('Bad pattern')
+        else:
+            self._instr_id = instr_id
+
+
+        # Set instrument id
+        if param_re.match(prm_abbr) is None:
+            raise AttributeError('Bad pattern')
+        else:
+            self._prm_abbr = prm_abbr
+
         self._event_id = event_id
-        self._batch_id = batch_id
+
+        # Set batch id
+        if batch_re.match(batch_id) is None:
+            raise AttributeError('Bad pattern')
+        else:
+            self._batch_id = batch_id
+
         self._day_event = day_event
 
     @property
     def event_dt(self):
         return self._event_dt
-
-    @event_dt.setter
-    def event_dt(self, value):
-
-        # Convert to datetime
-        if isinstance(value, pd.Timestamp):
-            value = value.to_pydatetime()
-        elif isinstance(value, str):
-            value = pd.to_datetime(value).to_pydatetime()
-
-        # Check time zone (UTC)
-        assert value.tzinfo == pytz.UTC
-
-        self._event_dt = value
 
     @property
     def instr_id(self):
