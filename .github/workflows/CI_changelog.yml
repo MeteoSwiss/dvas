@@ -1,4 +1,8 @@
 # This Actions checks if the CHANGELOG was modified. If not, raises an error.
+# 
+# Inspired from: 
+# https://github.community/t5/GitHub-Actions/Get-list-of-files-on-pull-request-merge/td-p/41570
+# https://developer.github.com/changes/2020-02-10-deprecating-auth-through-query-param/
 #
 # Created May 2020; F.P.A. Vogt; frederic.vogt@alumni.anu.edu.au
 
@@ -14,11 +18,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Checkout our repository
-      - uses: actions/checkout@v2 
+      #- uses: actions/checkout@v2 
 
       # Set up Python
-      - uses: actions/setup-python@v1
+      #- uses: actions/setup-python@v1
 
       - name: Check if changelog was modified
+        shell: bash
+        env:
+           SUPER_SECRET: ${{ secrets.CI_changelog_token }}
         run: |
-           python ./.github/workflows/fmod_checker.py --filename CHANGELOG
+        #   python ./.github/workflows/fmod_checker.py --filename CHANGELOG
+           # Use the magical Github REST API to access all the files in the pull_request
+           # https://developer.github.com/v3/pulls/#list-pull-requests-files
+           URL="https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files"
+           FILES=$(curl -s -X GET -G -H "Authorization: token "$SUPER-SECRET $URL | jq -r '.[] | .filename')
+           echo "Files included in commit:"
+           echo $FILES
+           echo " "
+           # Raise an issue if needed
+           if echo $FILES | grep -q "CHANGELOG"; then
+             echo "CHANGELOG was modified. Well done."
+             exit 0
+           else
+             echo "CHANGELOG was not modified! Please update it with some info about this PR!"
+             exit 1
+           fi
