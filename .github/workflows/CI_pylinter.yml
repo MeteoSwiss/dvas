@@ -25,6 +25,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install pylint
 
+      # Here, let's install our module to make sure all the dependencies specified in setup.py are
+      # also installed
+      - name: Install our module
+        run: pip install .
+
       # Lauch a home-made python script with in-line arguments split over multiple lines.
       # Here I use bash line breaks to feed each error codes on their own line. that way, I can
       # comment on each of them. The comments are included by hijacking the bash backtick's command
