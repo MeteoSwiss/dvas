@@ -148,7 +148,7 @@ coverage.xml
 .scrapy
 
 # Sphinx documentation
-docs/_build/
+docs/build/
 
 # PyBuilder
 target/
@@ -246,3 +246,6 @@ db.json
 expl_tmp.py
 local_db.sqlite
 this_file_of_result.txt
+
+# MacOS stuff
+*.DS_Store
