@@ -12,33 +12,10 @@ from contextlib import contextmanager
 
 # Import current package's modules
 from .dvas_helper import SingleInstanceMetaClass
-from .dvas_helper import TypedProperty
+from .dvas_helper import TypedPropertyPath
 
 # Define package path
 package_path = Path(__file__).parent
-
-
-class TypedPropertyPath(TypedProperty):
-    """Special typed property class for manage Path attributes"""
-
-    def __init__(self):
-        """Constructor"""
-        super().__init__((Path, str))
-
-    def __set__(self, instance, value):
-        """Overwrite __set__ method"""
-        if not isinstance(value, self._type):
-            raise TypeError(f"Expected class {self._type}, got {type(value)}")
-
-        # Convert to pathlib.Path
-        value = Path(value)
-
-        # Test OS compatibilty
-        try:
-            value.exists()
-        except OSError:
-            raise TypeError(f"{value} not valid OS path")
-        instance.__dict__[self._name] = value
 
 
 class GlobalPathVariablesManager(metaclass=SingleInstanceMetaClass):
@@ -60,10 +37,13 @@ class GlobalPathVariablesManager(metaclass=SingleInstanceMetaClass):
          'os_nm': 'DVAS_OUTPUT_PATH'}
     ]
 
-    # Define attributes
+    #: pathlib.Path: Original data path
     orig_data_path = TypedPropertyPath()
+    #: pathlib.Path: Config dir path
     config_dir_path = TypedPropertyPath()
+    #: pathlib.Path: Local db dir path
     local_db_path = TypedPropertyPath()
+    #: pathlib.Path: DVAS output dir path
     output_path = TypedPropertyPath()
 
     def __init__(self):

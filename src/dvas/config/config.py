@@ -3,172 +3,152 @@
 """
 
 # Import python packages and modules
-import os
 import re
 import pprint
-from abc import abstractmethod, ABC
-
+from abc import ABC
 from pathlib import Path
-
 import json
 from jsonschema import validate, exceptions
-
 from ruamel.yaml import YAML
 from ruamel.yaml.error import YAMLError
 
-from ..dvas_helper import get_by_path
 
 # Import current package modules
-from .pattern import INSTR_TYPE_KEY, INSTR_KEY
-from .pattern import EVENT_KEY, PARAM_KEY
-from .pattern import FLAG_KEY
 from .pattern import ORIGDATA_KEY, ORIGMETA_KEY
+from .pattern import INSTR_TYPE_KEY, INSTR_KEY
+from .pattern import PARAM_KEY, FLAG_KEY
 from .definitions import origdata, origmeta
-from .definitions import instrtype
-from .definitions import instrument
-from .definitions import event
-from .definitions import parameter
-from .definitions import flag
+from .definitions import instrtype, instrument
+from .definitions import parameter, flag
 from ..dvas_environ import path_var as env_path_var
-
+from ..dvas_helper import get_by_path
 from ..dvas_helper import RequiredAttrMetaClass
+from ..dvas_helper import TypedProperty
 
 
 # Define
 NODE_ESCAPE_CHAR = '_'
 
 
-def instantiate_config_managers(config_managers, config_dir_path=None, read=True):
+def instantiate_config_managers(config_managers, read=True):
     """Generate a dictionary with instances of all ConfigManagers
 
     Args:
-        config_managers (list of ConfigManager):
-        config_dir_path (str | pathlib.Path, optional): Config files directory path. Directory must exist.
-        read (bool, optional): (Default value = True)
+        config_managers (list of ConfigManager): ConfigManager to instantiate
+        read (bool, optional): Read config during class instantiation.
+            Default to True.
 
     Returns:
+        dict: key are ConfigManager name, value are ConfigManager instances
 
     """
 
     # Create instances
     instances = set()
     for config_manager in config_managers:
-        instances.add(config_manager(config_dir_path))
+        instances.add(config_manager())
 
     # Read
     if read:
         for inst in instances:
             inst.read()
 
-    return {arg.class_key: arg for arg in instances}
+    return {arg.CLASS_KEY: arg for arg in instances}
 
 
-class OneLayerConfigManager(ABC, metaclass=RequiredAttrMetaClass):
-    """Abstract class for managing YAML config"""
+class ConfigManager(ABC, metaclass=RequiredAttrMetaClass):
+    """Abstract clas for managing YAML config"""
 
     REQUIRED_ATTRIBUTES = {
-        'document': dict,
-        'parameter_pattern_prop': dict,
-        'node_params_def': dict,
-        'class_key': str
+        'DOC_TYPE': type,
     }
 
-    @abstractmethod
-    def __init__(self, config_dir_path=None):
-        """
-        Args:
-            config_dir_path (:obj:`pathlib.Path` | :obj:`str`, optional): Default to None
-                Config files directory path. Directory must exist.
+    #: type: Type of document. Only dict or list types.
+    DOC_TYPE = None
 
-        """
+    #: dict: Config document
+    document = TypedProperty((dict, list))
 
-        # Set attributes
-        self.config_dir_path = config_dir_path
-
-        # Set required attributes
-        self._document = {}
-        self._parameter_pattern_prop = {}
-        self._node_params_def = {}
-        self._class_key = ''
+    def __init__(self):
+        """Constructor"""
+        self.init_document()
 
     def __getitem__(self, item):
-        return self._document[item]
+        """Overwrite __getitem__ method"""
+        return self.document[item]
 
     def __repr__(self):
-        pp = pprint.PrettyPrinter()
-        return pp.pformat(self.document)
+        """Overwrite __repr__ method"""
+        p_printer = pprint.PrettyPrinter()
+        return p_printer.pformat(self.document)
 
-    @property
-    def config_dir_path(self):
-        """Config files directory path"""
-        return self._config_dir_path
+    def init_document(self):
+        """Initialise document attribute"""
+        if self.DOC_TYPE is dict:
+            self.document = {}
+        else:
+            self.document = []
 
-    @config_dir_path.setter
-    def config_dir_path(self, value):
 
-        # Set environement settings if None
-        if value is None:
-            value = env_path_var.config_dir_path
+class OneLayerConfigManager(ConfigManager):
+    """Abstract class for managing 'one-layer' YAML config
 
-        # Convert to Path
-        value = Path(value)
+    'one-layer' means YAML file of such type:
+        tag1: value_tag1
+        tag2: value_tag2
+        ...
+        tagN: value_tagN
 
-        # Convert to absolute path if relative
-        if not value.is_absolute():
-            value = Path(os.getcwd()) / value
+    """
 
-        # Test existence
-        assert value.exists()
+    REQUIRED_ATTRIBUTES = dict(
+        **ConfigManager.REQUIRED_ATTRIBUTES,
+        **{
+            'PARAMETER_PATTERN_PROP': dict,
+            'NODE_PARAMS_DEF': dict,
+            'CLASS_KEY': str
+        }
+    )
 
-        self._config_dir_path = value
+    # Define required attributes
+    DOC_TYPE = dict
 
-    @property
-    def document(self):
-        """Config document"""
-        return self._document
-
-    @property
-    def parameter_pattern_prop(self):
-        """JSON parameter schema. Constant value.
-        Must be a dict like {"type": "object", "patternProperties": ANY, "additionalProperties": False}
-        """
-        return self._parameter_pattern_prop
-
-    @property
-    def node_params_def(self):
-        """ """
-        return self._node_params_def
-
-    @property
-    def class_key(self):
-        """ """
-        return self._class_key
+    PARAMETER_PATTERN_PROP = None
+    """dict: JSON parameter schema. Constant value.
+            Must be a dict like {
+                "type": "object",
+                "patternProperties": ANY,
+                "additionalProperties": False
+            }
+    """
+    #: dict: Default root node parameters
+    NODE_PARAMS_DEF = None
+    #: str: Class key denomination
+    CLASS_KEY = None
 
     @property
     def json_schema(self):
-        """JSON schema. Constant value"""
+        """dict: JSON schema. Constant value"""
 
         return {
             "$schema": "http://json-schema.org/draft-07/schema#",
 
             "type": 'object',
-            "patternProperties": self.parameter_pattern_prop,
+            "patternProperties": self.PARAMETER_PATTERN_PROP,
             "additionalProperties": False
         }
 
-    def init_document(self):
-        if self.REQUIRED_ATTRIBUTES['document'] is dict:
-            self._document = {}
-        elif self.REQUIRED_ATTRIBUTES['document'] is list:
-            self._document = []
-        else:
-            self._document = None
-
     def append(self, value):
-        if self.REQUIRED_ATTRIBUTES['document'] is dict:
-            self._document.update(value)
+        """Append value to document attribute
+
+        Args:
+            value (dict or list): Value to append
+
+        """
+        if self.DOC_TYPE is dict:
+            self.document.update(value)
         else:
-            self._document += value
+            self.document += value
 
     def read(self, doc_in=None):
         """Read config
@@ -183,9 +163,9 @@ class OneLayerConfigManager(ABC, metaclass=RequiredAttrMetaClass):
         self._get_document(doc_in)
 
         # Add missing default node params
-        for key, val in self.node_params_def.items():
+        for key, val in self.NODE_PARAMS_DEF.items():
             if key not in self.document.keys():
-                self._document[key] = val
+                self.document[key] = val
 
     def _get_document(self, doc_in=None):
         """Get YAML document as python dict
@@ -196,8 +176,14 @@ class OneLayerConfigManager(ABC, metaclass=RequiredAttrMetaClass):
         """
 
         if not doc_in:
-            doc_in = self.config_dir_path.rglob(
-                "*" + self.class_key + "*")
+            # Test dir existence
+            assert env_path_var.config_dir_path.exists(), (
+                f"{env_path_var.config_dir_path} doesn't exist"
+            )
+
+            # Search config file
+            doc_in = env_path_var.config_dir_path.rglob(
+                "*" + self.CLASS_KEY + "*")
 
         # Convert YAML string as JSON dict
         if isinstance(doc_in, str):
@@ -216,11 +202,15 @@ class OneLayerConfigManager(ABC, metaclass=RequiredAttrMetaClass):
         try:
             validate(instance=self.document, schema=self.json_schema)
 
-        except exceptions.ValidationError as e:
-            raise ConfigReadError(f"Error in '{filepath}'\n{e}")
+        except exceptions.ValidationError as exc:
+            raise ConfigReadError(
+                f"Error in '{list(doc_in)}'\n{exc}"
+            )
 
-        except exceptions.SchemaError as e:
-            raise ConfigReadError(f"Error in {self.__class__.__name__}.json_schema\n{e}")
+        except exceptions.SchemaError as exc:
+            raise ConfigReadError(
+                f"Error in {self.__class__.__name__}.json_schema\n{exc}"
+            )
 
     @staticmethod
     def read_yaml(file):
@@ -253,47 +243,51 @@ class OneLayerConfigManager(ABC, metaclass=RequiredAttrMetaClass):
             document = document if document else {}
             document = json.loads(json.dumps(document))
 
-        except IOError as e:
-            raise ConfigReadError(e)
-        except YAMLError as e:
-            raise ConfigReadError(e)
+        except IOError as exc:
+            raise ConfigReadError(exc)
+        except YAMLError as exc:
+            raise ConfigReadError(exc)
 
         return document
 
 
 class OrigMeta(OneLayerConfigManager):
-    """ """
+    """Original metadata config manager"""
 
-    def __init__(self, *args):
-        super().__init__(*args)
-
-        # Set required attributes
-        self._parameter_pattern_prop = origmeta.PARAMETER_PATTERN_PROP
-        self._class_key = ORIGMETA_KEY
+    PARAMETER_PATTERN_PROP = origmeta.PARAMETER_PATTERN_PROP
+    NODE_PARAMS_DEF = {}
+    CLASS_KEY = ORIGMETA_KEY
 
 
 class OneDimArrayConfigManager(OneLayerConfigManager):
+    """Abstract class for managing 'one-dim-array' YAML config
 
-    REQUIRED_ATTRIBUTES = {
-        'document': list,
-        'parameter_pattern_prop': dict,
-        'node_params_def': dict,
-        'class_key': str,
-        'const_nodes': list
-    }
+    'one-dim-array' means YAML file of such type:
+        - tag11: value_tag11
+          tag12: value_tag12
+          ...
+          tag1N: value_tag1N
+        - tag21: value_tag21
+          tag22: value_tag22
+          ...
+          tag2N: value_tag2N
+        ...
+        - tagM1: value_tagM1
+          tagM2: value_tagM2
+          ...
+          tagMN: value_tagMN
 
-    @abstractmethod
-    def __init__(self, *args):
-        super().__init__(*args)
+    """
+    REQUIRED_ATTRIBUTES = dict(
+        **OneLayerConfigManager.REQUIRED_ATTRIBUTES,
+        **{'CONST_NODES': list}
+    )
 
-        # Set attributes
-        self._document = []
-        self._const_nodes = []
+    # Define required attributes
+    DOC_TYPE = list
 
-    @property
-    def const_nodes(self):
-        """ """
-        return self._const_nodes
+    #: list: Constant node value
+    CONST_NODES = None
 
     @property
     def json_schema(self):
@@ -305,109 +299,91 @@ class OneDimArrayConfigManager(OneLayerConfigManager):
             "type": 'array',
             "items": {
                 "type": 'object',
-                "patternProperties": self.parameter_pattern_prop,
+                "patternProperties": self.PARAMETER_PATTERN_PROP,
                 "additionalProperties": False
             },
         }
 
-    def read(self, doc=None):
+    def read(self, doc_in=None):
         """Read config
 
         Args:
-            doc (:obj:`str`, optional): Default None -> read from directiory
-                Else read from doc.
+            doc_in (:obj:`str`, optional): Default None -> read from directiory
+                Else read from doc_in.
 
         """
 
         self.init_document()
-        self._get_document(doc)
+        self._get_document(doc_in)
 
         # Append constant node
-        self.append(self.const_nodes)
+        self.append(self.CONST_NODES)
 
         # Add missing default node params
-        for key, val in self.node_params_def.items():
+        for key, val in self.NODE_PARAMS_DEF.items():
             for i, _ in enumerate(self.document):
                 if key not in self.document[i].keys():
-                    self._document[i][key] = val
+                    self.document[i][key] = val
 
 
 class InstrType(OneDimArrayConfigManager):
-    """ """
+    """Instrument type config manager"""
 
-    def __init__(self, *args):
-        super().__init__(*args)
-
-        # Set required attributes
-        self._parameter_pattern_prop = instrtype.PARAMETER_PATTERN_PROP
-        self._const_nodes = []
-        self._node_params_def = {}
-        self._class_key = INSTR_TYPE_KEY
+    PARAMETER_PATTERN_PROP = instrtype.PARAMETER_PATTERN_PROP
+    NODE_PARAMS_DEF = {}
+    CLASS_KEY = INSTR_TYPE_KEY
+    CONST_NODES = []
 
 
 class Instrument(OneDimArrayConfigManager):
-    """ """
+    """Instrument config manager"""
 
-    def __init__(self, *args):
-        super().__init__(*args)
-
-        # Set required attributes
-        self._parameter_pattern_prop = instrument.PARAMETER_PATTERN_PROP
-        self._const_nodes = []
-        self._node_params_def = instrument.NODE_PARAMS_DEF
-        self._class_key = INSTR_KEY
+    PARAMETER_PATTERN_PROP = instrument.PARAMETER_PATTERN_PROP
+    NODE_PARAMS_DEF = instrument.NODE_PARAMS_DEF
+    CLASS_KEY = INSTR_KEY
+    CONST_NODES = []
 
 
 class Parameter(OneDimArrayConfigManager):
-    """ """
+    """Parameter config manager """
 
-    def __init__(self, *args):
-        super().__init__(*args)
-
-        # Set required attributes
-        self._parameter_pattern_prop = parameter.PARAMETER_PATTERN_PROP
-        self._const_nodes = []
-        self._node_params_def = {}
-        self._class_key = PARAM_KEY
+    PARAMETER_PATTERN_PROP = parameter.PARAMETER_PATTERN_PROP
+    NODE_PARAMS_DEF = {}
+    CLASS_KEY = PARAM_KEY
+    CONST_NODES = []
 
 
 class Flag(OneDimArrayConfigManager):
-    """ """
+    """Flag config manager """
 
-    def __init__(self, *args):
-        super().__init__(*args)
-
-        # Set required attributes
-        self._parameter_pattern_prop = flag.PARAMETER_PATTERN_PROP
-        self._const_nodes = flag.CONST_NODES
-        self._node_params_def = {}
-        self._class_key = FLAG_KEY
+    PARAMETER_PATTERN_PROP = flag.PARAMETER_PATTERN_PROP
+    NODE_PARAMS_DEF = {}
+    CLASS_KEY = FLAG_KEY
+    CONST_NODES = flag.CONST_NODES
 
 
 class MultiLayerConfigManager(OneLayerConfigManager):
     """Abstract class for managing YAML config"""
 
     REQUIRED_ATTRIBUTES = dict(
-        {
-            'node_pattern': list
-        },
         **OneLayerConfigManager.REQUIRED_ATTRIBUTES,
+        **{'NODE_PATTERN': list},
     )
 
-    @abstractmethod
-    def __init__(self, *args):
-        super().__init__(*args)
+    # Define required attributes
+    DOC_TYPE = dict
 
-        # Set attributes
-        self._node_pattern = []
+    #: list: Node pattern (order matter)
+    NODE_PATTERN = None
 
     def __getitem__(self, item):
-        """Return config item value
+        """Overwrite __getitem method.
 
         Args:
-            item (list of str):
+            item (list of str): Document item as list
 
         Returns:
+            object
 
         """
 
@@ -453,7 +429,7 @@ class MultiLayerConfigManager(OneLayerConfigManager):
         # Check node_keys
         assert list(range(len(node_keys))) == [
             next(iter(
-                i for i, pattern in enumerate(self.node_pattern)
+                i for i, pattern in enumerate(self.NODE_PATTERN)
                 if re.fullmatch(pattern, arg)
             ))
             for arg in node_keys
@@ -463,28 +439,25 @@ class MultiLayerConfigManager(OneLayerConfigManager):
             key: self[
                 [NODE_ESCAPE_CHAR + arg for arg in node_keys] + [key]
             ]
-            for key in self.node_params_def.keys()
+            for key in self.NODE_PARAMS_DEF.keys()
         }
 
         return out
 
     @property
-    def node_pattern(self):
-        """ """
-        return self._node_pattern
-
-    @property
     def json_schema(self):
         """JSON schema. Constant value"""
 
-        node_pattern_prop_key = rf"^{NODE_ESCAPE_CHAR}(({')|('.join(self.node_pattern)}))$"
+        node_pattern_prop_key = (
+            rf"^{NODE_ESCAPE_CHAR}(({')|('.join(self.NODE_PATTERN)}))$"
+        )
         node_pattern_prop = {
             node_pattern_prop_key: {"$ref": "#/nodeItem"}
         }
 
         pattern_prop = {
             **node_pattern_prop,
-            **self.parameter_pattern_prop
+            **self.PARAMETER_PATTERN_PROP
         }
 
         return {
@@ -514,7 +487,7 @@ class MultiLayerConfigManager(OneLayerConfigManager):
         super()._get_document(doc_in)
 
         # Check node order
-        self._check_dict_nodes(self.document, self.node_pattern)
+        self._check_dict_nodes(self.document, self.NODE_PATTERN)
 
     @staticmethod
     def _check_dict_nodes(document, node_pat):
@@ -538,7 +511,7 @@ class MultiLayerConfigManager(OneLayerConfigManager):
             Returns:
 
             """
-            if type(doc) is dict:
+            if isinstance(doc, dict):
 
                 for key, sub_doc in doc.items():
 
@@ -547,14 +520,16 @@ class MultiLayerConfigManager(OneLayerConfigManager):
                         continue
 
                     if not pat:
-                        err_msg = "Bad node. No key to match in {}".format(doc)
+                        err_msg = f"Bad node. No key to match in {doc}"
                         raise ConfigNodeError(err_msg)
 
                     if re.fullmatch(rf"_{pat[0]}", key) is None:
-                        err_msg = "Bad node. '{}' didn't match key in {}".format(pat[0], doc)
+                        err_msg = (
+                            f"Bad node. '{pat[0]}' didn't match key in {doc}"
+                        )
                         raise ConfigNodeError(err_msg)
-                    else:
-                        check_single_node(sub_doc, pat[1:])
+
+                    check_single_node(sub_doc, pat[1:])
 
             else:
                 err_msg = "Bad node. '{}' isn't of type dict".format(doc)
@@ -564,43 +539,21 @@ class MultiLayerConfigManager(OneLayerConfigManager):
 
 
 class OrigData(MultiLayerConfigManager):
-    """ """
+    """Original data config manager"""
 
-    def __init__(self, *args):
-        super().__init__(*args)
-
-        # Set required attributes
-        self._parameter_pattern_prop = origdata.PARAMETER_PATTERN_PROP
-        self._node_params_def = origdata.NODE_PARAMS_DEF
-        self._node_pattern = origdata.NODE_PATTERN
-        self._class_key = ORIGDATA_KEY
-
-
-class ConfigInitError(Exception):
-    """ """
-    pass
+    PARAMETER_PATTERN_PROP = origdata.PARAMETER_PATTERN_PROP
+    NODE_PARAMS_DEF = origdata.NODE_PARAMS_DEF
+    CLASS_KEY = ORIGDATA_KEY
+    NODE_PATTERN = origdata.NODE_PATTERN
 
 
 class ConfigReadError(Exception):
-    """ """
-    pass
+    """Error while reading config"""
 
 
 class ConfigNodeError(Exception):
-    """ """
-    pass
-
-
-class IDNodeError(Exception):
-    """ """
-    pass
+    """Error in config node"""
 
 
 class ConfigItemKeyError(KeyError):
-    """ """
-    pass
-
-
-class MaxConfigInstance(Exception):
-    """ """
-    pass
+    """Error in config key item"""

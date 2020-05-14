@@ -19,7 +19,7 @@ class TestGlobalPathVariablesManager:
 
     # Define
     test_value = Path('.', 'my_test_dir')
-    test_env_value = Path('.', 'my_env_test_dir')
+    test_env_value = Path('my_env_test_dir')
     bad_test_value = Path('1+*%')
     attr_name = path_var._CST[0]['name']
     os_varname = path_var._CST[0]['os_nm']

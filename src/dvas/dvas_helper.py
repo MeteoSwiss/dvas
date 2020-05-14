@@ -4,12 +4,11 @@ This module contains all helper class and functions used in the package.
 """
 
 # Import external packages and modules
-import os
 from datetime import datetime
-from functools import wraps
+from pathlib import Path
+from functools import wraps, reduce
 from abc import ABC, ABCMeta, abstractmethod
 from inspect import getmodule
-from functools import reduce
 from operator import getitem
 from peewee import PeeweeException
 
@@ -42,7 +41,7 @@ class RequiredAttrMetaClass(ABCMeta):
 
     REQUIRED_ATTRIBUTES = {}
     """dict: Required class attributes.
-    dict key: attribute name, dict value: required attribute type
+    key: attribute name, value: required attribute type
     """
 
     def __call__(cls, *args, **kwargs):
@@ -59,7 +58,7 @@ class RequiredAttrMetaClass(ABCMeta):
 
             if not isinstance(getattr(obj, attr_name), dtype):
                 errmsg = (
-                    f"required attribute {attr_name} bad set in class {obj}"
+                    f"required attribute '{attr_name}' bad set in class {obj}"
                 )
                 raise ValueError(errmsg)
 
@@ -197,7 +196,8 @@ class DBAccess(ContextDecorator):
         if self._close_by_exit:
             self._db.close()
 
-
+#TODO
+# Test this db access context manager to possible speed up data select/insert
 class DBAccessQ(ContextDecorator):
     """Data base context decorator"""
 
@@ -234,29 +234,55 @@ class DBAccessQ(ContextDecorator):
         self._db.stop()
 
 
-class TypedProperty(object):
+class TypedProperty:
     """Typed property class"""
-    __slots__ = ('_name', '_type')
+    def __init__(self, typ, val=None):
+        if not (isinstance(val, typ) or val is None):
+            raise TypeError()
+        self._value = val
+        self._typ = typ
 
-    def __init__(self, typ):
-        """Constructor"""
-        self._type = typ
+    def __get__(self, instance, owner):
+        return self._value
 
-    def __get__(self, instance, klass=None):
-        """Getter"""
-        if instance is None:
-            return self
-        return instance.__dict__[self._name]
-
-    def __set__(self, instance, value):
-        """Setter"""
-        if not isinstance(value, self._type):
-            raise TypeError(f"Expected class {self._type}, got {type(value)}")
-        instance.__dict__[self._name] = value
+    def __set__(self, instance, val):
+        if not isinstance(val, self._typ):
+            raise TypeError()
+        self._value = val
 
     def __set_name__(self, instance, name):
         """Attribute name setter"""
         self._name = name
+
+
+class TypedPropertyPath(TypedProperty):
+    """Special typed property class for manage Path attributes"""
+
+    def __init__(self):
+        """Constructor"""
+        super().__init__((Path, str))
+
+    def __set__(self, instance, val):
+        """Overwrite __set__ method
+
+        Args:
+            instance (object):
+            value (pathlib.Path or str): Directory path.
+                Created if create is True.
+        """
+        if not isinstance(val, self._typ):
+            raise TypeError(f"Expected class {self._typ}, got {type(val)}")
+
+        # Convert to pathlib.Path
+        val = Path(val)
+
+        # Test OS compatibility
+        try:
+            val.exists()
+        except OSError:
+            raise TypeError(f"{val} not valid OS path name")
+
+        self._value = val
 
 
 def get_by_path(root, items):
