@@ -27,16 +27,16 @@ jobs:
         shell: bash
         env:
            SUPER_SECRET: ${{ secrets.CI_changelog_token }}
-        run: |
+           
+        # Use the magical Github REST API to access all the files in the pull_request
+        # https://developer.github.com/v3/pulls/#list-pull-requests-files
         #   python ./.github/workflows/fmod_checker.py --filename CHANGELOG
-           # Use the magical Github REST API to access all the files in the pull_request
-           # https://developer.github.com/v3/pulls/#list-pull-requests-files
+        run: |
            URL="https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files"
            FILES=$(curl -s -X GET -G -H "Authorization: token "$SUPER-SECRET $URL | jq -r '.[] | .filename')
            echo "Files included in commit:"
            echo $FILES
            echo " "
-           # Raise an issue if needed
            if echo $FILES | grep -q "CHANGELOG"; then
              echo "CHANGELOG was modified. Well done."
              exit 0
