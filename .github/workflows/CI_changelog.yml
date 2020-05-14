@@ -17,11 +17,6 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      # Checkout our repository
-      #- uses: actions/checkout@v2 
-
-      # Set up Python
-      #- uses: actions/setup-python@v1
 
       - name: Check if changelog was modified
         shell: bash
