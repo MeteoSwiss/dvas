@@ -1,10 +1,10 @@
 """
-This file contains testing classes and function for dvas.config.config modules
+This file contains testing classes and function for
+dvas.config.config module.
 
 """
 
 # Import from python packages and modules
-import os
 from pathlib import Path
 from jsonschema import validate
 import pytest
@@ -15,17 +15,12 @@ from dvas.config.config import Parameter, Flag
 from dvas.config.config import ConfigReadError
 
 # Define
-OK_FIXTURE_DIR = os.path.join(
-    os.path.dirname(os.path.realpath(__file__)),
-    'etc/ok',
-    )
-KO_FIXTURE_DIR = os.path.join(
-    os.path.dirname(os.path.realpath(__file__)),
-    'etc/ko',
-    )
+current_pkge_path = Path(__file__).parent
+ok_fixture_dir = current_pkge_path / 'etc' / 'ok'
+ko_fixture_dir = current_pkge_path / 'etc' / 'ko'
 
 
-@pytest.mark.datafiles(OK_FIXTURE_DIR)
+@pytest.mark.datafiles(ok_fixture_dir.as_posix())
 def test_instantiate_config_managers(datafiles):
     """Test ConfigManager for OK config file"""
 
@@ -51,7 +46,7 @@ def test_instantiate_config_managers(datafiles):
         assert cfg_mngr.read() is None
 
 
-@pytest.mark.datafiles(os.path.join(KO_FIXTURE_DIR, 'a'))
+@pytest.mark.datafiles(Path.as_posix(ko_fixture_dir / 'a'))
 def test_config_manager_ko_a(datafiles):
     """Test for bad config file"""
 
@@ -62,7 +57,7 @@ def test_config_manager_ko_a(datafiles):
         cfg_mngr.read()
 
 
-@pytest.mark.datafiles(os.path.join(KO_FIXTURE_DIR, 'b'))
+@pytest.mark.datafiles(Path.as_posix(ko_fixture_dir / 'b'))
 def test_config_manager_ko_b(datafiles):
 
     # Instantiate all managers

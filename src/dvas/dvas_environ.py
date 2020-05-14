@@ -8,16 +8,41 @@ Created February 2020, L. Modolo - mol@meteoswiss.ch
 # Import Python packages and module
 import os
 from pathlib import Path
+from contextlib import contextmanager
 
 # Import current package's modules
 from .dvas_helper import SingleInstanceMetaClass
+from .dvas_helper import TypedProperty
 
 # Define package path
 package_path = Path(__file__).parent
 
 
+class TypedPropertyPath(TypedProperty):
+    """Special typed property class for manage Path attributes"""
+
+    def __init__(self):
+        """Constructor"""
+        super().__init__((Path, str))
+
+    def __set__(self, instance, value):
+        """Overwrite __set__ method"""
+        if not isinstance(value, self._type):
+            raise TypeError(f"Expected class {self._type}, got {type(value)}")
+
+        # Convert to pathlib.Path
+        value = Path(value)
+
+        # Test OS compatibilty
+        try:
+            value.exists()
+        except OSError:
+            raise TypeError(f"{value} not valid OS path")
+        instance.__dict__[self._name] = value
+
+
 class GlobalPathVariablesManager(metaclass=SingleInstanceMetaClass):
-    """Class to manage global path package's variables"""
+    """Class to manage package's global directory path variables"""
 
     # Set class constant attributes
     _CST = [
@@ -35,51 +60,16 @@ class GlobalPathVariablesManager(metaclass=SingleInstanceMetaClass):
          'os_nm': 'DVAS_OUTPUT_PATH'}
     ]
 
-    def __init__(self):
-        # Create private attributes
-        self._orig_data_path = None
-        self._config_dir_path = None
-        self._local_db_path = None
-        self._output_path = None
+    # Define attributes
+    orig_data_path = TypedPropertyPath()
+    config_dir_path = TypedPropertyPath()
+    local_db_path = TypedPropertyPath()
+    output_path = TypedPropertyPath()
 
+    def __init__(self):
+        """Constructor"""
         # Load os environment values
         self.load_os_environ()
-
-    @property
-    def orig_data_path(self):
-        """pathlib.Path: Original data directory path"""
-        return self._orig_data_path
-
-    @orig_data_path.setter
-    def orig_data_path(self, value):
-        self._orig_data_path = self._test_path(value)
-
-    @property
-    def config_dir_path(self):
-        """pathlib.Path: Config directory path"""
-        return self._config_dir_path
-
-    @config_dir_path.setter
-    def config_dir_path(self, value):
-        self._config_dir_path = self._test_path(value)
-
-    @property
-    def local_db_path(self):
-        """pathlib.Path: Local DB directory path"""
-        return self._local_db_path
-
-    @local_db_path.setter
-    def local_db_path(self, value):
-        self._local_db_path = self._test_path(value)
-
-    @property
-    def output_path(self):
-        """pathlib.Path: Output directory path"""
-        return self._output_path
-
-    @output_path.setter
-    def output_path(self, value):
-        self._output_path = self._test_path(value)
 
     def load_os_environ(self):
         """Load from OS environment variables"""
@@ -89,6 +79,31 @@ class GlobalPathVariablesManager(metaclass=SingleInstanceMetaClass):
                 arg['name'],
                 os.getenv(arg['os_nm'], arg['default'])
             )
+
+    @contextmanager
+    def set_many_attr(self, items):
+        """Context manager to set temporarily many global variables.
+
+        Args:
+            items (dict): Temporarily global variables.
+                keys: instance attribute name. values: temporarily set values.
+
+        Examples:
+            >>>from dvas.dvas_environ import path_var
+            >>>with path_var.set_many_attr({})
+
+        """
+
+        # Set new values and save old values
+        old_items = {}
+        for key, val in items.items():
+            old_items.update({key: getattr(self, key)})
+            setattr(self, key, val)
+        yield
+
+        # Restore old values
+        for key, val in old_items.items():
+            setattr(self, key, val)
 
     @staticmethod
     def _test_path(value):
@@ -102,9 +117,16 @@ class GlobalPathVariablesManager(metaclass=SingleInstanceMetaClass):
 
         """
         try:
-            return Path(value)
-        except TypeError:
-            raise AttributeError('Not compatible with pathlib.Path')
+            # Set Path
+            out = Path(value)
+
+            # Test OS compatibility
+            out.exists()
+
+            return out
+
+        except (TypeError, OSError):
+            raise TypeError('Not compatible with system path')
 
 
 path_var = GlobalPathVariablesManager()

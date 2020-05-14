@@ -23,7 +23,7 @@ setup(
     author="MDA",
     author_email="",
     description="Data Visualisation and Analysis Software for meteorological radiosounding",
-    python_requires='>=3.7.5',
+    python_requires='>=3.8.0',
     install_requires=[
         "pandas",
         "jsonschema",
@@ -56,7 +56,7 @@ setup(
 
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
-        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
 
     ],
 

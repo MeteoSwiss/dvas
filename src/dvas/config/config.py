@@ -6,7 +6,7 @@
 import os
 import re
 import pprint
-from abc import abstractmethod, ABCMeta
+from abc import abstractmethod, ABC
 
 from pathlib import Path
 
@@ -16,7 +16,7 @@ from jsonschema import validate, exceptions
 from ruamel.yaml import YAML
 from ruamel.yaml.error import YAMLError
 
-from mdtpyhelper.misc import get_by_path
+from ..dvas_helper import get_by_path
 
 # Import current package modules
 from .pattern import INSTR_TYPE_KEY, INSTR_KEY
@@ -30,6 +30,9 @@ from .definitions import event
 from .definitions import parameter
 from .definitions import flag
 from ..dvas_environ import path_var as env_path_var
+
+from ..dvas_helper import RequiredAttrMetaClass
+
 
 # Define
 NODE_ESCAPE_CHAR = '_'
@@ -60,28 +63,7 @@ def instantiate_config_managers(config_managers, config_dir_path=None, read=True
     return {arg.class_key: arg for arg in instances}
 
 
-class ConfigManagerMeta(ABCMeta):
-    """ """
-    REQUIRED_ATTRIBUTES = {}
-
-    def __call__(cls, *args, **kwargs):
-        obj = super(ConfigManagerMeta, cls).__call__(*args, **kwargs)
-
-        for attr_name, dtype in obj.REQUIRED_ATTRIBUTES.items():
-
-            if not hasattr(obj, attr_name):
-                errmsg = f"required attribute '{attr_name}' not defined in class {obj}"
-                raise ValueError(errmsg)
-
-            if not isinstance(getattr(obj, attr_name), dtype):
-                errmsg = f"required attribute '{attr_name}' bad setted in class {obj}"
-                raise ValueError(errmsg)
-        return obj
-
-
-#TODO
-# Replace object with ABC
-class OneLayerConfigManager(object, metaclass=ConfigManagerMeta):
+class OneLayerConfigManager(ABC, metaclass=RequiredAttrMetaClass):
     """Abstract class for managing YAML config"""
 
     REQUIRED_ATTRIBUTES = {

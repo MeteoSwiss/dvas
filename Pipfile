@@ -8,9 +8,12 @@ pyment = "*"
 pytest = "*"
 pytest-env = "*"
 pylint = "*"
+pipenv = "*"
+pipenv-setup = "*"
+pytest-datafiles = "*"
 
 [packages]
 dvas = {editable = true,path = "."}
 
 [requires]
-python_version = "3.7"
+python_version = "3.8"

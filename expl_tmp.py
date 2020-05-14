@@ -21,7 +21,6 @@ from dvas.database.model import Parameter
 from dvas.config import config
 from dvas.data.linker import OriginalCSVLinker
 from dvas.data.data import load, update_db
-from mdtpyhelper import misc
 from dvas.data.data import FlagManager
 
 from dvas.dvas_helper import TimeIt
