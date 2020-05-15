@@ -32,7 +32,7 @@ def test_instantiate_config_managers(datafiles):
         {'config_dir_path': Path(datafiles)}
     ):
         # Get managers
-        cfg_mngrs = instantiate_config_managers(cfg_mngrs_class, read=False)
+        cfg_mngrs = instantiate_config_managers(*cfg_mngrs_class, read=False)
 
         # Test type
         assert isinstance(cfg_mngrs, dict)
@@ -47,7 +47,7 @@ def test_instantiate_config_managers(datafiles):
             {'config_dir_path': 'myfakepath'}
     ):
         # Get managers
-        cfg_mngrs = instantiate_config_managers(cfg_mngrs_class, read=False)
+        cfg_mngrs = instantiate_config_managers(*cfg_mngrs_class, read=False)
 
         with pytest.raises(AssertionError):
             # Loop for each manager

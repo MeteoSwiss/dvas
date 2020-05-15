@@ -1,13 +1,10 @@
 """
-This module contains the required attributes definition for
-.config.ConfigManager.Instrument which is a .config.ConfigManager child.
+This module contains the required attributes definition for class
+dvas.config.config.OrigData
 
 Created February 2020, L. Modolo - mol@meteoswiss.ch
 
 """
-
-# Import python packages and modules
-import numpy as np
 
 # Import from current packages modules
 from ..pattern import INSTR_TYPE_PAT, INSTR_PAT, PARAM_PAT
@@ -32,10 +29,10 @@ NA_VALUES = 'na_values'
 INDEX_NM = Data.index.name
 VALUE_NM = Data.value.name
 
-# Define node order
+#: list: Node pattern
 NODE_PATTERN = [INSTR_TYPE_PAT, PARAM_PAT, INSTR_PAT]
 
-# Define default root parameters
+#: dict: Node parameters default value
 NODE_PARAMS_DEF = {
     IDX_UNIT_NM: 'ms',
     DT_FORMAT_NM: None,
@@ -52,7 +49,7 @@ NODE_PARAMS_DEF = {
     NA_VALUES: ['/']
 }
 
-# Define parameter JSON_SCHEMA
+#: dict: Parameter pattern properties (JSON_SCHEMA)
 PARAMETER_PATTERN_PROP = {
     rf"^{IDX_UNIT_NM}$": {
         "type": "string",

@@ -14,7 +14,14 @@ from peewee import PeeweeException
 
 
 class SingleInstanceMetaClass(type):
-    """Metaclass to create single instance of class"""
+    """Metaclass to create single instance of class
+
+    `Source code`
+
+    .. _Source code:
+        https://www.pythonprogramming.in/singleton-class-using-metaclass-in-python.html
+
+    """
 
     def __init__(cls, name, bases, dic):
         """Constructor"""
@@ -22,7 +29,7 @@ class SingleInstanceMetaClass(type):
         super().__init__(name, bases, dic)
 
     def __call__(cls, *args, **kwargs):
-        """Class __call method"""
+        """Class __call__ method"""
         if cls.__single_instance:
             return cls.__single_instance
         single_obj = cls.__new__(cls)
@@ -68,6 +75,11 @@ class RequiredAttrMetaClass(ABCMeta):
 class ContextDecorator(ABC):
     """Use this class as superclass of a context manager to convert it into
     a decorator.
+
+    `Source code`
+
+    .. _Source code:
+        http://sametmax.com/les-context-managers-et-le-mot-cle-with-en-python/
 
     """
 
@@ -186,8 +198,7 @@ class DBAccess(ContextDecorator):
 
     def __enter__(self):
         """Class __enter__ method"""
-        if self._db.is_closed():
-            self._db.connect()
+        self._db.connect(reuse_if_open=True)
         self._transaction = self._db.atomic()
         return self._transaction
 
@@ -235,7 +246,14 @@ class DBAccessQ(ContextDecorator):
 
 
 class TypedProperty:
-    """Typed property class"""
+    """Typed property class
+
+    `Source code`
+
+    .. _Source code:
+        https://stackoverflow.com/questions/34884947/understanding-a-python-descriptors-example-typedproperty
+
+    """
     def __init__(self, typ, val=None):
         if not (isinstance(val, typ) or val is None):
             raise TypeError()
@@ -310,3 +328,9 @@ def get_by_path(root, items):
 
     """
     return reduce(getitem, items, root)
+
+
+class ClassProperty(property):
+    """Class property decorator. Use with classmethod decorator."""
+    def __get__(self, cls, owner):
+        return self.fget.__get__(None, owner)()

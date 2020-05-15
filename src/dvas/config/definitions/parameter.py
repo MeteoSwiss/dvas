@@ -1,6 +1,6 @@
 """
-This module contains the required attributes definition for
-.config.ConfigManager.InstrType which is a .config.ConfigManager child.
+This module contains the required attributes definition for class
+dvas.config.config.Parameter.
 
 Created February 2020, L. Modolo - mol@meteoswiss.ch
 
@@ -10,7 +10,7 @@ Created February 2020, L. Modolo - mol@meteoswiss.ch
 from ..pattern import PARAM_PAT
 from ...database.model import Parameter
 
-# Define parameter JSON_SCHEMA
+#: dict: Parameter pattern properties (JSON_SCHEMA)
 PARAMETER_PATTERN_PROP = {
     rf"^{Parameter.prm_abbr.name}$": {
         "type": "string",

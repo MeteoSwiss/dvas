@@ -4,9 +4,6 @@ dataframes and series
 
 """
 
-# Import external packages and modules
-import pandas as pd
-
 
 def crosscorr(datax, datay, lag=0, wrap=False, method='kendall'):
     """Lag-N cross correlation.
@@ -27,6 +24,8 @@ def crosscorr(datax, datay, lag=0, wrap=False, method='kendall'):
     if wrap:
         shiftedy = datay.shift(lag)
         shiftedy.iloc[:lag] = datay.iloc[-lag:].values
-        return datax.corr(shiftedy, method=method)
+        out = datax.corr(shiftedy, method=method)
     else:
-        return datax.corr(datay.shift(lag), method=method)
+        out = datax.corr(datay.shift(lag), method=method)
+
+    return out

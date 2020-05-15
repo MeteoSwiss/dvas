@@ -1,10 +1,11 @@
 """
+This module contains database model (ORM used PeeWee).
+
+Created February 2020, L. Modolo - mol@meteoswiss.ch
 
 """
 
 # Import from python packages
-import os
-from pathlib import Path
 import re
 from peewee import SqliteDatabase, Model, Check
 from peewee import AutoField
@@ -13,61 +14,44 @@ from peewee import DateTimeField, TextField, CharField
 from peewee import ForeignKeyField
 
 # Import from current package
-from ..dvas_environ import path_var as env_path_var
 from ..config.pattern import BATCH_PAT
 from ..config.pattern import INSTR_TYPE_PAT, INSTR_PAT
 from ..config.pattern import PARAM_PAT
-
-# Create db path
-env_path_var.local_db_path.mkdir(mode=777, parents=True, exist_ok=True)
-
-# Define db path
-db_file_path = env_path_var.local_db_path / 'local_db.sqlite'
+from ..dvas_environ import path_var as env_path_var
 
 
-# TODO
-# Test peewee sqlite queue module
-# db = SqliteQueueDatabase(
-#     db_file_path,
-#     pragmas={
-#         'foreign_keys': True,
-#         # Set cache to 10MB
-#         'cache_size': -10*1024
-#     },
-#     autoconnect=False,
-#     use_gevent=False,  # Use the standard library "threading" module.
-#     autostart=False,  # The worker thread now must be started manually.
-#     queue_max_size=64,  # Max. # of pending writes that can accumulate.
-#     results_timeout=5.0  # Max. time to wait for query to be executed.
-# )
-
+#: str: Local database file name
+DB_FILE_NM = 'local_db.sqlite'
 db = SqliteDatabase(
-    db_file_path,
+    env_path_var.local_db_path / DB_FILE_NM,
     pragmas={
         'foreign_keys': True,
         # Set cache to 10MB
-        'cache_size': -10*1024
+        'cache_size': -10 * 1024
     },
-    autoconnect=False
+    autoconnect=True
 )
+# TODO
+# Test peewee SqliteQueueDatabase
 
 
 @db.func('re_fullmatch')
 def re_fullmatch(pattern, string):
-    """Database re.fullmatch function used in Check constraints"""
+    """Database re.fullmatch function. Used it in check constraints"""
     return (
         re.fullmatch(pattern=pattern, string=string) is not None
     )
 
 
 class MetadataModel(Model):
-    """ """
+    """Metadata model class"""
     class Meta:
+        """Meta class"""
         database = db
 
 
 class InstrType(MetadataModel):
-    """ """
+    """Instrument type model"""
     id = AutoField(primary_key=True)
     type_name = CharField(
         null=False, unique=True,
@@ -79,7 +63,7 @@ class InstrType(MetadataModel):
 
 
 class Instrument(MetadataModel):
-    """ """
+    """Instrument model """
     id = AutoField(primary_key=True)
     instr_id = CharField(
         constraints=[
@@ -92,7 +76,7 @@ class Instrument(MetadataModel):
 
 
 class Parameter(MetadataModel):
-    """ """
+    """Parameter model"""
     id = AutoField(primary_key=True)
     prm_abbr = CharField(
         null=False,
@@ -105,7 +89,7 @@ class Parameter(MetadataModel):
 
 
 class Flag(MetadataModel):
-    """ """
+    """Flag model"""
     id = AutoField(primary_key=True)
     bit_number = IntegerField(
         null=False,
@@ -116,12 +100,13 @@ class Flag(MetadataModel):
 
 
 class OrgiDataInfo(MetadataModel):
+    """Original data information model"""
     id = AutoField(primary_key=True)
     source = CharField(null=True)
 
 
 class EventsInstrumentsParameters(MetadataModel):
-    """ """
+    """Events/Instruments/Parameter model"""
     id = AutoField(primary_key=True)
     event_dt = DateTimeField(null=False)
     instrument = ForeignKeyField(
@@ -144,7 +129,7 @@ class EventsInstrumentsParameters(MetadataModel):
 
 
 class Data(MetadataModel):
-    """ """
+    """Data model"""
     id = AutoField(primary_key=True)
     event_instr_param = ForeignKeyField(
         EventsInstrumentsParameters,

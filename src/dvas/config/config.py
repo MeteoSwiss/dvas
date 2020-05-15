@@ -30,11 +30,12 @@ from ..dvas_helper import TypedProperty
 NODE_ESCAPE_CHAR = '_'
 
 
-def instantiate_config_managers(config_managers, read=True):
+def instantiate_config_managers(*args, read=True):
     """Generate a dictionary with instances of all ConfigManagers
 
     Args:
-        config_managers (list of ConfigManager): ConfigManager to instantiate
+        args (ConfigManager):
+            ConfigManager to instantiate
         read (bool, optional): Read config during class instantiation.
             Default to True.
 
@@ -44,9 +45,9 @@ def instantiate_config_managers(config_managers, read=True):
     """
 
     # Create instances
-    instances = set()
-    for config_manager in config_managers:
-        instances.add(config_manager())
+    instances = []
+    for config_manager in args:
+        instances.append(config_manager())
 
     # Read
     if read:
@@ -66,8 +67,13 @@ class ConfigManager(ABC, metaclass=RequiredAttrMetaClass):
     #: type: Type of document. Only dict or list types.
     DOC_TYPE = None
 
-    #: dict: Config document
     document = TypedProperty((dict, list))
+    """dict: Config document
+    
+    Note:
+        Must be redefined as well to avoid list/dict reference overlap 
+    
+    """
 
     def __init__(self):
         """Constructor"""
@@ -258,6 +264,9 @@ class OrigMeta(OneLayerConfigManager):
     NODE_PARAMS_DEF = {}
     CLASS_KEY = ORIGMETA_KEY
 
+    #: dict: Config document
+    document = TypedProperty((dict, list))
+
 
 class OneDimArrayConfigManager(OneLayerConfigManager):
     """Abstract class for managing 'one-dim-array' YAML config
@@ -334,6 +343,9 @@ class InstrType(OneDimArrayConfigManager):
     CLASS_KEY = INSTR_TYPE_KEY
     CONST_NODES = []
 
+    #: dict: Config document
+    document = TypedProperty((dict, list))
+
 
 class Instrument(OneDimArrayConfigManager):
     """Instrument config manager"""
@@ -343,6 +355,8 @@ class Instrument(OneDimArrayConfigManager):
     CLASS_KEY = INSTR_KEY
     CONST_NODES = []
 
+    #: dict: Config document
+    document = TypedProperty((dict, list))
 
 class Parameter(OneDimArrayConfigManager):
     """Parameter config manager """
@@ -352,6 +366,8 @@ class Parameter(OneDimArrayConfigManager):
     CLASS_KEY = PARAM_KEY
     CONST_NODES = []
 
+    #: dict: Config document
+    document = TypedProperty((dict, list))
 
 class Flag(OneDimArrayConfigManager):
     """Flag config manager """
@@ -361,6 +377,8 @@ class Flag(OneDimArrayConfigManager):
     CLASS_KEY = FLAG_KEY
     CONST_NODES = flag.CONST_NODES
 
+    #: dict: Config document
+    document = TypedProperty((dict, list))
 
 class MultiLayerConfigManager(OneLayerConfigManager):
     """Abstract class for managing YAML config"""
@@ -545,6 +563,9 @@ class OrigData(MultiLayerConfigManager):
     NODE_PARAMS_DEF = origdata.NODE_PARAMS_DEF
     CLASS_KEY = ORIGDATA_KEY
     NODE_PATTERN = origdata.NODE_PATTERN
+
+    #: dict: Config document
+    document = TypedProperty((dict, list))
 
 
 class ConfigReadError(Exception):
