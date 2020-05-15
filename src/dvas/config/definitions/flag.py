@@ -17,7 +17,7 @@ INTERP_ABBR = 'interp'
 SYNC_ABBR = 'sync'
 AUTOQC_ABBR = 'auto_qc'
 
-# Define parameter JSON_SCHEMA for user input
+#: dict: Parameter pattern properties (JSON_SCHEMA)
 PARAMETER_PATTERN_PROP = {
     rf"^{Flag.bit_number.name}$": {
         "type": "integer",
@@ -31,7 +31,7 @@ PARAMETER_PATTERN_PROP = {
     }
 }
 
-# DEFINE constant node values
+#: list: Constant node values
 CONST_NODES = [
     {
         Flag.bit_number.name: 0,
@@ -58,7 +58,7 @@ CONST_NODES = [
         Flag.flag_abbr.name: SYNC_ABBR,
         Flag.desc.name: 'Synchronized'
     },
-{
+    {
         Flag.bit_number.name: 5,
         Flag.flag_abbr.name: AUTOQC_ABBR,
         Flag.desc.name: 'Auto QC flagged'

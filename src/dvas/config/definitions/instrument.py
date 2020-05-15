@@ -1,6 +1,6 @@
 """
-This module contains the required attributes definition for
-.config.ConfigManager.Instrument which is a .config.ConfigManager child.
+This module contains the required attributes definition for class
+dvas.config.config.Instrument.
 
 Created February 2020, L. Modolo - mol@meteoswiss.ch
 
@@ -10,13 +10,13 @@ Created February 2020, L. Modolo - mol@meteoswiss.ch
 from ..pattern import INSTR_PAT, INSTR_TYPE_PAT
 from ...database.model import Instrument
 
-# Define default root parameters
+#: dict: Node parameters default value
 NODE_PARAMS_DEF = {
     Instrument.sn.name: '',
     Instrument.remark.name: ''
 }
 
-# Define parameter JSON_SCHEMA
+#: dict: Parameter pattern properties (JSON_SCHEMA)
 PARAMETER_PATTERN_PROP = {
     rf"^{Instrument.instr_id.name}$": {
         "type": "string",

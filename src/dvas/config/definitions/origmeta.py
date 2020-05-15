@@ -1,42 +1,41 @@
 """
-This module contains the required attributes definition for
-.config.ConfigManager.Instrument which is a .config.ConfigManager child.
+This module contains the required attributes definition for class
+dvas.config.config.OrigMeta
 
 Created February 2020, L. Modolo - mol@meteoswiss.ch
 
 """
 
 # Import from current packages modules
-from ..pattern import INSTR_TYPE_KEY, INSTR_TYPE_PAT
-from ..pattern import INSTR_KEY, INSTR_PAT
-from ..pattern import EVENT_KEY, EVENT_PAT, BATCH_KEY, BATCH_PAT
-from ..pattern import PROFILEDT_KEY, MS_KEY
-from ...database.model import EventsInstrumentsParameters as eip
-from ...database.model import InstrType, Instrument
+from ..pattern import INSTR_PAT
+from ..pattern import EVENT_PAT
+from ..pattern import BATCH_PAT
+from ...database.model import EventsInstrumentsParameters as evt_inst_prm
+from ...database.model import Instrument
 
-# Define default root parameters
+#: dict: Node parameters default value
 NODE_PARAMS_DEF = {
-    eip.event_id.name: None,
+    evt_inst_prm.event_id.name: None,
 }
 
-# Define parameter JSON_SCHEMA
+#: dict: Parameter pattern properties (JSON_SCHEMA)
 PARAMETER_PATTERN_PROP = {
-    rf"^{eip.event_dt.name}$": {
+    rf"^{evt_inst_prm.event_dt.name}$": {
         "type": 'string',
     },
     rf"^{Instrument.instr_id.name}$": {
         "type": 'string',
         "pattern": INSTR_PAT
     },
-    rf"^{eip.event_id.name}$": {
+    rf"^{evt_inst_prm.event_id.name}$": {
         "type": 'string',
         "pattern": EVENT_PAT
     },
-    rf"^{eip.batch_id.name}$": {
+    rf"^{evt_inst_prm.batch_id.name}$": {
         "type": 'string',
         "pattern": BATCH_PAT
     },
-    rf"^{eip.day_event.name}$": {
+    rf"^{evt_inst_prm.day_event.name}$": {
         "type": "boolean",
     },
 }

@@ -26,6 +26,7 @@ from dvas.data.data import FlagManager
 from dvas.dvas_helper import TimeIt
 
 
+
 doc = """
 meas_site: PAY_RS
 flight: f1
@@ -82,7 +83,7 @@ if __name__ == '__main__':
     # update_db('prepros1')
     # update_db('altpros1')
     data_t1 = load("event_id == 'e1'", 'trepros1')
-    data_t2 = load("event_id == 'e2'", 'trepros1')
+    #data_t2 = load("event_id == 'e2'", 'trepros1')
     # data_a = load("event_id == 'e2'", 'altpros1')
     # data_p = load("event_id == 'e2'", 'prepros1')
     # data.resample(inplace=True)

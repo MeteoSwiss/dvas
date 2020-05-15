@@ -1,24 +1,22 @@
 """
+This module contains the linker classes for data modules.
+
+Created February 2020, L. Modolo - mol@meteoswiss.ch
 
 """
 
+# Import external python packages and modules
 from abc import ABC, abstractmethod
 from pathlib import Path
 import inspect
-from operator import itemgetter
-from glob import glob
 from itertools import takewhile
-
 import pandas as pd
 
 # Import from current package
 from ..dvas_environ import path_var as env_path_var
 from ..database.model import Data
 from ..database.database import db_mngr, EventManager, InstrType, Instrument
-
-from ..config.pattern import EVENT_KEY, INSTR_KEY, ORIGMETA_KEY
 from ..config.config import OrigData, OrigMeta
-
 from ..dvas_helper import TimeIt
 
 # Define
@@ -30,30 +28,26 @@ PD_CSV_READ_ARGS = inspect.getfullargspec(pd.read_csv).args[1:]
 
 
 class DataLinker(ABC):
-    """ """
+    """Data linker abstract class"""
 
     @abstractmethod
-    def load(self):
+    def load(self, *args, **kwargs):
         """Data loading method"""
-        pass
 
     @abstractmethod
-    def save(self):
+    def save(self, *args, **kwargs):
         """Data saving method"""
-        pass
 
 
 class LocalDBLinker(DataLinker):
-    """ """
-
-    def __init__(self):
-        super().__init__()
+    """Local DB data linker """
 
     def load(self, search, prm_abbr):
-        """
+        """Load data method
 
         Args:
             search (str):
+            prm_abbr (str): Parameter abbr
 
         Returns:
 
@@ -70,13 +64,10 @@ class LocalDBLinker(DataLinker):
         return data
 
     def save(self, data_list):
-        """
+        """Save data method
 
         Args:
           data_list (list of dict): {'data': pd.Series, 'event': EventManager'}
-
-        Returns:
-
 
         """
 
@@ -84,76 +75,20 @@ class LocalDBLinker(DataLinker):
             db_mngr.add_data(**args)
 
 
-class CSVLinker(DataLinker):
-    """ """
-
-    def __init__(self, repo):
-        """ """
-
-        # Set attributes
-        self.repo = repo
-
-    @property
-    def repo(self):
-        """ """
-        return self._repo
-
-    @repo.setter
-    def repo(self, value):
-        # Convert to path
-        value = value if isinstance(value, Path) else Path(value)
-
-        # Test
-        assert value.exists(), f'{value} does not exist'
-
-        self._repo = value
-
-    def load(self):
-        """Data loading method"""
-        raise NotImplementedError(
-            f'Please implement {self.__class__.__name__}.load()')
-
-    def save(self):
-        """Data saving method"""
-        raise NotImplementedError(
-            f'Please implement {self.__class__.__name__}.save()')
-
-
-class CSVOutputLinker(CSVLinker):
-    """ """
-
-    _INDEX_KEY_ORDER = []
-
-    def __init__(self):
-        super().__init__(env_path_var.output_path)
-
-    def get_file_path(self, index):
-        """
-
-        Args:
-          id_source:
-
-        Returns:
-
-
-        """
-        identifier = self.create_id(id_source)
-        filename = self._id_mngr.join(identifier) + '.csv'
-        path = self.repo / Path('/'.join(self._id_mngr.split(identifier)))
-        return path, filename
+class CSVOutputLinker(DataLinker):
+    """CSV output data linker class"""
 
     def load(self):
         errmsg = (
             f"Save method for {self.__class__.__name__} is not implemented. " +
-            f"No load of standardized CSV file data is implemented."
+            "No load of standardized CSV file data is implemented."
         )
         raise NotImplementedError(errmsg)
 
-    def save(self, id_source, data):
+    def save(self, data):
         """
 
         Args:
-          id_source:
           data:
 
         Returns:
@@ -161,38 +96,32 @@ class CSVOutputLinker(CSVLinker):
 
         """
 
-        # Define
-        path, filename = self.get_file_path(id_source)
-
         # Create path
-        try:
-            path.mkdir(parents=True, exist_ok=False)
-        except FileExistsError:
-            pass
+        env_path_var.output_path.mkdir(mode=777, parents=True, exist_ok=False)
 
         # Save data
-        data.to_csv(path / filename, header=False, index=True)
+        data.to_csv(env_path_var.output_path / 'data.csv', header=False, index=True)
 
 
-class OriginalCSVLinker(CSVLinker):
+class OriginalCSVLinker(DataLinker):
+    """Original data CSV linger"""
 
     def __init__(self):
-        super().__init__(env_path_var.orig_data_path)
-
+        "Constructor"
         # Set attributes
-        self._origdata_config_mngr = OrigData(env_path_var.config_dir_path)
+        self._origdata_config_mngr = OrigData()
 
         # Init origdata config manager
-        self._origdata_config_mngr.read()
+        self.origdata_config_mngr.read()
 
     @property
     def origdata_config_mngr(self):
-        """ """
+        """config.OrigData: Config orig data manager"""
         return self._origdata_config_mngr
 
     @TimeIt()
-    def load(self, prm_abr, exclude_file_name=[]):
-        """
+    def load(self, prm_abbr, exclude_file_name=None):
+        """Overwrite load method
 
         Args:
             exclude_file_name (list of str | list of Path): Already load data file to be excluded
@@ -203,6 +132,8 @@ class OriginalCSVLinker(CSVLinker):
 
         # Init
         out = []
+        if exclude_file_name is None:
+            exclude_file_name = []
 
         # Define
         origmeta_cfg_mngr = OrigMeta()
@@ -212,11 +143,11 @@ class OriginalCSVLinker(CSVLinker):
 
         # Scan recursively CSV files in directory
         origdata_file_path_list = [
-            arg for arg in Path(self.repo).rglob("*.csv")
+            arg for arg in env_path_var.orig_data_path.rglob("*.csv")
             if arg not in exclude_file_name
         ]
 
-        for i, origdata_file_path in enumerate(origdata_file_path_list):
+        for origdata_file_path in origdata_file_path_list:
 
             # Define metadata path
             metadata_file_path = origdata_file_path
@@ -251,7 +182,7 @@ class OriginalCSVLinker(CSVLinker):
             event = EventManager(
                 event_dt=origmeta_cfg_mngr.document['event_dt'],
                 instr_id=origmeta_cfg_mngr.document['instr_id'],
-                prm_abbr=prm_abr,
+                prm_abbr=prm_abbr,
                 batch_id=origmeta_cfg_mngr.document['batch_id'],
                 day_event=origmeta_cfg_mngr.document['day_event'],
                 event_id=origmeta_cfg_mngr.document['event_id']
@@ -272,7 +203,7 @@ class OriginalCSVLinker(CSVLinker):
 
             # Get origdata config params
             origdata_cfg_prm = self.origdata_config_mngr.get_all(
-                [instr_type_name, prm_abr, event.instr_id]
+                [instr_type_name, prm_abbr, event.instr_id]
             )
 
             # Get raw data config param
@@ -283,7 +214,7 @@ class OriginalCSVLinker(CSVLinker):
             # Read raw csv
             try:
                 data = pd.read_csv(origdata_file_path, **raw_csv_read_args)
-            except Exception as e:
+            except Exception as _:
                 raise Exception(
                     f"Error while reading CSV data in {origdata_file_path}"
                 )
@@ -293,8 +224,8 @@ class OriginalCSVLinker(CSVLinker):
         return out
 
     def save(self, *args, **kwargs):
-        """ """
+        """Implement save method"""
         errmsg = (
-            f"Save method for {self.__class__.__name__} should not be implemented."
+            f"Save method for {self.__class__.__name__} should not implemented."
         )
         raise NotImplementedError(errmsg)
