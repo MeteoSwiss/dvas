@@ -5,9 +5,6 @@ verify_ssl = true
 
 [dev-packages]
 pyment = "*"
-pytest = "*"
-pytest-env = "*"
-pytest-datafiles = "*"
 pylint = "*"
 pipenv = "*"
 pipenv-setup = "*"

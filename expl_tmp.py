@@ -1,6 +1,6 @@
 """
-
 Examples
+
 """
 
 from dvas.database.database import db_mngr
@@ -21,5 +21,3 @@ if __name__ == '__main__':
     data_t2.resample(inplace=True)
     data_t2.interpolate(inplace=True)
     data_sync = data_t2.synchronise()
-
-
