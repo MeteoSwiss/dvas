@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 
 ### Added:
+ - [modolol, 2020-05-18] Add pytest-env, pytest-datafiles in pip install CI_pytest.yml
  - [fpavogt, 2020-05-14] Github Action to check if this CHANGELOG gets modified :) 
  - [fpavogt, 2020-05-14] Added README, CODE_OF_CONDUCT, CONTRIBUTING files
  - [fpavogt, 2020-05-07] Github Actions to validate syntax using pylint and run pytests
@@ -17,6 +18,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Deprecated:
 ### Removed:
 ### Fixed:
- - [modolol, 2020-05-15] Code cleaning
  - [modolol, 2020-05-18] Code cleaning (bis)
+ - [modolol, 2020-05-15] Code cleaning
+
 ### Security:
