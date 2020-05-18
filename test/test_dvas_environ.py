@@ -21,8 +21,8 @@ class TestGlobalPathVariablesManager:
     test_value = Path('.', 'my_test_dir')
     test_env_value = Path('my_env_test_dir')
     bad_test_value = Path('1+*%')
-    attr_name = path_var._CST[0]['name']
-    os_varname = path_var._CST[0]['os_nm']
+    attr_name = path_var.CST[0]['name']
+    os_varname = path_var.CST[0]['os_nm']
     init_value = getattr(path_var, attr_name)
     path_var_2 = GlobalPathVariablesManager()
 
@@ -41,9 +41,7 @@ class TestGlobalPathVariablesManager:
         """
 
         # Test pathlib.Path value
-        with path_var.set_many_attr(
-                {self.attr_name: self.test_value}
-        ):
+        with path_var.set_many_attr({self.attr_name: self.test_value}):
             assert getattr(self.path_var_2, self.attr_name) == self.test_value
 
         with path_var.set_many_attr(
@@ -71,9 +69,7 @@ class TestGlobalPathVariablesManager:
         os.environ[self.os_varname] = self.test_env_value.as_posix()
 
         # Test
-        with path_var.set_many_attr(
-            {self.attr_name: self.test_value}
-        ):
+        with path_var.set_many_attr({self.attr_name: self.test_value}):
             # Test direct assignment
             assert getattr(path_var, self.attr_name) == self.test_value
             assert getattr(self.path_var_2, self.attr_name) == self.test_value

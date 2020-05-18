@@ -12,17 +12,36 @@ from contextlib import contextmanager
 
 # Import current package's modules
 from .dvas_helper import SingleInstanceMetaClass
-from .dvas_helper import TypedPropertyPath
+from .dvas_helper import TypedProperty
 
 # Define package path
 package_path = Path(__file__).parent
+
+
+def set_path(value):
+    """Test and set input argument into pathlib.Path object.
+
+    Args:
+        value (`obj`): Argument to be tested
+
+    Returns:
+        patlib.Path
+
+    """
+    try:
+        (out := Path(value)).exists()
+
+    except (TypeError, OSError):
+        raise TypeError('Not compatible with system path')
+
+    return out
 
 
 class GlobalPathVariablesManager(metaclass=SingleInstanceMetaClass):
     """Class to manage package's global directory path variables"""
 
     # Set class constant attributes
-    _CST = [
+    CST = [
         {'name': 'orig_data_path',
          'default': package_path / 'examples' / 'data',
          'os_nm': 'DVAS_ORIG_DATA_PATH'},
@@ -38,13 +57,13 @@ class GlobalPathVariablesManager(metaclass=SingleInstanceMetaClass):
     ]
 
     #: pathlib.Path: Original data path
-    orig_data_path = TypedPropertyPath()
+    orig_data_path = TypedProperty((Path, str), set_path)
     #: pathlib.Path: Config dir path
-    config_dir_path = TypedPropertyPath()
+    config_dir_path = TypedProperty((Path, str), set_path)
     #: pathlib.Path: Local db dir path
-    local_db_path = TypedPropertyPath()
+    local_db_path = TypedProperty((Path, str), set_path)
     #: pathlib.Path: DVAS output dir path
-    output_path = TypedPropertyPath()
+    output_path = TypedProperty((Path, str), set_path)
 
     def __init__(self):
         """Constructor"""
@@ -53,7 +72,7 @@ class GlobalPathVariablesManager(metaclass=SingleInstanceMetaClass):
 
     def load_os_environ(self):
         """Load from OS environment variables"""
-        for arg in self._CST:
+        for arg in self.CST:
             setattr(
                 self,
                 arg['name'],
@@ -84,29 +103,5 @@ class GlobalPathVariablesManager(metaclass=SingleInstanceMetaClass):
         # Restore old values
         for key, val in old_items.items():
             setattr(self, key, val)
-
-    @staticmethod
-    def _test_path(value):
-        """Test and convert input argument to pathlib.Path.
-
-        If variable is not defined in environment variable, the default value
-        is used.
-
-        Args:
-            value (`obj`): Argument to be tested
-
-        """
-        try:
-            # Set Path
-            out = Path(value)
-
-            # Test OS compatibility
-            out.exists()
-
-            return out
-
-        except (TypeError, OSError):
-            raise TypeError('Not compatible with system path')
-
 
 path_var = GlobalPathVariablesManager()

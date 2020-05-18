@@ -1,11 +1,12 @@
 """
 This module contains all helper class and functions used in the package.
 
+Created February 2020, L. Modolo - mol@meteoswiss.ch
+
 """
 
 # Import external packages and modules
 from datetime import datetime
-from pathlib import Path
 from functools import wraps, reduce
 from abc import ABC, ABCMeta, abstractmethod
 from inspect import getmodule
@@ -248,59 +249,46 @@ class DBAccessQ(ContextDecorator):
 class TypedProperty:
     """Typed property class
 
-    `Source code`
+    `Source code `
 
     .. _Source code:
         https://stackoverflow.com/questions/34884947/understanding-a-python-descriptors-example-typedproperty
 
     """
-    def __init__(self, typ, val=None):
-        if not (isinstance(val, typ) or val is None):
-            raise TypeError()
-        self._value = val
+    def __init__(self, typ, setter_fct=None, args=None, kwargs=None):
+        """Constructor
+
+        Args:
+            typ (type or tuple of type): Data type
+            setter_fct: Function applied before assign value in setter method.
+                The function can include special check and raises.
+            args (tuple): setter function args
+            kwargs (dict): setter function kwargs
+        """
+        # Set attributes
         self._typ = typ
+        self._setter_fct = (lambda x: x) if setter_fct is None else setter_fct
+        self._setter_fct_args = tuple() if args is None else args
+        self._setter_fct_kwargs = dict() if kwargs is None else kwargs
 
     def __get__(self, instance, owner):
-        return self._value
+        if instance is None:
+            return self
+        return instance.__dict__[self._name]
 
     def __set__(self, instance, val):
-        if not isinstance(val, self._typ):
-            raise TypeError()
-        self._value = val
+        # Test type
+        if isinstance(val, self._typ) is False:
+            raise TypeError(f'{self._name} <- val bad type')
+
+        # Set val
+        instance.__dict__[self._name] = self._setter_fct(
+            val, *self._setter_fct_args, **self._setter_fct_kwargs
+        )
 
     def __set_name__(self, instance, name):
         """Attribute name setter"""
         self._name = name
-
-
-class TypedPropertyPath(TypedProperty):
-    """Special typed property class for manage Path attributes"""
-
-    def __init__(self):
-        """Constructor"""
-        super().__init__((Path, str))
-
-    def __set__(self, instance, val):
-        """Overwrite __set__ method
-
-        Args:
-            instance (object):
-            value (pathlib.Path or str): Directory path.
-                Created if create is True.
-        """
-        if not isinstance(val, self._typ):
-            raise TypeError(f"Expected class {self._typ}, got {type(val)}")
-
-        # Convert to pathlib.Path
-        val = Path(val)
-
-        # Test OS compatibility
-        try:
-            val.exists()
-        except OSError:
-            raise TypeError(f"{val} not valid OS path name")
-
-        self._value = val
 
 
 def get_by_path(root, items):
@@ -328,9 +316,3 @@ def get_by_path(root, items):
 
     """
     return reduce(getitem, items, root)
-
-
-class ClassProperty(property):
-    """Class property decorator. Use with classmethod decorator."""
-    def __get__(self, cls, owner):
-        return self.fget.__get__(None, owner)()

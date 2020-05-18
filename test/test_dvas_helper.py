@@ -5,9 +5,8 @@ dvas.dvas_helper module.
 """
 
 # Import from python packages and modules
-import os
-import pytest
 from abc import ABC
+import pytest
 
 # Import from current package
 from dvas.dvas_helper import SingleInstanceMetaClass
@@ -24,7 +23,7 @@ def test_single_instance_metaclass():
     """
 
     class SingleVar(metaclass=SingleInstanceMetaClass):
-        pass
+        """Singleton class implementation"""
 
     # Create many instances
     instances = [SingleVar() for _ in range(5)]
@@ -33,7 +32,7 @@ def test_single_instance_metaclass():
     ids = [id(arg) for arg in instances]
 
     # Test uniqueness
-    assert len(set(ids))
+    assert len(set(ids)) == 1
 
 
 def test_required_attr_metaclass():
@@ -47,19 +46,23 @@ def test_required_attr_metaclass():
     """
 
     class RequiredAttr(ABC, metaclass=RequiredAttrMetaClass):
+        """Required attribute abstract class"""
         REQUIRED_ATTRIBUTES = {'my_attr': int}
 
     class OK(RequiredAttr):
+        """OK required attribute implemented class"""
         def __init__(self):
             self.my_attr = 1
 
     class KO1(RequiredAttr):
+        """KO required attribute implemented class"""
         def __init__(self):
             self.my_attr = 'a'
 
     class KO2(RequiredAttr):
+        """KO required attribute implemented class"""
         def __init__(self):
-            self.foo = 1
+            self.ko_attr = 1
 
     # Test OK
     assert isinstance(OK(), OK)

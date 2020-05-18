@@ -9,25 +9,30 @@ Created February 2020, L. Modolo - mol@meteoswiss.ch
 import pprint
 from math import floor
 from threading import Thread
+from datetime import datetime
 import pytz
 from peewee import chunked, DoesNotExist
 from peewee import IntegrityError
 from playhouse.shortcuts import model_to_dict
-import pandas as pd
+from pandas import DataFrame, to_datetime, Timestamp
+
 
 # Import from current package
 from .model import db
 from .model import Instrument, InstrType, EventsInstrumentsParameters
 from .model import Parameter, Flag, OrgiDataInfo, Data
 from ..config.pattern import PARAM_KEY, INSTR_KEY, batch_re
-from ..config.pattern import INSTR_TYPE_KEY, instr_re, param_re
+from ..config.pattern import INSTR_TYPE_KEY
+from ..config.pattern import instr_re, param_re, event_re
 from ..config.pattern import FLAG_KEY
 from ..config.config import instantiate_config_managers
 from ..config.config import InstrType as CfgInstrType
 from ..config.config import Instrument as CfgInstrument
 from ..config.config import Parameter as CfgParameter
 from ..config.config import Flag as CfgFlag
-from ..dvas_helper import DBAccess, SingleInstanceMetaClass
+from ..dvas_helper import DBAccess
+from ..dvas_helper import SingleInstanceMetaClass
+from ..dvas_helper import TypedProperty
 from ..dvas_helper import TimeIt
 
 
@@ -257,7 +262,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
                 # Format series as list of tuples
                 n_data = len(data)
-                data = pd.DataFrame(data, columns=[VALUE_NM])
+                data = DataFrame(data, columns=[VALUE_NM])
                 data.index.name = INDEX_NM
                 data.reset_index(inplace=True)
                 data = data.to_dict(orient='list')
@@ -421,7 +426,7 @@ class Queryer(Thread):
                 data = list(qry.tuples().iterator())
 
             # Convert to data frame
-            data = pd.DataFrame(
+            data = DataFrame(
                 data,
                 columns=[INDEX_NM, VALUE_NM]
             )
@@ -485,8 +490,70 @@ class ConfigLinker:
         return self.cfg_mngr[FLAG_KEY].document
 
 
+def set_datetime(val):
+    """Test and set input argument into datetime.datetime.
+
+    Args:
+        val (str | datetime | pd.Timestamp): UTC datetime
+
+    Returns:
+        datetime.datetime
+
+    """
+    try:
+        assert (out := to_datetime(val).to_pydatetime()).tzinfo == pytz.UTC
+    except AssertionError:
+        raise TypeError('Not UTC or bad datetime format')
+
+    return out
+
+
+def set_str(val, re_pattern, fullmatch=True):
+    """Test and set input argument into str.
+
+    Args:
+        val (str): String
+        re_pattern (re.Pattern): Compiled regexp pattern
+        fullmatch (bool): Apply fullmatch. Default to True.
+
+    Returns:
+        str
+
+    """
+    try:
+        if fullmatch:
+            assert re_pattern.fullmatch(val) is not None
+        else:
+            assert re_pattern.match(val) is not None
+    except AssertionError:
+        raise TypeError(f"Argument doesn't match {re_pattern.pattern}")
+
+    return val
+
+
 class EventManager:
     """Class for create an unique event identifier"""
+
+    #: datetime.datetime: UTC datetime
+    event_dt = TypedProperty((str, Timestamp, datetime), set_datetime)
+    #: str: Instrument id
+    instr_id = TypedProperty(
+        str, set_str, args=(instr_re,), kwargs={'fullmatch': True}
+    )
+    #: str: Parameter id
+    prm_abbr = TypedProperty(
+        str, set_str, args=(param_re,), kwargs={'fullmatch': True}
+    )
+    #: str: Batch id
+    batch_id = TypedProperty(
+        str, set_str, args=(batch_re,), kwargs={'fullmatch': True}
+    )
+    #: bool: Day event
+    day_event = TypedProperty(bool)
+    #: str: Event id
+    event_id = TypedProperty(
+        str, set_str, args=(event_re,), kwargs={'fullmatch': True}
+    )
 
     def __init__(self, event_dt, instr_id, prm_abbr, batch_id, day_event, event_id=''):
         """Constructor
@@ -502,69 +569,12 @@ class EventManager:
         """
 
         # Set attributes
-        # --------------
-
-        # Set datetime
-        if isinstance(event_dt, pd.Timestamp):
-            value = event_dt.to_pydatetime()
-        elif isinstance(event_dt, str):
-            value = pd.to_datetime(event_dt).to_pydatetime()
-        else:
-            raise AttributeError('Bad type')
-
-        # Check time zone (UTC)
-        assert value.tzinfo == pytz.UTC, ('Not UTC datetime')
-        self._event_dt = event_dt
-
-        # Set instrument id
-        if instr_re.match(instr_id) is None:
-            raise AttributeError('Bad pattern')
-        self._instr_id = instr_id
-
-        # Set instrument id
-        if param_re.match(prm_abbr) is None:
-            raise AttributeError('Bad pattern')
-        self._prm_abbr = prm_abbr
-
-        self._event_id = event_id
-
-        # Set batch id
-        if batch_re.match(batch_id) is None:
-            raise AttributeError('Bad pattern')
-        self._batch_id = batch_id
-
-        # Set day event
-        self._day_event = day_event
-
-    @property
-    def event_dt(self):
-        """datetime: UTC event datetime"""
-        return self._event_dt
-
-    @property
-    def instr_id(self):
-        """str: Instrument id"""
-        return self._instr_id
-
-    @property
-    def prm_abbr(self):
-        """str: Parameter abbreviation"""
-        return self._prm_abbr
-
-    @property
-    def batch_id(self):
-        """str: Batch id"""
-        return self._batch_id
-
-    @property
-    def day_event(self):
-        """bool: Event is a day event or not"""
-        return self._day_event
-
-    @property
-    def event_id(self):
-        """str: Event id"""
-        return self._event_id
+        self.event_dt = event_dt
+        self.instr_id = instr_id
+        self.prm_abbr = prm_abbr
+        self.batch_id = batch_id
+        self.day_event = day_event
+        self.event_id = event_id
 
     def __repr__(self):
         p_printer = pprint.PrettyPrinter()
