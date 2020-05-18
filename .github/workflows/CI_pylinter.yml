@@ -42,7 +42,7 @@ jobs:
                                                             C0115 `# missing-class-docstring` \
                                                             C0116 `# missing-function-docstring` \
                                                             C0411 `# wrong-import-order` \
-                                                            W0511 `# fixme` \
+                                                            #W0511 `# fixme` (remove temporary)\
                                                             W0611 `# unused-import` \
                                                             W0612 `# unused-variable` \
 

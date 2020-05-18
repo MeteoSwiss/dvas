@@ -34,6 +34,9 @@ setup(
         "numericalunits",
         "matplotlib",
         "peewee",
+        "pytest",
+        "pytest-env",
+        "pytest-datafiles",
     ],
 
     # Use DVAS from a terminal
