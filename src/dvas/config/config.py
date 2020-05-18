@@ -1,4 +1,7 @@
-"""Module containing class and function for config management
+"""
+Module containing class and function for config management.
+
+Created February 2020, L. Modolo - mol@meteoswiss.ch
 
 """
 
@@ -46,6 +49,7 @@ def instantiate_config_managers(*args, read=True):
 
     # Create instances
     instances = []
+
     for config_manager in args:
         instances.append(config_manager())
 
@@ -68,11 +72,8 @@ class ConfigManager(ABC, metaclass=RequiredAttrMetaClass):
     DOC_TYPE = None
 
     document = TypedProperty((dict, list))
-    """dict: Config document
-    
-    Note:
-        Must be redefined as well to avoid list/dict reference overlap 
-    
+    """dict: Config document. Must be redefined as well to avoid 
+    list/dict reference overlap     
     """
 
     def __init__(self):

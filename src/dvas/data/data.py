@@ -1,6 +1,7 @@
 """
 Module containing class and function for data management
 
+Created February 2020, L. Modolo - mol@meteoswiss.ch
 
 """
 
@@ -10,7 +11,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from ..config.definitions.flag import RAWNA_ABBR, RESMPL_ABBR, UPSMPL_ABBR
-from ..config.definitions.flag import INTERP_ABBR, SYNC_ABBR, AUTOQC_ABBR
+from ..config.definitions.flag import INTERP_ABBR, SYNC_ABBR
 from .linker import LocalDBLinker, OriginalCSVLinker
 from ..database.database import db_mngr
 from ..database.model import Flag
@@ -27,13 +28,18 @@ cfg_linker = ConfigLinker()
 
 
 class FlagManager:
+    """Flag manager class"""
 
     _FLAG_BIT_NM = Flag.bit_number.name
     _FLAG_ABBR_NM = Flag.flag_abbr.name
     _FLAG_DESC_NM = Flag.desc.name
 
-    def __init__(self, index, ):
+    def __init__(self, index):
+        """Constructor
 
+        Args:
+            index (pd.Index): Pandas index
+        """
         self._flags = {
             arg[Flag.flag_abbr.name]: arg
             for arg in db_mngr.get_flags()
@@ -45,16 +51,30 @@ class FlagManager:
 
     @property
     def flags(self):
+        """dict: Flag abbr, description and bit position."""
         return self._flags
 
     @property
     def data(self):
+        """pd.Series: Data corresponding flag value."""
         return self._data
 
+    @data.setter
+    def data(self, value):
+        self._data = value
+
     def get_bit_number(self, abbr):
+        """Get bit number given flag abbr"""
         return self.flags[abbr][self._FLAG_BIT_NM]
 
     def set_bit_val(self, abbr, index=None):
+        """Set data flag value to one
+
+        Args:
+            abbr (str):
+            index (pd.Index): Default to None.
+
+        """
         if index is None:
             self._data = self.data.apply(
                 lambda x: x | (1 << self.get_bit_number(abbr))
@@ -65,6 +85,12 @@ class FlagManager:
             )
 
     def get_bit_val(self, abbr):
+        """Get data flag value
+
+        Args:
+            abbr (str):
+
+        """
         return self.data.apply(
             lambda x: x & (1 << self.get_bit_number(abbr))
         )
@@ -78,11 +104,11 @@ class TimeProfileManager:
     def __init__(self, data, event_mngr, index_lag=pd.Timedelta('0s')):
         """
 
-        Parameters
-        ----------
-        data: pd.Series with index of type pd.TimedeltaIndex
-        event_mngr
-        index_lag: pd.Timedelta
+        Args:
+            data (pd.Series): pd.Series with index of type pd.TimedeltaIndex
+            event_mngr (EventManager):
+            index_lag (pd.Timedelta):
+
         """
 
         # Test
@@ -107,28 +133,34 @@ class TimeProfileManager:
 
     @property
     def event_mngr(self):
-        """ """
+        """EventManager: Corresponding data event manager"""
         return self._event_mngr
 
     @property
+    def flag_mngr(self):
+        """FlagManager: Flag manager"""
+        return self._flag_mngr
+
+    @property
     def index_lag(self):
-        """ """
+        """pd.Timedelta: Index time lag"""
         return self._index_lag
 
     @property
     def data(self):
-        """ """
+        """pd.Series: Data"""
         return self._data
 
     @property
     def flag(self):
+        """pd.Series: Corresponding data flag"""
         return self._flag_mngr.data
 
     def __len__(self):
         return len(self.data)
 
-    def _interpolate(self):
-        """ """
+    def interpolate(self):
+        """Interpolated method"""
 
         # Test if resampled data
         assert self._flag_mngr.get_bit_val(RESMPL_ABBR).all(), (
@@ -136,13 +168,13 @@ class TimeProfileManager:
         )
 
         #TODO
-        # Add automatique interpolation for polar coord (e.g. wind direction)
+        # Add automatic interpolation for polar coord (e.g. wind direction)
         self._data = self.data.interpolate(method='index')
 
         # Set flag
         self._flag_mngr.set_bit_val(INTERP_ABBR)
 
-    def _resample(self, interval='1s', method='mean'):
+    def resample(self, interval='1s', method='mean'):
         """
 
         Args:
@@ -171,9 +203,9 @@ class TimeProfileManager:
     def _reset_index(self):
         """Set index start at 0s"""
         self._data.index = self.data.index - self.data.index[0]
-        self._flag_mngr._data.index = self.flag.index - self.flag.index[0]
+        self._flag_mngr.data.index = self.flag.index - self.flag.index[0]
 
-    def _shift(self, periods):
+    def shift(self, periods):
         """
 
         Args:
@@ -187,17 +219,6 @@ class TimeProfileManager:
         self._data = self.data.shift(periods)
         self._index_lag -= pd.Timedelta(periods, self.data.index.freq.name)
 
-    def change_index_unit(self, new_unit: str):
-        """
-
-        Args:
-          new_unit: str:
-
-        Returns:
-
-
-        """
-        pass
 
 @TimeIt()
 def load(search, prm_abbr):
@@ -244,21 +265,22 @@ def update_db(prm_abbr):
 
 
 class MultiTimeProfileManager(list):
-    """ """
+    """Multi time profile manager"""
 
     @staticmethod
     def map_inplace(obj, func, map_inplace, *args, **kwargs):
+        """Map individual TimeProfileManager"""
         if map_inplace:
             MultiTimeProfileManager(
                 map(lambda x: func(x, *args, **kwargs), obj)
             )
-            return
+            out = None
         else:
             out = obj.copy()
             MultiTimeProfileManager(
                 map(lambda x: func(x, *args, **kwargs), out)
             )
-            return out
+        return out
 
     def copy(self):
         """Overwrite of copy method"""
@@ -270,25 +292,26 @@ class MultiTimeProfileManager(list):
         super().append(value)
 
     def resample(self, interval='1s', method='mean', inplace=False):
+        """Resample method"""
         return self.map_inplace(
-            self, TimeProfileManager._resample, map_inplace=inplace,
+            self, TimeProfileManager.resample, map_inplace=inplace,
             interval=interval, method=method
         )
 
     def interpolate(self, inplace=False):
+        """Interpolate method"""
         return self.map_inplace(
-            self, TimeProfileManager._interpolate, map_inplace=inplace
+            self, TimeProfileManager.interpolate, map_inplace=inplace
         )
 
     def synchronise(self, i_start=0, n_corr=300, window=30, i_ref=0):
-        """
+        """Synchronise time profile
 
         Args:
-          profile_series(list of TimeSeriesManager):
-          i_start:  (Default value = 0)
-          n_corr:  (Default value = 300)
-          window:  (Default value = 30)
-          i_ref:  (Default value = 0)
+          i_start (int): Start integer index. Default to 0.
+          n_corr (int): Default to 300.
+          window (int): Window size. Default to 30.
+          i_ref (int): Reference TimeProfile index. Default to 0.
 
         Returns:
 
@@ -297,7 +320,7 @@ class MultiTimeProfileManager(list):
 
         # Check synchonised flag
         assert all(
-            [arg._flag_mngr.get_bit_val(INTERP_ABBR).all() for arg in self]
+            [arg.flag_mngr.get_bit_val(INTERP_ABBR).all() for arg in self]
         ), 'Please interpolate data before'
 
         # Copy
@@ -320,13 +343,13 @@ class MultiTimeProfileManager(list):
             idx_offset.append(np.argmax(corr_res))
 
         for i, arg in enumerate(out):
-            arg._shift(window_values[idx_offset[i]])
-            arg._flag_mngr.set_bit_val(SYNC_ABBR)
+            arg.shift(window_values[idx_offset[i]])
+            arg.flag_mngr.set_bit_val(SYNC_ABBR)
 
         return out
 
     def plot(self):
-        """ """
+        """Plot method"""
 
         fig = plt.figure()
         for arg in self:
