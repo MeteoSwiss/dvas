@@ -31,8 +31,6 @@ db = SqliteDatabase(
     },
     autoconnect=True
 )
-# TODO
-# Test peewee SqliteQueueDatabase
 
 
 @db.func('re_fullmatch')

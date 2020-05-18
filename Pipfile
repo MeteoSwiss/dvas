@@ -7,10 +7,10 @@ verify_ssl = true
 pyment = "*"
 pytest = "*"
 pytest-env = "*"
+pytest-datafiles = "*"
 pylint = "*"
 pipenv = "*"
 pipenv-setup = "*"
-pytest-datafiles = "*"
 
 [packages]
 dvas = {editable = true,path = "."}
