@@ -16,6 +16,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed:
  - [modolol, 2020-05-18] Adapted setup.py and CI_pylinter.yml
+
 ### Deprecated:
 ### Removed:
 ### Fixed:

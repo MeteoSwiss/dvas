@@ -60,10 +60,12 @@ def main():
     (pylint_stdout, _) = lint.py_run(fn_list + ' ' + pylint_command, return_std=True)
 
     # Extract the score ... keep it as an int for now.
-    score = pylint_stdout.getvalue().split('\n')[-3].split('rated at ')[1].split('/10 ')[0]
+    score = float(
+        pylint_stdout.getvalue().split('\n')[-3].split('rated at ')[1].split('/10 ')[0]
+    )
 
     # For the Github Action, raise an exception in case I get any restricted errors.
-    if args.restrict is not None and score != '10':
+    if args.restrict is not None and score != '10.':
         # Display the output, so we can learn somehting from it if needed
         print(pylint_stdout.getvalue())
         raise Exception('Ouch! Some forbidden pylint error codes are present!')
@@ -74,7 +76,7 @@ def main():
     # If a minimum score was set, raise an Exception if it is not met, so that it can be picked-up
     # by a Github Action.
     if args.min_score is not None:
-        if float(score) < args.min_score:
+        if score < args.min_score:
             raise Exception('''Ouch! pylint final score of %.2f is smaller than the specified
                                threshold of %.2f !''' % (float(score), args.min_score))
 
