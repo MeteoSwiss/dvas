@@ -1,0 +1,39 @@
+digraph "packages" {
+charset="utf-8"
+rankdir=BT
+"0" [label="dvas", shape="box"];
+"1" [label="dvas.config", shape="box"];
+"2" [label="dvas.config.config", shape="box"];
+"3" [label="dvas.config.definitions", shape="box"];
+"4" [label="dvas.config.definitions.event", shape="box"];
+"5" [label="dvas.config.definitions.flag", shape="box"];
+"6" [label="dvas.config.definitions.instrtype", shape="box"];
+"7" [label="dvas.config.definitions.instrument", shape="box"];
+"8" [label="dvas.config.definitions.origdata", shape="box"];
+"9" [label="dvas.config.definitions.origmeta", shape="box"];
+"10" [label="dvas.config.definitions.parameter", shape="box"];
+"11" [label="dvas.config.pattern", shape="box"];
+"12" [label="dvas.data", shape="box"];
+"13" [label="dvas.data.data", shape="box"];
+"14" [label="dvas.data.linker", shape="box"];
+"15" [label="dvas.data.math", shape="box"];
+"16" [label="dvas.database", shape="box"];
+"17" [label="dvas.database.database", shape="box"];
+"18" [label="dvas.database.model", shape="box"];
+"19" [label="dvas.dvas_environ", shape="box"];
+"20" [label="dvas.dvas_helper", shape="box"];
+"21" [label="dvas.dvas_version", shape="box"];
+"0" -> "21" [arrowhead="open", arrowtail="none"];
+"2" -> "3" [arrowhead="open", arrowtail="none"];
+"2" -> "4" [arrowhead="open", arrowtail="none"];
+"2" -> "5" [arrowhead="open", arrowtail="none"];
+"2" -> "6" [arrowhead="open", arrowtail="none"];
+"2" -> "7" [arrowhead="open", arrowtail="none"];
+"2" -> "8" [arrowhead="open", arrowtail="none"];
+"2" -> "9" [arrowhead="open", arrowtail="none"];
+"2" -> "10" [arrowhead="open", arrowtail="none"];
+"2" -> "11" [arrowhead="open", arrowtail="none"];
+"13" -> "14" [arrowhead="open", arrowtail="none"];
+"13" -> "15" [arrowhead="open", arrowtail="none"];
+"17" -> "18" [arrowhead="open", arrowtail="none"];
+}
