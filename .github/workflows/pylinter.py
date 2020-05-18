@@ -12,7 +12,6 @@ Created May 2020; F.P.A. Vogt; frederic.vogt@alumni.anu.edu.au
 import argparse
 import glob
 import os
-import re
 from pylint import epylint as lint
 
 def main():
@@ -61,11 +60,8 @@ def main():
     (pylint_stdout, _) = lint.py_run(fn_list + ' ' + pylint_command, return_std=True)
 
     # Extract the score ... keep it as an int for now.
-    # score = round(float(
-    #     pylint_stdout.getvalue().split('\n')[-3].split('rated at ')[1].split('/10 ')[0]
-    # ), 2)
     score = round(float(
-        re.search(r'(-?\d+(\.\d+)?)/10', pylint_stdout.getvalue())[1]
+        pylint_stdout.getvalue().split('\n')[-3].split('rated at ')[1].split('/10 ')[0]
     ), 2)
 
     # For the Github Action, raise an exception in case I get any restricted errors.
