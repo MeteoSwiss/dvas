@@ -41,16 +41,6 @@ def test_instantiate_config_managers(datafiles):
             # Test read
             assert cfg_mngr.read() is None
 
-    # Test attribute exception
-    with env_path_var.set_many_attr({'config_dir_path': 'myfakepath'}):
-        # Get managers
-        cfg_mngrs = instantiate_config_managers(*cfg_mngrs_class, read=False)
-
-        with pytest.raises(AssertionError):
-            # Loop for each manager
-            for cfg_mngr in cfg_mngrs.values():
-                cfg_mngr.read()
-
 
 @pytest.mark.datafiles(Path.as_posix(ko_fixture_dir / 'a'))
 def test_config_manager_ko_a(datafiles):

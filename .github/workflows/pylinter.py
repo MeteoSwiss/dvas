@@ -55,7 +55,14 @@ def main():
         pylint_command = ''
 
     # Get a list of all the .py files here and in all the subfolders.
-    fn_list = ' '.join(glob.glob(os.path.join('.', '**', '*.py'), recursive=True))
+    fn_list = glob.glob(os.path.join('.', '**', '*.py'), recursive=True)
+
+    # Skip the docs and build folders
+    for bad_item in ['./build', './docs']:
+        fn_list = [item for item in fn_list if bad_item not in item]
+
+    # Turn this into a string to feed pylint
+    fn_list = ' '.join(fn_list)
 
     # Launch pylint with the appropriate options
     (pylint_stdout, _) = lint.py_run(fn_list + ' ' + pylint_command, return_std=True)

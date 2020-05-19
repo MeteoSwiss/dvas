@@ -18,21 +18,29 @@ from .dvas_helper import TypedProperty
 package_path = Path(__file__).parent
 
 
-def set_path(value):
+def set_path(value, exist_ok=False):
     """Test and set input argument into pathlib.Path object.
 
     Args:
         value (`obj`): Argument to be tested
+        exist_ok (bool, optional): If True check existence. Otherwise
+            create path. Default to False.
 
     Returns:
         patlib.Path
 
     """
     try:
-        (out := Path(value)).exists()
+        if exist_ok is True:
+            assert (out := Path(value)).exists() is True
+        else:
+            (out := Path(value)).mkdir(mode=777, parents=True, exist_ok=True)
 
-    except (TypeError, OSError):
-        raise TypeError('Not compatible with system path')
+    except AssertionError:
+        raise TypeError(f"Path '{out}' does not exist")
+
+    except (TypeError, OSError, FileNotFoundError):
+        raise TypeError(f"Path '{out}' is not compatible with system path")
 
     return out
 
@@ -57,13 +65,21 @@ class GlobalPathVariablesManager(metaclass=SingleInstanceMetaClass):
     ]
 
     #: pathlib.Path: Original data path
-    orig_data_path = TypedProperty((Path, str), set_path)
+    orig_data_path = TypedProperty(
+        (Path, str), set_path, kwargs={'exist_ok': True}
+    )
     #: pathlib.Path: Config dir path
-    config_dir_path = TypedProperty((Path, str), set_path)
+    config_dir_path = TypedProperty(
+        (Path, str), set_path, kwargs={'exist_ok': True}
+    )
     #: pathlib.Path: Local db dir path
-    local_db_path = TypedProperty((Path, str), set_path)
+    local_db_path = TypedProperty(
+        (Path, str), set_path, kwargs={'exist_ok': False}
+    )
     #: pathlib.Path: DVAS output dir path
-    output_path = TypedProperty((Path, str), set_path)
+    output_path = TypedProperty(
+        (Path, str), set_path, kwargs={'exist_ok': False}
+    )
 
     def __init__(self):
         """Constructor"""
