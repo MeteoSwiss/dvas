@@ -42,5 +42,5 @@ jobs:
     # Read to run all the tests !
     - name: Test dvas with pytest
       run: |
-        pytest
+        pytest -s
 

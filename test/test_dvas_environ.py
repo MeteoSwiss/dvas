@@ -44,12 +44,14 @@ class TestGlobalPathVariablesManager:
         with path_var.set_many_attr({self.attr_name: self.test_value}):
             assert getattr(self.path_var_2, self.attr_name) == self.test_value
 
+        print(getattr(self.path_var_2, self.attr_name))
         with path_var.set_many_attr(
                 {self.attr_name: self.test_value.as_posix()}
         ):
             assert getattr(self.path_var_2, self.attr_name) == self.test_value
 
         # Test exception
+        print(getattr(self.path_var_2, self.attr_name))
         with pytest.raises(TypeError):
             setattr(path_var, self.attr_name, self.bad_test_value)
         with pytest.raises(TypeError):
