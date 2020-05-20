@@ -12,6 +12,7 @@ Created May 2020; F.P.A. Vogt; frederic.vogt@alumni.anu.edu.au
 import argparse
 import glob
 import os
+import re
 from pylint import epylint as lint
 
 def main():
@@ -54,14 +55,21 @@ def main():
         pylint_command = ''
 
     # Get a list of all the .py files here and in all the subfolders.
-    fn_list = ' '.join(glob.glob(os.path.join('.', '**', '*.py'), recursive=True))
+    fn_list = glob.glob(os.path.join('.', '**', '*.py'), recursive=True)
+
+    # Skip the docs and build folders
+    for bad_item in ['./build', './docs']:
+        fn_list = [item for item in fn_list if bad_item not in item]
+
+    # Turn this into a string to feed pylint
+    fn_list = ' '.join(fn_list)
 
     # Launch pylint with the appropriate options
     (pylint_stdout, _) = lint.py_run(fn_list + ' ' + pylint_command, return_std=True)
 
-    # Extract the score ... keep it as an int for now.
+    # Extract the score ... keep it as an float for now.
     score = round(float(
-        pylint_stdout.getvalue().split('\n')[-3].split('rated at ')[1].split('/10 ')[0]
+        re.search(r'\s([\+\-\d\.]+)/10', pylint_stdout.getvalue())[1]
     ), 2)
 
     # For the Github Action, raise an exception in case I get any restricted errors.

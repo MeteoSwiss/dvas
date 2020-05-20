@@ -183,11 +183,6 @@ class OneLayerConfigManager(ConfigManager):
         """
 
         if not doc_in:
-            # Test dir existence
-            assert env_path_var.config_dir_path.exists(), (
-                f"{env_path_var.config_dir_path} doesn't exist"
-            )
-
             # Search config file
             doc_in = env_path_var.config_dir_path.rglob(
                 "*" + self.CLASS_KEY + "*")
