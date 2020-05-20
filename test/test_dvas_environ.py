@@ -43,7 +43,8 @@ class TestGlobalPathVariablesManager:
 
     def test_uniqueness(self):
         """Test instance uniqueness"""
-
+        print(id(path_var))
+        print(id(self.path_var_2))
         assert id(path_var) == id(self.path_var_2)
 
     @pytest.fixture(autouse=True)
