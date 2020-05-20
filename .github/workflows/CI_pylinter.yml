@@ -11,7 +11,7 @@ on:
 
 jobs:
   pylinter:
-    runs-on: ubuntu-latest
+    runs-on: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       # Checkout our repository
       - uses: actions/checkout@v2
