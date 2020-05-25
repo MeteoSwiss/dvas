@@ -68,7 +68,7 @@ class TestGlobalPathVariablesManager:
         ):
             assert getattr(self.path_var_2, self.attr_name) == test_value
 
-        if 'win' in sys.platform:
+        if sys.platform.startswith('win'):
             # Test exception
             test_value = Path(tmpdir) / self.ko_test_value
             with pytest.raises(TypeError):
