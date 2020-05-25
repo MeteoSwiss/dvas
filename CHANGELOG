@@ -20,6 +20,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Deprecated:
 ### Removed:
 ### Fixed:
+ - [modolol, 2020-05-25] Adapt for passing multi OS_CI
  - [modolol, 2020-05-18] Code cleaning (bis)
  - [modolol, 2020-05-15] Code cleaning
 
