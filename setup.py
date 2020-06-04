@@ -31,12 +31,12 @@ setup(
         "ruamel-yaml",
         "pampy",
         "scipy",
-        "numericalunits",
         "matplotlib",
         "peewee",
         "pytest",
         "pytest-env",
         "pytest-datafiles",
+        "sre_yield",
     ],
 
     # Use DVAS from a terminal

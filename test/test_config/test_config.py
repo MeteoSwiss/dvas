@@ -12,7 +12,7 @@ import pytest
 
 from dvas.config.config import instantiate_config_managers
 from dvas.config.config import OrigData, Instrument, InstrType
-from dvas.config.config import Parameter, Flag
+from dvas.config.config import Parameter, Flag, Tag
 from dvas.config.config import ConfigReadError
 from dvas.dvas_environ import path_var as env_path_var
 
@@ -26,7 +26,7 @@ ko_fixture_dir = current_pkge_path / 'etc' / 'ko'
 def test_instantiate_config_managers(datafiles):
     """Test ConfigManager for OK config file"""
 
-    cfg_mngrs_class = [OrigData, Instrument, InstrType, Parameter, Flag]
+    cfg_mngrs_class = [OrigData, Instrument, InstrType, Parameter, Flag, Tag]
 
     # Instantiate all managers
     with env_path_var.set_many_attr({'config_dir_path': Path(datafiles)}):

@@ -6,12 +6,32 @@ Created February 2020, L. Modolo - mol@meteoswiss.ch
 """
 
 # Import external packages and modules
+import re
 from datetime import datetime
 from functools import wraps, reduce
 from abc import ABC, ABCMeta, abstractmethod
 from inspect import getmodule
 from operator import getitem
 from peewee import PeeweeException
+
+
+def camel_to_snake(name):
+    """Convert camel case to snake case
+
+    Args:
+        name (str): Camel case string
+
+    Returns:
+        str
+    """
+
+    # Define module global
+    first_cap_re = re.compile('(.)([A-Z][a-z]+)')
+    all_cap_re = re.compile('([a-z0-9])([A-Z])')
+
+    # Convert
+    s1 = first_cap_re.sub(r'\1_\2', name)
+    return all_cap_re.sub(r'\1_\2', s1).lower()
 
 
 class SingleInstanceMetaClass(type):
@@ -84,7 +104,6 @@ class ContextDecorator(ABC):
 
     """
 
-    @abstractmethod
     def __init__(self):
         """Abstract constructor"""
         self._func = None
@@ -207,6 +226,7 @@ class DBAccess(ContextDecorator):
         """Class __exit__ method"""
         if self._close_by_exit:
             self._db.close()
+
 
 #TODO
 # Test this db access context manager to possible speed up data select/insert

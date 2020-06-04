@@ -77,6 +77,11 @@ _metlab-c50:
             - 0
             - 3
 
+    _fklpros1:
+        usecols:
+            - 0
+            - 5
+
     _prepros1:
         usecols:
             - 0

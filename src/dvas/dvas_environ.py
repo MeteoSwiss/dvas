@@ -13,6 +13,7 @@ from contextlib import contextmanager
 # Import current package's modules
 from .dvas_helper import SingleInstanceMetaClass
 from .dvas_helper import TypedProperty
+from . import __name__ as pkg_name
 
 # Define package path
 package_path = Path(__file__).parent
@@ -120,4 +121,81 @@ class GlobalPathVariablesManager(metaclass=SingleInstanceMetaClass):
         for key, val in old_items.items():
             setattr(self, key, val)
 
+
+#: GlobalPathVariablesManager: Global variable containing directory path values
 path_var = GlobalPathVariablesManager()
+
+
+def check_str(val, choices, case_sens=False):
+    """Function used to check str
+
+    Args:
+        val (str): Value to check
+        choices (list of str): Allowed choices for value
+        case_sens (bool): Case sensitivity
+
+    Return:
+        str
+
+    Raises:
+        TypeError if value is not in choises
+
+    """
+
+    if case_sens is False:
+        choices_mod = list(map(str.lower, choices))
+        val_mod = val.lower()
+    else:
+        choices_mod = choices
+        val_mod = val
+
+    try:
+        assert val_mod in choices_mod
+        idx = choices_mod.index(val_mod)
+    except (StopIteration, AssertionError):
+        raise TypeError(f"{val} not in {choices}")
+
+    return choices[idx]
+
+
+class GlobalPackageVariableManager(metaclass=SingleInstanceMetaClass):
+    """Class used to manage package global variables"""
+
+    # Set class constant attributes
+    CST = [
+        {'name': 'log_output',
+         'default': 'CONSOLE',
+         'os_nm': 'DVAS_LOG_OUTPUT'},
+        {'name': 'log_file_name',
+         'default': pkg_name + '.log',
+         'os_nm': 'DVAS_LOG_FILE_NAME'},
+        {'name': 'log_level',
+         'default': 'INFO',
+         'os_nm': 'DVAS_LOG_LEVEL'},
+    ]
+
+    #: str: Logger output type
+    log_output = TypedProperty(
+        str, check_str, kwargs={'choices': ['FILE', 'CONSOLE']}
+    )
+    log_file_name = TypedProperty(str)  #TODO add check re \w
+    log_level = TypedProperty(
+        str, check_str,
+        kwargs={'choices': ['DEBUG', 'INFO', 'WARNING', 'ERROR']}
+    )
+
+    def __init__(self):
+        """Constructor"""
+        self.load_os_environ()
+
+    def load_os_environ(self):
+        """Load from OS environment variables"""
+        for arg in self.CST:
+            setattr(
+                self,
+                arg['name'],
+                os.getenv(arg['os_nm'], arg['default'])
+            )
+
+
+glob_var = GlobalPackageVariableManager()

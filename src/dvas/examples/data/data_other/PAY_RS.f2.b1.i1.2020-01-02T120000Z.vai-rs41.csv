@@ -1,9 +1,9 @@
 # event_dt: 2020-01-02T120000Z
-# batch_id: b1
 # instr_id: i1
-# event_id: e2
-# day_event: True
-
+# tag_abbr:
+#     - e2
+#     - b1
+#     - day
 Elapsed time;TimeUTC;GpsHeightMSL;P;Temp;RH;Dewp;Dir;Speed;CompAz;CompRng;Lat;Lon;KeyFlags;O3Current;O3;BoxTemperature;O3Voltage;O3PumpCurrent
 s;hh:mm:ss;m;hPa;°C;%;°C;°;m/s;°;m;°;°;;µA;mPa;°C;V;mA
 0.00;10:55:52;491.0;958.44;4.40;79.9;1.24;22;3.70;0;0;46.813;6.944;TUdfv             ;/////////;///;//////////////;/////////;/////////////

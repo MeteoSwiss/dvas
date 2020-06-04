@@ -8,34 +8,29 @@ Created February 2020, L. Modolo - mol@meteoswiss.ch
 
 # Import from current packages modules
 from ..pattern import INSTR_PAT
-from ..pattern import EVENT_PAT
-from ..pattern import BATCH_PAT
-from ...database.model import EventsInstrumentsParameters as evt_inst_prm
+from ...database.model import EventsInfo
 from ...database.model import Instrument
+from ...database.model import Tag
 
-#: dict: Node parameters default value
-NODE_PARAMS_DEF = {
-    evt_inst_prm.event_id.name: None,
-}
 
 #: dict: Parameter pattern properties (JSON_SCHEMA)
 PARAMETER_PATTERN_PROP = {
-    rf"^{evt_inst_prm.event_dt.name}$": {
+    rf"^{EventsInfo.event_dt.name}$": {
         "type": 'string',
     },
     rf"^{Instrument.instr_id.name}$": {
         "type": 'string',
         "pattern": INSTR_PAT
     },
-    rf"^{evt_inst_prm.event_id.name}$": {
-        "type": 'string',
-        "pattern": EVENT_PAT
-    },
-    rf"^{evt_inst_prm.batch_id.name}$": {
-        "type": 'string',
-        "pattern": BATCH_PAT
-    },
-    rf"^{evt_inst_prm.day_event.name}$": {
-        "type": "boolean",
+    rf"^{Tag.tag_abbr.name}$": {
+        "type": 'array',
+        "items": {
+            "type": "string",
+        },
+        "minItems": 1,
+        "uniqueItems": True
     },
 }
+
+#: str: Config manager key name
+KEY = 'OrigMeta'

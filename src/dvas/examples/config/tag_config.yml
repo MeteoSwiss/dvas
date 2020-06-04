@@ -1,0 +1,16 @@
+
+- tag_abbr: 'e([1-9]\d{0,1})'
+  # Generate e1, e2, ..., e99
+  tag_desc: 'Event \1'
+  # Use group 1 from regexp to fill desc
+
+- tag_abbr: 'b([12])'
+  # Generate b1, b2
+  tag_desc: 'Batch \1'
+  # Use group 1 from regexp to fill desc
+
+- tag_abbr: 'day'
+  tag_desc: 'Day event'
+
+- tag_abbr: 'night'
+  tag_desc: 'Night event'

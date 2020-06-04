@@ -1,0 +1,18 @@
+
+- tag_abbr: 'e1'
+  tag_desc: 'Event 1'
+
+- tag_abbr: 'e2'
+  tag_desc: 'Event 2'
+
+- tag_abbr: 'b1'
+  tag_desc: 'Batch 1'
+
+- tag_abbr: 'b2'
+  tag_desc: 'Batch 2'
+
+- tag_abbr: 'day'
+  tag_desc: 'Day event'
+
+- tag_abbr: 'night'
+  tag_desc: 'Night event'
