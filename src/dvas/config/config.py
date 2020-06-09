@@ -22,6 +22,7 @@ from .definitions import instrtype, instrument
 from .definitions import parameter, flag
 from .definitions import tag
 from ..dvas_environ import path_var as env_path_var
+from ..dvas_environ import glob_var as env_glob_var
 from ..dvas_helper import get_by_path
 from ..dvas_helper import RequiredAttrMetaClass
 from ..dvas_helper import TypedProperty
@@ -71,8 +72,8 @@ class ConfigManager(ABC, metaclass=RequiredAttrMetaClass):
     DOC_TYPE = None
 
     document = TypedProperty((dict, list))
-    """dict: Config document. Must be redefined as well to avoid 
-    list/dict reference overlap     
+    """dict: Config document. Must be redefined as well to avoid
+    list/dict reference overlap
     """
 
     def __init__(self):
@@ -181,6 +182,8 @@ class OneLayerConfigManager(ConfigManager):
 
         """
 
+        cfg_file_suffix = ['.' + arg for arg in env_glob_var.config_file_ext]
+
         # Search yml config files
         if doc_in is None:
 
@@ -191,14 +194,11 @@ class OneLayerConfigManager(ConfigManager):
             )
 
             # Filter (case insensitive)
-
-            #TODO
-            # Add allowed config files extensions in globals
             doc_in = [
                 arg for arg in env_path_var.config_dir_path.rglob("*.*")
                 if (
                     (pat.search(arg.stem) is not None) and
-                    (arg.suffix in ['.yml', '.yaml'])
+                    (arg.suffix in cfg_file_suffix)
                 )
             ]
 
@@ -484,13 +484,16 @@ class MultiLayerConfigManager(OneLayerConfigManager):
         """
 
         # Check node_keys
-        assert list(range(len(node_keys))) == [
+        node_keys_match = [
             next(iter(
                 i for i, pattern in enumerate(self.NODE_PATTERN)
                 if re.fullmatch(pattern, arg)
             ))
             for arg in node_keys
-        ], "Bad node_keys pattern or sequence"
+        ]
+        assert list(range(len(node_keys))) == node_keys_match, (
+            "Bad node_keys pattern or sequence"
+        )
 
         out = {
             key: self[

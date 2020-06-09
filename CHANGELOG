@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 
 ## [Unreleased]
+ - [modolol, 2020-05-25] Add logging possibilities
 
 ### Added:
  - [modolol, 2020-05-18] Add pytest-env, pytest-datafiles in pip install CI_pytest.yml

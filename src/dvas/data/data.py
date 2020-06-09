@@ -13,19 +13,23 @@ import matplotlib.pyplot as plt
 from .linker import LocalDBLinker, OriginalCSVLinker
 from .math import crosscorr
 from ..database.database import db_mngr
-from ..database.model import Flag
+from ..database.model import Flag, Parameter
+from ..database.model import EventsInfo, OrgiDataInfo
+from ..database.model import Instrument
 from ..database.database import OneDimArrayConfigLinker
 from ..config.definitions.flag import RAWNA_ABBR, RESMPL_ABBR, UPSMPL_ABBR
 from ..config.definitions.flag import INTERP_ABBR, SYNC_ABBR
-from .. import dvas_logger as log
-
-from ..dvas_helper import TimeIt
+from ..dvas_logger import get_logger
 
 
 # Define
 FLAG = 'flag'
 VALUE = 'value'
 cfg_linker = OneDimArrayConfigLinker()
+
+# Logger
+localdb = get_logger('localdb')
+rawcsv = get_logger('rawcsv')
 
 
 class FlagManager:
@@ -165,7 +169,7 @@ class ProfileManger:
         self._flag_mngr.set_bit_val(INTERP_ABBR)
 
     def get_flagged(self, flag_abbr):
-        """"""
+        """Get flag value for given flag abbr"""
         return self.flag_mngr.get_bit_val(flag_abbr)
 
 
@@ -246,7 +250,6 @@ class TimeProfileManager(ProfileManger):
         self._index_lag -= pd.Timedelta(periods, self.data.index.freq.name)
 
 
-@TimeIt()
 def load(search, prm_abbr):
     """
 
@@ -274,47 +277,76 @@ def load(search, prm_abbr):
     return out
 
 
-def update_db(prm_abbr):
+def update_db(prm_contains):
+    """Update database.
+
+    Args:
+        prm_contains (str): Parameter abbr search criteria. Use '%' for any
+            character.
+
     """
 
-    Returns:
-
-    """
-
-    #TODO
-    # Add update_db('*'), load all params
-
-    # Log
-    log.rawcsv.info("Start reading CSV files for '%s'", prm_abbr)
-
-    # Load CSV data
+    # Init linkers
     db_linker = LocalDBLinker()
     orig_data_linker = OriginalCSVLinker()
 
-    #TODO
-    # Implement exclude_file_name args
-    new_orig_data = orig_data_linker.load(prm_abbr)
+    # Search prm_abbr
+    prm_abbr_list = [
+        arg[0] for arg in db_mngr.get_or_none(
+            Parameter,
+            search={'where': Parameter.prm_abbr.contains(prm_contains)},
+            attr=[[Parameter.prm_abbr.name]],
+            get_first=False
+        )
+    ]
 
-    # Log
-    log.rawcsv.info("Finish reading CSV files for '%s'", prm_abbr)
-    log.rawcsv.info(
-        "Found %d new data while reading CSV files for '%s'",
-        len(new_orig_data),
-        prm_abbr
+    localdb.info(
+        "Update db for following parameters: %s",
+        prm_abbr_list
     )
 
-    # Log
-    log.localdb.info(
-        "Start inserting in local DB new found data for '%s'", prm_abbr
-    )
+    # Loop loading
+    for prm_abbr in prm_abbr_list:
 
-    # Save to DB
-    db_linker.save(new_orig_data)
+        # Log
+        rawcsv.info("Start reading CSV files for '%s'", prm_abbr)
 
-    # Log
-    log.localdb.info(
-        "Finish inserting in local DB new found data for '%s'", prm_abbr
-    )
+        # Search exclude file names
+        exclude_file_name = db_mngr.get_or_none(
+            EventsInfo,
+            search={
+                'where': (
+                    (Parameter.prm_abbr == prm_abbr) &
+                    (Instrument.instr_id != '')
+                ),
+                'join_order': [Parameter, OrgiDataInfo, Instrument]},
+            attr=[[OrgiDataInfo.source.name]],
+            get_first=False
+        )
+
+        # Load
+        new_orig_data = orig_data_linker.load(prm_abbr, exclude_file_name)
+
+        # Log
+        rawcsv.info("Finish reading CSV files for '%s'", prm_abbr)
+        rawcsv.info(
+            "Found %d new data while reading CSV files for '%s'",
+            len(new_orig_data),
+            prm_abbr
+        )
+
+        # Log
+        localdb.info(
+            "Start inserting in local DB new found data for '%s'", prm_abbr
+        )
+
+        # Save to DB
+        db_linker.save(new_orig_data)
+
+        # Log
+        localdb.info(
+            "Finish inserting in local DB new found data for '%s'", prm_abbr
+        )
 
 
 class MultiTimeProfileManager(list):

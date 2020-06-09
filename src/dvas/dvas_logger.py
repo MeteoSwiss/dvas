@@ -9,9 +9,9 @@ Note:
 """
 
 # Python external packages and modules import
-from _datetime import datetime
 import logging
 from logging import StreamHandler, FileHandler
+from datetime import datetime
 
 # Current package import
 from .dvas_environ import glob_var, path_var
@@ -34,7 +34,7 @@ def get_logger(name):
     """Get logger"""
 
     # Test logger name existence
-    if not(name in LOGGER_NAME):
+    if name not in LOGGER_NAME:
         raise ValueError("Unknown logger name '{}'".format(name))
 
     return logging.getLogger(name)
@@ -113,13 +113,3 @@ class LogManager(ContextDecorator):
 
     def __exit__(self, typ, value, traceback):
         clear_log()
-
-
-# Add logger names to module locals()
-for log_nm in LOGGER_NAME:
-
-    # Replace '.' by '_' for camel case syntax
-    log_var_nm = log_nm.replace('.', '_')
-
-    # Add to locals()
-    locals().update({log_var_nm: get_logger(log_nm)})

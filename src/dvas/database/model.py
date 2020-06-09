@@ -150,4 +150,3 @@ class Data(MetadataModel):
         backref='datas')
     index = FloatField(null=False)
     value = FloatField(null=True)
-

@@ -8,6 +8,7 @@ Created February 2020, L. Modolo - mol@meteoswiss.ch
 # Import from python packages
 import pprint
 import re
+from itertools import chain, zip_longest
 from collections import OrderedDict
 from math import floor
 from threading import Thread
@@ -35,8 +36,11 @@ from ..config.config import Tag as CfgTag
 from ..dvas_helper import DBAccess
 from ..dvas_helper import SingleInstanceMetaClass
 from ..dvas_helper import TypedProperty
+from ..dvas_helper import check_list_str
 from ..dvas_helper import TimeIt
-from .. import dvas_logger as log
+from ..dvas_helper import get_by_path
+from ..dvas_logger import get_logger
+from ..dvas_environ import glob_var
 
 
 # Define
@@ -46,6 +50,11 @@ VALUE_NM = Data.value.name
 EVENT_DT_NM = EventsInfo.event_dt.name
 EVENT_INSTR_NM = EventsInfo.instrument.id.name
 EVENT_PARAM_NM = EventsInfo.param.prm_abbr.name
+
+# Logger
+localdb = get_logger('localdb')
+localdb_select = get_logger('localdb.select')
+rawcsv_load = get_logger('rawcsv.load')
 
 
 class OneDimArrayConfigLinker:
@@ -69,7 +78,7 @@ class OneDimArrayConfigLinker:
         self._cfg_mngr = instantiate_config_managers(*cfg_mngrs)
 
     def get_document(self, key):
-        """Return config document
+        """Return config document.
 
         Args:
             key (str): Config manager key
@@ -77,41 +86,97 @@ class OneDimArrayConfigLinker:
         Returns:
             dict
 
+        Raises:
+            - ConfigGenMaxLenError: Error for to much generated items.
+
         """
 
+        def get_grp_fct(grp_fct):
+            """Get group function as callable or str"""
+            try:
+                out = eval(grp_fct, {})
+            except (NameError, SyntaxError):
+                out = grp_fct
+            return out
+
+        # Init
+        sep = glob_var.config_gen_grp_sep
+        pat_spilt = r'\{0}[^\n\r\t\{0}]+\{0}'.format(sep)
+        pat_find = r'\{0}([^\n\r\t{0}]+)\{0}'.format(sep)
+
+        # Define
         array_old = self._cfg_mngr[key].document
         node_gen = self._cfg_mngr[key].NODE_GEN
         array_new = []
 
-        for i, doc in enumerate(array_old):
-            sub_array_new = {}
+        # Loop over te config array items
+        for doc in array_old:
+
+            # Test if node generator allowed
             if node_gen:
-                #TODO add max length
+
+                # Init new sub dict
+                sub_dict_new = {}
+
+                # Generate from regexp generator
                 node_gen_val = sre_yield.AllMatches(doc[node_gen])
-                sub_array_new.update(
-                    {
-                        node_gen: list(node_gen_val)
-                    }
-                )
+
+                # Check length
+                if (n_val := len(node_gen_val)) > glob_var.config_gen_max:
+                    raise ConfigGenMaxLenError(
+                        f"{n_val} generated config field. " +
+                        f"Max allowed {glob_var.config_gen_max}"
+                    )
+
+                # Update sub dict
+                sub_dict_new.update({node_gen: list(node_gen_val)})
+
+                # Loop over other config item key
                 for key in filter(lambda x: x != node_gen, doc.keys()):
-                    sub_array_new.update(
+
+                    # Update new sub dict for current key
+                    sub_dict_new.update(
                         {
                             key: [
-                                re.sub(
-                                    doc[node_gen],
-                                    '{}'.format(doc[key]),
-                                    node_gen_val[i].group()
+                                ''.join(
+                                    [arg for arg in chain(
+                                        *zip_longest(
+
+                                            # Split formula
+                                            re.split(pat_spilt, doc[key]),
+
+                                            # Find formula and substitute
+                                            [
+                                                re.sub(
+                                                    doc[node_gen],
+                                                    get_grp_fct(grp_fct),
+                                                    node_gen_val[i].group()
+                                                ) for grp_fct in
+                                                re.findall(pat_find, doc[key])
+                                            ]
+                                        )
+                                    ) if arg]
                                 )
+                                # Test if groups exists in generated str
                                 if node_gen_val[i].groups() else
                                 doc[key]
                                 for i in range(len(node_gen_val))
                             ]
                         }
                     )
-            array_new += [
-                dict(zip(sub_array_new, i))
-                for i in zip(*sub_array_new.values())
-            ]
+
+                # Rearange dict of list in list of dict
+                res = [
+                    dict(zip(sub_dict_new, arg))
+                    for arg in zip(*sub_dict_new.values())
+                ]
+
+            # Case without generator
+            else:
+                res = [doc]
+
+            # Append to new array
+            array_new += res
 
         return array_new
 
@@ -172,13 +237,14 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                 pass
 
     @staticmethod
-    def get_or_none(table, search=None, attr=None):
+    def get_or_none(table, search=None, attr=None, get_first=True):
         """Get from DB
 
         Args:
             table ():
             search (dict):
-            attr (list):
+            attr (list of (list of str)):
+            get_first (bool): return first occurrence or all. Default ot False.
 
         """
 
@@ -202,10 +268,20 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         try:
             with DBAccess(db) as _:
-                out = qry.get()
+                if get_first:
+                    if attr:
+                        out = [get_by_path(qry.get(), arg) for arg in attr]
+                    else:
+                        out = qry.get()
 
-                for arg in attr:
-                    out = getattr(out, arg)
+                else:
+                    if attr:
+                        out = [
+                            [get_by_path(qry_arg, arg) for arg in attr]
+                            for qry_arg in qry.iterator()
+                        ]
+                    else:
+                        out = list(qry.iterator())
 
         except DoesNotExist:
             out = None
@@ -296,41 +372,40 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     Instrument.instr_id == event.instr_id
                 )
                 if not instr:
-                    log.localdb.insert.error(
+                    localdb.insert.error(
                         "instr_id '%s' is missing in DB", event.instr_id
                     )
-                    raise
+                    raise DBInsertError()
 
                 # Get/Check parameter
                 param = Parameter.get_or_none(
                     Parameter.prm_abbr == event.prm_abbr
                 )
                 if not param:
-                    log.localdb.insert.error(
+                    localdb.insert.error(
                         "prm_abbr '%s' is missing in DB", event.prm_abbr
                     )
                     raise DBInsertError()
 
                 # Check tag_abbr existence
                 try:
-                    tag_id_list = []
-                    for arg in event.tag_abbr:
-                        assert (
-                            tag_id := db_mngr.get_or_none(
-                                Tag,
-                                search={
-                                    'join_order': [],
-                                    'where': Tag.tag_abbr == arg
-                                },
-                                attr=['id']
-                            )
-                        ) is not None
-                        tag_id_list.append(tag_id)
+                    tag_id_list = [
+                        arg[0] for arg in
+                        db_mngr.get_or_none(
+                            Tag,
+                            search={
+                                'where': Tag.tag_abbr.in_(event.tag_abbr)
+                            },
+                            attr=[[Tag.id.name]],
+                            get_first=False
+                        )
+                    ]
+                    assert len(tag_id_list) == len(event.tag_abbr)
 
                 except AssertionError:
-                    log.rawcsv_load.error(
-                        "tag_abbr '%s' is missing in DB",
-                        arg
+                    rawcsv_load.error(
+                        "Many tag_abbr in '%s' are missing in DB",
+                        event.tag_abbr
                     )
                     raise DBInsertError()
 
@@ -354,7 +429,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                             EventsTags.events_info.name: event_info
                         } for tag_id in tag_id_list
                     ]
-                    EventsTags.insert_many(tag_event_source).execute()
+                    EventsTags.insert_many(tag_event_source).execute()  # noqa pylint: disable=E1120
 
                     # Format series as list of tuples
                     n_data = len(data)
@@ -381,7 +456,8 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         except DBInsertError:
             pass
 
-    def _get_eventsinfo_id(self, where, prm_abbr):
+    @staticmethod
+    def _get_eventsinfo_id(where, prm_abbr):
         """ """
 
         # Replace field in string
@@ -443,7 +519,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         eventsinfo_id_list = self._get_eventsinfo_id(where, prm_abbr)
 
         if not eventsinfo_id_list:
-            log.localdb_select.warning(
+            localdb_select.warning(
                 "Empty search '%s' for '%s", where, prm_abbr
             )
 
@@ -604,24 +680,6 @@ def set_str(val, re_pattern, fullmatch=True):
     return val
 
 
-def set_list_str(val):
-    """Test and set input argument into list of str.
-
-    Args:
-        val (list of str): Input
-
-    Returns:
-        str
-
-    """
-    try:
-        assert all([isinstance(arg, str) for arg in val]) is True
-    except AssertionError:
-        raise TypeError(f"Argument is not a list a str")
-
-    return val
-
-
 class EventManager:
     """Class for create an unique event identifier"""
 
@@ -636,7 +694,7 @@ class EventManager:
         str, set_str, args=(param_re,), kwargs={'fullmatch': True}
     )
     #: str: Tag abbr
-    tag_abbr = TypedProperty(list, set_list_str)
+    tag_abbr = TypedProperty(list, check_list_str)
 
     def __init__(self, event_dt, instr_id, prm_abbr, tag_abbr):
         """Constructor
@@ -662,9 +720,8 @@ class EventManager:
     def as_dict(self):
         """Convert EventManager to dict"""
         out = OrderedDict()
-        for key in [
-            'event_dt', 'instr_id', 'prm_abbr', 'tag_abbr',
-        ]:
+        keys_nm = ['event_dt', 'instr_id', 'prm_abbr', 'tag_abbr',]
+        for key in keys_nm:
             out.update({key: self.__getattribute__(key)})
         return out
 
@@ -706,3 +763,7 @@ class EventManager:
 
 class DBInsertError(Exception):
     """Exception class for DB insert error"""
+
+
+class ConfigGenMaxLenError(Exception):
+    """Exception class for max length config generator error"""

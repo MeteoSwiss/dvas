@@ -30,8 +30,10 @@ def camel_to_snake(name):
     all_cap_re = re.compile('([a-z0-9])([A-Z])')
 
     # Convert
-    s1 = first_cap_re.sub(r'\1_\2', name)
-    return all_cap_re.sub(r'\1_\2', s1).lower()
+    return all_cap_re.sub(
+        r'\1_\2',
+        first_cap_re.sub(r'\1_\2', name)
+    ).lower()
 
 
 class SingleInstanceMetaClass(type):
@@ -149,6 +151,7 @@ class TimeIt(ContextDecorator):
 
         Args:
             header_msg (str): User defined elapsed time header. Default to ''.
+
         """
         super().__init__()
         self._start = None
@@ -193,6 +196,7 @@ class DBAccess(ContextDecorator):
             db (peewee.SqliteDatabase): PeeWee Sqlite DB object
             close_by_exit (bool): Close DB by exiting context manager.
                 Default to True
+
         """
         super().__init__()
         self._db = db
@@ -204,6 +208,7 @@ class DBAccess(ContextDecorator):
 
         Args:
             func (callable): Decorated function
+
         """
         @wraps(func)
         def decorated(*args, **kwargs):
@@ -311,11 +316,71 @@ class TypedProperty:
         self._name = name
 
 
+def check_str(val, choices, case_sens=False):
+    """Function used to check str
+
+    Args:
+        val (str): Value to check
+        choices (list of str): Allowed choices for value
+        case_sens (bool): Case sensitivity
+
+    Return:
+        str
+
+    Raises:
+        TypeError if value is not in choises
+
+    """
+
+    if case_sens is False:
+        choices_mod = list(map(str.lower, choices))
+        val_mod = val.lower()
+    else:
+        choices_mod = choices
+        val_mod = val
+
+    try:
+        assert val_mod in choices_mod
+        idx = choices_mod.index(val_mod)
+    except (StopIteration, AssertionError):
+        raise TypeError(f"{val} not in {choices}")
+
+    return choices[idx]
+
+
+def check_list_str(val, choices=None, case_sens=False):
+    """Test and set input argument into list of str.
+
+    Args:
+        val (list of str): Input
+        choices (list of str):
+        case_sens (bool):
+
+    Returns:
+        str
+
+    """
+    try:
+        if choices:
+            for arg in val:
+                check_str(arg, choices, case_sens=case_sens)
+        else:
+            assert all([isinstance(arg, str) for arg in val]) is True
+
+    except AssertionError:
+        raise TypeError(f"{val} is not a list of str")
+
+    except TypeError as _:
+        raise TypeError(f"{val} item are not all in {choices}")
+
+    return val
+
+
 def get_by_path(root, items):
     """Access a nested object in root by item sequence.
 
     Args:
-        root (dict or list): Root list or dictionary
+        root (dict|list|class): Object to access
         items (list): Item sequence
 
     Returns:
@@ -335,4 +400,9 @@ def get_by_path(root, items):
     0
 
     """
-    return reduce(getitem, items, root)
+    if isinstance(root, (dict, list)):
+        out = reduce(getitem, items, root)
+    else:
+        out = reduce(getattr, items, root)
+
+    return out

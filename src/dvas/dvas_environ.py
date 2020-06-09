@@ -13,6 +13,7 @@ from contextlib import contextmanager
 # Import current package's modules
 from .dvas_helper import SingleInstanceMetaClass
 from .dvas_helper import TypedProperty
+from .dvas_helper import check_str, check_list_str
 from . import __name__ as pkg_name
 
 # Define package path
@@ -126,38 +127,6 @@ class GlobalPathVariablesManager(metaclass=SingleInstanceMetaClass):
 path_var = GlobalPathVariablesManager()
 
 
-def check_str(val, choices, case_sens=False):
-    """Function used to check str
-
-    Args:
-        val (str): Value to check
-        choices (list of str): Allowed choices for value
-        case_sens (bool): Case sensitivity
-
-    Return:
-        str
-
-    Raises:
-        TypeError if value is not in choises
-
-    """
-
-    if case_sens is False:
-        choices_mod = list(map(str.lower, choices))
-        val_mod = val.lower()
-    else:
-        choices_mod = choices
-        val_mod = val
-
-    try:
-        assert val_mod in choices_mod
-        idx = choices_mod.index(val_mod)
-    except (StopIteration, AssertionError):
-        raise TypeError(f"{val} not in {choices}")
-
-    return choices[idx]
-
-
 class GlobalPackageVariableManager(metaclass=SingleInstanceMetaClass):
     """Class used to manage package global variables"""
 
@@ -172,16 +141,34 @@ class GlobalPackageVariableManager(metaclass=SingleInstanceMetaClass):
         {'name': 'log_level',
          'default': 'INFO',
          'os_nm': 'DVAS_LOG_LEVEL'},
+        {'name': 'config_gen_max',
+         'default': 10000},
+        {'name': 'config_gen_grp_sep',
+         'default': '$'},
+        {'name': 'config_file_ext',
+         'default': ['yml', 'yaml']}
     ]
 
-    #: str: Logger output type
+    #: str: Log output type, Default to 'CONSOLE'
     log_output = TypedProperty(
-        str, check_str, kwargs={'choices': ['FILE', 'CONSOLE']}
+        str, check_str, args=(['FILE', 'CONSOLE'],)
     )
+    #: str: Log output file name. Default to 'dvas.log'
     log_file_name = TypedProperty(str)  #TODO add check re \w
+    #: str: Log level. Default to 'INFO'
     log_level = TypedProperty(
         str, check_str,
-        kwargs={'choices': ['DEBUG', 'INFO', 'WARNING', 'ERROR']}
+        args=(['DEBUG', 'INFO', 'WARNING', 'ERROR'],)
+    )
+    #: int: Config regexp generator limit. Default to 10000.
+    config_gen_max = TypedProperty(int)
+    #: str: Config regex generator group function separator. Default to '$'.
+    config_gen_grp_sep = TypedProperty(
+        str, check_str, args=(['$', '%', '#'],)
+    )
+    #: list if str: Config file allowed extensions. Default to ['yml', 'yaml']
+    config_file_ext = TypedProperty(
+        list, check_list_str, kwargs={'choices': ['yml', 'yaml', 'txt']}
     )
 
     def __init__(self):
@@ -191,11 +178,15 @@ class GlobalPackageVariableManager(metaclass=SingleInstanceMetaClass):
     def load_os_environ(self):
         """Load from OS environment variables"""
         for arg in self.CST:
-            setattr(
-                self,
-                arg['name'],
-                os.getenv(arg['os_nm'], arg['default'])
-            )
+            if 'os_nm' in arg.keys():
+                setattr(
+                    self,
+                    arg['name'],
+                    os.getenv(arg['os_nm'], arg['default'])
+                )
+            else:
+                setattr(self, arg['name'], arg['default'])
 
 
 glob_var = GlobalPackageVariableManager()
+

@@ -17,7 +17,8 @@ from ..database.model import Data, InstrType, Instrument, Tag
 from ..database.database import db_mngr, EventManager
 from ..config.config import OrigData, OrigMeta
 from ..config.config import ConfigReadError
-from .. import dvas_logger as log
+from ..dvas_logger import get_logger
+from ..dvas_environ import glob_var as env_glob_var
 
 # Define
 INDEX_NM = Data.index.name
@@ -25,6 +26,9 @@ VALUE_NM = Data.value.name
 
 # Pandas csv_read method arguments
 PD_CSV_READ_ARGS = inspect.getfullargspec(pd.read_csv).args[1:]
+
+# Logger
+rawcsv_load = get_logger('rawcsv.load')
 
 
 class DataLinker(ABC):
@@ -138,6 +142,7 @@ class OriginalCSVLinker(DataLinker):
             exclude_file_name = []
 
         # Define
+        cfg_file_suffix = ['.' + arg for arg in env_glob_var.config_file_ext]
         origmeta_cfg_mngr = OrigMeta()
 
         # Scan recursively CSV files in directory
@@ -149,14 +154,11 @@ class OriginalCSVLinker(DataLinker):
         for origdata_file_path in origdata_file_path_list:
 
             # Define metadata path
-
-            # TODO
-            # Add allowed config files extensions in globals
             try:
                 metadata_file_path = next(
                     arg for arg in origdata_file_path.parent.glob(
                         '*' + origdata_file_path.stem + '*.*'
-                    ) if arg.suffix in ['.yaml', '.yml']
+                    ) if arg.suffix in cfg_file_suffix
                 )
             except StopIteration:
                 metadata_file_path = origdata_file_path
@@ -178,7 +180,7 @@ class OriginalCSVLinker(DataLinker):
                 assert origmeta_cfg_mngr.document
 
             except ConfigReadError as exc:
-                log.rawcsv_load.error(
+                rawcsv_load.error(
                     "Error in reading file '%s' (%s)",
                     metadata_file_path,
                     exc
@@ -186,7 +188,7 @@ class OriginalCSVLinker(DataLinker):
                 continue
 
             except AssertionError:
-                log.rawcsv_load.error(
+                rawcsv_load.error(
                     "No meta data found in file '%s'",
                     metadata_file_path
                 )
@@ -208,19 +210,20 @@ class OriginalCSVLinker(DataLinker):
                     'join_order': [InstrType],
                     'where': Instrument.instr_id == event.instr_id
                 },
-                attr=['instr_type', 'type_name']
+                attr=[[Instrument.instr_type.name, InstrType.type_name.name]]
             )
 
             if not instr_type_name:
-                log.rawcsv_load.error((
-                        "Missing instrument id '%s' in DB while reading " +
-                        "meta data in file '%s'"
-                    ),
+                rawcsv_load.error(
+                    "Missing instrument id '%s' in DB while reading " +
+                    "meta data in file '%s'",
                     event.instr_id,
-                    metadata_file_path)
+                    metadata_file_path
+                )
                 continue
 
             # Get origdata config params
+            instr_type_name = instr_type_name[0]
             origdata_cfg_prm = self.origdata_config_mngr.get_all(
                 [instr_type_name, prm_abbr, event.instr_id]
             )
@@ -235,7 +238,7 @@ class OriginalCSVLinker(DataLinker):
                 data = pd.read_csv(origdata_file_path, **raw_csv_read_args)
 
             except ValueError as exc:
-                log.rawcsv_load.error(
+                rawcsv_load.error(
                     "Error while reading '%s' in CSV file '%s' (%s: %s)",
                     prm_abbr, origdata_file_path,
                     type(exc).__name__, exc
@@ -244,7 +247,7 @@ class OriginalCSVLinker(DataLinker):
             else:
 
                 # Log
-                log.rawcsv_load.info(
+                rawcsv_load.info(
                     "Successful reading of '%s' in CSV file '%s'",
                     prm_abbr, origdata_file_path,
                 )
@@ -254,7 +257,7 @@ class OriginalCSVLinker(DataLinker):
                     {
                         'event': event,
                         'data': data,
-                        'source_info': origdata_file_path
+                        'source_info': origdata_file_path.name
                     }
                 )
 
