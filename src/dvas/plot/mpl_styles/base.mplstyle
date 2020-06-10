@@ -36,5 +36,3 @@ mathtext.fontset: cm
 mathtext.bf: monospace:bold
 
 contour.negative_linestyle: solid
-
-text.usetex: False

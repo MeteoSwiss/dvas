@@ -20,8 +20,9 @@ WIDTH_ONECOL = 6.92
 WIDTH_TWOCOL = 14.16
 
 # The official dvas styles
-PLOT_STYLES = {'robust': 'robust.mplstyle',
-               'pretty': 'latex.mplstyle'}
+PLOT_STYLES = {'base': 'base.mplstyle',
+               'nolatex': 'nolatex.mplstyle',
+               'latex': 'latex.mplstyle'}
 
 # The official save types
 # TODO: create a test function that validates that those default file formats are indeed available
@@ -31,7 +32,7 @@ PLOT_TYPES = ['.png', '.pdf']
 # A flag to display the plots or not.
 PLOT_SHOW = True
 
-def set_mplstyle(style='robust'):
+def set_mplstyle(style='base'):
     ''' Set the DVAS plotting style.
 
     Args:
@@ -59,10 +60,10 @@ def set_mplstyle(style='robust'):
                         % (style, ', '.join(PLOT_STYLES.keys())))
 
     # Always apply the base style first.
-    plt.style.use(str(Path(package_path, 'plot', 'mpl_styles', PLOT_STYLES['robust'])))
+    plt.style.use(str(Path(package_path, 'plot', 'mpl_styles', PLOT_STYLES['base'])))
 
     # Then apply which ever alternative style was requested, if we haven't already.
-    if style != 'robust':
+    if style != 'base':
         plt.style.use(str(Path(package_path, 'plot', 'mpl_styles', PLOT_STYLES[style])))
 
 
