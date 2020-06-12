@@ -6,11 +6,11 @@ Created February 2020, L. Modolo - mol@meteoswiss.ch
 """
 
 # Import Python packages and module
-import os, sys
+import os
 import platform
-import oschmod
 from pathlib import Path
 from contextlib import contextmanager
+import oschmod
 
 # Import current package's modules
 from .dvas_helper import SingleInstanceMetaClass
