@@ -5,16 +5,14 @@ Created February 2020, L. Modolo - mol@meteoswiss.ch
 
 """
 
+# Import from external packages
 from copy import deepcopy
 import numpy as np
 import pandas as pd
 
-from ..config.definitions.flag import RAWNA_ABBR, RESMPL_ABBR, UPSMPL_ABBR
-from ..config.definitions.flag import INTERP_ABBR, SYNC_ABBR
+# Import from current package
 from .linker import LocalDBLinker, OriginalCSVLinker
-from ..database.database import db_mngr
-from ..database.model import Flag
-from ..database.database import ConfigLinker
+from ..plot.plot import basic_plot
 from .math import crosscorr
 from ..database.database import db_mngr
 from ..database.model import Flag, Parameter

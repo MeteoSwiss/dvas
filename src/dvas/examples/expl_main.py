@@ -3,6 +3,7 @@ Examples
 
 """
 
+# Import
 from dvas.data.data import load, update_db
 from dvas.dvas_logger import LogManager
 from dvas.database.database import db_mngr
@@ -29,3 +30,8 @@ if __name__ == '__main__':
         data_t2.resample(inplace=True)
         data_t2.interpolate(inplace=True)
         data_sync = data_t2.synchronise()
+
+    data_t1.plot()
+
+    print(data_t2[0].get_flagged('sync').head())
+    print(data_sync[0].get_flagged('sync').head())
