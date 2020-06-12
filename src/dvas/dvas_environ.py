@@ -6,7 +6,9 @@ Created February 2020, L. Modolo - mol@meteoswiss.ch
 """
 
 # Import Python packages and module
-import os
+import os, sys
+import platform
+import oschmod
 from pathlib import Path
 from contextlib import contextmanager
 
@@ -29,20 +31,25 @@ def set_path(value, exist_ok=False):
             create path. Default to False.
 
     Returns:
-        patlib.Path
+        pathlib.Path
 
     """
-    try:
-        if exist_ok is True:
+    if exist_ok is True:
+        try:
             assert (out := Path(value)).exists() is True
-        else:
-            (out := Path(value)).mkdir(mode=777, parents=True, exist_ok=True)
+        except AssertionError:
+            raise TypeError(f"Path '{out}' does not exist")
 
-    except AssertionError:
-        raise TypeError(f"Path '{out}' does not exist")
+    else:
+        try:
+            (out := Path(value)).mkdir(parents=True, exist_ok=True)
+            if platform.system() != 'Windows':
+                assert (oschmod.get_mode(out) >> 6) >= 4
+        except AssertionError:
+            raise TypeError(f"Owner has no read/write access to '{out}'")
 
-    except (TypeError, OSError, FileNotFoundError):
-        raise TypeError(f"Path '{out}' is not compatible with system path")
+        except (TypeError, OSError, FileNotFoundError):
+            raise TypeError(f"Path '{out}' is not compatible with system path")
 
     return out
 

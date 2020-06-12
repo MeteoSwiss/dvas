@@ -2,7 +2,7 @@
 # instr_id: i4
 # tag_abbr:
 #     - e2
-#     - b1
+#     - b2
 #     - day
 Rel. Time;Date;Time;Altitude (gpm);Wind Direction (°);Wind Velocity (m/s);Pressure (hPa);Temperature (°C);Humidity (%);Dewpoint (°C);Ozone (nbar);Ozone normalized (nbar);Pump Temperature (K);I ECC cells (uA);Level Flag;LAT (°);LON (°);ALT (m);STA;SAT;HDOP (m);VDOP (m);GPS Jamming;Battery Voltage (v);Transmitter Voltage (V);FSM state;Error Flag;DIST (m);ALD (m);AZI (°);ELE (°);CR (m/s);U_ref;T_REF (°C);T_A3 (°C);T_10 (°C);V-Corr (°C);T_CH (°C);T_HY50 (°C);DP_HY50 (°C);RH_HY50 (%);RH_MAX (%);RH_HY50_OUTS;TAU_INC;TAU_DEC;RH_HY50_K_LIM;DP_HY50_K
 0;19.11.19;10:55:54.0;498.89428;25.31334;6.29413;958.5;4.0889;89.60803;2.38139;;;;;;46.812733;6.943484;498.87523;5611.0;11.0;0.56;8.76268;15.3957;2783.5405;1094.15923;7.0;0.0;403.10479;402.50692;41.09542;1.12832;2.31605;46301.49398;24.06189;4.30118;;-0.21228;5.07691;7.84427;2.38045;66.88146;100.0;89.60803;0.24517;0.30313;89.60803;2.38139

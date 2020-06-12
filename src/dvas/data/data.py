@@ -19,17 +19,13 @@ from ..database.model import Instrument
 from ..database.database import OneDimArrayConfigLinker
 from ..config.definitions.flag import RAWNA_ABBR, RESMPL_ABBR, UPSMPL_ABBR
 from ..config.definitions.flag import INTERP_ABBR, SYNC_ABBR
-from ..dvas_logger import get_logger
+from ..dvas_logger import localdb, rawcsv
 
 
 # Define
 FLAG = 'flag'
 VALUE = 'value'
 cfg_linker = OneDimArrayConfigLinker()
-
-# Logger
-localdb = get_logger('localdb')
-rawcsv = get_logger('rawcsv')
 
 
 class FlagManager:
@@ -320,7 +316,7 @@ def update_db(prm_contains):
                     (Instrument.instr_id != '')
                 ),
                 'join_order': [Parameter, OrgiDataInfo, Instrument]},
-            attr=[[OrgiDataInfo.source.name]],
+            attr=[[EventsInfo.orig_data_info.name, OrgiDataInfo.source.name]],
             get_first=False
         )
 
@@ -435,6 +431,6 @@ class MultiTimeProfileManager(list):
     def plot(self):
         """Plot method"""
 
-        fig = plt.figure()
+        plt.figure()
         for arg in self:
             plt.plot(arg.data)

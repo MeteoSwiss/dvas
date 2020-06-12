@@ -13,11 +13,11 @@ import pandas as pd
 
 # Import from current package
 from ..dvas_environ import path_var as env_path_var
-from ..database.model import Data, InstrType, Instrument, Tag
+from ..database.model import Data, InstrType, Instrument
 from ..database.database import db_mngr, EventManager
 from ..config.config import OrigData, OrigMeta
 from ..config.config import ConfigReadError
-from ..dvas_logger import get_logger
+from ..dvas_logger import rawcsv
 from ..dvas_environ import glob_var as env_glob_var
 
 # Define
@@ -26,9 +26,6 @@ VALUE_NM = Data.value.name
 
 # Pandas csv_read method arguments
 PD_CSV_READ_ARGS = inspect.getfullargspec(pd.read_csv).args[1:]
-
-# Logger
-rawcsv_load = get_logger('rawcsv.load')
 
 
 class DataLinker(ABC):
@@ -180,7 +177,7 @@ class OriginalCSVLinker(DataLinker):
                 assert origmeta_cfg_mngr.document
 
             except ConfigReadError as exc:
-                rawcsv_load.error(
+                rawcsv.error(
                     "Error in reading file '%s' (%s)",
                     metadata_file_path,
                     exc
@@ -188,7 +185,7 @@ class OriginalCSVLinker(DataLinker):
                 continue
 
             except AssertionError:
-                rawcsv_load.error(
+                rawcsv.error(
                     "No meta data found in file '%s'",
                     metadata_file_path
                 )
@@ -214,7 +211,7 @@ class OriginalCSVLinker(DataLinker):
             )
 
             if not instr_type_name:
-                rawcsv_load.error(
+                rawcsv.error(
                     "Missing instrument id '%s' in DB while reading " +
                     "meta data in file '%s'",
                     event.instr_id,
@@ -238,7 +235,7 @@ class OriginalCSVLinker(DataLinker):
                 data = pd.read_csv(origdata_file_path, **raw_csv_read_args)
 
             except ValueError as exc:
-                rawcsv_load.error(
+                rawcsv.error(
                     "Error while reading '%s' in CSV file '%s' (%s: %s)",
                     prm_abbr, origdata_file_path,
                     type(exc).__name__, exc
@@ -247,7 +244,7 @@ class OriginalCSVLinker(DataLinker):
             else:
 
                 # Log
-                rawcsv_load.info(
+                rawcsv.info(
                     "Successful reading of '%s' in CSV file '%s'",
                     prm_abbr, origdata_file_path,
                 )

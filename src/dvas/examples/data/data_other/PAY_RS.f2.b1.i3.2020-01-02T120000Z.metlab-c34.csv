@@ -2,7 +2,7 @@
 #instr_id: i3
 #tag_abbr:
 #     - e2
-#     - b1
+#     - b2
 #     - day
 #
 Rel. Time;Altitude (gpm);Wind Direction (°);Wind Velocity (m/s);Pressure (hPa);Temperature (°C);Humidity (%);Dewpoint (°C);Ozone (nbar);Ozone normalized (nbar);Pump Temperature (K);I ECC cells (uA);Level Flag;LAT (°);LON (°);ALT (m);VEL (m/s);DIR (°);STA;SAT;PDOP (m);DIST (m);ALD (m);AZI (°);ELE (°);CR (m/s);T_REF (°C);T_A3 (°C);X-Corr (°C);V-Corr (°C);T_CH (°C);T_2 (°C);DP_HC2 (°C);Humidity raw(%);RH_MAX (%);RH_HC2_S;TAU_I;TAU_IS;RH_HC2R_IK;RH_HC2R_IKS;RH_HC2R_I;RH_HC2_LIM;RH_HC2_K_MAX100;RH_HC2_K_LIM;DP_HC2_K;DP_HC2_K_LIM

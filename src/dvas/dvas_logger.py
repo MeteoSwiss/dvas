@@ -21,12 +21,8 @@ from .dvas_helper import ContextDecorator
 # Define logger names
 LOGGER_NAME = [
     'localdb',
-    'localdb.insert',
-    'localdb.select',
     'rawcsv',
-    'rawcsv.load',
     'data',
-    'data.calc'
 ]
 
 
@@ -88,10 +84,11 @@ def init_log():
 
     # Add handler to all logger
     for name in LOGGER_NAME:
-        logger = logging.getLogger(name)
+        logger = get_logger(name)
         logger.setLevel(glob_var.log_level)
         logger.propagate = False
         logger.addHandler(handler)
+        logger.disabled = False
 
 
 def clear_log():
@@ -102,7 +99,9 @@ def clear_log():
         logger = logging.getLogger(name)
         for hdl in logger.handlers:
             hdl.flush()
-        logger.handlers = []
+            hdl.close()
+            logger.removeHandler(hdl)
+        logger.disabled = True
 
 
 class LogManager(ContextDecorator):
@@ -113,3 +112,12 @@ class LogManager(ContextDecorator):
 
     def __exit__(self, typ, value, traceback):
         clear_log()
+
+
+# Add logger to locals()
+#: logging.logger: Local DB logger
+localdb = get_logger('localdb')
+#: logging.logger: Raw CSV data logger
+rawcsv = get_logger('rawcsv')
+#: loggin.logger: Data logger
+data = get_logger('data')

@@ -39,7 +39,7 @@ from ..dvas_helper import TypedProperty
 from ..dvas_helper import check_list_str
 from ..dvas_helper import TimeIt
 from ..dvas_helper import get_by_path
-from ..dvas_logger import get_logger
+from ..dvas_logger import localdb, rawcsv
 from ..dvas_environ import glob_var
 
 
@@ -50,11 +50,6 @@ VALUE_NM = Data.value.name
 EVENT_DT_NM = EventsInfo.event_dt.name
 EVENT_INSTR_NM = EventsInfo.instrument.id.name
 EVENT_PARAM_NM = EventsInfo.param.prm_abbr.name
-
-# Logger
-localdb = get_logger('localdb')
-localdb_select = get_logger('localdb.select')
-rawcsv_load = get_logger('rawcsv.load')
 
 
 class OneDimArrayConfigLinker:
@@ -403,7 +398,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     assert len(tag_id_list) == len(event.tag_abbr)
 
                 except AssertionError:
-                    rawcsv_load.error(
+                    rawcsv.error(
                         "Many tag_abbr in '%s' are missing in DB",
                         event.tag_abbr
                     )
@@ -457,50 +452,105 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             pass
 
     @staticmethod
-    def _get_eventsinfo_id(where, prm_abbr):
-        """ """
+    def _get_eventsinfo_id(where_arg, prm_abbr):
+        """Get events info
 
-        # Replace field in string
-        where = where.replace(
-            'event_dt', 'EventsInfo.event_dt'
-        )
-        where = where.replace(
-            'instr_id', 'Instrument.instr_id'
-        )
-        where = where.replace(
-            'tag_abbr', 'Tag.tag_abbr'
-        )
+        Search syntax:
+            - Logical and: and, &
+            - Logical or: or, |
+            - Operators: ==, >=, <=, <, >, !=
+            - Event datetime field: #e, #event, #event_dt
+            - Instrument field: #i, #instr, #instr_id
+            - Tag field: #t, #instr, #instr_id
+            - Datetime: %'any valid pandas.datetime'%
 
-        # Replace logical operators
-        where = where.replace(' and ', ' & ')
-        where = where.replace(' or ', ' | ')
-        where = where.replace('not(', '~(')
+        """
 
-        # Add paramerter field
-        where = f"({where}) & (Parameter.prm_abbr == '{prm_abbr}')"
+        # Substitute and and or
+        where_arg = re.sub(r'[\s\t]+(and)[\s\t]+', '&', where_arg)
+        where_arg = re.sub(r'[\s\t]+(or)[\s\t]+', '|', where_arg)
 
-        # Evaluate
-        where_arg = eval(
-            where,
-            {
-                'EventsInfo': EventsInfo,
-                'Instrument': Instrument,
-                'Tag': Tag,
-                'Parameter': Parameter
-            }
-        )
+        # Substitute spaces
+        where_arg = re.sub(r'[\s\t\n\r]+', '', where_arg)
 
-        # Create query
-        qry = (
-            EventsInfo.select().distinct().
-            join(Instrument).switch(EventsInfo).
-            join(Parameter).switch(EventsInfo).
-            join(EventsTags).join(Tag).
-            where(where_arg)
+        # Split and find kernel logical conditions
+        where_split = re.split(r"[\#\w\=\>\<\!\'\"\[\]\,\-\:\%]+", where_arg)
+        where_find = re.findall(r"([\#\w\=\>\<\!\'\"\[\]\,\-\:\%]+)", where_arg)
+
+        # Create base request
+        qry_base = (
+            EventsInfo
+            .select().distinct()
+            .join(Instrument).switch(EventsInfo)
+            .join(Parameter).switch(EventsInfo)
+            .join(EventsTags).join(Tag)
         )
 
-        with DBAccess(db) as _:
-            out = list(qry.iterator())
+        try:
+            with DBAccess(db) as _:
+                # Search for kernel logical condition
+                search_res = []
+                for where in where_find:
+                    # Replace field in string
+                    where = re.sub(
+                        r'\#((e(vent(_dt)?)?)|(dt))', 'EventsInfo.event_dt', where
+                    )
+                    where = re.sub(
+                        r'\#(i(nstr(_id)?)?)', 'Instrument.instr_id', where
+                    )
+                    where = re.sub(
+                        r'\#(t(ag(_abbr)?)?)', 'Tag.tag_abbr', where
+                    )
+
+                    # Replace datetime
+                    where = re.sub(
+                        r'\%([\dTZ\:\-]+)\%', r"to_datetime('\1').to_pydatetime()", where
+                    )
+
+                    # Create query
+                    qry_tmp = qry_base.where(
+                        eval(
+                            where,
+                            {
+                                'EventsInfo': EventsInfo,
+                                'Instrument': Instrument,
+                                'Tag': Tag,
+                                'to_datetime': to_datetime
+                            }
+                        ) &
+                        (Parameter.prm_abbr == prm_abbr)
+                    )
+
+                    # Execute query
+                    search_res.append(
+                        str(
+                            set(arg.id for arg in qry_tmp.iterator())
+                        )
+                    )
+
+                # Eval set logical expression
+                out = list(eval(''.join(
+                    [arg for arg in chain(
+                        *zip_longest(
+
+                            # Split formula
+                            where_split,
+
+                            # Find formula and substitute
+                            search_res
+                        )
+                    ) if arg]
+                )))
+
+                # Convert id as table element
+                qry = EventsInfo.select().where(EventsInfo.id.in_(out))
+                out = [arg for arg in qry.iterator()]
+
+        except Exception as exc:
+            print(where)
+            print(where_find)
+            print(exc)
+            out = []
 
         return out
 
@@ -519,7 +569,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         eventsinfo_id_list = self._get_eventsinfo_id(where, prm_abbr)
 
         if not eventsinfo_id_list:
-            localdb_select.warning(
+            localdb.warning(
                 "Empty search '%s' for '%s", where, prm_abbr
             )
 
