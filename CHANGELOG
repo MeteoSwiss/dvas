@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 
 ### Added:
+ - [fpavogt, 2020-06-10] Create a plot submodule, including dedicated style sheets
  - [modolol, 2020-05-18] Add pytest-env, pytest-datafiles in pip install CI_pytest.yml
  - [fpavogt, 2020-05-14] Github Action to check if this CHANGELOG gets modified :)
  - [fpavogt, 2020-05-14] Added README, CODE_OF_CONDUCT, CONTRIBUTING files

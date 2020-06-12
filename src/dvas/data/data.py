@@ -8,7 +8,6 @@ Created February 2020, L. Modolo - mol@meteoswiss.ch
 import copy
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
 from ..config.definitions.flag import RAWNA_ABBR, RESMPL_ABBR, UPSMPL_ABBR
 from ..config.definitions.flag import INTERP_ABBR, SYNC_ABBR
@@ -17,6 +16,7 @@ from ..database.database import db_mngr
 from ..database.model import Flag
 from ..database.database import ConfigLinker
 from .math import crosscorr
+from ..plot.plot import basic_plot
 
 from ..dvas_helper import TimeIt
 
@@ -348,9 +348,7 @@ class MultiTimeProfileManager(list):
 
         return out
 
-    def plot(self):
+    def plot(self, **kwargs):
         """Plot method"""
 
-        fig = plt.figure()
-        for arg in self:
-            plt.plot(arg.data)
+        basic_plot(self, **kwargs)
