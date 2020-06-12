@@ -5,6 +5,7 @@ dvas.dvas_helper module.
 """
 
 # Import from python packages and modules
+from pathlib import Path
 from abc import ABC
 import pytest
 
@@ -12,6 +13,7 @@ import pytest
 from dvas.dvas_helper import SingleInstanceMetaClass
 from dvas.dvas_helper import RequiredAttrMetaClass
 from dvas.dvas_helper import get_by_path
+from dvas.dvas_helper import check_path
 
 
 def test_single_instance_metaclass():
@@ -108,3 +110,21 @@ def test_get_by_path():
 
     with pytest.raises(KeyError):
         get_by_path({'a': {'b': 1, 'c': 0}, 'b': 2}, ['a', 'z'])
+
+
+@pytest.fixture(autouse=True)
+def test_check_path(tmpdir):
+    """Function to test check_path"""
+
+    # Test str path name
+    assert check_path(Path(tmpdir).as_posix()) == Path(tmpdir)
+
+    # Test exist_ok True
+    assert check_path(Path(tmpdir), exist_ok=True) == Path(tmpdir)
+
+    # Test exist_ok False
+    assert check_path(Path(tmpdir) / 'test') == Path(tmpdir) / 'test'
+
+    # Raise exception
+    with pytest.raises(TypeError):
+        check_path(Path(tmpdir) / 'dummy', exist_ok=True)

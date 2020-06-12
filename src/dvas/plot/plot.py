@@ -99,7 +99,8 @@ def basic_plot(items, fig_num=None, save_fn=None):
         xmin = np.nanmax([xmin, np.min(x_data_s)])
         xmax = np.nanmin([xmax, np.max(x_data_s)])
 
-        ax1.plot(x_data_s, arg.data.values, linestyle='-', drawstyle='steps-mid')
+        #ax1.plot(x_data_s, arg.data.values, linestyle='-', drawstyle='steps-mid')
+        ax1.plot(x_data_s, arg.data.values, linestyle='-')
 
     # Deal with the axes
     ax1.set_xlabel(r'$\Delta t$ [s]')

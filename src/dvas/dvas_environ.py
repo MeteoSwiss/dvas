@@ -7,97 +7,23 @@ Created February 2020, L. Modolo - mol@meteoswiss.ch
 
 # Import Python packages and module
 import os
-import platform
 from pathlib import Path
 from contextlib import contextmanager
-import oschmod
 
 # Import current package's modules
 from .dvas_helper import SingleInstanceMetaClass
 from .dvas_helper import TypedProperty
-from .dvas_helper import check_str, check_list_str
+from .dvas_helper import check_str, check_list_str, check_path
 from . import __name__ as pkg_name
 
 # Define package path
 package_path = Path(__file__).parent
 
 
-def set_path(value, exist_ok=False):
-    """Test and set input argument into pathlib.Path object.
+class VariableManager():
+    """"""
 
-    Args:
-        value (`obj`): Argument to be tested
-        exist_ok (bool, optional): If True check existence.
-            Otherwise create path. Default to False. The user must have
-            read and write access to the path.
-
-    Returns:
-        pathlib.Path
-
-    Raises:
-        - TypeError: In case of path does not exist, or
-
-    """
-
-    # Create or test existence
-    if exist_ok is True:
-        try:
-            assert (out := Path(value)).exists() is True
-        except AssertionError:
-            raise TypeError(f"Path '{out}' does not exist")
-
-    else:
-        try:
-            (out := Path(value)).mkdir(parents=True, exist_ok=True)
-        except (TypeError, OSError, FileNotFoundError):
-            raise TypeError(f"Can not create '{out}'")
-
-    # Set read/write access
-    try:
-        if platform.system() != 'Windows':
-            oschmod.set_mode(out, "u+rw")
-
-    except Exception:
-        raise TypeError(f"Can not set '{out}' to read/write access.")
-
-    return out
-
-
-class GlobalPathVariablesManager(metaclass=SingleInstanceMetaClass):
-    """Class to manage package's global directory path variables"""
-
-    # Set class constant attributes
-    CST = [
-        {'name': 'orig_data_path',
-         'default': package_path / 'examples' / 'data',
-         'os_nm': 'DVAS_ORIG_DATA_PATH'},
-        {'name': 'config_dir_path',
-         'default': package_path / 'examples' / 'config',
-         'os_nm': 'DVAS_CONFIG_DIR_PATH'},
-        {'name': 'local_db_path',
-         'default': Path('.') / 'dvas_db',
-         'os_nm': 'DVAS_LOCAL_DB_PATH'},
-        {'name': 'output_path',
-         'default': Path('.') / 'output',
-         'os_nm': 'DVAS_OUTPUT_PATH'}
-    ]
-
-    #: pathlib.Path: Original data path
-    orig_data_path = TypedProperty(
-        (Path, str), set_path, kwargs={'exist_ok': True}
-    )
-    #: pathlib.Path: Config dir path
-    config_dir_path = TypedProperty(
-        (Path, str), set_path, kwargs={'exist_ok': True}
-    )
-    #: pathlib.Path: Local db dir path
-    local_db_path = TypedProperty(
-        (Path, str), set_path, kwargs={'exist_ok': False}
-    )
-    #: pathlib.Path: DVAS output dir path
-    output_path = TypedProperty(
-        (Path, str), set_path, kwargs={'exist_ok': False}
-    )
+    CST = []
 
     def __init__(self):
         """Constructor"""
@@ -107,11 +33,14 @@ class GlobalPathVariablesManager(metaclass=SingleInstanceMetaClass):
     def load_os_environ(self):
         """Load from OS environment variables"""
         for arg in self.CST:
-            setattr(
-                self,
-                arg['name'],
-                os.getenv(arg['os_nm'], arg['default'])
-            )
+            if 'os_nm' in arg.keys():
+                setattr(
+                    self,
+                    arg['name'],
+                    os.getenv(arg['os_nm'], arg['default'])
+                )
+            else:
+                setattr(self, arg['name'], arg['default'])
 
     @contextmanager
     def set_many_attr(self, items):
@@ -139,11 +68,48 @@ class GlobalPathVariablesManager(metaclass=SingleInstanceMetaClass):
             setattr(self, key, val)
 
 
+class GlobalPathVariablesManager(VariableManager, metaclass=SingleInstanceMetaClass):
+    """Class to manage package's global directory path variables"""
+
+    # Set class constant attributes
+    CST = [
+        {'name': 'orig_data_path',
+         'default': package_path / 'examples' / 'data',
+         'os_nm': 'DVAS_ORIG_DATA_PATH'},
+        {'name': 'config_dir_path',
+         'default': package_path / 'examples' / 'config',
+         'os_nm': 'DVAS_CONFIG_DIR_PATH'},
+        {'name': 'local_db_path',
+         'default': Path('.') / 'dvas_db',
+         'os_nm': 'DVAS_LOCAL_DB_PATH'},
+        {'name': 'output_path',
+         'default': Path('.') / 'output',
+         'os_nm': 'DVAS_OUTPUT_PATH'}
+    ]
+
+    #: pathlib.Path: Original data path
+    orig_data_path = TypedProperty(
+        (Path, str), check_path, kwargs={'exist_ok': True}
+    )
+    #: pathlib.Path: Config dir path
+    config_dir_path = TypedProperty(
+        (Path, str), check_path, kwargs={'exist_ok': True}
+    )
+    #: pathlib.Path: Local db dir path
+    local_db_path = TypedProperty(
+        (Path, str), check_path, kwargs={'exist_ok': False}
+    )
+    #: pathlib.Path: DVAS output dir path
+    output_path = TypedProperty(
+        (Path, str), check_path, kwargs={'exist_ok': False}
+    )
+
+
 #: GlobalPathVariablesManager: Global variable containing directory path values
 path_var = GlobalPathVariablesManager()
 
 
-class GlobalPackageVariableManager(metaclass=SingleInstanceMetaClass):
+class GlobalPackageVariableManager(VariableManager, metaclass=SingleInstanceMetaClass):
     """Class used to manage package global variables"""
 
     # Set class constant attributes
@@ -182,27 +148,9 @@ class GlobalPackageVariableManager(metaclass=SingleInstanceMetaClass):
     config_gen_grp_sep = TypedProperty(
         str, check_str, args=(['$', '%', '#'],)
     )
-    #: list if str: Config file allowed extensions. Default to ['yml', 'yaml']
+    #: list of str: Config file allowed extensions. Default to ['yml', 'yaml']
     config_file_ext = TypedProperty(
         list, check_list_str, kwargs={'choices': ['yml', 'yaml', 'txt']}
     )
 
-    def __init__(self):
-        """Constructor"""
-        self.load_os_environ()
-
-    def load_os_environ(self):
-        """Load from OS environment variables"""
-        for arg in self.CST:
-            if 'os_nm' in arg.keys():
-                setattr(
-                    self,
-                    arg['name'],
-                    os.getenv(arg['os_nm'], arg['default'])
-                )
-            else:
-                setattr(self, arg['name'], arg['default'])
-
-
 glob_var = GlobalPackageVariableManager()
-

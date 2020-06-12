@@ -6,12 +6,15 @@ Created February 2020, L. Modolo - mol@meteoswiss.ch
 """
 
 # Import external packages and modules
+from pathlib import Path
 import re
+import platform
 from datetime import datetime
 from functools import wraps, reduce
 from abc import ABC, ABCMeta, abstractmethod
 from inspect import getmodule
 from operator import getitem
+import oschmod
 from peewee import PeeweeException
 
 
@@ -404,5 +407,46 @@ def get_by_path(root, items):
         out = reduce(getitem, items, root)
     else:
         out = reduce(getattr, items, root)
+
+    return out
+
+
+def check_path(value, exist_ok=False):
+    """Test and set input argument into pathlib.Path object.
+
+    Args:
+        value (`obj`): Argument to be tested
+        exist_ok (bool, optional): If True check existence.
+            Otherwise create path. Default to False. The user must have
+            read and write access to the path.
+
+    Returns:
+        pathlib.Path
+
+    Raises:
+        - TypeError: In case of path does not exist, or
+
+    """
+
+    # Create or test existence
+    if exist_ok is True:
+        try:
+            assert (out := Path(value)).exists() is True
+        except AssertionError:
+            raise TypeError(f"Path '{out}' does not exist")
+
+    else:
+        try:
+            (out := Path(value)).mkdir(parents=True, exist_ok=True)
+        except (TypeError, OSError, FileNotFoundError):
+            raise TypeError(f"Can not create '{out}'")
+
+    # Set read/write access
+    try:
+        if platform.system() != 'Windows':
+            oschmod.set_mode(out, "u+rw")
+
+    except Exception:
+        raise TypeError(f"Can not set '{out}' to read/write access.")
 
     return out

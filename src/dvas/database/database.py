@@ -184,6 +184,11 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         EventsInfo, Parameter,
         Flag, Tag, EventsTags, Data, OrgiDataInfo
     ]
+    DB_TABLES_PRINT = [
+        Parameter, InstrType,
+        Instrument, Flag,
+        Tag
+    ]
 
     def __init__(self):
         """Constructor"""
@@ -624,11 +629,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         out += f"{'*' * len(out)}\n"
 
         if not print_tables:
-            print_tables = [
-                InstrType, Instrument, Flag,
-                Parameter, EventsInfo, OrgiDataInfo,
-                Tag, EventsTags,
-            ]
+            print_tables = self.DB_TABLES_PRINT
 
         for print_tbl in print_tables:
             out += f"{print_tbl.__name__}\n"

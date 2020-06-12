@@ -12,26 +12,7 @@ import pytest
 
 # Import from current package
 from dvas.dvas_environ import path_var
-from dvas.dvas_environ import set_path
 from dvas.dvas_environ import GlobalPathVariablesManager
-
-
-@pytest.fixture(autouse=True)
-def test_set_path(tmpdir):
-    """Function to test set_path"""
-
-    # Test str path name
-    assert set_path(Path(tmpdir).as_posix()) == Path(tmpdir)
-
-    # Test exist_ok True
-    assert set_path(Path(tmpdir), exist_ok=True) == Path(tmpdir)
-
-    # Test exist_ok False
-    assert set_path(Path(tmpdir) / 'test') == Path(tmpdir) / 'test'
-
-    # Raise exception
-    with pytest.raises(TypeError):
-        set_path(Path(tmpdir) / 'dummy', exist_ok=True)
 
 
 class TestGlobalPathVariablesManager:
@@ -48,8 +29,6 @@ class TestGlobalPathVariablesManager:
 
     def test_uniqueness(self):
         """Test instance uniqueness"""
-        print(id(path_var))
-        print(id(self.path_var_2))
         assert id(path_var) == id(self.path_var_2)
 
     @pytest.fixture(autouse=True)

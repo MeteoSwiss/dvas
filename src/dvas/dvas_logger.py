@@ -34,6 +34,9 @@ def get_logger(name):
     if name not in LOGGER_NAME:
         raise ValueError("Unknown logger name '{}'".format(name))
 
+    out = logging.getLogger(name)
+    out.disabled = True
+
     return logging.getLogger(name)
 
 

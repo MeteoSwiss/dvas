@@ -15,15 +15,23 @@ if __name__ == '__main__':
     # Create database
     db_mngr.create_db()
 
+    # Update DB + log
     with LogManager():
-        pass
         update_db('fklpros1')
         update_db('trepros1')
         update_db('prepros1')
         update_db('altpros1')
 
+    # Update all parameters ending with 1 + log
+    with LogManager():
+        update_db('%1')
+
+    # Same without log
+    update_db('%1')
+
+    # Load
     data_t1 = load("#e < %2020-01-02T120000Z%", 'trepros1')
-    data_t2 = load("#tag_abbr == 'e2'", 'trepros1')
+    data_t2 = load("#tag == 'e2'", 'trepros1')
     data_a = load("#tag_abbr == 'b1'", 'altpros1')
 
     with TimeIt():
