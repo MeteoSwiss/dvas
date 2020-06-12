@@ -45,8 +45,8 @@ def set_mplstyle(style='base'):
             dict | Dictionary with valid key/value pairs for `matplotlib.rcParams`.
 
     Note:
-        Specifying the 'pretty' style requires a working system-wide LaTeX installation. 
-        Speciying 'robust' enables the default matplotlib LaTeX. Defaults to 'base'. 
+        Specifying the 'pretty' style requires a working system-wide LaTeX installation.
+        Specifying 'robust' enables the default matplotlib LaTeX. Defaults to 'base'.
 
     '''
 

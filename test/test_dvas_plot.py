@@ -5,7 +5,6 @@ dvas.plot module.
 """
 
 # Import from python packages and modules
-import pytest
 import matplotlib.pyplot as plt
 
 # Import from current package
@@ -19,7 +18,7 @@ def test_plot_types():
 
     """
 
-    # Inspired from 
+    # Inspired from
     # https://stackoverflow.com/questions/7608066/
     # in-matplotlib-is-there-a-way-to-know-the-list-of-available-output-format
     fig = plt.figure()
