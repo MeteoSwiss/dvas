@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [modolol, 2020-05-25] Add logging possibilities
 
 ### Added:
+ - [fpavogt, 2020-06-12] Automatically load the `base` style sheet for plots & new tests
  - [modolol, 2020-06-12] Add tags table in DB and config items generator
  - [fpavogt, 2020-06-10] Create a plot submodule, including dedicated style sheets	   
  - [modolol, 2020-05-18] Add pytest-env, pytest-datafiles in pip install CI_pytest.yml
@@ -15,7 +16,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [fpavogt, 2020-05-14] Added README, CODE_OF_CONDUCT, CONTRIBUTING files
  - [fpavogt, 2020-05-07] Github Actions to validate syntax using pylint and run pytests
  - [fpavogt, 2020-05-07] CHANGELOG file based on https://keepachangelog.com
- - [fpavogt, 2020-05-07] Sphinx documentation with primary pages and todo list.
+ - [fpavogt, 2020-05-07] Sphinx documentation with primary pages and todo list
 
 ### Changed:
  - [modolol, 2020-05-18] Adapted setup.py and CI_pylinter.yml
