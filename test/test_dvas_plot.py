@@ -19,7 +19,9 @@ def test_plot_types():
 
     """
 
-    # Create a dummy figure
+    # Inspired from 
+    # https://stackoverflow.com/questions/7608066/
+    # in-matplotlib-is-there-a-way-to-know-the-list-of-available-output-format
     fig = plt.figure()
     ok_exts = fig.canvas.get_supported_filetypes()
 
