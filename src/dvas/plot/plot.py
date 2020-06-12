@@ -35,8 +35,8 @@ PLOT_TYPES = ['.png', '.pdf']
 PLOT_SHOW = True
 
 def set_mplstyle(style='base'):
-    ''' Set the DVAS plotting style. 'base' contains all the generic commands. 'pretty' enables the
-    use of a system-wide LaTeX engine. 'robust' disables it.
+    ''' Set the DVAS plotting style. 'base' contains all the generic commands. 'latex' enables the
+    use of a system-wide LaTeX engine. 'nolatex' disables it.
 
     Args:
         name (str, dict, optional): A style specification. Valid options are:
@@ -45,8 +45,8 @@ def set_mplstyle(style='base'):
             dict | Dictionary with valid key/value pairs for `matplotlib.rcParams`.
 
     Note:
-        Specifying the 'pretty' style requires a working system-wide LaTeX installation.
-        Specifying 'robust' enables the default matplotlib LaTeX. Defaults to 'base'.
+        Specifying the 'latex' style requires a working system-wide LaTeX installation.
+        Specifying 'nolatex' enables the default matplotlib LaTeX.
 
     '''
 
