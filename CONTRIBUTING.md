@@ -14,6 +14,7 @@ We are currently in the very early stages of development of dvas. If you would l
 
 ## Styleguides
 
-The following choices apply to dvas:
-
-- python doctrings: Google Style
+- **python doctrings:** Google Style
+- **linting:** 
+  * the following [pylint](https://www.pylint.org/) error codes are forbidden: ``E, C0303, C0304, C0112, C0114, C0115, C0116, C0411, W0611, W0612.`` Any pull request will be automatically linted, and these will be flagged accordingly. 
+  * In general, we would encourage contributors to follow PEP8 as closely as possible/reasonable.
