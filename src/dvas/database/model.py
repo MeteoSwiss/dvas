@@ -9,12 +9,11 @@ Created February 2020, L. Modolo - mol@meteoswiss.ch
 import re
 from peewee import SqliteDatabase, Model, Check
 from peewee import AutoField
-from peewee import IntegerField, BooleanField, FloatField
+from peewee import IntegerField, FloatField
 from peewee import DateTimeField, TextField, CharField
 from peewee import ForeignKeyField
 
 # Import from current package
-from ..config.pattern import BATCH_PAT
 from ..config.pattern import INSTR_TYPE_PAT, INSTR_PAT
 from ..config.pattern import PARAM_PAT
 from ..dvas_environ import path_var as env_path_var
@@ -52,9 +51,9 @@ class InstrType(MetadataModel):
     """Instrument type model"""
     id = AutoField(primary_key=True)
     type_name = CharField(
-        null=False, unique=True,
+        null=True, unique=True,
         constraints=[
-            Check(f"re_fullmatch('{INSTR_TYPE_PAT}', type_name)")
+            Check(f"re_fullmatch('({INSTR_TYPE_PAT})|()', type_name)")
         ]
     )
     desc = TextField()
@@ -64,8 +63,9 @@ class Instrument(MetadataModel):
     """Instrument model """
     id = AutoField(primary_key=True)
     instr_id = CharField(
+        null=True, unique=True,
         constraints=[
-            Check(f"re_fullmatch('{INSTR_PAT}', instr_id)")
+            Check(f"re_fullmatch('({INSTR_PAT})|()', instr_id)")
         ]
     )
     instr_type = ForeignKeyField(InstrType, backref='instruments')
@@ -83,7 +83,7 @@ class Parameter(MetadataModel):
             Check(f"re_fullmatch('{PARAM_PAT}', prm_abbr)"),
         ]
     )
-    prm_desc = TextField(default='')
+    prm_desc = TextField(null=False, default='')
 
 
 class Flag(MetadataModel):
@@ -94,7 +94,14 @@ class Flag(MetadataModel):
         unique=True,
         constraints=[Check("bit_number >= 0")])
     flag_abbr = CharField(null=False)
-    desc = TextField(null=False)
+    flag_desc = TextField(null=False, default='')
+
+
+class Tag(MetadataModel):
+    """Tag model"""
+    id = AutoField(primary_key=True)
+    tag_abbr = CharField(null=False, unique=True)
+    tag_desc = TextField()
 
 
 class OrgiDataInfo(MetadataModel):
@@ -103,34 +110,43 @@ class OrgiDataInfo(MetadataModel):
     source = CharField(null=True)
 
 
-class EventsInstrumentsParameters(MetadataModel):
+class EventsInfo(MetadataModel):
     """Events/Instruments/Parameter model"""
     id = AutoField(primary_key=True)
     event_dt = DateTimeField(null=False)
     instrument = ForeignKeyField(
-        Instrument, backref='event_instrs_params'
+        Instrument, backref='event_info'
     )
     param = ForeignKeyField(
-        Parameter, backref='event_instrs_params'
+        Parameter, backref='event_info'
     )
-    batch_id = CharField(
-        null=False,
-        constraints=[
-            Check(f"re_fullmatch('{BATCH_PAT}', batch_id)")
-        ]
-    )
-    day_event = BooleanField(null=False)
-    event_id = CharField(null=True)
     orig_data_info = ForeignKeyField(
-        OrgiDataInfo, backref='event_instrs_params'
+        OrgiDataInfo, backref='event_info'
     )
+
+
+class EventsTags(MetadataModel):
+    """Many-to-Many link between EventsInfo and Tag tables"""
+    tag = ForeignKeyField(
+        Tag, backref='events_tags'
+    )
+    events_info = ForeignKeyField(
+        EventsInfo, backref='events_tags'
+    )
+
+
+#TODO
+#class MetaData
+#    prm
+#    value
+#    event
 
 
 class Data(MetadataModel):
     """Data model"""
     id = AutoField(primary_key=True)
-    event_instr_param = ForeignKeyField(
-        EventsInstrumentsParameters,
+    event_info = ForeignKeyField(
+        EventsInfo,
         backref='datas')
     index = FloatField(null=False)
     value = FloatField(null=True)

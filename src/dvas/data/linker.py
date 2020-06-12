@@ -7,17 +7,18 @@ Created February 2020, L. Modolo - mol@meteoswiss.ch
 
 # Import external python packages and modules
 from abc import ABC, abstractmethod
-from pathlib import Path
 import inspect
 from itertools import takewhile
 import pandas as pd
 
 # Import from current package
 from ..dvas_environ import path_var as env_path_var
-from ..database.model import Data
-from ..database.database import db_mngr, EventManager, InstrType, Instrument
+from ..database.model import Data, InstrType, Instrument
+from ..database.database import db_mngr, EventManager
 from ..config.config import OrigData, OrigMeta
-from ..dvas_helper import TimeIt
+from ..config.config import ConfigReadError
+from ..dvas_logger import rawcsv
+from ..dvas_environ import glob_var as env_glob_var
 
 # Define
 INDEX_NM = Data.index.name
@@ -107,7 +108,7 @@ class OriginalCSVLinker(DataLinker):
     """Original data CSV linger"""
 
     def __init__(self):
-        "Constructor"
+        """Constructor"""
         # Set attributes
         self._origdata_config_mngr = OrigData()
 
@@ -119,14 +120,16 @@ class OriginalCSVLinker(DataLinker):
         """config.OrigData: Config orig data manager"""
         return self._origdata_config_mngr
 
-    @TimeIt()
     def load(self, prm_abbr, exclude_file_name=None):
         """Overwrite load method
 
         Args:
-            exclude_file_name (list of str | list of Path): Already load data file to be excluded
+            prm_abbr (str): Parameter abbr
+            exclude_file_name (list of str): Already load data file name to be
+                excluded.
 
         Returns:
+            list of dict
 
         """
 
@@ -136,33 +139,26 @@ class OriginalCSVLinker(DataLinker):
             exclude_file_name = []
 
         # Define
+        cfg_file_suffix = ['.' + arg for arg in env_glob_var.config_file_ext]
         origmeta_cfg_mngr = OrigMeta()
-
-        # Convert
-        exclude_file_name = [Path(arg) for arg in exclude_file_name]
 
         # Scan recursively CSV files in directory
         origdata_file_path_list = [
             arg for arg in env_path_var.orig_data_path.rglob("*.csv")
-            if arg not in exclude_file_name
+            if arg.name not in exclude_file_name
         ]
 
         for origdata_file_path in origdata_file_path_list:
 
             # Define metadata path
-            metadata_file_path = origdata_file_path
-            for ext in ['.txt', '.yml']:
-                try:
-                    new_fn = next(
-                        Path(metadata_file_path.parent).glob(
-                            '*' + metadata_file_path.stem + '*' + ext
-                        )
-                    )
-                except StopIteration:
-                    pass
-                else:
-                    metadata_file_path = new_fn
-                    break
+            try:
+                metadata_file_path = next(
+                    arg for arg in origdata_file_path.parent.glob(
+                        '*' + origdata_file_path.stem + '*.*'
+                    ) if arg.suffix in cfg_file_suffix
+                )
+            except StopIteration:
+                metadata_file_path = origdata_file_path
 
             # Read metadata
             with metadata_file_path.open(mode='r') as fid:
@@ -176,32 +172,55 @@ class OriginalCSVLinker(DataLinker):
                     meta_raw = fid.read()
 
             # Read YAML config
-            origmeta_cfg_mngr.read(meta_raw)
+            try:
+                origmeta_cfg_mngr.read(meta_raw)
+                assert origmeta_cfg_mngr.document
+
+            except ConfigReadError as exc:
+                rawcsv.error(
+                    "Error in reading file '%s' (%s)",
+                    metadata_file_path,
+                    exc
+                )
+                continue
+
+            except AssertionError:
+                rawcsv.error(
+                    "No meta data found in file '%s'",
+                    metadata_file_path
+                )
+                continue
 
             # Create event
             event = EventManager(
-                event_dt=origmeta_cfg_mngr.document['event_dt'],
-                instr_id=origmeta_cfg_mngr.document['instr_id'],
+                event_dt=origmeta_cfg_mngr['event_dt'],
+                instr_id=origmeta_cfg_mngr['instr_id'],
                 prm_abbr=prm_abbr,
-                batch_id=origmeta_cfg_mngr.document['batch_id'],
-                day_event=origmeta_cfg_mngr.document['day_event'],
-                event_id=origmeta_cfg_mngr.document['event_id']
+                tag_abbr=origmeta_cfg_mngr['tag_abbr'],
             )
 
-            # Get instr_type name
+            # Check instr_type name existence
+            # (need it for loading origdata config)
             instr_type_name = db_mngr.get_or_none(
                 Instrument,
                 search={
                     'join_order': [InstrType],
                     'where': Instrument.instr_id == event.instr_id
                 },
-                attr=['instr_type', 'type_name']
+                attr=[[Instrument.instr_type.name, InstrType.type_name.name]]
             )
 
             if not instr_type_name:
-                raise Exception('Missing instr_id')
+                rawcsv.error(
+                    "Missing instrument id '%s' in DB while reading " +
+                    "meta data in file '%s'",
+                    event.instr_id,
+                    metadata_file_path
+                )
+                continue
 
             # Get origdata config params
+            instr_type_name = instr_type_name[0]
             origdata_cfg_prm = self.origdata_config_mngr.get_all(
                 [instr_type_name, prm_abbr, event.instr_id]
             )
@@ -214,12 +233,30 @@ class OriginalCSVLinker(DataLinker):
             # Read raw csv
             try:
                 data = pd.read_csv(origdata_file_path, **raw_csv_read_args)
-            except Exception as _:
-                raise Exception(
-                    f"Error while reading CSV data in {origdata_file_path}"
+
+            except ValueError as exc:
+                rawcsv.error(
+                    "Error while reading '%s' in CSV file '%s' (%s: %s)",
+                    prm_abbr, origdata_file_path,
+                    type(exc).__name__, exc
                 )
 
-            out.append({'event': event, 'data': data})
+            else:
+
+                # Log
+                rawcsv.info(
+                    "Successful reading of '%s' in CSV file '%s'",
+                    prm_abbr, origdata_file_path,
+                )
+
+                # Append data
+                out.append(
+                    {
+                        'event': event,
+                        'data': data,
+                        'source_info': origdata_file_path.name
+                    }
+                )
 
         return out
 
@@ -229,3 +266,7 @@ class OriginalCSVLinker(DataLinker):
             f"Save method for {self.__class__.__name__} should not implemented."
         )
         raise NotImplementedError(errmsg)
+
+
+class ConfigInstrIdError(Exception):
+    """Error for missing instrument id"""

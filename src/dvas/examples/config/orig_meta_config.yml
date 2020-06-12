@@ -1,5 +1,0 @@
-# Event configuration file
-
-event_id: 'e1'
-day_event: False
-event_dt: '2020-01-02T00:00:00Z'

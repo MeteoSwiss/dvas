@@ -1,5 +1,6 @@
 event_dt: 2020-01-02T000000Z
-batch_id: b1
 instr_id: i2
-event_id: e1
-day_event: False
+tag_abbr:
+    - e1
+    - b1
+    - night

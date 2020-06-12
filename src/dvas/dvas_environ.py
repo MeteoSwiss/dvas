@@ -7,12 +7,16 @@ Created February 2020, L. Modolo - mol@meteoswiss.ch
 
 # Import Python packages and module
 import os
+import platform
 from pathlib import Path
 from contextlib import contextmanager
+import oschmod
 
 # Import current package's modules
 from .dvas_helper import SingleInstanceMetaClass
 from .dvas_helper import TypedProperty
+from .dvas_helper import check_str, check_list_str
+from . import __name__ as pkg_name
 
 # Define package path
 package_path = Path(__file__).parent
@@ -23,24 +27,38 @@ def set_path(value, exist_ok=False):
 
     Args:
         value (`obj`): Argument to be tested
-        exist_ok (bool, optional): If True check existence. Otherwise
-            create path. Default to False.
+        exist_ok (bool, optional): If True check existence.
+            Otherwise create path. Default to False. The user must have
+            read and write access to the path.
 
     Returns:
-        patlib.Path
+        pathlib.Path
+
+    Raises:
+        - TypeError: In case of path does not exist, or
 
     """
-    try:
-        if exist_ok is True:
+
+    # Create or test existence
+    if exist_ok is True:
+        try:
             assert (out := Path(value)).exists() is True
-        else:
-            (out := Path(value)).mkdir(mode=777, parents=True, exist_ok=True)
+        except AssertionError:
+            raise TypeError(f"Path '{out}' does not exist")
 
-    except AssertionError:
-        raise TypeError(f"Path '{out}' does not exist")
+    else:
+        try:
+            (out := Path(value)).mkdir(parents=True, exist_ok=True)
+        except (TypeError, OSError, FileNotFoundError):
+            raise TypeError(f"Can not create '{out}'")
 
-    except (TypeError, OSError, FileNotFoundError):
-        raise TypeError(f"Path '{out}' is not compatible with system path")
+    # Set read/write access
+    try:
+        if platform.system() != 'Windows':
+            oschmod.set_mode(out, "u+rw")
+
+    except Exception:
+        raise TypeError(f"Can not set '{out}' to read/write access.")
 
     return out
 
@@ -120,4 +138,71 @@ class GlobalPathVariablesManager(metaclass=SingleInstanceMetaClass):
         for key, val in old_items.items():
             setattr(self, key, val)
 
+
+#: GlobalPathVariablesManager: Global variable containing directory path values
 path_var = GlobalPathVariablesManager()
+
+
+class GlobalPackageVariableManager(metaclass=SingleInstanceMetaClass):
+    """Class used to manage package global variables"""
+
+    # Set class constant attributes
+    CST = [
+        {'name': 'log_output',
+         'default': 'CONSOLE',
+         'os_nm': 'DVAS_LOG_OUTPUT'},
+        {'name': 'log_file_name',
+         'default': pkg_name + '.log',
+         'os_nm': 'DVAS_LOG_FILE_NAME'},
+        {'name': 'log_level',
+         'default': 'INFO',
+         'os_nm': 'DVAS_LOG_LEVEL'},
+        {'name': 'config_gen_max',
+         'default': 10000},
+        {'name': 'config_gen_grp_sep',
+         'default': '$'},
+        {'name': 'config_file_ext',
+         'default': ['yml', 'yaml']}
+    ]
+
+    #: str: Log output type, Default to 'CONSOLE'
+    log_output = TypedProperty(
+        str, check_str, args=(['FILE', 'CONSOLE'],)
+    )
+    #: str: Log output file name. Default to 'dvas.log'
+    log_file_name = TypedProperty(str)  #TODO add check re \w
+    #: str: Log level. Default to 'INFO'
+    log_level = TypedProperty(
+        str, check_str,
+        args=(['DEBUG', 'INFO', 'WARNING', 'ERROR'],)
+    )
+    #: int: Config regexp generator limit. Default to 10000.
+    config_gen_max = TypedProperty(int)
+    #: str: Config regex generator group function separator. Default to '$'.
+    config_gen_grp_sep = TypedProperty(
+        str, check_str, args=(['$', '%', '#'],)
+    )
+    #: list if str: Config file allowed extensions. Default to ['yml', 'yaml']
+    config_file_ext = TypedProperty(
+        list, check_list_str, kwargs={'choices': ['yml', 'yaml', 'txt']}
+    )
+
+    def __init__(self):
+        """Constructor"""
+        self.load_os_environ()
+
+    def load_os_environ(self):
+        """Load from OS environment variables"""
+        for arg in self.CST:
+            if 'os_nm' in arg.keys():
+                setattr(
+                    self,
+                    arg['name'],
+                    os.getenv(arg['os_nm'], arg['default'])
+                )
+            else:
+                setattr(self, arg['name'], arg['default'])
+
+
+glob_var = GlobalPackageVariableManager()
+

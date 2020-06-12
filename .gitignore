@@ -243,7 +243,6 @@ pip-selfcheck.json
 .venv/src/
 .venv/tcl/
 db.json
-expl_tmp.py
 local_db.sqlite
 this_file_of_result.txt
 

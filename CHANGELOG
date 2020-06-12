@@ -4,10 +4,12 @@ The format is inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [Unreleased]
+### [Unreleased]
+ - [modolol, 2020-05-25] Add logging possibilities
 
 ### Added:
- - [fpavogt, 2020-06-10] Create a plot submodule, including dedicated style sheets
+ - [modolol, 2020-06-12] Add tags table in DB and config items generator
+ - [fpavogt, 2020-06-10] Create a plot submodule, including dedicated style sheets	   
  - [modolol, 2020-05-18] Add pytest-env, pytest-datafiles in pip install CI_pytest.yml
  - [fpavogt, 2020-05-14] Github Action to check if this CHANGELOG gets modified :)
  - [fpavogt, 2020-05-14] Added README, CODE_OF_CONDUCT, CONTRIBUTING files
@@ -21,6 +23,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Deprecated:
 ### Removed:
 ### Fixed:
+ - [modolol, 2020-06-12] Set os.chmod(777) -> skip for Windows and check for R/W for MAC and Linux
  - [modolol, 2020-05-25] Adapt for passing multi OS_CI
  - [modolol, 2020-05-18] Code cleaning (bis)
  - [modolol, 2020-05-15] Code cleaning

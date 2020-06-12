@@ -126,3 +126,6 @@ PARAMETER_PATTERN_PROP = {
         "uniqueItems": True
     },
 }
+
+#: str: Config manager key name
+KEY = 'OrigData'

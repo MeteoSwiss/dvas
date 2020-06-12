@@ -5,26 +5,29 @@ Created February 2020, L. Modolo - mol@meteoswiss.ch
 
 """
 
-import copy
+# Import from external packages
+from copy import deepcopy
 import numpy as np
 import pandas as pd
 
+# Import from current package
+from .linker import LocalDBLinker, OriginalCSVLinker
+from ..plot.plot import basic_plot
+from .math import crosscorr
+from ..database.database import db_mngr
+from ..database.model import Flag, Parameter
+from ..database.model import EventsInfo, OrgiDataInfo
+from ..database.model import Instrument
+from ..database.database import OneDimArrayConfigLinker
 from ..config.definitions.flag import RAWNA_ABBR, RESMPL_ABBR, UPSMPL_ABBR
 from ..config.definitions.flag import INTERP_ABBR, SYNC_ABBR
-from .linker import LocalDBLinker, OriginalCSVLinker
-from ..database.database import db_mngr
-from ..database.model import Flag
-from ..database.database import ConfigLinker
-from .math import crosscorr
-from ..plot.plot import basic_plot
-
-from ..dvas_helper import TimeIt
+from ..dvas_logger import localdb, rawcsv
 
 
 # Define
 FLAG = 'flag'
 VALUE = 'value'
-cfg_linker = ConfigLinker()
+cfg_linker = OneDimArrayConfigLinker()
 
 
 class FlagManager:
@@ -32,7 +35,7 @@ class FlagManager:
 
     _FLAG_BIT_NM = Flag.bit_number.name
     _FLAG_ABBR_NM = Flag.flag_abbr.name
-    _FLAG_DESC_NM = Flag.desc.name
+    _FLAG_DESC_NM = Flag.flag_desc.name
 
     def __init__(self, index):
         """Constructor
@@ -64,24 +67,28 @@ class FlagManager:
         self._data = value
 
     def get_bit_number(self, abbr):
-        """Get bit number given flag abbr"""
+        """Get bit number corresponding to given flag abbr"""
         return self.flags[abbr][self._FLAG_BIT_NM]
 
-    def set_bit_val(self, abbr, index=None):
+    def set_bit_val(self, abbr, index=None, set_val=True):
         """Set data flag value to one
 
         Args:
             abbr (str):
-            index (pd.Index): Default to None.
+            index (pd.Index, optional): Default to None.
+            set_val (bool, optional): Default to True
 
         """
         if index is None:
-            self._data = self.data.apply(
+            index = self.data.index
+
+        if set_val is True:
+            self._data.loc[index] = self.data.loc[index].apply(
                 lambda x: x | (1 << self.get_bit_number(abbr))
             )
         else:
             self._data.loc[index] = self.data.loc[index].apply(
-                lambda x: x | (1 << self.get_bit_number(abbr))
+                lambda x: x & ~(1 << self.get_bit_number(abbr))
             )
 
     def get_bit_val(self, abbr):
@@ -91,45 +98,35 @@ class FlagManager:
             abbr (str):
 
         """
-        return self.data.apply(
-            lambda x: x & (1 << self.get_bit_number(abbr))
-        )
+        bit_nbr = self.get_bit_number(abbr)
+        return self.data.apply(lambda x: (x >> bit_nbr) & 1)
 
 
-class TimeProfileManager:
-    """Time profile manager """
+class ProfileManger:
+    """Profile manager"""
 
-    _COL_NAME = [VALUE, FLAG]
-
-    def __init__(self, data, event_mngr, index_lag=pd.Timedelta('0s')):
-        """
+    def __init__(self, data, event_mngr):
+        """Constructor
 
         Args:
-            data (pd.Series): pd.Series with index of type pd.TimedeltaIndex
+            data (pd.Series): pd.Series with any index
             event_mngr (EventManager):
-            index_lag (pd.Timedelta):
 
         """
 
         # Test
         assert isinstance(data, pd.Series)
-        assert isinstance(data.index, pd.TimedeltaIndex)
-        assert isinstance(index_lag, pd.Timedelta)
 
-        # Init attributes
+        # Set attributes
+        self._data = data
+        self._data.name = None
         self._flag_mngr = FlagManager(data.index)
         self._event_mngr = event_mngr
-        self._index_lag = index_lag
-        self._data = data
 
-        # Reset index
-        self._reset_index()
-
-        # Set raw NA
-        self._flag_mngr.set_bit_val(RAWNA_ABBR, self.data.isna())
-
-        # Set data attributes
-        self._data.name = None
+    @property
+    def data(self):
+        """pd.Series: Data"""
+        return self._data
 
     @property
     def event_mngr(self):
@@ -142,19 +139,13 @@ class TimeProfileManager:
         return self._flag_mngr
 
     @property
-    def index_lag(self):
-        """pd.Timedelta: Index time lag"""
-        return self._index_lag
-
-    @property
-    def data(self):
-        """pd.Series: Data"""
-        return self._data
-
-    @property
     def flag(self):
         """pd.Series: Corresponding data flag"""
         return self._flag_mngr.data
+
+    def copy(self):
+        """Copy method"""
+        return deepcopy(self)
 
     def __len__(self):
         return len(self.data)
@@ -169,18 +160,55 @@ class TimeProfileManager:
 
         #TODO
         # Add automatic interpolation for polar coord (e.g. wind direction)
+        # Check if this function must be improved/fixed
         self._data = self.data.interpolate(method='index')
 
         # Set flag
         self._flag_mngr.set_bit_val(INTERP_ABBR)
 
-    def resample(self, interval='1s', method='mean'):
+    def get_flagged(self, flag_abbr):
+        """Get flag value for given flag abbr"""
+        return self.flag_mngr.get_bit_val(flag_abbr)
+
+
+class TimeProfileManager(ProfileManger):
+    """Time profile manager """
+
+    def __init__(self, data, event_mngr, index_lag=pd.Timedelta('0s')):
+        """Constructor
+
+        Args:
+            data (pd.Series): pd.Series with index of type pd.TimedeltaIndex
+            event_mngr (EventManager):
+            index_lag (pd.Timedelta):
+
         """
+        super().__init__(data, event_mngr)
+
+        # Test
+        assert isinstance(data.index, pd.TimedeltaIndex)
+        assert isinstance(index_lag, pd.Timedelta)
+
+        # Init attributes
+        self._index_lag = index_lag
+
+        # Reset index
+        self._reset_index()
+
+        # Set raw NA
+        self._flag_mngr.set_bit_val(RAWNA_ABBR, self.data.isna())
+
+    @property
+    def index_lag(self):
+        """pd.Timedelta: Index time lag"""
+        return self._index_lag
+
+    def resample(self, interval='1s', method='mean'):
+        """Resample method
 
         Args:
             interval (str, optional): Resample interval. Default is '1s'.
             method (str, optional): Resample method, 'mean' (default) | 'sum'
-            inplace (bool, optional): Default is True
 
         """
 
@@ -220,7 +248,6 @@ class TimeProfileManager:
         self._index_lag -= pd.Timedelta(periods, self.data.index.freq.name)
 
 
-@TimeIt()
 def load(search, prm_abbr):
     """
 
@@ -248,43 +275,98 @@ def load(search, prm_abbr):
     return out
 
 
-def update_db(prm_abbr):
+def update_db(prm_contains):
+    """Update database.
+
+    Args:
+        prm_contains (str): Parameter abbr search criteria. Use '%' for any
+            character.
+
     """
 
-    Returns:
-
-    """
-
-    # Load CSV data
+    # Init linkers
     db_linker = LocalDBLinker()
     orig_data_linker = OriginalCSVLinker()
-    new_orig_data = orig_data_linker.load(prm_abbr)
 
-    # Save to DB
-    db_linker.save(new_orig_data)
+    # Search prm_abbr
+    prm_abbr_list = [
+        arg[0] for arg in db_mngr.get_or_none(
+            Parameter,
+            search={'where': Parameter.prm_abbr.contains(prm_contains)},
+            attr=[[Parameter.prm_abbr.name]],
+            get_first=False
+        )
+    ]
+
+    localdb.info(
+        "Update db for following parameters: %s",
+        prm_abbr_list
+    )
+
+    # Loop loading
+    for prm_abbr in prm_abbr_list:
+
+        # Log
+        rawcsv.info("Start reading CSV files for '%s'", prm_abbr)
+
+        # Search exclude file names
+        exclude_file_name = db_mngr.get_or_none(
+            EventsInfo,
+            search={
+                'where': (
+                    (Parameter.prm_abbr == prm_abbr) &
+                    (Instrument.instr_id != '')
+                ),
+                'join_order': [Parameter, OrgiDataInfo, Instrument]},
+            attr=[[EventsInfo.orig_data_info.name, OrgiDataInfo.source.name]],
+            get_first=False
+        )
+
+        # Load
+        new_orig_data = orig_data_linker.load(prm_abbr, exclude_file_name)
+
+        # Log
+        rawcsv.info("Finish reading CSV files for '%s'", prm_abbr)
+        rawcsv.info(
+            "Found %d new data while reading CSV files for '%s'",
+            len(new_orig_data),
+            prm_abbr
+        )
+
+        # Log
+        localdb.info(
+            "Start inserting in local DB new found data for '%s'", prm_abbr
+        )
+
+        # Save to DB
+        db_linker.save(new_orig_data)
+
+        # Log
+        localdb.info(
+            "Finish inserting in local DB new found data for '%s'", prm_abbr
+        )
 
 
 class MultiTimeProfileManager(list):
     """Multi time profile manager"""
 
-    @staticmethod
-    def map_inplace(obj, func, map_inplace, *args, **kwargs):
+    def map(self, func, inplace, *args, **kwargs):
         """Map individual TimeProfileManager"""
-        if map_inplace:
+        if inplace:
             MultiTimeProfileManager(
-                map(lambda x: func(x, *args, **kwargs), obj)
+                map(lambda x: func(x, *args, **kwargs), self)
             )
             out = None
         else:
-            out = obj.copy()
+            out = self.copy()
             MultiTimeProfileManager(
                 map(lambda x: func(x, *args, **kwargs), out)
             )
         return out
 
     def copy(self):
-        """Overwrite of copy method"""
-        return copy.deepcopy(self)
+        """Copy method"""
+        return deepcopy(self)
 
     def append(self, value):
         """Overwrite of append method"""
@@ -293,15 +375,15 @@ class MultiTimeProfileManager(list):
 
     def resample(self, interval='1s', method='mean', inplace=False):
         """Resample method"""
-        return self.map_inplace(
-            self, TimeProfileManager.resample, map_inplace=inplace,
+        return self.map(
+            TimeProfileManager.resample, inplace=inplace,
             interval=interval, method=method
         )
 
     def interpolate(self, inplace=False):
         """Interpolate method"""
-        return self.map_inplace(
-            self, TimeProfileManager.interpolate, map_inplace=inplace
+        return self.map(
+            TimeProfileManager.interpolate, inplace=inplace
         )
 
     def synchronise(self, i_start=0, n_corr=300, window=30, i_ref=0):

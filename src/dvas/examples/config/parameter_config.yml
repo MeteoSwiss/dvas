@@ -1,37 +1,20 @@
 # Parameter configuration file
 
-- prm_abbr: 'trepros1'
-  prm_desc: 'Temperature'
-
-- prm_abbr: 'urepros1'
-  prm_desc: 'Relative humidity'
-
-- prm_abbr: 'prepros1'
-  prm_desc: 'Pressure'
+- prm_abbr: '^([tup])repros([1u])'
+  # Generate variables from regex generator for temperature, humidity and
+  #pressure for both instant and uncertainty values.
+  prm_desc: &myfct '$lambda x:{"t": "Temperature", "u": "Relative humidity", "p": "Pressure", "f": "Wind speed", "d": "Wind direction"}[x.group(1)]$$lambda x:{"u": " uncertainty", "1": ""}[x.group(2)]$'
+  # Link anchor to str
 
 - prm_abbr: 'altpros1'
+  # Variable can be generated from str only
   prm_desc: 'Altitude'
 
-- prm_abbr: 'fklpros1'
-  prm_desc: 'Wind speed'
+- prm_abbr: 'altprosu'
+  prm_desc: 'Altitude uncertainty'
 
-- prm_abbr: 'dklpros1'
-  prm_desc: 'Wind direction'
-
-- prm_abbr: 'treprosu'
-  prm_desc: 'Temperature uncertainty'
-
-- 'prm_abbr': 'ureprosu'
-  'prm_desc': 'Humidity uncertainty'
-
-- 'prm_abbr': 'preprosu'
-  'prm_desc': 'Pressure uncertainty'
-
-- 'prm_abbr': 'altprosu'
-  'prm_desc': 'Altitude uncertainty'
-
-- 'prm_abbr': 'fklprosu'
-  'prm_desc': 'Wind speed uncertainty'
-
-- 'prm_abbr': 'dklprosu'
-  'prm_desc': 'Wind direction uncertainty'
+- prm_abbr: '^([fd])klpros([1u])'
+  # Generate variables from regex generator for wind force and direction
+  # for both instant and uncertainty values
+  prm_desc: *myfct
+  # Reference to anchor
