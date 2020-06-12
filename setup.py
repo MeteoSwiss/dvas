@@ -1,3 +1,6 @@
+# No need for a module docstring. Disable the pylint warning.
+# pylint: disable=C0114
+
 from pathlib import Path
 from setuptools import setup, find_packages  # Always prefer setuptools over distutils
 
