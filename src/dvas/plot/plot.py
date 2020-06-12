@@ -29,8 +29,6 @@ PLOT_STYLES = {'base': 'base.mplstyle',
 plt.style.use(str(Path(package_path, 'plot', 'mpl_styles', PLOT_STYLES['base'])))
 
 # The official save types
-# TODO: create a test function that validates that those default file formats are indeed available
-# on the platform on which the code is being run.
 PLOT_TYPES = ['.png', '.pdf']
 
 # A flag to display the plots or not.
