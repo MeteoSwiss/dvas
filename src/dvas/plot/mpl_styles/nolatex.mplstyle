@@ -1,0 +1,9 @@
+# A custom matplotlib stylesheet, to better control the look of the dvas plots
+#
+# In this case, disable the use of a system-wide LaTeX installation.
+#
+# Created May 2020; F.P.A. Vogt; frederic.vogt@alumni.anu.edu.au
+#
+
+text.usetex: False
+

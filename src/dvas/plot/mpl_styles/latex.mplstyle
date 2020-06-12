@@ -1,0 +1,11 @@
+# A custom matplotlib stylesheet, to better control the look of the dvas plots
+#
+# In this case, enable the use of a system-wide LaTeX installation.
+# This allows for much prettier, but slower and less robust (user must have LaTeX!) plotting.
+#
+# Created May 2020; F.P.A. Vogt; frederic.vogt@alumni.anu.edu.au
+#
+
+text.usetex: True
+text.latex.preamble: \usepackage{cmbright} \usepackage{amsmath} \usepackage{amssymb}
+

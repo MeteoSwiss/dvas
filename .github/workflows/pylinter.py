@@ -58,7 +58,7 @@ def main():
     fn_list = glob.glob(os.path.join('.', '**', '*.py'), recursive=True)
 
     # Skip the docs and build folders
-    for bad_item in ['./build', './docs']:
+    for bad_item in [os.path.join('.', 'build'), os.path.join('.', 'docs')]:
         fn_list = [item for item in fn_list if bad_item not in item]
 
     # Turn this into a string to feed pylint

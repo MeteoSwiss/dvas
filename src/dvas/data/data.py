@@ -8,9 +8,13 @@ Created February 2020, L. Modolo - mol@meteoswiss.ch
 from copy import deepcopy
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
+from ..config.definitions.flag import RAWNA_ABBR, RESMPL_ABBR, UPSMPL_ABBR
+from ..config.definitions.flag import INTERP_ABBR, SYNC_ABBR
 from .linker import LocalDBLinker, OriginalCSVLinker
+from ..database.database import db_mngr
+from ..database.model import Flag
+from ..database.database import ConfigLinker
 from .math import crosscorr
 from ..database.database import db_mngr
 from ..database.model import Flag, Parameter
@@ -428,9 +432,7 @@ class MultiTimeProfileManager(list):
 
         return out
 
-    def plot(self):
+    def plot(self, **kwargs):
         """Plot method"""
 
-        plt.figure()
-        for arg in self:
-            plt.plot(arg.data)
+        basic_plot(self, **kwargs)
