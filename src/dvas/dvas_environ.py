@@ -27,13 +27,19 @@ def set_path(value, exist_ok=False):
 
     Args:
         value (`obj`): Argument to be tested
-        exist_ok (bool, optional): If True check existence. Otherwise
-            create path. Default to False.
+        exist_ok (bool, optional): If True check existence.
+            Otherwise create path. Default to False. The user must have
+            read and write access to the path.
 
     Returns:
         pathlib.Path
 
+    Raises:
+        - TypeError: In case of path does not exist, or
+
     """
+
+    # Create or test existence
     if exist_ok is True:
         try:
             assert (out := Path(value)).exists() is True
@@ -43,13 +49,16 @@ def set_path(value, exist_ok=False):
     else:
         try:
             (out := Path(value)).mkdir(parents=True, exist_ok=True)
-            if platform.system() != 'Windows':
-                assert (oschmod.get_mode(out) >> 6) >= 4
-        except AssertionError:
-            raise TypeError(f"Owner has no read/write access to '{out}'")
-
         except (TypeError, OSError, FileNotFoundError):
-            raise TypeError(f"Path '{out}' is not compatible with system path")
+            raise TypeError(f"Can not create '{out}'")
+
+    # Set read/write access
+    try:
+        if platform.system() != 'Windows':
+            oschmod.set_mode(out, "u+rw")
+
+    except Exception:
+        raise TypeError(f"Can not set '{out}' to read/write access.")
 
     return out
 

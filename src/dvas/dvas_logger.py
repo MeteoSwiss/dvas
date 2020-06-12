@@ -23,6 +23,7 @@ LOGGER_NAME = [
     'localdb',
     'rawcsv',
     'data',
+    'plot',
 ]
 
 
@@ -119,5 +120,7 @@ class LogManager(ContextDecorator):
 localdb = get_logger('localdb')
 #: logging.logger: Raw CSV data logger
 rawcsv = get_logger('rawcsv')
-#: loggin.logger: Data logger
+#: logging.logger: Data logger
 data = get_logger('data')
+#: logging.logger: Plot logger
+plot = get_logger('plot')

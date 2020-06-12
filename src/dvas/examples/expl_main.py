@@ -22,8 +22,8 @@ if __name__ == '__main__':
         update_db('altpros1')
 
     data_t1 = load("#e < %2020-01-02T120000Z%", 'trepros1')
-    data_t2 = load("tag_abbr == 'e2'", 'trepros1')
-    data_a = load("tag_abbr == 'b1'", 'altpros1')
+    data_t2 = load("#tag_abbr == 'e2'", 'trepros1')
+    data_a = load("#tag_abbr == 'b1'", 'altpros1')
 
     with TimeIt():
         data_t2.resample(inplace=True)

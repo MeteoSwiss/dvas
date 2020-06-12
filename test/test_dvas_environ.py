@@ -29,6 +29,10 @@ def test_set_path(tmpdir):
     # Test exist_ok False
     assert set_path(Path(tmpdir) / 'test') == Path(tmpdir) / 'test'
 
+    # Raise exception
+    with pytest.raises(TypeError):
+        set_path(Path(tmpdir) / 'dummy', exist_ok=True)
+
 
 class TestGlobalPathVariablesManager:
     """Class to test GlobalPathVariablesManager"""
