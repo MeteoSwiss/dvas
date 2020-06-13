@@ -45,7 +45,10 @@ jobs:
       - name: Look for Exception-raising errors
         run: |
           python ./.github/workflows/pylinter.py --restrict E `# All errors are bad` \
+                                                            C0303 `# trailing-whitespace` \
+                                                            C0304 `# missing-final-newline` \
                                                             C0112 `# empty docstrings` \
+                                                            C0114 `# missing-module-docstring` \
                                                             C0115 `# missing-class-docstring` \
                                                             C0116 `# missing-function-docstring` \
                                                             C0411 `# wrong-import-order` \

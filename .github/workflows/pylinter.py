@@ -73,7 +73,7 @@ def main():
     ), 2)
 
     # For the Github Action, raise an exception in case I get any restricted errors.
-    if args.restrict is not None and score < 9.99:
+    if args.restrict is not None and score < 10:
         # Display the output, so we can learn something from it if needed
         print(pylint_stdout.getvalue())
         raise Exception('Ouch! Some forbidden pylint error codes are present!')
