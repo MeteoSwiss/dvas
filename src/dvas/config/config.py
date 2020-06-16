@@ -98,9 +98,10 @@ class ConfigManager(ABC, metaclass=RequiredAttrMetaClass):
 
 
 class OneLayerConfigManager(ConfigManager):
-    """Abstract class for managing 'one-layer' YAML config
+    """Abstract class for managing 'one-layer' YAML config.
 
-    'one-layer' means YAML file of such type:
+    'one-layer' means YAML file of such type::
+
         tag1: value_tag1
         tag2: value_tag2
         ...
@@ -122,11 +123,14 @@ class OneLayerConfigManager(ConfigManager):
 
     PARAMETER_PATTERN_PROP = None
     """dict: JSON parameter schema. Constant value.
-            Must be a dict like {
-                "type": "object",
-                "patternProperties": ANY,
-                "additionalProperties": False
-            }
+
+       Must be a dict like::
+
+         {"type": "object",
+          "patternProperties": ANY,
+          "additionalProperties": False
+         }
+
     """
     #: dict: Default root node parameters
     NODE_PARAMS_DEF = None
@@ -291,7 +295,7 @@ class OneDimArrayConfigManager(OneLayerConfigManager):
           tag22: value_tag22
           ...
           tag2N: value_tag2N
-        ...
+        - ...
         - tagM1: value_tagM1
           tagM2: value_tagM2
           ...

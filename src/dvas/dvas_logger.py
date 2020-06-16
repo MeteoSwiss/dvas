@@ -40,10 +40,7 @@ def get_logger(name):
 class DeltaTimeFormatter(logging.Formatter):
     """Delta time formatter
 
-    `Source code`_
-
-    .. _Source code:
-        https://stackoverflow.com/questions/25194864/python-logging-time-since-start-of-program
+    `Source code <https://stackoverflow.com/questions/25194864/python-logging-time-since-start-of-program>`__
 
     """
     def format(self, record):

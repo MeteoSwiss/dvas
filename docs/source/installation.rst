@@ -30,7 +30,7 @@ if required:
 
 .. literalinclude:: ../../setup.py
     :language: python
-    :lines: 27-40
+    :lines: 31-43
 
 Testing the installation
 ------------------------
