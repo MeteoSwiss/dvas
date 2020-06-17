@@ -12,7 +12,7 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath(os.path.join('..', '..')))
+#sys.path.insert(0, os.path.abspath(os.path.join('..', '..')))
 
 # Run the version file
 with open(os.path.join('..', '..', 'src', 'dvas', 'dvas_version.py')) as fid:
@@ -36,6 +36,18 @@ extensions = ['sphinx.ext.napoleon',
               'sphinx.ext.autodoc', # To get the automatic documentation of functions
               ]
 
+# Specify the parameters of the autodoc, in order to
+#autodoc_default_options = {
+#    'members': 'var1, var2',
+#    'member-order': 'bysource',
+#    'special-members': '__init__',
+#    'undoc-members': True,
+#    'exclude-members': '__weakref__'
+#}
+
+# To use this nice feature, but still avoid wreaking havoc with sphinx-apidoc
+autosectionlabel_prefix_document = True
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -47,9 +59,26 @@ exclude_patterns = []
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
 
+highlight_language = 'python3'
+
 # Deal with the todos
 todo_include_todos = True
 todo_link_only = False
+
+# Napoleon settings (for the docstrings)
+napoleon_google_docstring = True
+napoleon_numpy_docstring = True
+napoleon_include_init_with_doc = False
+napoleon_include_private_with_doc = False
+napoleon_include_special_with_doc = False
+napoleon_use_admonition_for_examples = False
+napoleon_use_admonition_for_notes = False
+napoleon_use_admonition_for_references = False
+napoleon_use_ivar = False
+napoleon_use_param = False
+napoleon_use_rtype = False
+napoleon_use_keyword = False
+napoleon_custom_sections = None
 
 # -- Options for HTML output -------------------------------------------------
 

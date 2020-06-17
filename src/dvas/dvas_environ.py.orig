@@ -23,13 +23,20 @@ package_path = Path(__file__).parent
 class VariableManager():
     """"""
 
+<<<<<<< HEAD
     CST = []
+=======
+    Args:
+        value (pathlib.Path, str): Argument to be tested
+        exist_ok (bool, optional): If True check existence. Default to False.
+>>>>>>> origin/develop
 
     def __init__(self):
         """Constructor"""
         # Load os environment values
         self.load_os_environ()
 
+<<<<<<< HEAD
     def load_os_environ(self):
         """Load from OS environment variables"""
         for arg in self.CST:
@@ -41,26 +48,48 @@ class VariableManager():
                 )
             else:
                 setattr(self, arg['name'], arg['default'])
+=======
+    Raises:
+        TypeError: In case if path does not exist falls exist_ok is True
+>>>>>>> origin/develop
 
     @contextmanager
     def set_many_attr(self, items):
         """Context manager to set temporarily many global variables.
 
+<<<<<<< HEAD
         Args:
             items (dict): Temporarily global variables.
                 keys: instance attribute name. values: temporarily set values.
-        except AssertionError as ass:
+
         Examples:
             >>>from dvas.dvas_environ import path_var
             >>>with path_var.set_many_attr({})
 
         """
+
         # Set new values and save old values
         old_items = {}
         for key, val in items.items():
             old_items.update({key: getattr(self, key)})
             setattr(self, key, val)
         yield
+=======
+    # Test existence
+    if exist_ok is True:
+        try:
+            assert (out := Path(value)).exists() is True, (
+                f"Path '{value}' does not exist"
+            )
+        except AssertionError as ass:
+            raise TypeError(ass)
+    else:
+        try:
+            out = Path(value)
+        except (TypeError, OSError):
+            raise TypeError(f"Bad path name for '{value}'")
+>>>>>>> origin/develop
+
         # Restore old values
         for key, val in old_items.items():
             setattr(self, key, val)
@@ -102,8 +131,50 @@ class GlobalPathVariablesManager(VariableManager, metaclass=SingleInstanceMetaCl
         (Path, str), check_path, kwargs={'exist_ok': False}
     )
 
+<<<<<<< HEAD
+=======
+    def __init__(self):
+        """Constructor"""
+        # Load os environment values
+        self.load_os_environ()
+
+    def load_os_environ(self):
+        """Load from OS environment variables"""
+        for arg in self.CST:
+            setattr(
+                self,
+                arg['name'],
+                os.getenv(arg['os_nm'], arg['default'])
+            )
+
+    @contextmanager
+    def set_many_attr(self, items):
+        """Context manager to set temporarily many global variables.
+
+        Args:
+            items (dict): Temporarily global variables.
+                keys: instance attribute name. values: temporarily set values.
+
+        Examples:
+            ::
+
                 from dvas.dvas_environ import path_var
                 with path_var.set_many_attr({})
+
+        """
+
+        # Set new values and save old values
+        old_items = {}
+        for key, val in items.items():
+            old_items.update({key: getattr(self, key)})
+            setattr(self, key, val)
+        yield
+
+        # Restore old values
+        for key, val in old_items.items():
+            setattr(self, key, val)
+
+>>>>>>> origin/develop
 
 #: GlobalPathVariablesManager: Global variable containing directory path values
 path_var = GlobalPathVariablesManager()

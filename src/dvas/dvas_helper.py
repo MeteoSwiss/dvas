@@ -42,10 +42,8 @@ def camel_to_snake(name):
 class SingleInstanceMetaClass(type):
     """Metaclass to create single instance of class
 
-    `Source code`
-
-    .. _Source code:
-        https://www.pythonprogramming.in/singleton-class-using-metaclass-in-python.html
+    Note:
+        `Source code <https://www.pythonprogramming.in/singleton-class-using-metaclass-in-python.html>`__
 
     """
 
@@ -99,13 +97,10 @@ class RequiredAttrMetaClass(ABCMeta):
 
 
 class ContextDecorator(ABC):
-    """Use this class as superclass of a context manager to convert it into
-    a decorator.
+    """Use this class as superclass of a context manager to convert it into a decorator.
 
-    `Source code`
-
-    .. _Source code:
-        http://sametmax.com/les-context-managers-et-le-mot-cle-with-en-python/
+    Note:
+        `Source code <http://sametmax.com/les-context-managers-et-le-mot-cle-with-en-python/>`__
 
     """
 
@@ -145,12 +140,12 @@ class ContextDecorator(ABC):
 
 
 class TimeIt(ContextDecorator):
-    """Code elapsed time calculator context manager/decorator
+    """Code elapsed time calculator context manager/decorator.
 
     """
 
     def __init__(self, header_msg=''):
-        """Constructor
+        """Constructor.
 
         Args:
             header_msg (str): User defined elapsed time header. Default to ''.
@@ -277,10 +272,8 @@ class DBAccessQ(ContextDecorator):
 class TypedProperty:
     """Typed property class
 
-    `Source code `
-
-    .. _Source code:
-        https://stackoverflow.com/questions/34884947/understanding-a-python-descriptors-example-typedproperty
+    Note:
+        `Source code <https://stackoverflow.com/questions/34884947/understanding-a-python-descriptors-example-typedproperty>`__
 
     """
     def __init__(self, typ, setter_fct=None, args=None, kwargs=None):

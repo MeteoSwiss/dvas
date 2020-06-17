@@ -19,7 +19,7 @@ from peewee import IntegrityError
 from playhouse.shortcuts import model_to_dict
 from pandas import DataFrame, to_datetime, Timestamp
 import sre_yield
-
+import oschmod
 
 # Import from current package
 from .model import db
@@ -205,7 +205,13 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         """
 
         # Create local DB directory
-        db.database.parent.mkdir(mode=777, parents=True, exist_ok=True)
+        try:
+            db.database.parent.mkdir(parents=True, exist_ok=True)
+            oschmod.set_mode(db.database.parent.as_posix(), 'u+rw')
+        except (OSError,) as exc:
+            raise DBDirError(
+                f"Error in creating '{db.database.parent}' ({exc})"
+            )
 
         with DBAccess(db) as _:
 
@@ -814,6 +820,9 @@ class EventManager:
 
 class DBInsertError(Exception):
     """Exception class for DB insert error"""
+
+class DBDirError(Exception):
+    """Exception class for DB directory creating error"""
 
 
 class ConfigGenMaxLenError(Exception):
