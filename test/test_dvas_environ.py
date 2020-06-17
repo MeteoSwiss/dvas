@@ -6,7 +6,6 @@ dvas.dvas_helper module.
 
 # Import from python packages and modules
 import os
-import sys
 from pathlib import Path
 import pytest
 
