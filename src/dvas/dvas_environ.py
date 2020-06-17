@@ -7,10 +7,8 @@ Created February 2020, L. Modolo - mol@meteoswiss.ch
 
 # Import Python packages and module
 import os
-import platform
 from pathlib import Path
 from contextlib import contextmanager
-import oschmod
 
 # Import current package's modules
 from .dvas_helper import SingleInstanceMetaClass
@@ -26,39 +24,30 @@ def set_path(value, exist_ok=False):
     """Test and set input argument into pathlib.Path object.
 
     Args:
-        value (`obj`): Argument to be tested
-        exist_ok (bool, optional): If True check existence.
-            Otherwise create path. Default to False. The user must have
-            read and write access to the path.
+        value (pathlib.Path, str): Argument to be tested
+        exist_ok (bool, optional): If True check existence. Default to False.
 
     Returns:
         pathlib.Path
 
     Raises:
-        - TypeError: In case of path does not exist, or
+        TypeError: In case if path does not exist falls exist_ok is True
 
     """
 
-    # Create or test existence
+    # Test existence
     if exist_ok is True:
         try:
-            assert (out := Path(value)).exists() is True
-        except AssertionError:
-            raise TypeError(f"Path '{out}' does not exist")
-
+            assert (out := Path(value)).exists() is True, (
+                f"Path '{value}' does not exist"
+            )
+        except AssertionError as ass:
+            raise TypeError(ass)
     else:
         try:
-            (out := Path(value)).mkdir(parents=True, exist_ok=True)
-        except (TypeError, OSError, FileNotFoundError):
-            raise TypeError(f"Can not create '{out}'")
-
-    # Set read/write access
-    try:
-        if platform.system() != 'Windows':
-            oschmod.set_mode(out, "u+rw")
-
-    except Exception:
-        raise TypeError(f"Can not set '{out}' to read/write access.")
+            out = Path(value)
+        except (TypeError, OSError):
+            raise TypeError(f"Bad path name for '{value}'")
 
     return out
 
@@ -207,4 +196,3 @@ class GlobalPackageVariableManager(metaclass=SingleInstanceMetaClass):
 
 
 glob_var = GlobalPackageVariableManager()
-

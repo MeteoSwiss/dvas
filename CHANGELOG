@@ -9,7 +9,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added:
  - [modolol, 2020-06-12] Add tags table in DB and config items generator
- - [fpavogt, 2020-06-10] Create a plot submodule, including dedicated style sheets	   
+ - [fpavogt, 2020-06-10] Create a plot submodule, including dedicated style sheets
  - [modolol, 2020-05-18] Add pytest-env, pytest-datafiles in pip install CI_pytest.yml
  - [fpavogt, 2020-05-14] Github Action to check if this CHANGELOG gets modified :)
  - [fpavogt, 2020-05-14] Add README, CODE_OF_CONDUCT, CONTRIBUTING files
@@ -23,6 +23,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Deprecated:
 ### Removed:
 ### Fixed:
+ - [modolol, 2020-06-17] Remove automatic make dir in module import and global path assignment
  - [fpavogt, 2020-06-12] Automatically load the `base` style sheet for plots & new tests
  - [modolol, 2020-06-12] Set os.chmod(777) -> skip for Windows and check for R/W for Mac and Linux
  - [modolol, 2020-05-25] Adapt for passing multi OS_CI
