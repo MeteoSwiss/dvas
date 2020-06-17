@@ -1,5 +1,5 @@
-The dvas modules
-================
+Modules
+=======
 
 .. toctree::
    :maxdepth: 4

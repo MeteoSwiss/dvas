@@ -35,18 +35,18 @@ PLOT_TYPES = ['.png', '.pdf']
 PLOT_SHOW = True
 
 def set_mplstyle(style='base'):
-    ''' Set the DVAS plotting style. ``'base'`` contains all the generic commands. ``'latex'``
-    enables the use of a system-wide LaTeX engine. ``'nolatex'`` disables it.
+    ''' Set the DVAS plotting style. 'base' contains all the generic commands. 'latex'
+    enables the use of a system-wide LaTeX engine. 'nolatex' disables it.
 
     Args:
-        name (str, dict, optional): A style specification. Valid options are:
+        name (str, dict; optional): A style specification. Defaults to 'base'. Valid options are:
 
-            - *str*: One of [``'base'``, ``'nolatex'``, ``'latex'``] defined inside DVAS.
-            - *dict*: Dictionary with valid key/value pairs for ``matplotlib.rcParams``.
+            - *str*: One of ['base', 'nolatex', 'latex'] defined inside DVAS.
+            - *dict*: Dictionary with valid key/value pairs for matplotlib.rcParams.
 
     Caution:
-        Specifying the ``'latex'`` style requires a working system-wide LaTeX installation.
-        Specifying ``'nolatex'`` enables the default matplotlib LaTeX.
+        Specifying the 'latex' style requires a working system-wide LaTeX installation.
+        Specifying 'nolatex' enables the default matplotlib LaTeX.
 
     '''
 
@@ -74,7 +74,7 @@ def basic_plot(items, fig_num=None, save_fn=None):
     ''' Create a basic plot.
 
     Args:
-        items (list): list of ``TimeProfileManager``
+        items (list): list of TimeProfileManager
         fig_num (int, optional): figure number
         save_fn (str, optional): name of the plot file to save. If None, no plot is saved.
 

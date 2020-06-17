@@ -284,22 +284,23 @@ class OrigMeta(OneLayerConfigManager):
 
 
 class OneDimArrayConfigManager(OneLayerConfigManager):
-    """Abstract class for managing 'one-dim-array' YAML config
+    """Abstract class for managing 'one-dim-array' YAML config.
 
-    'one-dim-array' means YAML file of such type:
-        - tag11: value_tag11
-          tag12: value_tag12
-          ...
-          tag1N: value_tag1N
-        - tag21: value_tag21
-          tag22: value_tag22
-          ...
-          tag2N: value_tag2N
-        - ...
-        - tagM1: value_tagM1
-          tagM2: value_tagM2
-          ...
-          tagMN: value_tagMN
+    'one-dim-array' means YAML file of such type::
+
+        tag11: value_tag11
+        tag12: value_tag12
+        ...
+        tag1N: value_tag1N
+        tag21: value_tag21
+        tag22: value_tag22
+        ...
+        tag2N: value_tag2N
+        ...
+        tagM1: value_tagM1
+        tagM2: value_tagM2
+        ...
+        tagMN: value_tagMN
 
     """
     REQUIRED_ATTRIBUTES = dict(
