@@ -8,6 +8,7 @@ from dvas.data.data import load, update_db
 from dvas.dvas_logger import LogManager
 from dvas.database.database import db_mngr
 from dvas.dvas_helper import TimeIt
+from dvas.dvas_environ import glob_var
 
 
 if __name__ == '__main__':

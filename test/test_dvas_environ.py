@@ -40,7 +40,6 @@ class TestGlobalPathVariablesManager:
     # Define
     ok_value = Path('my_test_dir', 'my_sub_dir')
     ok_env_value = Path('my_env_test_dir', 'my_sub_env_dir')
-    ko_test_value = Path('1+*%=')
     attr_name = 'output_path'
     os_varname = 'DVAS_OUTPUT_PATH'
     init_value = getattr(path_var, attr_name)
@@ -48,8 +47,6 @@ class TestGlobalPathVariablesManager:
 
     def test_uniqueness(self):
         """Test instance uniqueness"""
-        print(id(path_var))
-        print(id(self.path_var_2))
         assert id(path_var) == id(self.path_var_2)
 
     @pytest.fixture(autouse=True)
@@ -71,14 +68,6 @@ class TestGlobalPathVariablesManager:
                 {self.attr_name: test_value.as_posix()}
         ):
             assert getattr(self.path_var_2, self.attr_name) == test_value
-
-        if sys.platform.startswith('win'):
-            # Test exception
-            test_value = Path(tmpdir) / self.ko_test_value
-            with pytest.raises(TypeError):
-                setattr(path_var, self.attr_name, test_value)
-            with pytest.raises(TypeError):
-                setattr(path_var, self.attr_name, test_value.as_posix())
 
     @pytest.fixture(autouse=True)
     def test_misc(self, tmpdir):

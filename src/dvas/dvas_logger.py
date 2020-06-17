@@ -12,6 +12,7 @@ Note:
 import logging
 from logging import StreamHandler, FileHandler
 from datetime import datetime
+import oschmod
 
 # Current package import
 from .dvas_environ import glob_var, path_var
@@ -60,7 +61,12 @@ def init_log():
 
         # Set log path
         log_path = path_var.output_path / 'log'
-        log_path.mkdir(mode=777, parents=True, exist_ok=True)
+        try:
+            log_path.mkdir(parents=True, exist_ok=True)
+            oschmod.set_mode(log_path.as_posix(), 'u+rw')
+        except (OSError,) as exc:
+            raise LogDirError(f"Error in creating '{log_path}' ({exc})")
+
         log_file_path = log_path / glob_var.log_file_name
 
         # Create stream handler and set level
@@ -121,3 +127,7 @@ rawcsv = get_logger('rawcsv')
 data = get_logger('data')
 #: logging.logger: Plot logger
 plot = get_logger('plot')
+
+
+class LogDirError(Exception):
+    """Exception for error in creating log directory"""
