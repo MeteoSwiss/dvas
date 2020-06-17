@@ -122,8 +122,10 @@ class GlobalPathVariablesManager(metaclass=SingleInstanceMetaClass):
                 keys: instance attribute name. values: temporarily set values.
 
         Examples:
-            >>>from dvas.dvas_environ import path_var
-            >>>with path_var.set_many_attr({})
+            ::
+
+                from dvas.dvas_environ import path_var
+                with path_var.set_many_attr({})
 
         """
 

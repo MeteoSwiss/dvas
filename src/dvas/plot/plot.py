@@ -1,7 +1,7 @@
 '''
-Module containing ALL the plotting done in DVAS.
+Module containing the primary plotting functions for dvas.
 
-Created June 2020; F.P.A. Vogt; frederic.vogt@alumni.anu.edu.au
+Created June 2020; F.P.A. Vogt; frederic.vogt@meteoswiss.ch
 '''
 
 from pathlib import Path
@@ -14,13 +14,13 @@ from ..dvas_environ import package_path
 
 
 # Define some constants
-# Width of a 1-column plot [inches], to fit in scientific articles when scaled by 50%
+#: float: Width of a 1-column plot [inches], to fit in scientific articles when scaled by 50%
 WIDTH_ONECOL = 6.92
 
-# Width of a 2-column plot [inches], to fit in scientific articles when scaled by 50%
+#: float: Width of a 2-column plot [inches], to fit in scientific articles when scaled by 50%
 WIDTH_TWOCOL = 14.16
 
-# The official dvas styles
+#: dict: The name of the different dvas matplotlib style sheets
 PLOT_STYLES = {'base': 'base.mplstyle',
                'nolatex': 'nolatex.mplstyle',
                'latex': 'latex.mplstyle'}
@@ -28,23 +28,23 @@ PLOT_STYLES = {'base': 'base.mplstyle',
 # Immediately enable the base look for DVAS plots, as soon as we load the module.
 plt.style.use(str(Path(package_path, 'plot', 'mpl_styles', PLOT_STYLES['base'])))
 
-# The official save types
+#: list[str]: The default file extensions to save the plots into.
 PLOT_TYPES = ['.png', '.pdf']
 
 # A flag to display the plots or not.
 PLOT_SHOW = True
 
 def set_mplstyle(style='base'):
-    ''' Set the DVAS plotting style. 'base' contains all the generic commands. 'latex' enables the
-    use of a system-wide LaTeX engine. 'nolatex' disables it.
+    ''' Set the DVAS plotting style. 'base' contains all the generic commands. 'latex'
+    enables the use of a system-wide LaTeX engine. 'nolatex' disables it.
 
     Args:
-        name (str, dict, optional): A style specification. Valid options are:
+        name (str, dict; optional): A style specification. Defaults to 'base'. Valid options are:
 
-            str  | One of ['base', 'nolatex', 'latex'] defined inside DVAS.
-            dict | Dictionary with valid key/value pairs for `matplotlib.rcParams`.
+            - *str*: One of ['base', 'nolatex', 'latex'] defined inside DVAS.
+            - *dict*: Dictionary with valid key/value pairs for matplotlib.rcParams.
 
-    Note:
+    Caution:
         Specifying the 'latex' style requires a working system-wide LaTeX installation.
         Specifying 'nolatex' enables the default matplotlib LaTeX.
 

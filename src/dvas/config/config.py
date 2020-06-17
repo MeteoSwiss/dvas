@@ -98,9 +98,10 @@ class ConfigManager(ABC, metaclass=RequiredAttrMetaClass):
 
 
 class OneLayerConfigManager(ConfigManager):
-    """Abstract class for managing 'one-layer' YAML config
+    """Abstract class for managing 'one-layer' YAML config.
 
-    'one-layer' means YAML file of such type:
+    'one-layer' means YAML file of such type::
+
         tag1: value_tag1
         tag2: value_tag2
         ...
@@ -122,11 +123,14 @@ class OneLayerConfigManager(ConfigManager):
 
     PARAMETER_PATTERN_PROP = None
     """dict: JSON parameter schema. Constant value.
-            Must be a dict like {
-                "type": "object",
-                "patternProperties": ANY,
-                "additionalProperties": False
-            }
+
+       Must be a dict like::
+
+         {"type": "object",
+          "patternProperties": ANY,
+          "additionalProperties": False
+         }
+
     """
     #: dict: Default root node parameters
     NODE_PARAMS_DEF = None
@@ -280,22 +284,23 @@ class OrigMeta(OneLayerConfigManager):
 
 
 class OneDimArrayConfigManager(OneLayerConfigManager):
-    """Abstract class for managing 'one-dim-array' YAML config
+    """Abstract class for managing 'one-dim-array' YAML config.
 
-    'one-dim-array' means YAML file of such type:
-        - tag11: value_tag11
-          tag12: value_tag12
-          ...
-          tag1N: value_tag1N
-        - tag21: value_tag21
-          tag22: value_tag22
-          ...
-          tag2N: value_tag2N
+    'one-dim-array' means YAML file of such type::
+
+        tag11: value_tag11
+        tag12: value_tag12
         ...
-        - tagM1: value_tagM1
-          tagM2: value_tagM2
-          ...
-          tagMN: value_tagMN
+        tag1N: value_tag1N
+        tag21: value_tag21
+        tag22: value_tag22
+        ...
+        tag2N: value_tag2N
+        ...
+        tagM1: value_tagM1
+        tagM2: value_tagM2
+        ...
+        tagMN: value_tagMN
 
     """
     REQUIRED_ATTRIBUTES = dict(
