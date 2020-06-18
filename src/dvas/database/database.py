@@ -13,11 +13,11 @@ from collections import OrderedDict
 from math import floor
 from threading import Thread
 from datetime import datetime
-import pytz
 from peewee import chunked, DoesNotExist
 from peewee import IntegrityError
 from playhouse.shortcuts import model_to_dict
 from pandas import DataFrame, to_datetime, Timestamp
+from pampy.helpers import Iterable, Union
 import sre_yield
 import oschmod
 
@@ -26,7 +26,7 @@ from .model import db
 from .model import Instrument, InstrType, EventsInfo
 from .model import Parameter, Flag, OrgiDataInfo, Data
 from .model import Tag, EventsTags
-from ..config.pattern import instr_re, param_re
+from ..config.pattern import INSTR_PAT, PARAM_PAT
 from ..config.config import instantiate_config_managers
 from ..config.config import InstrType as CfgInstrType
 from ..config.config import Instrument as CfgInstrument
@@ -35,10 +35,9 @@ from ..config.config import Flag as CfgFlag
 from ..config.config import Tag as CfgTag
 from ..dvas_helper import DBAccess
 from ..dvas_helper import SingleInstanceMetaClass
-from ..dvas_helper import TypedProperty
-from ..dvas_helper import check_list_str
+from ..dvas_helper import TypedProperty as TProp
 from ..dvas_helper import TimeIt
-from ..dvas_helper import get_by_path
+from ..dvas_helper import get_by_path, check_datetime
 from ..dvas_logger import localdb, rawcsv
 from ..dvas_environ import glob_var
 
@@ -696,62 +695,17 @@ class Queryer(Thread):
 db_mngr = DatabaseManager()
 
 
-def set_datetime(val):
-    """Test and set input argument into datetime.datetime.
-
-    Args:
-        val (str | datetime | pd.Timestamp): UTC datetime
-
-    Returns:
-        datetime.datetime
-
-    """
-    try:
-        assert (out := to_datetime(val).to_pydatetime()).tzinfo == pytz.UTC
-    except AssertionError:
-        raise TypeError('Not UTC or bad datetime format')
-
-    return out
-
-
-def set_str(val, re_pattern, fullmatch=True):
-    """Test and set input argument into str.
-
-    Args:
-        val (str): String
-        re_pattern (re.Pattern): Compiled regexp pattern
-        fullmatch (bool): Apply fullmatch. Default to True.
-
-    Returns:
-        str
-
-    """
-    try:
-        if fullmatch:
-            assert re_pattern.fullmatch(val) is not None
-        else:
-            assert re_pattern.match(val) is not None
-    except AssertionError:
-        raise TypeError(f"Argument doesn't match {re_pattern.pattern}")
-
-    return val
-
-
 class EventManager:
     """Class for create an unique event identifier"""
 
     #: datetime.datetime: UTC datetime
-    event_dt = TypedProperty((str, Timestamp, datetime), set_datetime)
+    event_dt = TProp(Union[str, Timestamp, datetime], check_datetime)
     #: str: Instrument id
-    instr_id = TypedProperty(
-        str, set_str, args=(instr_re,), kwargs={'fullmatch': True}
-    )
+    instr_id = TProp(re.compile(rf'^({INSTR_PAT})$'), lambda *x: x[0])
     #: str: Parameter abbd
-    prm_abbr = TypedProperty(
-        str, set_str, args=(param_re,), kwargs={'fullmatch': True}
-    )
+    prm_abbr = TProp(re.compile(rf'^({PARAM_PAT})$'), lambda *x: x[0])
     #: str: Tag abbr
-    tag_abbr = TypedProperty(list, check_list_str)
+    tag_abbr = TProp(Iterable[str], lambda x: list(x))  #TODO use set()
 
     def __init__(self, event_dt, instr_id, prm_abbr, tag_abbr):
         """Constructor

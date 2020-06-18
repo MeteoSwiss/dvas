@@ -7,15 +7,17 @@ Created February 2020, L. Modolo - mol@meteoswiss.ch
 
 # Import external packages and modules
 from pathlib import Path
-import re
-import platform
+from re import compile, IGNORECASE
 from datetime import datetime
+import pytz
 from functools import wraps, reduce
 from abc import ABC, ABCMeta, abstractmethod
 from inspect import getmodule
 from operator import getitem
-import oschmod
+from pampy import match as pmatch
+from pampy import MatchError
 from peewee import PeeweeException
+from pandas import to_datetime
 
 
 def camel_to_snake(name):
@@ -29,8 +31,8 @@ def camel_to_snake(name):
     """
 
     # Define module global
-    first_cap_re = re.compile('(.)([A-Z][a-z]+)')
-    all_cap_re = re.compile('([a-z0-9])([A-Z])')
+    first_cap_re = compile('(.)([A-Z][a-z]+)')
+    all_cap_re = compile('([a-z0-9])([A-Z])')
 
     # Convert
     return all_cap_re.sub(
@@ -276,18 +278,19 @@ class TypedProperty:
         `Source code <https://stackoverflow.com/questions/34884947/understanding-a-python-descriptors-example-typedproperty>`__
 
     """
-    def __init__(self, typ, setter_fct=None, args=None, kwargs=None):
+    def __init__(self, pampy_match, setter_fct=None, args=None, kwargs=None):
         """Constructor
 
         Args:
-            typ (type or tuple of type): Data type
+            pampy_match (type or tuple of type): Data type
             setter_fct: Function applied before assign value in setter method.
-                The function can include special check and raises.
+                The function can include special check and raises -
+                use TypeError to raise appropriate exception.
             args (tuple): setter function args
             kwargs (dict): setter function kwargs
         """
         # Set attributes
-        self._typ = typ
+        self._pampy_match = pampy_match
         self._setter_fct = (lambda x: x) if setter_fct is None else setter_fct
         self._setter_fct_args = tuple() if args is None else args
         self._setter_fct_kwargs = dict() if kwargs is None else kwargs
@@ -299,77 +302,44 @@ class TypedProperty:
 
     def __set__(self, instance, val):
         # Test type
-        if isinstance(val, self._typ) is False:
-            raise TypeError(f'{self._name} <- val bad type')
-
-        # Set val
-        instance.__dict__[self._name] = self._setter_fct(
-            val, *self._setter_fct_args, **self._setter_fct_kwargs
-        )
+        try:
+            instance.__dict__[self._name] = pmatch(
+                val, self._pampy_match, self._setter_fct(
+                   val, *self._setter_fct_args, **self._setter_fct_kwargs
+                )
+            )
+        except (MatchError, TypeError):
+            raise TypeError(
+                f'Bad type while assignment of {self._name} <- {val}'
+            )
 
     def __set_name__(self, instance, name):
         """Attribute name setter"""
         self._name = name
 
+    @staticmethod
+    def re_str_choice(choices, ignore_case=False):
+        """Method to create re.compile for a list of str
 
-def check_str(val, choices, case_sens=False):
-    """Function used to check str
+        Args:
+            choices (list of str): Choice of strings
+            ignore_case (bool): Ignore case if True. Default to False.
 
-    Args:
-        val (str): Value to check
-        choices (list of str): Allowed choices for value
-        case_sens (bool): Case sensitivity
+        Return:
+            re.compile
 
-    Return:
-        str
+        """
 
-    Raises:
-        TypeError if value is not in choises
+        # Create pattern
+        pattern = '^(' + ')|('.join(choices) + ')$'
 
-    """
-
-    if case_sens is False:
-        choices_mod = list(map(str.lower, choices))
-        val_mod = val.lower()
-    else:
-        choices_mod = choices
-        val_mod = val
-
-    try:
-        assert val_mod in choices_mod
-        idx = choices_mod.index(val_mod)
-    except (StopIteration, AssertionError):
-        raise TypeError(f"{val} not in {choices}")
-
-    return choices[idx]
-
-
-def check_list_str(val, choices=None, case_sens=False):
-    """Test and set input argument into list of str.
-
-    Args:
-        val (list of str): Input
-        choices (list of str):
-        case_sens (bool):
-
-    Returns:
-        str
-
-    """
-    try:
-        if choices:
-            for arg in val:
-                check_str(arg, choices, case_sens=case_sens)
+        # Create re.compile
+        if ignore_case:
+            out = compile(pattern, IGNORECASE)
         else:
-            assert all([isinstance(arg, str) for arg in val]) is True
+            out = compile(pattern)
 
-    except AssertionError:
-        raise TypeError(f"{val} is not a list of str")
-
-    except TypeError as _:
-        raise TypeError(f"{val} item are not all in {choices}")
-
-    return val
+        return out
 
 
 def get_by_path(root, items):
@@ -408,38 +378,55 @@ def check_path(value, exist_ok=False):
     """Test and set input argument into pathlib.Path object.
 
     Args:
-        value (`obj`): Argument to be tested
-        exist_ok (bool, optional): If True check existence.
-            Otherwise create path. Default to False. The user must have
-            read and write access to the path.
+        value (pathlib.Path, str): Argument to be tested
+        exist_ok (bool, optional): If True check existence. Default to False.
 
     Returns:
         pathlib.Path
 
     Raises:
-        - TypeError: In case of path does not exist, or
+        TypeError: In case if path does not exist falls exist_ok is True
 
     """
 
-    # Create or test existence
+    # Test existence
     if exist_ok is True:
         try:
-            assert (out := Path(value)).exists() is True
-        except AssertionError:
-            raise TypeError(f"Path '{out}' does not exist")
+            assert (out := Path(value)).exists() is True, (
+                f"Path '{value}' does not exist"
+            )
+        except AssertionError as ass:
+            raise TypeError(ass)
+    else:
+        try:
+            out = Path(value)
+        except (TypeError, OSError):
+            raise TypeError(f"Bad path name for '{value}'")
+
+    return out
+
+
+def check_datetime(val, utc=True):
+    """Test and set input argument into datetime.datetime.
+
+    Args:
+        val (str | datetime | pd.Timestamp): Datetime
+        utc (bool): Check UTC. Default to True.
+
+    Returns:
+        datetime.datetime
+
+    """
+    if utc:
+        try:
+            assert (out := to_datetime(val).to_pydatetime()).tzinfo == pytz.UTC
+        except (ValueError, AssertionError):
+            raise TypeError(f"Not UTC or bad datetime format for '{val}'")
 
     else:
         try:
-            (out := Path(value)).mkdir(parents=True, exist_ok=True)
-        except (TypeError, OSError, FileNotFoundError):
-            raise TypeError(f"Can not create '{out}'")
-
-    # Set read/write access
-    try:
-        if platform.system() != 'Windows':
-            oschmod.set_mode(out, "u+rw")
-
-    except Exception:
-        raise TypeError(f"Can not set '{out}' to read/write access.")
+            out = to_datetime(val).to_pydatetime()
+        except ValueError:
+            raise TypeError(f"Bad datetime format for '{val}'")
 
     return out

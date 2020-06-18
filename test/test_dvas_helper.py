@@ -6,14 +6,18 @@ dvas.dvas_helper module.
 
 # Import from python packages and modules
 from pathlib import Path
+from datetime import datetime
 from abc import ABC
 import pytest
+from pampy import ANY
 
 # Import from current package
 from dvas.dvas_helper import SingleInstanceMetaClass
 from dvas.dvas_helper import RequiredAttrMetaClass
+from dvas.dvas_helper import TypedProperty
 from dvas.dvas_helper import get_by_path
 from dvas.dvas_helper import check_path
+from dvas.dvas_helper import check_datetime
 
 
 def test_single_instance_metaclass():
@@ -77,6 +81,59 @@ def test_required_attr_metaclass():
         KO2()
 
 
+def my_output_fct(x, length, start=0):
+    """Return x[start:(start+len)]"""
+    return x[start:(start + length)]
+
+
+class TestTypedProperty:
+    """Class used to test TypedProperty class"""
+
+    class A:
+        my_str = TypedProperty(str)
+        my_upper_str = TypedProperty(str, lambda x: x.upper())
+        my_list = TypedProperty([1, ANY])
+        my_truncated_str = TypedProperty(
+            str, my_output_fct, args=(2,), kwargs={'start': 3})
+        my_matched_str = TypedProperty(
+            TypedProperty.re_str_choice(['A', 'B']), lambda *x: x[0]
+        )
+        my_matched_str_ic = TypedProperty(
+            TypedProperty.re_str_choice(['A', 'B'], ignore_case=True),
+            lambda *x: x[0]
+        )
+
+    # Create instance
+    inst = A()
+
+    def test_type_check(self):
+        """Method to test type checking"""
+        self.inst.my_str = 'a'
+        self.inst.my_list = [1, 2]
+        self.inst.my_matched_str = 'A'
+        self.inst.my_matched_str_ic = 'a'
+
+        with pytest.raises(TypeError):
+            self.inst.my_str = 1
+
+        with pytest.raises(TypeError):
+            self.inst.my_list = [2, 1]
+
+        with pytest.raises(TypeError):
+            self.inst.my_matched_str = 'C'
+
+
+    def test_output_fct(self):
+        self.inst.my_upper_str = 'a'
+        assert self.inst.my_upper_str == 'A'
+
+        self.inst.my_truncated_str = 'abcde'
+        assert self.inst.my_truncated_str == 'de'
+
+        self.inst.my_matched_str = 'A'
+        assert self.inst.my_matched_str == 'A'
+
+
 def test_get_by_path():
     """Function used to test the metaclass SingleInstanceMetaClass
 
@@ -128,3 +185,15 @@ def test_check_path(tmpdir):
     # Raise exception
     with pytest.raises(TypeError):
         check_path(Path(tmpdir) / 'dummy', exist_ok=True)
+
+
+def test_check_datetime():
+    """Test dvas_helper.set_datetime"""
+
+    assert check_datetime('20200101', utc=False) == datetime(2020, 1, 1)
+    assert check_datetime(datetime(2020, 1, 1), utc=False) ==\
+        datetime(2020, 1, 1)
+    check_datetime('20200101T000000Z')
+
+    with pytest.raises(TypeError):
+        check_datetime('20200101')

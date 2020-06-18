@@ -14,7 +14,7 @@ import json
 from jsonschema import validate, exceptions
 from ruamel.yaml import YAML
 from ruamel.yaml.error import YAMLError
-
+from pampy.helpers import Union
 
 # Import current package modules
 from .definitions import origdata, origmeta
@@ -71,7 +71,7 @@ class ConfigManager(ABC, metaclass=RequiredAttrMetaClass):
     #: type: Type of document. Only dict or list types.
     DOC_TYPE = None
 
-    document = TypedProperty((dict, list))
+    document = TypedProperty(Union[dict, list])
     """dict: Config document. Must be redefined as well to avoid
     list/dict reference overlap
     """
@@ -280,7 +280,7 @@ class OrigMeta(OneLayerConfigManager):
     CLASS_KEY = origmeta.KEY
 
     #: dict: Config document
-    document = TypedProperty((dict, list))
+    document = TypedProperty(Union[dict, list])
 
 
 class OneDimArrayConfigManager(OneLayerConfigManager):
@@ -369,7 +369,7 @@ class InstrType(OneDimArrayConfigManager):
     NODE_GEN = instrtype.NODE_GEN
 
     #: dict: Config document
-    document = TypedProperty((dict, list))
+    document = TypedProperty(Union[dict, list])
 
 
 class Instrument(OneDimArrayConfigManager):
@@ -382,7 +382,7 @@ class Instrument(OneDimArrayConfigManager):
     NODE_GEN = instrument.NODE_GEN
 
     #: dict: Config document
-    document = TypedProperty((dict, list))
+    document = TypedProperty(Union[dict, list])
 
 
 class Parameter(OneDimArrayConfigManager):
@@ -395,7 +395,7 @@ class Parameter(OneDimArrayConfigManager):
     NODE_GEN = parameter.NODE_GEN
 
     #: dict: Config document
-    document = TypedProperty((dict, list))
+    document = TypedProperty(Union[dict, list])
 
 
 class Flag(OneDimArrayConfigManager):
@@ -408,7 +408,7 @@ class Flag(OneDimArrayConfigManager):
     NODE_GEN = flag.NODE_GEN
 
     #: dict: Config document
-    document = TypedProperty((dict, list))
+    document = TypedProperty(Union[dict, list])
 
 
 class Tag(OneDimArrayConfigManager):
@@ -421,7 +421,7 @@ class Tag(OneDimArrayConfigManager):
     NODE_GEN = tag.NODE_GEN
 
     #: dict: Config document
-    document = TypedProperty((dict, list))
+    document = TypedProperty(Union[dict, list])
 
 
 class MultiLayerConfigManager(OneLayerConfigManager):
@@ -612,7 +612,7 @@ class OrigData(MultiLayerConfigManager):
     NODE_PATTERN = origdata.NODE_PATTERN
 
     #: dict: Config document
-    document = TypedProperty((dict, list))
+    document = TypedProperty(Union[dict, list])
 
 
 class ConfigReadError(Exception):

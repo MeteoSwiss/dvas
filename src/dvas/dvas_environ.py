@@ -8,12 +8,14 @@ Created February 2020, L. Modolo - mol@meteoswiss.ch
 # Import Python packages and module
 import os
 from pathlib import Path
+from re import compile
 from contextlib import contextmanager
+from pampy.helpers import Union, Iterable
 
 # Import current package's modules
 from .dvas_helper import SingleInstanceMetaClass
-from .dvas_helper import TypedProperty
-from .dvas_helper import check_str, check_list_str, check_path
+from .dvas_helper import TypedProperty as TProp
+from .dvas_helper import check_path
 from . import __name__ as pkg_name
 
 # Define package path
@@ -21,7 +23,7 @@ package_path = Path(__file__).parent
 
 
 class VariableManager():
-    """"""
+    """Class to manage variables"""
 
     CST = []
 
@@ -86,27 +88,21 @@ class GlobalPathVariablesManager(VariableManager, metaclass=SingleInstanceMetaCl
     ]
 
     #: pathlib.Path: Original data path
-    orig_data_path = TypedProperty(
-        (Path, str), check_path, kwargs={'exist_ok': True}
+    orig_data_path = TProp(
+        Union[Path, str], check_path, kwargs={'exist_ok': True}
     )
     #: pathlib.Path: Config dir path
-    config_dir_path = TypedProperty(
-        (Path, str), check_path, kwargs={'exist_ok': True}
+    config_dir_path = TProp(
+        Union[Path, str], check_path, kwargs={'exist_ok': True}
     )
     #: pathlib.Path: Local db dir path
-    local_db_path = TypedProperty(
-        (Path, str), check_path, kwargs={'exist_ok': False}
+    local_db_path = TProp(
+        Union[Path, str], check_path, kwargs={'exist_ok': False}
     )
     #: pathlib.Path: DVAS output dir path
-    output_path = TypedProperty(
-        (Path, str), check_path, kwargs={'exist_ok': False}
+    output_path = TProp(
+        Union[Path, str], check_path, kwargs={'exist_ok': False}
     )
-
-                from dvas.dvas_environ import path_var
-                with path_var.set_many_attr({})
-
-#: GlobalPathVariablesManager: Global variable containing directory path values
-path_var = GlobalPathVariablesManager()
 
 
 class GlobalPackageVariableManager(VariableManager, metaclass=SingleInstanceMetaClass):
@@ -118,7 +114,7 @@ class GlobalPackageVariableManager(VariableManager, metaclass=SingleInstanceMeta
          'default': 'CONSOLE',
          'os_nm': 'DVAS_LOG_OUTPUT'},
         {'name': 'log_file_name',
-         'default': pkg_name + '.log',
+         'default': pkg_name,
          'os_nm': 'DVAS_LOG_FILE_NAME'},
         {'name': 'log_level',
          'default': 'INFO',
@@ -132,25 +128,31 @@ class GlobalPackageVariableManager(VariableManager, metaclass=SingleInstanceMeta
     ]
 
     #: str: Log output type, Default to 'CONSOLE'
-    log_output = TypedProperty(
-        str, check_str, args=(['FILE', 'CONSOLE'],)
+    log_output = TProp(
+            TProp.re_str_choice(['FILE', 'CONSOLE'], ignore_case=True),
+            lambda *x: x[0].upper()
     )
-    #: str: Log output file name. Default to 'dvas.log'
-    log_file_name = TypedProperty(str)  #TODO add check re \w
+    #: str: Log output file name. Default to 'dvas'
+    log_file_name = TProp(compile(r'\w+'), lambda x: x + '.log')
     #: str: Log level. Default to 'INFO'
-    log_level = TypedProperty(
-        str, check_str,
-        args=(['DEBUG', 'INFO', 'WARNING', 'ERROR'],)
+    log_level = TProp(
+        TProp.re_str_choice(
+            ['DEBUG', 'INFO', 'WARNING', 'ERROR'], ignore_case=True
+        ),
+        lambda *x: x[0].upper()
     )
     #: int: Config regexp generator limit. Default to 10000.
-    config_gen_max = TypedProperty(int)
+    config_gen_max = TProp(int)
     #: str: Config regex generator group function separator. Default to '$'.
-    config_gen_grp_sep = TypedProperty(
-        str, check_str, args=(['$', '%', '#'],)
+    config_gen_grp_sep = TProp(
+        TProp.re_str_choice([r'\$', r'\%']),
+        lambda *x: x[0]
     )
     #: list of str: Config file allowed extensions. Default to ['yml', 'yaml']
-    config_file_ext = TypedProperty(
-        list, check_list_str, kwargs={'choices': ['yml', 'yaml', 'txt']}
-    )
+    config_file_ext = TProp(Iterable[str], lambda x: tuple(x))
 
+
+#: GlobalPathVariablesManager: Global variable containing directory path values
+path_var = GlobalPathVariablesManager()
+#: GlobalPackageVariableManager: Global variable containing package variables
 glob_var = GlobalPackageVariableManager()
