@@ -105,32 +105,29 @@ class GlobalPathVariablesManager(VariableManager, metaclass=SingleInstanceMetaCl
     )
 
 
-class GlobalPackageVariableManager(VariableManager, metaclass=SingleInstanceMetaClass):
-    """Class used to manage package global variables"""
+class GlobalLoggingVariableManager(VariableManager, metaclass=SingleInstanceMetaClass):
+    """Class used to manage package logging variables"""
+
+    #: tuple: Allowed logging modes
+    MODES = ('FILE', 'CONSOLE')
 
     # Set class constant attributes
     CST = [
-        {'name': 'log_output',
+        {'name': 'log_mode',
          'default': 'CONSOLE',
-         'os_nm': 'DVAS_LOG_OUTPUT'},
+         'os_nm': 'DVAS_LOG_MODE'},
         {'name': 'log_file_name',
          'default': pkg_name,
          'os_nm': 'DVAS_LOG_FILE_NAME'},
         {'name': 'log_level',
          'default': 'INFO',
          'os_nm': 'DVAS_LOG_LEVEL'},
-        {'name': 'config_gen_max',
-         'default': 10000},
-        {'name': 'config_gen_grp_sep',
-         'default': '$'},
-        {'name': 'config_file_ext',
-         'default': ['yml', 'yaml']}
     ]
 
-    #: str: Log output type, Default to 'CONSOLE'
-    log_output = TProp(
-            TProp.re_str_choice(['FILE', 'CONSOLE'], ignore_case=True),
-            lambda *x: x[0].upper()
+    #: str: Log output mode, Default to 'CONSOLE'
+    log_mode = TProp(
+        TProp.re_str_choice(MODES, ignore_case=True),
+        lambda *x: x[0].upper()
     )
     #: str: Log output file name. Default to 'dvas'
     log_file_name = TProp(compile(r'\w+'), lambda x: x + '.log')
@@ -141,6 +138,21 @@ class GlobalPackageVariableManager(VariableManager, metaclass=SingleInstanceMeta
         ),
         lambda *x: x[0].upper()
     )
+
+
+class GlobalPackageVariableManager(VariableManager, metaclass=SingleInstanceMetaClass):
+    """Class used to manage package global variables"""
+
+    # Set class constant attributes
+    CST = [
+        {'name': 'config_gen_max',
+         'default': 10000},
+        {'name': 'config_gen_grp_sep',
+         'default': '$'},
+        {'name': 'config_file_ext',
+         'default': ['yml', 'yaml']}
+    ]
+
     #: int: Config regexp generator limit. Default to 10000.
     config_gen_max = TProp(int)
     #: str: Config regex generator group function separator. Default to '$'.
@@ -154,5 +166,7 @@ class GlobalPackageVariableManager(VariableManager, metaclass=SingleInstanceMeta
 
 #: GlobalPathVariablesManager: Global variable containing directory path values
 path_var = GlobalPathVariablesManager()
-#: GlobalPackageVariableManager: Global variable containing package variables
+#: GlobalLogingVariableManager: Global variable containing log package variables
+log_var = GlobalLoggingVariableManager()
+#: GlobalPackageVariableManager: Global variable containing global package variables
 glob_var = GlobalPackageVariableManager()

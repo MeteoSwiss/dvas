@@ -15,7 +15,7 @@ from datetime import datetime
 import oschmod
 
 # Current package import
-from .dvas_environ import glob_var, path_var
+from .dvas_environ import log_var, path_var
 from .dvas_helper import ContextDecorator
 
 
@@ -60,7 +60,7 @@ def init_log():
     clear_log()
 
     # Select mode
-    if glob_var.log_output == 'FILE':
+    if log_var.log_mode == 'FILE':
 
         # Set log path
         log_path = path_var.output_path / 'log'
@@ -70,7 +70,7 @@ def init_log():
         except (OSError,) as exc:
             raise LogDirError(f"Error in creating '{log_path}' ({exc})")
 
-        log_file_path = log_path / glob_var.log_file_name
+        log_file_path = log_path / log_var.log_file_name
 
         # Create stream handler and set level
         handler = FileHandler(
@@ -92,7 +92,7 @@ def init_log():
     # Add handler to all logger
     for name in LOGGER_NAME:
         logger = get_logger(name)
-        logger.setLevel(glob_var.log_level)
+        logger.setLevel(log_var.log_level)
         logger.propagate = False
         logger.addHandler(handler)
         logger.disabled = False

@@ -9,19 +9,11 @@ Created February 2020, L. Modolo - mol@meteoswiss.ch
 # Import current packages modules
 from ...database.model import Flag
 
-# Define
-RAWNA_ABBR = 'raw_na'
-RESMPL_ABBR = 're_smpl'
-UPSMPL_ABBR = 'up_smpl'
-INTERP_ABBR = 'interp'
-SYNC_ABBR = 'sync'
-AUTOQC_ABBR = 'auto_qc'
-
 #: dict: Parameter pattern properties (JSON_SCHEMA)
 PARAMETER_PATTERN_PROP = {
     rf"^{Flag.bit_number.name}$": {
         "type": "integer",
-        "minimum": 6,
+        "minimum": 10,
     },
     rf"^{Flag.flag_abbr.name}$": {
         "type": "string"
@@ -35,33 +27,28 @@ PARAMETER_PATTERN_PROP = {
 CONST_NODES = [
     {
         Flag.bit_number.name: 0,
-        Flag.flag_abbr.name: RAWNA_ABBR,
-        Flag.flag_desc.name: "Raw NA"
+        Flag.flag_abbr.name: 'raw_na',
+        Flag.flag_desc.name: "Raw NA data"
     },
     {
         Flag.bit_number.name: 1,
-        Flag.flag_abbr.name: RESMPL_ABBR,
-        Flag.flag_desc.name: "Resampled"
+        Flag.flag_abbr.name: 'resampled',
+        Flag.flag_desc.name: "Resampled data"
     },
-    {
+{
         Flag.bit_number.name: 2,
-        Flag.flag_abbr.name: UPSMPL_ABBR,
-        Flag.flag_desc.name: "Resampled"
+        Flag.flag_abbr.name: 'interp',
+        Flag.flag_desc.name: "Interpolated data"
     },
     {
         Flag.bit_number.name: 3,
-        Flag.flag_abbr.name: INTERP_ABBR,
-        Flag.flag_desc.name: 'Interpolated'
+        Flag.flag_abbr.name: 'day',
+        Flag.flag_desc.name: "Day measurement point"
     },
     {
         Flag.bit_number.name: 4,
-        Flag.flag_abbr.name: SYNC_ABBR,
-        Flag.flag_desc.name: 'Synchronized'
-    },
-    {
-        Flag.bit_number.name: 5,
-        Flag.flag_abbr.name: AUTOQC_ABBR,
-        Flag.flag_desc.name: 'Auto QC flagged'
+        Flag.flag_abbr.name: 'night',
+        Flag.flag_desc.name: "Night measurement point"
     },
 ]
 

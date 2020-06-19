@@ -89,7 +89,8 @@ def my_output_fct(x, length, start=0):
 class TestTypedProperty:
     """Class used to test TypedProperty class"""
 
-    class A:
+    class CheckClass:
+        """Class used to do checks"""
         my_str = TypedProperty(str)
         my_upper_str = TypedProperty(str, lambda x: x.upper())
         my_list = TypedProperty([1, ANY])
@@ -104,7 +105,7 @@ class TestTypedProperty:
         )
 
     # Create instance
-    inst = A()
+    inst = CheckClass()
 
     def test_type_check(self):
         """Method to test type checking"""
@@ -122,8 +123,8 @@ class TestTypedProperty:
         with pytest.raises(TypeError):
             self.inst.my_matched_str = 'C'
 
-
-    def test_output_fct(self):
+    def test_setter_fct(self):
+        """Method used to test setter function"""
         self.inst.my_upper_str = 'a'
         assert self.inst.my_upper_str == 'A'
 

@@ -19,6 +19,25 @@ PARAMETER_PATTERN_PROP = {
     },
 }
 
+CONST_NODES = [
+    {
+        Tag.tag_abbr.name: 'raw',
+        Tag.tag_desc.name: 'Data are raw'
+    },
+    {
+        Tag.tag_abbr.name: 'derived',
+        Tag.tag_desc.name: 'Data are derived from raw'
+    },
+    {
+        Tag.tag_abbr.name: 'resampled',
+        Tag.tag_desc.name: 'Data are resampled'
+    },
+    {
+        Tag.tag_abbr.name: 'sync',
+        Tag.tag_desc.name: 'Data are synchronized'
+    },
+]
+
 #: str: Config manager key name
 KEY = Tag.__name__
 

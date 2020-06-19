@@ -238,8 +238,10 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     ]
                 )
 
-            except IntegrityError:
-                pass
+            except IntegrityError as exc:
+                raise DBCreateError(exc)
+
+        #TODO return db object
 
     @staticmethod
     def get_or_none(table, search=None, attr=None, get_first=True):
@@ -705,7 +707,7 @@ class EventManager:
     #: str: Parameter abbd
     prm_abbr = TProp(re.compile(rf'^({PARAM_PAT})$'), lambda *x: x[0])
     #: str: Tag abbr
-    tag_abbr = TProp(Iterable[str], lambda x: list(x))  #TODO use set()
+    tag_abbr = TProp(Iterable[str], lambda x: set(x))
 
     def __init__(self, event_dt, instr_id, prm_abbr, tag_abbr):
         """Constructor
@@ -714,7 +716,7 @@ class EventManager:
             event_dt (str | datetime | pd.Timestamp): UTC datetime
             instr_id (str):
             prm_abbr (str):
-            tag_abbr (list of str):
+            tag_abbr (iterable of str): Tag abbr iterable
 
         """
 
@@ -727,6 +729,25 @@ class EventManager:
     def __repr__(self):
         p_printer = pprint.PrettyPrinter()
         return p_printer.pformat(self.as_dict())
+
+    def add_tag(self, val):
+        """Add a tag abbr
+
+        Args:
+            val (str): New tag abbr
+
+        """
+        self.tag_abbr.add(val)
+
+    def rm_tag(self, val):
+        """Remove a tag abbr
+
+        Args:
+            val (str): Tag abbr to remove
+
+        """
+        if self.tag_abbr.intersection({val}):
+            self.tag_abbr.remove(val)
 
     def as_dict(self):
         """Convert EventManager to dict"""
@@ -772,8 +793,13 @@ class EventManager:
         return self.sort_attr >= other.sort_attr
 
 
+class DBCreateError(Exception):
+    """Exception class for DB creation error"""
+
+
 class DBInsertError(Exception):
     """Exception class for DB insert error"""
+
 
 class DBDirError(Exception):
     """Exception class for DB directory creating error"""

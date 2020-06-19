@@ -9,11 +9,11 @@ Created February 2020, L. Modolo - mol@meteoswiss.ch
 from pathlib import Path
 from re import compile, IGNORECASE
 from datetime import datetime
-import pytz
 from functools import wraps, reduce
 from abc import ABC, ABCMeta, abstractmethod
 from inspect import getmodule
 from operator import getitem
+import pytz
 from pampy import match as pmatch
 from pampy import MatchError
 from peewee import PeeweeException

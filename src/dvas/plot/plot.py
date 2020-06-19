@@ -1,8 +1,8 @@
-'''
+"""
 Module containing the primary plotting functions for dvas.
 
 Created June 2020; F.P.A. Vogt; frederic.vogt@meteoswiss.ch
-'''
+"""
 
 from pathlib import Path
 import numpy as np
@@ -34,8 +34,9 @@ PLOT_TYPES = ['.png', '.pdf']
 # A flag to display the plots or not.
 PLOT_SHOW = True
 
+
 def set_mplstyle(style='base'):
-    ''' Set the DVAS plotting style. 'base' contains all the generic commands. 'latex'
+    """ Set the DVAS plotting style. 'base' contains all the generic commands. 'latex'
     enables the use of a system-wide LaTeX engine. 'nolatex' disables it.
 
     Args:
@@ -48,7 +49,7 @@ def set_mplstyle(style='base'):
         Specifying the 'latex' style requires a working system-wide LaTeX installation.
         Specifying 'nolatex' enables the default matplotlib LaTeX.
 
-    '''
+    """
 
     # Let's start with some sanity checks. If the user is foolish enough to feed a dict, trust it.
     if isinstance(style, dict):
@@ -71,14 +72,14 @@ def set_mplstyle(style='base'):
 
 
 def basic_plot(items, fig_num=None, save_fn=None):
-    ''' Create a basic plot.
+    """ Create a basic plot.
 
     Args:
         items (list): list of TimeProfileManager
         fig_num (int, optional): figure number
         save_fn (str, optional): name of the plot file to save. If None, no plot is saved.
 
-    '''
+    """
 
     # Instantiate the figure, closing it first if it already exists.
     if fig_num is not None:
@@ -102,8 +103,7 @@ def basic_plot(items, fig_num=None, save_fn=None):
         xmin = np.nanmax([xmin, np.min(x_data_s)])
         xmax = np.nanmin([xmax, np.max(x_data_s)])
 
-        #ax1.plot(x_data_s, arg.data.values, linestyle='-', drawstyle='steps-mid')
-        ax1.plot(x_data_s, arg.data.values, linestyle='-')
+        ax1.plot(x_data_s, arg.data.values, linestyle='-', drawstyle='steps-mid')
 
     # Deal with the axes
     ax1.set_xlabel(r'$\Delta t$ [s]')
