@@ -32,11 +32,14 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     # Check the python/conda setup
+    # Powershell syntax adapted from: 
+    # https://stackoverflow.com/questions/63805/equivalent-of-nix-which-command-in-powershell
+    # Answer from: petrsnd
     - name: Check the setup (I)
       if: matrix.os == 'windows-latest'
       run: |
-        where python
-        where conda
+        Get-Command python | Select-Object -ExpandProperty Definition
+        Get-Command conda | Select-Object -ExpandProperty Definition
 
     - name: Check the setup (II)
       if: matrix.os != 'windows-latest'
