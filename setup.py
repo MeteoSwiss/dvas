@@ -31,6 +31,7 @@ setup(
         "dotty-dict",
         "jsonschema",
         "matplotlib",
+        "netcdf4",
         "oschmod",
         "pampy",
         "pandas",
