@@ -38,7 +38,7 @@ jobs:
         where python
         where conda
 
-    -name: Check the setup (II)
+    - name: Check the setup (II)
       if: matrix.os != 'windows-latest'
       run: |
         which python
