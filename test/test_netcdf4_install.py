@@ -14,7 +14,18 @@ def test_netcd4():
 
     """
 
+    # Create a dummy file
     dummy = nc.Dataset("netcdf4_test.nc", "w", format="NETCDF4")
+    dummy.description = "A dummy NETCDF4 file."
+
+    # Include a typical dimension
+    time = dummy.createDimension("time", None)
+
+    # And a variable
+    times = rootgrp.createVariable("time","f8",("time",))
+    times.units = 's'
+    times[:] = np.arange(0, 6000, 1.)
+
     dummy.close()
 
     dummy = nc.Dataset("netcdf4_test.nc", "r")
