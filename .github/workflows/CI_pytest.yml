@@ -25,6 +25,11 @@ jobs:
     # Checkout the repository
     - uses: actions/checkout@v2
 
+    - name: Check the setup
+      run: |
+        which python
+        which conda
+
     # Setup python
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
