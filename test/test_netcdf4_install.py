@@ -4,7 +4,7 @@ This file contains testing classes and functions for the netcdf4 module (a dvas 
 """
 
 # Import from python packages and modules
-import netcdf4 as nc
+import netCDF4 as nc
 
 def test_netcd4():
     """Function used to test if the netcdf4 package is properly installed
