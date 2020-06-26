@@ -36,6 +36,11 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name: Check the setup
+      run: |
+        which python
+        which conda
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
