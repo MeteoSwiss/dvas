@@ -34,6 +34,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+      # Here, let's install netCDF4 via conda, to get all the correct dependencies
 
     # Here, let's install our module to make sure all the dependencies specified in setup.py are
     # also installed
