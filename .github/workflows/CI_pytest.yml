@@ -33,6 +33,7 @@ jobs:
 
     # 
     - name: Check the setup
+      shell: bash
       run: |
         which python
         which conda
