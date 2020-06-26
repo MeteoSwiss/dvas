@@ -14,10 +14,10 @@ def test_netcd4():
 
     """
 
-    dummy = Dataset("netcdf4_test.nc", "w", format="NETCDF4")
+    dummy = nc.Dataset("netcdf4_test.nc", "w", format="NETCDF4")
     dummy.close()
 
-    dummy = Dataset("netcdf4_test.nc", "r")
+    dummy = nc.Dataset("netcdf4_test.nc", "r")
 
     assert dummy.data_model == 'NETCDF4'
 
