@@ -32,12 +32,14 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     # Check the python/conda setup
-    - name: Check the setup
-      if: ${{matrix.os}} == 'windows-latest'
+    - name: Check the setup (I)
+      if: matrix.os == 'windows-latest'
       run: |
         where python
         where conda
-      if: ${{matrix.os}} != 'windows-latest'
+
+    -name: Check the setup (II)
+      if: matrix.os != 'windows-latest'
       run: |
         which python
         which conda
