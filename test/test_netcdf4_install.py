@@ -4,6 +4,7 @@ This file contains testing classes and functions for the netcdf4 module (a dvas 
 """
 
 # Import from python packages and modules
+import os
 import numpy as np
 import netCDF4 as nc
 
@@ -23,7 +24,7 @@ def test_netcd4():
     time = dummy.createDimension("time", None)
 
     # And a variable
-    times = dummy.createVariable("time","f8",("time",))
+    times = dummy.createVariable("time","f8",("time",), zlib=True, least_significant_digit=3)
     times.units = 's'
     times[:] = np.arange(0, 6000, 1.)
 
@@ -34,3 +35,4 @@ def test_netcd4():
     assert dummy.data_model == 'NETCDF4'
 
     dummy.close()
+    os.remove("netcdf4_test.nc")
