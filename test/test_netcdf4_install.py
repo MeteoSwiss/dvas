@@ -20,11 +20,14 @@ def test_netcd4():
     dummy = nc.Dataset("netcdf4_test.nc", "w", format="NETCDF4")
     dummy.description = "A dummy NETCDF4 file."
 
+    # Create a group (special feature of netCDF4)
+    dummy_grp = dummy.createGroup("dummy_grp")
+
     # Include a typical dimension
-    time = dummy.createDimension("time", None)
+    time = dummy_grp.createDimension("time", None)
 
     # And a variable
-    times = dummy.createVariable("time","f8",("time",), zlib=True, least_significant_digit=3)
+    times = dummy_grp.createVariable("time","f8",("time",), zlib=True, least_significant_digit=3)
     times.units = 's'
     times[:] = np.arange(0, 6000, 1.)
 
