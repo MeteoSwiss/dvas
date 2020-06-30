@@ -15,7 +15,7 @@ import re
 from itertools import chain, zip_longest
 import inspect
 from itertools import takewhile
-import netCDF4
+from netCDF4 import Dataset  # noqa pylint: disable=E1101
 import pandas as pd
 
 # Import from current package
@@ -346,7 +346,7 @@ class GDPDataLinker(DataLinker):
             )
 
             #try:
-            with netCDF4.Dataset(origdata_file_path, 'r') as fid:
+            with Dataset(origdata_file_path, 'r') as fid:
 
                 meta_dict = {
                     EventsInfo.event_dt.name: 'dt_field',
