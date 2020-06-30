@@ -1,8 +1,12 @@
 """
-This module contains the required attributes definition for class
-dvas.config.config.Parameter.
+Copyright(c) 2020 MeteoSwiss, contributors listed in AUTHORS
 
-Created February 2020, L. Modolo - mol@meteoswiss.ch
+Distributed under the terms of the BSD 3 - Clause License.
+
+SPDX - License - Identifier: BSD - 3 - Clause
+
+Module contents: Required attributes definition for
+.config.ConfigManager.Parameter class.
 
 """
 

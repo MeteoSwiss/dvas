@@ -1,24 +1,25 @@
 """
-This module contains the regex patterns used into the package.
+Copyright(c) 2020 MeteoSwiss, contributors listed in AUTHORS
 
-Created February 2020, L. Modolo - mol@meteoswiss.ch
+Distributed under the terms of the BSD 3 - Clause License.
+
+SPDX - License - Identifier: BSD - 3 - Clause
+
+Module contents: Regex patterns used into the package.
 
 """
 
 # Import python packages and modules
 import re
 
-#: str: Instrument type pattern (e.g. vai-rs92, met_lab-c50)
-INSTR_TYPE_PAT = r"\w{3,8}\-\w{3,8}"
+# Define
+RE_UPPER_W = r'[A-Z0-9]'
+RE_LOWER_W = r'[a-z0-9]'
+
+#: str: Instrument type pattern (e.g. VAI-RS92, MET_LAB-C50, RS92-GDP_002)
+INSTR_TYPE_PAT = rf"{RE_UPPER_W}+(({RE_UPPER_W})|([\-\_]))*{RE_UPPER_W}"
 INSTR_TYPE_RE = re.compile(INSTR_TYPE_PAT)
 
-#: str: Instrument key name
-INSTR_PREFIX = 'i'
-
-#: str: Instrument pattern (e.g. i1, i10, i203)
-INSTR_PAT = rf'{INSTR_PREFIX}([1-9](\d(\d)?)?)'
-instr_re = re.compile(INSTR_PAT)
-
-#: str: Parameter pattern (e.g. tre200s0, uorpros1)
-PARAM_PAT = r"\w{8}"
+#: str: Parameter pattern (e.g. tre200s0, uorpros1, uorprosu_r)
+PARAM_PAT = rf"{RE_LOWER_W}+(({RE_LOWER_W})|([\_]))*{RE_LOWER_W}"
 param_re = re.compile(PARAM_PAT)

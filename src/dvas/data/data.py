@@ -1,7 +1,11 @@
 """
-Module containing class and function for data management
+Copyright(c) 2020 MeteoSwiss, contributors listed in AUTHORS
 
-Created February 2020, L. Modolo - mol@meteoswiss.ch
+Distributed under the terms of the BSD 3 - Clause License.
+
+SPDX - License - Identifier: BSD - 3 - Clause
+
+Module contents: Data management
 
 """
 
@@ -11,7 +15,7 @@ import numpy as np
 import pandas as pd
 
 # Import from current package
-from .linker import LocalDBLinker, OriginalCSVLinker
+from .linker import LocalDBLinker, OriginalCSVLinker, GDPDataLinker
 from ..plot.plot import basic_plot
 from .math import crosscorr
 from ..database.database import db_mngr
@@ -31,9 +35,9 @@ cfg_linker = OneDimArrayConfigLinker()
 class FlagManager:
     """Flag manager class"""
 
-    _FLAG_BIT_NM = Flag.bit_number.name
-    _FLAG_ABBR_NM = Flag.flag_abbr.name
-    _FLAG_DESC_NM = Flag.flag_desc.name
+    FLAG_BIT_NM = Flag.bit_number.name
+    FLAG_ABBR_NM = Flag.flag_abbr.name
+    FLAG_DESC_NM = Flag.flag_desc.name
 
     def __init__(self, index):
         """
@@ -41,7 +45,7 @@ class FlagManager:
             index (iterable): Flag index
         """
         self._flags = {
-            arg[Flag.flag_abbr.name]: arg
+            arg[self.FLAG_ABBR_NM]: arg
             for arg in db_mngr.get_flags()
         }
 
@@ -84,7 +88,7 @@ class FlagManager:
 
     def get_bit_number(self, abbr):
         """Get bit number corresponding to given flag abbr"""
-        return self.flags[abbr][self._FLAG_BIT_NM]
+        return self.flags[abbr][self.FLAG_BIT_NM]
 
     def set_bit_val(self, abbr, set_val, index=None):
         """Set data flag value to one
@@ -223,7 +227,20 @@ class ProfileManger:
 class TimeProfileManager(ProfileManger):
     """Time profile manager """
 
-    def __init__(self, data, event_mngr, index_lag=pd.Timedelta('0s')):
+    @staticmethod
+    def factory(data, event_mngr, index_lag=pd.Timedelta('0s'), err_r=None, err_s=None, err_t=None):
+        """TimeProfileManager factory"""
+
+        if (err_r is None) or (err_s is None) or (err_t is None):
+            return TimeProfileManager(data, event_mngr, index_lag)
+        if (err_s is None) or (err_t is None):
+            raise NotImplementedError()
+            #return TimeProfileErrTypeA(data, event_mngr, index_lag, err_r)
+        else:
+            raise NotImplementedError()
+            #return TimeProfileErrTypeA(data, event_mngr, index_lag, err_r, err_s, err_t)
+
+    def __init__(self, data, event_mngr, index_lag):
         """Constructor
 
         Args:
@@ -301,15 +318,26 @@ class TimeProfileManager(ProfileManger):
         self._index_lag -= pd.Timedelta(periods, self.data.index.freq.name)
 
 
+class TimeProfileErrTypeA(TimeProfileManager):
+    """Error type A TimeProfileManager"""
+
+
+
+class TimeProfileErrTypeB(TimeProfileManager):
+    """Error type B TimeProfileManager"""
+
+
+
+
 def load(search, prm_abbr):
-    """
+    """Load parameter
 
     Args:
         search (str): Data loader search criterion
-        prm_abbr (str):
+        prm_abbr (str): Positional parameter abbr
 
     Returns:
-
+        MultiTimeProfileManager
 
     """
 
@@ -320,7 +348,7 @@ def load(search, prm_abbr):
     out = MultiTimeProfileManager()
     for data in db_linker.load(search, prm_abbr):
         out.append(
-            TimeProfileManager(
+            TimeProfileManager.factory(
                 data['data'],
                 data['event'])
         )
@@ -340,6 +368,7 @@ def update_db(prm_contains):
     # Init linkers
     db_linker = LocalDBLinker()
     orig_data_linker = OriginalCSVLinker()
+    gdp_data_linker = GDPDataLinker()
 
     # Search prm_abbr
     prm_abbr_list = [
@@ -351,6 +380,7 @@ def update_db(prm_contains):
         )
     ]
 
+    # Log
     localdb.info(
         "Update db for following parameters: %s",
         prm_abbr_list
@@ -368,7 +398,7 @@ def update_db(prm_contains):
             search={
                 'where': (
                     (Parameter.prm_abbr == prm_abbr) &
-                    (Instrument.instr_id != '')
+                    (Instrument.sn != '')
                 ),
                 'join_order': [Parameter, OrgiDataInfo, Instrument]},
             attr=[[EventsInfo.orig_data_info.name, OrgiDataInfo.source.name]],
@@ -377,6 +407,9 @@ def update_db(prm_contains):
 
         # Load
         new_orig_data = orig_data_linker.load(prm_abbr, exclude_file_name)
+
+        #TODO modify this ugly implementation
+        new_orig_data += gdp_data_linker.load(prm_abbr, exclude_file_name)
 
         # Log
         rawcsv.info("Finish reading CSV files for '%s'", prm_abbr)
@@ -400,7 +433,15 @@ def update_db(prm_contains):
         )
 
 
-class MultiTimeProfileManager(list):
+class MultiProfileManager(list):
+    """Mutli profile manager"""
+
+    def load(self):
+        """Load method"""
+        raise NotImplementedError('Please implement')
+
+
+class MultiTimeProfileManager(MultiProfileManager):
     """Multi time profile manager"""
 
     def __init__(self, time_profiles_mngrs=tuple()):
@@ -410,6 +451,10 @@ class MultiTimeProfileManager(list):
             time_profiles_mngrs (iterable of TimeProfileManager):
         """
         super().__init__(time_profiles_mngrs)
+
+    def load(self):
+        """Overwrite load method"""
+        pass
 
     def map(self, func, inplace, *args, **kwargs):
         """Map individual TimeProfileManager"""

@@ -1,7 +1,11 @@
 """
-This module contains all helper class and functions used in the package.
+Copyright(c) 2020 MeteoSwiss, contributors listed in AUTHORS
 
-Created February 2020, L. Modolo - mol@meteoswiss.ch
+Distributed under the terms of the BSD 3 - Clause License.
+
+SPDX - License - Identifier: BSD - 3 - Clause
+
+Module contents: Package helper classes and functions.
 
 """
 
@@ -342,12 +346,14 @@ class TypedProperty:
         return out
 
 
-def get_by_path(root, items):
+def get_by_path(root, items, sep='.'):
     """Access a nested object in root by item sequence.
 
     Args:
         root (dict|list|class): Object to access
-        items (list): Item sequence
+        items (list|str): Item sequence. String sequence must be separated
+            by sep value.
+        sep (str, optional): Separator.
 
     Returns:
         object: Nested value
@@ -365,7 +371,16 @@ def get_by_path(root, items):
     >>>get_by_path({'a': {'b': 1, 'c':0}}, ['a', 'c'])
     0
 
+    >>>get_by_path({'a': {'b': 1, 'c':0}}, 'a.c')
+    0
+
     """
+
+    # Split '.'
+    if isinstance(items, str):
+        items = items.split(sep)
+
+    # Get item/attr
     if isinstance(root, (dict, list)):
         out = reduce(getitem, items, root)
     else:

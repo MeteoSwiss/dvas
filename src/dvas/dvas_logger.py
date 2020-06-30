@@ -1,10 +1,11 @@
-"""Logger module
+"""
+Copyright(c) 2020 MeteoSwiss, contributors listed in AUTHORS
 
-Created May 2020, L. Modolo - mol@meteoswiss.ch
+Distributed under the terms of the BSD 3 - Clause License.
 
-Note:
-    Values in LOGGER_NAME can be used as logger into LogManager context
-    manager ('.' in LOGGER_NAME value must be replaced by '_')
+SPDX - License - Identifier: BSD - 3 - Clause
+
+Module contents: Logging management
 
 """
 
@@ -12,7 +13,6 @@ Note:
 import logging
 from logging import StreamHandler, FileHandler
 from datetime import datetime
-import oschmod
 
 # Current package import
 from .dvas_environ import log_var, path_var
@@ -66,7 +66,8 @@ def init_log():
         log_path = path_var.output_path / 'log'
         try:
             log_path.mkdir(parents=True, exist_ok=True)
-            oschmod.set_mode(log_path.as_posix(), 'u+rw')
+            # Set user read/write permission
+            log_path.chmod(log_path.stat().st_mode | 0o600)
         except (OSError,) as exc:
             raise LogDirError(f"Error in creating '{log_path}' ({exc})")
 

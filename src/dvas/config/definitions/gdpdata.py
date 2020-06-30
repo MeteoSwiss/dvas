@@ -12,7 +12,7 @@ Module contents: Required attributes definition for
 
 # Import from current packages modules
 from ..pattern import INSTR_TYPE_PAT, PARAM_PAT
-from ...database.model import Data, Instrument, EventsInfo
+from ...database.model import Data
 
 # Define
 EVENT_DT_FIELD_NM = 'dt_field'

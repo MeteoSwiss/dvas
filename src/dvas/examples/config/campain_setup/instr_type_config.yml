@@ -1,12 +1,18 @@
 
-- type_name: 'vai-rs41'
+- type_name: 'VAI-RS41'
   desc: 'Vaisala RS-41'
 
-- type_name: 'vai-rs92'
+- type_name: 'VAI-RS92'
   desc: 'Vaisala RS-92'
 
-- type_name: 'metlab-c34'
+- type_name: 'METLAB-C34'
   desc: 'MeteoLabor C34'
 
-- type_name: 'metlab-c50'
+- type_name: 'METLAB-C50'
   desc: 'MeteoLabor C50'
+
+- type_name: 'RS92-GDP_002'
+  desc: 'Vaisala RS92 Gruan Data Product, version 2'
+
+- type_name: 'RS41-GDP-BETA_001'
+  desc: 'Vaisala RS41 Gruan Data Product, version 1 beta'

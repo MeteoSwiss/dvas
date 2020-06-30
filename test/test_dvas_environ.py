@@ -1,6 +1,11 @@
 """
-This file contains testing classes and function for
-dvas.dvas_helper module.
+Copyright(c) 2020 MeteoSwiss, contributors listed in AUTHORS
+
+Distributed under the terms of the BSD 3 - Clause License.
+
+SPDX - License - Identifier: BSD - 3 - Clause
+
+Module contents: Testing classes and function for dvas.dvas_environ module.
 
 """
 
@@ -34,7 +39,7 @@ class TestGlobalPathVariablesManager:
         """Method direct variable assignment
 
         The method tests:
-            - pathlib.Path and str assignement
+            - pathlib.Path and str assignment
             - TypeError exception
 
         """
@@ -68,7 +73,7 @@ class TestGlobalPathVariablesManager:
         with path_var.set_many_attr({self.attr_name: self.init_value}):
 
             # Reload path var environ
-            path_var.load_os_environ()
+            path_var.set_attr()
 
             # Test load from OS environ
             assert getattr(path_var, self.attr_name) == test_value

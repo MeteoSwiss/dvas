@@ -1,14 +1,26 @@
 """
-This module contains the required attributes definition for class
-dvas.config.config.InstrType
+Copyright(c) 2020 MeteoSwiss, contributors listed in AUTHORS
 
-Created February 2020, L. Modolo - mol@meteoswiss.ch
+Distributed under the terms of the BSD 3 - Clause License.
+
+SPDX - License - Identifier: BSD - 3 - Clause
+
+Module contents: Required attributes definition for
+.config.ConfigManager.InstrType class.
 
 """
 
 # Import current packages modules
 from ..pattern import INSTR_TYPE_PAT
 from ...database.model import InstrType
+
+#: list: Constant node values
+CONST_NODES = [
+    {
+        InstrType.type_name.name: '',
+        InstrType.desc.name: 'Null instrument type',
+    }
+]
 
 #: dict: Parameter pattern properties (JSON_SCHEMA)
 PARAMETER_PATTERN_PROP = {
@@ -20,14 +32,6 @@ PARAMETER_PATTERN_PROP = {
         "type": "string"
     }
 }
-
-#: list: Constant node values
-CONST_NODES = [
-    {
-        InstrType.type_name.name: '',
-        InstrType.desc.name: 'Null instrument type',
-    }
-]
 
 #: str: Config manager key name
 KEY = InstrType.__name__

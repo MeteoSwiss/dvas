@@ -1,6 +1,11 @@
 """
-This file contains testing classes and function for
-dvas.dvas_helper module.
+Copyright(c) 2020 MeteoSwiss, contributors listed in AUTHORS
+
+Distributed under the terms of the BSD 3 - Clause License.
+
+SPDX - License - Identifier: BSD - 3 - Clause
+
+Module contents: Testing classes and function for dvas.dvas_helper module.
 
 """
 
@@ -142,9 +147,21 @@ def test_get_by_path():
         - Get nested value/item in lists
         - Get nested value/item in dicts
         - Get nested value/item in mixed dicts/lists
+        - Get nested value/item in class
+        - Get nested value/item from dot separated str key
         - Raise exception KeyError
 
     """
+
+    # Define
+    class A:
+        """Define class A"""
+        A = 1
+
+    class B:
+        """Define class B"""
+        def __init__(self):
+            self.b = A()
 
     # Lists
     assert get_by_path([1, [2, 3]], [1, 0]) == 2
@@ -160,6 +177,13 @@ def test_get_by_path():
 
     # Dicts/Lists
     assert get_by_path({'a': [0, {'a': [10, 20]}]}, ['a', 1, 'a']) == [10, 20]
+
+    # Class
+    assert get_by_path(B(), ['b', 'A']) == 1
+
+    # Separated key
+    assert get_by_path(B(), 'b.A') == 1
+    assert get_by_path(B(), 'b$A', sep='$') == 1
 
     # Raises
     for items in [[0, 10], [10]]:

@@ -1,9 +1,9 @@
 # Parameter configuration file
 
-- prm_abbr: '^([tup])repros([1u])'
+- prm_abbr: '^([tup])repros(1|u|(u_r)|(u_s)|(u_t))'
   # Generate variables from regex generator for temperature, humidity and
   #pressure for both instant and uncertainty values.
-  prm_desc: &myfct '$lambda x:{"t": "Temperature", "u": "Relative humidity", "p": "Pressure", "f": "Wind speed", "d": "Wind direction"}[x.group(1)]$$lambda x:{"u": " uncertainty", "1": ""}[x.group(2)]$'
+  prm_desc: &myfct '$lambda x:{"t": "Temperature", "u": "Relative humidity", "p": "Pressure", "f": "Wind speed", "d": "Wind direction"}[x.group(1)]$$lambda x:{"u": " combinated uncertainty", "u": " random uncertainty", "u": " spacial uncertainty", "u": " temporal uncertainty", "1": ""}[x.group(2)]$'
   # Link anchor to str
 
 - prm_abbr: 'altpros1'

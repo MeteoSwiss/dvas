@@ -1,4 +1,4 @@
-_vai-rs92:
+_VAI-RS92:
     idx_unit: 's'
     delimiter:
     delim_whitespace: True
@@ -21,9 +21,7 @@ _vai-rs92:
             - 3
 
 
-
-
-_vai-rs41:
+_VAI-RS41:
     idx_unit: 's'
     delimiter: ';'
     skiprows: 1
@@ -45,7 +43,7 @@ _vai-rs41:
             - 3
 
 
-_metlab-c34:
+_METLAB-C34:
     idx_unit: 's'
     delimiter: ';'
     skiprows: 1
@@ -66,7 +64,8 @@ _metlab-c34:
             - 0
             - 5
 
-_metlab-c50:
+
+_METLAB-C50:
     idx_unit: 's'
     delimiter: ';'
     skiprows: 0

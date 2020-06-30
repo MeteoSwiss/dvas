@@ -31,7 +31,8 @@ setup(
         "dotty-dict",
         "jsonschema",
         "matplotlib",
-        "oschmod",
+		"netCDF4",
+        'numpy',
         "pampy",
         "pandas",
         "peewee",
@@ -41,6 +42,7 @@ setup(
         "ruamel-yaml",
         "scipy",
         "sre_yield",
+        "yaconfigobject",
     ],
 
     # Use DVAS from a terminal
@@ -59,7 +61,7 @@ setup(
         'Topic :: Scientific/Engineering :: Meteorology',
 
         # Pick your license as you wish (should match "license" above)
-        #'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+            'License :: OSI Approved :: BSD 3-Clause "New" or "Revised" License (BSD-3-Clause)',
 
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.

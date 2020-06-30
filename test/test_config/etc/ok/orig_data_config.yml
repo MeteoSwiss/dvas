@@ -1,5 +1,5 @@
 
-_vai-rs41:
+_VAI-RS41:
     idx_unit: 'dt'
     dt_format: '%H:%M:%S'
     lambda: 'lambda x: x + 1'
@@ -7,7 +7,7 @@ _vai-rs41:
     _trepros1:
         delimiter: '.'
 
-_vai-rs92:
+_VAI-RS492:
+    lambda: 'lambda x: 5 * x'
     _trepros1:
-        _i11:
-            lambda: 'lambda x: 3 * x'
+        lambda: 'lambda x: 3 * x'

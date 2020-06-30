@@ -1,17 +1,25 @@
 
-- instr_id: 'i1'
-  instr_type: 'vai-rs41'
-  sn: '41-0000'
+- sn: '41-0000'
+  instr_type: 'VAI-RS41'
 
-- instr_id: 'i2'
-  instr_type: 'vai-rs92'
-  sn: '92-0000'
+- sn: '92-0000'
+  instr_type: 'VAI-RS92'
   remark: 'Modified firmware, version 4.1'
 
-- instr_id: 'i3'
-  instr_type: 'metlab-c34'
-  sn: '34-0000'
+- sn: '34-0000'
+  instr_type: 'METLAB-C34'
 
-- instr_id: 'i4'
-  instr_type: 'metlab-c50'
-  remark: 'No SN'
+- sn: '50-0000'
+  instr_type: 'METLAB-C50'
+
+- sn: 'M1453539'
+  instr_type: 'RS92-GDP_002'
+  remark: 'Reference (GRUAN Data Product)'
+
+- sn: 'M1453906'
+  instr_type: 'RS92-GDP_002'
+  remark: 'Reference (GRUAN Data Product)'
+
+- sn: 'N4741049'
+  instr_type: 'RS41-GDP-BETA_001'
+  remark: 'Reference (GRUAN Data Product)'

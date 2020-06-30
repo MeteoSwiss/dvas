@@ -1,5 +1,3 @@
 
-- instr_id: 'i1'
-  instr_type: 'vai-rs41'
-  sn: '41-0000'
-
+- sn: '41-0000'
+  instr_type: 'VAI-RS41'
