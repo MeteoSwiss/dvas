@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 This file contains testing classes and functions for the netcdf4 module (a dvas requirement).
 
@@ -9,7 +10,7 @@ import numpy as np
 import netCDF4 as nc
 
 def test_netcd4():
-    """Function used to test if the netcdf4 package is properly installed
+    """Function used to test if the netcdf4 package is properly installed.
 
     The function tests:
         - existence of all dependent libraries by testing the creation of a dummy netcdf4 file.
@@ -27,15 +28,17 @@ def test_netcd4():
     time = dummy_grp.createDimension("time", None)
 
     # And a variable
-    times = dummy_grp.createVariable("time","f8",("time",), zlib=True, least_significant_digit=3)
+    times = dummy_grp.createVariable("time", "f8", ("time",), zlib=True, least_significant_digit=3)
     times.units = 's'
-    times[:] = np.arange(0, 6000, 1.)
+    times[:] = np.arange(0, 6000, 1.5)
 
     dummy.close()
 
     dummy = nc.Dataset("netcdf4_test.nc", "r")
 
+    # If I get here, then most likely it is all working fine.
     assert dummy.data_model == 'NETCDF4'
 
+    # Clean up the mess I made.
     dummy.close()
     os.remove("netcdf4_test.nc")
