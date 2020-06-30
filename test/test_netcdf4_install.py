@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=E1101, W0612
 """
 This file contains testing classes and functions for the netcdf4 module (a dvas requirement).
 
