@@ -15,7 +15,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest]
 
     steps:
       # Checkout our repository
@@ -37,11 +37,12 @@ jobs:
         run: pip install .
         shell: bash
 
-      # Lauch a home-made python script with in-line arguments split over multiple lines.
+      # Launch a home-made python script with in-line arguments split over multiple lines.
       # Here I use bash line breaks to feed each error codes on their own line. that way, I can
       # comment on each of them. The comments are included by hijacking the bash backtick's command
-      # substituion. Inspired from https://stackoverflow.com/questions/9522631/
-      # how-to-put-a-line-comment-for-a-multi-line-command
+      # substitution. 
+      # Inspired from https://stackoverflow.com/questions/9522631/how-to-put-a-line-comment-for-a-multi-line-command
+      # Authors: Marwan Alsabbagh, Kos
       - name: Look for Exception-raising errors
         run: |
           python ./.github/workflows/pylinter.py --restrict E `# All errors are bad` \

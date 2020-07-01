@@ -31,7 +31,7 @@ setup(
         "dotty-dict",
         "jsonschema",
         "matplotlib",
-		"netCDF4",
+		    "netCDF4",
         'numpy',
         "pampy",
         "pandas",
