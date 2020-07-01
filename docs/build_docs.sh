@@ -3,6 +3,7 @@
 #
 
 # Step 0: just clean the existing apidoc rst files
+rm -r -f ./build
 rm -r -f ./source/modules
 
 # Step 1: run autodoc to generate all the docstring rst files.

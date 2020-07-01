@@ -93,7 +93,7 @@ Until its release, the dvas repository will remain private: branching will thus 
   
 - **doctrings:** Google Style. Please try to stick to the following MWE:
 ```
-    ''' A brief one-liner description, that finishes with a dot.
+    """ A brief one-liner description, that finishes with a dot.
 
     Use some
     multi-line space for
@@ -123,7 +123,14 @@ Until its release, the dvas repository will remain private: branching will thus 
     Caution:
         Something the be careful about.
 
-    '''
+    .. uml::
+        @startuml
+        title Sequence diagramm example
+        Alice -> Bob: Hi!
+        Alice <- Bob: How are you?
+        @enduml
+
+    """
 ```
 You should of course feel free to use more of the tools offered by [sphinx](https://www.sphinx-doc.org/en/master/), [napoleon](https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html), and 
 [Google Doc Strings](https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html#example-google). But if you do, **please make sure there are no errors upon generating the docs !**

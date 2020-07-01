@@ -339,6 +339,14 @@ def load(search, prm_abbr):
     Returns:
         MultiTimeProfileManager
 
+    .. uml::
+
+        @startuml
+        title Sequence diagramm example
+        Alice -> Bob: Hi!
+        Alice <- Bob: How are you?
+        @enduml
+
     """
 
     # Init
