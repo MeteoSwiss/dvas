@@ -4,9 +4,9 @@ If you want to report a bug with dvas, [jump here](#reporting-a-bug).
 
 If you are still reading this, you may actually be considering contributing to the development of dvas. :heart_eyes: :tada:
 
-There are many ways that you can do so, including by: 
+There are many ways that you can do so, including by:
 - [reporting a bug](#reporting-a-bug)
-- fixing an [known issue](https://github.com/MeteoSwiss-MDA/dvas/issues?q=is%3Aissue+), 
+- fixing an [known issue](https://github.com/MeteoSwiss-MDA/dvas/issues?q=is%3Aissue+),
 - implementing a new functionality, and/or
 - improving the documentation:
   * in the code, with better docstrings
@@ -19,8 +19,9 @@ All these contributions are welcome, and what follows should help you get starte
 
 - [Code of conduct](#code-of-conduct)
 - [Reporting a bug](#reporting-a-bug)
-- [Contributing](#contributing)
+- [Essential things to know about dvas](#essential)
 - [Styles](#styles)
+- [Step-by-step guide to contributing](#contributing)
 
 ## Code of conduct
 
@@ -30,7 +31,84 @@ This project and everyone participating in it is governed by the [dvas Code of C
 
 If you find something odd with dvas, first check if it is a [known issue](https://github.com/MeteoSwiss-MDA/dvas/issues?q=is%3Aissue+). If not, please create a new [Github Issue](https://github.com/MeteoSwiss-MDA/dvas/issues). This is the best way for everyone to keep track of new problems and past solutions.
 
-## Contributing
+## Essential things to know about dvas
+dvas is a first-and-foremost a Python module - but not only. dvas also includes a series of parameter and
+utilitarian files related to its Github repository, and a dedicated documentation hosted using Github pages.
+
+For the sake of clarity, and to facilitate the maintenance, we list here (succinctly) a series of key facts about the dvas code and its repository:
+
+    1. Source code
+        * dvas adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
+        * The adopted styles are described [here](#styles)
+
+    2. Github repository
+        * contributions to dvas get typically merged into the `develop` branch. Pull requests to the
+        `master` branch should only originate from the `develop` branch. 
+        * any successful pull request to the `master` branch should trigger an new code release.
+        * a series of Github Actions are implemented for CI purposes. These include the execution of
+        the dvas tests on Windows, macOS and Linux operating systems, a linting of the code, and a validation
+        of the docs.
+
+    3. Documentation
+        * the dvas documentation is generated using Sphinx, with the Read-the-docs theme. The compiled
+        documentation is hosted.
+        on the gh-pages branch of the dvas repositiory.
+        * UML diagrams included in the code docstrings are rendered (when building the docs) with the
+        [plantuml server](http://www.plantuml.com/plantuml)
+
+
+## Styles
+
+- **linting:** 
+  * the following [pylint](https://www.pylint.org/) error codes are forbidden in dvas: ``E, C0303, C0304, C0112, C0114, C0115, C0116, C0411, W0611, W0612.`` Any pull request will be automatically linted, and these will be flagged accordingly. 
+  * In general, we would encourage contributors to follow PEP8 as closely as possible/reasonable. You should check often
+    how well you are doing using the command `pylint some_modified_file.py`.
+  
+- **doctrings:** Google Style. Please try to stick to the following MWE:
+```
+    """ A brief one-liner description, that finishes with a dot.
+
+    Use some
+    multi-line space for
+    more detailed info.
+
+    Args:
+        x (float, int): variable x could be of 2 types ...
+
+           - *float*: x could be a float
+           - *int*: x could also be an int
+
+        y (list[str]; optional): variable y info
+
+    Returns:
+        bool: some grand Truth about the World.
+
+    Example:
+        If needed, you can specify chunks of code using code blocks::
+
+            def some_function():
+                print('hurray!')
+
+    Note:
+        `Source <https://github.com/sphinx-doc/sphinx/issues/3921>`__
+        Please note the double _ _ after the link !
+
+    Caution:
+        Something the be careful about.
+
+    .. uml::
+        @startuml
+        title Sequence diagramm example
+        Alice -> Bob: Hi!
+        Alice <- Bob: How are you?
+        @enduml
+
+    """
+```
+You should of course feel free to use more of the tools offered by [sphinx](https://www.sphinx-doc.org/en/master/), [napoleon](https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html), and 
+[Google Doc Strings](https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html#example-google). But if you do, **please make sure there are no errors upon generating the docs !**
+
+## Step-by-step guide to contributing
 
 We are currently in the early stages of development of dvas. If you would like to contribute to the code, please contact [frederic.vogt@meteoswiss.ch](mailto:frederic.vogt@meteoswiss.ch).
 
@@ -101,56 +179,3 @@ Until its release, the dvas repository will remain private: branching will thus 
    there might be something wrong with your changes).
    
    The code devs will then come and take a look at the pull request and assess its fitness for purpose.
-
-
-## Styles
-
-- **linting:** 
-  * the following [pylint](https://www.pylint.org/) error codes are forbidden in dvas: ``E, C0303, C0304, C0112, C0114, C0115, C0116, C0411, W0611, W0612.`` Any pull request will be automatically linted, and these will be flagged accordingly. 
-  * In general, we would encourage contributors to follow PEP8 as closely as possible/reasonable. You should check often
-    how well you are doing using the command `pylint some_modified_file.py`.
-  
-- **doctrings:** Google Style. Please try to stick to the following MWE:
-```
-    """ A brief one-liner description, that finishes with a dot.
-
-    Use some
-    multi-line space for
-    more detailed info.
-
-    Args:
-        x (float, int): variable x could be of 2 types ...
-
-           - *float*: x could be a float
-           - *int*: x could also be an int
-
-        y (list[str]; optional): variable y info
-
-    Returns:
-        bool: some grand Truth about the World.
-
-    Example:
-        If needed, you can specify chunks of code using code blocks::
-
-            def some_function():
-                print('hurray!')
-
-    Note:
-        `Source <https://github.com/sphinx-doc/sphinx/issues/3921>`__
-        Please note the double _ _ after the link !
-
-    Caution:
-        Something the be careful about.
-
-    .. uml::
-        @startuml
-        title Sequence diagramm example
-        Alice -> Bob: Hi!
-        Alice <- Bob: How are you?
-        @enduml
-
-    """
-```
-You should of course feel free to use more of the tools offered by [sphinx](https://www.sphinx-doc.org/en/master/), [napoleon](https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html), and 
-[Google Doc Strings](https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html#example-google). But if you do, **please make sure there are no errors upon generating the docs !**
-

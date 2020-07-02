@@ -13,8 +13,6 @@
 #
 
 from pathlib import Path
-#sys.path.insert(0, os.path.abspath(os.path.join('..', '..')))
-
 
 # Define
 file_absolute_path = Path(__file__).absolute()
