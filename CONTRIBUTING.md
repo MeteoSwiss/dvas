@@ -37,32 +37,40 @@ utilitarian files related to its Github repository, and a dedicated documentatio
 
 For the sake of clarity, and to facilitate the maintenance, we list here (succinctly) a series of key facts about the dvas code and its repository:
 
-    1. Source code
-        * dvas adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
-        * The adopted styles are described [here](#styles)
+1. **Source code:**
+   * dvas adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+   * The adopted styles are described [here](#styles).
+   * dvas *operational* dependencies are specified in `setup.py`. Dependencies required for 
+    *code development* activities are specified in `dev_requirements.txt`.
+   * There is a human-readable [Changelog](CHANGELOG).
 
-    2. Github repository
-        * contributions to dvas get typically merged into the `develop` branch. Pull requests to the
-        `master` branch should only originate from the `develop` branch. 
-        * any successful pull request to the `master` branch should trigger an new code release.
-        * a series of Github Actions are implemented for CI purposes. These include the execution of
-        the dvas tests on Windows, macOS and Linux operating systems, a linting of the code, and a validation
-        of the docs.
+2. **Github repository:**
+   * Contributions to dvas get typically merged into the `develop` branch. Pull requests to the
+    `master` branch should only originate from the `develop` branch. 
+   * Any successful pull request to the `master` branch should trigger an new code release.
+   * A series of Github Actions are implemented for CI purposes. These include the execution of
+    the dvas tests on Windows, macOS and Linux, a linting of the code, a validation
+    of the docs, and a check of the `CHANGELOG`.
+   * A `.pylintrc` refines the behavior of pylint for dvas.
 
-    3. Documentation
-        * the dvas documentation is generated using Sphinx, with the Read-the-docs theme. The compiled
-        documentation is hosted.
-        on the gh-pages branch of the dvas repositiory.
-        * UML diagrams included in the code docstrings are rendered (when building the docs) with the
-        [plantuml server](http://www.plantuml.com/plantuml)
+3. **Documentation:**
+   * The dvas documentation is generated using Sphinx, with the Read-the-docs theme. The compiled
+    documentation is hosted on the `gh-pages` branch of the dvas repositiory.
+   * UML diagrams included in the code docstrings are rendered (when building the docs) with the
+    [plantuml server](http://www.plantuml.com/plantuml).
 
 
 ## Styles
 
 - **linting:** 
-  * the following [pylint](https://www.pylint.org/) error codes are forbidden in dvas: ``E, C0303, C0304, C0112, C0114, C0115, C0116, C0411, W0611, W0612.`` Any pull request will be automatically linted, and these will be flagged accordingly. 
-  * In general, we would encourage contributors to follow PEP8 as closely as possible/reasonable. You should check often
+  * The following [pylint](https://www.pylint.org/) error codes are forbidden in dvas: ``E, C0303, C0304, C0112, C0114, C0115, C0116, C0411, W0611, W0612.`` Any pull request will be automatically linted, and these will be flagged accordingly. 
+  * We encourage contributors to follow PEP8 as closely as possible/reasonable. You should check often
     how well you are doing using the command `pylint some_modified_file.py`.
+  * To avoid `E1101` errors, stick to the following:
+    ```
+    import netCDF4 as nc
+    ```
+
   
 - **doctrings:** Google Style. Please try to stick to the following MWE:
 ```
