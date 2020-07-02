@@ -13,7 +13,7 @@ There are many ways that you can do so, including by:
   * in this repository (for example this very file !)
   * in the website, via the docs `.rst` files
 
-All these contrbutions are welcome, and what follows should help you get started. Note that contributing to dvas does *not* necessarily require an advanced knowledge of python and/or Github. Helping us fix typos in the docs, for example, could be an excellent first contribution. Plus, :anger: typos :anger: are the worst !
+All these contributions are welcome, and what follows should help you get started. Note that contributing to dvas does *not* necessarily require an advanced knowledge of python and/or Github. Helping us fix typos in the docs, for example, could be an excellent first contribution. Plus, :anger: typos :anger: are the worst !
 
 ## Table of contents
 
@@ -28,7 +28,7 @@ This project and everyone participating in it is governed by the [dvas Code of C
 
 ## Reporting a bug
 
-If you find something odd with dvas, first check if it is a [known issue](https://github.com/MeteoSwiss-MDA/dvas/issues?q=is%3Aissue+). If not, please create a new [Github Issue](https://github.com/MeteoSwiss-MDA/dvas/issues). This is the best way for everyone to keep track of new problems and past solutions. 
+If you find something odd with dvas, first check if it is a [known issue](https://github.com/MeteoSwiss-MDA/dvas/issues?q=is%3Aissue+). If not, please create a new [Github Issue](https://github.com/MeteoSwiss-MDA/dvas/issues). This is the best way for everyone to keep track of new problems and past solutions.
 
 ## Contributing
 
@@ -40,7 +40,7 @@ Until its release, the dvas repository will remain private: branching will thus 
     
        git config --list
        
-   If `user.name` and `user.email` are missing or do not match those your github account account, change them:
+   If `user.name` and `user.email` are missing or do not match those of your github account account, change them:
 
        git config --local user.name "your_github_id"
        git config --local user.email "your_github_id@users.noreply.github.com"
@@ -60,7 +60,11 @@ Until its release, the dvas repository will remain private: branching will thus 
        git config --list
        git status
 
-5. Modify the code locally. This could be the source code, or the docs `.rst` source files. 
+4. Install the packages that are required for doing dev work with dvas:
+
+       pip install -r dev_requirements.txt
+
+5. Modify the code locally. This could be the source code, or the docs `.rst` source files.
    
    :warning: Please read carefully (and adhere to!) the dvas [style conventions](#styles) below.
 
@@ -73,13 +77,28 @@ Until its release, the dvas repository will remain private: branching will thus 
    
        git push origin your_branch_name
 
-7. Once ready with the modifications, push your branch to the dvas repository. If warranted (it most likely will be!), remember to update the `CHANGELOG` before doing so. 
+7. Do not forget to lint your contributions. If you want to run the checks that will be executed automatically at the pull
+   request stage, you can run the following commands from the dvas repository:
+
+       python ./.github/workflows/pylinter.py --restrict E C0303 C0304 C0112 C0114 C0115 C0116 C0411 W0611 W0612
+       python ./.github/workflows/pylinter.py --min_score 8
+
+    Note that this may pick-up linting problems outside of your contribution as well.
+
+8. If warranted, make sure the docs compile without errors/warnings:
+
+       cd docs
+       sh build_docs.sh
+
+7. Once ready with the modifications, push your branch to the dvas repository. If warranted (it most likely will be!), 
+   remember to update the `CHANGELOG` and add your name to the `AUTHORS` before doing so. 
 
        git push origin your_branch_name
 
-   Next, go to `your_branhc-name` on the dvas Github repository, and draft a new pull request. By default, the pull request should go from
-   `your_branch_name` to the `develop` branch. Do not forget to link the pull request to a specific issue if warranted. Once the pull request is issued, automated checks will be run (pytest, 
-   pylint, changelog, ...), which sould all succeed (if not, there might be something wrong with your changes).
+9. Next, go to `your_branch_name` on the dvas Github repository, and draft a new pull request. By default, the pull request should go 
+   from `your_branch_name` to the `develop` branch. Do not forget to link the pull request to a specific issue if warranted. Once the 
+   pull request is issued, automated checks will be run (pytest, pylint, changelog, ...), which sould all succeed (if not, 
+   there might be something wrong with your changes).
    
    The code devs will then come and take a look at the pull request and assess its fitness for purpose.
 
@@ -108,7 +127,7 @@ Until its release, the dvas repository will remain private: branching will thus 
         y (list[str]; optional): variable y info
 
     Returns:
-        bool: some grand Truth about he World.
+        bool: some grand Truth about the World.
 
     Example:
         If needed, you can specify chunks of code using code blocks::
@@ -117,7 +136,7 @@ Until its release, the dvas repository will remain private: branching will thus 
                 print('hurray!')
 
     Note:
-        `Source <https://github.com/sphinx-doc/sphinx/issues/3921>`__ 
+        `Source <https://github.com/sphinx-doc/sphinx/issues/3921>`__
         Please note the double _ _ after the link !
 
     Caution:
