@@ -16,10 +16,14 @@ with open(Path('.') / 'src' / 'dvas' / 'dvas_version.py') as fid:
         line.split("'")[1] for line in fid.readlines() if 'VERSION' in line
     )
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
 setup(
     dependency_links=[],
     name="dvas",
     version=version,
+    license='GNU General Public License v3 or later (GPLv3+)',
 
     # Include all packages under src
     packages=find_packages("src"),
@@ -27,10 +31,12 @@ setup(
     # Tell setuptools packages are under src
     package_dir={"": "src"},
 
-    url="",
-    author="MDA",
+    url="https://github.com/MeteoSwiss-MDA/dvas",
+    author="MeteoSwiss",
     author_email="",
     description="Data Visualisation and Analysis Software for meteorological radiosounding",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     python_requires='>=3.8.0',
     install_requires=[
         "dotty-dict",
