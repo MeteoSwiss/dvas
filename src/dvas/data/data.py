@@ -1,7 +1,11 @@
 """
-Module containing class and function for data management
+Copyright(c) 2020 MeteoSwiss, contributors listed in AUTHORS
 
-Created February 2020, L. Modolo - mol@meteoswiss.ch
+Distributed under the terms of the BSD 3 - Clause License.
+
+SPDX - License - Identifier: BSD - 3 - Clause
+
+Module contents: Data management
 
 """
 
@@ -11,7 +15,7 @@ import numpy as np
 import pandas as pd
 
 # Import from current package
-from .linker import LocalDBLinker, OriginalCSVLinker
+from .linker import LocalDBLinker, OriginalCSVLinker, GDPDataLinker
 from ..plot.plot import basic_plot
 from .math import crosscorr
 from ..database.database import db_mngr
@@ -19,8 +23,6 @@ from ..database.model import Flag, Parameter
 from ..database.model import EventsInfo, OrgiDataInfo
 from ..database.model import Instrument
 from ..database.database import OneDimArrayConfigLinker
-from ..config.definitions.flag import RAWNA_ABBR, RESMPL_ABBR, UPSMPL_ABBR
-from ..config.definitions.flag import INTERP_ABBR, SYNC_ABBR
 from ..dvas_logger import localdb, rawcsv
 
 
@@ -33,24 +35,26 @@ cfg_linker = OneDimArrayConfigLinker()
 class FlagManager:
     """Flag manager class"""
 
-    _FLAG_BIT_NM = Flag.bit_number.name
-    _FLAG_ABBR_NM = Flag.flag_abbr.name
-    _FLAG_DESC_NM = Flag.flag_desc.name
+    FLAG_BIT_NM = Flag.bit_number.name
+    FLAG_ABBR_NM = Flag.flag_abbr.name
+    FLAG_DESC_NM = Flag.flag_desc.name
 
     def __init__(self, index):
-        """Constructor
-
+        """
         Args:
-            index (pd.Index): Pandas index
+            index (iterable): Flag index
         """
         self._flags = {
-            arg[Flag.flag_abbr.name]: arg
+            arg[self.FLAG_ABBR_NM]: arg
             for arg in db_mngr.get_flags()
         }
 
         self._data = pd.Series(
             np.zeros(len(index),), index=index, dtype=int
         )
+
+    def __len__(self):
+        return len(self.data)
 
     @property
     def flags(self):
@@ -59,37 +63,71 @@ class FlagManager:
 
     @property
     def data(self):
-        """pd.Series: Data corresponding flag value."""
+        """pandas.Series: Data corresponding flag value."""
         return self._data
 
     @data.setter
     def data(self, value):
         self._data = value
 
+    def reindex(self, index, set_abbr):
+        """Reindex method
+
+        Args:
+            index (iterable): New index
+            set_abbr (str): Flag abbr used to replace NaN creating during
+                reindexing.
+
+        """
+
+        # Reindex flag
+        self.data = self.data.reindex(index)
+
+        # Set resampled flag
+        self.set_bit_val(set_abbr, True, self.data.isna())
+
     def get_bit_number(self, abbr):
         """Get bit number corresponding to given flag abbr"""
-        return self.flags[abbr][self._FLAG_BIT_NM]
+        return self.flags[abbr][self.FLAG_BIT_NM]
 
-    def set_bit_val(self, abbr, index=None, set_val=True):
+    def set_bit_val(self, abbr, set_val, index=None):
         """Set data flag value to one
 
         Args:
             abbr (str):
+            set_val (bool): Default to True
             index (pd.Index, optional): Default to None.
-            set_val (bool, optional): Default to True
 
         """
+
+        # Define
+        def set_to_true(x):
+            """Set bit to True"""
+            if np.isnan(x):
+                out = (1 << self.get_bit_number(abbr))
+            else:
+                out = int(x) | (1 << self.get_bit_number(abbr))
+
+            return out
+
+        def set_to_false(x):
+            """Set bit to False"""
+            if np.isnan(x):
+                out = 0
+            else:
+                out = int(x) & ~(1 << self.get_bit_number(abbr))
+
+            return out
+
+        # Init
         if index is None:
             index = self.data.index
 
+        # Set bit
         if set_val is True:
-            self._data.loc[index] = self.data.loc[index].apply(
-                lambda x: x | (1 << self.get_bit_number(abbr))
-            )
+            self._data.loc[index] = self.data.loc[index].apply(set_to_true)
         else:
-            self._data.loc[index] = self.data.loc[index].apply(
-                lambda x: x & ~(1 << self.get_bit_number(abbr))
-            )
+            self._data.loc[index] = self.data.loc[index].apply(set_to_false)
 
     def get_bit_val(self, abbr):
         """Get data flag value
@@ -115,7 +153,7 @@ class ProfileManger:
         """
 
         # Test
-        assert isinstance(data, pd.Series)
+        self.check_data(data)
 
         # Set attributes
         self._data = data
@@ -127,6 +165,19 @@ class ProfileManger:
     def data(self):
         """pd.Series: Data"""
         return self._data
+
+    @data.setter
+    def data(self, val):
+        # Test
+        self.check_data(val)
+        assert len(val) == len(self.flag_mngr), 'len(data) != len(flag)'
+
+        # Set data
+        self._data = val
+
+        # Modify tag 'raw' -> 'derived'
+        self.event_mngr.rm_tag('raw')
+        self.event_mngr.add_tag('derived')
 
     @property
     def event_mngr(self):
@@ -143,6 +194,10 @@ class ProfileManger:
         """pd.Series: Corresponding data flag"""
         return self._flag_mngr.data
 
+    def check_data(self, val):
+        """Check data"""
+        assert isinstance(val, pd.Series)
+
     def copy(self):
         """Copy method"""
         return deepcopy(self)
@@ -153,18 +208,16 @@ class ProfileManger:
     def interpolate(self):
         """Interpolated method"""
 
-        # Test if resampled data
-        assert self._flag_mngr.get_bit_val(RESMPL_ABBR).all(), (
-            'Data have not been resampled'
-        )
-
         #TODO
         # Add automatic interpolation for polar coord (e.g. wind direction)
         # Check if this function must be improved/fixed
-        self._data = self.data.interpolate(method='index')
+        interp_data = self.data.interpolate(method='index')
 
-        # Set flag
-        self._flag_mngr.set_bit_val(INTERP_ABBR)
+        # Set interp flag
+        self.flag_mngr.set_bit_val('interp', True, index=self.data.isna())
+
+        # Set data
+        self.data = interp_data
 
     def get_flagged(self, flag_abbr):
         """Get flag value for given flag abbr"""
@@ -174,7 +227,20 @@ class ProfileManger:
 class TimeProfileManager(ProfileManger):
     """Time profile manager """
 
-    def __init__(self, data, event_mngr, index_lag=pd.Timedelta('0s')):
+    @staticmethod
+    def factory(data, event_mngr, index_lag=pd.Timedelta('0s'), err_r=None, err_s=None, err_t=None):
+        """TimeProfileManager factory"""
+
+        if (err_r is None) or (err_s is None) or (err_t is None):
+            return TimeProfileManager(data, event_mngr, index_lag)
+        if (err_s is None) or (err_t is None):
+            raise NotImplementedError()
+            #return TimeProfileErrTypeA(data, event_mngr, index_lag, err_r)
+        else:
+            raise NotImplementedError()
+            #return TimeProfileErrTypeA(data, event_mngr, index_lag, err_r, err_s, err_t)
+
+    def __init__(self, data, event_mngr, index_lag):
         """Constructor
 
         Args:
@@ -186,7 +252,6 @@ class TimeProfileManager(ProfileManger):
         super().__init__(data, event_mngr)
 
         # Test
-        assert isinstance(data.index, pd.TimedeltaIndex)
         assert isinstance(index_lag, pd.Timedelta)
 
         # Init attributes
@@ -196,12 +261,19 @@ class TimeProfileManager(ProfileManger):
         self._reset_index()
 
         # Set raw NA
-        self._flag_mngr.set_bit_val(RAWNA_ABBR, self.data.isna())
+        self._flag_mngr.set_bit_val('raw_na', True, self.data.isna())
 
     @property
     def index_lag(self):
         """pd.Timedelta: Index time lag"""
         return self._index_lag
+
+    def check_data(self, val):
+        """Overwrite check data"""
+        super().check_data(val)
+
+        # Test
+        assert isinstance(val.index, pd.TimedeltaIndex)
 
     def resample(self, interval='1s', method='mean'):
         """Resample method
@@ -214,19 +286,17 @@ class TimeProfileManager(ProfileManger):
 
         resampler = self.data.resample(interval, label='right', closed='right')
         if method == 'mean':
-            self._data = resampler.mean()
+            data_tmp = resampler.mean()
         elif method == 'sum':
-            self._data = resampler.sum()
+            data_tmp = resampler.sum()
         else:
             raise AttributeError('Bad method value')
 
-        # Set resample flag
-        self._flag_mngr.set_bit_val(RESMPL_ABBR)
+        # Reindex flag
+        self.flag_mngr.reindex(data_tmp.index, 'resampled')
 
-        # Set up sampled flag
-        self._flag_mngr.set_bit_val(
-            UPSMPL_ABBR,
-            self.data.isna() & (self._flag_mngr.get_bit_val(RAWNA_ABBR) != 1))
+        # Set data
+        self.data = data_tmp
 
     def _reset_index(self):
         """Set index start at 0s"""
@@ -248,15 +318,34 @@ class TimeProfileManager(ProfileManger):
         self._index_lag -= pd.Timedelta(periods, self.data.index.freq.name)
 
 
+class TimeProfileErrTypeA(TimeProfileManager):
+    """Error type A TimeProfileManager"""
+
+
+
+class TimeProfileErrTypeB(TimeProfileManager):
+    """Error type B TimeProfileManager"""
+
+
+
+
 def load(search, prm_abbr):
-    """
+    """Load parameter
 
     Args:
         search (str): Data loader search criterion
-        prm_abbr (str):
+        prm_abbr (str): Positional parameter abbr
 
     Returns:
+        MultiTimeProfileManager
 
+    .. uml::
+
+        @startuml
+        title Sequence diagramm example
+        Alice -> Bob: Hi!
+        Alice <- Bob: How are you?
+        @enduml
 
     """
 
@@ -267,7 +356,7 @@ def load(search, prm_abbr):
     out = MultiTimeProfileManager()
     for data in db_linker.load(search, prm_abbr):
         out.append(
-            TimeProfileManager(
+            TimeProfileManager.factory(
                 data['data'],
                 data['event'])
         )
@@ -287,6 +376,7 @@ def update_db(prm_contains):
     # Init linkers
     db_linker = LocalDBLinker()
     orig_data_linker = OriginalCSVLinker()
+    gdp_data_linker = GDPDataLinker()
 
     # Search prm_abbr
     prm_abbr_list = [
@@ -298,6 +388,7 @@ def update_db(prm_contains):
         )
     ]
 
+    # Log
     localdb.info(
         "Update db for following parameters: %s",
         prm_abbr_list
@@ -315,7 +406,7 @@ def update_db(prm_contains):
             search={
                 'where': (
                     (Parameter.prm_abbr == prm_abbr) &
-                    (Instrument.instr_id != '')
+                    (Instrument.sn != '')
                 ),
                 'join_order': [Parameter, OrgiDataInfo, Instrument]},
             attr=[[EventsInfo.orig_data_info.name, OrgiDataInfo.source.name]],
@@ -324,6 +415,9 @@ def update_db(prm_contains):
 
         # Load
         new_orig_data = orig_data_linker.load(prm_abbr, exclude_file_name)
+
+        #TODO modify this ugly implementation
+        new_orig_data += gdp_data_linker.load(prm_abbr, exclude_file_name)
 
         # Log
         rawcsv.info("Finish reading CSV files for '%s'", prm_abbr)
@@ -347,8 +441,28 @@ def update_db(prm_contains):
         )
 
 
-class MultiTimeProfileManager(list):
+class MultiProfileManager(list):
+    """Mutli profile manager"""
+
+    def load(self):
+        """Load method"""
+        raise NotImplementedError('Please implement')
+
+
+class MultiTimeProfileManager(MultiProfileManager):
     """Multi time profile manager"""
+
+    def __init__(self, time_profiles_mngrs=tuple()):
+        """
+
+        Args:
+            time_profiles_mngrs (iterable of TimeProfileManager):
+        """
+        super().__init__(time_profiles_mngrs)
+
+    def load(self):
+        """Overwrite load method"""
+        pass
 
     def map(self, func, inplace, *args, **kwargs):
         """Map individual TimeProfileManager"""
@@ -400,11 +514,6 @@ class MultiTimeProfileManager(list):
 
         """
 
-        # Check synchonised flag
-        assert all(
-            [arg.flag_mngr.get_bit_val(INTERP_ABBR).all() for arg in self]
-        ), 'Please interpolate data before'
-
         # Copy
         out = self.copy()
 
@@ -426,7 +535,7 @@ class MultiTimeProfileManager(list):
 
         for i, arg in enumerate(out):
             arg.shift(window_values[idx_offset[i]])
-            arg.flag_mngr.set_bit_val(SYNC_ABBR)
+            arg.event_mngr.add_tag('sync')
 
         return out
 

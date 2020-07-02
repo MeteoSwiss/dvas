@@ -1,13 +1,17 @@
 """
-This module contains the required attributes definition for class
-dvas.config.config.OrigData
+Copyright(c) 2020 MeteoSwiss, contributors listed in AUTHORS
 
-Created February 2020, L. Modolo - mol@meteoswiss.ch
+Distributed under the terms of the BSD 3 - Clause License.
+
+SPDX - License - Identifier: BSD - 3 - Clause
+
+Module contents: Required attributes definition for
+.config.ConfigManager.OrigData class.
 
 """
 
 # Import from current packages modules
-from ..pattern import INSTR_TYPE_PAT, INSTR_PAT, PARAM_PAT
+from ..pattern import INSTR_TYPE_PAT, PARAM_PAT
 from ...database.model import Data
 
 # Define
@@ -30,7 +34,7 @@ INDEX_NM = Data.index.name
 VALUE_NM = Data.value.name
 
 #: list: Node pattern
-NODE_PATTERN = [INSTR_TYPE_PAT, PARAM_PAT, INSTR_PAT]
+NODE_PATTERN = [INSTR_TYPE_PAT, PARAM_PAT]
 
 #: dict: Node parameters default value
 NODE_PARAMS_DEF = {

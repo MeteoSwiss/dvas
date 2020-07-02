@@ -1,14 +1,21 @@
 """
-This file contains testing classes and function for
-dvas.plot module.
+Copyright(c) 2020 MeteoSwiss, contributors listed in AUTHORS
+
+Distributed under the terms of the BSD 3 - Clause License.
+
+SPDX - License - Identifier: BSD - 3 - Clause
+
+Module contents: Testing classes and function for dvas.plot.plot module.
 
 """
+
 
 # Import from python packages and modules
 import matplotlib.pyplot as plt
 
 # Import from current package
 from dvas.plot import PLOT_TYPES
+
 
 def test_plot_types():
     """Function used to test if the default plot types are supported by the OS

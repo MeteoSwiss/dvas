@@ -1,7 +1,11 @@
 """
-This module contains database model (ORM used PeeWee).
+Copyright(c) 2020 MeteoSwiss, contributors listed in AUTHORS
 
-Created February 2020, L. Modolo - mol@meteoswiss.ch
+Distributed under the terms of the BSD 3 - Clause License.
+
+SPDX - License - Identifier: BSD - 3 - Clause
+
+Module contents: Database model (ORM uses PeeWee package)
 
 """
 
@@ -14,7 +18,7 @@ from peewee import DateTimeField, TextField, CharField
 from peewee import ForeignKeyField
 
 # Import from current package
-from ..config.pattern import INSTR_TYPE_PAT, INSTR_PAT
+from ..config.pattern import INSTR_TYPE_PAT
 from ..config.pattern import PARAM_PAT
 from ..dvas_environ import path_var as env_path_var
 
@@ -62,14 +66,8 @@ class InstrType(MetadataModel):
 class Instrument(MetadataModel):
     """Instrument model """
     id = AutoField(primary_key=True)
-    instr_id = CharField(
-        null=True, unique=True,
-        constraints=[
-            Check(f"re_fullmatch('({INSTR_PAT})|()', instr_id)")
-        ]
-    )
+    sn = CharField(null=True, unique=True)
     instr_type = ForeignKeyField(InstrType, backref='instruments')
-    sn = TextField()
     remark = TextField()
 
 

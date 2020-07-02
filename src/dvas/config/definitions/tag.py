@@ -1,8 +1,12 @@
 """
-This module contains the required attributes definition for
-.config.ConfigManager.Tag which is a .config.ConfigManager child.
+Copyright(c) 2020 MeteoSwiss, contributors listed in AUTHORS
 
-Created June 2020, L. Modolo - mol@meteoswiss.ch
+Distributed under the terms of the BSD 3 - Clause License.
+
+SPDX - License - Identifier: BSD - 3 - Clause
+
+Module contents: Required attributes definition for
+.config.ConfigManager.Tag class.
 
 """
 
@@ -18,6 +22,30 @@ PARAMETER_PATTERN_PROP = {
         "type": "string"
     },
 }
+
+#: list: Constant node values
+CONST_NODES = [
+    {
+        Tag.tag_abbr.name: 'raw',
+        Tag.tag_desc.name: 'Data are raw'
+    },
+    {
+        Tag.tag_abbr.name: 'gdp',
+        Tag.tag_desc.name: 'GRUAN Data Product'
+    },
+    {
+        Tag.tag_abbr.name: 'derived',
+        Tag.tag_desc.name: 'Data are derived from raw'
+    },
+    {
+        Tag.tag_abbr.name: 'resampled',
+        Tag.tag_desc.name: 'Data are resampled'
+    },
+    {
+        Tag.tag_abbr.name: 'sync',
+        Tag.tag_desc.name: 'Data are synchronized'
+    },
+]
 
 #: str: Config manager key name
 KEY = Tag.__name__

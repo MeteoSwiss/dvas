@@ -1,6 +1,4 @@
 include LICENSE
+include AUTHORS
 include README
 recursive-include ./test *.yml
-#recursive-include brutifus/mpl_styles  *.mplstyle
-#recursive-include brutifus/docs *
-#recursive-exclude * *.DS_Store

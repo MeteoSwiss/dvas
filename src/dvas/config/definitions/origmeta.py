@@ -1,13 +1,16 @@
 """
-This module contains the required attributes definition for class
-dvas.config.config.OrigMeta
+Copyright(c) 2020 MeteoSwiss, contributors listed in AUTHORS
 
-Created February 2020, L. Modolo - mol@meteoswiss.ch
+Distributed under the terms of the BSD 3 - Clause License.
+
+SPDX - License - Identifier: BSD - 3 - Clause
+
+Module contents: Required attributes definition for
+.config.ConfigManager.OrigMeta class.
 
 """
 
 # Import from current packages modules
-from ..pattern import INSTR_PAT
 from ...database.model import EventsInfo
 from ...database.model import Instrument
 from ...database.model import Tag
@@ -18,9 +21,8 @@ PARAMETER_PATTERN_PROP = {
     rf"^{EventsInfo.event_dt.name}$": {
         "type": 'string',
     },
-    rf"^{Instrument.instr_id.name}$": {
+    rf"^{Instrument.sn.name}$": {
         "type": 'string',
-        "pattern": INSTR_PAT
     },
     rf"^{Tag.tag_abbr.name}$": {
         "type": 'array',
@@ -31,6 +33,13 @@ PARAMETER_PATTERN_PROP = {
         "uniqueItems": True
     },
 }
+
+#: list: Constant node values
+CONST_NODES = [
+    {
+        Tag.tag_abbr.name: 'raw',
+    },
+]
 
 #: str: Config manager key name
 KEY = 'OrigMeta'

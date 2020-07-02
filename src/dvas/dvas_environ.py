@@ -1,105 +1,82 @@
 """
-This module contains the package's environment variables.
+Copyright(c) 2020 MeteoSwiss, contributors listed in AUTHORS
 
-Created February 2020, L. Modolo - mol@meteoswiss.ch
+Distributed under the terms of the BSD 3 - Clause License.
+
+SPDX - License - Identifier: BSD - 3 - Clause
+
+Module contents: Global and environment variables management classes.
 
 """
 
 # Import Python packages and module
 import os
 from pathlib import Path
+from re import compile
+from abc import ABC, ABCMeta, abstractmethod
 from contextlib import contextmanager
+from pampy import match as pmatch
+from pampy.helpers import Union, Iterable, Any
+from yaconfigobject import Config
 
 # Import current package's modules
+from . import __name__ as pkg_name
+from . import package_path
 from .dvas_helper import SingleInstanceMetaClass
-from .dvas_helper import TypedProperty
-from .dvas_helper import check_str, check_list_str
+from .dvas_helper import TypedProperty as TProp
+from .dvas_helper import check_path
 from . import __name__ as pkg_name
 
-# Define package path
-package_path = Path(__file__).parent
+
+# Define
+CONFIG = Config(
+    name='dvas_config.yaml',
+    paths=[(package_path / 'etc').as_posix()]
+)
 
 
-def set_path(value, exist_ok=False):
-    """Test and set input argument into pathlib.Path object.
-
-    Args:
-        value (pathlib.Path, str): Argument to be tested
-        exist_ok (bool, optional): If True check existence. Default to False.
-
-    Returns:
-        pathlib.Path
-
-    Raises:
-        TypeError: In case if path does not exist falls exist_ok is True
-
-    """
-
-    # Test existence
-    if exist_ok is True:
-        try:
-            assert (out := Path(value)).exists() is True, (
-                f"Path '{value}' does not exist"
-            )
-        except AssertionError as ass:
-            raise TypeError(ass)
-    else:
-        try:
-            out = Path(value)
-        except (TypeError, OSError):
-            raise TypeError(f"Bad path name for '{value}'")
-
-    return out
+class ABCSingleInstanceMeta(ABCMeta, SingleInstanceMetaClass):
+    """Child Meteclass from ABCMeta and SingleInstanceMetaClass"""
 
 
-class GlobalPathVariablesManager(metaclass=SingleInstanceMetaClass):
-    """Class to manage package's global directory path variables"""
-
-    # Set class constant attributes
-    CST = [
-        {'name': 'orig_data_path',
-         'default': package_path / 'examples' / 'data',
-         'os_nm': 'DVAS_ORIG_DATA_PATH'},
-        {'name': 'config_dir_path',
-         'default': package_path / 'examples' / 'config',
-         'os_nm': 'DVAS_CONFIG_DIR_PATH'},
-        {'name': 'local_db_path',
-         'default': Path('.') / 'dvas_db',
-         'os_nm': 'DVAS_LOCAL_DB_PATH'},
-        {'name': 'output_path',
-         'default': Path('.') / 'output',
-         'os_nm': 'DVAS_OUTPUT_PATH'}
-    ]
-
-    #: pathlib.Path: Original data path
-    orig_data_path = TypedProperty(
-        (Path, str), set_path, kwargs={'exist_ok': True}
-    )
-    #: pathlib.Path: Config dir path
-    config_dir_path = TypedProperty(
-        (Path, str), set_path, kwargs={'exist_ok': True}
-    )
-    #: pathlib.Path: Local db dir path
-    local_db_path = TypedProperty(
-        (Path, str), set_path, kwargs={'exist_ok': False}
-    )
-    #: pathlib.Path: DVAS output dir path
-    output_path = TypedProperty(
-        (Path, str), set_path, kwargs={'exist_ok': False}
-    )
+class VariableManager(ABC, metaclass=ABCSingleInstanceMeta):
+    """Class to manage variables"""
 
     def __init__(self):
         """Constructor"""
-        # Load os environment values
-        self.load_os_environ()
 
-    def load_os_environ(self):
-        """Load from OS environment variables"""
-        for arg in self.CST:
+        # Check attr_def
+        try:
+            assert isinstance(self.attr_def, list)
+            assert all([
+                pmatch({'name': Any, 'default': Any}, arg, True, default=False)
+                for arg in self.attr_def
+            ])
+
+        except AssertionError:
+            "Error in matching 'attr_def' pattern"
+
+        # Set attributes
+        self.set_attr()
+
+    @property
+    @abstractmethod
+    def attr_def(self):
+        """Class attributes definition"""
+        pass
+
+    def set_attr(self):
+        """Set attribute from attr_def. Try first to get attribute value from
+        environment. All attributes can be defined in environment variables
+        using <package name>_<attribute name> in upper case."""
+        for arg in self.attr_def:
             setattr(
                 self,
                 arg['name'],
-                os.getenv(arg['os_nm'], arg['default'])
+                os.getenv(
+                    (pkg_name + '_' + arg['name']).upper(),
+                    arg['default']
+                )
             )
 
     @contextmanager
@@ -109,90 +86,120 @@ class GlobalPathVariablesManager(metaclass=SingleInstanceMetaClass):
         Args:
             items (dict): Temporarily global variables.
                 keys: instance attribute name. values: temporarily set values.
-
+        except AssertionError as ass:
         Examples:
-            ::
-
-                from dvas.dvas_environ import path_var
-                with path_var.set_many_attr({})
+            >>>from dvas.dvas_environ import path_var
+            >>>with path_var.set_many_attr({})
 
         """
-
         # Set new values and save old values
         old_items = {}
         for key, val in items.items():
             old_items.update({key: getattr(self, key)})
             setattr(self, key, val)
         yield
-
         # Restore old values
         for key, val in old_items.items():
             setattr(self, key, val)
 
 
+class GlobalPathVariablesManager(VariableManager):
+    """Class to manage package's global directory path variables"""
+
+    #: pathlib.Path: Original data path
+    orig_data_path = TProp(
+        Union[Path, str], check_path, kwargs={'exist_ok': True}
+    )
+    #: pathlib.Path: Config dir path
+    config_dir_path = TProp(
+        Union[Path, str], check_path, kwargs={'exist_ok': True}
+    )
+    #: pathlib.Path: Local db dir path
+    local_db_path = TProp(
+        Union[Path, str], check_path, kwargs={'exist_ok': False}
+    )
+    #: pathlib.Path: DVAS output dir path
+    output_path = TProp(
+        Union[Path, str], check_path, kwargs={'exist_ok': False}
+    )
+
+    @property
+    def attr_def(self):
+        return [
+            {'name': 'orig_data_path',
+             'default': package_path / 'examples' / 'data'},
+            {'name': 'config_dir_path',
+             'default': package_path / 'examples' / 'config'},
+            {'name': 'local_db_path',
+             'default': Path('.') / 'dvas_db'},
+            {'name': 'output_path',
+             'default': Path('.') / 'output'}
+        ]
+
+
+class GlobalLoggingVariableManager(VariableManager):
+    """Class used to manage package logging variables"""
+
+    #: tuple: Allowed logging modes
+    MODES = ('FILE', 'CONSOLE')
+
+    #: str: Log output mode, Default to 'CONSOLE'
+    log_mode = TProp(
+        TProp.re_str_choice(MODES, ignore_case=True),
+        lambda *x: x[0].upper()
+    )
+    #: str: Log output file name. Default to 'dvas'
+    log_file_name = TProp(compile(r'\w+'), lambda x: x + '.log')
+    #: str: Log level. Default to 'INFO'
+    log_level = TProp(
+        TProp.re_str_choice(
+            ['DEBUG', 'INFO', 'WARNING', 'ERROR'], ignore_case=True
+        ),
+        lambda *x: x[0].upper()
+    )
+
+    @property
+    def attr_def(self):
+        return [
+            {'name': 'log_mode',
+             'default': 'CONSOLE'},
+            {'name': 'log_file_name',
+             'default': pkg_name},
+            {'name': 'log_level',
+             'default': 'INFO'},
+        ]
+
+
+class GlobalPackageVariableManager(VariableManager):
+    """Class used to manage package global variables"""
+
+    #: int: Config regexp generator limit. Default to 10000.
+    config_gen_max = TProp(int, lambda x: int(x))
+    #: str: Config regex generator group function separator. Default to '$'.
+    config_gen_grp_sep = TProp(
+        TProp.re_str_choice([r'\$', r'\%']),
+        lambda *x: x[0]
+    )
+    #: list of str: Config file allowed extensions. Default to ['yml', 'yaml']
+    config_file_ext = TProp(Iterable[str], lambda x: tuple(x))
+
+    @property
+    def attr_def(self):
+        return [
+            {'name': 'config_gen_max',
+             'default': 10000},
+            {'name': 'config_gen_grp_sep',
+             'default': '$'},
+            {'name': 'config_file_ext',
+             'default': ['yml', 'yaml']}
+        ]
+
+
 #: GlobalPathVariablesManager: Global variable containing directory path values
 path_var = GlobalPathVariablesManager()
 
+#: GlobalLoggingVariableManager: Global variable containing log package variables
+log_var = GlobalLoggingVariableManager()
 
-class GlobalPackageVariableManager(metaclass=SingleInstanceMetaClass):
-    """Class used to manage package global variables"""
-
-    # Set class constant attributes
-    CST = [
-        {'name': 'log_output',
-         'default': 'CONSOLE',
-         'os_nm': 'DVAS_LOG_OUTPUT'},
-        {'name': 'log_file_name',
-         'default': pkg_name + '.log',
-         'os_nm': 'DVAS_LOG_FILE_NAME'},
-        {'name': 'log_level',
-         'default': 'INFO',
-         'os_nm': 'DVAS_LOG_LEVEL'},
-        {'name': 'config_gen_max',
-         'default': 10000},
-        {'name': 'config_gen_grp_sep',
-         'default': '$'},
-        {'name': 'config_file_ext',
-         'default': ['yml', 'yaml']}
-    ]
-
-    #: str: Log output type, Default to 'CONSOLE'
-    log_output = TypedProperty(
-        str, check_str, args=(['FILE', 'CONSOLE'],)
-    )
-    #: str: Log output file name. Default to 'dvas.log'
-    log_file_name = TypedProperty(str)  #TODO add check re \w
-    #: str: Log level. Default to 'INFO'
-    log_level = TypedProperty(
-        str, check_str,
-        args=(['DEBUG', 'INFO', 'WARNING', 'ERROR'],)
-    )
-    #: int: Config regexp generator limit. Default to 10000.
-    config_gen_max = TypedProperty(int)
-    #: str: Config regex generator group function separator. Default to '$'.
-    config_gen_grp_sep = TypedProperty(
-        str, check_str, args=(['$', '%', '#'],)
-    )
-    #: list if str: Config file allowed extensions. Default to ['yml', 'yaml']
-    config_file_ext = TypedProperty(
-        list, check_list_str, kwargs={'choices': ['yml', 'yaml', 'txt']}
-    )
-
-    def __init__(self):
-        """Constructor"""
-        self.load_os_environ()
-
-    def load_os_environ(self):
-        """Load from OS environment variables"""
-        for arg in self.CST:
-            if 'os_nm' in arg.keys():
-                setattr(
-                    self,
-                    arg['name'],
-                    os.getenv(arg['os_nm'], arg['default'])
-                )
-            else:
-                setattr(self, arg['name'], arg['default'])
-
-
+#: GlobalPackageVariableManager: Global variable containing global package variables
 glob_var = GlobalPackageVariableManager()

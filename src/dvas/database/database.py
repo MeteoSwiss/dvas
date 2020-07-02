@@ -1,7 +1,11 @@
 """
-This module contains the database interaction functions and classes
+Copyright(c) 2020 MeteoSwiss, contributors listed in AUTHORS
 
-Created February 2020, L. Modolo - mol@meteoswiss.ch
+Distributed under the terms of the BSD 3 - Clause License.
+
+SPDX - License - Identifier: BSD - 3 - Clause
+
+Module contents: Local database management tools
 
 """
 
@@ -13,20 +17,19 @@ from collections import OrderedDict
 from math import floor
 from threading import Thread
 from datetime import datetime
-import pytz
 from peewee import chunked, DoesNotExist
 from peewee import IntegrityError
 from playhouse.shortcuts import model_to_dict
 from pandas import DataFrame, to_datetime, Timestamp
+from pampy.helpers import Iterable, Union
 import sre_yield
-import oschmod
 
 # Import from current package
 from .model import db
 from .model import Instrument, InstrType, EventsInfo
 from .model import Parameter, Flag, OrgiDataInfo, Data
 from .model import Tag, EventsTags
-from ..config.pattern import instr_re, param_re
+from ..config.pattern import PARAM_PAT
 from ..config.config import instantiate_config_managers
 from ..config.config import InstrType as CfgInstrType
 from ..config.config import Instrument as CfgInstrument
@@ -35,10 +38,9 @@ from ..config.config import Flag as CfgFlag
 from ..config.config import Tag as CfgTag
 from ..dvas_helper import DBAccess
 from ..dvas_helper import SingleInstanceMetaClass
-from ..dvas_helper import TypedProperty
-from ..dvas_helper import check_list_str
+from ..dvas_helper import TypedProperty as TProp
 from ..dvas_helper import TimeIt
-from ..dvas_helper import get_by_path
+from ..dvas_helper import get_by_path, check_datetime
 from ..dvas_logger import localdb, rawcsv
 from ..dvas_environ import glob_var
 
@@ -184,6 +186,11 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         EventsInfo, Parameter,
         Flag, Tag, EventsTags, Data, OrgiDataInfo
     ]
+    DB_TABLES_PRINT = [
+        Parameter, InstrType,
+        Instrument, Flag,
+        Tag
+    ]
 
     def __init__(self):
         """Constructor"""
@@ -202,7 +209,10 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         # Create local DB directory
         try:
             db.database.parent.mkdir(parents=True, exist_ok=True)
-            oschmod.set_mode(db.database.parent.as_posix(), 'u+rw')
+            # Set user read/write permission
+            db.database.parent.chmod(
+                db.database.parent.stat().st_mode | 0o600
+            )
         except (OSError,) as exc:
             raise DBDirError(
                 f"Error in creating '{db.database.parent}' ({exc})"
@@ -234,8 +244,10 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     ]
                 )
 
-            except IntegrityError:
-                pass
+            except IntegrityError as exc:
+                raise DBCreateError(exc)
+
+        #TODO return db object
 
     @staticmethod
     def get_or_none(table, search=None, attr=None, get_first=True):
@@ -370,11 +382,11 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
                 # Get/Check instrument
                 instr = Instrument.get_or_none(
-                    Instrument.instr_id == event.instr_id
+                    Instrument.sn == event.sn
                 )
                 if not instr:
-                    localdb.insert.error(
-                        "instr_id '%s' is missing in DB", event.instr_id
+                    localdb.error(
+                        "instr_id '%s' is missing in DB", event.sn
                     )
                     raise DBInsertError()
 
@@ -494,15 +506,17 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         try:
             with DBAccess(db) as _:
+
                 # Search for kernel logical condition
                 search_res = []
+
                 for where in where_find:
                     # Replace field in string
                     where = re.sub(
                         r'\#((e(vent(_dt)?)?)|(dt))', 'EventsInfo.event_dt', where
                     )
                     where = re.sub(
-                        r'\#(i(nstr(_id)?)?)', 'Instrument.instr_id', where
+                        r'\#((sn)|(instr_sn))', 'Instrument.sn', where
                     )
                     where = re.sub(
                         r'\#(t(ag(_abbr)?)?)', 'Tag.tag_abbr', where
@@ -545,17 +559,14 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                             # Find formula and substitute
                             search_res
                         )
-                    ) if arg]
+                    ) if arg is not None]
                 )))
 
                 # Convert id as table element
                 qry = EventsInfo.select().where(EventsInfo.id.in_(out))
                 out = [arg for arg in qry.iterator()]
 
-        except Exception as exc:
-            print(where)
-            print(where_find)
-            print(exc)
+        except Exception as _:
             out = []
 
         return out
@@ -604,7 +615,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     {
                         'event': EventManager(
                             event_dt=eventsinfo_id_list[i].event_dt,
-                            instr_id=eventsinfo_id_list[i].instrument.instr_id,
+                            sn=eventsinfo_id_list[i].instrument.sn,
                             prm_abbr=eventsinfo_id_list[i].param.prm_abbr,
                             tag_abbr=tag_abbr,
                         ),
@@ -630,11 +641,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         out += f"{'*' * len(out)}\n"
 
         if not print_tables:
-            print_tables = [
-                InstrType, Instrument, Flag,
-                Parameter, EventsInfo, OrgiDataInfo,
-                Tag, EventsTags,
-            ]
+            print_tables = self.DB_TABLES_PRINT
 
         for print_tbl in print_tables:
             out += f"{print_tbl.__name__}\n"
@@ -695,77 +702,32 @@ class Queryer(Thread):
 db_mngr = DatabaseManager()
 
 
-def set_datetime(val):
-    """Test and set input argument into datetime.datetime.
-
-    Args:
-        val (str | datetime | pd.Timestamp): UTC datetime
-
-    Returns:
-        datetime.datetime
-
-    """
-    try:
-        assert (out := to_datetime(val).to_pydatetime()).tzinfo == pytz.UTC
-    except AssertionError:
-        raise TypeError('Not UTC or bad datetime format')
-
-    return out
-
-
-def set_str(val, re_pattern, fullmatch=True):
-    """Test and set input argument into str.
-
-    Args:
-        val (str): String
-        re_pattern (re.Pattern): Compiled regexp pattern
-        fullmatch (bool): Apply fullmatch. Default to True.
-
-    Returns:
-        str
-
-    """
-    try:
-        if fullmatch:
-            assert re_pattern.fullmatch(val) is not None
-        else:
-            assert re_pattern.match(val) is not None
-    except AssertionError:
-        raise TypeError(f"Argument doesn't match {re_pattern.pattern}")
-
-    return val
-
-
 class EventManager:
     """Class for create an unique event identifier"""
 
     #: datetime.datetime: UTC datetime
-    event_dt = TypedProperty((str, Timestamp, datetime), set_datetime)
+    event_dt = TProp(Union[str, Timestamp, datetime], check_datetime)
     #: str: Instrument id
-    instr_id = TypedProperty(
-        str, set_str, args=(instr_re,), kwargs={'fullmatch': True}
-    )
+    sn = TProp(str, lambda *x: x[0])
     #: str: Parameter abbd
-    prm_abbr = TypedProperty(
-        str, set_str, args=(param_re,), kwargs={'fullmatch': True}
-    )
+    prm_abbr = TProp(re.compile(rf'^({PARAM_PAT})$'), lambda *x: x[0])
     #: str: Tag abbr
-    tag_abbr = TypedProperty(list, check_list_str)
+    tag_abbr = TProp(Iterable[str], lambda x: set(x))
 
-    def __init__(self, event_dt, instr_id, prm_abbr, tag_abbr):
+    def __init__(self, event_dt, sn, prm_abbr, tag_abbr):
         """Constructor
 
         Args:
             event_dt (str | datetime | pd.Timestamp): UTC datetime
-            instr_id (str):
+            sn (str): Instrument serial number
             prm_abbr (str):
-            tag_abbr (list of str):
+            tag_abbr (iterable of str): Tag abbr iterable
 
         """
 
         # Set attributes
         self.event_dt = event_dt
-        self.instr_id = instr_id
+        self.sn = sn
         self.prm_abbr = prm_abbr
         self.tag_abbr = tag_abbr
 
@@ -773,10 +735,29 @@ class EventManager:
         p_printer = pprint.PrettyPrinter()
         return p_printer.pformat(self.as_dict())
 
+    def add_tag(self, val):
+        """Add a tag abbr
+
+        Args:
+            val (str): New tag abbr
+
+        """
+        self.tag_abbr.add(val)
+
+    def rm_tag(self, val):
+        """Remove a tag abbr
+
+        Args:
+            val (str): Tag abbr to remove
+
+        """
+        if self.tag_abbr.intersection({val}):
+            self.tag_abbr.remove(val)
+
     def as_dict(self):
         """Convert EventManager to dict"""
         out = OrderedDict()
-        keys_nm = ['event_dt', 'instr_id', 'prm_abbr', 'tag_abbr',]
+        keys_nm = ['event_dt', 'sn', 'prm_abbr', 'tag_abbr',]
         for key in keys_nm:
             out.update({key: self.__getattribute__(key)})
         return out
@@ -796,7 +777,7 @@ class EventManager:
     @property
     def sort_attr(self):
         """ list of EventManger attributes: Attributes sort order"""
-        return [self.event_dt, self.instr_id, self.prm_abbr]
+        return [self.event_dt, self.sn, self.prm_abbr]
 
     def __eq__(self, other):
         return self.sort_attr == other.sort_attr
@@ -817,8 +798,13 @@ class EventManager:
         return self.sort_attr >= other.sort_attr
 
 
+class DBCreateError(Exception):
+    """Exception class for DB creation error"""
+
+
 class DBInsertError(Exception):
     """Exception class for DB insert error"""
+
 
 class DBDirError(Exception):
     """Exception class for DB directory creating error"""

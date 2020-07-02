@@ -1,47 +1,46 @@
 """
-This module contains the required attributes definition for class
-dvas.config.config.Instrument.
+Copyright(c) 2020 MeteoSwiss, contributors listed in AUTHORS
 
-Created February 2020, L. Modolo - mol@meteoswiss.ch
+Distributed under the terms of the BSD 3 - Clause License.
+
+SPDX - License - Identifier: BSD - 3 - Clause
+
+Module contents: Required attributes definition for
+.config.ConfigManager.Instrument class.
 
 """
 
 # Import current packages modules
-from ..pattern import INSTR_PAT, INSTR_TYPE_PAT
+from ..pattern import INSTR_TYPE_PAT
 from ...database.model import Instrument
 
 #: dict: Node parameters default value
 NODE_PARAMS_DEF = {
-    Instrument.sn.name: '',
-    Instrument.remark.name: ''
-}
-
-#: dict: Parameter pattern properties (JSON_SCHEMA)
-PARAMETER_PATTERN_PROP = {
-    rf"^{Instrument.instr_id.name}$": {
-        "type": "string",
-        "pattern": INSTR_PAT,
-    },
-    rf"^{Instrument.instr_type.name}$": {
-        "type": "string",
-        "pattern": INSTR_TYPE_PAT,
-    },
-    rf"^{Instrument.sn.name}$": {
-        "type": "string"
-    },
-    rf"^{Instrument.remark.name}$": {
-        "type": "string"
-    }
+    Instrument.remark.name: '',
 }
 
 #: list: Constant node values
 CONST_NODES = [
     {
-        Instrument.instr_id.name: '',
+        Instrument.sn.name: '',
         Instrument.instr_type.name: '',
-        Instrument.remark.name: "Null instrument id"
+        Instrument.remark.name: 'Null instrument',
     }
 ]
+
+#: dict: Parameter pattern properties (JSON_SCHEMA)
+PARAMETER_PATTERN_PROP = {
+    rf"^{Instrument.sn.name}$": {
+        "type": "string"
+    },
+    rf"^{Instrument.instr_type.name}$": {
+        "type": "string",
+        "pattern": INSTR_TYPE_PAT,
+    },
+    rf"^{Instrument.remark.name}$": {
+        "type": "string"
+    }
+}
 
 #: str: Config manager key name
 KEY = Instrument.__name__

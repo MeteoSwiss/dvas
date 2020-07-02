@@ -1,9 +1,9 @@
-#event_dt: 2020-01-02T120000Z
-#instr_id: i3
+#event_dt: '2020-01-02T120000Z'
+#sn: '34-0000'
 #tag_abbr:
-#     - e2
-#     - b2
-#     - day
+#     - 'e2'
+#     - 'b2'
+#     - 'day'
 #
 Rel. Time;Altitude (gpm);Wind Direction (°);Wind Velocity (m/s);Pressure (hPa);Temperature (°C);Humidity (%);Dewpoint (°C);Ozone (nbar);Ozone normalized (nbar);Pump Temperature (K);I ECC cells (uA);Level Flag;LAT (°);LON (°);ALT (m);VEL (m/s);DIR (°);STA;SAT;PDOP (m);DIST (m);ALD (m);AZI (°);ELE (°);CR (m/s);T_REF (°C);T_A3 (°C);X-Corr (°C);V-Corr (°C);T_CH (°C);T_2 (°C);DP_HC2 (°C);Humidity raw(%);RH_MAX (%);RH_HC2_S;TAU_I;TAU_IS;RH_HC2R_IK;RH_HC2R_IKS;RH_HC2R_I;RH_HC2_LIM;RH_HC2_K_MAX100;RH_HC2_K_LIM;DP_HC2_K;DP_HC2_K_LIM
 0;493.71939;31.01602;5.45664;958.26132;4.10394;83.56969;1.64375;;;;;;46.812848;6.943538;493.7;7.87645;196.0;7511.0;11.0;0.75;21.72919;21.8963;209.74539;7.08308;2.25;23.1794;4.31628;-0.22712;-0.21234;5.28249;5.16064;1.58049;83.154;100.0;83.56969;7.13098;7.13098;91.56909;90.68412;83.56969;83.56969;83.56969;83.56969;1.64375;1.64375

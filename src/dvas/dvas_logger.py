@@ -1,10 +1,11 @@
-"""Logger module
+"""
+Copyright(c) 2020 MeteoSwiss, contributors listed in AUTHORS
 
-Created May 2020, L. Modolo - mol@meteoswiss.ch
+Distributed under the terms of the BSD 3 - Clause License.
 
-Note:
-    Values in LOGGER_NAME can be used as logger into LogManager context
-    manager ('.' in LOGGER_NAME value must be replaced by '_')
+SPDX - License - Identifier: BSD - 3 - Clause
+
+Module contents: Logging management
 
 """
 
@@ -12,10 +13,9 @@ Note:
 import logging
 from logging import StreamHandler, FileHandler
 from datetime import datetime
-import oschmod
 
 # Current package import
-from .dvas_environ import glob_var, path_var
+from .dvas_environ import log_var, path_var
 from .dvas_helper import ContextDecorator
 
 
@@ -34,6 +34,9 @@ def get_logger(name):
     # Test logger name existence
     if name not in LOGGER_NAME:
         raise ValueError("Unknown logger name '{}'".format(name))
+
+    out = logging.getLogger(name)
+    out.disabled = True
 
     return logging.getLogger(name)
 
@@ -57,17 +60,18 @@ def init_log():
     clear_log()
 
     # Select mode
-    if glob_var.log_output == 'FILE':
+    if log_var.log_mode == 'FILE':
 
         # Set log path
         log_path = path_var.output_path / 'log'
         try:
             log_path.mkdir(parents=True, exist_ok=True)
-            oschmod.set_mode(log_path.as_posix(), 'u+rw')
+            # Set user read/write permission
+            log_path.chmod(log_path.stat().st_mode | 0o600)
         except (OSError,) as exc:
             raise LogDirError(f"Error in creating '{log_path}' ({exc})")
 
-        log_file_path = log_path / glob_var.log_file_name
+        log_file_path = log_path / log_var.log_file_name
 
         # Create stream handler and set level
         handler = FileHandler(
@@ -89,7 +93,7 @@ def init_log():
     # Add handler to all logger
     for name in LOGGER_NAME:
         logger = get_logger(name)
-        logger.setLevel(glob_var.log_level)
+        logger.setLevel(log_var.log_level)
         logger.propagate = False
         logger.addHandler(handler)
         logger.disabled = False

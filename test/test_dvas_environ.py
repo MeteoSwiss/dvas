@@ -1,6 +1,11 @@
 """
-This file contains testing classes and function for
-dvas.dvas_helper module.
+Copyright(c) 2020 MeteoSwiss, contributors listed in AUTHORS
+
+Distributed under the terms of the BSD 3 - Clause License.
+
+SPDX - License - Identifier: BSD - 3 - Clause
+
+Module contents: Testing classes and function for dvas.dvas_environ module.
 
 """
 
@@ -11,26 +16,7 @@ import pytest
 
 # Import from current package
 from dvas.dvas_environ import path_var
-from dvas.dvas_environ import set_path
 from dvas.dvas_environ import GlobalPathVariablesManager
-
-
-@pytest.fixture(autouse=True)
-def test_set_path(tmpdir):
-    """Function to test set_path"""
-
-    # Test str path name
-    assert set_path(Path(tmpdir).as_posix()) == Path(tmpdir)
-
-    # Test exist_ok True
-    assert set_path(Path(tmpdir), exist_ok=True) == Path(tmpdir)
-
-    # Test exist_ok False
-    assert set_path(Path(tmpdir) / 'test') == Path(tmpdir) / 'test'
-
-    # Raise exception
-    with pytest.raises(TypeError):
-        set_path(Path(tmpdir) / 'dummy', exist_ok=True)
 
 
 class TestGlobalPathVariablesManager:
@@ -53,7 +39,7 @@ class TestGlobalPathVariablesManager:
         """Method direct variable assignment
 
         The method tests:
-            - pathlib.Path and str assignement
+            - pathlib.Path and str assignment
             - TypeError exception
 
         """
@@ -87,7 +73,7 @@ class TestGlobalPathVariablesManager:
         with path_var.set_many_attr({self.attr_name: self.init_value}):
 
             # Reload path var environ
-            path_var.load_os_environ()
+            path_var.set_attr()
 
             # Test load from OS environ
             assert getattr(path_var, self.attr_name) == test_value
