@@ -28,6 +28,7 @@ Welcome to the dvas documentation.
     acknowledge
     license
     changelog
+    Contributing <https://github.com/MeteoSwiss-MDA/dvas/blob/develop/CONTRIBUTING.md>
     Github repository <https://github.com/MeteoSwiss-MDA/dvas>
     modules
     doc_todo

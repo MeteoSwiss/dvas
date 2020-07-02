@@ -42,7 +42,8 @@ extensions = [
     'sphinx.ext.todo',  # To get the TODOs visible
     'sphinx.ext.autosectionlabel',  # So we can link directly to the section header names
     'sphinx.ext.autodoc',  # To get the automatic documentation of functions
-    'plantweb.directive'  # To create UML diagrams (need plantweb PyPI package)
+    'plantweb.directive',  # To create UML diagrams (need plantweb PyPI package)
+    #'recommonmark', # To include .md files
 ]
 
 # Specify the parameters of the autodoc, in order to
