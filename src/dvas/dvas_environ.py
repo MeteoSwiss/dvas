@@ -17,22 +17,13 @@ from abc import ABC, ABCMeta, abstractmethod
 from contextlib import contextmanager
 from pampy import match as pmatch
 from pampy.helpers import Union, Iterable, Any
-from yaconfigobject import Config
 
 # Import current package's modules
-from . import __name__ as pkg_name
 from . import package_path
 from .dvas_helper import SingleInstanceMetaClass
 from .dvas_helper import TypedProperty as TProp
 from .dvas_helper import check_path
 from . import __name__ as pkg_name
-
-
-# Define
-CONFIG = Config(
-    name='dvas_config.yaml',
-    paths=[(package_path / 'etc').as_posix()]
-)
 
 
 class ABCSingleInstanceMeta(ABCMeta, SingleInstanceMetaClass):

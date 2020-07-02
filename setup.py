@@ -28,7 +28,6 @@ setup(
     description="Data Visualisation and Analysis Software for meteorological radiosounding",
     python_requires='>=3.8.0',
     install_requires=[
-        "dotty-dict",
         "jsonschema",
         "matplotlib",
         "netCDF4",
@@ -42,7 +41,6 @@ setup(
         "ruamel-yaml",
         "scipy",
         "sre_yield",
-        "yaconfigobject",
     ],
 
     # Use DVAS from a terminal

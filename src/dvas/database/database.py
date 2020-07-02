@@ -442,7 +442,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                             EventsTags.events_info.name: event_info
                         } for tag_id in tag_id_list
                     ]
-                    EventsTags.insert_many(tag_event_source).execute()  # noqa pylint: disable=E1120
+                    EventsTags.insert_many(tag_event_source).execute()
 
                     # Format series as list of tuples
                     n_data = len(data)
@@ -464,7 +464,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
                     # Insert to db
                     for batch in chunked(data, n_max):
-                        Data.insert_many(batch, fields=fields).execute()  # noqa pylint: disable=E1120
+                        Data.insert_many(batch, fields=fields).execute()
 
         except DBInsertError:
             pass
