@@ -13,9 +13,9 @@ Module contents: Data linker classes
 from abc import ABC, abstractmethod
 import re
 from itertools import chain, zip_longest
-import inspect
 from itertools import takewhile
-from netCDF4 import Dataset  # noqa pylint: disable=E1101
+import inspect
+import netCDF4  as nc
 import pandas as pd
 
 # Import from current package
@@ -346,7 +346,7 @@ class GDPDataLinker(DataLinker):
             )
 
             #try:
-            with Dataset(origdata_file_path, 'r') as fid:
+            with nc.Dataset(origdata_file_path, 'r') as fid:
 
                 meta_dict = {
                     EventsInfo.event_dt.name: 'dt_field',
