@@ -19,9 +19,9 @@ All these contributions are welcome, and what follows should help you get starte
 
 - [Code of conduct](#code-of-conduct)
 - [Reporting a bug](#reporting-a-bug)
-- [Essential things to know about dvas](#essential)
+- [Essential things to know about dvas](#essential-things-to-know-about-dvas)
 - [Styles](#styles)
-- [Step-by-step guide to contributing](#contributing)
+- [Step-by-step guide to contributing](#step-by-step-guide-to-contributing)
 
 ## Code of conduct
 
