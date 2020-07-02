@@ -1,11 +1,9 @@
 """
-Copyright(c) 2020 MeteoSwiss, contributors listed in AUTHORS
+Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.
 
-Distributed under the terms of the BSD 3 - Clause License.
+Distributed under the terms of the GNU General Public License v3.0 or later.
 
-SPDX - License - Identifier: BSD - 3 - Clause
-
-Module contents: Global and environment variables management classes.
+SPDX-License-Identifier: GPL-3.0-or-later
 
 """
 

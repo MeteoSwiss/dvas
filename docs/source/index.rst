@@ -1,8 +1,8 @@
 
 .. include:: ./substitutions.rst
 
-dvas |version| |stars| |watch|
-==============================
+dvas |version| |stars| |watch| |license|
+========================================
 
 |last-commit| |issues|
 
@@ -26,11 +26,9 @@ Welcome to the dvas documentation.
     running
     troubleshooting
     acknowledge
+    license
     changelog
     Github repository <https://github.com/MeteoSwiss-MDA/dvas>
     modules
     doc_todo
 
-.. todo::
-
-    Add here information about the code License.
