@@ -47,7 +47,7 @@ For the sake of clarity, and to facilitate the maintenance, we list here (succin
 2. **Github repository:**
    * Contributions to dvas get typically merged into the `develop` branch. Pull requests to the
     `master` branch should only originate from the `develop` branch. 
-   * Any successful pull request to the `master` branch should trigger an new code release.
+   * Any successful pull request to the `master` branch should trigger a new code release.
    * A series of Github Actions are implemented for CI purposes. These include the execution of
     the dvas tests on Windows, macOS and Linux, a linting of the code, a validation
     of the docs, and a check of the `CHANGELOG`.
@@ -63,7 +63,7 @@ For the sake of clarity, and to facilitate the maintenance, we list here (succin
 ## Styles
 
 - **linting:** 
-  * The following [pylint](https://www.pylint.org/) error codes are forbidden in dvas: ``E, C0303, C0304, C0112, C0114, C0115, C0116, C0411, W0611, W0612.`` Any pull request will be automatically linted, and these will be flagged accordingly. 
+  * The following [pylint](https://www.pylint.org/) error codes are forbidden in dvas: ``E, C0303, C0304, C0112, C0114, C0115, C0116, C0411, W0611, W0612.`` Any pull request will be automatically linted, and these will be flagged accordingly.
   * We encourage contributors to follow PEP8 as closely as possible/reasonable. You should check often
     how well you are doing using the command `pylint some_modified_file.py`.
   * To avoid `E1101` errors, stick to the following:
@@ -163,15 +163,16 @@ Until its release, the dvas repository will remain private: branching will thus 
    
        git push origin your_branch_name
 
-7. Do not forget to lint your contributions. If you want to run the checks that will be executed automatically at the pull
-   request stage, you can run the following commands from the dvas repository:
+7. Lint your contributions using the command `pylint some_modified_file.py`. If you want to run the 
+   checks that will be executed automatically at the pull request stage, you can run the following 
+   commands from the dvas repository:
 
        python ./.github/workflows/pylinter.py --restrict E C0303 C0304 C0112 C0114 C0115 C0116 C0411 W0611 W0612
        python ./.github/workflows/pylinter.py --min_score 8
 
     Note that this may pick-up linting problems outside of your contribution as well.
 
-8. If warranted, make sure the docs compile without errors/warnings:
+8. If warranted, make sure that the docs still compile without errors/warnings:
 
        cd docs
        sh build_docs.sh
@@ -186,4 +187,4 @@ Until its release, the dvas repository will remain private: branching will thus 
    pull request is issued, automated checks will be run (pytest, pylint, changelog, ...), which sould all succeed (if not, 
    there might be something wrong with your changes).
    
-   The code devs will then come and take a look at the pull request and assess its fitness for purpose.
+   The code devs will then come and take a look and review the pull request.
