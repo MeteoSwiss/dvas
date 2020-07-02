@@ -42,5 +42,3 @@ if __name__ == '__main__':
 
     data_t2.plot()
     data_sync.plot()
-
-

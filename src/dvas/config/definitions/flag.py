@@ -39,7 +39,7 @@ CONST_NODES = [
         Flag.flag_abbr.name: 'resampled',
         Flag.flag_desc.name: "Resampled data"
     },
-{
+    {
         Flag.bit_number.name: 2,
         Flag.flag_abbr.name: 'interp',
         Flag.flag_desc.name: "Interpolated data"

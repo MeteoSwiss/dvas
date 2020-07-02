@@ -279,7 +279,7 @@ class TypedProperty:
     """Typed property class
 
     Note:
-        `Source code <https://stackoverflow.com/questions/34884947/understanding-a-python-descriptors-example-typedproperty>`__
+        Adapted from `Stackoverflow. <https://stackoverflow.com/questions/34884947/understanding-a-python-descriptors-example-typedproperty>`__
 
     """
     def __init__(self, pampy_match, setter_fct=None, args=None, kwargs=None):
@@ -309,7 +309,7 @@ class TypedProperty:
         try:
             instance.__dict__[self._name] = pmatch(
                 val, self._pampy_match, self._setter_fct(
-                   val, *self._setter_fct_args, **self._setter_fct_kwargs
+                    val, *self._setter_fct_args, **self._setter_fct_kwargs
                 )
             )
         except (MatchError, TypeError):

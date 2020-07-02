@@ -31,7 +31,7 @@ setup(
         "dotty-dict",
         "jsonschema",
         "matplotlib",
-		    "netCDF4",
+        "netCDF4",
         'numpy',
         "pampy",
         "pandas",
@@ -46,7 +46,7 @@ setup(
     ],
 
     # Use DVAS from a terminal
-    #entry_points={'console_scripts': ['brutifus=brutifus.__main__:main']},
+    #entry_points={'console_scripts': ['dvas=dvas.__main__:main']},
 
     classifiers=[
 
@@ -61,7 +61,7 @@ setup(
         'Topic :: Scientific/Engineering :: Meteorology',
 
         # Pick your license as you wish (should match "license" above)
-            'License :: OSI Approved :: BSD 3-Clause "New" or "Revised" License (BSD-3-Clause)',
+        'License :: OSI Approved :: BSD 3-Clause "New" or "Revised" License (BSD-3-Clause)',
 
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
