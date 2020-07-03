@@ -11,3 +11,5 @@
 .. |watch| image:: https://img.shields.io/github/watchers/MeteoSwiss-MDA/dvas.svg?style=social&label=Watch
    :target: https://github.com/MeteoSwiss-MDA/dvas
 
+.. |license| image:: ./_static/LICENSE.svg
+   :target: https://www.gnu.org/licenses/gpl-3.0.en.html

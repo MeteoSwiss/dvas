@@ -38,6 +38,8 @@ utilitarian files related to its Github repository, and a dedicated documentatio
 For the sake of clarity, and to facilitate the maintenance, we list here (succinctly) a series of key facts about the dvas code and its repository:
 
 1. **Source code:**
+   * dvas is distributed under the terms of the GNU General Public License v3.0 or later. The dvas
+    copyright is owned by MeteoSwiss, with the following [authors](AUTHORS).
    * dvas adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
    * The adopted styles are described [here](#styles).
    * dvas *operational* dependencies are specified in `setup.py`. Dependencies required for 
