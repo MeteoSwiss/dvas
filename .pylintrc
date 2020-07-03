@@ -8,15 +8,6 @@
 generated-members=nc.*,  # netCDF4
 
 
-[MESSAGES CONTROL]
-
-# Disable the message, report, category or checker with the given id(s). You
-# can either give multiple identifier separated by comma (,) or put this option
-# multiple time (only on the command line, not in the configuration file where
-# it should appear only once).
-disable=E1120,  # peewee (bad to disable all E1120 errors. But didn't find another way to disable this error when using 'insert_many' method of peewee.ModelBase class)
-
-
 [BASIC]
 
 # Good variable names which should always be accepted, separated by a comma.
