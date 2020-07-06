@@ -17,7 +17,6 @@ from pampy import match as pmatch
 from pampy.helpers import Union, Iterable, Any
 
 # Import current package's modules
-from . import package_path
 from .dvas_helper import SingleInstanceMetaClass
 from .dvas_helper import TypedProperty as TProp
 from .dvas_helper import check_path
