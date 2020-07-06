@@ -2,3 +2,4 @@ include LICENSE
 include AUTHORS
 include README
 recursive-include ./test *.yml
+recursive-include ./src/dvas/examples *.*

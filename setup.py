@@ -81,6 +81,7 @@ setup(
     include_package_data=True,  # So that non .py files make it onto pypi, and then back !
     package_data={
         'pytest_cfg': ['pytest.ini'],
+        'pylint_cfg': ['.pylintrc'],
         'test_files': ['./test/*'],
         #'docs': ['../docs/build']
     }
