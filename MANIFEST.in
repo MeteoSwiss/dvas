@@ -1,4 +1,6 @@
 include LICENSE
 include AUTHORS
 include README
-recursive-include ./test *.yml
+global-include ./test *.yml *.yaml
+global-include ./example *.*
+include ./src/dvas/plot/mpl_style *.mplstyle
