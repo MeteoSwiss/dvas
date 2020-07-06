@@ -21,6 +21,7 @@ from .dvas_helper import SingleInstanceMetaClass
 from .dvas_helper import TypedProperty as TProp
 from .dvas_helper import check_path
 from . import __name__ as pkg_name
+from . import pkg_path, expl_path
 
 
 class ABCSingleInstanceMeta(ABCMeta, SingleInstanceMetaClass):
@@ -115,9 +116,9 @@ class GlobalPathVariablesManager(VariableManager):
     def attr_def(self):
         return [
             {'name': 'orig_data_path',
-             'default': Path('.') / 'examples' / 'data'},
+             'default': expl_path / 'data'},
             {'name': 'config_dir_path',
-             'default': Path('.') / 'examples' / 'config'},
+             'default': expl_path / 'config'},
             {'name': 'local_db_path',
              'default': Path('.') / 'dvas_db'},
             {'name': 'output_path',

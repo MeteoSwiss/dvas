@@ -14,7 +14,7 @@ def main():
     # Run the doc building script, and collect the output.
     # Adapted from: https://stackoverflow.com/questions/4760215/running-shell-command-and-capturing-the-output
     # Author: senderle
-    result = subprocess.run(['sh', './build_docs.sh'], 
+    result = subprocess.run(['sh', './build_docs.sh'],
                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     lines = result.stdout.decode('utf-8').split('\n')
     warn_lines = result.stderr.decode('utf-8').split('\n')
@@ -33,6 +33,7 @@ def main():
        print('Docs compiled ok. Logs follow.')
        for line in lines:
            print(line)
+
 
 if __name__ == '__main__':
 

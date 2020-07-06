@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
 from ..dvas_environ import path_var as env_path_var
-from .. import package_path
+from .. import pkg_path
 
 
 # Define some constants
@@ -31,7 +31,7 @@ PLOT_STYLES = {'base': 'base.mplstyle',
                'latex': 'latex.mplstyle'}
 
 # Immediately enable the base look for DVAS plots, as soon as we load the module.
-plt.style.use(str(Path(package_path, 'plot', 'mpl_styles', PLOT_STYLES['base'])))
+plt.style.use(str(Path(pkg_path, 'plot', 'mpl_styles', PLOT_STYLES['base'])))
 
 #: list[str]: The default file extensions to save the plots into.
 PLOT_TYPES = ['.png', '.pdf']
@@ -69,11 +69,11 @@ def set_mplstyle(style='base'):
                         % (style, ', '.join(PLOT_STYLES.keys())))
 
     # Always apply the base style first.
-    plt.style.use(str(Path(package_path, 'plot', 'mpl_styles', PLOT_STYLES['base'])))
+    plt.style.use(str(Path(pkg_path, 'plot', 'mpl_styles', PLOT_STYLES['base'])))
 
     # Then apply which ever alternative style was requested, if we haven't already.
     if style != 'base':
-        plt.style.use(str(Path(package_path, 'plot', 'mpl_styles', PLOT_STYLES[style])))
+        plt.style.use(str(Path(pkg_path, 'plot', 'mpl_styles', PLOT_STYLES[style])))
 
 
 def basic_plot(items, fig_num=None, save_fn=None):
