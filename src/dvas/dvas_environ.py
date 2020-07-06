@@ -21,7 +21,7 @@ from .dvas_helper import SingleInstanceMetaClass
 from .dvas_helper import TypedProperty as TProp
 from .dvas_helper import check_path
 from . import __name__ as pkg_name
-from . import pkg_path, expl_path
+from . import expl_path
 
 
 class ABCSingleInstanceMeta(ABCMeta, SingleInstanceMetaClass):
