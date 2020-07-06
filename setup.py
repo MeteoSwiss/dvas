@@ -84,6 +84,7 @@ setup(
         'pylint_cfg': ['.pylintrc'],
         'examples_files': ['./examples/*'],
         'test_files': ['./test/*'],
+        'plot_style': ['*.mplstyle'],
         #'docs': ['../docs/build']
     },
 
