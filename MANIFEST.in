@@ -2,5 +2,5 @@ include LICENSE
 include AUTHORS
 include README
 global-include ./test *.yml *.yaml
-global-include ./example *.*
+global-include ./src/dvas/example *.*
 include ./src/dvas/plot/mpl_style *.mplstyle

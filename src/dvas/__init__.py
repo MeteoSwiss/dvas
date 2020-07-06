@@ -14,4 +14,4 @@ from .dvas_version import VERSION
 __version__ = VERSION
 
 pkg_path = Path(__file__).absolute().parent
-expl_path = pkg_path.parents[1] / 'examples'
+expl_path = pkg_path / 'examples'

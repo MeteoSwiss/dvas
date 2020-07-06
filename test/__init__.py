@@ -9,5 +9,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 from pathlib import Path
 
+print(Path('.').absolute())
+print('**********')
 for p in Path('.').rglob('*'):
     print(p)
