@@ -82,8 +82,9 @@ setup(
     package_data={
         'pytest_cfg': ['pytest.ini'],
         'pylint_cfg': ['.pylintrc'],
+        'examples_files': ['./examples/*'],
         'test_files': ['./test/*'],
         #'docs': ['../docs/build']
-    }
+    },
 
 )

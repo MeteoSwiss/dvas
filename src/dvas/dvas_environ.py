@@ -116,9 +116,9 @@ class GlobalPathVariablesManager(VariableManager):
     def attr_def(self):
         return [
             {'name': 'orig_data_path',
-             'default': package_path / 'examples' / 'data'},
+             'default': Path('.') / 'examples' / 'data'},
             {'name': 'config_dir_path',
-             'default': package_path / 'examples' / 'config'},
+             'default': Path('.') / 'examples' / 'config'},
             {'name': 'local_db_path',
              'default': Path('.') / 'dvas_db'},
             {'name': 'output_path',
