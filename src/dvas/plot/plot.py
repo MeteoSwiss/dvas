@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
 from ..dvas_environ import path_var as env_path_var
-from ..dvas_environ import package_path
+from .. import package_path
 
 
 # Define some constants
