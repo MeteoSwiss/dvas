@@ -39,7 +39,6 @@ setup(
     long_description_content_type="text/markdown",
     python_requires='>=3.8.0',
     install_requires=[
-        "dotty-dict",
         "jsonschema",
         "matplotlib",
         "netCDF4",
@@ -53,7 +52,6 @@ setup(
         "ruamel-yaml",
         "scipy",
         "sre_yield",
-        "yaconfigobject",
     ],
 
     # Use DVAS from a terminal
@@ -81,10 +79,14 @@ setup(
     ],
 
     include_package_data=True,  # So that non .py files make it onto pypi, and then back !
-    package_data={
-        'pytest_cfg': ['pytest.ini'],
-        'test_files': ['./test/*'],
-        #'docs': ['../docs/build']
-    }
+    # package_data={
+    #     "": ['*.csv', '*.txt', '*.yml', '*.yaml']
+    #     'pytest_cfg': ['pytest.ini'],
+    #     'pylint_cfg': ['.pylintrc'],
+    #     'examples_files': ['./examples/*'],
+    #     'test_files': ['./test/*'],
+    #     'plot_style': ['*.mplstyle'],
+    #     #'docs': ['../docs/build']
+    # },
 
 )

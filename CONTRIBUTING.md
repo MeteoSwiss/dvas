@@ -42,25 +42,29 @@ For the sake of clarity, and to facilitate the maintenance, we list here (succin
     copyright is owned by MeteoSwiss, with the following [authors](AUTHORS).
    * dvas adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
    * The adopted styles are described [here](#styles).
-   * dvas *operational* dependencies are specified in `setup.py`. Dependencies required for 
-    *code development* activities are specified in `dev_requirements.txt`.
+   * dvas *operational* dependencies are specified in `setup.py`.
    * There is a human-readable [Changelog](CHANGELOG).
 
 2. **Github repository:**
    * Contributions to dvas get typically merged into the `develop` branch. Pull requests to the
-    `master` branch should only originate from the `develop` branch. 
+     `master` branch should only originate from the `develop` branch. 
    * Any successful pull request to the `master` branch should trigger a new code release.
    * A series of Github Actions are implemented for CI purposes. These include the execution of
-    the dvas tests on Windows, macOS and Linux, a linting of the code, a validation
-    of the docs, and a check of the `CHANGELOG`.
+     the dvas tests on Windows, macOS and Linux, a linting of the code, a validation
+     of the docs, and a check of the `CHANGELOG`.
    * A `.pylintrc` refines the behavior of pylint for dvas.
 
 3. **Documentation:**
    * The dvas documentation is generated using Sphinx, with the Read-the-docs theme. The compiled
-    documentation is hosted on the `gh-pages` branch of the dvas repositiory.
+     documentation is hosted on the `gh-pages` branch of the dvas repositiory.
    * UML diagrams included in the code docstrings are rendered (when building the docs) with the
-    [plantuml server](http://www.plantuml.com/plantuml).
+     [plantuml server](http://www.plantuml.com/plantuml).
 
+4. **Development utilities:**
+   * Dependencies required for *code development* activities are specified in 
+     `./.dev_utils/dev_requirements.txt`.
+   * On Windows, linter and tests can be run locally from terminal with `sh .\.dev_utils\linter_bash.bat`
+     resp. `sh .\.dev_utils\test_bash.bat` commands. 
 
 ## Styles
 
@@ -72,7 +76,6 @@ For the sake of clarity, and to facilitate the maintenance, we list here (succin
     ```
     import netCDF4 as nc
     ```
-
   
 - **doctrings:** Google Style. Please try to stick to the following MWE:
 ```

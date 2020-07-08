@@ -15,22 +15,13 @@ from abc import ABC, ABCMeta, abstractmethod
 from contextlib import contextmanager
 from pampy import match as pmatch
 from pampy.helpers import Union, Iterable, Any
-from yaconfigobject import Config
 
 # Import current package's modules
-from . import __name__ as pkg_name
-from . import package_path
 from .dvas_helper import SingleInstanceMetaClass
 from .dvas_helper import TypedProperty as TProp
 from .dvas_helper import check_path
 from . import __name__ as pkg_name
-
-
-# Define
-CONFIG = Config(
-    name='dvas_config.yaml',
-    paths=[(package_path / 'etc').as_posix()]
-)
+from . import expl_path
 
 
 class ABCSingleInstanceMeta(ABCMeta, SingleInstanceMetaClass):
@@ -125,9 +116,9 @@ class GlobalPathVariablesManager(VariableManager):
     def attr_def(self):
         return [
             {'name': 'orig_data_path',
-             'default': package_path / 'examples' / 'data'},
+             'default': expl_path / 'data'},
             {'name': 'config_dir_path',
-             'default': package_path / 'examples' / 'config'},
+             'default': expl_path / 'config'},
             {'name': 'local_db_path',
              'default': Path('.') / 'dvas_db'},
             {'name': 'output_path',

@@ -342,9 +342,12 @@ def load(search, prm_abbr):
     .. uml::
 
         @startuml
-        title Sequence diagramm example
-        Alice -> Bob: Hi!
-        Alice <- Bob: How are you?
+        hide footbox
+
+        -> LocalDBLinker: load(search, prm_abbr)
+        LocalDBLinker -> DatabaseManager: get_data(where=search, prm_abbr=prm_abbr)
+        DatabaseManager <- LocalDBLinker: data
+        <- LocalDBLinker: data
         @enduml
 
     """
