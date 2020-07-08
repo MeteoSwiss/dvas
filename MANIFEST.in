@@ -3,4 +3,4 @@ include AUTHORS
 include README
 graft test
 graft examples
-graft src/dvas/plot/mpl_style
+graft src/dvas/plot/mpl_styles
