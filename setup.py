@@ -26,10 +26,10 @@ setup(
     license='GNU General Public License v3 or later (GPLv3+)',
 
     # Include all packages under src
-    packages=['dvas'], #find_packages("src"),
+    packages=find_packages("src"),
 
     # Tell setuptools packages are under src
-    package_dir={"dvas": "src/dvas"},
+    package_dir={"": "src"},
 
     url="https://github.com/MeteoSwiss-MDA/dvas",
     author="MeteoSwiss",
