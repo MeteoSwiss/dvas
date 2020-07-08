@@ -1,6 +1,6 @@
 include LICENSE
 include AUTHORS
 include README
-global-include ./test *.yml *.yaml
-global-include ./src/dvas/example *.*
-include ./src/dvas/plot/mpl_style *.mplstyle
+graft test
+graft examples
+graft src/dvas/plot/mpl_style
