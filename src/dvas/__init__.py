@@ -15,3 +15,8 @@ __version__ = VERSION
 
 pkg_path = Path(__file__).absolute().parent
 expl_path = pkg_path / 'examples'
+#TODO
+# Ideally move examples to '.'
+# But, need to solve errors when running CI under github.
+# "pip install ." removes 'src' and it becomes unsafe to specify 'examples'
+# path as a relative path from package path.

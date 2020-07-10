@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 
 # Import from current package
-from .linker import LocalDBLinker, OriginalCSVLinker, GDPDataLinker
+from .linker import LocalDBLinker, client_code
 from ..plot.plot import basic_plot
 from .math import crosscorr
 from ..database.database import db_mngr
@@ -24,6 +24,7 @@ from ..database.model import EventsInfo, OrgiDataInfo
 from ..database.model import Instrument
 from ..database.database import OneDimArrayConfigLinker
 from ..dvas_logger import localdb, rawcsv
+from ..dvas_environ import path_var
 
 
 # Define
@@ -378,8 +379,11 @@ def update_db(prm_contains):
 
     # Init linkers
     db_linker = LocalDBLinker()
-    orig_data_linker = OriginalCSVLinker()
-    gdp_data_linker = GDPDataLinker()
+
+    #TODO
+    #  Erase
+    #orig_data_linker = OriginalCSVLinker()
+    #gdp_data_linker = GDPDataLinker()
 
     # Search prm_abbr
     prm_abbr_list = [
@@ -397,30 +401,32 @@ def update_db(prm_contains):
         prm_abbr_list
     )
 
+    # Scan path
+    origdata_path_scan = list(path_var.orig_data_path.rglob("*.*"))
+
     # Loop loading
     for prm_abbr in prm_abbr_list:
 
         # Log
         rawcsv.info("Start reading CSV files for '%s'", prm_abbr)
 
-        # Search exclude file names
-        exclude_file_name = db_mngr.get_or_none(
-            EventsInfo,
-            search={
-                'where': (
-                    (Parameter.prm_abbr == prm_abbr) &
-                    (Instrument.sn != '')
-                ),
-                'join_order': [Parameter, OrgiDataInfo, Instrument]},
-            attr=[[EventsInfo.orig_data_info.name, OrgiDataInfo.source.name]],
-            get_first=False
-        )
+        new_orig_data = client_code(origdata_path_scan, prm_abbr)
 
-        # Load
-        new_orig_data = orig_data_linker.load(prm_abbr, exclude_file_name)
+        #TODO
+        #  Erase
+        # # Exclude file
+        # origdata_path_new = [
+        #     arg for arg in origdata_path_scan
+        #     if arg not in exclude_file_name
+        # ]
+        #
+        # # Load
+        # new_orig_data += client_code(origdata_path_new, prm_abbr)
 
-        #TODO modify this ugly implementation
-        new_orig_data += gdp_data_linker.load(prm_abbr, exclude_file_name)
+        # TODO
+        #  Erase
+        #new_orig_data = orig_data_linker.load(prm_abbr, exclude_file_name)
+        #new_orig_data += gdp_data_linker.load(prm_abbr, exclude_file_name)
 
         # Log
         rawcsv.info("Finish reading CSV files for '%s'", prm_abbr)

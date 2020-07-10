@@ -1,92 +1,127 @@
+
+# ----------------------------------------------------
+# RS92
+# ----------------------------------------------------
 _VAI-RS92:
-    idx_unit: 's'
-    delimiter:
-    delim_whitespace: True
-    header: 1
-    skiprows: 1
+
+    # -- META DATA ----------------------------------
+    dt_field: '{event_dt}'
+    sn_field: '{sn}'
+    tag_field:
+        - '{event}'
+        - '{ring}'
+        - '{day_night}'
+
+    # -- ORIG DATA ----------------------------------
+    index_unit: 's'
+    index_col: 0
+
+    csv_delimiter:
+    csv_delim_whitespace: True
+    csv_header: 1
+    csv_skiprows: 1
 
     _altpros1:
-        usecols:
-            - 0
-            - 1
+        value_col: 1
 
     _prepros1:
-        usecols:
-            - 0
-            - 2
+        value_col: 2
 
     _trepros1:
-        usecols:
-            - 0
-            - 3
+        value_col: 3
 
 
+# ----------------------------------------------------
+# RS41
+# ----------------------------------------------------
 _VAI-RS41:
-    idx_unit: 's'
-    delimiter: ';'
-    skiprows: 1
-    header: 1
+
+    # -- META DATA ----------------------------------
+    dt_field: '{event_dt}'
+    sn_field: '{sn}'
+    tag_field:
+        - '{event}'
+        - '{ring}'
+        - '{day_night}'
+
+    # -- ORIG DATA ----------------------------------
+    index_unit: 's'
+    index_col: 0
+
+    csv_delimiter: ';'
+    csv_skiprows: 1
+    csv_header: 1
 
     _trepros1:
-        usecols:
-            - 0
-            - 4
+        value_col: 4
 
     _altpros1:
-        usecols:
-            - 0
-            - 2
+        value_col: 2
 
     _prepros1:
-        usecols:
-            - 0
-            - 3
+        value_col: 3
 
 
+# ----------------------------------------------------
+# C34
+# ----------------------------------------------------
 _METLAB-C34:
-    idx_unit: 's'
-    delimiter: ';'
-    skiprows: 1
-    header: 0
+
+    # -- META DATA ----------------------------------
+    dt_field: '{event_dt}'
+    sn_field: '{sn}'
+    tag_field:
+        - '{event}'
+        - '{ring}'
+        - '{day_night}'
+
+    # -- ORIG DATA ----------------------------------
+    index_unit: 's'
+    index_col: 0
+
+    csv_delimiter: ';'
+    csv_skiprows: 1
+    csv_header: 0
 
     _altpros1:
-        usecols:
-            - 0
-            - 1
+        value_col: 1
 
     _prepros1:
-        usecols:
-            - 0
-            - 4
+        value_col: 4
 
     _trepros1:
-        usecols:
-            - 0
-            - 5
+        value_col: 5
 
 
+# ----------------------------------------------------
+# C50
+# ----------------------------------------------------
 _METLAB-C50:
-    idx_unit: 's'
-    delimiter: ';'
-    skiprows: 0
-    header: 0
+
+    # -- META DATA ----------------------------------
+    dt_field: '{event_dt}'
+    sn_field: '{sn}'
+    tag_field:
+        - '{event}'
+        - '{ring}'
+        - '{day_night}'
+
+    # -- ORIG DATA ----------------------------------
+    index_unit: 's'
+    index_col: 0
+
+    csv_delimiter: ';'
+    csv_skiprows: 0
+    csv_header: 0
 
     _altpros1:
-        usecols:
-            - 0
-            - 3
+        value_col: 3
 
     _fklpros1:
-        usecols:
-            - 0
-            - 5
+        value_col: 5
 
     _prepros1:
-        usecols:
-            - 0
-            - 6
+        value_col: 6
 
     _trepros1:
-        usecols:
-            - 0
-            - 7
+        value_col: 7
