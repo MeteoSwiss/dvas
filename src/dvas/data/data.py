@@ -20,8 +20,6 @@ from ..plot.plot import basic_plot
 from .math import crosscorr
 from ..database.database import db_mngr
 from ..database.model import Flag, Parameter
-from ..database.model import EventsInfo, OrgiDataInfo
-from ..database.model import Instrument
 from ..database.database import OneDimArrayConfigLinker
 from ..dvas_logger import localdb, rawcsv
 from ..dvas_environ import path_var
@@ -380,11 +378,6 @@ def update_db(prm_contains):
     # Init linkers
     db_linker = LocalDBLinker()
 
-    #TODO
-    #  Erase
-    #orig_data_linker = OriginalCSVLinker()
-    #gdp_data_linker = GDPDataLinker()
-
     # Search prm_abbr
     prm_abbr_list = [
         arg[0] for arg in db_mngr.get_or_none(
@@ -411,22 +404,6 @@ def update_db(prm_contains):
         rawcsv.info("Start reading CSV files for '%s'", prm_abbr)
 
         new_orig_data = client_code(origdata_path_scan, prm_abbr)
-
-        #TODO
-        #  Erase
-        # # Exclude file
-        # origdata_path_new = [
-        #     arg for arg in origdata_path_scan
-        #     if arg not in exclude_file_name
-        # ]
-        #
-        # # Load
-        # new_orig_data += client_code(origdata_path_new, prm_abbr)
-
-        # TODO
-        #  Erase
-        #new_orig_data = orig_data_linker.load(prm_abbr, exclude_file_name)
-        #new_orig_data += gdp_data_linker.load(prm_abbr, exclude_file_name)
 
         # Log
         rawcsv.info("Finish reading CSV files for '%s'", prm_abbr)

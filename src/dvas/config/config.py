@@ -501,7 +501,7 @@ class MultiLayerConfigManager(OneLayerConfigManager):
             out = self[
                 [NODE_ESCAPE_CHAR + arg for arg in node_keys] + [key_param]
             ]
-        except ConfigItemKeyError as exc:
+        except ConfigItemKeyError as _:
             raise KeyError(
                 f"Bad key '{node_keys + [key_param]}' " +
                 f"for {self.__class__.__name__}"
@@ -519,26 +519,6 @@ class MultiLayerConfigManager(OneLayerConfigManager):
             dict
 
         """
-
-        #TODO
-        #  Erase
-        # # Check node_keys
-        # try:
-        #     node_keys_match = [
-        #         next(iter(
-        #             i for i, pattern in enumerate(self.NODE_PATTERN)
-        #             if re.fullmatch(pattern, arg)
-        #         ))
-        #         for arg in node_keys
-        #     ]
-        #     assert list(range(len(node_keys))) == node_keys_match, (
-        #         "Bad node_keys pattern or sequence"
-        #     )
-        #
-        # except (StopIteration, AssertionError) as _:
-        #     raise KeyError(
-        #         f"Bad key {node_keys} while accessing {self.document}"
-        #     )
 
         out = {
             key: self.get_val(node_keys, key)
@@ -651,20 +631,6 @@ class OrigData(MultiLayerConfigManager):
 
     #: dict: Config document
     document = TypedProperty(MultiLayerConfigManager.DOC_TYPE)
-
-
-# TODO
-#  Erase
-# class GDPData(MultiLayerConfigManager):
-#     """GDP Data config manager"""
-#
-#     PARAMETER_PATTERN_PROP = gdpdata.PARAMETER_PATTERN_PROP
-#     NODE_PARAMS_DEF = gdpdata.NODE_PARAMS_DEF
-#     CLASS_KEY = gdpdata.KEY
-#     NODE_PATTERN = gdpdata.NODE_PATTERN
-#
-#     #: dict: Config document
-#     document = TypedProperty(Union[dict, list])
 
 
 class ConfigReadError(Exception):
