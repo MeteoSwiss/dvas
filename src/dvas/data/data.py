@@ -15,15 +15,14 @@ import numpy as np
 import pandas as pd
 
 # Import from current package
-from .linker import LocalDBLinker, OriginalCSVLinker, GDPDataLinker
+from .linker import LocalDBLinker, CSVHandler, GDPHandler
 from ..plot.plot import basic_plot
 from .math import crosscorr
 from ..database.database import db_mngr
 from ..database.model import Flag, Parameter
-from ..database.model import EventsInfo, OrgiDataInfo
-from ..database.model import Instrument
 from ..database.database import OneDimArrayConfigLinker
 from ..dvas_logger import localdb, rawcsv
+from ..dvas_environ import path_var
 
 
 # Define
@@ -344,10 +343,10 @@ def load(search, prm_abbr):
         @startuml
         hide footbox
 
-        -> LocalDBLinker: load(search, prm_abbr)
+        load -> LocalDBLinker: load(search, prm_abbr)
         LocalDBLinker -> DatabaseManager: get_data(where=search, prm_abbr=prm_abbr)
-        DatabaseManager <- LocalDBLinker: data
-        <- LocalDBLinker: data
+        LocalDBLinker <- DatabaseManager : data
+        load <- LocalDBLinker: data
         @enduml
 
     """
@@ -374,12 +373,35 @@ def update_db(prm_contains):
         prm_contains (str): Parameter abbr search criteria. Use '%' for any
             character.
 
+
+    .. uml::
+
+        @startuml
+        hide footbox
+
+        update_db -> CSVHandler: handle(file_path, prm_abbr)
+        activate CSVHandler
+
+        CSVHandler -> GDPHandler: handle(file_path, prm_abbr)
+        activate GDPHandler
+
+        CSVHandler <- GDPHandler: data
+        deactivate  GDPHandler
+
+        update_db <- CSVHandler: data
+        deactivate   CSVHandler
+
+        @enduml
+
+
     """
 
     # Init linkers
     db_linker = LocalDBLinker()
-    orig_data_linker = OriginalCSVLinker()
-    gdp_data_linker = GDPDataLinker()
+
+    # Define chain of responsibility for loadgin from raw
+    handler = CSVHandler()
+    handler.set_next(GDPHandler())
 
     # Search prm_abbr
     prm_abbr_list = [
@@ -397,30 +419,32 @@ def update_db(prm_contains):
         prm_abbr_list
     )
 
+    # Scan path
+    origdata_path_scan = list(path_var.orig_data_path.rglob("*.*"))
+
     # Loop loading
     for prm_abbr in prm_abbr_list:
 
         # Log
         rawcsv.info("Start reading CSV files for '%s'", prm_abbr)
 
-        # Search exclude file names
-        exclude_file_name = db_mngr.get_or_none(
-            EventsInfo,
-            search={
-                'where': (
-                    (Parameter.prm_abbr == prm_abbr) &
-                    (Instrument.sn != '')
-                ),
-                'join_order': [Parameter, OrgiDataInfo, Instrument]},
-            attr=[[EventsInfo.orig_data_info.name, OrgiDataInfo.source.name]],
-            get_first=False
-        )
+        # Scan files
+        new_orig_data = []
+        for file_path in origdata_path_scan:
+            result = handler.handle(file_path, prm_abbr)
+            if result:
+                new_orig_data.append(result)
 
-        # Load
-        new_orig_data = orig_data_linker.load(prm_abbr, exclude_file_name)
+                # Log
+                rawcsv.info(
+                    "CSV files '%s' was treated", file_path
+                )
+            else:
 
-        #TODO modify this ugly implementation
-        new_orig_data += gdp_data_linker.load(prm_abbr, exclude_file_name)
+                # Log
+                rawcsv.debug(
+                    "CSV files '%s' was left untouched", file_path
+                )
 
         # Log
         rawcsv.info("Finish reading CSV files for '%s'", prm_abbr)

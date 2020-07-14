@@ -1,5 +1,4 @@
 
 b_1:
     config_values:
-        idx_unit: dt
-        dt_format: '%H:%M:%S'
+lambda: 'lambda x: 3 * x'

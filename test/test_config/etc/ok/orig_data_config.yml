@@ -1,11 +1,9 @@
 
 _VAI-RS41:
-    idx_unit: 'dt'
-    dt_format: '%H:%M:%S'
     lambda: 'lambda x: x + 1'
 
     _trepros1:
-        delimiter: '.'
+        csv_delimiter: '.'
 
 _VAI-RS492:
     lambda: 'lambda x: 5 * x'

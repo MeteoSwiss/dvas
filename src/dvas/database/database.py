@@ -709,19 +709,21 @@ class EventManager:
     event_dt = TProp(Union[str, Timestamp, datetime], check_datetime)
     #: str: Instrument id
     sn = TProp(str, lambda *x: x[0])
-    #: str: Parameter abbd
+    #: str: Parameter abbr
     prm_abbr = TProp(re.compile(rf'^({PARAM_PAT})$'), lambda *x: x[0])
     #: str: Tag abbr
-    tag_abbr = TProp(Iterable[str], lambda x: set(x))
+    tag_abbr = TProp(
+        Union[None, Iterable[str]], lambda x: set(x) if x else set()
+    )
 
-    def __init__(self, event_dt, sn, prm_abbr, tag_abbr):
+    def __init__(self, event_dt, sn, prm_abbr, tag_abbr=None):
         """Constructor
 
         Args:
             event_dt (str | datetime | pd.Timestamp): UTC datetime
             sn (str): Instrument serial number
             prm_abbr (str):
-            tag_abbr (iterable of str): Tag abbr iterable
+            tag_abbr (`optional`, iterable of str): Tag abbr iterable
 
         """
 

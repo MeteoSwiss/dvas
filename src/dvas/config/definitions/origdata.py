@@ -14,72 +14,102 @@ Module contents: Required attributes definition for
 from ..pattern import INSTR_TYPE_PAT, PARAM_PAT
 from ...database.model import Data
 
-# Define
-IDX_UNIT_NM = 'idx_unit'
-DT_FORMAT_NM = 'dt_format'
-LAMBDA_NM = 'lambda'
-DELIMITER_NM = 'delimiter'
-INDEX_COL_NM = 'index_col'
-HEADER_NM = 'header'
-USECOLS = 'usecols'
-NAMES_NM = 'names'
-DTYPE_NM = 'dtype'
-SKIPROWS_NM = 'skiprows'
-SKIP_BLANK_LINES_NM = 'skip_blank_lines'
-DELIM_WHITESPACE_NM = 'delim_whitespace'
-COMMENT_NM = 'comment'
-NA_VALUES = 'na_values'
+# Define global field name
+EVENT_DT_FLD_NM = 'dt_field'  # Datetime field name
+SN_FLD_NM = 'sn_field'  # Serial number field name
+TAG_FLD_NM = 'tag_field'  # Tag field name
+
+INDEX_FLD_NM = 'index_col'  # Index column field name
+PARAM_FLD_NM = 'value_col'  # Value column field name
+
+IDX_UNIT_FLD_NM = 'index_unit'  # Index unit field name
+
+LAMBDA_FLD_NM = 'lambda'  # Lambda field name
+
+# Define csv field name
+CSV_DELIMITER_FLD_NM = 'csv_delimiter'
+CSV_HEADER_FLD_NM = 'csv_header'
+CSV_INDEX_COL_FLD_NM = 'csv_index_col'
+CSV_NAMES_FLD_NM = 'csv_names'
+CSV_SKIPINITSPACE_FLD_NM = 'csv_skipinitialspace'
+CSV_SKIPROWS_FLD_NM = 'csv_skiprows'
+CSV_SKIP_BLANK_LINES_FLD_NM = 'csv_skip_blank_lines'
+CSV_DELIM_WHITESPACE_FLD_NM = 'csv_delim_whitespace'
+CSV_COMMENT_FLD_NM = 'csv_comment'
+CSV_NA_VALUES_FLD_NM = 'csv_na_values'
 
 INDEX_NM = Data.index.name
 VALUE_NM = Data.value.name
+
+#: list: Metadata fields keys
+META_FIELD_KEYS = [EVENT_DT_FLD_NM, SN_FLD_NM, TAG_FLD_NM]
 
 #: list: Node pattern
 NODE_PATTERN = [INSTR_TYPE_PAT, PARAM_PAT]
 
 #: dict: Node parameters default value
 NODE_PARAMS_DEF = {
-    IDX_UNIT_NM: 'ms',
-    DT_FORMAT_NM: None,
-    LAMBDA_NM: 'lambda x: x',
-    DELIMITER_NM: ';',
-    INDEX_COL_NM: INDEX_NM,
-    HEADER_NM: 'infer',
-    USECOLS: [],
-    NAMES_NM: [INDEX_NM, VALUE_NM],
-    SKIPROWS_NM: 0,
-    SKIP_BLANK_LINES_NM: True,
-    DELIM_WHITESPACE_NM: False,
-    COMMENT_NM: '#',
-    NA_VALUES: ['/']
+    TAG_FLD_NM: [],
+    IDX_UNIT_FLD_NM: 's',
+    LAMBDA_FLD_NM: 'lambda x: x',
+    CSV_DELIMITER_FLD_NM: ';',
+    CSV_HEADER_FLD_NM: 'infer',
+    CSV_INDEX_COL_FLD_NM: INDEX_NM,
+    CSV_NAMES_FLD_NM: [INDEX_NM, VALUE_NM],
+    CSV_SKIPINITSPACE_FLD_NM: False,
+    CSV_SKIPROWS_FLD_NM: 0,
+    CSV_SKIP_BLANK_LINES_FLD_NM: True,
+    CSV_DELIM_WHITESPACE_FLD_NM: False,
+    CSV_COMMENT_FLD_NM: '#',
+    CSV_NA_VALUES_FLD_NM: ['/']
 }
 
 #: dict: Parameter pattern properties (JSON_SCHEMA)
 PARAMETER_PATTERN_PROP = {
-    rf"^{IDX_UNIT_NM}$": {
+    rf"^{EVENT_DT_FLD_NM}$": {
         "type": "string",
-        "enum": ['dt', 's', 'ms', 'meters']
     },
-    rf"^{DT_FORMAT_NM}$": {
-        'anyOf': [
-            {"type": "null"},
-            {"type": 'string'}
+    rf"^{SN_FLD_NM}$": {
+        "type": "string",
+    },
+    rf"^{TAG_FLD_NM}$": {
+        "type": 'array',
+        "items": {
+            "type": "string",
+        },
+        "minItems": 1,
+        "uniqueItems": True
+    },
+    rf"^{INDEX_FLD_NM}$": {
+        "type": ['integer', 'string'],  # see https://cswr.github.io/JsonSchema/spec/multiple_types/
+        "minimum": 0
+    },
+    rf"^{PARAM_FLD_NM}$": {
+        "anyOf": [
+            {
+                "type": "integer",
+                "minimum": 0
+            },
+            {
+                "type": "string",
+            }
         ]
     },
-    rf"^{LAMBDA_NM}$": {
+    rf"^{IDX_UNIT_FLD_NM}$": {
+        "type": "string",
+        "enum": ['s', 'm']
+    },
+    rf"^{LAMBDA_FLD_NM}$": {
         "type": 'string',
         "pattern": r"^\s*lambda\s*\w+\s*\:.+"
     },
-    rf"^{DELIMITER_NM}$": {
+    rf"^{CSV_DELIMITER_FLD_NM}$": {
         'anyOf': [
             {"type": "null"},
             {"type": 'string'}
         ]
     },
-    rf"^{INDEX_COL_NM}$": {
-        "type": "string",
-        "enum": [INDEX_NM]
-    },
-    rf"^{HEADER_NM}$": {
+    rf"^{CSV_HEADER_FLD_NM}$": {
         'anyOf': [
             {
                 "type": "string",
@@ -88,16 +118,11 @@ PARAMETER_PATTERN_PROP = {
             {"type": 'integer'}
         ]
     },
-    rf"^{USECOLS}$": {
-        "type": 'array',
-        "items": {
-            "type": "integer",
-            "minimum": 0,
-        },
-        "minItems": 2,
-        "uniqueItems": True
+    rf"^{CSV_INDEX_COL_FLD_NM}$": {
+        "type": "string",
+        "enum": [INDEX_NM]
     },
-    rf"^{NAMES_NM}$": {
+    rf"^{CSV_NAMES_FLD_NM}$": {
         "type": 'array',
         "items": {
             "type": "string",
@@ -107,21 +132,24 @@ PARAMETER_PATTERN_PROP = {
         "maxItems": 2,
         "uniqueItems": True
     },
-    rf"^{SKIPROWS_NM}$": {
+    rf"^{CSV_SKIPINITSPACE_FLD_NM}$": {
+        "type": "boolean"
+    },
+    rf"^{CSV_SKIPROWS_FLD_NM}$": {
         "type": "integer",
         'minimum': 0,
     },
-    rf"^{SKIP_BLANK_LINES_NM}$": {
+    rf"^{CSV_SKIP_BLANK_LINES_FLD_NM}$": {
         "type": "boolean"
     },
-    rf"^{DELIM_WHITESPACE_NM}$": {
+    rf"^{CSV_DELIM_WHITESPACE_FLD_NM}$": {
         "type": "boolean"
     },
-    rf"^{COMMENT_NM}$": {
+    rf"^{CSV_COMMENT_FLD_NM}$": {
         "type": "string",
         "enum": ['#']
     },
-    rf"^{NA_VALUES}$": {
+    rf"^{CSV_NA_VALUES_FLD_NM}$": {
         "type": 'array',
         "items": {
             "type": "string"

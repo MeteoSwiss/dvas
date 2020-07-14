@@ -1,92 +1,181 @@
+
+# ----------------------------------------------------
+# RS92
+# ----------------------------------------------------
 _VAI-RS92:
-    idx_unit: 's'
-    delimiter:
-    delim_whitespace: True
-    header: 1
-    skiprows: 1
+
+    # -- META DATA ----------------------------------
+    dt_field: '{event_dt}'
+    sn_field: '{sn}'
+    tag_field:
+        - '{event}'
+        - '{ring}'
+        - '{day_night}'
+
+    # -- ORIG DATA ----------------------------------
+    index_unit: 's'
+    index_col: 0
+
+    csv_delimiter:
+    csv_delim_whitespace: True
+    csv_header: 1
+    csv_skiprows: 1
 
     _altpros1:
-        usecols:
-            - 0
-            - 1
+        value_col: 1
 
     _prepros1:
-        usecols:
-            - 0
-            - 2
+        value_col: 2
 
     _trepros1:
-        usecols:
-            - 0
-            - 3
+        value_col: 3
 
 
+# ----------------------------------------------------
+# RS41
+# ----------------------------------------------------
 _VAI-RS41:
-    idx_unit: 's'
-    delimiter: ';'
-    skiprows: 1
-    header: 1
+
+    # -- META DATA ----------------------------------
+    dt_field: '{event_dt}'
+    sn_field: '{sn}'
+    tag_field:
+        - '{event}'
+        - '{ring}'
+        - '{day_night}'
+
+    # -- ORIG DATA ----------------------------------
+    index_unit: 's'
+    index_col: 0
+
+    csv_delimiter: ';'
+    csv_skiprows: 1
+    csv_header: 1
 
     _trepros1:
-        usecols:
-            - 0
-            - 4
+        value_col: 4
 
     _altpros1:
-        usecols:
-            - 0
-            - 2
+        value_col: 2
 
     _prepros1:
-        usecols:
-            - 0
-            - 3
+        value_col: 3
 
 
+# ----------------------------------------------------
+# C34
+# ----------------------------------------------------
 _METLAB-C34:
-    idx_unit: 's'
-    delimiter: ';'
-    skiprows: 1
-    header: 0
+
+    # -- META DATA ----------------------------------
+    dt_field: '{event_dt}'
+    sn_field: '{sn}'
+    tag_field:
+        - '{event}'
+        - '{ring}'
+        - '{day_night}'
+
+    # -- ORIG DATA ----------------------------------
+    index_unit: 's'
+    index_col: 0
+
+    csv_delimiter: ';'
+    csv_skiprows: 1
+    csv_header: 0
 
     _altpros1:
-        usecols:
-            - 0
-            - 1
+        value_col: 1
 
     _prepros1:
-        usecols:
-            - 0
-            - 4
+        value_col: 4
 
     _trepros1:
-        usecols:
-            - 0
-            - 5
+        value_col: 5
 
 
+# ----------------------------------------------------
+# C50
+# ----------------------------------------------------
 _METLAB-C50:
-    idx_unit: 's'
-    delimiter: ';'
-    skiprows: 0
-    header: 0
+
+    # -- META DATA ----------------------------------
+    dt_field: '{event_dt}'
+    sn_field: '{sn}'
+    tag_field:
+        - '{event}'
+        - '{ring}'
+        - '{day_night}'
+
+    # -- ORIG DATA ----------------------------------
+    index_unit: 's'
+    index_col: 0
+
+    csv_delimiter: ';'
+    csv_skiprows: 0
+    csv_header: 0
 
     _altpros1:
-        usecols:
-            - 0
-            - 3
+        value_col: 3
 
     _fklpros1:
-        usecols:
-            - 0
-            - 5
+        value_col: 5
 
     _prepros1:
-        usecols:
-            - 0
-            - 6
+        value_col: 6
+
+    _trepros1:
+        value_col: 7
+
+
+# ----------------------------------------------------
+# RS92 GDP, version 2
+# ----------------------------------------------------
+_RS92-GDP_002:
+
+    # -- META DATA ----------------------------------
+    dt_field: '{g.Ascent.StandardTime}Z'
+    sn_field: '{g.Instrument.SerialNumber}'
+    tag_field:
+        - 'b{g.Ascent.BalloonNumber}'
+        - 'e{g.Ascent.ID}'
+
+    # -- ORIG DATA ----------------------------------
+    index_unit: 's'
+    index_col: 'time'
+
+    _trepros1:
+        value_col: 'temp'
+        lambda: 'lambda x: x - 273.15'
+
+    _treprosu:
+        value_col: 'u_temp'
+
+    _prepros1:
+        value_col: 'press'
+
+# ----------------------------------------------------
+# RS41 GDP, version 1
+# ----------------------------------------------------
+_RS41-GDP-BETA_001:
+
+    # -- META DATA ----------------------------------
+    dt_field: '{g.Measurement.StandardTime}'
+    sn_field: '{g.MainSonde.SerialNumber}'
+    tag_field:
+        - 'b{g.Measurement.BalloonNumber}'
+        - 'e{g.Measurement.Id}'
+
+    # -- ORIG DATA ----------------------------------
+    index_unit: 's'
+    index_col: 'time'
+
+    _trepros1:
+        value_col: 'temp'
+        lambda: 'lambda x: x - 273.15'
+
+            - 4
 
     _trepros1:
         usecols:
             - 0
-            - 7
+            - 5
