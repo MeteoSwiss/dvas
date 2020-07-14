@@ -49,7 +49,7 @@ class Handler(ABC):
     It also declares a method for executing a request.
 
     Note:
-        `Source https://refactoring.guru/design-patterns/chain-of-responsibility/python/example`__
+        `Source <https://refactoring.guru/design-patterns/chain-of-responsibility/python/example>`__
 
     """
 
