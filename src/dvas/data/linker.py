@@ -15,7 +15,7 @@ import re
 from itertools import chain, zip_longest
 from itertools import takewhile
 import inspect
-import netCDF4  as nc
+import netCDF4 as nc
 import pandas as pd
 
 # Import from current package
@@ -82,6 +82,30 @@ class AbstractHandler(Handler):
     """
     The default chaining behavior can be implemented inside a base handler
     class.
+
+    .. uml::
+
+        @startuml
+        hide footbox
+
+        class AbstractHandler {
+            set_next(handler)
+            {abstract} handle
+        }
+
+        class FileHandler {
+            {abstract} get_main(*args, **kwargs)
+            {abstract} get_metadata_item(*args, **kwargs)
+        }
+
+        AbstractHandler <--o AbstractHandler
+        AbstractHandler <|-- FileHandler : extends
+        FileHandler <|-- CSVHandler
+        FileHandler <|-- GDPHandler
+
+        @enduml
+
+
     """
 
     def __init__(self):
@@ -126,13 +150,13 @@ class FileHandler(AbstractHandler):
         """config.config.OrigData: Yaml original metadata manager"""
         return self._origdata_config_mngr
 
-    @abstractmethod
     @property
+    @abstractmethod
     def file_suffix(self):
         """re.compile : Handled file suffix (re.fullmatch of pathlib.Path.suffix)"""
 
-    @abstractmethod
     @property
+    @abstractmethod
     def file_instr_type_pat(self):
         """re.compile : File instr_type pattern
         (re.search within pathlib.Path.name). Group #1 must correspond to
@@ -586,34 +610,6 @@ class GDPHandler(FileHandler):
             }
 
         return out
-
-
-def client_code(files_path, prm_abbr):
-    """
-    The client code is usually suited to work with a single handler. In most
-    cases, it is not even aware that the handler is part of a chain.
-
-    Args:
-        files_path (list of pathlib.Path):
-        prm_abbr (str): Parameter abbr
-
-    """
-
-    # Define chain
-    handler = CSVHandler()
-    handler.set_next(GDPHandler())
-
-    # Scan files
-    data = []
-    for file_path in files_path:
-        result = handler.handle(file_path, prm_abbr)
-        if result:
-            data.append(result)
-            print(f"{file_path} was left treated.")
-        else:
-            print(f"{file_path} was left untouched.")
-
-    return data
 
 
 class DataLinker(ABC):

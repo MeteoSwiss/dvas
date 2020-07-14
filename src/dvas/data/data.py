@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 
 # Import from current package
-from .linker import LocalDBLinker, client_code
+from .linker import LocalDBLinker, CSVHandler, GDPHandler
 from ..plot.plot import basic_plot
 from .math import crosscorr
 from ..database.database import db_mngr
@@ -343,10 +343,10 @@ def load(search, prm_abbr):
         @startuml
         hide footbox
 
-        -> LocalDBLinker: load(search, prm_abbr)
+        load -> LocalDBLinker: load(search, prm_abbr)
         LocalDBLinker -> DatabaseManager: get_data(where=search, prm_abbr=prm_abbr)
-        DatabaseManager <- LocalDBLinker: data
-        <- LocalDBLinker: data
+        LocalDBLinker <- DatabaseManager : data
+        load <- LocalDBLinker: data
         @enduml
 
     """
@@ -373,10 +373,35 @@ def update_db(prm_contains):
         prm_contains (str): Parameter abbr search criteria. Use '%' for any
             character.
 
+
+    .. uml::
+
+        @startuml
+        hide footbox
+
+        update_db -> CSVHandler: handle(file_path, prm_abbr)
+        activate CSVHandler
+
+        CSVHandler -> GDPHandler: handle(file_path, prm_abbr)
+        activate GDPHandler
+
+        CSVHandler <- GDPHandler: data
+        deactivate  GDPHandler
+
+        update_db <- CSVHandler: data
+        deactivate   CSVHandler
+
+        @enduml
+
+
     """
 
     # Init linkers
     db_linker = LocalDBLinker()
+
+    # Define chain of responsibility for loadgin from raw
+    handler = CSVHandler()
+    handler.set_next(GDPHandler())
 
     # Search prm_abbr
     prm_abbr_list = [
@@ -403,7 +428,23 @@ def update_db(prm_contains):
         # Log
         rawcsv.info("Start reading CSV files for '%s'", prm_abbr)
 
-        new_orig_data = client_code(origdata_path_scan, prm_abbr)
+        # Scan files
+        new_orig_data = []
+        for file_path in origdata_path_scan:
+            result = handler.handle(file_path, prm_abbr)
+            if result:
+                new_orig_data.append(result)
+
+                # Log
+                rawcsv.info(
+                    "CSV files '%s' was treated", file_path
+                )
+            else:
+
+                # Log
+                rawcsv.debug(
+                    "CSV files '%s' was left untouched", file_path
+                )
 
         # Log
         rawcsv.info("Finish reading CSV files for '%s'", prm_abbr)

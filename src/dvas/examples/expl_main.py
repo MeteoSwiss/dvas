@@ -22,10 +22,8 @@ if __name__ == '__main__':
 
     # Update DB + log
     with LogManager():
-        #update_db('fklpros1')
         update_db('trepros1')
-        #update_db('prepros1')
-        #update_db('altpros1')
+        update_db('treprosu')
 
     # Update all parameters ending with 1 + log
     #with LogManager():
