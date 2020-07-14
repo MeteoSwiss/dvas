@@ -33,7 +33,7 @@ jobs:
       # Here, let's install our module to make sure all the dependencies specified in setup.py are
       # also installed
       - name: Install our module
-        run: pip install .
+        run: pip install -e .
         shell: bash
 
       # Launch a home-made python script to compile and check the docs.
