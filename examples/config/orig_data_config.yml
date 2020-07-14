@@ -172,3 +172,10 @@ _RS41-GDP-BETA_001:
     _trepros1:
         value_col: 'temp'
         lambda: 'lambda x: x - 273.15'
+
+            - 4
+
+    _trepros1:
+        usecols:
+            - 0
+            - 5
