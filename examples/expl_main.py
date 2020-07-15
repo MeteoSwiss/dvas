@@ -23,10 +23,12 @@ if __name__ == '__main__':
     # Update DB + log
     with LogManager():
         update_db('trepros1')
-        update_db('treprosu')
-        #update_db('fklpros1')
-        #update_db('prepros1')
-        #update_db('altpros1')
+        #update_db('treprosu_e')
+        #update_db('treprosu_s')
+        update_db('treprosu_t')
+        update_db('altpros1')
+
+        data = load("#e < %2020-01-02T120000Z%", 'treprosu_t')
 
     # Update all parameters ending with 1 + log
     #with LogManager():
@@ -35,16 +37,17 @@ if __name__ == '__main__':
     # Same without log
     #update_db('%1')
 
-    # Load
-    #data_t1 = load("#e < %2020-01-02T120000Z%", 'trepros1')
-    data_t2 = load("#tag == 'e1'", 'trepros1')
-    data_a = load("#tag_abbr == 'b1'", 'altpros1')
-    data_gdp = load("#tag == 'gdp'", 'trepros1')
+    # # Load
+    # #data_t1 = load("#e < %2020-01-02T120000Z%", 'trepros1')
+    # data_t2 = load("#tag == 'e1'", 'trepros1')
+    # data_a = load("#tag_abbr == 'b1'", 'altpros1')
+    # data_gdp = load("#tag == 'gdp'", 'trepros1')
+    #
+    # with TimeIt():
+    #     data_t2.resample(inplace=True)
+    #     data_t2.interpolate(inplace=True)
+    #     data_sync = data_t2.synchronise()
+    #
+    # data_t2.plot()
+    # data_sync.plot()
 
-    with TimeIt():
-        data_t2.resample(inplace=True)
-        data_t2.interpolate(inplace=True)
-        data_sync = data_t2.synchronise()
-
-    data_t2.plot()
-    data_sync.plot()

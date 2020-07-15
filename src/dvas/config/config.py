@@ -433,7 +433,10 @@ class MultiLayerConfigManager(OneLayerConfigManager):
 
     REQUIRED_ATTRIBUTES = dict(
         **OneLayerConfigManager.REQUIRED_ATTRIBUTES,
-        **{'NODE_PATTERN': list},
+        **{
+            'NODE_PATTERN': list,
+            'CONST_NODES': dict,
+        },
     )
 
     # Define required attributes
@@ -441,6 +444,9 @@ class MultiLayerConfigManager(OneLayerConfigManager):
 
     #: list: Node pattern (order matter)
     NODE_PATTERN = None
+
+    #: dict: Constant node value
+    CONST_NODES = None
 
     def __getitem__(self, item):
         """Overwrite __getitem method.
@@ -558,6 +564,15 @@ class MultiLayerConfigManager(OneLayerConfigManager):
             ]
         }
 
+    def read(self, doc_in=None):
+        """Overwrite read method"""
+
+        # Call super method
+        super().read(doc_in=doc_in)
+
+        # Append constant node
+        self.document.update(self.CONST_NODES)
+
     def _get_document(self, doc_in=None):
         """Get YAML document as python dict
 
@@ -628,6 +643,7 @@ class OrigData(MultiLayerConfigManager):
     NODE_PARAMS_DEF = origdata.NODE_PARAMS_DEF
     CLASS_KEY = origdata.KEY
     NODE_PATTERN = origdata.NODE_PATTERN
+    CONST_NODES = origdata.CONST_NODES
 
     #: dict: Config document
     document = TypedProperty(MultiLayerConfigManager.DOC_TYPE)

@@ -23,6 +23,7 @@ from ..database.model import Flag, Parameter
 from ..database.database import OneDimArrayConfigLinker
 from ..dvas_logger import localdb, rawcsv
 from ..dvas_environ import path_var
+from ..config.definitions.tag import TAG_RAW_VAL, TAG_DERIVED_VAL, TAG_EMPTY_VAL
 
 
 # Define
@@ -139,7 +140,31 @@ class FlagManager:
         return self.data.apply(lambda x: (x >> bit_nbr) & 1)
 
 
-class ProfileManger:
+class EmptyProfileManager:
+    """Empty profile"""
+
+    def __init__(self, event_mngr):
+        """
+
+        Args:
+            event_mngr:
+        """
+
+        # Set attributes
+        self._event_mngr = event_mngr
+
+    @property
+    def data(self):
+        """pd.Series: Data"""
+        return pd.Series()
+
+    @property
+    def event_mngr(self):
+        """EventManager: Corresponding data event manager"""
+        return self._event_mngr
+
+
+class ProfileManger(EmptyProfileManager):
     """Profile manager"""
 
     def __init__(self, data, event_mngr):
@@ -151,6 +176,8 @@ class ProfileManger:
 
         """
 
+        super().__init__(event_mngr)
+
         # Test
         self.check_data(data)
 
@@ -158,7 +185,6 @@ class ProfileManger:
         self._data = data
         self._data.name = None
         self._flag_mngr = FlagManager(data.index)
-        self._event_mngr = event_mngr
 
     @property
     def data(self):
@@ -175,13 +201,8 @@ class ProfileManger:
         self._data = val
 
         # Modify tag 'raw' -> 'derived'
-        self.event_mngr.rm_tag('raw')
-        self.event_mngr.add_tag('derived')
-
-    @property
-    def event_mngr(self):
-        """EventManager: Corresponding data event manager"""
-        return self._event_mngr
+        self.event_mngr.rm_tag(TAG_RAW_VAL)
+        self.event_mngr.add_tag(TAG_DERIVED_VAL)
 
     @property
     def flag_mngr(self):
@@ -230,6 +251,8 @@ class TimeProfileManager(ProfileManger):
     def factory(data, event_mngr, index_lag=pd.Timedelta('0s'), err_r=None, err_s=None, err_t=None):
         """TimeProfileManager factory"""
 
+        if len(data) == 0:
+            return EmptyProfileManager(event_mngr)
         if (err_r is None) or (err_s is None) or (err_t is None):
             return TimeProfileManager(data, event_mngr, index_lag)
         if (err_s is None) or (err_t is None):
@@ -321,19 +344,17 @@ class TimeProfileErrTypeA(TimeProfileManager):
     """Error type A TimeProfileManager"""
 
 
-
 class TimeProfileErrTypeB(TimeProfileManager):
     """Error type B TimeProfileManager"""
 
 
-
-
-def load(search, prm_abbr):
+def load(search, prm_abbr, filter_empty=True):
     """Load parameter
 
     Args:
         search (str): Data loader search criterion
         prm_abbr (str): Positional parameter abbr
+        filter_empty (bool): Filter empty data from search
 
     Returns:
         MultiTimeProfileManager
@@ -353,6 +374,9 @@ def load(search, prm_abbr):
 
     # Init
     db_linker = LocalDBLinker()
+
+    if filter_empty is True:
+        search += f" & (#tag != '{TAG_EMPTY_VAL}')"
 
     # Load data
     out = MultiTimeProfileManager()
@@ -511,7 +535,7 @@ class MultiTimeProfileManager(MultiProfileManager):
 
     def append(self, value):
         """Overwrite of append method"""
-        assert isinstance(value, TimeProfileManager)
+        assert isinstance(value, (TimeProfileManager, EmptyProfileManager))
         super().append(value)
 
     def resample(self, interval='1s', method='mean', inplace=False):

@@ -416,11 +416,9 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     assert len(tag_id_list) == len(event.tag_abbr)
 
                 except AssertionError:
-                    rawcsv.error(
-                        "Many tag_abbr in '%s' are missing in DB",
-                        event.tag_abbr
+                    raise DBInsertError(
+                        f"Many tag_abbr in {event.tag_abbr} are missing in DB",
                     )
-                    raise DBInsertError()
 
                 # Create original data information
                 orig_data_info, _ = OrgiDataInfo.get_or_create(
@@ -466,8 +464,8 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     for batch in chunked(data, n_max):
                         Data.insert_many(batch, fields=fields).execute()  # noqa pylint: disable=E1120
 
-        except DBInsertError:
-            pass
+        except DBInsertError as exc:
+            raise DBInsertError(exc)
 
     @staticmethod
     def _get_eventsinfo_id(where_arg, prm_abbr):
