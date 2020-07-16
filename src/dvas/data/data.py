@@ -376,7 +376,7 @@ def load(search, prm_abbr, filter_empty=True):
     db_linker = LocalDBLinker()
 
     if filter_empty is True:
-        search = "(" + search + ") & ~({_tag == '" + TAG_EMPTY_VAL + "'})"
+        search = "(" + search + ") & ~{_tag == '" + TAG_EMPTY_VAL + "'}"
 
     # Load data
     out = MultiTimeProfileManager()

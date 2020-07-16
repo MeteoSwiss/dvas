@@ -474,6 +474,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         Search syntax:
             - Logical and: &
             - Logical or: |
+            - logical not: ~
             - Operators: `link <http://docs.peewee-orm.com/en/latest/peewee/query_operators.html>`__
             - Event datetime field: _dt
             - Instrument serial number field: _sn
@@ -492,6 +493,10 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         # Split and find kernel logical conditions
         where_split = re.split(pat_split, where_arg)
         where_find = re.findall(pat_find, where_arg)
+
+        print(where_arg)
+        print(where_split)
+        print(where_find)
 
         # Create base request
         qry_base = (
@@ -551,7 +556,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
                 # Eval set logical expression
                 # (Replace ~ by all_event_id.difference)
-                a = re.sub(
+                res = re.sub(
                     r"\~",
                     'all_event_id.difference',
                     ''.join(
@@ -562,12 +567,17 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                                 where_split,
 
                                 # Find formula and substitute
-                                search_res
+                                ['(' + arg + ')' for arg in search_res]
                             )
                         ) if arg is not None]
                     )
                 )
-                out = list(eval(a, {'all_event_id': all_event_id}))
+                print(res)
+                res = res.replace('()', '')
+
+                print(res)
+
+                out = list(eval(res, {'all_event_id': all_event_id}))
 
                 # Convert id as table element
                 qry = EventsInfo.select().where(EventsInfo.id.in_(out))
