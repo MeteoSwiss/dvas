@@ -13,6 +13,12 @@ Module contents: Required attributes definition for
 # Import current packages modules
 from ...database.model import Tag
 
+# Define
+TAG_RAW_VAL = 'raw'
+TAG_GDP_VAL = 'gdp'
+TAG_DERIVED_VAL = 'derived'
+TAG_EMPTY_VAL = 'empty'
+
 #: dict: Parameter pattern properties (JSON_SCHEMA)
 PARAMETER_PATTERN_PROP = {
     rf"^{Tag.tag_abbr.name}$": {
@@ -26,16 +32,20 @@ PARAMETER_PATTERN_PROP = {
 #: list: Constant node values
 CONST_NODES = [
     {
-        Tag.tag_abbr.name: 'raw',
+        Tag.tag_abbr.name: TAG_RAW_VAL,
         Tag.tag_desc.name: 'Data are raw'
     },
     {
-        Tag.tag_abbr.name: 'gdp',
+        Tag.tag_abbr.name: TAG_GDP_VAL,
         Tag.tag_desc.name: 'GRUAN Data Product'
     },
     {
-        Tag.tag_abbr.name: 'derived',
+        Tag.tag_abbr.name: TAG_DERIVED_VAL,
         Tag.tag_desc.name: 'Data are derived from raw'
+    },
+    {
+        Tag.tag_abbr.name: TAG_EMPTY_VAL,
+        Tag.tag_desc.name: 'Data are empty'
     },
     {
         Tag.tag_abbr.name: 'resampled',

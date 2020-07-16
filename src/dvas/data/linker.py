@@ -28,14 +28,12 @@ from ..config.config import ConfigReadError
 from ..config.definitions.origdata import META_FIELD_KEYS
 from ..config.definitions.origdata import EVENT_DT_FLD_NM, SN_FLD_NM, TAG_FLD_NM
 from ..config.definitions.origdata import INDEX_FLD_NM, PARAM_FLD_NM
+from ..config.definitions.origdata import INDEX_NM, VALUE_NM
 from ..dvas_logger import rawcsv
 from ..dvas_environ import glob_var
-from ..dvas_helper import get_by_path
 from ..config.pattern import INSTR_TYPE_PAT
+from ..config.definitions.tag import TAG_RAW_VAL, TAG_GDP_VAL, TAG_EMPTY_VAL
 
-# Define
-INDEX_NM = Data.index.name
-VALUE_NM = Data.value.name
 
 # Pandas csv_read method arguments
 PD_CSV_READ_ARGS = [
@@ -269,7 +267,7 @@ class FileHandler(AbstractHandler):
         """Read field from metaconfig"""
 
         # Define
-        pat_spilt = r'\{[^\n\r\t\{\}]+\}'
+        pat_split = r'\{[^\n\r\t\{\}]+\}'
         pat_find = r'\{([^\n\r\t\{\}]+)\}'
 
         def create_meta_val(field_val_arg):
@@ -286,7 +284,7 @@ class FileHandler(AbstractHandler):
                     *zip_longest(
 
                         # Split formula
-                        re.split(pat_spilt, field_val_arg),
+                        re.split(pat_split, field_val_arg),
 
                         # Find nested item and substitute
                         [
@@ -320,7 +318,7 @@ class FileHandler(AbstractHandler):
 
             #TODO Details exceptions
             except Exception as exc:
-                raise Exception(exc)
+                raise Exception(f"{exc} / {key}")
 
         return out
 
@@ -429,7 +427,6 @@ class CSVHandler(FileHandler):
         except Exception as exc:
             raise Exception(exc)
 
-
         return out
 
     def get_main(self, file_path, prm_abbr):
@@ -450,12 +447,12 @@ class CSVHandler(FileHandler):
         # (need it for loading origdata config)
         self.check_sn(file_path, instr_type_name, metadata)
 
-        # Create event
+        # Create event with 'raw' tag
         event = EventManager(
             event_dt=metadata[EVENT_DT_FLD_NM],
             sn=metadata[SN_FLD_NM],
             prm_abbr=prm_abbr,
-            tag_abbr=metadata[TAG_FLD_NM],
+            tag_abbr=metadata[TAG_FLD_NM] + [TAG_RAW_VAL],
         )
 
         # Get config params for (instr_type, prm_abbr) couple
@@ -469,21 +466,21 @@ class CSVHandler(FileHandler):
             if key in PD_CSV_READ_ARGS}
 
         # Add usecols
-        raw_csv_read_args.update(
-            {
-                'usecols': [
-                    self.origdata_config_mngr.get_val(
-                        [instr_type_name, prm_abbr], INDEX_FLD_NM
-                    ),
-                    self.origdata_config_mngr.get_val(
-                        [instr_type_name, prm_abbr], PARAM_FLD_NM
-                    ),
-                ]
-            }
-        )
-
-        # Read raw csv
         try:
+            raw_csv_read_args.update(
+                {
+                    'usecols': [
+                        self.origdata_config_mngr.get_val(
+                            [instr_type_name, prm_abbr], INDEX_FLD_NM
+                        ),
+                        self.origdata_config_mngr.get_val(
+                            [instr_type_name, prm_abbr], PARAM_FLD_NM
+                        ),
+                    ]
+                }
+            )
+
+            # Read raw csv
             data = pd.read_csv(file_path, **raw_csv_read_args)
             data = data.applymap(
                 eval(self.origdata_config_mngr.get_val(
@@ -491,27 +488,39 @@ class CSVHandler(FileHandler):
                 )
             )
 
-        except ValueError as exc:
-            rawcsv.error(
-                "Error while reading '%s' in CSV file '%s' (%s: %s)",
-                prm_abbr, file_path,
-                type(exc).__name__, exc
-            )
-
-        else:
-
             # Log
             rawcsv.info(
                 "Successful reading of '%s' in CSV file '%s'",
                 prm_abbr, file_path,
             )
 
-            # Append data
-            out = {
-                'event': event,
-                'data': data,
-                'source_info': self.apply_file_check_rule(file_path)
-            }
+        except KeyError:
+
+            # Create empty data set
+            data = pd.DataFrame({INDEX_NM: [], VALUE_NM: []})
+            data.set_index(INDEX_NM, inplace=True)
+
+            # Add empty tag
+            event.add_tag(TAG_EMPTY_VAL)
+
+            # Log
+            rawcsv.warn(
+                "No data for '%s' in file '%s'",
+                prm_abbr, file_path,
+            )
+
+        except ValueError as exc:
+            raise OrigConfigError(
+                f"Error while reading '{prm_abbr}' in file '{file_path}' " +
+                f"({type(exc).__name__}: {exc})"
+            )
+
+        # Append data
+        out = {
+            'event': event,
+            'data': data,
+            'source_info': self.apply_file_check_rule(file_path)
+        }
 
         return out
 
@@ -542,7 +551,7 @@ class GDPHandler(FileHandler):
 
     def get_metadata_item(self, item):
         """Implementation of abstract method"""
-        return get_by_path(self._fid, [item])
+        return self._fid.getncattr(item)
 
     def get_metadata(self, file_path, instr_type_name, prm_abbr):
         """Method to get file metadata"""
@@ -552,8 +561,9 @@ class GDPHandler(FileHandler):
             try:
                 out = self.read_metaconfig_fields(instr_type_name, prm_abbr)
 
+            #TODO Detail exception
             except Exception as exc:
-                raise Exception(exc)
+                raise Exception(f"{exc} / {instr_type_name} / {prm_abbr}")
 
         return out
 
@@ -572,42 +582,66 @@ class GDPHandler(FileHandler):
         # (need it for loading origdata config)
         self.check_sn(file_path, instr_type_name, metadata)
 
-        # Create event
+        # Create event with 'raw' and 'gdp' tag
         event = EventManager(
             event_dt=metadata[EVENT_DT_FLD_NM],
             sn=metadata[SN_FLD_NM],
             prm_abbr=prm_abbr,
-            tag_abbr=metadata[TAG_FLD_NM],
+            tag_abbr=metadata[TAG_FLD_NM] + [TAG_RAW_VAL, TAG_GDP_VAL],
         )
 
-        # Read data
-        with nc.Dataset(file_path, 'r') as self._fid:
-            index_col_nn = self.origdata_config_mngr.get_val(
-                [instr_type_name, prm_abbr], INDEX_FLD_NM
-            )
-            data_col_nm = self.origdata_config_mngr.get_val(
-                [instr_type_name, prm_abbr], PARAM_FLD_NM
-            )
+        try:
 
-            data = pd.DataFrame(
-                {
-                    Data.index.name: self._fid[index_col_nn][:],
-                    Data.value.name: self._fid[data_col_nm][:],
-                }
-            )
-            data.set_index(Data.index.name, inplace=True)
-            data = data.applymap(
-                eval(self.origdata_config_mngr.get_val(
-                    [instr_type_name, prm_abbr], 'lambda')
+            # Read data
+            with nc.Dataset(file_path, 'r') as self._fid:
+                index_col_nn = self.origdata_config_mngr.get_val(
+                    [instr_type_name, prm_abbr], INDEX_FLD_NM
                 )
+                data_col_nm = self.origdata_config_mngr.get_val(
+                    [instr_type_name, prm_abbr], PARAM_FLD_NM
+                )
+
+                data = pd.DataFrame(
+                    {
+                        INDEX_NM: self._fid[index_col_nn][:],
+                        VALUE_NM: self._fid[data_col_nm][:],
+                    }
+                )
+                data.set_index(INDEX_NM, inplace=True)
+                data = data.applymap(
+                    eval(self.origdata_config_mngr.get_val(
+                        [instr_type_name, prm_abbr], 'lambda')
+                    )
+                )
+
+        except KeyError:
+
+            # Create empty data set
+            data = pd.DataFrame({INDEX_NM: [], VALUE_NM: []})
+            data.set_index(INDEX_NM, inplace=True)
+
+            # Add empty tag
+            event.add_tag(TAG_EMPTY_VAL)
+
+            # Log
+            rawcsv.warn(
+                "No data for '%s' in file '%s'",
+                prm_abbr, file_path,
             )
 
-            # Append data
-            out = {
-                'event': event,
-                'data': data,
-                'source_info': self.apply_file_check_rule(file_path)
-            }
+        #TODO Detail exception
+        except Exception as exc:
+            raise OrigConfigError(
+                f"Error while reading '{prm_abbr}' in file '{file_path}' " +
+                f"({type(exc).__name__}: {exc})"
+            )
+
+        # Append data
+        out = {
+            'event': event,
+            'data': data,
+            'source_info': self.apply_file_check_rule(file_path)
+        }
 
         return out
 
@@ -703,3 +737,7 @@ class ConfigInstrIdError(Exception):
 
 class OutputDirError(Exception):
     """Error for bad output directory path"""
+
+
+class OrigConfigError(Exception):
+    """Error for bad orig config"""

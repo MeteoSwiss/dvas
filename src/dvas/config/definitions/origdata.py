@@ -54,14 +54,18 @@ NODE_PARAMS_DEF = {
     LAMBDA_FLD_NM: 'lambda x: x',
     CSV_DELIMITER_FLD_NM: ';',
     CSV_HEADER_FLD_NM: 'infer',
-    CSV_INDEX_COL_FLD_NM: INDEX_NM,
-    CSV_NAMES_FLD_NM: [INDEX_NM, VALUE_NM],
     CSV_SKIPINITSPACE_FLD_NM: False,
     CSV_SKIPROWS_FLD_NM: 0,
     CSV_SKIP_BLANK_LINES_FLD_NM: True,
     CSV_DELIM_WHITESPACE_FLD_NM: False,
     CSV_COMMENT_FLD_NM: '#',
     CSV_NA_VALUES_FLD_NM: ['/']
+}
+
+#: dict: Constant nodes
+CONST_NODES = {
+    CSV_INDEX_COL_FLD_NM: INDEX_NM,
+    CSV_NAMES_FLD_NM: [INDEX_NM, VALUE_NM],
 }
 
 #: dict: Parameter pattern properties (JSON_SCHEMA)
@@ -117,20 +121,6 @@ PARAMETER_PATTERN_PROP = {
             },
             {"type": 'integer'}
         ]
-    },
-    rf"^{CSV_INDEX_COL_FLD_NM}$": {
-        "type": "string",
-        "enum": [INDEX_NM]
-    },
-    rf"^{CSV_NAMES_FLD_NM}$": {
-        "type": 'array',
-        "items": {
-            "type": "string",
-            'enum': [INDEX_NM, VALUE_NM]
-        },
-        "minItems": 2,
-        "maxItems": 2,
-        "uniqueItems": True
     },
     rf"^{CSV_SKIPINITSPACE_FLD_NM}$": {
         "type": "boolean"
