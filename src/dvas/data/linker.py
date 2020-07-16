@@ -267,7 +267,7 @@ class FileHandler(AbstractHandler):
         """Read field from metaconfig"""
 
         # Define
-        pat_spilt = r'\{[^\n\r\t\{\}]+\}'
+        pat_split = r'\{[^\n\r\t\{\}]+\}'
         pat_find = r'\{([^\n\r\t\{\}]+)\}'
 
         def create_meta_val(field_val_arg):
@@ -284,7 +284,7 @@ class FileHandler(AbstractHandler):
                     *zip_longest(
 
                         # Split formula
-                        re.split(pat_spilt, field_val_arg),
+                        re.split(pat_split, field_val_arg),
 
                         # Find nested item and substitute
                         [
@@ -447,7 +447,7 @@ class CSVHandler(FileHandler):
         # (need it for loading origdata config)
         self.check_sn(file_path, instr_type_name, metadata)
 
-        # Create event
+        # Create event with 'raw' tag
         event = EventManager(
             event_dt=metadata[EVENT_DT_FLD_NM],
             sn=metadata[SN_FLD_NM],
@@ -582,7 +582,7 @@ class GDPHandler(FileHandler):
         # (need it for loading origdata config)
         self.check_sn(file_path, instr_type_name, metadata)
 
-        # Create event
+        # Create event with 'raw' and 'gdp' tag
         event = EventManager(
             event_dt=metadata[EVENT_DT_FLD_NM],
             sn=metadata[SN_FLD_NM],

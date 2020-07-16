@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [modolol, 2020-05-25] Add logging possibilities
 
 ### Added:
+ - [modolol, 2020-07-16] Add dummy examples
  - [modolol, 2020-07-03] .dev_utils directory in package
  - [fpavogt, 2020-06-30] Add docs CI & a basic netCDF4 test
  - [modolol, 2020-06-12] Add tags table in DB and config items generator

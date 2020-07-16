@@ -12,7 +12,6 @@ Module content: examples
 from dvas.data.data import load, update_db
 from dvas.dvas_logger import LogManager
 from dvas.database.database import db_mngr
-from dvas.dvas_helper import TimeIt
 
 
 if __name__ == '__main__':
@@ -22,13 +21,13 @@ if __name__ == '__main__':
 
     # Update DB + log
     with LogManager():
-        update_db('trepros1')
-        #update_db('treprosu_e')
-        #update_db('treprosu_s')
-        update_db('treprosu_t')
+        update_db('trepros1', strict=True)
+        update_db('treprosu_')
         update_db('altpros1')
 
-        data = load("#e < %2020-01-02T120000Z%", 'treprosu_t')
+
+    data = load("{_dt < %2020-01-02T120000Z%} & ~({_sn.contains('AR')})", 'treprosu_t')
+
 
     # Update all parameters ending with 1 + log
     #with LogManager():

@@ -20,7 +20,7 @@ from datetime import datetime
 from peewee import chunked, DoesNotExist
 from peewee import IntegrityError
 from playhouse.shortcuts import model_to_dict
-from pandas import DataFrame, to_datetime, Timestamp
+from pandas import DataFrame, Timestamp
 from pampy.helpers import Iterable, Union
 import sre_yield
 
@@ -472,26 +472,26 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         """Get events info
 
         Search syntax:
-            - Logical and: and, &
-            - Logical or: or, |
-            - Operators: ==, >=, <=, <, >, !=
-            - Event datetime field: #e, #event, #event_dt
-            - Instrument field: #i, #instr, #instr_id
-            - Tag field: #t, #instr, #instr_id
-            - Datetime: %'any valid pandas.datetime'%
+            - Logical and: &
+            - Logical or: |
+            - Operators: `link <http://docs.peewee-orm.com/en/latest/peewee/query_operators.html>`__
+            - Event datetime field: _dt
+            - Instrument serial number field: _sn
+            - Tag field: _tag
+            - Datetime: %<any ISO 8601 UTC datetime>% (`link <https://fr.wikipedia.org/wiki/ISO_8601>`__)
 
         """
 
-        # Substitute and and or
-        where_arg = re.sub(r'[\s\t]+(and)[\s\t]+', '&', where_arg)
-        where_arg = re.sub(r'[\s\t]+(or)[\s\t]+', '|', where_arg)
+        # Define
+        pat_split = r'\{[^\n\r\t\{\}]+\}'
+        pat_find = r'\{([^\n\r\t\{\}]+)\}'
 
         # Substitute spaces
         where_arg = re.sub(r'[\s\t\n\r]+', '', where_arg)
 
         # Split and find kernel logical conditions
-        where_split = re.split(r"[\#\w\=\>\<\!\'\"\[\]\,\-\:\%]+", where_arg)
-        where_find = re.findall(r"([\#\w\=\>\<\!\'\"\[\]\,\-\:\%]+)", where_arg)
+        where_split = re.split(pat_split, where_arg)
+        where_find = re.findall(pat_find, where_arg)
 
         # Create base request
         qry_base = (
@@ -505,24 +505,27 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         try:
             with DBAccess(db) as _:
 
+                # Set of all event_id
+                all_event_id = set(arg.id for arg in EventsInfo.select())
+
                 # Search for kernel logical condition
                 search_res = []
 
                 for where in where_find:
                     # Replace field in string
                     where = re.sub(
-                        r'\#((e(vent(_dt)?)?)|(dt))', 'EventsInfo.event_dt', where
+                        r'_dt', 'EventsInfo.event_dt', where
                     )
                     where = re.sub(
-                        r'\#((sn)|(instr_sn))', 'Instrument.sn', where
+                        r'_sn', 'Instrument.sn', where
                     )
                     where = re.sub(
-                        r'\#(t(ag(_abbr)?)?)', 'Tag.tag_abbr', where
+                        r'_tag', 'Tag.tag_abbr', where
                     )
 
                     # Replace datetime
                     where = re.sub(
-                        r'\%([\dTZ\:\-]+)\%', r"to_datetime('\1').to_pydatetime()", where
+                        r'\%([\dTZ\:\-]+)\%', r"check_datetime('\1')", where
                     )
 
                     # Create query
@@ -533,7 +536,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                                 'EventsInfo': EventsInfo,
                                 'Instrument': Instrument,
                                 'Tag': Tag,
-                                'to_datetime': to_datetime
+                                'check_datetime': check_datetime
                             }
                         ) &
                         (Parameter.prm_abbr == prm_abbr)
@@ -547,24 +550,33 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     )
 
                 # Eval set logical expression
-                out = list(eval(''.join(
-                    [arg for arg in chain(
-                        *zip_longest(
+                # (Replace ~ by all_event_id.difference)
+                a = re.sub(
+                    r"\~",
+                    'all_event_id.difference',
+                    ''.join(
+                        [arg for arg in chain(
+                            *zip_longest(
 
-                            # Split formula
-                            where_split,
+                                # Split formula
+                                where_split,
 
-                            # Find formula and substitute
-                            search_res
-                        )
-                    ) if arg is not None]
-                )))
+                                # Find formula and substitute
+                                search_res
+                            )
+                        ) if arg is not None]
+                    )
+                )
+                out = list(eval(a, {'all_event_id': all_event_id}))
 
                 # Convert id as table element
                 qry = EventsInfo.select().where(EventsInfo.id.in_(out))
                 out = [arg for arg in qry.iterator()]
 
-        except Exception as _:
+        #TODO Detail exception
+        except Exception as exc:
+            print(exc)
+            #TODO Decide if raise or not
             out = []
 
         return out

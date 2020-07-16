@@ -376,7 +376,7 @@ def load(search, prm_abbr, filter_empty=True):
     db_linker = LocalDBLinker()
 
     if filter_empty is True:
-        search += f" & (#tag != '{TAG_EMPTY_VAL}')"
+        search = "(" + search + ") & ~({_tag == '" + TAG_EMPTY_VAL + "'})"
 
     # Load data
     out = MultiTimeProfileManager()
@@ -390,13 +390,13 @@ def load(search, prm_abbr, filter_empty=True):
     return out
 
 
-def update_db(prm_contains):
+def update_db(search, strict=False):
     """Update database.
 
     Args:
-        prm_contains (str): Parameter abbr search criteria. Use '%' for any
-            character.
-
+        search (str): prm_abbr search criteria.
+        strict (bool, optional): If False, match for any sub-string.
+            If True match for entire string. Default to False.
 
     .. uml::
 
@@ -428,10 +428,15 @@ def update_db(prm_contains):
     handler.set_next(GDPHandler())
 
     # Search prm_abbr
+    if strict is True:
+        search = {'where': Parameter.prm_abbr == search}
+    else:
+        search = {'where': Parameter.prm_abbr.contains(search)}
+
     prm_abbr_list = [
         arg[0] for arg in db_mngr.get_or_none(
             Parameter,
-            search={'where': Parameter.prm_abbr.contains(prm_contains)},
+            search=search,
             attr=[[Parameter.prm_abbr.name]],
             get_first=False
         )
