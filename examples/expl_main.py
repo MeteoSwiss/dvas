@@ -16,14 +16,14 @@ from dvas.database.database import db_mngr
 
 if __name__ == '__main__':
 
-    # # Create database
-    # db_mngr.create_db()
-    #
-    # # Update DB + log
-    # with LogManager():
-    #     update_db('trepros1', strict=True)
-    #     update_db('treprosu_')
-    #     update_db('altpros1')
+    # Create database
+    db_mngr.create_db()
+
+    # Update DB + log
+    with LogManager():
+        update_db('trepros1', strict=True)
+        update_db('treprosu_')
+        update_db('altpros1')
 
     data = load("{_dt < %2020-01-02T120000Z%} & ~{_sn.contains('AR')}", 'treprosu_t')
 

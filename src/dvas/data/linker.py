@@ -20,7 +20,7 @@ import pandas as pd
 
 # Import from current package
 from ..dvas_environ import path_var as env_path_var
-from ..database.model import Data, InstrType, Instrument, EventsInfo
+from ..database.model import InstrType, Instrument, EventsInfo
 from ..database.model import Parameter, OrgiDataInfo
 from ..database.database import db_mngr, EventManager
 from ..config.config import OrigData, CSVOrigMeta

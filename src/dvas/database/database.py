@@ -41,7 +41,7 @@ from ..dvas_helper import SingleInstanceMetaClass
 from ..dvas_helper import TypedProperty as TProp
 from ..dvas_helper import TimeIt
 from ..dvas_helper import get_by_path, check_datetime
-from ..dvas_logger import localdb, rawcsv
+from ..dvas_logger import localdb
 from ..dvas_environ import glob_var
 
 
