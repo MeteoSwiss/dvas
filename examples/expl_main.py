@@ -25,7 +25,8 @@ if __name__ == '__main__':
         update_db('treprosu_')
         update_db('altpros1')
 
-    data = load("{_dt < %2020-01-02T120000Z%} & ~{_sn.contains('AR')}", 'treprosu_t')
+    data_u_t = load("{_dt < %2020-01-02T120000Z%} & ~{_sn.contains('AR')}", 'treprosu_t')
+    data_t = load("{_tag == 'e1'}", 'trepros1')
 
     # Update all parameters ending with 1 + log
     #with LogManager():

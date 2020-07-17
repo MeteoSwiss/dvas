@@ -32,6 +32,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Deprecated:
 ### Removed:
 ### Fixed:
+ - [modolol, 2020-06-17] Fix bug in data loading (dvas.database.database)
  - [modolol, 2020-06-17] Remove automatic make dir in module import and global path assignment
  - [fpavogt, 2020-06-12] Automatically load the `base` style sheet for plots & new tests
  - [modolol, 2020-06-12] Set os.chmod(777) -> skip for Windows and check for R/W for Mac and Linux

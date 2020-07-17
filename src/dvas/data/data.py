@@ -248,14 +248,14 @@ class TimeProfileManager(ProfileManger):
     """Time profile manager """
 
     @staticmethod
-    def factory(data, event_mngr, index_lag=pd.Timedelta('0s'), err_r=None, err_s=None, err_t=None):
+    def factory(data, event_mngr, index_lag=pd.Timedelta('0s'), u_u=None, u_r=None, u_s=None, u_t=None):
         """TimeProfileManager factory"""
 
         if len(data) == 0:
             return EmptyProfileManager(event_mngr)
-        if (err_r is None) or (err_s is None) or (err_t is None):
+        if (u_r is None) or (u_s is None) or (u_t is None):
             return TimeProfileManager(data, event_mngr, index_lag)
-        if (err_s is None) or (err_t is None):
+        if (u_s is None) or (u_t is None):
             raise NotImplementedError()
             #return TimeProfileErrTypeA(data, event_mngr, index_lag, err_r)
         else:
@@ -500,7 +500,7 @@ def update_db(search, strict=False):
 class MultiProfileManager(list):
     """Mutli profile manager"""
 
-    def load(self):
+    def load(self, *args, **kwargs):
         """Load method"""
         raise NotImplementedError('Please implement')
 
@@ -516,9 +516,23 @@ class MultiTimeProfileManager(MultiProfileManager):
         """
         super().__init__(time_profiles_mngrs)
 
-    def load(self):
-        """Overwrite load method"""
-        pass
+    @staticmethod
+    def load(search, prm_abbr):
+        """Overwrite load method
+
+        Args:
+            search (str): Search criteria
+            prm_abbr (str or list of str): Parameter to load
+
+        """
+
+        if isinstance(prm_abbr, str):
+            prm_abbr = list(prm_abbr)
+
+        for prm in prm_abbr:
+            pass
+            #data = load(search, prm)
+
 
     def map(self, func, inplace, *args, **kwargs):
         """Map individual TimeProfileManager"""

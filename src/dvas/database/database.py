@@ -494,10 +494,6 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         where_split = re.split(pat_split, where_arg)
         where_find = re.findall(pat_find, where_arg)
 
-        print(where_arg)
-        print(where_split)
-        print(where_find)
-
         # Create base request
         qry_base = (
             EventsInfo
@@ -572,11 +568,8 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                         ) if arg is not None]
                     )
                 )
-                print(res)
-                res = res.replace('()', '')
 
-                print(res)
-
+                re.sub(r"(?<!set)\(\)", '', res)
                 out = list(eval(res, {'all_event_id': all_event_id}))
 
                 # Convert id as table element
