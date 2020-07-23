@@ -15,15 +15,15 @@ import numpy as np
 import pandas as pd
 
 # Import from current package
-from .linker import LocalDBLinker, OriginalCSVLinker, GDPDataLinker
+from .linker import LocalDBLinker, CSVHandler, GDPHandler
 from ..plot.plot import basic_plot
 from .math import crosscorr
 from ..database.database import db_mngr
 from ..database.model import Flag, Parameter
-from ..database.model import EventsInfo, OrgiDataInfo
-from ..database.model import Instrument
 from ..database.database import OneDimArrayConfigLinker
 from ..dvas_logger import localdb, rawcsv
+from ..dvas_environ import path_var
+from ..config.definitions.tag import TAG_RAW_VAL, TAG_DERIVED_VAL, TAG_EMPTY_VAL
 
 
 # Define
@@ -140,7 +140,31 @@ class FlagManager:
         return self.data.apply(lambda x: (x >> bit_nbr) & 1)
 
 
-class ProfileManger:
+class EmptyProfileManager:
+    """Empty profile"""
+
+    def __init__(self, event_mngr):
+        """
+
+        Args:
+            event_mngr:
+        """
+
+        # Set attributes
+        self._event_mngr = event_mngr
+
+    @property
+    def data(self):
+        """pd.Series: Data"""
+        return pd.Series()
+
+    @property
+    def event_mngr(self):
+        """EventManager: Corresponding data event manager"""
+        return self._event_mngr
+
+
+class ProfileManger(EmptyProfileManager):
     """Profile manager"""
 
     def __init__(self, data, event_mngr):
@@ -152,6 +176,8 @@ class ProfileManger:
 
         """
 
+        super().__init__(event_mngr)
+
         # Test
         self.check_data(data)
 
@@ -159,7 +185,6 @@ class ProfileManger:
         self._data = data
         self._data.name = None
         self._flag_mngr = FlagManager(data.index)
-        self._event_mngr = event_mngr
 
     @property
     def data(self):
@@ -176,13 +201,8 @@ class ProfileManger:
         self._data = val
 
         # Modify tag 'raw' -> 'derived'
-        self.event_mngr.rm_tag('raw')
-        self.event_mngr.add_tag('derived')
-
-    @property
-    def event_mngr(self):
-        """EventManager: Corresponding data event manager"""
-        return self._event_mngr
+        self.event_mngr.rm_tag(TAG_RAW_VAL)
+        self.event_mngr.add_tag(TAG_DERIVED_VAL)
 
     @property
     def flag_mngr(self):
@@ -231,6 +251,8 @@ class TimeProfileManager(ProfileManger):
     def factory(data, event_mngr, index_lag=pd.Timedelta('0s'), err_r=None, err_s=None, err_t=None):
         """TimeProfileManager factory"""
 
+        if len(data) == 0:
+            return EmptyProfileManager(event_mngr)
         if (err_r is None) or (err_s is None) or (err_t is None):
             return TimeProfileManager(data, event_mngr, index_lag)
         if (err_s is None) or (err_t is None):
@@ -322,19 +344,17 @@ class TimeProfileErrTypeA(TimeProfileManager):
     """Error type A TimeProfileManager"""
 
 
-
 class TimeProfileErrTypeB(TimeProfileManager):
     """Error type B TimeProfileManager"""
 
 
-
-
-def load(search, prm_abbr):
+def load(search, prm_abbr, filter_empty=True):
     """Load parameter
 
     Args:
         search (str): Data loader search criterion
         prm_abbr (str): Positional parameter abbr
+        filter_empty (bool): Filter empty data from search
 
     Returns:
         MultiTimeProfileManager
@@ -344,16 +364,19 @@ def load(search, prm_abbr):
         @startuml
         hide footbox
 
-        -> LocalDBLinker: load(search, prm_abbr)
+        load -> LocalDBLinker: load(search, prm_abbr)
         LocalDBLinker -> DatabaseManager: get_data(where=search, prm_abbr=prm_abbr)
-        DatabaseManager <- LocalDBLinker: data
-        <- LocalDBLinker: data
+        LocalDBLinker <- DatabaseManager : data
+        load <- LocalDBLinker: data
         @enduml
 
     """
 
     # Init
     db_linker = LocalDBLinker()
+
+    if filter_empty is True:
+        search = "(" + search + ") & ~{_tag == '" + TAG_EMPTY_VAL + "'}"
 
     # Load data
     out = MultiTimeProfileManager()
@@ -367,25 +390,53 @@ def load(search, prm_abbr):
     return out
 
 
-def update_db(prm_contains):
+def update_db(search, strict=False):
     """Update database.
 
     Args:
-        prm_contains (str): Parameter abbr search criteria. Use '%' for any
-            character.
+        search (str): prm_abbr search criteria.
+        strict (bool, optional): If False, match for any sub-string.
+            If True match for entire string. Default to False.
+
+    .. uml::
+
+        @startuml
+        hide footbox
+
+        update_db -> CSVHandler: handle(file_path, prm_abbr)
+        activate CSVHandler
+
+        CSVHandler -> GDPHandler: handle(file_path, prm_abbr)
+        activate GDPHandler
+
+        CSVHandler <- GDPHandler: data
+        deactivate  GDPHandler
+
+        update_db <- CSVHandler: data
+        deactivate   CSVHandler
+
+        @enduml
+
 
     """
 
     # Init linkers
     db_linker = LocalDBLinker()
-    orig_data_linker = OriginalCSVLinker()
-    gdp_data_linker = GDPDataLinker()
+
+    # Define chain of responsibility for loadgin from raw
+    handler = CSVHandler()
+    handler.set_next(GDPHandler())
 
     # Search prm_abbr
+    if strict is True:
+        search = {'where': Parameter.prm_abbr == search}
+    else:
+        search = {'where': Parameter.prm_abbr.contains(search)}
+
     prm_abbr_list = [
         arg[0] for arg in db_mngr.get_or_none(
             Parameter,
-            search={'where': Parameter.prm_abbr.contains(prm_contains)},
+            search=search,
             attr=[[Parameter.prm_abbr.name]],
             get_first=False
         )
@@ -397,30 +448,32 @@ def update_db(prm_contains):
         prm_abbr_list
     )
 
+    # Scan path
+    origdata_path_scan = list(path_var.orig_data_path.rglob("*.*"))
+
     # Loop loading
     for prm_abbr in prm_abbr_list:
 
         # Log
         rawcsv.info("Start reading CSV files for '%s'", prm_abbr)
 
-        # Search exclude file names
-        exclude_file_name = db_mngr.get_or_none(
-            EventsInfo,
-            search={
-                'where': (
-                    (Parameter.prm_abbr == prm_abbr) &
-                    (Instrument.sn != '')
-                ),
-                'join_order': [Parameter, OrgiDataInfo, Instrument]},
-            attr=[[EventsInfo.orig_data_info.name, OrgiDataInfo.source.name]],
-            get_first=False
-        )
+        # Scan files
+        new_orig_data = []
+        for file_path in origdata_path_scan:
+            result = handler.handle(file_path, prm_abbr)
+            if result:
+                new_orig_data.append(result)
 
-        # Load
-        new_orig_data = orig_data_linker.load(prm_abbr, exclude_file_name)
+                # Log
+                rawcsv.info(
+                    "CSV files '%s' was treated", file_path
+                )
+            else:
 
-        #TODO modify this ugly implementation
-        new_orig_data += gdp_data_linker.load(prm_abbr, exclude_file_name)
+                # Log
+                rawcsv.debug(
+                    "CSV files '%s' was left untouched", file_path
+                )
 
         # Log
         rawcsv.info("Finish reading CSV files for '%s'", prm_abbr)
@@ -487,7 +540,7 @@ class MultiTimeProfileManager(MultiProfileManager):
 
     def append(self, value):
         """Overwrite of append method"""
-        assert isinstance(value, TimeProfileManager)
+        assert isinstance(value, (TimeProfileManager, EmptyProfileManager))
         super().append(value)
 
     def resample(self, interval='1s', method='mean', inplace=False):

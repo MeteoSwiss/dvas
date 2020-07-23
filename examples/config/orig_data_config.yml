@@ -1,92 +1,117 @@
-_VAI-RS92:
-    idx_unit: 's'
-    delimiter:
-    delim_whitespace: True
-    header: 1
-    skiprows: 1
 
-    _altpros1:
-        usecols:
-            - 0
-            - 1
+# ----------------------------------------------------
+# YT type
+# ----------------------------------------------------
+_YT:
 
-    _prepros1:
-        usecols:
-            - 0
-            - 2
+    # -- META DATA ----------------------------------
+    dt_field: '{event_dt}Z'
+    sn_field: '{sn}'
+    tag_field:
+        - 'e{event_id}'
+        - 'r{rig}'
+        - '{day_night}'
 
-    _trepros1:
-        usecols:
-            - 0
-            - 3
+    # -- ORIG DATA ----------------------------------
+    index_unit: 's'
+    index_col: 0
 
-
-_VAI-RS41:
-    idx_unit: 's'
-    delimiter: ';'
-    skiprows: 1
-    header: 1
+    csv_delimiter: ','
+    csv_header: 1
+    csv_skipinitialspace: True
 
     _trepros1:
-        usecols:
-            - 0
-            - 4
+        value_col: 1
 
     _altpros1:
-        usecols:
-            - 0
-            - 2
+        value_col: 2
 
-    _prepros1:
-        usecols:
-            - 0
-            - 3
+# ----------------------------------------------------
+# ZT type
+# ----------------------------------------------------
+_ZT:
 
+    # -- META DATA ----------------------------------
+    dt_field: '{event_dt}'
+    sn_field: '{sn}'
+    tag_field:
+        - 'e{event_id}'
+        - 'r{rig}'
+        - '{day_night}'
 
-_METLAB-C34:
-    idx_unit: 's'
-    delimiter: ';'
-    skiprows: 1
-    header: 0
+    # -- ORIG DATA ----------------------------------
+    index_unit: 's'
+    index_col: 0
 
-    _altpros1:
-        usecols:
-            - 0
-            - 1
-
-    _prepros1:
-        usecols:
-            - 0
-            - 4
+    csv_delimiter: ';'
+    csv_header: 1
+    csv_skip_blank_lines: True
 
     _trepros1:
-        usecols:
-            - 0
-            - 5
-
-
-_METLAB-C50:
-    idx_unit: 's'
-    delimiter: ';'
-    skiprows: 0
-    header: 0
+        value_col: 1
 
     _altpros1:
-        usecols:
-            - 0
-            - 3
+        value_col: 2
 
-    _fklpros1:
-        usecols:
-            - 0
-            - 5
 
-    _prepros1:
-        usecols:
-            - 0
-            - 6
+# ----------------------------------------------------
+# AR GDP, version 1
+# ----------------------------------------------------
+_AR-GDP_001:
+
+    # -- META DATA ----------------------------------
+    dt_field: '{event_dt}'
+    sn_field: '{sn}'
+    tag_field:
+        - 'e{event_id}'
+        - 'r{rig}'
+
+    # -- ORIG DATA ----------------------------------
+    index_unit: 's'
+    index_col: 'time'
 
     _trepros1:
-        usecols:
-            - 0
-            - 7
+        value_col: 'temp'
+        lambda: 'lambda x: x - 273.15'
+
+    _treprosu_e:
+        value_col: 'temp_uec'
+
+    _treprosu_s:
+        value_col: 'temp_usc'
+
+    _treprosu_t:
+        value_col: 'temp_utc'
+
+    _altpros1:
+        value_col: 'alt'
+
+
+# ----------------------------------------------------
+# BR GDP, version 1
+# ----------------------------------------------------
+_BR-GDP_001:
+
+    # -- META DATA ----------------------------------
+    dt_field: '{event_dt}Z'
+    sn_field: '{sn}'
+    tag_field:
+        - 'e{event_id}'
+        - 'r{rig}'
+
+    # -- ORIG DATA ----------------------------------
+    index_unit: 's'
+    index_col: 'time'
+
+    _trepros1:
+        value_col: 'temp'
+        lambda: 'lambda x: x - 273.15'
+
+    _treprosu_e:
+        value_col: 'temp_uec'
+
+    _treprosu_t:
+        value_col: 'temp_utc'
+
+    _altpros1:
+        value_col: 'alt'

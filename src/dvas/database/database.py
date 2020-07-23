@@ -20,7 +20,7 @@ from datetime import datetime
 from peewee import chunked, DoesNotExist
 from peewee import IntegrityError
 from playhouse.shortcuts import model_to_dict
-from pandas import DataFrame, to_datetime, Timestamp
+from pandas import DataFrame, Timestamp
 from pampy.helpers import Iterable, Union
 import sre_yield
 
@@ -416,11 +416,9 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     assert len(tag_id_list) == len(event.tag_abbr)
 
                 except AssertionError:
-                    rawcsv.error(
-                        "Many tag_abbr in '%s' are missing in DB",
-                        event.tag_abbr
+                    raise DBInsertError(
+                        f"Many tag_abbr in {event.tag_abbr} are missing in DB",
                     )
-                    raise DBInsertError()
 
                 # Create original data information
                 orig_data_info, _ = OrgiDataInfo.get_or_create(
@@ -466,34 +464,39 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     for batch in chunked(data, n_max):
                         Data.insert_many(batch, fields=fields).execute()  # noqa pylint: disable=E1120
 
-        except DBInsertError:
-            pass
+        except DBInsertError as exc:
+            raise DBInsertError(exc)
 
     @staticmethod
     def _get_eventsinfo_id(where_arg, prm_abbr):
         """Get events info
 
         Search syntax:
-            - Logical and: and, &
-            - Logical or: or, |
-            - Operators: ==, >=, <=, <, >, !=
-            - Event datetime field: #e, #event, #event_dt
-            - Instrument field: #i, #instr, #instr_id
-            - Tag field: #t, #instr, #instr_id
-            - Datetime: %'any valid pandas.datetime'%
+            - Logical and: &
+            - Logical or: |
+            - logical not: ~
+            - Operators: `link <http://docs.peewee-orm.com/en/latest/peewee/query_operators.html>`__
+            - Event datetime field: _dt
+            - Instrument serial number field: _sn
+            - Tag field: _tag
+            - Datetime: %<any ISO 8601 UTC datetime>% (`link <https://fr.wikipedia.org/wiki/ISO_8601>`__)
 
         """
 
-        # Substitute and and or
-        where_arg = re.sub(r'[\s\t]+(and)[\s\t]+', '&', where_arg)
-        where_arg = re.sub(r'[\s\t]+(or)[\s\t]+', '|', where_arg)
+        # Define
+        pat_split = r'\{[^\n\r\t\{\}]+\}'
+        pat_find = r'\{([^\n\r\t\{\}]+)\}'
 
         # Substitute spaces
         where_arg = re.sub(r'[\s\t\n\r]+', '', where_arg)
 
         # Split and find kernel logical conditions
-        where_split = re.split(r"[\#\w\=\>\<\!\'\"\[\]\,\-\:\%]+", where_arg)
-        where_find = re.findall(r"([\#\w\=\>\<\!\'\"\[\]\,\-\:\%]+)", where_arg)
+        where_split = re.split(pat_split, where_arg)
+        where_find = re.findall(pat_find, where_arg)
+
+        print(where_arg)
+        print(where_split)
+        print(where_find)
 
         # Create base request
         qry_base = (
@@ -507,24 +510,27 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         try:
             with DBAccess(db) as _:
 
+                # Set of all event_id
+                all_event_id = set(arg.id for arg in EventsInfo.select())
+
                 # Search for kernel logical condition
                 search_res = []
 
                 for where in where_find:
                     # Replace field in string
                     where = re.sub(
-                        r'\#((e(vent(_dt)?)?)|(dt))', 'EventsInfo.event_dt', where
+                        r'_dt', 'EventsInfo.event_dt', where
                     )
                     where = re.sub(
-                        r'\#((sn)|(instr_sn))', 'Instrument.sn', where
+                        r'_sn', 'Instrument.sn', where
                     )
                     where = re.sub(
-                        r'\#(t(ag(_abbr)?)?)', 'Tag.tag_abbr', where
+                        r'_tag', 'Tag.tag_abbr', where
                     )
 
                     # Replace datetime
                     where = re.sub(
-                        r'\%([\dTZ\:\-]+)\%', r"to_datetime('\1').to_pydatetime()", where
+                        r'\%([\dTZ\:\-]+)\%', r"check_datetime('\1')", where
                     )
 
                     # Create query
@@ -535,7 +541,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                                 'EventsInfo': EventsInfo,
                                 'Instrument': Instrument,
                                 'Tag': Tag,
-                                'to_datetime': to_datetime
+                                'check_datetime': check_datetime
                             }
                         ) &
                         (Parameter.prm_abbr == prm_abbr)
@@ -549,24 +555,38 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     )
 
                 # Eval set logical expression
-                out = list(eval(''.join(
-                    [arg for arg in chain(
-                        *zip_longest(
+                # (Replace ~ by all_event_id.difference)
+                res = re.sub(
+                    r"\~",
+                    'all_event_id.difference',
+                    ''.join(
+                        [arg for arg in chain(
+                            *zip_longest(
 
-                            # Split formula
-                            where_split,
+                                # Split formula
+                                where_split,
 
-                            # Find formula and substitute
-                            search_res
-                        )
-                    ) if arg is not None]
-                )))
+                                # Find formula and substitute
+                                ['(' + arg + ')' for arg in search_res]
+                            )
+                        ) if arg is not None]
+                    )
+                )
+                print(res)
+                res = res.replace('()', '')
+
+                print(res)
+
+                out = list(eval(res, {'all_event_id': all_event_id}))
 
                 # Convert id as table element
                 qry = EventsInfo.select().where(EventsInfo.id.in_(out))
                 out = [arg for arg in qry.iterator()]
 
-        except Exception as _:
+        #TODO Detail exception
+        except Exception as exc:
+            print(exc)
+            #TODO Decide if raise or not
             out = []
 
         return out
@@ -709,19 +729,21 @@ class EventManager:
     event_dt = TProp(Union[str, Timestamp, datetime], check_datetime)
     #: str: Instrument id
     sn = TProp(str, lambda *x: x[0])
-    #: str: Parameter abbd
+    #: str: Parameter abbr
     prm_abbr = TProp(re.compile(rf'^({PARAM_PAT})$'), lambda *x: x[0])
     #: str: Tag abbr
-    tag_abbr = TProp(Iterable[str], lambda x: set(x))
+    tag_abbr = TProp(
+        Union[None, Iterable[str]], lambda x: set(x) if x else set()
+    )
 
-    def __init__(self, event_dt, sn, prm_abbr, tag_abbr):
+    def __init__(self, event_dt, sn, prm_abbr, tag_abbr=None):
         """Constructor
 
         Args:
             event_dt (str | datetime | pd.Timestamp): UTC datetime
             sn (str): Instrument serial number
             prm_abbr (str):
-            tag_abbr (iterable of str): Tag abbr iterable
+            tag_abbr (`optional`, iterable of str): Tag abbr iterable
 
         """
 

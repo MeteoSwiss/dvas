@@ -15,25 +15,635 @@ import re
 from itertools import chain, zip_longest
 from itertools import takewhile
 import inspect
-import netCDF4  as nc
+import netCDF4 as nc
 import pandas as pd
 
 # Import from current package
 from ..dvas_environ import path_var as env_path_var
-from ..database.model import Data, InstrType, Instrument, EventsInfo, Tag
+from ..database.model import Data, InstrType, Instrument, EventsInfo
+from ..database.model import Parameter, OrgiDataInfo
 from ..database.database import db_mngr, EventManager
-from ..config.config import OrigData, OrigMeta, GDPData
+from ..config.config import OrigData, CSVOrigMeta
 from ..config.config import ConfigReadError
+from ..config.definitions.origdata import META_FIELD_KEYS
+from ..config.definitions.origdata import EVENT_DT_FLD_NM, SN_FLD_NM, TAG_FLD_NM
+from ..config.definitions.origdata import INDEX_FLD_NM, PARAM_FLD_NM
+from ..config.definitions.origdata import INDEX_NM, VALUE_NM
 from ..dvas_logger import rawcsv
 from ..dvas_environ import glob_var
-from ..dvas_helper import get_by_path
+from ..config.pattern import INSTR_TYPE_PAT
+from ..config.definitions.tag import TAG_RAW_VAL, TAG_GDP_VAL, TAG_EMPTY_VAL
 
-# Define
-INDEX_NM = Data.index.name
-VALUE_NM = Data.value.name
 
 # Pandas csv_read method arguments
-PD_CSV_READ_ARGS = inspect.getfullargspec(pd.read_csv).args[1:]
+PD_CSV_READ_ARGS = [
+    ('csv_' + arg) for arg in inspect.getfullargspec(pd.read_csv).args[1:]
+]
+
+
+class Handler(ABC):
+    """
+    The Handler interface declares a method for building the chain of handlers.
+    It also declares a method for executing a request.
+
+    Note:
+        `Source <https://refactoring.guru/design-patterns/chain-of-responsibility/python/example>`__
+
+    """
+
+    @abstractmethod
+    def set_next(self, handler):
+        """Method to set next handler
+
+        Args:
+            handler (Handler): Handler class
+
+        Returns:
+            Handler
+        """
+
+    @abstractmethod
+    def handle(self, request, prm_abbr):
+        """Handle method
+
+        Args:
+            request (`object`): Request
+            prm_abbr (str): Parameter abbr
+
+        Returns:
+            Optional: 'object'
+
+        """
+
+
+class AbstractHandler(Handler):
+    """
+    The default chaining behavior can be implemented inside a base handler
+    class.
+
+    .. uml::
+
+        @startuml
+        hide footbox
+
+        class AbstractHandler {
+            set_next(handler)
+            {abstract} handle
+        }
+
+        class FileHandler {
+            {abstract} get_main(*args, **kwargs)
+            {abstract} get_metadata_item(*args, **kwargs)
+        }
+
+        AbstractHandler <--o AbstractHandler
+        AbstractHandler <|-- FileHandler : extends
+        FileHandler <|-- CSVHandler
+        FileHandler <|-- GDPHandler
+
+        @enduml
+
+
+    """
+
+    def __init__(self):
+        self._next_handler = None
+
+    def set_next(self, handler):
+        """
+        Returning a handler from here will let us link handlers in a
+        convenient way like this:
+        handler1.set_next(handler2).set_next(handler3)
+
+        """
+        self._next_handler = handler
+
+        return handler
+
+    @abstractmethod
+    def handle(self, *args):
+        """Super handler behavior"""
+        if self._next_handler:
+            return self._next_handler.handle(*args)
+        else:
+            return
+
+
+class FileHandler(AbstractHandler):
+    """File handler"""
+
+    def __init__(self):
+
+        # Call super constructor
+        super().__init__()
+
+        # Set attributes
+        self._origdata_config_mngr = OrigData()
+
+        # Init origdata config manager
+        self._origdata_config_mngr.read()
+
+    @property
+    def origdata_config_mngr(self):
+        """config.config.OrigData: Yaml original metadata manager"""
+        return self._origdata_config_mngr
+
+    @property
+    @abstractmethod
+    def file_suffix(self):
+        """re.compile : Handled file suffix (re.fullmatch of pathlib.Path.suffix)"""
+
+    @property
+    @abstractmethod
+    def file_instr_type_pat(self):
+        """re.compile : File instr_type pattern
+        (re.search within pathlib.Path.name). Group #1 must correspond to
+        instr_type name."""
+
+    def handle(self, file_path, prm_abbr):
+        """Handle method"""
+        if self.file_suffix.fullmatch(file_path.suffix) is not None:
+            return self.get_main(file_path, prm_abbr)
+        else:
+            return super().handle(file_path, prm_abbr)
+
+    @abstractmethod
+    def get_metadata_item(self, *args, **kwargs):
+        """Method to get metadata item"""
+
+    @abstractmethod
+    def get_main(self, *args, **kwargs):
+        """Main get method called from handle method"""
+
+    def get_instr_type(self, file_path):
+        """Get instrument type from file path
+
+        Args:
+            file_path:
+
+        Returns:
+
+        """
+
+        if (grp := re.search(self.file_instr_type_pat, file_path.name)) is None:
+            # TODO Detail exception
+            raise Exception(
+                f"Bad instr_type syntax in data file '{file_path}'"
+            )
+
+        # Get from group
+        instr_type_name = grp.group(1)
+
+        # Check instr_type name existence in DB
+        if db_mngr.get_or_none(
+                InstrType,
+                search={
+                    'where': InstrType.type_name == instr_type_name
+                },
+                attr=[[InstrType.type_name.name]]
+        ) is None:
+            # TODO Detail exception
+            raise Exception(
+                f"Missing instr_type '{instr_type_name}' in DB while reading " +
+                f"data file '{file_path}'"
+            )
+
+        return instr_type_name
+
+    def check_sn(self, file_path, instr_type_name, metadata):
+        """Check serial number in DB"""
+        # Check instr_type name existence
+        # (need it for loading origdata config)
+        if (
+            instr_type_name_from_sn := db_mngr.get_or_none(
+                Instrument,
+                search={
+                    'join_order': [InstrType],
+                    'where': Instrument.sn == metadata[SN_FLD_NM]
+                },
+                attr=[
+                    [Instrument.instr_type.name, InstrType.type_name.name]
+                ]
+            )
+        ) is None:
+            # TODO Detail exception
+            raise Exception(
+                f"Missing instrument SN '{metadata[SN_FLD_NM]}' in DB while reading " +
+                f"data file '{file_path}'"
+            )
+
+        if instr_type_name != instr_type_name_from_sn[0]:
+            #TODO Detail exception
+            raise Exception(
+                f"Instrument SN '{metadata[SN_FLD_NM]}' does not correspond to instr_type in " +
+                f"('{instr_type_name}' != '{instr_type_name_from_sn}') " +
+                f"for data file '{file_path}'"
+            )
+
+    def exclude_file(self, path_scan, prm_abbr):
+        """Exclude file method"""
+
+        # Search exclude file names
+        exclude_file_name = db_mngr.get_or_none(
+            EventsInfo,
+            search={
+                'where': (
+                    (Parameter.prm_abbr == prm_abbr) &
+                    (Instrument.sn != '')
+                ),
+                'join_order': [Parameter, OrgiDataInfo, Instrument]},
+            attr=[[EventsInfo.orig_data_info.name, OrgiDataInfo.source.name]],
+            get_first=False
+        )
+
+        origdata_path_new = [
+            arg for arg in path_scan
+            if self.apply_file_check_rule(arg) not in exclude_file_name
+        ]
+
+        return origdata_path_new
+
+    def read_metaconfig_fields(self, instr_type_name, prm_abbr):
+        """Read field from metaconfig"""
+
+        # Define
+        pat_split = r'\{[^\n\r\t\{\}]+\}'
+        pat_find = r'\{([^\n\r\t\{\}]+)\}'
+
+        def create_meta_val(field_val_arg):
+            """Create meta value
+
+            Args:
+                field_val_arg:
+
+            Returns:
+
+            """
+            return ''.join(
+                [arg for arg in chain(
+                    *zip_longest(
+
+                        # Split formula
+                        re.split(pat_split, field_val_arg),
+
+                        # Find nested item and substitute
+                        [
+                            self.get_metadata_item(item) for item in
+                            re.findall(pat_find, field_val_arg)
+                        ]
+
+                    )
+                ) if arg is not None]
+            )
+
+        # Create metadata output
+        out = {}
+        for key in META_FIELD_KEYS:
+
+            try:
+                field_val = self.origdata_config_mngr.get_val(
+                    [instr_type_name, prm_abbr], key
+                )
+
+                if isinstance(field_val, str):
+                    meta_val = create_meta_val(field_val)
+
+                else:
+                    meta_val = [
+                        create_meta_val(field_val_arg)
+                        for field_val_arg in field_val
+                    ]
+
+                out.update({key: meta_val})
+
+            #TODO Details exceptions
+            except Exception as exc:
+                raise Exception(f"{exc} / {key}")
+
+        return out
+
+    @staticmethod
+    def apply_file_check_rule(file_path):
+        """
+
+        Args:
+            file_path:
+
+        Returns:
+
+        """
+        return file_path.name
+
+
+class CSVHandler(FileHandler):
+    """CSV Hanlder class"""
+
+    _FILE_SUFFIX = re.compile(r'\.csv', re.IGNORECASE)
+    _FILE_INSTR_TYPE_PAT = re.compile(
+        r"^(" + INSTR_TYPE_PAT + r")\.\w+"
+    )
+
+    def __init__(self):
+
+        # Call super constructor
+        super().__init__()
+
+        # Define attributes
+        self.cfg_file_suffix = [
+            '.' + arg for arg in glob_var.config_file_ext
+        ]
+        self._origmeta_mngr = CSVOrigMeta()
+
+    @property
+    def origmeta_mngr(self):
+        """config.config.CSVOrigMeta: Yaml original CSV file metadata manager"""
+        return self._origmeta_mngr
+
+    @property
+    def file_suffix(self):
+        return self._FILE_SUFFIX
+
+    @property
+    def file_instr_type_pat(self):
+        return self._FILE_INSTR_TYPE_PAT
+
+    def get_metadata_item(self, item):
+        """Implementation of abstract method"""
+        return self.origmeta_mngr[item]
+
+    def get_metadata(self, file_path, instr_type_name, prm_abbr):
+        """Method to get metadata"""
+
+        # Init
+        self.origmeta_mngr.init_document()
+
+        # Define metadata file path
+        try:
+            metadata_file_path = next(
+                arg for arg in file_path.parent.glob(
+                    '*' + file_path.stem + '*.*'
+                ) if arg.suffix in self.cfg_file_suffix
+            )
+        except StopIteration:
+            metadata_file_path = file_path
+
+        # Read metadata
+        with metadata_file_path.open(mode='r') as fid:
+            if metadata_file_path == file_path:
+                meta_raw = ''.join(
+                    [arg[1:] for arg in
+                     takewhile(lambda x: x[0] in ['#', '%'], fid)
+                     ]
+                )
+            else:
+                meta_raw = fid.read()
+
+        # Read YAML config
+        try:
+            self.origmeta_mngr.read(meta_raw)
+            assert self.origmeta_mngr.document is not None
+
+        except ConfigReadError as exc:
+            #TODO raise exception
+            rawcsv.error(
+                "Error in reading file '%s' (%s)",
+                metadata_file_path,
+                exc
+            )
+            return
+
+        except AssertionError:
+            # TODO raise exception
+            rawcsv.error(
+                "No meta data found in file '%s'",
+                metadata_file_path
+            )
+            return
+
+        # Read metadata fields
+        try:
+            out = self.read_metaconfig_fields(instr_type_name, prm_abbr)
+
+        except Exception as exc:
+            raise Exception(exc)
+
+        return out
+
+    def get_main(self, file_path, prm_abbr):
+        """Implementation of abstract method"""
+
+        # Get instr_type
+        instr_type_name = self.get_instr_type(file_path)
+
+        # Get metadata
+        if (
+                metadata := self.get_metadata(
+                    file_path, instr_type_name, prm_abbr
+                )
+        ) is None:
+            return
+
+        # Check instr_type name existence
+        # (need it for loading origdata config)
+        self.check_sn(file_path, instr_type_name, metadata)
+
+        # Create event with 'raw' tag
+        event = EventManager(
+            event_dt=metadata[EVENT_DT_FLD_NM],
+            sn=metadata[SN_FLD_NM],
+            prm_abbr=prm_abbr,
+            tag_abbr=metadata[TAG_FLD_NM] + [TAG_RAW_VAL],
+        )
+
+        # Get config params for (instr_type, prm_abbr) couple
+        origdata_cfg_prm = self.origdata_config_mngr.get_all_default(
+            [instr_type_name, prm_abbr]
+        )
+
+        # Get raw data config param
+        raw_csv_read_args = {
+            key.replace('csv_', ''): val for key, val in origdata_cfg_prm.items()
+            if key in PD_CSV_READ_ARGS}
+
+        # Add usecols
+        try:
+            raw_csv_read_args.update(
+                {
+                    'usecols': [
+                        self.origdata_config_mngr.get_val(
+                            [instr_type_name, prm_abbr], INDEX_FLD_NM
+                        ),
+                        self.origdata_config_mngr.get_val(
+                            [instr_type_name, prm_abbr], PARAM_FLD_NM
+                        ),
+                    ]
+                }
+            )
+
+            # Read raw csv
+            data = pd.read_csv(file_path, **raw_csv_read_args)
+            data = data.applymap(
+                eval(self.origdata_config_mngr.get_val(
+                    [instr_type_name, prm_abbr], 'lambda')
+                )
+            )
+
+            # Log
+            rawcsv.info(
+                "Successful reading of '%s' in CSV file '%s'",
+                prm_abbr, file_path,
+            )
+
+        except KeyError:
+
+            # Create empty data set
+            data = pd.DataFrame({INDEX_NM: [], VALUE_NM: []})
+            data.set_index(INDEX_NM, inplace=True)
+
+            # Add empty tag
+            event.add_tag(TAG_EMPTY_VAL)
+
+            # Log
+            rawcsv.warn(
+                "No data for '%s' in file '%s'",
+                prm_abbr, file_path,
+            )
+
+        except ValueError as exc:
+            raise OrigConfigError(
+                f"Error while reading '{prm_abbr}' in file '{file_path}' " +
+                f"({type(exc).__name__}: {exc})"
+            )
+
+        # Append data
+        out = {
+            'event': event,
+            'data': data,
+            'source_info': self.apply_file_check_rule(file_path)
+        }
+
+        return out
+
+
+class GDPHandler(FileHandler):
+    """GDP Handler class"""
+
+    _FILE_SUFFIX = re.compile(r'\.nc', re.IGNORECASE)
+    _FILE_INSTR_TYPE_PAT = re.compile(
+        r"^[A-Z]{3}\-[A-Z]{2}\-\d{2}\_\d\_([\w\-]+\_\d{3})\_\d{8}T"
+    )
+
+    def __init__(self):
+
+        # Call super constructor
+        super().__init__()
+
+        # Set file id attribute
+        self._fid = None
+
+    @property
+    def file_suffix(self):
+        return self._FILE_SUFFIX
+
+    @property
+    def file_instr_type_pat(self):
+        return self._FILE_INSTR_TYPE_PAT
+
+    def get_metadata_item(self, item):
+        """Implementation of abstract method"""
+        return self._fid.getncattr(item)
+
+    def get_metadata(self, file_path, instr_type_name, prm_abbr):
+        """Method to get file metadata"""
+
+        with nc.Dataset(file_path, 'r') as self._fid:
+            # Read metadata fields
+            try:
+                out = self.read_metaconfig_fields(instr_type_name, prm_abbr)
+
+            #TODO Detail exception
+            except Exception as exc:
+                raise Exception(f"{exc} / {instr_type_name} / {prm_abbr}")
+
+        return out
+
+    def get_main(self, file_path, prm_abbr):
+        """Implementation of abstract method"""
+
+        # Get instr_type
+        instr_type_name = self.get_instr_type(file_path)
+
+        # Get metadata
+        metadata = self.get_metadata(
+            file_path, instr_type_name, prm_abbr
+        )
+
+        # Check instr_type name existence
+        # (need it for loading origdata config)
+        self.check_sn(file_path, instr_type_name, metadata)
+
+        # Create event with 'raw' and 'gdp' tag
+        event = EventManager(
+            event_dt=metadata[EVENT_DT_FLD_NM],
+            sn=metadata[SN_FLD_NM],
+            prm_abbr=prm_abbr,
+            tag_abbr=metadata[TAG_FLD_NM] + [TAG_RAW_VAL, TAG_GDP_VAL],
+        )
+
+        try:
+
+            # Read data
+            with nc.Dataset(file_path, 'r') as self._fid:
+                index_col_nn = self.origdata_config_mngr.get_val(
+                    [instr_type_name, prm_abbr], INDEX_FLD_NM
+                )
+                data_col_nm = self.origdata_config_mngr.get_val(
+                    [instr_type_name, prm_abbr], PARAM_FLD_NM
+                )
+
+                data = pd.DataFrame(
+                    {
+                        INDEX_NM: self._fid[index_col_nn][:],
+                        VALUE_NM: self._fid[data_col_nm][:],
+                    }
+                )
+                data.set_index(INDEX_NM, inplace=True)
+                data = data.applymap(
+                    eval(self.origdata_config_mngr.get_val(
+                        [instr_type_name, prm_abbr], 'lambda')
+                    )
+                )
+
+        except KeyError:
+
+            # Create empty data set
+            data = pd.DataFrame({INDEX_NM: [], VALUE_NM: []})
+            data.set_index(INDEX_NM, inplace=True)
+
+            # Add empty tag
+            event.add_tag(TAG_EMPTY_VAL)
+
+            # Log
+            rawcsv.warn(
+                "No data for '%s' in file '%s'",
+                prm_abbr, file_path,
+            )
+
+        #TODO Detail exception
+        except Exception as exc:
+            raise OrigConfigError(
+                f"Error while reading '{prm_abbr}' in file '{file_path}' " +
+                f"({type(exc).__name__}: {exc})"
+            )
+
+        # Append data
+        out = {
+            'event': event,
+            'data': data,
+            'source_info': self.apply_file_check_rule(file_path)
+        }
+
+        return out
 
 
 class DataLinker(ABC):
@@ -121,341 +731,13 @@ class CSVOutputLinker(DataLinker):
         data.to_csv(env_path_var.output_path / 'data.csv', header=False, index=True)
 
 
-class OriginalCSVLinker(DataLinker):
-    """Original data CSV linger"""
-
-    def __init__(self):
-        """Constructor"""
-        # Set attributes
-        self._origdata_config_mngr = OrigData()
-
-        # Init origdata config manager
-        self._origdata_config_mngr.read()
-
-    def load(self, prm_abbr, exclude_file_name=None):
-        """Load method
-
-        Args:
-            prm_abbr (str): Parameter abbr
-            exclude_file_name (list of str): Already load data file name to be
-                excluded.
-
-        Returns:
-            list of dict
-
-        """
-
-        # Init
-        out = []
-        if exclude_file_name is None:
-            exclude_file_name = []
-
-        # Define
-        cfg_file_suffix = ['.' + arg for arg in glob_var.config_file_ext]
-        origmeta_cfg_mngr = OrigMeta()
-
-        # Scan recursively CSV files in directory
-        origdata_file_path_list = [
-            arg for arg in env_path_var.orig_data_path.rglob("*.csv")
-            if arg.name not in exclude_file_name
-        ]
-
-        # Loop over data files
-        for origdata_file_path in origdata_file_path_list:
-
-            # Define metadata path
-            try:
-                metadata_file_path = next(
-                    arg for arg in origdata_file_path.parent.glob(
-                        '*' + origdata_file_path.stem + '*.*'
-                    ) if arg.suffix in cfg_file_suffix
-                )
-            except StopIteration:
-                metadata_file_path = origdata_file_path
-
-            # Read metadata
-            with metadata_file_path.open(mode='r') as fid:
-                if metadata_file_path.suffix == '.csv':
-                    meta_raw = ''.join(
-                        [arg[1:] for arg in
-                         takewhile(lambda x: x[0] in ['#', '%'], fid)
-                         ]
-                    )
-                else:
-                    meta_raw = fid.read()
-
-            # Read YAML config
-            try:
-                origmeta_cfg_mngr.read(meta_raw)
-                assert origmeta_cfg_mngr.document
-
-            except ConfigReadError as exc:
-                rawcsv.error(
-                    "Error in reading file '%s' (%s)",
-                    metadata_file_path,
-                    exc
-                )
-                continue
-
-            except AssertionError:
-                rawcsv.error(
-                    "No meta data found in file '%s'",
-                    metadata_file_path
-                )
-                continue
-
-            # Check instr_type name existence
-            # (need it for loading origdata config)
-            instr_type_name = db_mngr.get_or_none(
-                Instrument,
-                search={
-                    'join_order': [InstrType],
-                    'where': Instrument.sn == origmeta_cfg_mngr['sn']
-                },
-                attr=[[Instrument.instr_type.name, InstrType.type_name.name]]
-            )
-
-            if not instr_type_name:
-                rawcsv.error(
-                    "Missing instrument SN '%s' in DB while reading " +
-                    "meta data in file '%s'",
-                    origmeta_cfg_mngr['sn'],
-                    metadata_file_path
-                )
-                continue
-
-            # Create event
-            event = EventManager(
-                event_dt=origmeta_cfg_mngr['event_dt'],
-                sn=origmeta_cfg_mngr['sn'],
-                prm_abbr=prm_abbr,
-                tag_abbr=origmeta_cfg_mngr['tag_abbr'],
-            )
-
-            # Get origdata config params
-            instr_type_name = instr_type_name[0]
-            origdata_cfg_prm = self._origdata_config_mngr.get_all(
-                [instr_type_name, prm_abbr]
-            )
-
-            # Get raw data config param
-            raw_csv_read_args = {
-                key: val for key, val in origdata_cfg_prm.items()
-                if key in PD_CSV_READ_ARGS}
-
-            # Read raw csv
-            try:
-                data = pd.read_csv(origdata_file_path, **raw_csv_read_args)
-                data = data.applymap(eval(origdata_cfg_prm['lambda']))
-
-            except ValueError as exc:
-                rawcsv.error(
-                    "Error while reading '%s' in CSV file '%s' (%s: %s)",
-                    prm_abbr, origdata_file_path,
-                    type(exc).__name__, exc
-                )
-
-            else:
-
-                # Log
-                rawcsv.info(
-                    "Successful reading of '%s' in CSV file '%s'",
-                    prm_abbr, origdata_file_path,
-                )
-
-                # Append data
-                out.append(
-                    {
-                        'event': event,
-                        'data': data,
-                        'source_info': origdata_file_path.name
-                    }
-                )
-
-        return out
-
-    def save(self, *args, **kwargs):
-        """Implement save method"""
-        errmsg = (
-            f"Save method for {self.__class__.__name__} should " +
-            " not be implemented."
-        )
-        raise NotImplementedError(errmsg)
-
-
-class GDPDataLinker(DataLinker):
-    """Gruan Data Product linker"""
-
-    def __init__(self):
-        # Set attributes
-        self._gdpdata_config_mngr = GDPData()
-
-        # Init origdata config manager
-        self._gdpdata_config_mngr.read()
-
-    def load(self, prm_abbr, exclude_file_name):
-        """Load method
-
-        Args:
-            prm_abbr (str): Parameter abbr
-            exclude_file_name (list of str): Already load data file name to be
-                excluded.
-
-        Returns:
-            list of dict
-
-        """
-
-        # Define
-        sep = glob_var.config_gen_grp_sep
-        pat_spilt = r'\{0}[^\n\r\t\{0}]+\{0}'.format(sep)
-        pat_find = r'\{0}([^\n\r\t{0}]+)\{0}'.format(sep)
-
-        # Init
-        out = []
-        if exclude_file_name is None:
-            exclude_file_name = []
-
-        # Scan recursively CSV files in directory
-        origdata_file_path_list = [
-            arg for arg in env_path_var.orig_data_path.rglob("*.nc")
-            if arg.name not in exclude_file_name
-        ]
-
-        # Loop over data files
-        for origdata_file_path in origdata_file_path_list:
-
-            # Init
-            meta_data = {}
-
-            # Get instrument type from file name
-            if (grp := re.search(
-                    r"^[A-Z]{3}\-[A-Z]{2}\-\d{2}\_\d\_([\w\-]+\_\d{3})\_\d{8}T",
-                    origdata_file_path.name
-            )) is None:
-                pass
-                #TODO add log
-
-            instr_type_name = grp.group(1)
-
-            #TODO check if instrumnet exist in DB
-
-            # Get config
-            gdpdata_cfg_prm = self._gdpdata_config_mngr.get_all(
-                [instr_type_name, prm_abbr]
-            )
-
-            #try:
-            with nc.Dataset(origdata_file_path, 'r') as fid:
-
-                meta_dict = {
-                    EventsInfo.event_dt.name: 'dt_field',
-                    Instrument.sn.name: 'sn_field',
-                    Tag.tag_abbr.name: 'tag_field',
-                }
-
-                for key, value in meta_dict.items():
-
-                    field_val = gdpdata_cfg_prm[value]
-
-                    if isinstance(field_val, str):
-
-                        meta_val = ''.join(
-                            [arg for arg in chain(
-                                *zip_longest(
-
-                                    # Split formula
-                                    re.split(pat_spilt, field_val),
-
-                                    # Find nested item and substitute
-                                    [
-                                        get_by_path(fid, [item]) for item in
-                                        re.findall(pat_find, field_val)
-                                    ]
-
-                                )
-                            ) if arg is not None]
-                        )
-
-                    else:
-                        meta_val = [
-                            ''.join(
-                                [arg for arg in chain(
-                                    *zip_longest(
-
-                                        # Split formula
-                                        re.split(pat_spilt, field_val[i]),
-
-                                        # Find nested item and substitute
-                                        [
-                                            get_by_path(fid, [item]) for item in
-                                            re.findall(pat_find, field_val[i])
-                                        ]
-
-                                    )
-                                ) if arg is not None]
-                            ) for i in range(len(field_val))
-                        ]
-
-                    meta_data.update({key: meta_val})
-
-                #TODO check SN -> Instr Type in DB == instr type file
-
-                # Create event
-                event = EventManager(
-                    event_dt=meta_data['event_dt'],
-                    sn=meta_data['sn'],
-                    prm_abbr=prm_abbr,
-                    tag_abbr=meta_data['tag_abbr'],
-                )
-
-                # Read data
-                data_dict = {
-                    Data.index.name: 'time_field',
-                    Data.value.name: 'param_field',
-                }
-
-                try:
-                    data = pd.DataFrame(
-                        {
-                            Data.index.name: fid[gdpdata_cfg_prm[data_dict[Data.index.name]]][:],
-                            Data.value.name: fid[gdpdata_cfg_prm[data_dict[Data.value.name]]][:],
-                        }
-                    )
-                    data.set_index(Data.index.name, inplace=True)
-                    data = data.applymap(eval(gdpdata_cfg_prm['lambda']))
-
-                #TODO manage exception
-                except Exception as exc:
-                    raise Exception(exc)
-
-                else:
-
-                    # TODO Add log
-
-                    # Append data
-                    out.append(
-                        {
-                            'event': event,
-                            'data': data,
-                            'source_info': origdata_file_path.name
-                        }
-                    )
-
-        return out
-
-    def save(self, *args, **kwargs):
-        """Implement save method"""
-        errmsg = (
-            f"Save method for {self.__class__.__name__} should" +
-            " not be implemented."
-        )
-        raise NotImplementedError(errmsg)
-
-
 class ConfigInstrIdError(Exception):
     """Error for missing instrument id"""
 
 
 class OutputDirError(Exception):
     """Error for bad output directory path"""
+
+
+class OrigConfigError(Exception):
+    """Error for bad orig config"""

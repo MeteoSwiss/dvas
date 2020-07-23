@@ -5,12 +5,9 @@
   # Use standard re.sub group syntax to refer group number from regexp
   # generator.
 
-- tag_abbr: 'e((10429[56])|(120228))'
-  tag_desc: 'Event $\1$'
-
-- tag_abbr: 'b([12])'
-  # Generate b1, b2
-  tag_desc: 'Batch $\1$'
+- tag_abbr: 'r([12])'
+  # Generate r1, r2
+  tag_desc: 'Rig $\1$'
 
 - tag_abbr: '^((day)|(night))'
   # Generate day, night

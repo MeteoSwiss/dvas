@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [modolol, 2020-05-25] Add logging possibilities
 
 ### Added:
+ - [modolol, 2020-07-16] Add dummy examples
  - [modolol, 2020-07-03] .dev_utils directory in package
  - [fpavogt, 2020-06-30] Add docs CI & a basic netCDF4 test
  - [modolol, 2020-06-12] Add tags table in DB and config items generator
@@ -20,6 +21,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [fpavogt, 2020-05-07] Sphinx documentation with primary pages and todo list
 
 ### Changed:
+ - [modolol, 2020-07-16] load data search syntax
+ - [modolol, 2020-07-14] Use design pattern chain of responsibility for update_db
  - [fpavogt, 2020-07-02] Set GPL v3.0 license
  - [modolol, 2020-06-23] Remove instr_id. Use SN instead (adaptation for GPD integration)
  - [modolol, 2020-06-22] Licence and copyright files headers

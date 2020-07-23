@@ -21,10 +21,10 @@ from ruamel.yaml.error import YAMLError
 from pampy.helpers import Union
 
 # Import current package modules
-from .definitions import origdata, origmeta
+from .definitions import origdata, csvorigmeta
 from .definitions import instrtype, instrument
 from .definitions import parameter, flag
-from .definitions import tag, gdpdata
+from .definitions import tag
 from ..dvas_environ import path_var as env_path_var
 from ..dvas_environ import glob_var as env_glob_var
 from ..dvas_helper import get_by_path
@@ -100,6 +100,18 @@ class ConfigManager(ABC, metaclass=RequiredAttrMetaClass):
         else:
             self.document = []
 
+    def append(self, value):
+        """Append value to document attribute
+
+        Args:
+            value (dict or list): Value to append
+
+        """
+        if self.DOC_TYPE is dict:
+            self.document.update(value)
+        else:
+            self.document += value
+
 
 class OneLayerConfigManager(ConfigManager):
     """Abstract class for managing 'one-layer' YAML config.
@@ -152,18 +164,6 @@ class OneLayerConfigManager(ConfigManager):
             "patternProperties": self.PARAMETER_PATTERN_PROP,
             "additionalProperties": False
         }
-
-    def append(self, value):
-        """Append value to document attribute
-
-        Args:
-            value (dict or list): Value to append
-
-        """
-        if self.DOC_TYPE is dict:
-            self.document.update(value)
-        else:
-            self.document += value
 
     def read(self, doc_in=None):
         """Read config
@@ -276,15 +276,15 @@ class OneLayerConfigManager(ConfigManager):
         return document
 
 
-class OrigMeta(OneLayerConfigManager):
-    """Original metadata config manager"""
+class CSVOrigMeta(OneLayerConfigManager):
+    """CSV original metadata config manager"""
 
-    PARAMETER_PATTERN_PROP = origmeta.PARAMETER_PATTERN_PROP
+    PARAMETER_PATTERN_PROP = csvorigmeta.PARAMETER_PATTERN_PROP
     NODE_PARAMS_DEF = {}
-    CLASS_KEY = origmeta.KEY
+    CLASS_KEY = csvorigmeta.KEY
 
     #: dict: Config document
-    document = TypedProperty(Union[dict, list])
+    document = TypedProperty(OneLayerConfigManager.DOC_TYPE)
 
 
 class OneDimArrayConfigManager(OneLayerConfigManager):
@@ -373,7 +373,7 @@ class InstrType(OneDimArrayConfigManager):
     NODE_GEN = instrtype.NODE_GEN
 
     #: dict: Config document
-    document = TypedProperty(Union[dict, list])
+    document = TypedProperty(OneDimArrayConfigManager.DOC_TYPE)
 
 
 class Instrument(OneDimArrayConfigManager):
@@ -386,7 +386,7 @@ class Instrument(OneDimArrayConfigManager):
     NODE_GEN = instrument.NODE_GEN
 
     #: dict: Config document
-    document = TypedProperty(Union[dict, list])
+    document = TypedProperty(OneDimArrayConfigManager.DOC_TYPE)
 
 
 class Parameter(OneDimArrayConfigManager):
@@ -399,7 +399,7 @@ class Parameter(OneDimArrayConfigManager):
     NODE_GEN = parameter.NODE_GEN
 
     #: dict: Config document
-    document = TypedProperty(Union[dict, list])
+    document = TypedProperty(OneDimArrayConfigManager.DOC_TYPE)
 
 
 class Flag(OneDimArrayConfigManager):
@@ -412,7 +412,7 @@ class Flag(OneDimArrayConfigManager):
     NODE_GEN = flag.NODE_GEN
 
     #: dict: Config document
-    document = TypedProperty(Union[dict, list])
+    document = TypedProperty(OneDimArrayConfigManager.DOC_TYPE)
 
 
 class Tag(OneDimArrayConfigManager):
@@ -425,7 +425,7 @@ class Tag(OneDimArrayConfigManager):
     NODE_GEN = tag.NODE_GEN
 
     #: dict: Config document
-    document = TypedProperty(Union[dict, list])
+    document = TypedProperty(OneDimArrayConfigManager.DOC_TYPE)
 
 
 class MultiLayerConfigManager(OneLayerConfigManager):
@@ -433,7 +433,10 @@ class MultiLayerConfigManager(OneLayerConfigManager):
 
     REQUIRED_ATTRIBUTES = dict(
         **OneLayerConfigManager.REQUIRED_ATTRIBUTES,
-        **{'NODE_PATTERN': list},
+        **{
+            'NODE_PATTERN': list,
+            'CONST_NODES': dict,
+        },
     )
 
     # Define required attributes
@@ -441,6 +444,9 @@ class MultiLayerConfigManager(OneLayerConfigManager):
 
     #: list: Node pattern (order matter)
     NODE_PATTERN = None
+
+    #: dict: Constant node value
+    CONST_NODES = None
 
     def __getitem__(self, item):
         """Overwrite __getitem method.
@@ -482,32 +488,46 @@ class MultiLayerConfigManager(OneLayerConfigManager):
 
         return out
 
-    def get_all(self, node_keys):
-        """
+    def get_val(self, node_keys, key_param):
+        """Return single node_keys value
 
         Args:
-            node_keys (list of str):
+            node_keys (list of str): Node keys
+            key_param (str): Key parameter
 
-        Returns:
+        Returns
+            `object`
+
+        Raises:
+
 
         """
 
-        # Check node_keys
-        node_keys_match = [
-            next(iter(
-                i for i, pattern in enumerate(self.NODE_PATTERN)
-                if re.fullmatch(pattern, arg)
-            ))
-            for arg in node_keys
-        ]
-        assert list(range(len(node_keys))) == node_keys_match, (
-            "Bad node_keys pattern or sequence"
-        )
+        try:
+            out = self[
+                [NODE_ESCAPE_CHAR + arg for arg in node_keys] + [key_param]
+            ]
+        except ConfigItemKeyError as _:
+            raise KeyError(
+                f"Bad key '{node_keys + [key_param]}' " +
+                f"for {self.__class__.__name__}"
+            )
+
+        return out
+
+    def get_all_default(self, node_keys):
+        """Return all default values
+
+        Args:
+            node_keys (list of str): Node keys
+
+        Returns:
+            dict
+
+        """
 
         out = {
-            key: self[
-                [NODE_ESCAPE_CHAR + arg for arg in node_keys] + [key]
-            ]
+            key: self.get_val(node_keys, key)
             for key in self.NODE_PARAMS_DEF.keys()
         }
 
@@ -543,6 +563,15 @@ class MultiLayerConfigManager(OneLayerConfigManager):
                 {"$ref": "#/nodeItem"}
             ]
         }
+
+    def read(self, doc_in=None):
+        """Overwrite read method"""
+
+        # Call super method
+        super().read(doc_in=doc_in)
+
+        # Append constant node
+        self.document.update(self.CONST_NODES)
 
     def _get_document(self, doc_in=None):
         """Get YAML document as python dict
@@ -614,21 +643,10 @@ class OrigData(MultiLayerConfigManager):
     NODE_PARAMS_DEF = origdata.NODE_PARAMS_DEF
     CLASS_KEY = origdata.KEY
     NODE_PATTERN = origdata.NODE_PATTERN
+    CONST_NODES = origdata.CONST_NODES
 
     #: dict: Config document
-    document = TypedProperty(Union[dict, list])
-
-
-class GDPData(MultiLayerConfigManager):
-    """GDP Data config manager"""
-
-    PARAMETER_PATTERN_PROP = gdpdata.PARAMETER_PATTERN_PROP
-    NODE_PARAMS_DEF = gdpdata.NODE_PARAMS_DEF
-    CLASS_KEY = gdpdata.KEY
-    NODE_PATTERN = gdpdata.NODE_PATTERN
-
-    #: dict: Config document
-    document = TypedProperty(Union[dict, list])
+    document = TypedProperty(MultiLayerConfigManager.DOC_TYPE)
 
 
 class ConfigReadError(Exception):

@@ -407,14 +407,12 @@ def check_path(value, exist_ok=False):
     # Test existence
     if exist_ok is True:
         try:
-            assert (out := Path(value)).exists() is True, (
-                f"Path '{value}' does not exist"
-            )
-        except AssertionError as ass:
-            raise TypeError(ass)
+            out = Path(value).resolve(strict=True)
+        except FileNotFoundError:
+            raise TypeError(f"Path '{value}' does not exist")
     else:
         try:
-            out = Path(value)
+            out = Path(value).resolve(strict=False)
         except (TypeError, OSError):
             raise TypeError(f"Bad path name for '{value}'")
 
