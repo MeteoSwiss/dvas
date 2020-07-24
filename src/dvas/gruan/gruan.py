@@ -15,10 +15,11 @@ import warnings
 import numpy as np
 
 def corcoef_gdps(i, j, uc_type,
-                 sn_i=None, sn_j=None,
+                 srn_i=None, srn_j=None,
+                 mod_i=None, mod_j=None,
                  rig_i=None, rig_j=None,
-                 event_i=None, event_j=None,
-                 site_i=None, site_j=None):
+                 evt_i=None, evt_j=None,
+                 sit_i=None, sit_j=None):
     ''' Computes the correlation coefficient(s), for the specific uncertainty types of GRUAN Data
     Products (GDPs), between specific measurements.
 
@@ -36,32 +37,37 @@ def corcoef_gdps(i, j, uc_type,
         j (numpy.ndarray of int or float): time step or altitude of measurement 2.
         uc_type (str): uncertainty type. Must be one of
                        ['sigma_u', 'sigma_e', 'sigma_s', 'sigma_t'].
-        sn_i (numpy.ndarray of int or str, optional): serial number of RS from measurement 1.
-        sn_j (numpy.ndarray of int or str, optional): seriel number of RS from measurement 2.
+        srn_i (numpy.ndarray of int or str, optional): serial number of RS from measurement 1.
+        srn_j (numpy.ndarray of int or str, optional): seriel number of RS from measurement 2.
+        mod_i (numpy.ndarray of int or str, optional): GDP model from measurement 1.
+        mod_j (numpy.ndarray of int or str, optional): GDP model from measurement 2.
         rig_i (numpy.ndarray of int or str, optional): rig id of measurement 1.
         rig_j (numpy.ndarray of int or str, optional): rig id of measurement 2.
-        event_i (numpy.ndarray of int or str, optional): event id of measurement 1.
-        event_j (numpy.ndarray of int or str, optional): event id of measurement 2.
-        site_i (numpy.ndarray of int or str, optional): site id of measurement 1.
-        site_j (numpy.ndarray of int or str, optional): site id of measurement 2.
+        evt_i (numpy.ndarray of int or str, optional): event id of measurement 1.
+        evt_j (numpy.ndarray of int or str, optional): event id of measurement 2.
+        sit_i (numpy.ndarray of int or str, optional): site id of measurement 1.
+        sit_j (numpy.ndarray of int or str, optional): site id of measurement 2.
 
     Returns:
-        numpy.ndarray of float: the correlation coefficient(s).
+        numpy.ndarray of float(s): the correlation coefficient(s), in the range [0, 1].
 
     Note:
         This function returns the pair-wise correlation coefficients, and
-        **not** the full correlation matrix (i.e. `len(corcoef_gdp(i, j, uc_type)) == len(i)`).
+        **not** the full correlation matrix, i.e::
+        
+            len(corcoef_gdps(i, j, uc_type)) == len(i) == len(j)
 
     Todo:
-        - Add the RS model as a parameter ? <- confirm the correlations between different GDPs.
         - Consider refactoring the input using `collections.namedtuple` ?
         - Add reference to GRUAN docs in this docstring.
         - Add additional tests for sigma_e
+        - Confirm environmental correlations
+        - Confirm model-dependent correlations
 
     '''
 
     # Begin with some safety checks
-    for var in [i, j, sn_i, sn_j, rig_i, rig_j, event_i, event_j, site_i, site_j]:
+    for var in [i, j, srn_i, srn_j, mod_i, mod_j, rig_i, rig_j, evt_i, evt_j, sit_i, sit_j]:
         if var is None:
             continue
         if not isinstance(var, np.ndarray):
@@ -73,10 +79,10 @@ def corcoef_gdps(i, j, uc_type,
     corcoef = np.zeros(np.shape(i))
 
     # All variables always correlate fully with themselves
-    corcoef[(i == j) * (sn_i == sn_j) *
-            (rig_i == rig_j) * (event_i == event_j) * (site_i == site_j)] = 1.0
+    corcoef[(i == j) * (srn_i == srn_j) * (mod_i == mod_j) *
+            (rig_i == rig_j) * (evt_i == evt_j) * (sit_i == sit_j)] = 1.0
 
-    # Now work in the required level of correlation depending on the case.
+    # Now work in the required level of correlation depending on the uncertainty type.
     if uc_type == 'sigma_u':
         # Nothing to add in case of uncorrelated uncertainties.
         pass
@@ -89,13 +95,13 @@ def corcoef_gdps(i, j, uc_type,
         # 1) Full spatial-correlation between measurements acquired in the same event and at the
         # same site.
         # TODO: confirm this is correct: incl. for different RS models ?
-        corcoef[(event_i == event_j) * (site_i == site_j)] = 1.0
+        corcoef[(evt_i == evt_j) * (sit_i == sit_j)] = 1.0
 
     elif uc_type == 'sigma_t':
         # 1) Full temporal-correlation between measurements acquired in the same event and at the
         # same site.
         # TODO: confirm this is correct: incl. for different RS models ?
-        corcoef[(event_i == event_j) * (site_i == site_j)] = 1.0
+        corcoef[(evt_i == evt_j) * (sit_i == sit_j)] = 1.0
 
         # 2) Full temporal correlation between measurements acquired in distinct events and sites.
         # TODO: confirm this is correct: incl. for different RS models ?
@@ -106,11 +112,10 @@ def corcoef_gdps(i, j, uc_type,
 
     return corcoef
 
-
 def merge_andor_rebin_gdps(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
-                           sns=None, rigs=None, evts=None, sites=None,
+                           srns=None, mods=None, rigs=None, evts=None, sits=None,
                            binning=1, method='weighted mean'):
-    ''' Combines and (possibly) rebin profiles with full error propagation.
+    ''' Combines and (possibly) rebin GDP profiles, with full error propagation.
 
     Args:
         profiles (list of ndarray): list of profiles to combine. All must have the same length!
@@ -118,24 +123,28 @@ def merge_andor_rebin_gdps(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
         sigma_es (list of ndarray): list of associated environmental-correlated errors.
         sigma_ss (list of ndarray): list of associated spatial-correlated errors.
         sigma_ts (list of ndarray): list of associated temporal-correlated errors.
-        sns (list of numpy.ndarray of int or str, optional): list of RS Serial Numbers.
+        srns (list of numpy.ndarray of int or str, optional): list of RS Serial Numbers.
+        mods (list of numpy.ndarray of int or str, optional): list of GDP models.
         rigs (list of numpy.ndarray of int or str, optional): list of associated rigs.
-        events (list of numpy.ndarray of int or str, optional): list of associated events.
-        sites (list of numpy.ndarray of int or str, optional): list of associated sites.
+        evts (list of numpy.ndarray of int or str, optional): list of associated events.
+        sits (list of numpy.ndarray of int or str, optional): list of associated sites.
         binning (int, optional): the number of profile steps to put in a bin. Defaults to 1.
         method (str, optional): combination rule. Can be 'weighted mean', or 'delta'.
             Defaults to 'weighted mean'.
 
     Returns:
-        (ndarray, ndarray, ndarray, ndarray, ndarray, ndarray, ndarray): the merged profile, 
-           merged sigma_u, merged sigma_e, merged_sigma_s, merged sigma_t, 
+        (ndarray, ndarray, ndarray, ndarray, ndarray, list of list, ndarray): the merged profile,
+           merged sigma_u, merged sigma_e, merged_sigma_s, merged sigma_t,
            merged indices, new indices.
+
+    Todo:
+        * Feed 2 TimeProfileManager rather than all these ndarrays ...
 
     '''
 
     # Some safety checks first of all
-    for (ind, item) in enumerate([profiles, sigma_us, sigma_es, sigma_ss, sigma_ts, 
-                                  sns, rigs, evts, sites]):
+    for (ind, item) in enumerate([profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
+                                  srns, mods, rigs, evts, sits]):
         if ind > 4 and item is None:
             # Only allow the optional components to be None.
             continue
@@ -215,7 +224,8 @@ def merge_andor_rebin_gdps(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
     # Which layer indexes from the original profiles are included in each step ?
     # Watch out for the different syntax between np.split and np.add.reduceat when specifying the
     # slices !
-    old_inds = np.split(range(n_steps), range(binning, n_steps, binning))
+    # Also, turn it into a list of list
+    old_inds = [list(item) for item in np.split(range(n_steps), range(binning, n_steps, binning))]
 
     # I will also compute the pseudo index of the new binned levels
     # Note: I take it as the simple mean of all the levels involved ... EVEN if this is a weighted
@@ -241,12 +251,16 @@ def merge_andor_rebin_gdps(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
     sigma_ts_new = np.zeros_like(x_ms)
 
     # For each layer k, we will arrange all the measurement points in a row, so we can use matrix
-    # multiplication with the @ operator. To keep track of things, let's create the 1-D array that 
+    # multiplication with the @ operator. To keep track of things, let's create the 1-D array that
     # identifies the profiles' serial numbers, rigs, events and sites.
     # First, the SN (identical for all measurement points within a profile)
-    if sns is None:
-        sns = [None] * n_profiles
-    sns_inds = np.array([[sns[p_ind]] * n_steps for p_ind in range(n_profiles)]).ravel()
+    if srns is None:
+        srns = [None] * n_profiles
+    srns_inds = np.array([[srns[p_ind]] * n_steps for p_ind in range(n_profiles)]).ravel()
+    # idem for the GDP models
+    if mods is None:
+        mods = [None] * n_profiles
+    mods_inds = np.array([[mods[p_ind]] * n_steps for p_ind in range(n_profiles)]).ravel()
     # idem for the rigs
     if rigs is None:
         rigs = [None] * n_profiles
@@ -256,18 +270,18 @@ def merge_andor_rebin_gdps(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
         evts = [None] * n_profiles
     evts_inds = np.array([[evts[p_ind]] * n_steps for p_ind in range(n_profiles)]).ravel()
     # idem for the sites
-    if sites is None:
-        sites = [None] * n_profiles
-    sites_inds = np.array([[sites[p_ind]] * n_steps for p_ind in range(n_profiles)]).ravel()
+    if sits is None:
+        sits = [None] * n_profiles
+    sits_inds = np.array([[sits[p_ind]] * n_steps for p_ind in range(n_profiles)]).ravel()
 
     # Let's also keep track of the original indices of the data
     i_inds = np.array(n_profiles * list(range(n_steps))).ravel()
 
-    # Next, I follow Barlow p.60. Only I do it per layer k, and I only keep the profile points
-    # that are included in the construction of the layer. This keeps the matrices small by
+    # Next, I follow Barlow p.60. Only I do it per bin k, and I only keep the profile points
+    # that are included in the construction of the specific bin. This keeps the matrices small by
     # avoiding a lot of 0's.
     # Let's now start looping through all the layers
-    for k_ind in range(n_steps_new): # loop through all the new layers
+    for k_ind in range(n_steps_new): # loop through all the new bins
 
         # First, what are the limiting level indices of this layer ?
         j_min = np.min(old_inds[k_ind])
@@ -275,15 +289,20 @@ def merge_andor_rebin_gdps(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
 
         # What are the indices of the in-layer points ?
         in_layer = (i_inds >= j_min) * (i_inds < j_max)
+        # How many points are included in this layer
+        n_in_layer = len(in_layer[in_layer])
+        # How thick is the layer actually ?
+        n_layer = n_in_layer // n_profiles # This is an integer
 
-        if len(in_layer[in_layer]) != binning * n_profiles:
+        # Quick sanity check for all but the last bin, that I have the correct number of points.
+        if n_in_layer != binning * n_profiles and k_ind < n_steps_new - 1:
             raise Exception('Ouch! This error is impossible.')
 
         # First, build the G matrix
         if method == 'weighted mean':
             G_mat = w_ps.ravel()[in_layer]/w_ms[k_ind]
         elif method == 'delta':
-            G_mat = np.append(1/binning * np.ones(binning), -1/binning * np.ones(binning))
+            G_mat = np.append(1/n_layer * np.ones(n_layer), -1/n_layer * np.ones(n_layer))
 
         # Very well, the covariance matrix V is the sum of the different uncertainty components:
         # uncorrelated, environmental-correlated, spatial-correlated, temporal-correlated
@@ -301,30 +320,32 @@ def merge_andor_rebin_gdps(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
                                          ('sigma_s', local_sigma_ss),
                                          ('sigma_t', local_sigma_ts),
                                         ]:
-            U_mat = corcoef_gdps(np.tile(i_inds[in_layer], (binning * n_profiles, 1)), # i
-                                 np.tile(i_inds[in_layer], (binning * n_profiles, 1)).T, # j
+            U_mat = corcoef_gdps(np.tile(i_inds[in_layer], (n_in_layer, 1)), # i
+                                 np.tile(i_inds[in_layer], (n_in_layer, 1)).T, # j
                                  sigma_name,
-                                 sn_i=np.tile(sns_inds[in_layer], (binning * n_profiles, 1)),
-                                 sn_j=np.tile(sns_inds[in_layer], (binning * n_profiles, 1)).T,
-                                 rig_i=np.tile(rigs_inds[in_layer], (binning * n_profiles, 1)),
-                                 rig_j=np.tile(rigs_inds[in_layer], (binning * n_profiles, 1)).T,
-                                 event_i=np.tile(evts_inds[in_layer], (binning * n_profiles, 1)),
-                                 event_j=np.tile(evts_inds[in_layer], (binning * n_profiles, 1)).T,
-                                 site_i=np.tile(sites_inds[in_layer], (binning * n_profiles, 1)),
-                                 site_j=np.tile(sites_inds[in_layer], (binning * n_profiles, 1)).T,
+                                 srn_i=np.tile(srns_inds[in_layer], (n_in_layer, 1)),
+                                 srn_j=np.tile(srns_inds[in_layer], (n_in_layer, 1)).T,
+                                 mod_i=np.tile(mods_inds[in_layer], (n_in_layer, 1)),
+                                 mod_j=np.tile(mods_inds[in_layer], (n_in_layer, 1)).T,
+                                 rig_i=np.tile(rigs_inds[in_layer], (n_in_layer, 1)),
+                                 rig_j=np.tile(rigs_inds[in_layer], (n_in_layer, 1)).T,
+                                 evt_i=np.tile(evts_inds[in_layer], (n_in_layer, 1)),
+                                 evt_j=np.tile(evts_inds[in_layer], (n_in_layer, 1)).T,
+                                 sit_i=np.tile(sits_inds[in_layer], (n_in_layer, 1)),
+                                 sit_j=np.tile(sits_inds[in_layer], (n_in_layer, 1)).T,
                                 )
+
+            # Include a sanity check: if U_mat is not an identity matrix for sigma_u,
+            # something is very wrong.
+            if sigma_name == 'sigma_u' and np.any(U_mat != np.identity(n_in_layer)):
+                raise Exception('Ouch ! Something is very wrong here.')
+
             # Implement the multiplication. Mind the structure of these arrays to get the correct
             # mix of Hadamard and dot products where I need them !
             U_mat = np.multiply(U_mat, np.array([sigma_vals]).T @ np.array([sigma_vals]))
             U_mats += [U_mat]
 
-            # Include a sanity check: if U_mat is not an identity matrix for sigma_u,
-            # something is very wrong.
-            if sigma_name == 'sigma_u' and np.any(U_mat != np.identity(binning * n_profiles)):
-                raise Exception('Ouch ! Something is very wrong here.')
-
-        # Here, I can finally use matrix multiplication (using @) to save me a lot of convoluted 
-        # sums ...
+        # I can finally use matrix multiplication (using @) to save me a lot of convoluted sums ...
         # If I only have nan's then that's my result. If I only have partial nan's, then make sure I
         # still get a number out.
         if np.all(np.isnan(G_mat)):
@@ -334,7 +355,6 @@ def merge_andor_rebin_gdps(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
             sigma_ts_new[k_ind] = np.nan
 
         else:
-
             # Replace all the nan's with zeros so they do not intervene in the sums
             sigma_us_new[k_ind] = np.where(np.isnan(G_mat), 0, G_mat) @ \
                                   np.where(np.isnan(U_mats[0]), 0, U_mats[0]) @ \
