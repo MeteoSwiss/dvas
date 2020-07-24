@@ -94,7 +94,7 @@ def test_gruan_corcoef_gdp(test_input_1, expected_1):
                          [   # Weighted mean binning of a single profile
                              ([np.arange(1, 3, 1), np.arange(1, 3, 1), np.arange(1, 3, 1), np.arange(1, 3, 1), np.arange(1, 3, 1), 2],
                               (np.array([1.2]), np.sqrt(112/25), [[0, 1]], np.array([0.5]))),
-                             # Idem, but for a longer profile to validate the 
+                             # Idem, but for a longer profile to validate the
 
                          ])
 
@@ -106,7 +106,7 @@ def test_gruan_rebin_gdps(test_input_2, expected_2):
         - correct propagation of errors when rebining a single profile
 
     Note:
-       Inspired, in part, from `this post 
+       Inspired, in part, from `this post
        <https://stackoverflow.com/questions/39896716/can-i-perform-multiple-assertions-in-pytest>`__
        by Jon Clements.
 
@@ -134,14 +134,14 @@ def test_gruan_rebin_gdps(test_input_2, expected_2):
         errors += ['old_inds is wrong']
     if np.all(out[6] != expected_2[3]):
         errors += ['new_ind is wrong']
-    
+
     assert not errors
 
 
 # Let us test a series of conditions for the different types of uncertainty types
 @pytest.mark.parametrize("test_input_3, expected_3",
                          [   # Delta from two profiles from the same rig/event/site
-                             # Sigma_s and sigma_t cancel perfectly. 
+                             # Sigma_s and sigma_t cancel perfectly.
                              (SRN_NOK + MOD_OK + RIG_OK + EVT_OK + SIT_OK + [1, 'delta'],
                               (np.ones(5), np.sqrt(2)*np.ones(5), None, np.zeros(5), np.zeros(5),
                               [np.array([i]) for i in range(5)], range(5))),
@@ -159,7 +159,7 @@ def test_gruan_merge_andor_rebin_gdps(test_input_3, expected_3):
         - correct propagation of errors
 
     Note:
-       Inspired, in part, from `this post 
+       Inspired, in part, from `this post
        <https://stackoverflow.com/questions/39896716/can-i-perform-multiple-assertions-in-pytest>`__
        by Jon Clements.
 

@@ -54,7 +54,7 @@ def corcoef_gdps(i, j, uc_type,
     Note:
         This function returns the pair-wise correlation coefficients, and
         **not** the full correlation matrix, i.e::
-        
+
             len(corcoef_gdps(i, j, uc_type)) == len(i) == len(j)
 
     Todo:
