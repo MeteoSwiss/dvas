@@ -92,10 +92,11 @@ def test_gruan_corcoef_gdp(test_input_1, expected_1):
 # Let us test a series of conditions for the different types of uncertainty types
 @pytest.mark.parametrize("test_input_2, expected_2",
                          [   # Weighted mean binning of a single profile
-                             ([np.arange(1, 3, 1), np.arange(1, 3, 1), np.arange(1, 3, 1), np.arange(1, 3, 1), np.arange(1, 3, 1), 2],
+                             ([np.array([1, 2]), np.array([1, 2]), np.array([1, 2]), np.array([1, 2]), np.array([1, 2]), 2],
                               (np.array([1.2]), np.sqrt(112/25), [[0, 1]], np.array([0.5]))),
-                             # Idem, but for a longer profile to validate the
-
+                             # Idem, but with NaNs
+                             ([np.array([np.nan, 2]), np.array([np.nan, 2]), np.array([np.nan, 2]), np.array([np.nan, 2]), np.array([np.nan, 2]), 2],
+                              (np.array([2]), 4, [[0, 1]], np.array([0.5]))),
                          ])
 
 
@@ -114,10 +115,10 @@ def test_gruan_rebin_gdps(test_input_2, expected_2):
     errors = []
 
     out = merge_andor_rebin_gdps([test_input_2[0]], # profiles
-                                 [test_input_2[1]],  #sigma_us
-                                 [test_input_2[2]], #sigma_es
-                                 [test_input_2[3]], #sigma_ss
-                                 [test_input_2[4]], #sigma_ts
+                                 [test_input_2[1]], # sigma_us
+                                 [test_input_2[2]], # sigma_es
+                                 [test_input_2[3]], # sigma_ss
+                                 [test_input_2[4]], # sigma_ts
                                  srns=None,
                                  mods=None,
                                  rigs=None,
@@ -134,6 +135,9 @@ def test_gruan_rebin_gdps(test_input_2, expected_2):
         errors += ['old_inds is wrong']
     if np.all(out[6] != expected_2[3]):
         errors += ['new_ind is wrong']
+
+    import pdb
+    pdb.set_trace()
 
     assert not errors
 
