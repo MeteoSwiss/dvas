@@ -137,6 +137,12 @@ def merge_andor_rebin_gdps(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
            merged sigma_u, merged sigma_e, merged_sigma_s, merged sigma_t,
            merged indices, new indices.
 
+    Warnings:
+        If more than 1 profile is given (i.e. len(profiles)>1) and srns is None, then the code will
+        assume it is distinct for each profile (i.e. srn is different for each profile). For mods,
+        rigs, evts, sits, the opposite is True: setting them to None implies that they are the same
+        for all the profiles.
+
     Todo:
         * Feed 2 TimeProfileManager rather than all these ndarrays ...
 
@@ -166,6 +172,14 @@ def merge_andor_rebin_gdps(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
     # How long are the profiles ?
     n_steps = len(profiles[0])
 
+    # If I have more than 1 profile, and no SRN was specified, the user most likely forgot to 
+    # specify it.
+    if n_profiles >=2 and srns is None:
+        warn_msg = 'merge_andor_rebin_gdps() received %i profiles' % (n_profiles)
+        warn_msg += ', but no SRN for them. Assuming they come from different RS.'
+        warnings.warn(warn_msg)
+        srns = [np.ones(n_steps)+ind for ind in range(n_profiles)]
+    
     # For a delta , I can only have two profiles
     if method == 'delta' and n_profiles != 2:
         raise Exception('Ouch! I can only make the delta between 2 GDPs, not %i !' % (n_profiles))
