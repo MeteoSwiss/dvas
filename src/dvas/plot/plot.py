@@ -36,7 +36,7 @@ plt.style.use(str(Path(pkg_path, 'plot', 'mpl_styles', PLOT_STYLES['base'])))
 #: list[str]: The default file extensions to save the plots into.
 PLOT_TYPES = ['.png', '.pdf']
 
-# A flag to display the plots or not.
+#: bool: A flag to display the plots or not.
 PLOT_SHOW = True
 
 
