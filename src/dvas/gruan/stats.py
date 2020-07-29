@@ -14,11 +14,13 @@ This module contains GRUAN-related stats routines.
 import numpy as np
 
 from . import gruan
+from dvas.dvas_logger import gruan_logger, log_func_call
 
 # Run a KS test between two GDP profiles
+@log_func_call(gruan_logger)
 def gdp_ks_test(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
                 alpha = 0.0027, binning_list=None, **kwargs):
-  ''' Runs a KS test to assess the consistency between 2 GDP profiles.
+    ''' Runs a KS test to assess the consistency between 2 GDP profiles.
 
     Args:
         profiles (list of ndarray): list of profiles to combine. All must have the same length!

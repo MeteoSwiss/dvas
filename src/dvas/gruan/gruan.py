@@ -11,9 +11,13 @@ This module contains GRUAN-related routines, including correlation rules for GDP
 
 """
 
-import warnings
+# Import from Python packages
 import numpy as np
 
+# Import from current package
+from dvas.dvas_logger import gruan_logger, log_func_call
+
+@log_func_call(gruan_logger)
 def corcoef_gdps(i, j, uc_type,
                  srn_i=None, srn_j=None,
                  mod_i=None, mod_j=None,
@@ -88,7 +92,8 @@ def corcoef_gdps(i, j, uc_type,
         pass
 
     elif uc_type == 'sigma_e':
-        warnings.warn('Environmental correlations are not defined yet. Defaults to uncorrelation.')
+        warn_msg = 'Environmental correlations are not defined yet. Defaults to uncorrelation.'
+        gruan_logger.warning(warn_msg)
         #TODO: specify the environmental correlations for simultaneous flights.
 
     elif uc_type == 'sigma_s':
@@ -112,6 +117,7 @@ def corcoef_gdps(i, j, uc_type,
 
     return corcoef
 
+@log_func_call(gruan_logger)
 def merge_andor_rebin_gdps(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
                            srns=None, mods=None, rigs=None, evts=None, sits=None,
                            binning=1, method='weighted mean'):
@@ -172,14 +178,14 @@ def merge_andor_rebin_gdps(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
     # How long are the profiles ?
     n_steps = len(profiles[0])
 
-    # If I have more than 1 profile, and no SRN was specified, the user most likely forgot to 
+    # If I have more than 1 profile, and no SRN was specified, the user most likely forgot to
     # specify it.
-    if n_profiles >=2 and srns is None:
+    if n_profiles >= 2 and srns is None:
         warn_msg = 'merge_andor_rebin_gdps() received %i profiles' % (n_profiles)
         warn_msg += ', but no SRN for them. Assuming they come from different RS.'
-        warnings.warn(warn_msg)
-        srns = [np.ones(n_steps)+ind for ind in range(n_profiles)]
-    
+        gruan_logger.warning(warn_msg)
+        srns = [np.ones(n_steps) + ind for ind in range(n_profiles)]
+
     # For a delta , I can only have two profiles
     if method == 'delta' and n_profiles != 2:
         raise Exception('Ouch! I can only make the delta between 2 GDPs, not %i !' % (n_profiles))
