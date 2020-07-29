@@ -15,7 +15,7 @@ This module contains GRUAN-related routines, including correlation rules for GDP
 import numpy as np
 
 # Import from current package
-from dvas.dvas_logger import gruan_logger, log_func_call
+from ..dvas_logger import gruan_logger, log_func_call
 
 @log_func_call(gruan_logger)
 def corcoef_gdps(i, j, uc_type,

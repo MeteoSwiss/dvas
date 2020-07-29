@@ -11,12 +11,15 @@ This module contains GRUAN-related stats routines.
 
 """
 
+# Import from Python packages
 import numpy as np
+from scipy import stats
 
+# Import from this package
 from . import gruan
-from dvas.dvas_logger import gruan_logger, log_func_call
+from ..dvas_logger import gruan_logger, log_func_call
 
-# Run a KS test between two GDP profiles
+
 @log_func_call(gruan_logger)
 def gdp_ks_test(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
                 alpha = 0.0027, binning_list=None, **kwargs):
@@ -70,8 +73,8 @@ def gdp_ks_test(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
         # TODO: account for previously flagged bad data points
         (prof_del, prof_del_sigma_u, prof_del_sigma_e, prof_del_sigma_s, prof_del_sigma_t,
          prof_del_old_inds, prof_del_new_inds) = \
-         merge_andor_rebin_gdps(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
-                                binning=binning, method='delta', **kwargs)
+         gruan.merge_andor_rebin_gdps(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
+                                      binning=binning, method='delta', **kwargs)
 
         # Extract the variance of the difference
         delta_pqi = prof_del
@@ -81,7 +84,7 @@ def gdp_ks_test(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
         vt_delta_pqi = prof_del_sigma_t**2
 
         # Compute the total variance
-        v_delat_pqi = vu_delta_pqi + ve_delta_pqi + vs_delta_pqi + vt_delta_pqi
+        v_delta_pqi = vu_delta_pqi + ve_delta_pqi + vs_delta_pqi + vt_delta_pqi
 
         # Compute k_pqi (the normalized profile delta)
         k_pqi = delta_pqi/np.sqrt(v_delta_pqi)
@@ -94,16 +97,57 @@ def gdp_ks_test(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
             p_val = stats.kstest(np.array([k_pqi[k_ind]]), 'norm', args=(0, 1)).pvalue
 
             # Store it
-            p_ksi[prof_del_old_inds[k_ind][0] : prof_del_old_inds[k_ind][-1]+1] = p_val
+            p_ksi[b_ind][prof_del_old_inds[k_ind][0] : prof_del_old_inds[k_ind][-1]+1] = p_val
 
     # Compute the flags.
     f_pqi[p_ksi < alpha] = 1
 
-    return f_pqi
+    return (f_pqi, p_ksi)
 
 # Run a chi-square analysis between a merged profile and its components
-def chi_square():
-    '''
+def chi_square(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
+               profile_m, sigma_u_m, sigma_e_m, sigma_s_m, sigma_t_m):
+    ''' Computes a chi-square given a series of individual profiles, and a merged one.
+
+    This function does not work with resampled profiles: a chi-square is meaningless when computed
+    over numerous altitudes at once.
+
+    The chi-square, for n profiles, is computed as::
+
+        1/(n-1) * sum(x_i - <x>)**2/sigma_i**2
+ 
+    Args:
+        profiles (list of ndarray): list of individual profiles. All must have the same length!
+        sigma_us (list of ndarray): list of associated uncorrelated errors.
+        sigma_es (list of ndarray): list of associated environmental-correlated errors.
+        sigma_ss (list of ndarray): list of associated spatial-correlated errors.
+        sigma_ts (list of ndarray): list of associated temporal-correlated errors.
+        profile_m (ndarray): Mean profile. Must have the same length!
+        sigma_u_m (ndarray): list of associated uncorrelated errors.
+        sigma_e_m (ndarray): list of associated environmental-correlated errors.
+        sigma_s_m (ndarray): list of associated spatial-correlated errors.
+        sigma_t_m (ndarray): list of associated temporal-correlated errors.
+
+    Return:
+        ndarray: the chi-square array, with a size of ``len(profile_m)``.
+
+    TODO:
+        - implement dedicated test(s)
+
     '''
 
-    return False
+    # Figure out the common length
+    n_steps = len(profile_m)
+
+    for profile in profiles:
+        if len(profile) != n_steps:
+            raise Exception('Ouch ! All profiles should have the same length.')
+
+    # Compute the chi square
+    chi_sq = np.array([(profiles[ind] - profile_m)**2/(sigma_us[ind]**2 + sigma_es[ind]**2 + sigma_ss[ind]**2 + sigma_ts[ind]**2) for ind in range(len(pofiles))])
+    chi_sq *= (len(profiles)-1)**-1
+
+    # Use np.where to return nan (instead of 0) when this is all I have
+    chi_sq = np.where(np.all(np.isnan(chi_sq), axis=0), np.nan, np.nansum(chi_sq, axis=0))
+
+    return chi_sq
