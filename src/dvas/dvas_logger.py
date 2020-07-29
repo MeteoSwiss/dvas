@@ -14,6 +14,7 @@ import logging
 from logging import StreamHandler, FileHandler
 from datetime import datetime
 import inspect
+from functools import wraps
 
 # Current package import
 from .dvas_environ import log_var, path_var
@@ -52,12 +53,14 @@ def log_func_call(logger):
         Adapted from
         `this post <https://stackoverflow.com/questions/218616/how-to-get-method-parameter-names>`__
         on SO, in particular the reply from Kfir Eisner and Peter Mortensen.
+        See also `this <https://docs.python.org/3/library/inspect.html#inspect.BoundArguments>`__.
 
     '''
 
     def deco(func):
         ''' This is the actual function decorator. '''
 
+        @wraps(func) # This black magic is required for Sphinx to still pickup the func docstrings.
         def inner_deco(*args, **kwargs):
             ''' The core function, where the magic happens. '''
 
