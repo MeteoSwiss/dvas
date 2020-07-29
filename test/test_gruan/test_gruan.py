@@ -71,7 +71,6 @@ SIT_NOK = [np.array(['sit 1']), np.array(['sit 2'])]    # Different site
     # Temporal-correlated errors: different sites and times
     (T_NOK + ['sigma_t'] + SRN_NOK + MOD_OK + RIG_OK + EVT_OK + SIT_NOK, 1),
     ])
-
 def test_gruan_corcoef_gdp(test_input_1, expected_1):
     """Function used to test if the GDP correlations are properly implemented.
 
@@ -98,7 +97,6 @@ def test_gruan_corcoef_gdp(test_input_1, expected_1):
     ([np.array([np.nan, 2])] * 5 + [2],
      (np.array([2]), 4, [[0, 1]], np.array([0.5]))),
     ])
-
 def test_gruan_rebin_gdps(test_input_2, expected_2):
     """Function used to test if the routine combining GDP profiles is ok.
 
@@ -150,7 +148,6 @@ def test_gruan_rebin_gdps(test_input_2, expected_2):
      (np.ones(2), np.array([np.sqrt(6)/3, np.sqrt(4)/2]), None, np.zeros(2), np.zeros(2),
       [[0, 1, 2], [3, 4]], np.array([1, 3.5]))),
     ])
-
 def test_gruan_merge_andor_rebin_gdps(test_input_3, expected_3):
     """Function used to test if the routine combining GDP profiles is ok.
 

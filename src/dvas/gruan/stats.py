@@ -72,7 +72,7 @@ def gdp_ks_test(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
         # Compute the profile delta with the specified sampling
         # TODO: account for previously flagged bad data points
         (prof_del, prof_del_sigma_u, prof_del_sigma_e, prof_del_sigma_s, prof_del_sigma_t,
-         prof_del_old_inds, prof_del_new_inds) = \
+         prof_del_old_inds, _) = \
          gruan.merge_andor_rebin_gdps(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
                                       binning=binning, method='delta', **kwargs)
 
@@ -115,7 +115,7 @@ def chi_square(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
     The chi-square, for n profiles, is computed as::
 
         1/(n-1) * sum(x_i - <x>)**2/sigma_i**2
- 
+
     Args:
         profiles (list of ndarray): list of individual profiles. All must have the same length!
         sigma_us (list of ndarray): list of associated uncorrelated errors.
@@ -144,7 +144,7 @@ def chi_square(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
             raise Exception('Ouch ! All profiles should have the same length.')
 
     # Compute the chi square
-    chi_sq = np.array([(profiles[ind] - profile_m)**2/(sigma_us[ind]**2 + sigma_es[ind]**2 + sigma_ss[ind]**2 + sigma_ts[ind]**2) for ind in range(len(pofiles))])
+    chi_sq = np.array([(profiles[ind] - profile_m)**2/(sigma_us[ind]**2 + sigma_es[ind]**2 + sigma_ss[ind]**2 + sigma_ts[ind]**2) for ind in range(len(profiles))])
     chi_sq *= (len(profiles)-1)**-1
 
     # Use np.where to return nan (instead of 0) when this is all I have
