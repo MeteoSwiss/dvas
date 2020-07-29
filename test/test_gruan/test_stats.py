@@ -12,7 +12,7 @@ Module contents: Testing 'stats' classes and function of the gruan submodule.
 
 # Import from python packages and modules
 import numpy as np
-import pytest
+
 from dvas.gruan import stats
 
 
@@ -29,20 +29,19 @@ def test_stats_gdp_ks_test():
 
     # Create two "profiles" in sigma scale
     # Here, we only consider random errors for now.
-    profile = range(1, 5, 1) * np.sqrt(8) 
+    profile = range(1, 5, 1) * np.sqrt(8)
     qrofile = np.zeros(4)
-    
+
     # Create fake errors, such that the "total" error of profile-qrofile is np.sqrt(8)
     sigma_u = np.ones(4) * 2
     sigma_e = np.zeros(4)
     sigma_s = np.zeros(4)
     sigma_t = np.zeros(4)
 
-    (f_pqi, p_ksi, k_pqis) = stats.gdp_ks_test([profile, qrofile],
-                                               [sigma_u]*2, [sigma_e]*2, [sigma_s]*2, [sigma_t]*2,
-                                               alpha=0.0027, # This corresponds to a 3 sigma level
-                                               binning_list=[1], srns=[1, 2])
+    (f_pqi, _) = stats.gdp_ks_test([profile, qrofile],
+                                   [sigma_u]*2, [sigma_e]*2, [sigma_s]*2, [sigma_t]*2,
+                                   alpha=0.0027, # This corresponds to a 3 sigma level
+                                   binning_list=[1], srns=[1, 2])
 
     # If I get here, then most likely it is all working fine.
     assert np.all(f_pqi[0] == np.array([0., 0., 1., 1.]))
-

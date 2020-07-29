@@ -6,7 +6,7 @@ Distributed under the terms of the GNU General Public License v3.0 or later.
 
 SPDX-License-Identifier: GPL-3.0-or-later
 
-Module contents: Testing classes and function of the gruan submodule.
+Module contents: Testing 'gruan' classes and function of the gruan submodule.
 
 """
 
@@ -30,47 +30,47 @@ SIT_OK = [np.array(['sit']), np.array(['sit'])]         # Same site
 SIT_NOK = [np.array(['sit 1']), np.array(['sit 2'])]    # Different site
 
 # Let us test a series of conditions for the different types of uncertainty types
-@pytest.mark.parametrize("test_input_1, expected_1",
-                         [   # Uncorrelated errors: same point
-                             (T_OK + ['sigma_u'] + SRN_OK + MOD_OK + RIG_OK + EVT_OK + SIT_OK, 1),
-                             # Uncorrelated errors: different time
-                             (T_NOK + ['sigma_u'] + SRN_OK + MOD_OK + RIG_OK + EVT_OK + SIT_OK, 0),
-                             # Uncorrelated errors: different Serial Number
-                             (T_OK + ['sigma_u'] + SRN_NOK + MOD_OK + RIG_OK + EVT_OK + SIT_OK, 0),
-                             # Uncorrelated errors: different rig
-                             (T_OK + ['sigma_u'] + SRN_NOK + MOD_OK + RIG_NOK + EVT_OK + SIT_OK, 0),
-                             # Uncorrelated errors: different event
-                             (T_OK + ['sigma_u'] + SRN_NOK + MOD_OK + RIG_OK + EVT_NOK + SIT_OK, 0),
-                             # Uncorrelated errors: different site
-                             (T_OK + ['sigma_u'] + SRN_NOK + MOD_OK + RIG_OK + EVT_OK + SIT_NOK, 0),
-                             #
-                             # Environmental-correlated errors:
-                             # TODO
-                             #
-                             # Spatial-correlated errors: same point
-                             (T_OK + ['sigma_s'] + SRN_OK + MOD_OK + RIG_OK + EVT_OK + SIT_OK, 1),
-                             # Spatial-correlated errors: different times
-                             (T_NOK + ['sigma_s'] + SRN_NOK + MOD_OK + RIG_OK + EVT_OK + SIT_OK, 1),
-                             # Uncorrelated errors: different rigs
-                             (T_OK + ['sigma_s'] + SRN_NOK + MOD_OK + RIG_NOK + EVT_OK + SIT_OK, 1),
-                             # Uncorrelated errors: different rigs  & different times
-                             (T_NOK + ['sigma_s'] + SRN_NOK + MOD_OK + RIG_NOK + EVT_OK + SIT_OK, 1),
-                             # Uncorrelated errors: different event
-                             (T_OK + ['sigma_s'] + SRN_NOK + MOD_OK + RIG_OK + EVT_NOK + SIT_OK, 0),
-                             # Uncorrelated errors: different event
-                             (T_OK + ['sigma_s'] + SRN_NOK + MOD_OK + RIG_OK + EVT_OK + SIT_NOK, 0),
-                             #
-                             # Temporal-correlated errors: same point
-                             (T_OK + ['sigma_t'] + SRN_OK + MOD_OK + RIG_OK + EVT_OK + SIT_OK, 1),
-                             # Temporal-correlated errors: different time
-                             (T_NOK + ['sigma_t'] + SRN_NOK + MOD_OK + RIG_OK + EVT_OK + SIT_OK, 1),
-                             # Temporal-correlated errors: different rigs & different times
-                             (T_NOK + ['sigma_t'] + SRN_NOK + MOD_OK + RIG_NOK + EVT_OK + SIT_OK, 1),
-                             # Temporal-correlated errors: different events and times
-                             (T_NOK + ['sigma_t'] + SRN_NOK + MOD_OK + RIG_OK + EVT_NOK + SIT_OK, 1),
-                             # Temporal-correlated errors: different sites and times
-                             (T_NOK + ['sigma_t'] + SRN_NOK + MOD_OK + RIG_OK + EVT_OK + SIT_NOK, 1),
-                         ])
+@pytest.mark.parametrize("test_input_1, expected_1", [
+    # Uncorrelated errors: same point
+    (T_OK + ['sigma_u'] + SRN_OK + MOD_OK + RIG_OK + EVT_OK + SIT_OK, 1),
+    # Uncorrelated errors: different time
+    (T_NOK + ['sigma_u'] + SRN_OK + MOD_OK + RIG_OK + EVT_OK + SIT_OK, 0),
+    # Uncorrelated errors: different Serial Number
+    (T_OK + ['sigma_u'] + SRN_NOK + MOD_OK + RIG_OK + EVT_OK + SIT_OK, 0),
+    # Uncorrelated errors: different rig
+    (T_OK + ['sigma_u'] + SRN_NOK + MOD_OK + RIG_NOK + EVT_OK + SIT_OK, 0),
+    # Uncorrelated errors: different event
+    (T_OK + ['sigma_u'] + SRN_NOK + MOD_OK + RIG_OK + EVT_NOK + SIT_OK, 0),
+    # Uncorrelated errors: different site
+    (T_OK + ['sigma_u'] + SRN_NOK + MOD_OK + RIG_OK + EVT_OK + SIT_NOK, 0),
+    #
+    # Environmental-correlated errors:
+    # TODO
+    #
+    # Spatial-correlated errors: same point
+    (T_OK + ['sigma_s'] + SRN_OK + MOD_OK + RIG_OK + EVT_OK + SIT_OK, 1),
+    # Spatial-correlated errors: different times
+    (T_NOK + ['sigma_s'] + SRN_NOK + MOD_OK + RIG_OK + EVT_OK + SIT_OK, 1),
+    # Uncorrelated errors: different rigs
+    (T_OK + ['sigma_s'] + SRN_NOK + MOD_OK + RIG_NOK + EVT_OK + SIT_OK, 1),
+    # Uncorrelated errors: different rigs  & different times
+    (T_NOK + ['sigma_s'] + SRN_NOK + MOD_OK + RIG_NOK + EVT_OK + SIT_OK, 1),
+    # Uncorrelated errors: different event
+    (T_OK + ['sigma_s'] + SRN_NOK + MOD_OK + RIG_OK + EVT_NOK + SIT_OK, 0),
+    # Uncorrelated errors: different event
+    (T_OK + ['sigma_s'] + SRN_NOK + MOD_OK + RIG_OK + EVT_OK + SIT_NOK, 0),
+    #
+    # Temporal-correlated errors: same point
+    (T_OK + ['sigma_t'] + SRN_OK + MOD_OK + RIG_OK + EVT_OK + SIT_OK, 1),
+    # Temporal-correlated errors: different time
+    (T_NOK + ['sigma_t'] + SRN_NOK + MOD_OK + RIG_OK + EVT_OK + SIT_OK, 1),
+    # Temporal-correlated errors: different rigs & different times
+    (T_NOK + ['sigma_t'] + SRN_NOK + MOD_OK + RIG_NOK + EVT_OK + SIT_OK, 1),
+    # Temporal-correlated errors: different events and times
+    (T_NOK + ['sigma_t'] + SRN_NOK + MOD_OK + RIG_OK + EVT_NOK + SIT_OK, 1),
+    # Temporal-correlated errors: different sites and times
+    (T_NOK + ['sigma_t'] + SRN_NOK + MOD_OK + RIG_OK + EVT_OK + SIT_NOK, 1),
+    ])
 
 def test_gruan_corcoef_gdp(test_input_1, expected_1):
     """Function used to test if the GDP correlations are properly implemented.
@@ -82,23 +82,22 @@ def test_gruan_corcoef_gdp(test_input_1, expected_1):
 
     # If I get here, then most likely it is all working fine.
     assert corcoef_gdps(test_input_1[0], test_input_1[1], test_input_1[2],
-                       srn_i=test_input_1[3], srn_j=test_input_1[4],
-                       mod_i=test_input_1[5], mod_j=test_input_1[6],
-                       rig_i=test_input_1[7], rig_j=test_input_1[7],
-                       evt_i=test_input_1[9], evt_j=test_input_1[10],
-                       sit_i=test_input_1[11], sit_j=test_input_1[12]) == expected_1
+                        srn_i=test_input_1[3], srn_j=test_input_1[4],
+                        mod_i=test_input_1[5], mod_j=test_input_1[6],
+                        rig_i=test_input_1[7], rig_j=test_input_1[7],
+                        evt_i=test_input_1[9], evt_j=test_input_1[10],
+                        sit_i=test_input_1[11], sit_j=test_input_1[12]) == expected_1
 
 
 # Let us test a series of conditions for the different types of uncertainty types
-@pytest.mark.parametrize("test_input_2, expected_2",
-                         [   # Weighted mean binning of a single profile
-                             ([np.array([1, 2]), np.array([1, 2]), np.array([1, 2]), np.array([1, 2]), np.array([1, 2]), 2],
-                              (np.array([1.2]), np.sqrt(112/25), [[0, 1]], np.array([0.5]))),
-                             # Idem, but with NaNs
-                             ([np.array([np.nan, 2]), np.array([np.nan, 2]), np.array([np.nan, 2]), np.array([np.nan, 2]), np.array([np.nan, 2]), 2],
-                              (np.array([2]), 4, [[0, 1]], np.array([0.5]))),
-                         ])
-
+@pytest.mark.parametrize("test_input_2, expected_2", [
+    # Weighted mean binning of a single profile
+    ([np.array([1, 2])] * 5 + [2],
+     (np.array([1.2]), np.sqrt(112/25), [[0, 1]], np.array([0.5]))),
+    # Idem, but with NaNs
+    ([np.array([np.nan, 2])] * 5 + [2],
+     (np.array([2]), 4, [[0, 1]], np.array([0.5]))),
+    ])
 
 def test_gruan_rebin_gdps(test_input_2, expected_2):
     """Function used to test if the routine combining GDP profiles is ok.
@@ -136,25 +135,21 @@ def test_gruan_rebin_gdps(test_input_2, expected_2):
     if np.all(out[6] != expected_2[3]):
         errors += ['new_ind is wrong']
 
-    import pdb
-    pdb.set_trace()
-
     assert not errors
 
 
 # Let us test a series of conditions for the different types of uncertainty types
-@pytest.mark.parametrize("test_input_3, expected_3",
-                         [   # Delta from two profiles from the same rig/event/site
-                             # Sigma_s and sigma_t cancel perfectly.
-                             (SRN_NOK + MOD_OK + RIG_OK + EVT_OK + SIT_OK + [1, 'delta'],
-                              (np.ones(5), np.sqrt(2)*np.ones(5), None, np.zeros(5), np.zeros(5),
-                              [np.array([i]) for i in range(5)], range(5))),
-                             # Delta + binning from two profiles from the same rig/event/site
-                             (SRN_NOK + MOD_OK + RIG_OK + EVT_OK + SIT_OK + [3, 'delta'],
-                              (np.ones(2), np.array([np.sqrt(6)/3, np.sqrt(4)/2]), None,
-                               np.zeros(2), np.zeros(2), [[0, 1, 2], [3, 4]], np.array([1, 3.5]))),
-
-                         ])
+@pytest.mark.parametrize("test_input_3, expected_3", [
+    # Delta from two profiles from the same rig/event/site
+    # Sigma_s and sigma_t cancel perfectly.
+    (SRN_NOK + MOD_OK + RIG_OK + EVT_OK + SIT_OK + [1, 'delta'],
+     (np.ones(5), np.sqrt(2)*np.ones(5), None, np.zeros(5), np.zeros(5),
+      [np.array([i]) for i in range(5)], range(5))),
+    # Delta + binning from two profiles from the same rig/event/site
+    (SRN_NOK + MOD_OK + RIG_OK + EVT_OK + SIT_OK + [3, 'delta'],
+     (np.ones(2), np.array([np.sqrt(6)/3, np.sqrt(4)/2]), None, np.zeros(2), np.zeros(2),
+      [[0, 1, 2], [3, 4]], np.array([1, 3.5]))),
+    ])
 
 def test_gruan_merge_andor_rebin_gdps(test_input_3, expected_3):
     """Function used to test if the routine combining GDP profiles is ok.
