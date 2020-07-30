@@ -14,7 +14,7 @@ Module contents: Testing classes and function for dvas.plot.plot module.
 import matplotlib.pyplot as plt
 
 # Import from current package
-from dvas.plot import PLOT_TYPES
+from dvas.plot.plot_utils import PLOT_TYPES
 
 
 def test_plot_types():
