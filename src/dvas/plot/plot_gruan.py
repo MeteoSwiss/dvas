@@ -10,9 +10,6 @@ Module contents: Plotting functions related to the gruan submodule.
 """
 
 # Import from Python packages
-import os
-from pathlib import Path
-
 import numpy as np
 
 import matplotlib.pyplot as plt
@@ -29,15 +26,15 @@ from ..dvas_environ import path_var
 @log_func_call(plot_logger)
 def pks_cmap(alpha=0.27/100, vmin=0.0, vmax=3*0.27/100):
     ''' Defines a custom colormap for the p-value plot of the KS test function.
-    
+
     Args:
         alpha (float): the significance level of the KS test.
         vmin (float): vmin of the desired colorbar, for proper scaling of the transition level.
         vmax (float): vmax of the desired colorbar, for proper scaling of the transition level.
-    
+
     Returns:
        matplotlib.colors.LinearSegmentedColormap
-    
+
     '''
 
     # Some sanity checks
@@ -48,7 +45,7 @@ def pks_cmap(alpha=0.27/100, vmin=0.0, vmax=3*0.27/100):
     if not 0 <= vmin <= vmax <= 1:
         raise Exception('Ouch ! I need 0 <= vmin <= vmax <= 1.')
 
-    
+
     # What are the boundary colors I want ?
     a_start = colors.to_rgb('maroon')
     a_mid_m = colors.to_rgb('lightcoral')
@@ -99,7 +96,7 @@ def plot_ks_test(k_pqi, f_pqi, p_ksi, binning_list, alpha, tag=''):
 
     # Set up the scene ...
     plt.close(57)
-    fig = plt.figure(57, figsize=(pu.WIDTH_TWOCOL, 5))
+    plt.figure(57, figsize=(pu.WIDTH_TWOCOL, 5))
 
     gs = gridspec.GridSpec(2, 3, height_ratios=[1, 1], width_ratios=[1, 0.02, 0.08],
                            left=0.08, right=0.98, bottom=0.12, top=0.97, wspace=0.02, hspace=0.08)
@@ -130,18 +127,20 @@ def plot_ks_test(k_pqi, f_pqi, p_ksi, binning_list, alpha, tag=''):
     # Note that here I keep track of the binning "index" rather than the actual value.
     # That way, this does not blow up if the users specify non-contiguous values.
     bins = np.array([[bin_ind] * len(k_pqi) for bin_ind in range(n_bins)])
-    
+
     # To draw circles (and not disks), I need to build the full color array to feed to edgecolors.
-    # See: https://stackoverflow.com/questions/43519160/matplotlib-scatter-plot-with-colormaps-for-edgecolor-but-no-facecolor
+    # See: https://stackoverflow.com/questions/43519160/
+    # matplotlib-scatter-plot-with-colormaps-for-edgecolor-but-no-facecolor
     # and the reply from ImportanceOfBeingEarnest
     # Let's not forget to rescale the values as well !
     bin_cm = pu.cmap_discretize('plasma_r', n_bins) # That's the colormap I want, only discretized.
     # Turn binning values into colors. We need to map -0.5 <-> n_bins-0.5 onto 0 <-> 1.
-    # That's where the 0.5 comes from. This will let us align the major ticks with the colormap bins.
-    flag_origs = bin_cm((bins[f_pqi==1]+0.5)/(n_bins)) 
+    # That's where the 0.5 comes from. This will let us align the major ticks with the colormap
+    # bins.
+    flag_origs = bin_cm((bins[f_pqi == 1] + 0.5)/n_bins)
 
     # Now actually plot circles around the flagged values.
-    ax1_map = ax1.scatter(inds[f_pqi == 1], np.tile(k_pqi, (n_bins, 1))[f_pqi == 1],
+    ax1.scatter(inds[f_pqi == 1], np.tile(k_pqi, (n_bins, 1))[f_pqi == 1],
                 marker='o',
                 s=5*(bins[f_pqi == 1]+1)**2, # With this, we get circles growing linearly in radius
                 edgecolors=flag_origs, # We color each circle manually. No cmap !!!
@@ -156,7 +155,7 @@ def plot_ks_test(k_pqi, f_pqi, p_ksi, binning_list, alpha, tag=''):
     # Note how the vmin & vmax value match what we did earlier.
     cb2 = plt.colorbar(cm.ScalarMappable(norm=colors.Normalize(vmin=-0.5, vmax=n_bins-0.5),
                                          cmap=bin_cm),
-                       cax = cax2)
+                       cax=cax2)
 
     # Back to solid ground. Let's label things properly.
     cb2.set_label(r'$m$', labelpad=10)
@@ -168,7 +167,7 @@ def plot_ks_test(k_pqi, f_pqi, p_ksi, binning_list, alpha, tag=''):
 
     # Set the proper axis labels, etc ...
     for ax in [ax0, ax1]:
-       ax.set_xlim((-0.5, len(k_pqi)-0.5))
+        ax.set_xlim((-0.5, len(k_pqi)-0.5))
 
     ax0.set_ylabel(r'$m$')
     ax1.set_ylabel(r'$k_{p,q}^i$')

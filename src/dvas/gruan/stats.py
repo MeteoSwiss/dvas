@@ -23,7 +23,7 @@ from ..plot import plot_gruan
 
 @log_func_call(gruan_logger)
 def gdp_ks_test(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
-                alpha = 0.0027, binning_list=None, **kwargs):
+                alpha=0.0027, binning_list=None, **kwargs):
     ''' Runs a KS test to assess the consistency between 2 GDP profiles.
 
     Args:
@@ -39,9 +39,14 @@ def gdp_ks_test(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
         ndarray: The array of flags of len(binning_list), with 1's where the KS test failed.
         That is, where the p-value of the KS test is <= alpha.
 
+    Note:
+        The diagnostic plot will be generated only if a binning of 1 is included in the
+        binning_list.
+
     Todo:
         * Improve the input format.
         * When rolling, take into account the previously flagged data point.
+        * Deal with the plot tag.
 
     '''
 
@@ -111,7 +116,7 @@ def gdp_ks_test(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
         plot_gruan.plot_ks_test(k_pqis[binning_list.index(1)], f_pqi, p_ksi, binning_list, alpha,
                                 tag='')
     else:
-       gruan_logger.warning('KS test ran without binning of 1. Skipping the diagnostic plot.')
+        gruan_logger.warning('KS test ran without binning of 1. Skipping the diagnostic plot.')
 
     return (f_pqi, p_ksi)
 

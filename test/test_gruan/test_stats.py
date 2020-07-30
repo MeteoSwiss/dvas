@@ -40,9 +40,10 @@ def test_stats_gdp_ks_test():
     sigma_s = np.zeros(4)
     sigma_t = np.zeros(4)
 
+    # Note: p-value of 3-sigma level = 0.0027 = (1 - ss.norm.cdf(3))*2
     (f_pqi, _) = stats.gdp_ks_test([profile, qrofile],
                                    [sigma_u]*2, [sigma_e]*2, [sigma_s]*2, [sigma_t]*2,
-                                   alpha=(1 - ss.norm.cdf(3))*2, # This corresponds to a 3 sigma level
+                                   alpha=(1 - ss.norm.cdf(3))*2, # This corresponds to 3 sigma level
                                    binning_list=[1, 2, 20], srns=[1, 2])
 
     # If I get here, then most likely it is all working fine.

@@ -17,7 +17,6 @@ from matplotlib import colors
 from matplotlib import cm
 
 # Import from this package
-from ..dvas_environ import path_var as env_path_var
 from .. import pkg_path
 from ..dvas_logger import plot_logger, log_func_call
 
@@ -87,12 +86,12 @@ def cmap_discretize(cmap, N):
         N (int): number of colors.
 
     Note:
-        Adapted from the
-        `Scipy Cookbook <https://scipy-cookbook.readthedocs.io/items/Matplotlib_ColormapTransformations.html>`__.
+        Adapted from the `Scipy Cookbook
+        <https://scipy-cookbook.readthedocs.io/items/Matplotlib_ColormapTransformations.html>`__.
 
     Example:
         ::
-        
+
             x = resize(arange(100), (5,100))
             djet = cmap_discretize(cm.jet, 5)
             imshow(x, cmap=djet)
@@ -111,7 +110,7 @@ def cmap_discretize(cmap, N):
     indices = np.linspace(0, 1., N+1)
 
     cdict = {}
-    for ki, key in enumerate(('red','green','blue')):
+    for ki, key in enumerate(('red', 'green', 'blue')):
         cdict[key] = [(indices[i], colors_rgba[i-1, ki], colors_rgba[i, ki]) for i in range(N+1)]
 
     # Return colormap object.
