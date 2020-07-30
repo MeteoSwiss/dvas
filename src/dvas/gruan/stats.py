@@ -18,6 +18,7 @@ from scipy import stats
 # Import from this package
 from . import gruan
 from ..dvas_logger import gruan_logger, log_func_call
+from ..plot import plot_gruan
 
 
 @log_func_call(gruan_logger)
@@ -36,9 +37,11 @@ def gdp_ks_test(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
 
     Returns:
         ndarray: The array of flags of len(binning_list), with 1's where the KS test failed.
+        That is, where the p-value of the KS test is <= alpha.
 
     Todo:
         * Improve the input format.
+        * When rolling, take into account the previously flagged data point.
 
     '''
 
@@ -67,6 +70,7 @@ def gdp_ks_test(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
 
     # Let's start rolling
     k_pqis = []
+
     for (b_ind, binning) in enumerate(binning_list):
 
         # Compute the profile delta with the specified sampling
@@ -100,11 +104,19 @@ def gdp_ks_test(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
             p_ksi[b_ind][prof_del_old_inds[k_ind][0] : prof_del_old_inds[k_ind][-1]+1] = p_val
 
     # Compute the flags.
-    f_pqi[p_ksi < alpha] = 1
+    f_pqi[p_ksi <= alpha] = 1
+
+    # Create a diagnostic plot. I can do this only if one of the binning values is 1.
+    if 1 in binning_list:
+        plot_gruan.plot_ks_test(k_pqis[binning_list.index(1)], f_pqi, p_ksi, binning_list, alpha,
+                                tag='')
+    else:
+       gruan_logger.warning('KS test ran without binning of 1. Skipping the diagnostic plot.')
 
     return (f_pqi, p_ksi)
 
 # Run a chi-square analysis between a merged profile and its components
+@log_func_call(gruan_logger)
 def chi_square(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
                profile_m, sigma_u_m, sigma_e_m, sigma_s_m, sigma_t_m):
     ''' Computes a chi-square given a series of individual profiles, and a merged one.
