@@ -44,7 +44,7 @@ def test_stats_gdp_ks_test():
     (f_pqi, _) = stats.gdp_ks_test([profile, qrofile],
                                    [sigma_u]*2, [sigma_e]*2, [sigma_s]*2, [sigma_t]*2,
                                    alpha=(1 - ss.norm.cdf(3))*2, # This corresponds to 3 sigma level
-                                   binning_list=[1, 2, 20], srns=[1, 2])
+                                   binning_list=[1, 2, 20], do_plot=False, srns=[1, 2])
 
     # If I get here, then most likely it is all working fine.
     assert np.all(f_pqi[0] == np.array([0., 0., 1., 1.]))
