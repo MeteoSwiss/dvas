@@ -47,13 +47,13 @@ extensions = [
 ]
 
 # Specify the parameters of the autodoc, in order to
-#autodoc_default_options = {
+autodoc_default_options = {
 #    'members': 'var1, var2',
-#    'member-order': 'bysource',
+    'member-order': 'bysource',
 #    'special-members': '__init__',
-#    'undoc-members': True,
+#    'undoc-members': False,
 #    'exclude-members': '__weakref__'
-#}
+}
 
 # To use this nice feature, but still avoid wreaking havoc with sphinx-apidoc
 autosectionlabel_prefix_document = True
