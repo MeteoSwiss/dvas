@@ -111,6 +111,10 @@ class GlobalPathVariablesManager(VariableManager):
     output_path = TProp(
         Union[Path, str], check_path, kwargs={'exist_ok': False}
     )
+    #: pathlib.Path: DVAS output dir path for plots
+    plot_output_path = TProp(
+        Union[Path, str], check_path, kwargs={'exist_ok': False}
+    )
 
     @property
     def attr_def(self):
@@ -122,7 +126,9 @@ class GlobalPathVariablesManager(VariableManager):
             {'name': 'local_db_path',
              'default': Path('.') / 'dvas_db'},
             {'name': 'output_path',
-             'default': Path('.') / 'output'}
+             'default': Path('.') / 'output'},
+            {'name': 'plot_output_path',
+             'default': Path('.') / 'output' / 'plots'}
         ]
 
 
