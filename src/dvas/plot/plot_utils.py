@@ -38,6 +38,15 @@ PLOT_TYPES = ['.png', '.pdf']
 #: bool: A flag to display the plots or not.
 PLOT_SHOW = True
 
+#: dict: matches the GDP units name to their (better) plot format
+UNIT_LABELS = {'K': r'K$^{\circ}$',
+               'm': r'm',
+               'hPa': r'hPa',
+               'percent': r'\%',
+               'm s-1': r'm s$^{-1}$',
+               'degree': r'$^{\circ}$',
+               }
+
 @log_func_call(plot_logger)
 def set_mplstyle(style='base'):
     """ Set the DVAS plotting style. 'base' contains all the generic commands. 'latex'
@@ -78,12 +87,12 @@ def set_mplstyle(style='base'):
     if style != 'base':
         plt.style.use(str(Path(pkg_path, 'plot', 'mpl_styles', PLOT_STYLES[style])))
 
-def cmap_discretize(cmap, N):
+def cmap_discretize(cmap, n_cols):
     """Return a discrete colormap from the continuous colormap cmap.
 
     Args:
         cmap (str): colormap name or instance.
-        N (int): number of colors.
+        n_cols (int): number of colors.
 
     Note:
         Adapted from the `Scipy Cookbook
@@ -104,14 +113,16 @@ def cmap_discretize(cmap, N):
 
     # Modification: do not start with the colormap edges
     #colors_i = np.concatenate((np.linspace(0, 1., N), (0.,0.,0.,0.)))
-    colors_i = np.concatenate((np.linspace(1./N*0.5, 1-(1./N*0.5), N), (0., 0., 0.)))
+    colors_i = np.concatenate((np.linspace(1./n_cols*0.5, 1-(1./n_cols*0.5), n_cols), (0., 0., 0.)))
 
     colors_rgba = cmap(colors_i)
-    indices = np.linspace(0, 1., N+1)
+    indices = np.linspace(0, 1., n_cols+1)
 
     cdict = {}
-    for ki, key in enumerate(('red', 'green', 'blue')):
-        cdict[key] = [(indices[i], colors_rgba[i-1, ki], colors_rgba[i, ki]) for i in range(N+1)]
+    for k_ind, key in enumerate(('red', 'green', 'blue')):
+        cdict[key] = [(indices[i],
+                       colors_rgba[i-1, k_ind],
+                       colors_rgba[i, k_ind]) for i in range(n_cols+1)]
 
     # Return colormap object.
-    return colors.LinearSegmentedColormap(cmap.name + "_%d"%N, cdict, 1024)
+    return colors.LinearSegmentedColormap(cmap.name + "_%d" % (n_cols), cdict, 1024)
