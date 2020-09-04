@@ -661,16 +661,32 @@ class DataLinker(ABC):
 class LocalDBLinker(DataLinker):
     """Local DB data linker """
 
-    def load(self, search, prm_abbr):
-        """Load data method
+    def load(self, search, prm_abbr, filter_empty=True):
+        """Load parameter method
 
         Args:
-            search (str):
-            prm_abbr (str): Parameter abbr
+            search (str): Data loader search criterion
+            prm_abbr (str): Positional parameter abbr
+            filter_empty (bool): Filter empty data from search
 
         Returns:
+            list of pd.DataFrame
+
+        .. uml::
+
+            @startuml
+            hide footbox
+
+            LocalDBLinker -> DatabaseManager: get_data(where=search, prm_abbr=prm_abbr)
+            LocalDBLinker <- DatabaseManager : data
+
+            @enduml
 
         """
+
+        # Add empty tag if False
+        if filter_empty is True:
+            search = "(" + search + ") & ~{_tag == '" + TAG_EMPTY_VAL + "'}"
 
         # Retrieve data from DB
         data = db_mngr.get_data(where=search, prm_abbr=prm_abbr)

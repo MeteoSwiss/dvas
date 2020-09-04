@@ -443,3 +443,16 @@ def check_datetime(val, utc=True):
             raise TypeError(f"Bad datetime format for '{val}'")
 
     return out
+
+
+def unzip(val):
+    """Unzip list of tuple
+
+    Args:
+        val (list of tuples): Zipped list
+
+    Returns:
+        list
+
+    """
+    return list(zip(*val))

@@ -36,13 +36,17 @@ from ..config.config import Instrument as CfgInstrument
 from ..config.config import Parameter as CfgParameter
 from ..config.config import Flag as CfgFlag
 from ..config.config import Tag as CfgTag
+from ..config.definitions.tag import TAG_RAW_VAL, TAG_DERIVED_VAL, TAG_EMPTY_VAL
 from ..dvas_helper import DBAccess
 from ..dvas_helper import SingleInstanceMetaClass
 from ..dvas_helper import TypedProperty as TProp
 from ..dvas_helper import TimeIt
 from ..dvas_helper import get_by_path, check_datetime
+from ..dvas_helper import unzip
 from ..dvas_logger import localdb
 from ..dvas_environ import glob_var
+
+
 
 
 # Define
@@ -476,6 +480,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             - Logical or: |
             - logical not: ~
             - Operators: `link <http://docs.peewee-orm.com/en/latest/peewee/query_operators.html>`__
+            - Event id field: _id
             - Event datetime field: _dt
             - Instrument serial number field: _sn
             - Tag field: _tag
@@ -515,6 +520,9 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                 for where in where_find:
                     # Replace field in string
                     where = re.sub(
+                        r'_id', 'EventsInfo.event_id', where
+                    )
+                    where = re.sub(
                         r'_dt', 'EventsInfo.event_dt', where
                     )
                     where = re.sub(
@@ -526,7 +534,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
                     # Replace datetime
                     where = re.sub(
-                        r'\%([\dTZ\:\-]+)\%', r"check_datetime('\1')", where
+                        r'\%([\.\dTZ\:\-]+)\%', r"check_datetime('\1')", where
                     )
 
                     # Create query
@@ -629,7 +637,6 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                         'event': EventManager(
                             event_dt=eventsinfo_id_list[i].event_dt,
                             sn=eventsinfo_id_list[i].instrument.sn,
-                            prm_abbr=eventsinfo_id_list[i].param.prm_abbr,
                             tag_abbr=tag_abbr,
                         ),
                         'data': qry.res
@@ -729,13 +736,12 @@ class EventManager:
         Union[None, Iterable[str]], lambda x: set(x) if x else set()
     )
 
-    def __init__(self, event_dt, sn, prm_abbr, tag_abbr=None):
+    def __init__(self, event_dt, sn, tag_abbr=None):
         """Constructor
 
         Args:
             event_dt (str | datetime | pd.Timestamp): UTC datetime
             sn (str): Instrument serial number
-            prm_abbr (str):
             tag_abbr (`optional`, iterable of str): Tag abbr iterable
 
         """
@@ -743,7 +749,6 @@ class EventManager:
         # Set attributes
         self.event_dt = event_dt
         self.sn = sn
-        self.prm_abbr = prm_abbr
         self.tag_abbr = tag_abbr
 
     def __repr__(self):
@@ -757,6 +762,14 @@ class EventManager:
             val (str): New tag abbr
 
         """
+
+        #TODO
+        # consider to use the observer pattern
+        # Modify tag 'raw' -> 'derived'
+        #self.rm_tag(TAG_RAW_VAL)
+        #self.add_tag(TAG_DERIVED_VAL)
+
+        # Add new tag
         self.tag_abbr.add(val)
 
     def rm_tag(self, val):
@@ -772,7 +785,7 @@ class EventManager:
     def as_dict(self):
         """Convert EventManager to dict"""
         out = OrderedDict()
-        keys_nm = ['event_dt', 'sn', 'prm_abbr', 'tag_abbr',]
+        keys_nm = ['event_dt', 'sn', 'tag_abbr']
         for key in keys_nm:
             out.update({key: self.__getattribute__(key)})
         return out
@@ -782,17 +795,29 @@ class EventManager:
         """Sort list of event manager. Sorting order [event_dt, instr_id]
 
         Args:
-            event_list (list of EventManager):
+            event_list (list of EventManager): List to sort
 
         Returns:
+            list: Sorted event manager list
+            tuple: Original list index
 
         """
-        event_list.sort()
+
+        # Zip index
+        val = list(zip(event_list, range(len(event_list))))
+
+        # Sort
+        val.sort()
+
+        # Unzip index
+        out = unzip(val)
+
+        return list(out[0]), out[1]
 
     @property
     def sort_attr(self):
         """ list of EventManger attributes: Attributes sort order"""
-        return [self.event_dt, self.sn, self.prm_abbr]
+        return [self.event_dt, self.sn]
 
     def __eq__(self, other):
         return self.sort_attr == other.sort_attr

@@ -528,7 +528,7 @@ class MultiLayerConfigManager(OneLayerConfigManager):
 
         out = {
             key: self.get_val(node_keys, key)
-            for key in self.NODE_PARAMS_DEF.keys()
+            for key in [*self.NODE_PARAMS_DEF.keys(), *self.CONST_NODES.keys()]
         }
 
         return out

@@ -17,7 +17,6 @@ _YT:
     index_col: 0
 
     csv_delimiter: ','
-    csv_header: 1
     csv_skipinitialspace: True
 
     _trepros1:
@@ -44,7 +43,6 @@ _ZT:
     index_col: 0
 
     csv_delimiter: ';'
-    csv_header: 1
     csv_skip_blank_lines: True
 
     _trepros1:

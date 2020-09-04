@@ -64,6 +64,7 @@ NODE_PARAMS_DEF = {
 
 #: dict: Constant nodes
 CONST_NODES = {
+    CSV_HEADER_FLD_NM: 0,
     CSV_INDEX_COL_FLD_NM: INDEX_NM,
     CSV_NAMES_FLD_NM: [INDEX_NM, VALUE_NM],
 }
@@ -111,15 +112,6 @@ PARAMETER_PATTERN_PROP = {
         'anyOf': [
             {"type": "null"},
             {"type": 'string'}
-        ]
-    },
-    rf"^{CSV_HEADER_FLD_NM}$": {
-        'anyOf': [
-            {
-                "type": "string",
-                "enum": ['infer']
-            },
-            {"type": 'integer'}
         ]
     },
     rf"^{CSV_SKIPINITSPACE_FLD_NM}$": {

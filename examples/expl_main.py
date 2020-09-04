@@ -9,13 +9,16 @@ Module content: examples
 """
 
 # Import
-from dvas.data.data import load, update_db
+from dvas.data.data import TemporalMultiProfileManager
+from dvas.data.data import AltitudeMultiProfileManager
+from dvas.data.data import update_db
 from dvas.dvas_logger import LogManager
 from dvas.database.database import db_mngr
 
 
 if __name__ == '__main__':
 
+    """
     # Create database
     db_mngr.create_db()
 
@@ -24,9 +27,18 @@ if __name__ == '__main__':
         update_db('trepros1', strict=True)
         update_db('treprosu_')
         update_db('altpros1')
+    """
 
-    data_u_t = load("{_dt < %2020-01-02T120000Z%} & ~{_sn.contains('AR')}", 'treprosu_t')
-    data_t = load("{_tag == 'e1'}", 'trepros1')
+    data_t = TemporalMultiProfileManager.load("{_tag == 'e1'}", 'trepros1')
+    data_s = data_t.sort()
+    data_r = data_s.resample()
+    data_sy = data_r.synchronize()
+
+    #data_t_r = data_t.resample()
+    #data_t_sync = data_t.synchronize({'data': 'treprosy'})
+
+    #data_t_alt = AltitudeMultiProfileManager.load("{_tag == 'e1'}", 'trepros1', 'altpros1')
+
 
     # Update all parameters ending with 1 + log
     #with LogManager():
