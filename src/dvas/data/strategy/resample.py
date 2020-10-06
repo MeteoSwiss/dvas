@@ -5,7 +5,7 @@ Distributed under the terms of the GNU General Public License v3.0 or later.
 
 SPDX-License-Identifier: GPL-3.0-or-later
 
-Module contents: Resample strategy
+Module contents: Resample strategies
 
 """
 
@@ -13,10 +13,15 @@ Module contents: Resample strategy
 from abc import ABCMeta, abstractmethod
 
 # Import from current package
+from .data import TimeProfileManager
 
 
 class ResampleDataStrategy(metaclass=ABCMeta):
-    """Abstract class to manage data resample strategy"""
+    """Abstract class to manage data resample strategy.
+
+    Resample strategy goal's is to obtain an homogeneous
+    index, i.e constant interval and same for all profiles.
+    """
 
     @abstractmethod
     def resample(self, *args, **kwargs):
@@ -43,12 +48,15 @@ class TimeResampleDataStrategy(ResampleDataStrategy):
                 )
 
                 if method == 'mean':
-                    val[i].data = resampler.mean()
+                    res = resampler.mean()
 
                 elif method == 'sum':
-                    val[i].data = resampler.sum()
+                    res = resampler.sum()
 
-                val[i].data.index -= val[i].data.index[0]
+                res.index -= res.index[0]
+                val[i] = TimeProfileManager(
+                    arg.event_mngr, value=res['value'], flag=res['flag']
+                )
 
             data.update({key: val})
 

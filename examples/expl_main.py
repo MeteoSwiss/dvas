@@ -8,17 +8,33 @@ SPDX-License-Identifier: GPL-3.0-or-later
 Module content: examples
 """
 
+
+Tropopause
+Elle est définie comme l'altitude la plus basse où le gradient thermique vertical devient plus faible que -2 K par km dans une couche d'au moins 2 km d'épaisseur
+
+
 # Import
+import numpy as np
 from dvas.data.data import TemporalMultiProfileManager
 from dvas.data.data import AltitudeMultiProfileManager
 from dvas.data.data import update_db
 from dvas.dvas_logger import LogManager
 from dvas.database.database import db_mngr
-
+from dvas.database import database as db
 
 if __name__ == '__main__':
 
-    """
+    # with db.DBAccess(db.db) as _:
+    #     a = db.AndExpr(db.NotExpr(db.TagExpr('empty')), db.TagExpr('e1'))
+    #     a = db.AndExpr(a, db.ParameterExpr('trepros1'))
+    #     print(a.interpret())
+    #
+    #     # a = db.AbstractExpression.eval(
+    #     #     "tag('e1')",
+    #     # )
+    #     # print(a)
+
+
     # Create database
     db_mngr.create_db()
 
@@ -27,37 +43,48 @@ if __name__ == '__main__':
         update_db('trepros1', strict=True)
         update_db('treprosu_')
         update_db('altpros1')
-    """
 
-    data_t = TemporalMultiProfileManager.load("{_tag == 'e1'}", 'trepros1')
+
+
+    filter = "tag('e1')"
+
+    # Time
+    data_t = TemporalMultiProfileManager.load(filter, 'trepros1')
     data_s = data_t.sort()
     data_r = data_s.resample()
     data_sy = data_r.synchronize()
+    # #data_sy.plot()
+    data_sy.save({'data': 'dummy_3'})
+    test = TemporalMultiProfileManager.load(filter, 'dummy_3')
+    data_sy = test.sort()
+    print(
+        [[np.max(np.abs(arg[0] - arg[1]))
+         for arg in zip(data_sy.values[key], test.values[key])
+         ] for key in data_sy.keys]
+    )
+    data_sy.plot()
 
-    #data_t_r = data_t.resample()
-    #data_t_sync = data_t.synchronize({'data': 'treprosy'})
-
-    #data_t_alt = AltitudeMultiProfileManager.load("{_tag == 'e1'}", 'trepros1', 'altpros1')
 
 
-    # Update all parameters ending with 1 + log
-    #with LogManager():
-    #    update_db('%1')
+    # Alt
+    data_t = AltitudeMultiProfileManager.load(
+        filter, 'trepros1', 'altpros1'
+    )
+    data_s = data_t.sort()
+    data_r = data_s.resample()
+    data_sy_t = data_r.synchronize(method='time')
+    data_sy_a = data_r.synchronize(method='alt')
+    data_sy_t.save({'data': 'dummy_0', 'alt': 'dummy_1'})
 
-    # Same without log
-    #update_db('%1')
+    test = data_t = AltitudeMultiProfileManager.load(
+        filter, 'dummy_0', 'dummy_1'
+    )
+    data_sy = test.sort()
+    print(
+        [[np.max(np.abs(arg[0] - arg[1]))
+         for arg in zip(data_sy_t.values[key], test.values[key])
+         ] for key in data_sy_t.keys]
+    )
+    data_sy_t.plot()
 
-    # # Load
-    # #data_t1 = load("#e < %2020-01-02T120000Z%", 'trepros1')
-    # data_t2 = load("#tag == 'e1'", 'trepros1')
-    # data_a = load("#tag_abbr == 'b1'", 'altpros1')
-    # data_gdp = load("#tag == 'gdp'", 'trepros1')
-    #
-    # with TimeIt():
-    #     data_t2.resample(inplace=True)
-    #     data_t2.interpolate(inplace=True)
-    #     data_sync = data_t2.synchronise()
-    #
-    # data_t2.plot()
-    # data_sync.plot()
 

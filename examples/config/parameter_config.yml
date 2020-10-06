@@ -6,6 +6,10 @@
   prm_desc: &myfct '$lambda x:{"t": "Temperature", "u": "Relative humidity", "p": "Pressure", "f": "Wind speed", "d": "Wind direction"}[x.group(1)]$$lambda x:{"u_u": " uncorrelated uncertainty", "u_e": " environmental correlated uncertainty", "u_s": " spatial correlated uncertainty", "u_t": " temporal correlated uncertainty", "1": ""}[x.group(2)]$'
   # Link anchor to str
 
+- prm_abbr: '^dummy_((\d))'
+  prm_desc: 'Dummy variable $lambda x: str(x.group(1))$'
+  # Link anchor to str
+
 - prm_abbr: 'altpros1'
   # Variable can be generated from str only
   prm_desc: 'Altitude'

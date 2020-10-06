@@ -11,6 +11,7 @@ Module contents: Data manager classes used in dvas.data.data.ProfileManager
 
 # Import from external packages
 from copy import deepcopy
+from abc import ABCMeta, abstractmethod
 import numpy as np
 import pandas as pd
 
@@ -126,7 +127,7 @@ from ...database.database import db_mngr
 #         return self.data.apply(lambda x: (x >> bit_nbr) & 1)
 
 
-class ProfileManager:
+class ProfileManager(metaclass=ABCMeta):
     """Profile manager"""
 
     FLAG_BIT_NM = Flag.bit_number.name
@@ -159,12 +160,19 @@ class ProfileManager:
 
     @property
     def data(self):
-        """pd.Series: Data"""
+        """pd.DataFrame: Data"""
         return self._data
 
-    @data.setter
-    def data(self, val):
-        self._data = val
+    # @data.setter
+    # def data(self, val):
+    #
+    #     # Test index
+    #     self._test_index(val.index)
+    #
+    #     if len(self) == 0:
+    #         self._data = val
+    #     else:
+    #         self.data.update(val)
 
     @property
     def event_mngr(self):
@@ -183,10 +191,18 @@ class ProfileManager:
 
     @value.setter
     def value(self, val):
-        if isinstance(val, tuple):
-            self.data.loc[val[0], 'value'] = val[1]
+
+        # Test arg
+        self._test_index(val.index)
+
+        # Set series name
+        val.name = 'value'
+
+        if len(self) == 0:
+            self.data['value'] = val
         else:
-            self.data.loc[:, 'value'] = val
+
+            self.data.update(val)
 
     @property
     def flag(self):
@@ -195,10 +211,17 @@ class ProfileManager:
 
     @flag.setter
     def flag(self, val):
-        if isinstance(val, tuple):
-            self.data.loc[val[0], 'flag'] = val[1]
+
+        # Test arg
+        self._test_index(val.index)
+
+        # Set series name
+        val.name = 'flag'
+
+        if len(self) == 0:
+            self.data['flag'] = val
         else:
-            self.data.loc[:, 'flag'] = val
+            self.data.update(val)
 
     def copy(self):
         """Copy method"""
@@ -274,9 +297,30 @@ class ProfileManager:
         # Set data
         self.data = interp_data
 
+    @abstractmethod
+    def _test_index(self, index):
+        """Test index
 
-# class TimeProfileManager(ProfileManager):
-#     """Time profile manager """
+        Args:
+            index (pd.Index): Data index
+
+        Raises:
+            IndexError: Bad index type
+        """
+
+
+class TimeProfileManager(ProfileManager):
+    """Time profile manager """
+
+    def _test_index(self, index):
+        """Implementation"""
+
+        try:
+            assert isinstance(index, pd.TimedeltaIndex)
+
+        except AssertionError:
+            raise IndexError('Bad index type')
+
 #
 #     @staticmethod
 #     def factory(data, event_mngr, index_lag=pd.Timedelta('0s'), u_u=None, u_r=None, u_s=None, u_t=None):
@@ -347,3 +391,7 @@ class ProfileManager:
 #
 #         self._data = self.data.shift(periods)
 #         self._index_lag -= pd.Timedelta(periods, self.data.index.freq.name)
+
+
+class IndexError(Exception):
+    """Index error exception"""

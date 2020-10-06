@@ -15,16 +15,19 @@ from operator import itemgetter
 from copy import deepcopy
 import numpy as np
 import pandas as pd
+from pampy.pampy import match, List
 
 # Import from current package
 from .linker import LocalDBLinker, CSVHandler, GDPHandler
+from .strategy.data import TimeProfileManager
 from .strategy.load import LoadTimeDataStrategy
 from .strategy.load import LoadAltDataStrategy
 from .strategy.resample import TimeResampleDataStrategy
 from .strategy.sort import TimeSortDataStrategy
 from .strategy.sync import TimeSynchronizeStrategy
-from ..plot.plot import basic_plot
-from .math import crosscorr
+from .strategy.plot import TimePlotStrategy
+from .strategy.plot import AltTimePlotStartegy
+from .strategy.save import SaveTimeDataStrategy
 from ..database.database import db_mngr
 from ..database.model import Parameter
 from ..database.database import OneDimArrayConfigLinker
@@ -44,6 +47,9 @@ load_alt_stgy = LoadAltDataStrategy()
 sort_time_stgy = TimeSortDataStrategy()
 rspl_time_stgy = TimeResampleDataStrategy()
 sync_time_stgy = TimeSynchronizeStrategy()
+plot_time_stgy = TimePlotStrategy()
+plot_alt_time_stgy = AltTimePlotStartegy()
+save_time_stgy = SaveTimeDataStrategy()
 
 
 def update_db(search, strict=False):
@@ -160,7 +166,7 @@ class MultiProfileManager(metaclass=ABCMeta):
     def __init__(
             self,
             load_stgy, resample_stgy, sort_stgy,
-            sync_stgy, plot_stgy
+            sync_stgy, plot_stgy, save_stgy,
     ):
 
         # Init strategy
@@ -169,14 +175,35 @@ class MultiProfileManager(metaclass=ABCMeta):
         self._sort_stgy = sort_stgy
         self._sync_stgy = sync_stgy
         self._plot_stgy = plot_stgy
+        self._save_stgy = save_stgy
 
         # Init attributes
         self._data = {}
 
     @property
+    def keys(self):
+        """list: Data keys"""
+        return self._DATA_TYPES.keys()
+
+    @property
     def data(self):
         """dict of list of ProfileManager: Data"""
         return self._data
+
+    @data.setter
+    def data(self, val):
+
+        # Test
+        pattern = {
+            key: List[value]
+            for key, value in self._DATA_TYPES.items()
+        }
+        assert match(
+            val, pattern,
+            True, default=False
+        ), 'Bad type for value'
+
+        self._data = val
 
     @property
     def datas(self):
@@ -206,105 +233,187 @@ class MultiProfileManager(metaclass=ABCMeta):
 
     @classmethod
     def load(cls, *args, **kwargs):
-        """Load method"""
+        """Load classmethod
+
+        Returns:
+            MultiProfileManager
+
+        """
 
         # Create instance
         inst = cls()
 
         # Load data
         if len(args) == 1:
-            inst._data = args[0]
+            inst.data = args[0]
         else:
-            inst._data = inst._load_stgy.load(*args, **kwargs)
+            inst.data = inst._load_stgy.load(*args, **kwargs)
 
         return inst
 
-    def resample(self, *args, **kwargs):
+    def resample(self, *args, inplace=False, **kwargs):
         """Resample method
 
+        Args:
+            *args: Variable length argument list.
+            inplace (bool, `optional`): If True, perform operation in-place.
+                Default to False.
+            **kwargs: Arbitrary keyword arguments.
+
         Returns:
-            MultiProfileManager
+            MultiProfileManager if inplace is True, otherwise None
 
         """
-        out = self._resample_stgy.resample(self.copy().data, *args, **kwargs)
-        return self.load(out)
 
-    def sort(self):
+        # Resample
+        out = self._resample_stgy.resample(self.copy().data, *args, **kwargs)
+
+        # Modify inplace or not
+        if inplace:
+            self.data = out
+            res = None
+        else:
+            res = self.load(out)
+
+        return res
+
+    def sort(self, inplace=False):
         """Sort method
 
+        Args:
+            inplace (bool, `optional`): If True, perform operation in-place
+                Default to False.
         Returns
+            MultiProfileManager if inplace is True, otherwise None
+
+        """
+
+        # Sort
+        out = self._sort_stgy.sort(self.copy().data)
+
+        # Modify inplace or not
+        if inplace:
+            self.data = out
+            res = None
+        else:
+            res = self.load(out)
+
+        return res
+
+    def synchronize(self, *args, inplace=False, **kwargs):
+        """Synchronize method
+
+        Args:
+            *args: Variable length argument list.
+            inplace (bool, `optional`): If True, perform operation in-place.
+                Default to False.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns
+            MultiProfileManager if inplace is True, otherwise None
+
+        """
+
+        # Synchronize
+        out = self._sync_stgy.synchronize(self.copy().data, 'data', *args, **kwargs)
+
+        # Modify inplace or not
+        if inplace:
+            self.data = out
+            res = None
+        else:
+            res = self.load(out)
+
+        return res
+
+    def plot(self, *args, **kwargs):
+        """Plot method
+
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
             None
 
         """
-        out = self._sort_stgy.sort(self.copy().data)
-        return self.load(out)
+        self._plot_stgy.plot(self.values, self.event_mngrs, *args, **kwargs)
 
-    def synchronize(self, *args, **kwargs):
-        """Synchronize method
+    def save(self, prm_abbr):
+        """Save method
 
-        Returns
-            MultiProfileManager
+        Args:
+            prm_abbr (dict): Parameter abbr.
+
+        Returns:
+            None
 
         """
-        out = self._sync_stgy.synchronize(self.copy().data, 'data', *args, **kwargs)
-        return self.load(out)
+
+        # Test
+        assert match(
+            prm_abbr, {key: str for key in self._DATA_TYPES.keys()},
+            True, default=False
+        )
+
+        # Call save strategy
+        self._save_stgy.save(self.copy().values, self.event_mngrs, prm_abbr)
 
 
 class TemporalMultiProfileManager(MultiProfileManager):
     """Temporal multi profile manager"""
 
+    _DATA_TYPES = {'data': TimeProfileManager}
+
     def __init__(self):
         super().__init__(
             load_time_stgy, rspl_time_stgy, sort_time_stgy,
-            sync_time_stgy, None
+            sync_time_stgy, plot_time_stgy, save_time_stgy
         )
 
 
 class AltitudeMultiProfileManager(MultiProfileManager):
     """Altitude multi profile manager"""
 
+    _DATA_TYPES = {'data': TimeProfileManager, 'alt': TimeProfileManager}
+
     def __init__(self):
         super().__init__(
-            load_alt_stgy, None, None,
-            sync_time_stgy, None
+            load_alt_stgy, rspl_time_stgy, sort_time_stgy,
+            sync_time_stgy, plot_alt_time_stgy, save_time_stgy
         )
 
+    def synchronize(self, *args, inplace=False, method='time', **kwargs):
+        """Overwrite of synchronize method
 
-    def map(self, func, inplace, *args, **kwargs):
-        """Map individual TimeProfileManager"""
-        if inplace:
-            MultiTimeProfileManager(
-                map(lambda x: func(x, *args, **kwargs), self)
-            )
-            out = None
+        Args:
+            *args: Variable length argument list.
+            inplace (bool, `optional`): If True, perform operation in-place.
+                Default to False.
+            method (str, `optional`): Method used to synchronize series.
+                Default to 'time'
+                - 'time': Synchronize on time
+                - 'alt': Synchronize on altitude
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns
+            MultiProfileManager if inplace is True, otherwise None
+
+        """
+
+        # Synchronize
+        if method == 'time':
+            out = self._sync_stgy.synchronize(self.copy().data, 'data', *args, **kwargs)
         else:
-            out = self.copy()
-            MultiTimeProfileManager(
-                map(lambda x: func(x, *args, **kwargs), out)
-            )
-        return out
+            #TODO modify to integrate linear AND offset compesation
+            out = self._sync_stgy.synchronize(self.copy().data, 'alt', *args, **kwargs)
 
+        # Modify inplace or not
+        if inplace:
+            self.data = out
+            res = None
+        else:
+            res = self.load(out)
 
-    def append(self, value):
-        """Overwrite of append method"""
-        assert isinstance(value, (TimeProfileManager, EmptyProfileManager))
-        super().append(value)
+        return res
 
-    def resample(self, interval='1s', method='mean', inplace=False):
-        """Resample method"""
-        return self.map(
-            TimeProfileManager.resample, inplace=inplace,
-            interval=interval, method=method
-        )
-
-    def interpolate(self, inplace=False):
-        """Interpolate method"""
-        return self.map(
-            TimeProfileManager.interpolate, inplace=inplace
-        )
-
-
-    def plot(self, **kwargs):
-        """Plot method"""
-
-        basic_plot(self, **kwargs)

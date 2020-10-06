@@ -47,7 +47,7 @@ def from_rs92():
                 new_fid.setncattr('description', 'Dummy ' + new_gdp_type + ' GDP - version 001 - modified data from real Gruan Data Product')
                 new_fid.event_dt = fid.getncattr('g.Ascent.StandardTime')
                 new_fid.rig = '1'
-                new_fid.event_id = '1'
+                new_fid.event_id = '1' if re.search(r'2018\-01\-10', new_fid.event_dt) else '2'
                 new_fid.sn = new_gdp_type + f'-00{i}'
                 new_fid.station = meassite
                 new_fid.sensor_temp_u_enlarged = 0.1
@@ -118,7 +118,7 @@ def from_rs92():
                 {
                     'time': time,
                     'temp (°C)': new_gdp_fid['temp'][laps:] - 273.15 + sin_rand(n_data, 10),
-                    'alt (m)': new_gdp_fid['temp'][laps:] + sin_rand(n_data, 10)
+                    'alt (m)': new_gdp_fid['alt'][laps:] + sin_rand(n_data, 10)
                 }
             )
             data.to_csv(test_file, sep=',', index=False, float_format='    %.2f')
@@ -153,7 +153,7 @@ def from_rs41():
                 new_fid.setncattr('description', 'Dummy ' + new_gdp_type + ' GDP - version 001 - modified data from real Gruan Data Product')
                 new_fid.event_dt = fid.getncattr('g.Measurement.StandardTime')
                 new_fid.rig = '1'
-                new_fid.event_id = '1'
+                new_fid.event_id = '1' if re.search(r'2018\-01\-10', new_fid.event_dt) else '2'
                 new_fid.sn = new_gdp_type + f'-00{i}'
                 new_fid.station = meassite
                 new_fid.sensor_temp_u_enlarged = 0.1
@@ -229,7 +229,7 @@ def from_rs41():
                 {
                     'time': time,
                     'temp (°C)': new_gdp_fid['temp'][laps:] - 273.15 + sin_rand(n_data, 10),
-                    'alt (m)': new_gdp_fid['temp'][laps:] + sin_rand(n_data, 10)
+                    'alt (m)': new_gdp_fid['alt'][laps:] + sin_rand(n_data, 10)
                 }
             )
             data.to_csv(test_file, sep=';', index=False, line_terminator=os.linesep + os.linesep, float_format='%.2f')

@@ -11,10 +11,17 @@ Module contents: Loader strategies
 
 # Import from external packages
 from abc import ABCMeta, abstractmethod
+import pandas as pd
 
 # Import from current package
-from .data import ProfileManager
+from .data import TimeProfileManager
 from ..linker import LocalDBLinker
+from ...database.model import Data
+
+
+# Define
+INDEX_NM = Data.index.name
+VALUE_NM = Data.value.name
 
 
 class LoadDataStrategy(metaclass=ABCMeta):
@@ -40,8 +47,13 @@ class LoadTimeDataStrategy(LoadDataStrategy):
         # Test
         assert len(res) > 0, "No data"
 
+        # Format dataframe index
+        for i, arg in enumerate(res):
+            res[i]['data'][INDEX_NM] = pd.TimedeltaIndex(arg['data'][INDEX_NM], 's')
+            res[i]['data'] = arg['data'].set_index([INDEX_NM])[VALUE_NM]
+
         # Load data
-        out = [ProfileManager(data['event'], data['data']) for data in res]
+        out = [TimeProfileManager(data['event'], value=data['data']) for data in res]
 
         return {'data': out}
 
@@ -56,14 +68,6 @@ class LoadAltDataStrategy(LoadTimeDataStrategy):
         out_prm = super().load(search, prm_abbr)
 
         # Load alt
-        dt_str = f"%{out_prm['data'][0].event_mngr.event_dt:%Y%m%dT%H:%M:%SZ}%"
-        sn_str = f"'{out_prm['data'][0].event_mngr.sn}'"
-        search_alt = "{_dt == %s} & {_sn == %s}" % (dt_str, sn_str)
-        alt_res = self._db_linker.load(search_alt, alt_prm_abbr)
+        out_alt_prm = super().load(search, alt_prm_abbr)
 
-        # Test
-        assert len(alt_res) == 1, "No or too many alt data"
-
-        out_alt_prm = ProfileManager(alt_res[0]['data'], alt_res[0]['event'])
-
-        return dict({'alt': out_alt_prm}, **out_prm)
+        return {'data': out_prm['data'], 'alt': out_alt_prm['data']}

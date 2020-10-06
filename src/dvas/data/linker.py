@@ -84,7 +84,7 @@ class AbstractHandler(Handler):
     .. uml::
 
         @startuml
-        hide footbox
+        footer Chain of responsibility design pattern
 
         class AbstractHandler {
             set_next(handler)
@@ -451,7 +451,6 @@ class CSVHandler(FileHandler):
         event = EventManager(
             event_dt=metadata[EVENT_DT_FLD_NM],
             sn=metadata[SN_FLD_NM],
-            prm_abbr=prm_abbr,
             tag_abbr=metadata[TAG_FLD_NM] + [TAG_RAW_VAL],
         )
 
@@ -518,6 +517,7 @@ class CSVHandler(FileHandler):
         # Append data
         out = {
             'event': event,
+            'prm_abbr': prm_abbr,
             'data': data,
             'source_info': self.apply_file_check_rule(file_path)
         }
@@ -586,7 +586,6 @@ class GDPHandler(FileHandler):
         event = EventManager(
             event_dt=metadata[EVENT_DT_FLD_NM],
             sn=metadata[SN_FLD_NM],
-            prm_abbr=prm_abbr,
             tag_abbr=metadata[TAG_FLD_NM] + [TAG_RAW_VAL, TAG_GDP_VAL],
         )
 
@@ -640,6 +639,7 @@ class GDPHandler(FileHandler):
         out = {
             'event': event,
             'data': data,
+            'prm_abbr': prm_abbr,
             'source_info': self.apply_file_check_rule(file_path)
         }
 
@@ -657,6 +657,31 @@ class DataLinker(ABC):
     def save(self, *args, **kwargs):
         """Data saving method"""
 
+    def to_frame(self, data, key):
+        """Convert to pd.DataFrame
+
+        Args:
+            data (pd.DataFrame or pd.Series): Data dict to convert
+            key (str): Data key
+
+        Returns:
+            pd.Series
+
+        """
+
+        if isinstance(data[key], pd.Series):
+            data[key] = data[key].to_frame(VALUE_NM)
+            data[key].index.name = INDEX_NM
+            data[key].reset_index(inplace=True)
+
+        elif len(data[key].columns) == 1:
+            data[key].columns = [VALUE_NM]
+            data[key].index.name = INDEX_NM
+            data[key].reset_index(inplace=True)
+
+        else:
+            data[key].columns = [INDEX_NM, VALUE_NM]
+
 
 class LocalDBLinker(DataLinker):
     """Local DB data linker """
@@ -667,7 +692,8 @@ class LocalDBLinker(DataLinker):
         Args:
             search (str): Data loader search criterion
             prm_abbr (str): Positional parameter abbr
-            filter_empty (bool): Filter empty data from search
+            filter_empty (bool, `optional`): Filter empty data from search.
+                Default to True.
 
         Returns:
             list of pd.DataFrame
@@ -677,24 +703,17 @@ class LocalDBLinker(DataLinker):
             @startuml
             hide footbox
 
-            LocalDBLinker -> DatabaseManager: get_data(where=search, prm_abbr=prm_abbr)
+            LocalDBLinker -> DatabaseManager: get_data()
             LocalDBLinker <- DatabaseManager : data
 
             @enduml
 
         """
 
-        # Add empty tag if False
-        if filter_empty is True:
-            search = "(" + search + ") & ~{_tag == '" + TAG_EMPTY_VAL + "'}"
-
         # Retrieve data from DB
-        data = db_mngr.get_data(where=search, prm_abbr=prm_abbr)
-
-        # Format dataframe index
-        for arg in data:
-            arg['data'][INDEX_NM] = pd.TimedeltaIndex(arg['data'][INDEX_NM], 's')
-            arg['data'] = arg['data'].set_index([INDEX_NM])[VALUE_NM]
+        data = db_mngr.get_data(
+            where=search, prm_abbr=prm_abbr, filter_empty=filter_empty
+        )
 
         return data
 
@@ -702,11 +721,17 @@ class LocalDBLinker(DataLinker):
         """Save data method
 
         Args:
-          data_list (list of dict): {'data': pd.Series, 'event': EventManager'}
+            data_list (list of dict):
+                [{'data': pd.DataFrame or pd.Series, 'event': EventManager', 'prm_abbr': str}]
 
         """
 
         for args in data_list:
+
+            # Convert data to pd.DataFrame
+            self.to_frame(args, 'data')
+
+            # Add data to DB
             db_mngr.add_data(**args)
 
 

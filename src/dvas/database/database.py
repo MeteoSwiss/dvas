@@ -12,7 +12,10 @@ Module contents: Local database management tools
 # Import from python packages
 import pprint
 import re
+from abc import abstractmethod, ABCMeta
 from itertools import chain, zip_longest
+import operator
+from functools import reduce
 from collections import OrderedDict
 from math import floor
 from threading import Thread
@@ -45,8 +48,6 @@ from ..dvas_helper import get_by_path, check_datetime
 from ..dvas_helper import unzip
 from ..dvas_logger import localdb
 from ..dvas_environ import glob_var
-
-
 
 
 # Define
@@ -371,12 +372,13 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         return out
 
     @staticmethod
-    def add_data(data, event, source_info=None):
+    def add_data(data, event, prm_abbr, source_info=None):
         """Add data
 
         Args:
             data (pd.Series):
             event (EventManager):
+            prm_abbr (str):
             source_info (str, optional): Data source
 
         """
@@ -396,11 +398,11 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
                 # Get/Check parameter
                 param = Parameter.get_or_none(
-                    Parameter.prm_abbr == event.prm_abbr
+                    Parameter.prm_abbr == prm_abbr
                 )
                 if not param:
-                    localdb.insert.error(
-                        "prm_abbr '%s' is missing in DB", event.prm_abbr
+                    localdb.error(
+                        "prm_abbr '%s' is missing in DB", prm_abbr
                     )
                     raise DBInsertError()
 
@@ -472,139 +474,155 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             raise DBInsertError(exc)
 
     @staticmethod
-    def _get_eventsinfo_id(where_arg, prm_abbr):
-        """Get events info
-
-        Search syntax:
-            - Logical and: &
-            - Logical or: |
-            - logical not: ~
-            - Operators: `link <http://docs.peewee-orm.com/en/latest/peewee/query_operators.html>`__
-            - Event id field: _id
-            - Event datetime field: _dt
-            - Instrument serial number field: _sn
-            - Tag field: _tag
-            - Datetime: %<any ISO 8601 UTC datetime>% (`link <https://fr.wikipedia.org/wiki/ISO_8601>`__)
-
-        """
-
-        # Define
-        pat_split = r'\{[^\n\r\t\{\}]+\}'
-        pat_find = r'\{([^\n\r\t\{\}]+)\}'
-
-        # Substitute spaces
-        where_arg = re.sub(r'[\s\t\n\r]+', '', where_arg)
-
-        # Split and find kernel logical conditions
-        where_split = re.split(pat_split, where_arg)
-        where_find = re.findall(pat_find, where_arg)
-
-        # Create base request
-        qry_base = (
-            EventsInfo
-            .select().distinct()
-            .join(Instrument).switch(EventsInfo)
-            .join(Parameter).switch(EventsInfo)
-            .join(EventsTags).join(Tag)
-        )
+    def _get_eventsinfo_id(where_arg, prm_abbr, filter_empty):
+        """Get events id"""
 
         try:
-            with DBAccess(db) as _:
+            out = list(SearchEventExpr.eval(where_arg, prm_abbr, filter_empty))
 
-                # Set of all event_id
-                all_event_id = set(arg.id for arg in EventsInfo.select())
-
-                # Search for kernel logical condition
-                search_res = []
-
-                for where in where_find:
-                    # Replace field in string
-                    where = re.sub(
-                        r'_id', 'EventsInfo.event_id', where
-                    )
-                    where = re.sub(
-                        r'_dt', 'EventsInfo.event_dt', where
-                    )
-                    where = re.sub(
-                        r'_sn', 'Instrument.sn', where
-                    )
-                    where = re.sub(
-                        r'_tag', 'Tag.tag_abbr', where
-                    )
-
-                    # Replace datetime
-                    where = re.sub(
-                        r'\%([\.\dTZ\:\-]+)\%', r"check_datetime('\1')", where
-                    )
-
-                    # Create query
-                    qry_tmp = qry_base.where(
-                        eval(
-                            where,
-                            {
-                                'EventsInfo': EventsInfo,
-                                'Instrument': Instrument,
-                                'Tag': Tag,
-                                'check_datetime': check_datetime
-                            }
-                        ) &
-                        (Parameter.prm_abbr == prm_abbr)
-                    )
-
-                    # Execute query
-                    search_res.append(
-                        str(
-                            set(arg.id for arg in qry_tmp.iterator())
-                        )
-                    )
-
-                # Eval set logical expression
-                # (Replace ~ by all_event_id.difference)
-                res = re.sub(
-                    r"\~",
-                    'all_event_id.difference',
-                    ''.join(
-                        [arg for arg in chain(
-                            *zip_longest(
-
-                                # Split formula
-                                where_split,
-
-                                # Find formula and substitute
-                                ['(' + arg + ')' for arg in search_res]
-                            )
-                        ) if arg is not None]
-                    )
-                )
-
-                re.sub(r"(?<!set)\(\)", '', res)
-                out = list(eval(res, {'all_event_id': all_event_id}))
-
-                # Convert id as table element
-                qry = EventsInfo.select().where(EventsInfo.id.in_(out))
-                out = [arg for arg in qry.iterator()]
-
-        #TODO Detail exception
+        # TODO Detail exception
         except Exception as exc:
             print(exc)
-            #TODO Decide if raise or not
+            # TODO Decide if raise or not
             out = []
 
         return out
 
+
+    # def _get_eventsinfo_id(where_arg, prm_abbr):
+    #     """Get events info
+    #
+    #     Search syntax:
+    #         - Logical and: &
+    #         - Logical or: |
+    #         - logical not: ~
+    #         - Operators: `link <http://docs.peewee-orm.com/en/latest/peewee/query_operators.html>`__
+    #         - Event id field: _id
+    #         - Event datetime field: _dt
+    #         - Instrument serial number field: _sn
+    #         - Tag field: _tag
+    #         - Datetime: %<any ISO 8601 UTC datetime>% (`link <https://fr.wikipedia.org/wiki/ISO_8601>`__)
+    #
+    #     """
+    #
+    #     # Define
+    #     pat_split = r'\{[^\n\r\t\{\}]+\}'
+    #     pat_find = r'\{([^\n\r\t\{\}]+)\}'
+    #
+    #     # Substitute spaces
+    #     where_arg = re.sub(r'[\s\t\n\r]+', '', where_arg)
+    #
+    #     # Split and find kernel logical conditions
+    #     where_split = re.split(pat_split, where_arg)
+    #     where_find = re.findall(pat_find, where_arg)
+    #
+    #     # Create base request
+    #     qry_base = (
+    #         EventsInfo
+    #         .select().distinct()
+    #         .join(Instrument).switch(EventsInfo)
+    #         .join(Parameter).switch(EventsInfo)
+    #         .join(EventsTags).join(Tag)
+    #     )
+    #
+    #     try:
+    #         with DBAccess(db) as _:
+    #
+    #             # Set of all event_id
+    #             all_event_id = set(arg.id for arg in EventsInfo.select())
+    #
+    #             # Search for kernel logical condition
+    #             search_res = []
+    #
+    #             for where in where_find:
+    #                 # Replace field in string
+    #                 where = re.sub(
+    #                     r'_id', 'EventsInfo.event_id', where
+    #                 )
+    #                 where = re.sub(
+    #                     r'_dt', 'EventsInfo.event_dt', where
+    #                 )
+    #                 where = re.sub(
+    #                     r'_sn', 'Instrument.sn', where
+    #                 )
+    #                 where = re.sub(
+    #                     r'_tag', 'Tag.tag_abbr', where
+    #                 )
+    #
+    #                 # Replace datetime
+    #                 where = re.sub(
+    #                     r'\%([\.\dTZ\:\-]+)\%', r"check_datetime('\1')", where
+    #                 )
+    #
+    #                 # Create query
+    #                 qry_tmp = qry_base.where(
+    #                     eval(
+    #                         where,
+    #                         {
+    #                             'EventsInfo': EventsInfo,
+    #                             'Instrument': Instrument,
+    #                             'Tag': Tag,
+    #                             'check_datetime': check_datetime
+    #                         }
+    #                     ) &
+    #                     (Parameter.prm_abbr == prm_abbr)
+    #                 )
+    #
+    #                 # Execute query
+    #                 search_res.append(
+    #                     str(
+    #                         set(arg.id for arg in qry_tmp.iterator())
+    #                     )
+    #                 )
+    #
+    #             # Eval set logical expression
+    #             # (Replace ~ by all_event_id.difference)
+    #             res = re.sub(
+    #                 r"\~",
+    #                 'all_event_id.difference',
+    #                 ''.join(
+    #                     [arg for arg in chain(
+    #                         *zip_longest(
+    #
+    #                             # Split formula
+    #                             where_split,
+    #
+    #                             # Find formula and substitute
+    #                             ['(' + arg + ')' for arg in search_res]
+    #                         )
+    #                     ) if arg is not None]
+    #                 )
+    #             )
+    #
+    #             re.sub(r"(?<!set)\(\)", '', res)
+    #             out = list(eval(res, {'all_event_id': all_event_id}))
+    #
+    #             # Convert id as table element
+    #             qry = EventsInfo.select().where(EventsInfo.id.in_(out))
+    #             out = [arg for arg in qry.iterator()]
+    #
+    #     #TODO Detail exception
+    #     except Exception as exc:
+    #         print(exc)
+    #         #TODO Decide if raise or not
+    #         out = []
+    #
+    #     return out
+
     @TimeIt()
-    def get_data(self, where, prm_abbr):
+    def get_data(self, where, prm_abbr, filter_empty):
         """Get data from DB
 
         Args:
             where:
             prm_abbr:
+            filter_empty:
 
         Returns:
 
         """
         # Get event_info id
-        eventsinfo_id_list = self._get_eventsinfo_id(where, prm_abbr)
+        eventsinfo_id_list = self._get_eventsinfo_id(where, prm_abbr, filter_empty)
 
         if not eventsinfo_id_list:
             localdb.warning(
@@ -730,6 +748,9 @@ class EventManager:
     #: str: Instrument id
     sn = TProp(str, lambda *x: x[0])
     #: str: Parameter abbr
+
+    #TODO
+    # Delet prm_Abbr
     prm_abbr = TProp(re.compile(rf'^({PARAM_PAT})$'), lambda *x: x[0])
     #: str: Tag abbr
     tag_abbr = TProp(
@@ -836,6 +857,233 @@ class EventManager:
 
     def __ge__(self, other):
         return self.sort_attr >= other.sort_attr
+
+
+class SearchEventExpr(metaclass=ABCMeta):
+    """
+    Declare an abstract Interpret operation that is common to all nodes
+    in the abstract syntax tree.
+
+    .. uml::
+
+        @startuml
+        footer Interpreter design pattern
+
+        class SearchEventExpr {
+            {abstract} interpret()
+            {static} eval()
+        }
+
+        class LogicalSearchEventExpr {
+            _expression: List
+            interpret()
+            {abstract} fct(*arg)
+        }
+
+        SearchEventExpr <|-- LogicalSearchEventExpr : extends
+        LogicalSearchEventExpr o--> SearchEventExpr
+
+        class TerminalSearchEventExpr {
+            interpret()
+            {abstract} get_filter()
+        }
+
+        SearchEventExpr <|-- TerminalSearchEventExpr : extends
+
+        @enduml
+
+    """
+
+    @abstractmethod
+    def interpret(self):
+        """Interpreter method"""
+
+    @staticmethod
+    def eval(str_expr, prm_abbr, filter_empty):
+        """Evaluate search expression
+
+        Args:
+            str_expr (str): Expression to evaluate
+            prm_abbr (str): Search parameter
+            filter_empty (bool): Filter for empty data
+
+        Returns:
+            List of EventsInfo
+
+        """
+
+        str_expr_dict = {
+            'all': AllExpr,
+            'datetime': DatetimeExpr, 'date': DatetimeExpr, 'dt': DatetimeExpr,
+            'serialnumber': SerialNumberExpr, 'sn': SerialNumberExpr,
+            'tag': TagExpr,
+            'parameter': ParameterExpr, 'prm': ParameterExpr, 'prm_abbr': ParameterExpr,
+            'and_': AndExpr,
+            'or_': OrExpr,
+            'not_': NotExpr
+        }
+
+        with DBAccess(db) as _:
+
+            # Eval expression
+            expr = eval(str_expr, str_expr_dict)
+
+            # Add empty tag if False
+            if filter_empty is True:
+                expr = AndExpr(NotExpr(TagExpr(TAG_EMPTY_VAL)), expr)
+
+            # Filter parameter
+            expr = AndExpr(ParameterExpr(prm_abbr), expr)
+
+            # Interpret expression
+            expr_res = expr.interpret()
+
+            # Convert id as table element
+            qry = EventsInfo.select().where(EventsInfo.id.in_(expr_res))
+            out = [arg for arg in qry.iterator()]
+
+            return out
+
+
+class LogicalSearchEventExpr(SearchEventExpr):
+    """
+    Implement an interpret operation for nonterminal symbols in the grammar.
+    """
+
+    def __init__(self, *args):
+        self._expression = args
+
+    def interpret(self):
+        """Terminal interpreter method"""
+        return reduce(
+            self.fct,
+            [arg.interpret() for arg in self._expression]
+        )
+
+    @abstractmethod
+    def fct(self, *args):
+        """Logical function between expression args"""
+
+
+class AndExpr(LogicalSearchEventExpr):
+    """And operation"""
+
+    def fct(self, a, b):
+        """Implement fct method"""
+        return operator.and_(a, b)
+
+
+class OrExpr(LogicalSearchEventExpr):
+    """Or operation"""
+
+    def fct(self, a, b):
+        """Implement fct method"""
+        return operator.or_(a, b)
+
+
+class NotExpr(LogicalSearchEventExpr):
+    """Not operation"""
+
+    def __init__(self, arg):
+        self._expression = [AllExpr(), arg]
+
+    def fct(self, a, b):
+        """Implement fct method"""
+        return operator.sub(a, b)
+
+
+class TerminalSearchEventExpr(SearchEventExpr):
+    """
+    Implement an interpret operation associated with terminal symbols in
+    the grammar.
+    """
+
+    QRY_BASE = (
+        EventsInfo
+        .select().distinct()
+        .join(Instrument).switch(EventsInfo)
+        .join(Parameter).switch(EventsInfo)
+        .join(EventsTags).join(Tag)
+    )
+
+    def __init__(self, arg):
+        self.expression = arg
+
+    def interpret(self):
+        """Terminal expression interpreter"""
+        return set(
+            arg.id for arg in
+            self.QRY_BASE.where(self.get_filter()).iterator()
+        )
+
+    @abstractmethod
+    def get_filter(self):
+        """Return query where method filter"""
+
+
+class AllExpr(TerminalSearchEventExpr):
+    """All filter"""
+
+    def __init__(self):
+        pass
+
+    def get_filter(self):
+        """Implement get_filter method"""
+        return
+
+
+class DatetimeExpr(TerminalSearchEventExpr):
+    """Datetime filter"""
+
+    _OPER_DICT = {
+        '==': operator.eq,
+        '!=': operator.ne,
+        '>': operator.gt,
+        '<': operator.lt,
+        '>=': operator.ge,
+        '>=': operator.le,
+    }
+    expression = TProp(Union[str, Timestamp, datetime], check_datetime)
+
+    def __init__(self, arg, op='=='):
+        self.expression = arg
+        self._op = op
+
+    def get_filter(self):
+        """Implement get_filter method"""
+        return self._OPER_DICT[self._op](EventsInfo.event_dt, self.expression)
+
+
+class SerialNumberExpr(TerminalSearchEventExpr):
+    """Serial number filter"""
+
+    expression = TProp(str, lambda *x: x[0])
+
+    def get_filter(self):
+        """Implement get_filter method"""
+        return Instrument.sn == self.expression
+
+
+class TagExpr(TerminalSearchEventExpr):
+    """Tag filter"""
+
+    expression = TProp(
+        Union[str, Iterable[str]], lambda x: set([x]) if isinstance(x, str) else set(x)
+    )
+
+    def get_filter(self):
+        """Implement get_filter method"""
+        return Tag.tag_abbr.in_(self.expression)
+
+
+class ParameterExpr(TerminalSearchEventExpr):
+    """Parameter filter"""
+
+    expression = TProp(str, lambda x: x)
+
+    def get_filter(self):
+        """Implement get_filter method"""
+        return Parameter.prm_abbr == self.expression
 
 
 class DBCreateError(Exception):

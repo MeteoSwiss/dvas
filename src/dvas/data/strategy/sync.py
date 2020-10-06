@@ -14,6 +14,7 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 
 # Import from current package
+from .data import TimeProfileManager
 from ..math import crosscorr
 
 
@@ -57,12 +58,12 @@ class TimeSynchronizeStrategy(SynchronizeStrategy):
         )
         assert tst is True, 'Unsorted data or of different length'
 
+        #TODO
+        #Check datetime: It makes no sens to synchronize data of unequal timedelta index
+
         # Create values and datas
         values = {
             key: [arg.value for arg in val] for key, val in data.items()
-        }
-        datas = {
-            key: [arg.data for arg in val] for key, val in data.items()
         }
 
         # Select reference data
@@ -82,9 +83,12 @@ class TimeSynchronizeStrategy(SynchronizeStrategy):
             idx_offset.append(np.argmax(corr_res))
 
         # Apply shift to data
-        for key, val in datas.items():
+        for key, val in data.items():
             for i, arg in enumerate(val):
-                val[i] = arg.shift(window_values[idx_offset[i]])
+                res = arg.data.shift(window_values[idx_offset[i]])
+                val[i] = TimeProfileManager(
+                    arg.event_mngr, value=res['value'], flag=res['flag']
+                )
 
             data.update({key: val})
 
