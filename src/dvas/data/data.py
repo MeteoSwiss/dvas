@@ -10,11 +10,8 @@ Module contents: Data management
 """
 
 # Import from external packages
-from abc import ABCMeta, abstractmethod
-from operator import itemgetter
+from abc import abstractmethod
 from copy import deepcopy
-import numpy as np
-import pandas as pd
 from pampy.pampy import match, List
 
 # Import from current package
@@ -33,6 +30,7 @@ from ..database.model import Parameter
 from ..database.database import OneDimArrayConfigLinker
 from ..dvas_logger import localdb, rawcsv
 from ..dvas_environ import path_var
+from ..dvas_helper import RequiredAttrMetaClass
 
 
 # Define
@@ -159,8 +157,15 @@ def update_db(search, strict=False):
         )
 
 
-class MultiProfileManager(metaclass=ABCMeta):
+class MultiProfileManager(metaclass=RequiredAttrMetaClass):
     """Multi profile manager"""
+
+    REQUIRED_ATTRIBUTES = {
+        '_DATA_TYPES': dict
+    }
+
+    #: dict: Data type with corresponding key name
+    _DATA_TYPES = None
 
     @abstractmethod
     def __init__(
@@ -229,27 +234,36 @@ class MultiProfileManager(metaclass=ABCMeta):
         return self.data[item]
 
     def copy(self):
+        """Retrun a deep copy of the object"""
         return deepcopy(self)
 
-    @classmethod
-    def load(cls, *args, **kwargs):
+    def load(self, *args, inplace=False, **kwargs):
         """Load classmethod
+
+        Args:
+            inplace (bool, `optional`): If True, perform operation in-place.
+                Default to False.
 
         Returns:
             MultiProfileManager
 
         """
 
-        # Create instance
-        inst = cls()
-
         # Load data
         if len(args) == 1:
-            inst.data = args[0]
+            data = args[0]
         else:
-            inst.data = inst._load_stgy.load(*args, **kwargs)
+            data = self._load_stgy.load(*args, **kwargs)
 
-        return inst
+        # Modify inplace or not
+        if inplace is True:
+            self.data = data
+            res = None
+        else:
+            res = self.copy()
+            res.data = data
+
+        return res
 
     def resample(self, *args, inplace=False, **kwargs):
         """Resample method
@@ -268,12 +282,8 @@ class MultiProfileManager(metaclass=ABCMeta):
         # Resample
         out = self._resample_stgy.resample(self.copy().data, *args, **kwargs)
 
-        # Modify inplace or not
-        if inplace:
-            self.data = out
-            res = None
-        else:
-            res = self.load(out)
+        # Load
+        res = self.load(out, inplace=inplace)
 
         return res
 
@@ -291,12 +301,8 @@ class MultiProfileManager(metaclass=ABCMeta):
         # Sort
         out = self._sort_stgy.sort(self.copy().data)
 
-        # Modify inplace or not
-        if inplace:
-            self.data = out
-            res = None
-        else:
-            res = self.load(out)
+        # Load
+        res = self.load(out, inplace=inplace)
 
         return res
 
@@ -317,14 +323,11 @@ class MultiProfileManager(metaclass=ABCMeta):
         # Synchronize
         out = self._sync_stgy.synchronize(self.copy().data, 'data', *args, **kwargs)
 
-        # Modify inplace or not
-        if inplace:
-            self.data = out
-            res = None
-        else:
-            res = self.load(out)
+        # Load
+        res = self.load(out, inplace=inplace)
 
         return res
+
 
     def plot(self, *args, **kwargs):
         """Plot method
@@ -416,4 +419,3 @@ class AltitudeMultiProfileManager(MultiProfileManager):
             res = self.load(out)
 
         return res
-

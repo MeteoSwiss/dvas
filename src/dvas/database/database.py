@@ -39,7 +39,7 @@ from ..config.config import Instrument as CfgInstrument
 from ..config.config import Parameter as CfgParameter
 from ..config.config import Flag as CfgFlag
 from ..config.config import Tag as CfgTag
-from ..config.definitions.tag import TAG_RAW_VAL, TAG_DERIVED_VAL, TAG_EMPTY_VAL
+from ..config.definitions.tag import TAG_EMPTY_VAL
 from ..dvas_helper import DBAccess
 from ..dvas_helper import SingleInstanceMetaClass
 from ..dvas_helper import TypedProperty as TProp

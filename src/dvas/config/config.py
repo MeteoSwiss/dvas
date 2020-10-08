@@ -72,7 +72,7 @@ class ConfigManager(ABC, metaclass=RequiredAttrMetaClass):
         'DOC_TYPE': type,
     }
 
-    #: type: Type of document. Only dict or list types.
+    #: type: Type of document. Choices: [dict, list].
     DOC_TYPE = None
 
     document = TypedProperty(Union[dict, list])

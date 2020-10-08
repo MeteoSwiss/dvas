@@ -100,7 +100,7 @@ def calc_tropopause(temp, alt, start_alt=5000, layer=2000, grad_cond=-2):
 
 
 class TropopauseError(Exception):
-    """Exception in no tropopause where found"""
+    """Exception if no tropopause where found"""
 
 
 def calc_tropopause_old(alti, press, temp):

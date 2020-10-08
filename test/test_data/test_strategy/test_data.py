@@ -38,15 +38,18 @@ class TestTimeProfileManager:
     def test_data(self):
         """Test data getter and setter method"""
 
-        inst = TimeProfileManager(1)
-        inst.data = self.ok_data
+        inst = TimeProfileManager(
+            1, self.ok_data['value'], self.ok_data['flag']
+        )
 
-        # Test
-        assert inst.data.equals(self.ok_data)
+        # Test data
+        assert inst.data.astype('float').equals(self.ok_data.astype('float'))
 
         # Test index error
         with pytest.raises(IndexError):
-            inst.data = self.ko_index_data
+            TimeProfileManager(
+                1, self.ko_index_data['value'], self.ko_index_data['flag']
+            )
 
     def test_value(self):
         """Test value getter and setter method"""
@@ -55,9 +58,9 @@ class TestTimeProfileManager:
         test_series = self.ok_data['value'].copy()
         test_series.name = None
 
-        # Test
+        # Test value
         inst.value = test_series
-        assert inst.value.equals(test_series)
+        assert inst.value.astype('float').equals(test_series.astype('float'))
 
         # Test index error
         with pytest.raises(IndexError):
@@ -70,9 +73,12 @@ class TestTimeProfileManager:
         test_series = self.ok_data['flag'].copy()
         test_series.name = None
 
-        # Test
+        # Test flag
         inst.flag = test_series
-        assert inst.flag.equals(test_series)
+        assert inst.flag.astype('float').equals(test_series.astype('float'))
+
+        # Test flag type
+        assert inst.flag.dtype == pd.Int64Dtype()
 
         # Test index error
         with pytest.raises(IndexError):
