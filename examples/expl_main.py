@@ -9,9 +9,6 @@ Module content: examples
 """
 
 
-Tropopause
-Elle est définie comme l'altitude la plus basse où le gradient thermique vertical devient plus faible que -2 K par km dans une couche d'au moins 2 km d'épaisseur
-
 
 # Import
 import numpy as np
@@ -21,6 +18,10 @@ from dvas.data.data import update_db
 from dvas.dvas_logger import LogManager
 from dvas.database.database import db_mngr
 from dvas.database import database as db
+
+from dvas.data.math import calc_tropopause, calc_tropopause_old
+from dvas.dvas_helper import TimeIt
+
 
 if __name__ == '__main__':
 
@@ -34,6 +35,7 @@ if __name__ == '__main__':
     #     # )
     #     # print(a)
 
+    """
 
     # Create database
     db_mngr.create_db()
@@ -43,20 +45,26 @@ if __name__ == '__main__':
         update_db('trepros1', strict=True)
         update_db('treprosu_')
         update_db('altpros1')
+        update_db('prepros1')
 
-
+    """
 
     filter = "tag('e1')"
 
+
     # Time
     data_t = TemporalMultiProfileManager.load(filter, 'trepros1')
+
+    """
+
+
     data_s = data_t.sort()
     data_r = data_s.resample()
     data_sy = data_r.synchronize()
     # #data_sy.plot()
     data_sy.save({'data': 'dummy_3'})
     test = TemporalMultiProfileManager.load(filter, 'dummy_3')
-    data_sy = test.sort()
+    test = test.sort()
     print(
         [[np.max(np.abs(arg[0] - arg[1]))
          for arg in zip(data_sy.values[key], test.values[key])
@@ -64,8 +72,7 @@ if __name__ == '__main__':
     )
     data_sy.plot()
 
-
-
+    
     # Alt
     data_t = AltitudeMultiProfileManager.load(
         filter, 'trepros1', 'altpros1'
@@ -79,12 +86,13 @@ if __name__ == '__main__':
     test = data_t = AltitudeMultiProfileManager.load(
         filter, 'dummy_0', 'dummy_1'
     )
-    data_sy = test.sort()
+    test = test.sort()
     print(
         [[np.max(np.abs(arg[0] - arg[1]))
          for arg in zip(data_sy_t.values[key], test.values[key])
          ] for key in data_sy_t.keys]
     )
     data_sy_t.plot()
+    """
 
 

@@ -86,6 +86,11 @@ def from_rs92():
                 alt.units = 'm'
                 alt[:] = fid['alt'][:] + sin_rand(n_data, 10)
 
+                # Add pressure
+                press = new_fid.createVariable("press", "f4", ("time",), zlib=True, least_significant_digit=3)
+                press.units = 'hPa'
+                press[:] = fid['press'][:] + sin_rand(n_data, 10)
+
         time_str = re.search(r'\_(\d+T\d+)\_', new_gdp_file.as_posix()).group(1)
         test_file = new_gdp_file.parents[1] / 'data_test' / (test_type + '.' + meassite + '_' + time_str + '.csv')
         meta_test_file = test_file.parent / (test_file.stem + '.yml')
@@ -118,7 +123,8 @@ def from_rs92():
                 {
                     'time': time,
                     'temp (°C)': new_gdp_fid['temp'][laps:] - 273.15 + sin_rand(n_data, 10),
-                    'alt (m)': new_gdp_fid['alt'][laps:] + sin_rand(n_data, 10)
+                    'alt (m)': new_gdp_fid['alt'][laps:] + sin_rand(n_data, 10),
+                    'press (m)': new_gdp_fid['press'][laps:] + sin_rand(n_data, 10)
                 }
             )
             data.to_csv(test_file, sep=',', index=False, float_format='    %.2f')
@@ -198,6 +204,11 @@ def from_rs41():
                 alt.units = 'm'
                 alt[:] = fid['alt'][:] + sin_rand(n_data, 10)
 
+                # Add pressure
+                press = new_fid.createVariable("press", "f4", ("time",), zlib=True, least_significant_digit=3)
+                press.units = 'hPa'
+                press[:] = fid['press'][:] + sin_rand(n_data, 10)
+
         time_str = re.search(r'\_(\d+T\d+)\_', new_gdp_file.as_posix()).group(1)
         test_file = new_gdp_file.parents[1] / 'data_test' / (test_type + '.' + meassite + '_' + time_str + '.csv')
         meta_test_file = test_file.parent / (test_file.stem + '.yml')
@@ -229,7 +240,8 @@ def from_rs41():
                 {
                     'time': time,
                     'temp (°C)': new_gdp_fid['temp'][laps:] - 273.15 + sin_rand(n_data, 10),
-                    'alt (m)': new_gdp_fid['alt'][laps:] + sin_rand(n_data, 10)
+                    'alt (m)': new_gdp_fid['alt'][laps:] + sin_rand(n_data, 10),
+                    'press (m)': new_gdp_fid['press'][laps:] + sin_rand(n_data, 10)
                 }
             )
             data.to_csv(test_file, sep=';', index=False, line_terminator=os.linesep + os.linesep, float_format='%.2f')
