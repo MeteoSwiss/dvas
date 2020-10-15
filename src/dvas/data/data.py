@@ -25,7 +25,7 @@ from .strategy.sync import TimeSynchronizeStrategy
 from .strategy.plot import TimePlotStrategy
 from .strategy.plot import AltTimePlotStartegy
 from .strategy.save import SaveTimeDataStrategy
-from ..database.database import db_mngr
+from ..database.database import DatabaseManager
 from ..database.model import Parameter
 from ..database.database import OneDimArrayConfigLinker
 from ..dvas_logger import localdb, rawcsv
@@ -37,7 +37,6 @@ from ..dvas_helper import RequiredAttrMetaClass
 FLAG = 'flag'
 VALUE = 'value'
 cfg_linker = OneDimArrayConfigLinker()
-
 
 # Init strategy instances
 load_time_stgy = LoadTimeDataStrategy()
@@ -81,6 +80,7 @@ def update_db(search, strict=False):
     """
 
     # Init linkers
+    db_mngr = DatabaseManager()
     db_linker = LocalDBLinker()
 
     # Define chain of responsibility for loadgin from raw

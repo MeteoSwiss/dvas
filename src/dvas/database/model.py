@@ -20,20 +20,10 @@ from peewee import ForeignKeyField
 # Import from current package
 from ..config.pattern import INSTR_TYPE_PAT
 from ..config.pattern import PARAM_PAT
-from ..dvas_environ import path_var as env_path_var
 
 
-#: str: Local database file name
-DB_FILE_NM = 'local_db.sqlite'
-db = SqliteDatabase(
-    env_path_var.local_db_path / DB_FILE_NM,
-    pragmas={
-        'foreign_keys': True,
-        # Set cache to 10MB
-        'cache_size': -10 * 1024
-    },
-    autoconnect=True
-)
+# Create db instance
+db = SqliteDatabase(None, autoconnect=True)
 
 
 @db.func('re_fullmatch')

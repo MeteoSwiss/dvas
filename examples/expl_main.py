@@ -13,45 +13,48 @@ from dvas.data.data import TemporalMultiProfileManager
 from dvas.data.data import AltitudeMultiProfileManager
 from dvas.data.data import update_db
 from dvas.dvas_logger import LogManager
-from dvas.database.database import db_mngr
+from dvas.database.database import DatabaseManager
+
+# Define
+time_mngr = TemporalMultiProfileManager()
+alt_mngr = AltitudeMultiProfileManager()
 
 if __name__ == '__main__':
 
-    # Create database
-    db_mngr.create_db()
-
-    # Update DB + log
-    with LogManager():
-        update_db('trepros1', strict=True)
-        update_db('treprosu_')
-        update_db('altpros1')
-        update_db('prepros1')
-
+    # Define
+    CREATE_DB = True
     filter = "tag('e1')"
 
+    # Create database
+    db_mngr = DatabaseManager(create_db=CREATE_DB)
+
+    # Update DB + log
+    if CREATE_DB:
+        with LogManager():
+            update_db('trepros1', strict=True)
+            update_db('treprosu_')
+            update_db('altpros1')
+            update_db('prepros1')
+
     # Time
-    data_t = TemporalMultiProfileManager.load(filter, 'trepros1')
+    data_t = time_mngr.load(filter, 'trepros1')
     data_s = data_t.sort()
     data_r = data_s.resample()
     data_sy = data_r.synchronize()
-    # #data_sy.plot()
+    data_sy.plot()
     data_sy.save({'data': 'dummy_3'})
-    test = TemporalMultiProfileManager.load(filter, 'dummy_3')
+    test = time_mngr.load(filter, 'dummy_3')
     test = test.sort()
     data_sy.plot()
 
-
     # Alt
-    data_t = AltitudeMultiProfileManager.load(
-        filter, 'trepros1', 'altpros1'
-    )
+    data_t = alt_mngr.load(filter, 'trepros1', 'altpros1')
     data_s = data_t.sort()
     data_r = data_s.resample()
     data_sy_t = data_r.synchronize(method='time')
     data_sy_a = data_r.synchronize(method='alt')
     data_sy_t.save({'data': 'dummy_0', 'alt': 'dummy_1'})
-    test = data_t = AltitudeMultiProfileManager.load(
-        filter, 'dummy_0', 'dummy_1'
-    )
+    test = data_t = alt_mngr.load(filter, 'dummy_0', 'dummy_1')
     test = test.sort()
     data_sy_t.plot()
+

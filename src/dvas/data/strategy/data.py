@@ -17,7 +17,7 @@ import pandas as pd
 
 # Import from current package
 from ...database.model import Flag
-from ...database.database import db_mngr
+from ...database.database import DatabaseManager
 
 
 class ProfileManager(metaclass=ABCMeta):
@@ -27,34 +27,47 @@ class ProfileManager(metaclass=ABCMeta):
     FLAG_ABBR_NM = Flag.flag_abbr.name
     FLAG_DESC_NM = Flag.flag_desc.name
 
-    def __init__(self, event_mngr, value=None, flag=None):
+    db_mngr = DatabaseManager()
+
+    def __init__(self, event_mngr, data=None):
         """Constructor
 
         Args:
             event_mngr (int): Event id
-            value:
-            flag:
+            data:
 
         """
 
         # Set attributes
-        self._data = pd.DataFrame(columns=['value', 'flag'], dtype=float)
+        self._data = pd.concat(
+                [pd.Series(dtype='float'), pd.Series(dtype='Int64')],
+                axis=1
+            )
+        self._data.columns = ['value', 'flag']
         self._event_mngr = event_mngr
         self._flags_abbr = {
             arg[self.FLAG_ABBR_NM]: arg
-            for arg in db_mngr.get_flags()
+            for arg in self.db_mngr.get_flags()
         }
 
-        # Set value and flag
-        if value is not None:
-            self.value = value
-        if flag is not None:
-            self.flag = flag
+        # Set data
+        if data is not None:
+            self.data = data
 
     @property
     def data(self):
-        """pd.DataFrame: Data"""
+        """pd.DataFrame: Data. Columns index, 0: value, 1: flag"""
         return self._data
+
+    @data.setter
+    def data(self, val):
+
+        # Test arg
+        self._test_index(val.index)
+
+        # Set
+        self.value = val.iloc[:, 0]
+        self.flag = val.iloc[:, 1]
 
     @property
     def event_mngr(self):
@@ -68,7 +81,7 @@ class ProfileManager(metaclass=ABCMeta):
 
     @property
     def value(self):
-        """pd.Series: Corresponding data value"""
+        """pd.Series: Corresponding data 'value'"""
         return self.data['value']
 
     @value.setter
@@ -77,18 +90,18 @@ class ProfileManager(metaclass=ABCMeta):
         # Test arg
         self._test_index(val.index)
 
-        # Set series name
+        # Set series name/dtype
         val.name = 'value'
+        val = val.astype('float')
 
         if len(self) == 0:
             self.data['value'] = val
         else:
-
             self.data.update(val)
 
     @property
     def flag(self):
-        """pd.Series: Corresponding data flag"""
+        """pd.Series: Corresponding data 'flag'"""
         return self.data['flag']
 
     @flag.setter
@@ -97,17 +110,14 @@ class ProfileManager(metaclass=ABCMeta):
         # Test arg
         self._test_index(val.index)
 
-        # Set series name
+        # Set series name/dtype (Int64 uses special NaN for integers)
         val.name = 'flag'
-
-        # Convert to pandas int (use special NaN for integers)
         val = val.astype('Int64')
 
         if len(self) == 0:
             self.data['flag'] = val
         else:
             self.data.update(val)
-
 
     def copy(self):
         """Copy method"""
@@ -191,8 +201,6 @@ class TimeProfileManager(ProfileManager):
             assert isinstance(index, pd.TimedeltaIndex)
 
         except AssertionError:
-            raise IndexError('Bad index type')
-
-
-class IndexError(Exception):
-    """Index error exception"""
+            raise IndexError(
+                'Bad index type. Must be a pd.TimedeltaIndex class'
+            )

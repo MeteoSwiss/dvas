@@ -1,0 +1,125 @@
+
+# ----------------------------------------------------
+# YT type
+# ----------------------------------------------------
+_YT:
+
+    # -- META DATA ----------------------------------
+    dt_field: '{event_dt}Z'
+    sn_field: '{sn}'
+    tag_field:
+        - 'e{event_id}'
+        - 'r{rig}'
+        - '{day_night}'
+
+    # -- ORIG DATA ----------------------------------
+    index_unit: 's'
+    index_col: 0
+
+    csv_delimiter: ','
+    csv_skipinitialspace: True
+
+    _trepros1:
+        value_col: 1
+
+    _altpros1:
+        value_col: 2
+
+    _prepros1:
+        value_col: 3
+
+# ----------------------------------------------------
+# ZT type
+# ----------------------------------------------------
+_ZT:
+
+    # -- META DATA ----------------------------------
+    dt_field: '{event_dt}'
+    sn_field: '{sn}'
+    tag_field:
+        - 'e{event_id}'
+        - 'r{rig}'
+        - '{day_night}'
+
+    # -- ORIG DATA ----------------------------------
+    index_unit: 's'
+    index_col: 0
+
+    csv_delimiter: ';'
+    csv_skip_blank_lines: True
+
+    _trepros1:
+        value_col: 1
+
+    _altpros1:
+        value_col: 2
+
+    _prepros1:
+        value_col: 3
+
+# ----------------------------------------------------
+# AR GDP, version 1
+# ----------------------------------------------------
+_AR-GDP_001:
+
+    # -- META DATA ----------------------------------
+    dt_field: '{event_dt}'
+    sn_field: '{sn}'
+    tag_field:
+        - 'e{event_id}'
+        - 'r{rig}'
+
+    # -- ORIG DATA ----------------------------------
+    index_unit: 's'
+    index_col: 'time'
+
+    _trepros1:
+        value_col: 'temp'
+        lambda: 'lambda x: x - 273.15'
+
+    _treprosu_e:
+        value_col: 'temp_uec'
+
+    _treprosu_s:
+        value_col: 'temp_usc'
+
+    _treprosu_t:
+        value_col: 'temp_utc'
+
+    _altpros1:
+        value_col: 'alt'
+
+    _prepros1:
+        value_col: 'press'
+
+# ----------------------------------------------------
+# BR GDP, version 1
+# ----------------------------------------------------
+_BR-GDP_001:
+
+    # -- META DATA ----------------------------------
+    dt_field: '{event_dt}Z'
+    sn_field: '{sn}'
+    tag_field:
+        - 'e{event_id}'
+        - 'r{rig}'
+
+    # -- ORIG DATA ----------------------------------
+    index_unit: 's'
+    index_col: 'time'
+
+    _trepros1:
+        value_col: 'temp'
+        lambda: 'lambda x: x - 273.15'
+
+    _treprosu_e:
+        value_col: 'temp_uec'
+
+    _treprosu_t:
+        value_col: 'temp_utc'
+
+    _altpros1:
+        value_col: 'alt'
+
+    _prepros1:
+        value_col: 'press'

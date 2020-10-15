@@ -14,6 +14,8 @@ import pandas as pd
 from dvas import expl_path
 import re
 
+expl_path = Path('.').resolve().parents[1] / 'test_examples'
+N = 1000
 
 def sin_rand(n, scale=1):
     return np.sin(np.arange(n)*np.pi/(2*n) + np.random.rand()*2*np.pi) / scale
@@ -59,37 +61,37 @@ def from_rs92():
                 # Add time
                 time = new_fid.createVariable("time", "f4", ("time",), zlib=True, least_significant_digit=3)
                 time.units = 's'
-                time[:] = fid['time'][:]
+                time[:] = fid['time'][:N]
 
-                n_data = len(fid['time'][:])
+                n_data = len(fid['time'][:N])
 
                 # Add temp
                 temp = new_fid.createVariable("temp", "f4", ("time",), zlib=True, least_significant_digit=3)
                 temp.units = 'K'
                 temp.long_name = 'Temperature'
-                temp[:] = fid['temp'][:] + sin_rand(n_data, 50)
+                temp[:] = fid['temp'][:N] + sin_rand(n_data, 50)
 
                 # Add temp uncertainty environmental correlated
                 temp_uec = new_fid.createVariable("temp_uec", "f4", ("time",), zlib=True, least_significant_digit=3)
                 temp_uec.units = 'K'
                 temp_uec.long_name = 'Environmental correlated uncertainty of temperature'
-                temp_uec[:] = fid['u_std_temp'][:] + sin_rand(n_data, 50)
+                temp_uec[:] = fid['u_std_temp'][:N] + sin_rand(n_data, 50)
 
                 # Add temp temporal environmental correlated
                 temp_utc = new_fid.createVariable("temp_utc", "f4", ("time",), zlib=True, least_significant_digit=3)
                 temp_utc.units = 'K'
                 temp_utc.long_name = 'Temporal correlated uncertainty of temperature'
-                temp_utc[:] = fid['u_cor_temp'][:] + sin_rand(n_data, 50)
+                temp_utc[:] = fid['u_cor_temp'][:N] + sin_rand(n_data, 50)
 
                 # Add alt
                 alt = new_fid.createVariable("alt", "f4", ("time",), zlib=True, least_significant_digit=3)
                 alt.units = 'm'
-                alt[:] = fid['alt'][:] + sin_rand(n_data, 10)
+                alt[:] = fid['alt'][:N] + sin_rand(n_data, 10)
 
                 # Add pressure
                 press = new_fid.createVariable("press", "f4", ("time",), zlib=True, least_significant_digit=3)
                 press.units = 'hPa'
-                press[:] = fid['press'][:] + sin_rand(n_data, 10)
+                press[:] = fid['press'][:N] + sin_rand(n_data, 10)
 
         time_str = re.search(r'\_(\d+T\d+)\_', new_gdp_file.as_posix()).group(1)
         test_file = new_gdp_file.parents[1] / 'data_test' / (test_type + '.' + meassite + '_' + time_str + '.csv')
@@ -171,43 +173,43 @@ def from_rs41():
                 # Add time
                 time = new_fid.createVariable("time", "f4", ("time",), zlib=True, least_significant_digit=3)
                 time.units = 's'
-                time[:] = fid['time'][:]
+                time[:] = fid['time'][:N]
 
-                n_data = len(fid['time'][:])
+                n_data = len(fid['time'][:N])
 
                 # Add temp
                 temp = new_fid.createVariable("temp", "f4", ("time",), zlib=True, least_significant_digit=3)
                 temp.units = 'K'
                 temp.long_name = 'Temperature'
-                temp[:] = fid['temp'][:] + sin_rand(n_data, 50)
+                temp[:] = fid['temp'][:N] + sin_rand(n_data, 50)
 
                 # Add temp uncertainty environmental correlated
                 temp_uec = new_fid.createVariable("temp_uec", "f4", ("time",), zlib=True, least_significant_digit=3)
                 temp_uec.units = 'K'
                 temp_uec.long_name = 'Environmental correlated uncertainty of temperature'
-                temp_uec[:] = fid['temp_uc_ncor'][:] + sin_rand(n_data, 50)
+                temp_uec[:] = fid['temp_uc_ncor'][:N] + sin_rand(n_data, 50)
 
                 # Add temp spacial environmental correlated
                 temp_usc = new_fid.createVariable("temp_usc", "f4", ("time",), zlib=True, least_significant_digit=3)
                 temp_usc.units = 'K'
                 temp_usc.long_name = fid['temp_uc_scor'].long_name
-                temp_usc[:] = fid['temp_uc_scor'][:] + sin_rand(n_data, 50)
+                temp_usc[:] = fid['temp_uc_scor'][:N] + sin_rand(n_data, 50)
 
                 # Add temp temporal environmental correlated
                 temp_utc = new_fid.createVariable("temp_utc", "f4", ("time",), zlib=True, least_significant_digit=3)
                 temp_utc.units = 'K'
                 temp_utc.long_name = fid['temp_uc_tcor'].long_name
-                temp_utc[:] = fid['temp_uc_tcor'][:] + sin_rand(n_data, 50)
+                temp_utc[:] = fid['temp_uc_tcor'][:N] + sin_rand(n_data, 50)
 
                 # Add alt
                 alt = new_fid.createVariable("alt", "f4", ("time",), zlib=True, least_significant_digit=3)
                 alt.units = 'm'
-                alt[:] = fid['alt'][:] + sin_rand(n_data, 10)
+                alt[:] = fid['alt'][:N] + sin_rand(n_data, 10)
 
                 # Add pressure
                 press = new_fid.createVariable("press", "f4", ("time",), zlib=True, least_significant_digit=3)
                 press.units = 'hPa'
-                press[:] = fid['press'][:] + sin_rand(n_data, 10)
+                press[:] = fid['press'][:N] + sin_rand(n_data, 10)
 
         time_str = re.search(r'\_(\d+T\d+)\_', new_gdp_file.as_posix()).group(1)
         test_file = new_gdp_file.parents[1] / 'data_test' / (test_type + '.' + meassite + '_' + time_str + '.csv')

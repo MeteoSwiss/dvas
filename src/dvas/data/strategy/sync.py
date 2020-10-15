@@ -86,9 +86,7 @@ class TimeSynchronizeStrategy(SynchronizeStrategy):
         for key, val in data.items():
             for i, arg in enumerate(val):
                 res = arg.data.shift(window_values[idx_offset[i]])
-                val[i] = TimeProfileManager(
-                    arg.event_mngr, value=res['value'], flag=res['flag']
-                )
+                val[i] = TimeProfileManager(arg.event_mngr, data=res)
 
             data.update({key: val})
 

@@ -22,7 +22,7 @@ import pandas as pd
 from ..dvas_environ import path_var as env_path_var
 from ..database.model import InstrType, Instrument, EventsInfo
 from ..database.model import Parameter, OrgiDataInfo
-from ..database.database import db_mngr, EventManager
+from ..database.database import DatabaseManager, EventManager
 from ..config.config import OrigData, CSVOrigMeta
 from ..config.config import ConfigReadError
 from ..config.definitions.origdata import META_FIELD_KEYS
@@ -50,6 +50,8 @@ class Handler(ABC):
         `Source <https://refactoring.guru/design-patterns/chain-of-responsibility/python/example>`__
 
     """
+
+    db_mngr = DatabaseManager()
 
     @abstractmethod
     def set_next(self, handler):
@@ -195,7 +197,7 @@ class FileHandler(AbstractHandler):
         instr_type_name = grp.group(1)
 
         # Check instr_type name existence in DB
-        if db_mngr.get_or_none(
+        if self.db_mngr.get_or_none(
                 InstrType,
                 search={
                     'where': InstrType.type_name == instr_type_name
@@ -215,7 +217,7 @@ class FileHandler(AbstractHandler):
         # Check instr_type name existence
         # (need it for loading origdata config)
         if (
-            instr_type_name_from_sn := db_mngr.get_or_none(
+            instr_type_name_from_sn := self.db_mngr.get_or_none(
                 Instrument,
                 search={
                     'join_order': [InstrType],
@@ -244,7 +246,7 @@ class FileHandler(AbstractHandler):
         """Exclude file method"""
 
         # Search exclude file names
-        exclude_file_name = db_mngr.get_or_none(
+        exclude_file_name = self.db_mngr.get_or_none(
             EventsInfo,
             search={
                 'where': (
@@ -686,6 +688,8 @@ class DataLinker(ABC):
 class LocalDBLinker(DataLinker):
     """Local DB data linker """
 
+    db_mngr = DatabaseManager()
+
     def load(self, search, prm_abbr, filter_empty=True):
         """Load parameter method
 
@@ -711,7 +715,7 @@ class LocalDBLinker(DataLinker):
         """
 
         # Retrieve data from DB
-        data = db_mngr.get_data(
+        data = self.db_mngr.get_data(
             where=search, prm_abbr=prm_abbr, filter_empty=filter_empty
         )
 
@@ -732,7 +736,7 @@ class LocalDBLinker(DataLinker):
             self.to_frame(args, 'data')
 
             # Add data to DB
-            db_mngr.add_data(**args)
+            self.db_mngr.add_data(**args)
 
 
 class CSVOutputLinker(DataLinker):

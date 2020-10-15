@@ -20,7 +20,6 @@ from operator import getitem
 import pytz
 from pampy import match as pmatch
 from pampy import MatchError
-from peewee import PeeweeException
 from pandas import to_datetime
 
 
@@ -188,91 +187,6 @@ class TimeIt(ContextDecorator):
 
         # Print
         print(f'{self._head_msg}: {delta}', flush=True)
-
-
-class DBAccess(ContextDecorator):
-    """Local SQLite data base context decorator"""
-
-    def __init__(self, db, close_by_exit=True):
-        """Constructor
-
-        Args:
-            db (peewee.SqliteDatabase): PeeWee Sqlite DB object
-            close_by_exit (bool): Close DB by exiting context manager.
-                Default to True
-
-        """
-        super().__init__()
-        self._db = db
-        self._close_by_exit = close_by_exit
-        self._transaction = None
-
-    def __call__(self, func):
-        """Overwrite class __call__ method
-
-        Args:
-            func (callable): Decorated function
-
-        """
-        @wraps(func)
-        def decorated(*args, **kwargs):
-            with self as transaction:
-                try:
-                    out = func(*args, **kwargs)
-                except PeeweeException:
-                    transaction.rollback()
-                    out = None
-                return out
-        return decorated
-
-    def __enter__(self):
-        """Class __enter__ method"""
-        self._db.connect(reuse_if_open=True)
-        self._transaction = self._db.atomic()
-        return self._transaction
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        """Class __exit__ method"""
-        if self._close_by_exit:
-            self._db.close()
-
-
-#TODO
-# Test this db access context manager to possible speed up data select/insert
-class DBAccessQ(ContextDecorator):
-    """Data base context decorator"""
-
-    def __init__(self, db):
-        """Constructor
-
-        Args:
-            db (peewee.SqliteDatabase): PeeWee Sqlite DB object
-
-        """
-        super().__init__()
-        self._db = db
-
-    def __call__(self, func):
-        """Overwrite class __call__ method"""
-        @wraps(func)
-        def decorated(*args, **kwargs):
-            with self:
-                try:
-                    return func(*args, **kwargs)
-                except PeeweeException as exc:
-                    print(exc)
-
-        return decorated
-
-    def __enter__(self):
-        """Class __enter__ method"""
-        self._db.start()
-        self._db.connect()
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        """Class __exit__ method"""
-        self._db.close()
-        self._db.stop()
 
 
 class TypedProperty:

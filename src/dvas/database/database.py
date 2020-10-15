@@ -15,13 +15,14 @@ import re
 from abc import abstractmethod, ABCMeta
 from itertools import chain, zip_longest
 import operator
-from functools import reduce
+from functools import wraps, reduce
 from collections import OrderedDict
 from math import floor
 from threading import Thread
 from datetime import datetime
 from peewee import chunked, DoesNotExist
 from peewee import IntegrityError
+from peewee import PeeweeException
 from playhouse.shortcuts import model_to_dict
 from pandas import DataFrame, Timestamp
 from pampy.helpers import Iterable, Union
@@ -40,7 +41,7 @@ from ..config.config import Parameter as CfgParameter
 from ..config.config import Flag as CfgFlag
 from ..config.config import Tag as CfgTag
 from ..config.definitions.tag import TAG_EMPTY_VAL
-from ..dvas_helper import DBAccess
+from ..dvas_helper import ContextDecorator
 from ..dvas_helper import SingleInstanceMetaClass
 from ..dvas_helper import TypedProperty as TProp
 from ..dvas_helper import TimeIt
@@ -48,6 +49,7 @@ from ..dvas_helper import get_by_path, check_datetime
 from ..dvas_helper import unzip
 from ..dvas_logger import localdb
 from ..dvas_environ import glob_var
+from ..dvas_environ import path_var as env_path_var
 
 
 # Define
@@ -57,6 +59,12 @@ VALUE_NM = Data.value.name
 EVENT_DT_NM = EventsInfo.event_dt.name
 EVENT_INSTR_NM = EventsInfo.instrument.id.name
 EVENT_PARAM_NM = EventsInfo.param.prm_abbr.name
+
+#: int: Database cache size in kB
+DB_CACHE_SIZE = 10 * 1024
+
+#: str: Local database file name
+DB_FILE_NM = 'local_db.sqlite'
 
 
 class OneDimArrayConfigLinker:
@@ -197,13 +205,54 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         Tag
     ]
 
-    def __init__(self):
+    def __init__(self, create_db=False):
         """Constructor"""
 
-        # Create config linker instance
+        # Create config linker instance attribute
         self._cfg_linker = OneDimArrayConfigLinker()
 
-    def create_db(self):
+        # Create db attribute
+        self._db = db
+
+        # Init db
+        self._init_db()
+
+        if create_db:
+            self._create_db()
+
+    @property
+    def db(self):
+        """peewee.SqliteDatabase: Database intance"""
+        return self._db
+
+    def _init_db(self):
+        """Init db"""
+
+        # Init DB
+        self._db.init(
+            env_path_var.local_db_path / DB_FILE_NM,
+            pragmas={
+                'foreign_keys': True,
+                # Set cache to 10MB
+                'cache_size': -DB_CACHE_SIZE
+            }
+        )
+
+        # Create local DB directory
+        try:
+            self._db.database.parent.mkdir(parents=True, exist_ok=True)
+            # Set user read/write permission
+            self._db.database.parent.chmod(
+                self._db.database.parent.stat().st_mode | 0o600
+            )
+        except (OSError,) as exc:
+            raise DBDirError(
+                f"Error in creating '{self._db.database.parent}' ({exc})"
+            )
+
+    #TODO
+    # Fix with DB can't be create several times
+    def _create_db(self):
         """Method for creating the database.
 
         Note:
@@ -211,19 +260,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         """
 
-        # Create local DB directory
-        try:
-            db.database.parent.mkdir(parents=True, exist_ok=True)
-            # Set user read/write permission
-            db.database.parent.chmod(
-                db.database.parent.stat().st_mode | 0o600
-            )
-        except (OSError,) as exc:
-            raise DBDirError(
-                f"Error in creating '{db.database.parent}' ({exc})"
-            )
-
-        with DBAccess(db) as _:
+        with DBAccess(self) as _:
 
             try:
 
@@ -252,10 +289,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             except IntegrityError as exc:
                 raise DBCreateError(exc)
 
-        #TODO return db object
-
-    @staticmethod
-    def get_or_none(table, search=None, attr=None, get_first=True):
+    def get_or_none(self, table, search=None, attr=None, get_first=True):
         """Get from DB
 
         Args:
@@ -285,7 +319,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             qry = qry.where(search['where'])
 
         try:
-            with DBAccess(db) as _:
+            with DBAccess(self) as _:
                 if get_first:
                     if attr:
                         out = [get_by_path(qry.get(), arg) for arg in attr]
@@ -310,16 +344,14 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
     def _model_to_dict(query, recurse=False):
         return [model_to_dict(qry, recurse=recurse) for qry in query]
 
-    @staticmethod
-    def _drop_tables():
+    def _drop_tables(self):
         """Drop db tables"""
-        db.drop_tables(DatabaseManager.DB_TABLES, safe=True)
+        self._db.drop_tables(DatabaseManager.DB_TABLES, safe=True)
 
-    @staticmethod
-    def _create_tables():
+    def _create_tables(self):
         """Create db tables"""
 
-        db.create_tables(DatabaseManager.DB_TABLES, safe=True)
+        self._db.create_tables(DatabaseManager.DB_TABLES, safe=True)
 
     def _fill_table(self, table, foreign_constraint=None):
         """
@@ -356,7 +388,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         """
 
-        with DBAccess(db) as _:
+        with DBAccess(self) as _:
             qry = table.select()
             if search:
 
@@ -371,8 +403,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         return out
 
-    @staticmethod
-    def add_data(data, event, prm_abbr, source_info=None):
+    def add_data(self, data, event, prm_abbr, source_info=None):
         """Add data
 
         Args:
@@ -384,7 +415,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         """
 
         try:
-            with DBAccess(db) as _:
+            with DBAccess(self) as _:
 
                 # Get/Check instrument
                 instr = Instrument.get_or_none(
@@ -410,7 +441,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                 try:
                     tag_id_list = [
                         arg[0] for arg in
-                        db_mngr.get_or_none(
+                        self.get_or_none(
                             Tag,
                             search={
                                 'where': Tag.tag_abbr.in_(event.tag_abbr)
@@ -488,127 +519,6 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         return out
 
-
-    # def _get_eventsinfo_id(where_arg, prm_abbr):
-    #     """Get events info
-    #
-    #     Search syntax:
-    #         - Logical and: &
-    #         - Logical or: |
-    #         - logical not: ~
-    #         - Operators: `link <http://docs.peewee-orm.com/en/latest/peewee/query_operators.html>`__
-    #         - Event id field: _id
-    #         - Event datetime field: _dt
-    #         - Instrument serial number field: _sn
-    #         - Tag field: _tag
-    #         - Datetime: %<any ISO 8601 UTC datetime>% (`link <https://fr.wikipedia.org/wiki/ISO_8601>`__)
-    #
-    #     """
-    #
-    #     # Define
-    #     pat_split = r'\{[^\n\r\t\{\}]+\}'
-    #     pat_find = r'\{([^\n\r\t\{\}]+)\}'
-    #
-    #     # Substitute spaces
-    #     where_arg = re.sub(r'[\s\t\n\r]+', '', where_arg)
-    #
-    #     # Split and find kernel logical conditions
-    #     where_split = re.split(pat_split, where_arg)
-    #     where_find = re.findall(pat_find, where_arg)
-    #
-    #     # Create base request
-    #     qry_base = (
-    #         EventsInfo
-    #         .select().distinct()
-    #         .join(Instrument).switch(EventsInfo)
-    #         .join(Parameter).switch(EventsInfo)
-    #         .join(EventsTags).join(Tag)
-    #     )
-    #
-    #     try:
-    #         with DBAccess(db) as _:
-    #
-    #             # Set of all event_id
-    #             all_event_id = set(arg.id for arg in EventsInfo.select())
-    #
-    #             # Search for kernel logical condition
-    #             search_res = []
-    #
-    #             for where in where_find:
-    #                 # Replace field in string
-    #                 where = re.sub(
-    #                     r'_id', 'EventsInfo.event_id', where
-    #                 )
-    #                 where = re.sub(
-    #                     r'_dt', 'EventsInfo.event_dt', where
-    #                 )
-    #                 where = re.sub(
-    #                     r'_sn', 'Instrument.sn', where
-    #                 )
-    #                 where = re.sub(
-    #                     r'_tag', 'Tag.tag_abbr', where
-    #                 )
-    #
-    #                 # Replace datetime
-    #                 where = re.sub(
-    #                     r'\%([\.\dTZ\:\-]+)\%', r"check_datetime('\1')", where
-    #                 )
-    #
-    #                 # Create query
-    #                 qry_tmp = qry_base.where(
-    #                     eval(
-    #                         where,
-    #                         {
-    #                             'EventsInfo': EventsInfo,
-    #                             'Instrument': Instrument,
-    #                             'Tag': Tag,
-    #                             'check_datetime': check_datetime
-    #                         }
-    #                     ) &
-    #                     (Parameter.prm_abbr == prm_abbr)
-    #                 )
-    #
-    #                 # Execute query
-    #                 search_res.append(
-    #                     str(
-    #                         set(arg.id for arg in qry_tmp.iterator())
-    #                     )
-    #                 )
-    #
-    #             # Eval set logical expression
-    #             # (Replace ~ by all_event_id.difference)
-    #             res = re.sub(
-    #                 r"\~",
-    #                 'all_event_id.difference',
-    #                 ''.join(
-    #                     [arg for arg in chain(
-    #                         *zip_longest(
-    #
-    #                             # Split formula
-    #                             where_split,
-    #
-    #                             # Find formula and substitute
-    #                             ['(' + arg + ')' for arg in search_res]
-    #                         )
-    #                     ) if arg is not None]
-    #                 )
-    #             )
-    #
-    #             re.sub(r"(?<!set)\(\)", '', res)
-    #             out = list(eval(res, {'all_event_id': all_event_id}))
-    #
-    #             # Convert id as table element
-    #             qry = EventsInfo.select().where(EventsInfo.id.in_(out))
-    #             out = [arg for arg in qry.iterator()]
-    #
-    #     #TODO Detail exception
-    #     except Exception as exc:
-    #         print(exc)
-    #         #TODO Decide if raise or not
-    #         out = []
-    #
-    #     return out
-
     @TimeIt()
     def get_data(self, where, prm_abbr, filter_empty):
         """Get data from DB
@@ -633,9 +543,9 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         qryer = []
 
         for eventsinfo_id in eventsinfo_id_list:
-            qryer.append(Queryer(eventsinfo_id))
+            qryer.append(Queryer(self, eventsinfo_id))
 
-        with DBAccess(db) as _:
+        with DBAccess(self) as _:
             for qry in qryer:
                 qry.start()
                 qry.join()
@@ -694,13 +604,99 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         return self._get_table(Flag)
 
 
+class DBAccess(ContextDecorator):
+    """Local SQLite data base context decorator"""
+
+    def __init__(self, db_mngr, close_by_exit=True):
+        """Constructor
+
+        Args:
+            db_mngr (DatabaseManager): DB manager instance
+            close_by_exit (bool): Close DB by exiting context manager.
+                Default to True
+
+        """
+        super().__init__()
+        self._close_by_exit = close_by_exit
+        self._transaction = None
+        self._db_mngr = db_mngr
+
+    def __call__(self, func):
+        """Overwrite class __call__ method
+
+        Args:
+            func (callable): Decorated function
+
+        """
+        @wraps(func)
+        def decorated(*args, **kwargs):
+            with self as transaction:
+                try:
+                    out = func(*args, **kwargs)
+                except PeeweeException:
+                    transaction.rollback()
+                    out = None
+                return out
+        return decorated
+
+    def __enter__(self):
+        """Class __enter__ method"""
+        self._db_mngr.db.connect(reuse_if_open=True)
+        self._transaction = self._db_mngr.db.atomic()
+        return self._transaction
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Class __exit__ method"""
+        if self._close_by_exit:
+            self._db_mngr.db.close()
+
+
+#TODO
+# Test this db access context manager to possible speed up data select/insert
+class DBAccessQ(ContextDecorator):
+    """Data base context decorator"""
+
+    def __init__(self, db):
+        """Constructor
+
+        Args:
+            db (peewee.SqliteDatabase): PeeWee Sqlite DB object
+
+        """
+        super().__init__()
+        self._db = db
+
+    def __call__(self, func):
+        """Overwrite class __call__ method"""
+        @wraps(func)
+        def decorated(*args, **kwargs):
+            with self:
+                try:
+                    return func(*args, **kwargs)
+                except PeeweeException as exc:
+                    print(exc)
+
+        return decorated
+
+    def __enter__(self):
+        """Class __enter__ method"""
+        self._db.start()
+        self._db.connect()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Class __exit__ method"""
+        self._db.close()
+        self._db.stop()
+
+
 class Queryer(Thread):
     """Data queryer"""
 
-    def __init__(self, eventsinfo_id):
+    def __init__(self, db_mngr, eventsinfo_id):
         """Constructor"""
         super().__init__()
         self.eventsinfo_id = eventsinfo_id
+        self.db_mngr = db_mngr
         self.res = None
         self.exc = None
 
@@ -714,7 +710,7 @@ class Queryer(Thread):
                 where(Data.event_info == self.eventsinfo_id)
             )
 
-            with DBAccess(db, close_by_exit=False):
+            with DBAccess(self.db_mngr, close_by_exit=False):
                 data = list(qry.tuples().iterator())
 
             # Convert to data frame
@@ -734,10 +730,6 @@ class Queryer(Thread):
         # Test exception attribute
         if self.exc:
             raise self.exc
-
-
-#: DatabaseManager: Local SQLite database manager
-db_mngr = DatabaseManager()
 
 
 class EventManager:
@@ -860,9 +852,7 @@ class EventManager:
 
 
 class SearchEventExpr(metaclass=ABCMeta):
-    """
-    Declare an abstract Interpret operation that is common to all nodes
-    in the abstract syntax tree.
+    """Abstract search event expression interpreter class.
 
     .. uml::
 
@@ -903,7 +893,15 @@ class SearchEventExpr(metaclass=ABCMeta):
         """Evaluate search expression
 
         Args:
-            str_expr (str): Expression to evaluate
+            str_expr (str): Expression to evaluate.
+                Grammar:
+                - all(): Select all
+                - [datetime|dt]('<ISO datetime>', ['=='(default)|'>='|'>'|'<='|'<'|'!=']): Select by datetime
+                - [serialnumber|sn]('<Serial number>'): Select by serial number
+                - [tag](['<Tag>'|('<Tag 1>', ...,'<Tag n>')]): Select by tag
+                - and_(<expr 1>, ..., <expr n>): Intersection
+                - or_(<expr 1>, ..., <expr n>): Union
+                - not_(<expr>): All - <expr>
             prm_abbr (str): Search parameter
             filter_empty (bool): Filter for empty data
 
@@ -912,18 +910,19 @@ class SearchEventExpr(metaclass=ABCMeta):
 
         """
 
+        # Define
         str_expr_dict = {
             'all': AllExpr,
-            'datetime': DatetimeExpr, 'date': DatetimeExpr, 'dt': DatetimeExpr,
+            'datetime': DatetimeExpr, 'dt': DatetimeExpr,
             'serialnumber': SerialNumberExpr, 'sn': SerialNumberExpr,
             'tag': TagExpr,
-            'parameter': ParameterExpr, 'prm': ParameterExpr, 'prm_abbr': ParameterExpr,
             'and_': AndExpr,
             'or_': OrExpr,
             'not_': NotExpr
         }
+        db_mngr = DatabaseManager()
 
-        with DBAccess(db) as _:
+        with DBAccess(db_mngr) as _:
 
             # Eval expression
             expr = eval(str_expr, str_expr_dict)
@@ -1047,11 +1046,11 @@ class DatetimeExpr(TerminalSearchEventExpr):
 
     def __init__(self, arg, op='=='):
         self.expression = arg
-        self._op = op
+        self._op = self._OPER_DICT[op]
 
     def get_filter(self):
         """Implement get_filter method"""
-        return self._OPER_DICT[self._op](EventsInfo.event_dt, self.expression)
+        return self._op(EventsInfo.event_dt, self.expression)
 
 
 class SerialNumberExpr(TerminalSearchEventExpr):

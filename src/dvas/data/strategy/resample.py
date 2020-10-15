@@ -54,9 +54,7 @@ class TimeResampleDataStrategy(ResampleDataStrategy):
                     res = resampler.sum()
 
                 res.index -= res.index[0]
-                val[i] = TimeProfileManager(
-                    arg.event_mngr, value=res['value'], flag=res['flag']
-                )
+                val[i] = TimeProfileManager(arg.event_mngr, data=res)
 
             data.update({key: val})
 

@@ -12,6 +12,7 @@ Module contents: Loader strategies
 # Import from external packages
 from abc import ABCMeta, abstractmethod
 import pandas as pd
+import numpy as np
 
 # Import from current package
 from .data import TimeProfileManager
@@ -50,10 +51,14 @@ class LoadTimeDataStrategy(LoadDataStrategy):
         # Format dataframe index
         for i, arg in enumerate(res):
             res[i]['data'][INDEX_NM] = pd.TimedeltaIndex(arg['data'][INDEX_NM], 's')
-            res[i]['data'] = arg['data'].set_index([INDEX_NM])[VALUE_NM]
+            res[i]['data'] = arg['data'].set_index([INDEX_NM])[[VALUE_NM]]
+
+            #TODO
+            # Load flag from DB too
+            res[i]['data']['flag'] = np.nan
 
         # Load data
-        out = [TimeProfileManager(data['event'], value=data['data']) for data in res]
+        out = [TimeProfileManager(data['event'], data=data['data']) for data in res]
 
         return {'data': out}
 
