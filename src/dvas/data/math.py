@@ -10,6 +10,7 @@ Module contents: Specialized mathematical operation on data
 """
 
 # Import external packages and modules
+import warnings
 import numpy as np
 import pandas as pd
 
@@ -79,12 +80,14 @@ def calc_tropopause(temp, alt, start_alt=5000, layer=2000, grad_cond=-2):
         ].index[-1]
 
         # Calculate minimal thermal gradient in layer
-        min_grad = np.nanmin(
-            (
-                (row['temp'] - data['temp'].loc[idxmin:idxmax]) /
-                (row['alt'] - data['alt'].loc[idxmin:idxmax])
-            ) * 1000
-        )
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore")
+            min_grad = np.nanmin(
+                (
+                    (row['temp'] - data['temp'].loc[idxmin:idxmax]) /
+                    (row['alt'] - data['alt'].loc[idxmin:idxmax])
+                ) * 1000
+            )
 
         # Break if minimal gradient in layer > gradient condition
         if min_grad > grad_cond:
