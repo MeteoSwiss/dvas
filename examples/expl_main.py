@@ -22,14 +22,14 @@ alt_mngr = AltitudeMultiProfileManager()
 if __name__ == '__main__':
 
     # Define
-    CREATE_DB = True
+    RESET_DB = False
     filter = "tag('e1')"
 
     # Create database
-    db_mngr = DatabaseManager(create_db=CREATE_DB)
+    db_mngr = DatabaseManager(reset_db=RESET_DB)
 
     # Update DB + log
-    if CREATE_DB:
+    if RESET_DB:
         with LogManager():
             update_db('trepros1', strict=True)
             update_db('treprosu_')

@@ -215,18 +215,23 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         self._db = db
 
         # Init db
-        self._init_db()
+        exists_db = self._init_db()
 
-        if create_db:
+        if (create_db is True) or (exists_db is False):
             self._create_db()
 
     @property
     def db(self):
-        """peewee.SqliteDatabase: Database intance"""
+        """peewee.SqliteDatabase: Database instance"""
         return self._db
 
     def _init_db(self):
-        """Init db"""
+        """Init db
+
+        Returns:
+            bool: DB already exists or not
+
+        """
 
         # Init DB
         self._db.init(
@@ -239,16 +244,22 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         )
 
         # Create local DB directory
-        try:
-            self._db.database.parent.mkdir(parents=True, exist_ok=True)
-            # Set user read/write permission
-            self._db.database.parent.chmod(
-                self._db.database.parent.stat().st_mode | 0o600
-            )
-        except (OSError,) as exc:
-            raise DBDirError(
-                f"Error in creating '{self._db.database.parent}' ({exc})"
-            )
+        if self._db.database.exists():
+            exists = True
+        else:
+            exists = False
+            try:
+                self._db.database.parent.mkdir(parents=True, exist_ok=True)
+                # Set user read/write permission
+                self._db.database.parent.chmod(
+                    self._db.database.parent.stat().st_mode | 0o600
+                )
+            except (OSError,) as exc:
+                raise DBDirError(
+                    f"Error in creating '{self._db.database.parent}' ({exc})"
+                )
+
+        return exists
 
     #TODO
     # Fix with DB can't be create several times

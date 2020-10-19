@@ -328,7 +328,6 @@ class MultiProfileManager(metaclass=RequiredAttrMetaClass):
 
         return res
 
-
     def plot(self, *args, **kwargs):
         """Plot method
 
