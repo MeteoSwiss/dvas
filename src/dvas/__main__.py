@@ -31,10 +31,10 @@ def dvas_init():
 
     # For now, require a new folder to avoid issues ...
     while arena_path.exists():
-            arena_path = \
-              input('%s already exists. Please specify a new (relative) path for the dvas arena:'
-                    % (arena_path))
-            arena_path = Path(arena_path)
+        arena_path = \
+             input('%s already exists. Please specify a new (relative) path for the dvas arena:'
+                   % (arena_path))
+        arena_path = Path(arena_path)
 
     # Very well, setup the suitable directory
     #arena_path.mkdir()
