@@ -54,8 +54,8 @@ setup(
         "sre_yield",
     ],
 
-    # Use DVAS from a terminal
-    #entry_points={'console_scripts': ['dvas=dvas.__main__:main']},
+    # Setup entry points to use DVAS from a terminal
+    entry_points={'console_scripts': ['dvas=dvas.__main__:main']},
 
     classifiers=[
 
