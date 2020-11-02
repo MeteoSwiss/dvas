@@ -1,10 +1,10 @@
 # This Actions checks if the CHANGELOG was modified. If not, raises an error.
-# 
-# Inspired from: 
+#
+# Inspired from:
 # https://github.community/t5/GitHub-Actions/Get-list-of-files-on-pull-request-merge/td-p/41570
 # https://developer.github.com/changes/2020-02-10-deprecating-auth-through-query-param/
 #
-# Created May 2020; F.P.A. Vogt; frederic.vogt@alumni.anu.edu.au
+# Created May 2020; F.P.A. Vogt; frederic.vogt@meteoswiss.ch
 
 name: CI_changelog
 

@@ -2,13 +2,14 @@
 # versions. For more information see:
 # https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 # Adapted from: https://github.com/actions/starter-workflows/blob/master/ci/python-package.yml
-# Created May 2020; F.P.A. Vogt; frederic.vogt@alumni.anu.edu.au
+# Created May 2020; F.P.A. Vogt; frederic.vogt@meteoswiss.ch
 
 name: CI_pytest
 
 on:
-  push:
-    branches: [ master ]
+  # Not required on push: no code should go to master directly.
+  #push:
+  #  branches: [ master ]
   pull_request:
     branches: [ master, develop ]
 
@@ -23,16 +24,17 @@ jobs:
 
     steps:
     # Checkout the repository
-    - uses: actions/checkout@v2
+    - name: Checkout current repository
+      uses: actions/checkout@v2
 
     # Setup python
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
 
     # Check the python/conda setup
-    # Powershell syntax adapted from: 
+    # Powershell syntax adapted from:
     # https://stackoverflow.com/questions/63805/equivalent-of-nix-which-command-in-powershell
     # Answer from: petrsnd
     - name: Check the setup (I)
@@ -61,4 +63,3 @@ jobs:
     - name: Test dvas with pytest
       run: |
         pytest -s
-
