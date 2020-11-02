@@ -1,11 +1,12 @@
 # Inspired from: https://github.com/PyCQA/pylint/pull/2758#issuecomment-561164761
-# Created May 2020; F.P.A. Vogt; frederic.vogt@alumni.anu.edu.au
+# Created May 2020; F.P.A. Vogt; frederic.vogt@meteoswiss.ch
 
 name: CI_pylinter
 
 on:
-  push:
-    branches: [ master ]
+  # Not required on push: no code should go to master directly
+  #push:
+  #  branches: [ master ]
   pull_request:
     branches: [ master, develop ]
 
@@ -16,13 +17,16 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
+        python-version: [3.8]
 
     steps:
       # Checkout our repository
       - uses: actions/checkout@v2
 
       # Set up Python
-      - uses: actions/setup-python@v1
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
 
       # Install any dependency we require
       - name: Install dependancies
@@ -40,7 +44,7 @@ jobs:
       # Launch a home-made python script with in-line arguments split over multiple lines.
       # Here I use bash line breaks to feed each error codes on their own line. that way, I can
       # comment on each of them. The comments are included by hijacking the bash backtick's command
-      # substitution. 
+      # substitution.
       # Inspired from https://stackoverflow.com/questions/9522631/how-to-put-a-line-comment-for-a-multi-line-command
       # Authors: Marwan Alsabbagh, Kos
       - name: Look for Exception-raising errors

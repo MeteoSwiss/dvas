@@ -6,7 +6,7 @@ found, this script will raise an Exception), or to ignore some errors in a gener
 will print all the errors found, but will not raise any Exception). If a score is specified, the
 script will raise an Exception if it is not met.
 
-Created May 2020; F.P.A. Vogt; frederic.vogt@alumni.anu.edu.au
+Created May 2020; F.P.A. Vogt; frederic.vogt@meteoswiss.ch
 '''
 
 import argparse
