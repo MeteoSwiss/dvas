@@ -3,15 +3,20 @@
 Running dvas
 ============
 
-This page is very much a WIP. Feel free to add/restructure this as you see fit.
+1. Initialize a new dvas *processing arena*. In a terminal, in a location of your choice, type:
+
+.. code-block:: none
+
+    dvas --init
+
 
 Naming conventions
 ------------------
 
 The following applies throughout dvas:
 
-    * all radiosonde profiles must be associated to a unique **serial number**.
-    * all radiosonde profiles must be associated to a specific **site**, **event**, and **rig**,
+    * all radiosonde profiles must be associated to a unique **serial number** ``sn``.
+    * all radiosonde profiles must be associated to a specific ``site``, ``event``, and ``rig``,
       which respectively encode the spatial, temporal, and payload configurations of the launch.
       This information must be provided to dvas via `tags` in the metadata associated to each dataset.
 
@@ -25,7 +30,19 @@ The following applies throughout dvas:
 Filtering syntax
 ----------------
 
-The following are valid filtering syntax for querying the dvas database:
+The following grammatic rules allow to filter and extract specific datasets from the database:
+
+.. code-block:: none
+
+    - all(): Select all
+    - [datetime|dt]('<ISO datetime>', ['=='(default)|'>='|'>'|'<='|'<'|'!=']): Select by datetime
+    - [serialnumber|sn]('<Serial number>'): Select by serial number
+    - [tag](['<Tag>'|('<Tag 1>', ...,'<Tag n>')]): Select by tag
+    - and_(<expr 1>, ..., <expr n>): Intersection
+    - or_(<expr 1>, ..., <expr n>): Union
+    - not_(<expr>): All - <expr>
+
+.. rubric:: Examples
 
 .. code-block:: python3
 
