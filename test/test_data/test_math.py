@@ -17,8 +17,13 @@ from dvas.data.math import calc_tropopause, TropopauseError
 
 
 def test_calc_tropopause():
+    """Test calc_tropopause function
 
-    # Create dummy profile
+    The test is based on a simulated temperature profile
+
+    """
+
+    # Create temperature profile
     TROPO_ALT = 8000
     TROPO_TEMP = -60
     GROUND_ALT = 1500
@@ -28,7 +33,7 @@ def test_calc_tropopause():
         '0s', f'{round((TROPO_ALT - GROUND_ALT)/UP_SPEED*1.5)}s', freq='2s'
     )
     alt = pd.Series(
-        GROUND_ALT + UP_SPEED * time.total_seconds(),
+        GROUND_ALT + UP_SPEED * time.total_seconds(),  # noqa, pylint: disable=E1101
         index=time
     )
     temp = (alt - GROUND_ALT) * (TROPO_TEMP - GROUND_TEMP)/(TROPO_ALT - GROUND_ALT)

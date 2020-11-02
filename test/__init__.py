@@ -20,5 +20,5 @@ path_var.local_db_path = test_expl_path / 'dvas_db'
 path_var.orig_data_path = test_expl_path / 'data'
 
 
-db_mngr = DatabaseManager(create_db=True)
+db_mngr = DatabaseManager(reset_db=True)
 update_db('trepros1')

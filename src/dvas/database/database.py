@@ -192,7 +192,12 @@ class OneDimArrayConfigLinker:
 
 
 class DatabaseManager(metaclass=SingleInstanceMetaClass):
-    """Local DB manager"""
+    """Local data base manager.
+
+    Note:
+        If the data base does not exists, the creation will be forced.
+
+    """
 
     DB_TABLES = [
         InstrType, Instrument,
@@ -205,8 +210,13 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         Tag
     ]
 
-    def __init__(self, create_db=False):
-        """Constructor"""
+    def __init__(self, reset_db=False):
+        """
+
+        Args:
+            reset_db (bool): Force the data base to be reset.
+
+        """
 
         # Create config linker instance attribute
         self._cfg_linker = OneDimArrayConfigLinker()
@@ -217,7 +227,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         # Init db
         exists_db = self._init_db()
 
-        if (create_db is True) or (exists_db is False):
+        if (reset_db is True) or (exists_db is False):
             self._create_db()
 
     @property

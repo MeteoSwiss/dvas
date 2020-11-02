@@ -40,7 +40,8 @@ def crosscorr(datax, datay, lag=0, wrap=False, method='kendall'):
 
     return out
 
-
+#TODO
+# Modify into a speedup version (inspiration of newton minimal search)
 def calc_tropopause(temp, alt, start_alt=5000, layer=2000, grad_cond=-2):
     """Calculate tropopause altitude
 
