@@ -46,4 +46,14 @@ The following grammatic rules allow to filter and extract specific datasets from
 
 .. code-block:: python3
 
-    filter = "tag('e1')" # Extracts all the profiles associated to the event tagged "1".
+    # Extract all the profiles associated to the event tagged "1":
+    filt_evt = "tag('e1')"
+
+    # Extract all the profiles from a specifc launch time:
+    filt_dt = "dt('20160715T120000Z', '==')"
+
+    # Two or more conditions can also be combined, for example:
+    filt_comb = "and_(%s,%s)" % (filt_evt, filt_dt)
+
+    # With the suitable filter, the data can then be extracted from the database:
+    data_t = time_mngr.load(filt, 'trepros1')
