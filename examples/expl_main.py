@@ -8,6 +8,14 @@ SPDX-License-Identifier: GPL-3.0-or-later
 Module content: examples
 """
 
+from pathlib import Path
+
+# Set the data path to look where we currently are
+from dvas.dvas_environ import path_var
+# WARNING: this must be done BEFORE importing anything else ... !
+path_var.orig_data_path = Path(__file__).parent / 'data'
+path_var.config_dir_path = Path(__file__).parent / 'config'
+
 # Import
 from dvas.data.data import TemporalMultiProfileManager
 from dvas.data.data import AltitudeMultiProfileManager
@@ -23,7 +31,7 @@ if __name__ == '__main__':
 
     # Define
     RESET_DB = False
-    filter = "tag('e1')"
+    filt = "tag('e1')"
 
     # Create database
     db_mngr = DatabaseManager(reset_db=RESET_DB)
@@ -37,24 +45,23 @@ if __name__ == '__main__':
             update_db('prepros1')
 
     # Time
-    data_t = time_mngr.load(filter, 'trepros1')
+    data_t = time_mngr.load(filt, 'trepros1')
     data_s = data_t.sort()
     data_r = data_s.resample()
     data_sy = data_r.synchronize()
     data_sy.plot()
     data_sy.save({'data': 'dummy_3'})
-    test = time_mngr.load(filter, 'dummy_3')
+    test = time_mngr.load(filt, 'dummy_3')
     test = test.sort()
     data_sy.plot()
 
     # Alt
-    data_t = alt_mngr.load(filter, 'trepros1', 'altpros1')
+    data_t = alt_mngr.load(filt, 'trepros1', 'altpros1')
     data_s = data_t.sort()
     data_r = data_s.resample()
     data_sy_t = data_r.synchronize(method='time')
     data_sy_a = data_r.synchronize(method='alt')
     data_sy_t.save({'data': 'dummy_0', 'alt': 'dummy_1'})
-    test = data_t = alt_mngr.load(filter, 'dummy_0', 'dummy_1')
+    test = data_t = alt_mngr.load(filt, 'dummy_0', 'dummy_1')
     test = test.sort()
     data_sy_t.plot()
-
