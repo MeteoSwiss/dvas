@@ -49,7 +49,8 @@ jobs:
           cd ../..
 
       # Set up Python
-      - uses: actions/setup-python@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
       # The following should be temporary ... right now, the default goes to 3.9, but many wheels
       # are still missing for this version.
         with:

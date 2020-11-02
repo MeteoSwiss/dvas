@@ -21,10 +21,12 @@ jobs:
 
     steps:
       # Checkout our repository
-      - uses: actions/checkout@v2
+      - name: Checkout current repository
+        uses: actions/checkout@v2
 
       # Set up Python
-      - uses: actions/setup-python@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
 
