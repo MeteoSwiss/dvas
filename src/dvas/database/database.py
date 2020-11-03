@@ -453,10 +453,9 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     Parameter.prm_abbr == prm_abbr
                 )
                 if not param:
-                    localdb.error(
-                        "prm_abbr '%s' is missing in DB", prm_abbr
-                    )
-                    raise DBInsertError()
+                    err_msg = "prm_abbr '%s' is missing in DB" % (prm_abbr)
+                    localdb.error(err_msg)
+                    raise DBInsertError(err_msg)
 
                 # Check tag_abbr existence
                 try:
