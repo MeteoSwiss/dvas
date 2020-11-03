@@ -159,9 +159,10 @@ def plot_gdps(fn_list, ref_var='time', tag=None, save_loc=None):
 
     plt.savefig(save_loc / ('GDPs_%s%s.png' % (ref_var, tag)))
 
+
 @log_func_call(plot_logger)
 def pks_cmap(alpha=0.27/100, vmin=0.0, vmax=3*0.27/100):
-    ''' Defines a custom colormap for the p-value plot of the KS test function.
+    """ Defines a custom colormap for the p-value plot of the KS test function.
 
     Args:
         alpha (float): the significance level of the KS test.
@@ -171,7 +172,7 @@ def pks_cmap(alpha=0.27/100, vmin=0.0, vmax=3*0.27/100):
     Returns:
        matplotlib.colors.LinearSegmentedColormap
 
-    '''
+    """
 
     # Some sanity checks
     if not isinstance(vmin, float) or not isinstance(vmax, float):
@@ -200,7 +201,7 @@ def pks_cmap(alpha=0.27/100, vmin=0.0, vmax=3*0.27/100):
 
 @log_func_call(plot_logger)
 def plot_ks_test(k_pqi, f_pqi, p_ksi, binning_list, alpha, tag=None, save_loc=None):
-    ''' Creates a diagnostic plot for the KS test.
+    """ Creates a diagnostic plot for the KS test.
 
     Args:
         k_pqi (ndarray): the **unbinned** normalized profile delta.
@@ -216,7 +217,7 @@ def plot_ks_test(k_pqi, f_pqi, p_ksi, binning_list, alpha, tag=None, save_loc=No
     TODO:
         * fix the problem of thin lines becoming invisible (in case of long profiles)
 
-    '''
+    """
 
     # Some sanity checks first
     if not isinstance(binning_list, list):

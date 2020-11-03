@@ -20,9 +20,9 @@ import pandas as pd
 
 # Import from current package
 from ..dvas_environ import path_var as env_path_var
-from ..database.model import Data, InstrType, Instrument, EventsInfo
+from ..database.model import InstrType, Instrument, EventsInfo
 from ..database.model import Parameter, OrgiDataInfo
-from ..database.database import db_mngr, EventManager
+from ..database.database import DatabaseManager, EventManager
 from ..config.config import OrigData, CSVOrigMeta
 from ..config.config import ConfigReadError
 from ..config.definitions.origdata import META_FIELD_KEYS
@@ -50,6 +50,8 @@ class Handler(ABC):
         `Source <https://refactoring.guru/design-patterns/chain-of-responsibility/python/example>`__
 
     """
+
+    db_mngr = DatabaseManager()
 
     @abstractmethod
     def set_next(self, handler):
@@ -84,7 +86,7 @@ class AbstractHandler(Handler):
     .. uml::
 
         @startuml
-        hide footbox
+        footer Chain of responsibility design pattern
 
         class AbstractHandler {
             set_next(handler)
@@ -195,7 +197,7 @@ class FileHandler(AbstractHandler):
         instr_type_name = grp.group(1)
 
         # Check instr_type name existence in DB
-        if db_mngr.get_or_none(
+        if self.db_mngr.get_or_none(
                 InstrType,
                 search={
                     'where': InstrType.type_name == instr_type_name
@@ -215,7 +217,7 @@ class FileHandler(AbstractHandler):
         # Check instr_type name existence
         # (need it for loading origdata config)
         if (
-            instr_type_name_from_sn := db_mngr.get_or_none(
+            instr_type_name_from_sn := self.db_mngr.get_or_none(
                 Instrument,
                 search={
                     'join_order': [InstrType],
@@ -244,7 +246,7 @@ class FileHandler(AbstractHandler):
         """Exclude file method"""
 
         # Search exclude file names
-        exclude_file_name = db_mngr.get_or_none(
+        exclude_file_name = self.db_mngr.get_or_none(
             EventsInfo,
             search={
                 'where': (
@@ -451,7 +453,6 @@ class CSVHandler(FileHandler):
         event = EventManager(
             event_dt=metadata[EVENT_DT_FLD_NM],
             sn=metadata[SN_FLD_NM],
-            prm_abbr=prm_abbr,
             tag_abbr=metadata[TAG_FLD_NM] + [TAG_RAW_VAL],
         )
 
@@ -518,6 +519,7 @@ class CSVHandler(FileHandler):
         # Append data
         out = {
             'event': event,
+            'prm_abbr': prm_abbr,
             'data': data,
             'source_info': self.apply_file_check_rule(file_path)
         }
@@ -586,7 +588,6 @@ class GDPHandler(FileHandler):
         event = EventManager(
             event_dt=metadata[EVENT_DT_FLD_NM],
             sn=metadata[SN_FLD_NM],
-            prm_abbr=prm_abbr,
             tag_abbr=metadata[TAG_FLD_NM] + [TAG_RAW_VAL, TAG_GDP_VAL],
         )
 
@@ -640,6 +641,7 @@ class GDPHandler(FileHandler):
         out = {
             'event': event,
             'data': data,
+            'prm_abbr': prm_abbr,
             'source_info': self.apply_file_check_rule(file_path)
         }
 
@@ -657,28 +659,65 @@ class DataLinker(ABC):
     def save(self, *args, **kwargs):
         """Data saving method"""
 
+    def to_frame(self, data, key):
+        """Convert to pd.DataFrame
+
+        Args:
+            data (pd.DataFrame or pd.Series): Data dict to convert
+            key (str): Data key
+
+        Returns:
+            pd.Series
+
+        """
+
+        if isinstance(data[key], pd.Series):
+            data[key] = data[key].to_frame(VALUE_NM)
+            data[key].index.name = INDEX_NM
+            data[key].reset_index(inplace=True)
+
+        elif len(data[key].columns) == 1:
+            data[key].columns = [VALUE_NM]
+            data[key].index.name = INDEX_NM
+            data[key].reset_index(inplace=True)
+
+        else:
+            data[key].columns = [INDEX_NM, VALUE_NM]
+
 
 class LocalDBLinker(DataLinker):
     """Local DB data linker """
 
-    def load(self, search, prm_abbr):
-        """Load data method
+    db_mngr = DatabaseManager()
+
+    def load(self, search, prm_abbr, filter_empty=True):
+        """Load parameter method
 
         Args:
-            search (str):
-            prm_abbr (str): Parameter abbr
+            search (str): Data loader search criterion
+            prm_abbr (str): Positional parameter abbr
+            filter_empty (bool, `optional`): Filter empty data from search.
+                Default to True.
 
         Returns:
+            list of pd.DataFrame
+
+        .. uml::
+
+            @startuml
+            hide footbox
+
+            LocalDBLinker -> DatabaseManager: get_data()
+            LocalDBLinker <- DatabaseManager : data
+
+            @enduml
 
         """
 
         # Retrieve data from DB
-        data = db_mngr.get_data(where=search, prm_abbr=prm_abbr)
-
-        # Format dataframe index
-        for arg in data:
-            arg['data'][INDEX_NM] = pd.TimedeltaIndex(arg['data'][INDEX_NM], 's')
-            arg['data'] = arg['data'].set_index([INDEX_NM])[VALUE_NM]
+        data = self.db_mngr.get_data(
+            where=search, prm_abbr=prm_abbr, filter_empty=filter_empty
+        )
 
         return data
 
@@ -686,12 +725,18 @@ class LocalDBLinker(DataLinker):
         """Save data method
 
         Args:
-          data_list (list of dict): {'data': pd.Series, 'event': EventManager'}
+            data_list (list of dict):
+                [{'data': pd.DataFrame or pd.Series, 'event': EventManager', 'prm_abbr': str}]
 
         """
 
         for args in data_list:
-            db_mngr.add_data(**args)
+
+            # Convert data to pd.DataFrame
+            self.to_frame(args, 'data')
+
+            # Add data to DB
+            self.db_mngr.add_data(**args)
 
 
 class CSVOutputLinker(DataLinker):

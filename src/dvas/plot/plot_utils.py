@@ -47,6 +47,7 @@ UNIT_LABELS = {'K': r'K$^{\circ}$',
                'degree': r'$^{\circ}$',
                }
 
+
 @log_func_call(plot_logger)
 def set_mplstyle(style='base'):
     """ Set the DVAS plotting style. 'base' contains all the generic commands. 'latex'
@@ -86,6 +87,7 @@ def set_mplstyle(style='base'):
     # Then apply which ever alternative style was requested, if we haven't already.
     if style != 'base':
         plt.style.use(str(Path(pkg_path, 'plot', 'mpl_styles', PLOT_STYLES[style])))
+
 
 def cmap_discretize(cmap, n_cols):
     """Return a discrete colormap from the continuous colormap cmap.

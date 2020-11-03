@@ -72,7 +72,7 @@ class ConfigManager(ABC, metaclass=RequiredAttrMetaClass):
         'DOC_TYPE': type,
     }
 
-    #: type: Type of document. Only dict or list types.
+    #: type: Type of document. Choices: [dict, list].
     DOC_TYPE = None
 
     document = TypedProperty(Union[dict, list])
@@ -528,7 +528,7 @@ class MultiLayerConfigManager(OneLayerConfigManager):
 
         out = {
             key: self.get_val(node_keys, key)
-            for key in self.NODE_PARAMS_DEF.keys()
+            for key in [*self.NODE_PARAMS_DEF.keys(), *self.CONST_NODES.keys()]
         }
 
         return out

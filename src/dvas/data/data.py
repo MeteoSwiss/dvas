@@ -10,20 +10,27 @@ Module contents: Data management
 """
 
 # Import from external packages
+from abc import abstractmethod
 from copy import deepcopy
-import numpy as np
-import pandas as pd
+from pampy.pampy import match, List
 
 # Import from current package
 from .linker import LocalDBLinker, CSVHandler, GDPHandler
-from ..plot.plot import basic_plot
-from .math import crosscorr
-from ..database.database import db_mngr
-from ..database.model import Flag, Parameter
+from .strategy.data import TimeProfileManager
+from .strategy.load import LoadTimeDataStrategy
+from .strategy.load import LoadAltDataStrategy
+from .strategy.resample import TimeResampleDataStrategy
+from .strategy.sort import TimeSortDataStrategy
+from .strategy.sync import TimeSynchronizeStrategy
+from .strategy.plot import TimePlotStrategy
+from .strategy.plot import AltTimePlotStartegy
+from .strategy.save import SaveTimeDataStrategy
+from ..database.database import DatabaseManager
+from ..database.model import Parameter
 from ..database.database import OneDimArrayConfigLinker
 from ..dvas_logger import localdb, rawcsv
 from ..dvas_environ import path_var
-from ..config.definitions.tag import TAG_RAW_VAL, TAG_DERIVED_VAL, TAG_EMPTY_VAL
+from ..dvas_helper import RequiredAttrMetaClass
 
 
 # Define
@@ -31,363 +38,15 @@ FLAG = 'flag'
 VALUE = 'value'
 cfg_linker = OneDimArrayConfigLinker()
 
-
-class FlagManager:
-    """Flag manager class"""
-
-    FLAG_BIT_NM = Flag.bit_number.name
-    FLAG_ABBR_NM = Flag.flag_abbr.name
-    FLAG_DESC_NM = Flag.flag_desc.name
-
-    def __init__(self, index):
-        """
-        Args:
-            index (iterable): Flag index
-        """
-        self._flags = {
-            arg[self.FLAG_ABBR_NM]: arg
-            for arg in db_mngr.get_flags()
-        }
-
-        self._data = pd.Series(
-            np.zeros(len(index),), index=index, dtype=int
-        )
-
-    def __len__(self):
-        return len(self.data)
-
-    @property
-    def flags(self):
-        """dict: Flag abbr, description and bit position."""
-        return self._flags
-
-    @property
-    def data(self):
-        """pandas.Series: Data corresponding flag value."""
-        return self._data
-
-    @data.setter
-    def data(self, value):
-        self._data = value
-
-    def reindex(self, index, set_abbr):
-        """Reindex method
-
-        Args:
-            index (iterable): New index
-            set_abbr (str): Flag abbr used to replace NaN creating during
-                reindexing.
-
-        """
-
-        # Reindex flag
-        self.data = self.data.reindex(index)
-
-        # Set resampled flag
-        self.set_bit_val(set_abbr, True, self.data.isna())
-
-    def get_bit_number(self, abbr):
-        """Get bit number corresponding to given flag abbr"""
-        return self.flags[abbr][self.FLAG_BIT_NM]
-
-    def set_bit_val(self, abbr, set_val, index=None):
-        """Set data flag value to one
-
-        Args:
-            abbr (str):
-            set_val (bool): Default to True
-            index (pd.Index, optional): Default to None.
-
-        """
-
-        # Define
-        def set_to_true(x):
-            """Set bit to True"""
-            if np.isnan(x):
-                out = (1 << self.get_bit_number(abbr))
-            else:
-                out = int(x) | (1 << self.get_bit_number(abbr))
-
-            return out
-
-        def set_to_false(x):
-            """Set bit to False"""
-            if np.isnan(x):
-                out = 0
-            else:
-                out = int(x) & ~(1 << self.get_bit_number(abbr))
-
-            return out
-
-        # Init
-        if index is None:
-            index = self.data.index
-
-        # Set bit
-        if set_val is True:
-            self._data.loc[index] = self.data.loc[index].apply(set_to_true)
-        else:
-            self._data.loc[index] = self.data.loc[index].apply(set_to_false)
-
-    def get_bit_val(self, abbr):
-        """Get data flag value
-
-        Args:
-            abbr (str):
-
-        """
-        bit_nbr = self.get_bit_number(abbr)
-        return self.data.apply(lambda x: (x >> bit_nbr) & 1)
-
-
-class EmptyProfileManager:
-    """Empty profile"""
-
-    def __init__(self, event_mngr):
-        """
-
-        Args:
-            event_mngr:
-        """
-
-        # Set attributes
-        self._event_mngr = event_mngr
-
-    @property
-    def data(self):
-        """pd.Series: Data"""
-        return pd.Series()
-
-    @property
-    def event_mngr(self):
-        """EventManager: Corresponding data event manager"""
-        return self._event_mngr
-
-
-class ProfileManger(EmptyProfileManager):
-    """Profile manager"""
-
-    def __init__(self, data, event_mngr):
-        """Constructor
-
-        Args:
-            data (pd.Series): pd.Series with any index
-            event_mngr (EventManager):
-
-        """
-
-        super().__init__(event_mngr)
-
-        # Test
-        self.check_data(data)
-
-        # Set attributes
-        self._data = data
-        self._data.name = None
-        self._flag_mngr = FlagManager(data.index)
-
-    @property
-    def data(self):
-        """pd.Series: Data"""
-        return self._data
-
-    @data.setter
-    def data(self, val):
-        # Test
-        self.check_data(val)
-        assert len(val) == len(self.flag_mngr), 'len(data) != len(flag)'
-
-        # Set data
-        self._data = val
-
-        # Modify tag 'raw' -> 'derived'
-        self.event_mngr.rm_tag(TAG_RAW_VAL)
-        self.event_mngr.add_tag(TAG_DERIVED_VAL)
-
-    @property
-    def flag_mngr(self):
-        """FlagManager: Flag manager"""
-        return self._flag_mngr
-
-    @property
-    def flag(self):
-        """pd.Series: Corresponding data flag"""
-        return self._flag_mngr.data
-
-    def check_data(self, val):
-        """Check data"""
-        assert isinstance(val, pd.Series)
-
-    def copy(self):
-        """Copy method"""
-        return deepcopy(self)
-
-    def __len__(self):
-        return len(self.data)
-
-    def interpolate(self):
-        """Interpolated method"""
-
-        #TODO
-        # Add automatic interpolation for polar coord (e.g. wind direction)
-        # Check if this function must be improved/fixed
-        interp_data = self.data.interpolate(method='index')
-
-        # Set interp flag
-        self.flag_mngr.set_bit_val('interp', True, index=self.data.isna())
-
-        # Set data
-        self.data = interp_data
-
-    def get_flagged(self, flag_abbr):
-        """Get flag value for given flag abbr"""
-        return self.flag_mngr.get_bit_val(flag_abbr)
-
-
-class TimeProfileManager(ProfileManger):
-    """Time profile manager """
-
-    @staticmethod
-    def factory(data, event_mngr, index_lag=pd.Timedelta('0s'), err_r=None, err_s=None, err_t=None):
-        """TimeProfileManager factory"""
-
-        if len(data) == 0:
-            return EmptyProfileManager(event_mngr)
-        if (err_r is None) or (err_s is None) or (err_t is None):
-            return TimeProfileManager(data, event_mngr, index_lag)
-        if (err_s is None) or (err_t is None):
-            raise NotImplementedError()
-            #return TimeProfileErrTypeA(data, event_mngr, index_lag, err_r)
-        else:
-            raise NotImplementedError()
-            #return TimeProfileErrTypeA(data, event_mngr, index_lag, err_r, err_s, err_t)
-
-    def __init__(self, data, event_mngr, index_lag):
-        """Constructor
-
-        Args:
-            data (pd.Series): pd.Series with index of type pd.TimedeltaIndex
-            event_mngr (EventManager):
-            index_lag (pd.Timedelta):
-
-        """
-        super().__init__(data, event_mngr)
-
-        # Test
-        assert isinstance(index_lag, pd.Timedelta)
-
-        # Init attributes
-        self._index_lag = index_lag
-
-        # Reset index
-        self._reset_index()
-
-        # Set raw NA
-        self._flag_mngr.set_bit_val('raw_na', True, self.data.isna())
-
-    @property
-    def index_lag(self):
-        """pd.Timedelta: Index time lag"""
-        return self._index_lag
-
-    def check_data(self, val):
-        """Overwrite check data"""
-        super().check_data(val)
-
-        # Test
-        assert isinstance(val.index, pd.TimedeltaIndex)
-
-    def resample(self, interval='1s', method='mean'):
-        """Resample method
-
-        Args:
-            interval (str, optional): Resample interval. Default is '1s'.
-            method (str, optional): Resample method, 'mean' (default) | 'sum'
-
-        """
-
-        resampler = self.data.resample(interval, label='right', closed='right')
-        if method == 'mean':
-            data_tmp = resampler.mean()
-        elif method == 'sum':
-            data_tmp = resampler.sum()
-        else:
-            raise AttributeError('Bad method value')
-
-        # Reindex flag
-        self.flag_mngr.reindex(data_tmp.index, 'resampled')
-
-        # Set data
-        self.data = data_tmp
-
-    def _reset_index(self):
-        """Set index start at 0s"""
-        self._data.index = self.data.index - self.data.index[0]
-        self._flag_mngr.data.index = self.flag.index - self.flag.index[0]
-
-    def shift(self, periods):
-        """
-
-        Args:
-          periods:
-
-        Returns:
-
-
-        """
-
-        self._data = self.data.shift(periods)
-        self._index_lag -= pd.Timedelta(periods, self.data.index.freq.name)
-
-
-class TimeProfileErrTypeA(TimeProfileManager):
-    """Error type A TimeProfileManager"""
-
-
-class TimeProfileErrTypeB(TimeProfileManager):
-    """Error type B TimeProfileManager"""
-
-
-def load(search, prm_abbr, filter_empty=True):
-    """Load parameter
-
-    Args:
-        search (str): Data loader search criterion
-        prm_abbr (str): Positional parameter abbr
-        filter_empty (bool): Filter empty data from search
-
-    Returns:
-        MultiTimeProfileManager
-
-    .. uml::
-
-        @startuml
-        hide footbox
-
-        load -> LocalDBLinker: load(search, prm_abbr)
-        LocalDBLinker -> DatabaseManager: get_data(where=search, prm_abbr=prm_abbr)
-        LocalDBLinker <- DatabaseManager : data
-        load <- LocalDBLinker: data
-        @enduml
-
-    """
-
-    # Init
-    db_linker = LocalDBLinker()
-
-    if filter_empty is True:
-        search = "(" + search + ") & ~{_tag == '" + TAG_EMPTY_VAL + "'}"
-
-    # Load data
-    out = MultiTimeProfileManager()
-    for data in db_linker.load(search, prm_abbr):
-        out.append(
-            TimeProfileManager.factory(
-                data['data'],
-                data['event'])
-        )
-
-    return out
+# Init strategy instances
+load_time_stgy = LoadTimeDataStrategy()
+load_alt_stgy = LoadAltDataStrategy()
+sort_time_stgy = TimeSortDataStrategy()
+rspl_time_stgy = TimeResampleDataStrategy()
+sync_time_stgy = TimeSynchronizeStrategy()
+plot_time_stgy = TimePlotStrategy()
+plot_alt_time_stgy = AltTimePlotStartegy()
+save_time_stgy = SaveTimeDataStrategy()
 
 
 def update_db(search, strict=False):
@@ -421,6 +80,7 @@ def update_db(search, strict=False):
     """
 
     # Init linkers
+    db_mngr = DatabaseManager()
     db_linker = LocalDBLinker()
 
     # Define chain of responsibility for loadgin from raw
@@ -497,105 +157,264 @@ def update_db(search, strict=False):
         )
 
 
-class MultiProfileManager(list):
-    """Mutli profile manager"""
+class MultiProfileManager(metaclass=RequiredAttrMetaClass):
+    """Multi profile manager"""
 
-    def load(self):
-        """Load method"""
-        raise NotImplementedError('Please implement')
+    REQUIRED_ATTRIBUTES = {
+        '_DATA_TYPES': dict
+    }
 
+    #: dict: Data type with corresponding key name
+    _DATA_TYPES = None
 
-class MultiTimeProfileManager(MultiProfileManager):
-    """Multi time profile manager"""
+    @abstractmethod
+    def __init__(
+            self,
+            load_stgy, resample_stgy, sort_stgy,
+            sync_stgy, plot_stgy, save_stgy,
+    ):
 
-    def __init__(self, time_profiles_mngrs=tuple()):
-        """
+        # Init strategy
+        self._load_stgy = load_stgy
+        self._resample_stgy = resample_stgy
+        self._sort_stgy = sort_stgy
+        self._sync_stgy = sync_stgy
+        self._plot_stgy = plot_stgy
+        self._save_stgy = save_stgy
 
-        Args:
-            time_profiles_mngrs (iterable of TimeProfileManager):
-        """
-        super().__init__(time_profiles_mngrs)
+        # Init attributes
+        self._data = {}
 
-    def load(self):
-        """Overwrite load method"""
-        pass
+    @property
+    def keys(self):
+        """list: Data keys"""
+        return self._DATA_TYPES.keys()
 
-    def map(self, func, inplace, *args, **kwargs):
-        """Map individual TimeProfileManager"""
-        if inplace:
-            MultiTimeProfileManager(
-                map(lambda x: func(x, *args, **kwargs), self)
-            )
-            out = None
-        else:
-            out = self.copy()
-            MultiTimeProfileManager(
-                map(lambda x: func(x, *args, **kwargs), out)
-            )
-        return out
+    @property
+    def data(self):
+        """dict of list of ProfileManager: Data"""
+        return self._data
+
+    @data.setter
+    def data(self, val):
+
+        # Test
+        pattern = {
+            key: List[value]
+            for key, value in self._DATA_TYPES.items()
+        }
+        assert match(
+            val, pattern,
+            True, default=False
+        ), 'Bad type for value'
+
+        self._data = val
+
+    @property
+    def datas(self):
+        """dict of list of ProfileManger datas: Datas"""
+        return {key: [arg.data for arg in val] for key, val in self.data.items()}
+
+    @property
+    def values(self):
+        """dict of list of ProfileManger values: Values"""
+        return {key: [arg.value for arg in val] for key, val in self.data.items()}
+
+    @property
+    def flags(self):
+        """dict of list of ProfileManger flags: Flags"""
+        return {key: [arg.flag for arg in val] for key, val in self.data.items()}
+
+    @property
+    def event_mngrs(self):
+        """dict of list of ProfileManger event_mngr: Event managers"""
+        return {key: [arg.event_mngr for arg in val] for key, val in self.data.items()}
+
+    def __getitem__(self, item):
+        return self.data[item]
 
     def copy(self):
-        """Copy method"""
+        """Retrun a deep copy of the object"""
         return deepcopy(self)
 
-    def append(self, value):
-        """Overwrite of append method"""
-        assert isinstance(value, (TimeProfileManager, EmptyProfileManager))
-        super().append(value)
-
-    def resample(self, interval='1s', method='mean', inplace=False):
-        """Resample method"""
-        return self.map(
-            TimeProfileManager.resample, inplace=inplace,
-            interval=interval, method=method
-        )
-
-    def interpolate(self, inplace=False):
-        """Interpolate method"""
-        return self.map(
-            TimeProfileManager.interpolate, inplace=inplace
-        )
-
-    def synchronise(self, i_start=0, n_corr=300, window=30, i_ref=0):
-        """Synchronise time profile
+    def load(self, *args, inplace=False, **kwargs):
+        """Load classmethod
 
         Args:
-          i_start (int): Start integer index. Default to 0.
-          n_corr (int): Default to 300.
-          window (int): Window size. Default to 30.
-          i_ref (int): Reference TimeProfile index. Default to 0.
+            inplace (bool, `optional`): If True, perform operation in-place.
+                Default to False.
 
         Returns:
-
+            MultiProfileManager
 
         """
 
-        # Copy
-        out = self.copy()
+        # Load data
+        if len(args) == 1:
+            data = args[0]
+        else:
+            data = self._load_stgy.load(*args, **kwargs)
 
-        # Select reference data
-        ref_data = out[i_ref]
+        # Modify inplace or not
+        if inplace is True:
+            self.data = data
+            res = None
+        else:
+            res = self.copy()
+            res.data = data
 
-        # Find best corrcoef
-        idx_offset = []
-        window_values = range(-window, window)
-        for test_data in out:
-            corr_res = [
-                crosscorr(
-                    ref_data.data.iloc[i_start:i_start + n_corr],
-                    test_data.data.iloc[i_start:i_start + n_corr],
-                    lag=w)
-                for w in window_values
-            ]
-            idx_offset.append(np.argmax(corr_res))
+        return res
 
-        for i, arg in enumerate(out):
-            arg.shift(window_values[idx_offset[i]])
-            arg.event_mngr.add_tag('sync')
+    def resample(self, *args, inplace=False, **kwargs):
+        """Resample method
 
-        return out
+        Args:
+            *args: Variable length argument list.
+            inplace (bool, `optional`): If True, perform operation in-place.
+                Default to False.
+            **kwargs: Arbitrary keyword arguments.
 
-    def plot(self, **kwargs):
-        """Plot method"""
+        Returns:
+            MultiProfileManager if inplace is True, otherwise None
 
-        basic_plot(self, **kwargs)
+        """
+
+        # Resample
+        out = self._resample_stgy.resample(self.copy().data, *args, **kwargs)
+
+        # Load
+        res = self.load(out, inplace=inplace)
+
+        return res
+
+    def sort(self, inplace=False):
+        """Sort method
+
+        Args:
+            inplace (bool, `optional`): If True, perform operation in-place
+                Default to False.
+        Returns
+            MultiProfileManager if inplace is True, otherwise None
+
+        """
+
+        # Sort
+        out = self._sort_stgy.sort(self.copy().data)
+
+        # Load
+        res = self.load(out, inplace=inplace)
+
+        return res
+
+    def synchronize(self, *args, inplace=False, **kwargs):
+        """Synchronize method
+
+        Args:
+            *args: Variable length argument list.
+            inplace (bool, `optional`): If True, perform operation in-place.
+                Default to False.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns
+            MultiProfileManager if inplace is True, otherwise None
+
+        """
+
+        # Synchronize
+        out = self._sync_stgy.synchronize(self.copy().data, 'data', *args, **kwargs)
+
+        # Load
+        res = self.load(out, inplace=inplace)
+
+        return res
+
+    def plot(self, *args, **kwargs):
+        """Plot method
+
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            None
+
+        """
+        self._plot_stgy.plot(self.values, self.event_mngrs, *args, **kwargs)
+
+    def save(self, prm_abbr):
+        """Save method
+
+        Args:
+            prm_abbr (dict): Parameter abbr.
+
+        Returns:
+            None
+
+        """
+
+        # Test
+        assert match(
+            prm_abbr, {key: str for key in self._DATA_TYPES.keys()},
+            True, default=False
+        )
+
+        # Call save strategy
+        self._save_stgy.save(self.copy().values, self.event_mngrs, prm_abbr)
+
+
+class TemporalMultiProfileManager(MultiProfileManager):
+    """Temporal multi profile manager"""
+
+    _DATA_TYPES = {'data': TimeProfileManager}
+
+    def __init__(self):
+        super().__init__(
+            load_time_stgy, rspl_time_stgy, sort_time_stgy,
+            sync_time_stgy, plot_time_stgy, save_time_stgy
+        )
+
+
+class AltitudeMultiProfileManager(MultiProfileManager):
+    """Altitude multi profile manager"""
+
+    _DATA_TYPES = {'data': TimeProfileManager, 'alt': TimeProfileManager}
+
+    def __init__(self):
+        super().__init__(
+            load_alt_stgy, rspl_time_stgy, sort_time_stgy,
+            sync_time_stgy, plot_alt_time_stgy, save_time_stgy
+        )
+
+    def synchronize(self, *args, inplace=False, method='time', **kwargs):
+        """Overwrite of synchronize method
+
+        Args:
+            *args: Variable length argument list.
+            inplace (bool, `optional`): If True, perform operation in-place.
+                Default to False.
+            method (str, `optional`): Method used to synchronize series.
+                Default to 'time'
+                - 'time': Synchronize on time
+                - 'alt': Synchronize on altitude
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns
+            MultiProfileManager if inplace is True, otherwise None
+
+        """
+
+        # Synchronize
+        if method == 'time':
+            out = self._sync_stgy.synchronize(self.copy().data, 'data', *args, **kwargs)
+        else:
+            #TODO modify to integrate linear AND offset compesation
+            out = self._sync_stgy.synchronize(self.copy().data, 'alt', *args, **kwargs)
+
+        # Modify inplace or not
+        if inplace:
+            self.data = out
+            res = None
+        else:
+            res = self.load(out)
+
+        return res

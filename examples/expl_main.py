@@ -8,43 +8,60 @@ SPDX-License-Identifier: GPL-3.0-or-later
 Module content: examples
 """
 
-# Import
-from dvas.data.data import load, update_db
-from dvas.dvas_logger import LogManager
-from dvas.database.database import db_mngr
+from pathlib import Path
 
+# Set the data path to look where we currently are
+from dvas.dvas_environ import path_var
+# WARNING: this must be done BEFORE importing anything else ... !
+path_var.orig_data_path = Path(__file__).parent / 'data'
+path_var.config_dir_path = Path(__file__).parent / 'config'
+
+# Import
+from dvas.data.data import TemporalMultiProfileManager
+from dvas.data.data import AltitudeMultiProfileManager
+from dvas.data.data import update_db
+from dvas.dvas_logger import LogManager
+from dvas.database.database import DatabaseManager
+
+# Define
+time_mngr = TemporalMultiProfileManager()
+alt_mngr = AltitudeMultiProfileManager()
 
 if __name__ == '__main__':
 
-    # # Create database
-    # db_mngr.create_db()
-    #
-    # # Update DB + log
-    # with LogManager():
-    #     update_db('trepros1', strict=True)
-    #     update_db('treprosu_')
-    #     update_db('altpros1')
+    # Define
+    RESET_DB = False
+    filt = "tag('e1')"
 
-    data = load("{_dt < %2020-01-02T120000Z%} & ~{_sn.contains('AR')}", 'treprosu_t')
+    # Create database
+    db_mngr = DatabaseManager(reset_db=RESET_DB)
 
-    # Update all parameters ending with 1 + log
-    #with LogManager():
-    #    update_db('%1')
+    # Update DB + log
+    if RESET_DB:
+        with LogManager():
+            update_db('trepros1', strict=True)
+            update_db('treprosu_')
+            update_db('altpros1')
+            update_db('prepros1')
 
-    # Same without log
-    #update_db('%1')
+    # Time
+    data_t = time_mngr.load(filt, 'trepros1')
+    data_s = data_t.sort()
+    data_r = data_s.resample()
+    data_sy = data_r.synchronize()
+    data_sy.plot()
+    data_sy.save({'data': 'dummy_3'})
+    test = time_mngr.load(filt, 'dummy_3')
+    test = test.sort()
+    data_sy.plot()
 
-    # # Load
-    # #data_t1 = load("#e < %2020-01-02T120000Z%", 'trepros1')
-    # data_t2 = load("#tag == 'e1'", 'trepros1')
-    # data_a = load("#tag_abbr == 'b1'", 'altpros1')
-    # data_gdp = load("#tag == 'gdp'", 'trepros1')
-    #
-    # with TimeIt():
-    #     data_t2.resample(inplace=True)
-    #     data_t2.interpolate(inplace=True)
-    #     data_sync = data_t2.synchronise()
-    #
-    # data_t2.plot()
-    # data_sync.plot()
-
+    # Alt
+    data_t = alt_mngr.load(filt, 'trepros1', 'altpros1')
+    data_s = data_t.sort()
+    data_r = data_s.resample()
+    data_sy_t = data_r.synchronize(method='time')
+    data_sy_a = data_r.synchronize(method='alt')
+    data_sy_t.save({'data': 'dummy_0', 'alt': 'dummy_1'})
+    test = data_t = alt_mngr.load(filt, 'dummy_0', 'dummy_1')
+    test = test.sort()
+    data_sy_t.plot()

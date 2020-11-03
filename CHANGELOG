@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [modolol, 2020-05-25] Add logging possibilities
 
 ### Added:
+ - [modolol, 2020-11-02] Tropopause calculation function
  - [fpavogt, 2020-07-23] Add gruan submodule, with GDP correlation rules
  - [modolol, 2020-07-16] Add dummy examples
  - [modolol, 2020-07-03] .dev_utils directory in package
@@ -22,6 +23,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [fpavogt, 2020-05-07] Sphinx documentation with primary pages and todo list
 
 ### Changed:
+ - [modolol, 2020-11-02] Data classes types
  - [modolol, 2020-07-16] load data search syntax
  - [modolol, 2020-07-14] Use design pattern chain of responsibility for update_db
  - [fpavogt, 2020-07-02] Set GPL v3.0 license
@@ -33,6 +35,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Deprecated:
 ### Removed:
 ### Fixed:
+ - [modolol, 2020-06-17] Fix bug in data loading (dvas.database.database)
  - [modolol, 2020-06-17] Remove automatic make dir in module import and global path assignment
  - [fpavogt, 2020-06-12] Automatically load the `base` style sheet for plots & new tests
  - [modolol, 2020-06-12] Set os.chmod(777) -> skip for Windows and check for R/W for Mac and Linux
