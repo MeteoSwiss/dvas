@@ -906,13 +906,14 @@ class SearchEventExpr(metaclass=ABCMeta):
         Args:
             str_expr (str): Expression to evaluate.
                 Grammar:
-                - all(): Select all
-                - [datetime|dt]('<ISO datetime>', ['=='(default)|'>='|'>'|'<='|'<'|'!=']): Select by datetime
-                - [serialnumber|sn]('<Serial number>'): Select by serial number
-                - [tag](['<Tag>'|('<Tag 1>', ...,'<Tag n>')]): Select by tag
-                - and_(<expr 1>, ..., <expr n>): Intersection
-                - or_(<expr 1>, ..., <expr n>): Union
-                - not_(<expr>): All - <expr>
+
+                  - all(): Select all
+                  - [datetime|dt]('<ISO datetime>', ['=='(default)|'>='|'>'|'<='|'<'|'!=']): Select by datetime
+                  - [serialnumber|sn]('<Serial number>'): Select by serial number
+                  - [tag](['<Tag>' | ('<Tag 1>', ..., '<Tag n>')]): Select by tag
+                  - and_(<expr 1>, ..., <expr n>): Intersection
+                  - or_(<expr 1>, ..., <expr n>): Union
+                  - not_(<expr>): All - <expr>
             prm_abbr (str): Search parameter
             filter_empty (bool): Filter for empty data
 
