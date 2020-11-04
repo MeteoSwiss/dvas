@@ -4,23 +4,23 @@
 dvas |version| |stars| |watch| |license|
 ========================================
 
-|last-commit| |issues|
+|github| |pypi| |last-commit| |issues|
 
 .. todo::
 
-    Tags for the latest pypi release and associated DOI should be added when releasing the code 
+    Tags for the latest pypi release and associated DOI should be added when releasing the code
     for the first time. These should also be added to the :ref:`acknowledge:Acknowledging dvas` page.
 
 Welcome to the dvas documentation.
 
 .. note::
 
-    These pages are very much a work in progress. If you feel like helping, we have a list of 
+    These pages are very much a work in progress. If you feel like helping, we have a list of
     missing items on the :ref:`doc_todo:Documentation todos` page.
 
 .. toctree::
     :maxdepth: 1
-    
+
     Home <self>
     installation
     running
@@ -32,4 +32,3 @@ Welcome to the dvas documentation.
     Github repository <https://github.com/MeteoSwiss-MDA/dvas>
     modules
     doc_todo
-
