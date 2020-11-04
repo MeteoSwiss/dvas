@@ -443,10 +443,9 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     Instrument.sn == event.sn
                 )
                 if not instr:
-                    localdb.error(
-                        "instr_id '%s' is missing in DB", event.sn
-                    )
-                    raise DBInsertError()
+                    err_msg = "instr_id '%s' is missing in DB" % (event.sn)
+                    localdb.error(err_msg)
+                    raise DBInsertError(err_msg)
 
                 # Get/Check parameter
                 param = Parameter.get_or_none(
