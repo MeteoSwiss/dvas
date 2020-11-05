@@ -30,6 +30,9 @@ LOGGER_NAME = [
     'gruan',
 ]
 
+class dvasError(Exception):
+    """General error class for dvas."""
+
 def get_logger(name):
     """Get logger"""
 
