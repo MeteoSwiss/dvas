@@ -242,8 +242,14 @@ class RSProfile(Profile):
     # The column names for the pandas DataFrame
     PD_COLS = {'alt': np.float, 'dt': 'timedelta64[ns]', 'val': np.float, 'flag': np.int64}
 
-class GDPProfile(Profile):
-    """ Child Profile class for *GDP-like* radiosonde atmospheric measurements.
+    @property
+    def dt(self):
+        """pd.Series: Corresponding data time delta since launch"""
+        return self._data['dt']
+
+
+class GDPProfile(RSProfile):
+    """ Child RSProfile class for *GDP-like* radiosonde atmospheric measurements.
     Requires some measured values, together with their corresponding measurement times since launch,
     altitudes, flags, as well as 4 distinct types uncertainties:
 
@@ -251,6 +257,8 @@ class GDPProfile(Profile):
       - 'uc_r' : Rig "uncorrelated" uncertainties.
       - 'uc_s' : Spatial-correlated uncertainties.
       - 'uc_t' : Temporal correlated uncertainties.
+
+    The property "uc_tot" returns the total uncertainty, and is prodvided for convenience.
 
     The data is stored in a pandas DataFrame with column labels:
     - 'alt' (float)
@@ -269,3 +277,16 @@ class GDPProfile(Profile):
     # The column names for the pandas DataFrame
     PD_COLS = {'alt': np.float, 'dt': 'timedelta64[ns]', 'val': np.float, 'uc_n': np.float,
                'uc_r': np.float, 'uc_s': np.float, 'uc_t': np.float, 'flag': np.int64}
+
+    @property
+    def uc_tot(self):
+        """ Computes the total uncertainty from the individual components.
+
+        Returns:
+            pd.Series: uc_tot = np.sqrt(uc_n**2 + uc_r**2 + uc_s**2 + uc_t**2)
+        """
+
+        return np.sqrt(self.data.uc_n.fillna(0)**2 +
+                       self.data.uc_r.fillna(0)**2 +
+                       self.data.uc_s.fillna(0)**2 +
+                       self.data.uc_t.fillna(0)**2)
