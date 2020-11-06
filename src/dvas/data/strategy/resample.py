@@ -13,7 +13,7 @@ Module contents: Resample strategies
 from abc import ABCMeta, abstractmethod
 
 # Import from current package
-from .data import TimeProfileManager
+from .data import RSProfile
 
 
 class ResampleDataStrategy(metaclass=ABCMeta):
@@ -28,21 +28,25 @@ class ResampleDataStrategy(metaclass=ABCMeta):
         """Strategy required method"""
 
 
-class TimeResampleDataStrategy(ResampleDataStrategy):
+class ResampleRSDataStrategy(ResampleDataStrategy):
     """Class to manage resample of time data parameter"""
 
     def resample(self, data, interval='1s', method='mean'):
         """Implementation of resample method
 
         Args:
-            data (dict): Dict of list of ProfileManager
+            data (dict): Dict or list of RSProfile
             interval (str, optional): Resample interval. Default is '1s'.
             method (str, optional): Resample method, 'mean' (default) | 'sum'
 
         """
 
+        # TODO: THIS NEEDS TO BE FIXED !!!
+
+        """
         for key, val in data.items():
             for i, arg in enumerate(val):
+
                 resampler = arg.data.resample(
                     interval, label='right', closed='right'
                 )
@@ -54,8 +58,9 @@ class TimeResampleDataStrategy(ResampleDataStrategy):
                     res = resampler.sum()
 
                 res.index -= res.index[0]
-                val[i] = TimeProfileManager(arg.event_mngr, data=res)
+                val[i] = RSProfile(arg.event_mngr, data=res)
 
             data.update({key: val})
 
         return data
+        """

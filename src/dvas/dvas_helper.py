@@ -94,7 +94,7 @@ class RequiredAttrMetaClass(ABCMeta):
 
             if not isinstance(getattr(obj, attr_name), dtype):
                 errmsg = (
-                    f"required attribute '{attr_name}' bad set in class {obj}"
+                    f"required attribute '{attr_name}' set badly in class {obj}"
                 )
                 raise ValueError(errmsg)
 

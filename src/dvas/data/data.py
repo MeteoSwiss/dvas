@@ -16,15 +16,21 @@ from pampy.pampy import match, List
 
 # Import from current package
 from .linker import LocalDBLinker, CSVHandler, GDPHandler
-from .strategy.data import TimeProfileManager
-from .strategy.load import LoadTimeDataStrategy
-from .strategy.load import LoadAltDataStrategy
-from .strategy.resample import TimeResampleDataStrategy
+from .strategy.data import Profile, RSProfile, GDPProfile
+
+from .strategy.load import LoadProfileStrategy, LoadRSProfileStrategy, LoadGDPProfileStrategy
+
+from .strategy.resample import ResampleRSDataStrategy
+
 from .strategy.sort import TimeSortDataStrategy
+
 from .strategy.sync import TimeSynchronizeStrategy
+
 from .strategy.plot import TimePlotStrategy
 from .strategy.plot import AltTimePlotStartegy
+
 from .strategy.save import SaveTimeDataStrategy
+
 from ..database.database import DatabaseManager
 from ..database.model import Parameter
 from ..database.database import OneDimArrayConfigLinker
@@ -38,14 +44,15 @@ FLAG = 'flag'
 VALUE = 'value'
 cfg_linker = OneDimArrayConfigLinker()
 
-# Init strategy instances
-load_time_stgy = LoadTimeDataStrategy()
-load_alt_stgy = LoadAltDataStrategy()
+load_prf_stgy = LoadProfileStrategy()
+load_rsprf_stgy = LoadRSProfileStrategy()
+load_gdpprf_stgy = LoadGDPProfileStrategy()
+
 sort_time_stgy = TimeSortDataStrategy()
-rspl_time_stgy = TimeResampleDataStrategy()
+rspl_time_rs_stgy = ResampleRSDataStrategy()
 sync_time_stgy = TimeSynchronizeStrategy()
-plot_time_stgy = TimePlotStrategy()
-plot_alt_time_stgy = AltTimePlotStartegy()
+plt_time_stgy = TimePlotStrategy()
+plt_alt_time_stgy = AltTimePlotStartegy()
 save_time_stgy = SaveTimeDataStrategy()
 
 
@@ -157,85 +164,79 @@ def update_db(search, strict=False):
         )
 
 
-class MultiProfileManager(metaclass=RequiredAttrMetaClass):
-    """Multi profile manager"""
+class MultiProfile(metaclass=RequiredAttrMetaClass):
+    """Multi profile base class, designed to handle multiple Profile."""
 
-    REQUIRED_ATTRIBUTES = {
-        '_DATA_TYPES': dict
-    }
+    REQUIRED_ATTRIBUTES = {'_DATA_TYPES': dict}
 
-    #: dict: Data type with corresponding key name
-    _DATA_TYPES = None
+    #: dict: list of supported Profile Types
+    _DATA_TYPES = {'prf': Profile}
 
-    @abstractmethod
-    def __init__(
-            self,
-            load_stgy, resample_stgy, sort_stgy,
-            sync_stgy, plot_stgy, save_stgy,
-    ):
+    def __init__(self,
+                 load_stgy=load_prf_stgy, sort_stgy=sort_time_stgy, plot_stgy=plt_time_stgy,
+                 save_stgy=save_time_stgy):
+        """ Init function, setting up the applicable strategies. """
 
         # Init strategy
         self._load_stgy = load_stgy
-        self._resample_stgy = resample_stgy
+        #self._resample_stgy = resample_stgy
         self._sort_stgy = sort_stgy
-        self._sync_stgy = sync_stgy
+        #self._sync_stgy = sync_stgy
         self._plot_stgy = plot_stgy
         self._save_stgy = save_stgy
 
         # Init attributes
-        self._data = {}
+        self._profiles = {} #TODO: do we really need to keep this as a dictionnary ? In case of a mix ?
+        for key in self._DATA_TYPES:
+            self._profiles[key] = []
 
     @property
     def keys(self):
-        """list: Data keys"""
+        """list: Data types"""
         return self._DATA_TYPES.keys()
 
     @property
-    def data(self):
-        """dict of list of ProfileManager: Data"""
-        return self._data
+    def profiles(self):
+        """list of Profile"""
+        return self._profiles
 
-    @data.setter
-    def data(self, val):
+    @profiles.setter
+    def profiles(self, val):
 
-        # Test
-        pattern = {
-            key: List[value]
-            for key, value in self._DATA_TYPES.items()
-        }
-        assert match(
-            val, pattern,
-            True, default=False
-        ), 'Bad type for value'
+        assert isinstance(val, dict), "Was expecting a dict, not: %s" % (type(val))
+        assert self._DATA_TYPES.keys() == val.keys(), "Invalid keys: %s" % (val.keys())
+        #TODO: check that all the profiles have the correct type
 
-        self._data = val
+        self._profiles = val
 
-    @property
-    def datas(self):
-        """dict of list of ProfileManger datas: Datas"""
-        return {key: [arg.data for arg in val] for key, val in self.data.items()}
+    #@property
+    #def datas(self):
+    #    """dict of list of ProfileManger datas: Datas"""
+    #    return {key: [arg.data for arg in val] for key, val in self.data.items()}
 
-    @property
-    def values(self):
-        """dict of list of ProfileManger values: Values"""
-        return {key: [arg.value for arg in val] for key, val in self.data.items()}
+    #@property
+    #def values(self):
+    #    """dict of list of ProfileManger values: Values"""
+    #    return {key: [arg.value for arg in val] for key, val in self.data.items()}
 
-    @property
-    def flags(self):
-        """dict of list of ProfileManger flags: Flags"""
-        return {key: [arg.flag for arg in val] for key, val in self.data.items()}
+    #@property
+    #def flags(self):
+    #    """dict of list of ProfileManger flags: Flags"""
+    #    return {key: [arg.flag for arg in val] for key, val in self.data.items()}
 
     @property
     def event_mngrs(self):
         """dict of list of ProfileManger event_mngr: Event managers"""
-        return {key: [arg.event_mngr for arg in val] for key, val in self.data.items()}
+        return {key: [arg.event_mngr for arg in val] for key, val in self.profiles.items()}
 
     def __getitem__(self, item):
-        return self.data[item]
+        return self.profiles[item]
 
     def copy(self):
         """Retrun a deep copy of the object"""
         return deepcopy(self)
+
+    #TODO: add an "append" method to add new data manually
 
     def load(self, *args, inplace=False, **kwargs):
         """Load classmethod
@@ -245,45 +246,26 @@ class MultiProfileManager(metaclass=RequiredAttrMetaClass):
                 Default to False.
 
         Returns:
-            MultiProfileManager
+            MultiProfile: only if inplace=False
 
         """
 
+        # vof: removing this in favor of a dedicated "append" method.
         # Load data
-        if len(args) == 1:
-            data = args[0]
-        else:
-            data = self._load_stgy.load(*args, **kwargs)
+        #if len(args) == 1:
+        #    data = args[0]
+        #else:
+
+        # Call the appropriate Data Startegy
+        data = self._load_stgy.load(*args, **kwargs)
 
         # Modify inplace or not
         if inplace is True:
-            self.data = data
+            self.profiles = data
             res = None
         else:
             res = self.copy()
-            res.data = data
-
-        return res
-
-    def resample(self, *args, inplace=False, **kwargs):
-        """Resample method
-
-        Args:
-            *args: Variable length argument list.
-            inplace (bool, `optional`): If True, perform operation in-place.
-                Default to False.
-            **kwargs: Arbitrary keyword arguments.
-
-        Returns:
-            MultiProfileManager if inplace is True, otherwise None
-
-        """
-
-        # Resample
-        out = self._resample_stgy.resample(self.copy().data, *args, **kwargs)
-
-        # Load
-        res = self.load(out, inplace=inplace)
+            res.profiles = data
 
         return res
 
@@ -306,115 +288,149 @@ class MultiProfileManager(metaclass=RequiredAttrMetaClass):
 
         return res
 
-    def synchronize(self, *args, inplace=False, **kwargs):
-        """Synchronize method
+    #def plot(self, *args, **kwargs):
+    #    """Plot method
+    #
+    #    Args:
+    #        *args: Variable length argument list.
+    #        **kwargs: Arbitrary keyword arguments.
+    #
+    #    Returns:
+    #        None
+    #
+    #    """
+    #    self._plot_stgy.plot(self.values, self.event_mngrs, *args, **kwargs)
 
-        Args:
-            *args: Variable length argument list.
-            inplace (bool, `optional`): If True, perform operation in-place.
-                Default to False.
-            **kwargs: Arbitrary keyword arguments.
-
-        Returns
-            MultiProfileManager if inplace is True, otherwise None
-
-        """
-
-        # Synchronize
-        out = self._sync_stgy.synchronize(self.copy().data, 'data', *args, **kwargs)
-
-        # Load
-        res = self.load(out, inplace=inplace)
-
-        return res
-
-    def plot(self, *args, **kwargs):
-        """Plot method
-
-        Args:
-            *args: Variable length argument list.
-            **kwargs: Arbitrary keyword arguments.
-
-        Returns:
-            None
-
-        """
-        self._plot_stgy.plot(self.values, self.event_mngrs, *args, **kwargs)
-
-    def save(self, prm_abbr):
-        """Save method
-
-        Args:
-            prm_abbr (dict): Parameter abbr.
-
-        Returns:
-            None
-
-        """
-
-        # Test
-        assert match(
-            prm_abbr, {key: str for key in self._DATA_TYPES.keys()},
-            True, default=False
-        )
-
-        # Call save strategy
-        self._save_stgy.save(self.copy().values, self.event_mngrs, prm_abbr)
+    #def save(self, prm_abbr):
+    #    """Save method
+    #
+    #    Args:
+    #        prm_abbr (dict): Parameter abbr.
+    #
+    #    Returns:
+    #        None
+    #
+    #    """
+    #
+    #    # Test
+    #    assert match(
+    #        prm_abbr, {key: str for key in self._DATA_TYPES.keys()},
+    #        True, default=False
+    #    )
+    #
+    #    # Call save strategy
+    #    self._save_stgy.save(self.copy().values, self.event_mngrs, prm_abbr)
 
 
-class TemporalMultiProfileManager(MultiProfileManager):
-    """Temporal multi profile manager"""
+class MultiRSProfile(MultiProfile):
+    """Multi RS profile manager, designed to handle multiple RSProfile instances."""
 
-    _DATA_TYPES = {'data': TimeProfileManager}
+    _DATA_TYPES = {'rs_prf': RSProfile}
 
-    def __init__(self):
-        super().__init__(
-            load_time_stgy, rspl_time_stgy, sort_time_stgy,
-            sync_time_stgy, plot_time_stgy, save_time_stgy
-        )
+    def __init__(self,
+                 load_stgy=load_rsprf_stgy, sort_stgy=sort_time_stgy, plot_stgy=plt_time_stgy,
+                 save_stgy=save_time_stgy, resample_stgy=rspl_time_rs_stgy,
+                 sync_stgy=sync_time_stgy):
+        """ Init function, to set the appropriate strategies"""
+
+        # First call the parent __init__() for the common strategies.
+        super().__init__(load_stgy=load_stgy, sort_stgy=sort_stgy, plot_stgy=plot_stgy,
+                         save_stgy=save_stgy)
+
+        # Then also set the specific strategies for this Class
+        self._resample_stgy = resample_stgy
+        self._sync_stgy = sync_stgy
+
+    #def resample(self, *args, inplace=False, **kwargs):
+    #    """Resample method
+    #
+    #    Args:
+    #        *args: Variable length argument list.
+    #        inplace (bool, `optional`): If True, perform operation in-place.
+    #            Default to False.
+    #        **kwargs: Arbitrary keyword arguments.
+    #
+    #    Returns:
+    #        MultiProfileManager if inplace is True, otherwise None
+    #
+    #    """
+    #
+    #    # Resample
+    #    out = self._resample_stgy.resample(self.copy().data, *args, **kwargs)
+    #
+    #    # Load
+    #    res = self.load(out, inplace=inplace)
+    #
+    #    return res
+
+    #def synchronize(self, *args, inplace=False, **kwargs):
+    #    """Synchronize method
+    #
+    #    Args:
+    #        *args: Variable length argument list.
+    #        inplace (bool, `optional`): If True, perform operation in-place.
+    #            Default to False.
+    #        **kwargs: Arbitrary keyword arguments.
+    #
+    #    Returns
+    #        MultiProfileManager if inplace is True, otherwise None
+    #
+    #    """
+    #
+    #    # Synchronize
+    #    out = self._sync_stgy.synchronize(self.copy().data, 'data', *args, **kwargs)
+    #
+    #    # Load
+    #    res = self.load(out, inplace=inplace)
+    #
+    #    return res
+
+class MultiGDPProfile(MultiRSProfile):
+    """Multi GDP profile manager, designed to handle multiple GDPProfile instances."""
+
+    _DATA_TYPES = {'gdp_prf': GDPProfile}
+
+    def __init__(self,
+                 load_stgy=load_gdpprf_stgy, sort_stgy=sort_time_stgy, plot_stgy=plt_time_stgy,
+                 save_stgy=save_time_stgy, resample_stgy=rspl_time_rs_stgy,
+                 sync_stgy=sync_time_stgy):
+        """ Init function, to set the appropriate strategies"""
+
+        # First call the parent __init_() to set the common strategies.
+        super().__init__(load_stgy=load_stgy, sort_stgy=sort_stgy, plot_stgy=plot_stgy,
+                         save_stgy=save_stgy, resample_stgy=resample_stgy, sync_stgy=sync_stgy)
 
 
-class AltitudeMultiProfileManager(MultiProfileManager):
-    """Altitude multi profile manager"""
-
-    _DATA_TYPES = {'data': TimeProfileManager, 'alt': TimeProfileManager}
-
-    def __init__(self):
-        super().__init__(
-            load_alt_stgy, rspl_time_stgy, sort_time_stgy,
-            sync_time_stgy, plot_alt_time_stgy, save_time_stgy
-        )
-
-    def synchronize(self, *args, inplace=False, method='time', **kwargs):
-        """Overwrite of synchronize method
-
-        Args:
-            *args: Variable length argument list.
-            inplace (bool, `optional`): If True, perform operation in-place.
-                Default to False.
-            method (str, `optional`): Method used to synchronize series.
-                Default to 'time'
-                - 'time': Synchronize on time
-                - 'alt': Synchronize on altitude
-            **kwargs: Arbitrary keyword arguments.
-
-        Returns
-            MultiProfileManager if inplace is True, otherwise None
-
-        """
-
-        # Synchronize
-        if method == 'time':
-            out = self._sync_stgy.synchronize(self.copy().data, 'data', *args, **kwargs)
-        else:
-            #TODO modify to integrate linear AND offset compesation
-            out = self._sync_stgy.synchronize(self.copy().data, 'alt', *args, **kwargs)
-
-        # Modify inplace or not
-        if inplace:
-            self.data = out
-            res = None
-        else:
-            res = self.load(out)
-
-        return res
+    #def synchronize(self, *args, inplace=False, method='time', **kwargs):
+    #    """Overwrite of synchronize method
+    #
+    #    Args:
+    #        *args: Variable length argument list.
+    #        inplace (bool, `optional`): If True, perform operation in-place.
+    #            Default to False.
+    #        method (str, `optional`): Method used to synchronize series.
+    #            Default to 'time'
+    #            - 'time': Synchronize on time
+    #            - 'alt': Synchronize on altitude
+    #        **kwargs: Arbitrary keyword arguments.
+    #
+    #    Returns
+    #        MultiProfileManager if inplace is True, otherwise None
+    #
+    #    """
+    #
+    #    # Synchronize
+    #    if method == 'time':
+    #        out = self._sync_stgy.synchronize(self.copy().data, 'data', *args, **kwargs)
+    #    else:
+    #        #TODO modify to integrate linear AND offset compesation
+    #        out = self._sync_stgy.synchronize(self.copy().data, 'alt', *args, **kwargs)
+    #
+    #    # Modify inplace or not
+    #    if inplace:
+    #        self.data = out
+    #        res = None
+    #    else:
+    #        res = self.load(out)
+    #
+    #    return res

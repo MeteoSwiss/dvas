@@ -10,9 +10,8 @@ Module contents: Data manager classes used in dvas.data.data.ProfileManager
 """
 
 # Import from external packages
-from datetime import datetime
 from copy import deepcopy
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
 import numpy as np
 import pandas as pd
 
@@ -28,7 +27,7 @@ class Profile(metaclass=ABCMeta):
     The data is stored in a pandas DataFrame with column labels:
       - 'alt' (float)
       - 'val' (float)
-      - 'flag' (int64)
+      - 'flg' (int64)
 
     The same format is expected as input.
 
@@ -39,7 +38,7 @@ class Profile(metaclass=ABCMeta):
     FLAG_DESC_NM = Flag.flag_desc.name
 
     # The column names for the pandas DataFrame
-    PD_COLS = {'alt': np.float, 'val': np.float, 'flag': np.int64}
+    PD_COLS = {'alt': np.float, 'val': np.float, 'flg': np.int64}
 
     db_mngr = DatabaseManager()
 
@@ -118,19 +117,19 @@ class Profile(metaclass=ABCMeta):
     #        self.data.update(val)
 
     @property
-    def flag(self):
+    def flg(self):
         """pd.Series: Corresponding data 'flag'"""
-        return self._data['flag']
+        return self._data['flg']
 
-    @flag.setter
-    def flag(self, val):
+    @flg.setter
+    def flg(self, val):
         """ Flag setter function.
 
         Args:
            val: pd.DataFrame with a column 'flag' (Int64)
         """
 
-        if val.name != 'flag':
+        if val.name != 'flg':
             raise dvasError('Flag column not found.')
 
         # Force the dtype (Int64 uses special NaN for integers)
@@ -138,7 +137,7 @@ class Profile(metaclass=ABCMeta):
 
         # Set the data
         if len(self) == 0:
-            self._data['flag'] = val
+            self._data['flg'] = val
         else:
             self._data.update(val)
 
@@ -149,11 +148,11 @@ class Profile(metaclass=ABCMeta):
     def __len__(self):
         return len(self.data)
 
-    def _get_flag_bit_nbr(self, abbr):
+    def _get_flg_bit_nbr(self, abbr):
         """Get bit number corresponding to given flag abbr"""
         return self.flags_abbr[abbr][self.FLAG_BIT_NM]
 
-    def toogle_flag(self, abbr, set_val=True, index=None):
+    def toogle_flg(self, abbr, set_val=True, index=None):
         """Toogle flag values on/off.
 
         Args:
@@ -167,9 +166,9 @@ class Profile(metaclass=ABCMeta):
         def set_to_true(x):
             """Set bit to True"""
             if np.isnan(x):
-                out = (1 << self._get_flag_bit_nbr(abbr))
+                out = (1 << self._get_flg_bit_nbr(abbr))
             else:
-                out = int(x) | (1 << self._get_flag_bit_nbr(abbr))
+                out = int(x) | (1 << self._get_flg_bit_nbr(abbr))
 
             return out
 
@@ -178,7 +177,7 @@ class Profile(metaclass=ABCMeta):
             if np.isnan(x):
                 out = 0
             else:
-                out = int(x) & ~(1 << self._get_flag_bit_nbr(abbr))
+                out = int(x) & ~(1 << self._get_flg_bit_nbr(abbr))
 
             return out
 
@@ -188,9 +187,9 @@ class Profile(metaclass=ABCMeta):
 
         # Set bit
         if set_val is True:
-            self.flag = self.flag.loc[index].apply(set_to_true)
+            self.flg = self.flg.loc[index].apply(set_to_true)
         else:
-            self.flag = self.flag.loc[index].apply(set_to_false)
+            self.flg = self.flg.loc[index].apply(set_to_false)
 
     def is_flagged(self, abbr):
         """Check if a specific flag tag is set.
@@ -202,8 +201,8 @@ class Profile(metaclass=ABCMeta):
             pd.Series: Series of int, with 1's where the requested flag name is True.
 
         """
-        bit_nbr = self._get_flag_bit_nbr(abbr)
-        return self.flag.apply(lambda x: (x >> bit_nbr) & 1)
+        bit_nbr = self._get_flg_bit_nbr(abbr)
+        return self.flg.apply(lambda x: (x >> bit_nbr) & 1)
 
     def _test_cols(self, val):
         """ Test that all the required columns are present, with the correct type.
@@ -219,6 +218,7 @@ class Profile(metaclass=ABCMeta):
         for item in self.PD_COLS:
             if item not in val.columns:
                 raise dvasError('Required column not found: %s' % (item))
+
             if pd.Series(dtype=self.PD_COLS[item]).dtype != val[item].dtype:
                 raise dvasError('Wrong data type for %s: I need %s but you gave me %s' %
                                 (item, self.PD_COLS[item], val[item].dtype))
@@ -231,7 +231,7 @@ class RSProfile(Profile):
 
     The data is stored in a pandas DataFrame with column labels:
     - 'alt' (float)
-    - 'dt' (datetime.datetime)
+    - 'tdt' (timedelta64[ns])
     - 'val' (float)
     - 'flag' (int64)
 
@@ -240,12 +240,12 @@ class RSProfile(Profile):
     """
 
     # The column names for the pandas DataFrame
-    PD_COLS = {'alt': np.float, 'dt': 'timedelta64[ns]', 'val': np.float, 'flag': np.int64}
+    PD_COLS = {'alt': np.float, 'tdt': 'timedelta64[ns]', 'val': np.float, 'flg': np.int64}
 
     @property
-    def dt(self):
+    def tdt(self):
         """pd.Series: Corresponding data time delta since launch"""
-        return self._data['dt']
+        return self._data['tdt']
 
 
 class GDPProfile(RSProfile):
@@ -262,21 +262,21 @@ class GDPProfile(RSProfile):
 
     The data is stored in a pandas DataFrame with column labels:
     - 'alt' (float)
-    - 'dt' (datetime.datetime)
+    - 'tdt' (datetime.datetime)
     - 'val' (float)
-    - 'uc_n' (float)
-    - 'uc_r' (float)
-    - 'uc_s' (float)
-    - 'uc_t' (float)
-    - 'flag' (int64)
+    - 'ucn' (float)
+    - 'ucr' (float)
+    - 'ucs' (float)
+    - 'uct' (float)
+    - 'flg' (int64)
 
     The same format is expected as input.
 
     """
 
     # The column names for the pandas DataFrame
-    PD_COLS = {'alt': np.float, 'dt': 'timedelta64[ns]', 'val': np.float, 'uc_n': np.float,
-               'uc_r': np.float, 'uc_s': np.float, 'uc_t': np.float, 'flag': np.int64}
+    PD_COLS = {'alt': np.float, 'tdt': 'timedelta64[ns]', 'val': np.float, 'ucn': np.float,
+               'ucr': np.float, 'ucs': np.float, 'uct': np.float, 'flg': np.int64}
 
     @property
     def uc_tot(self):
@@ -286,7 +286,7 @@ class GDPProfile(RSProfile):
             pd.Series: uc_tot = np.sqrt(uc_n**2 + uc_r**2 + uc_s**2 + uc_t**2)
         """
 
-        return np.sqrt(self.data.uc_n.fillna(0)**2 +
-                       self.data.uc_r.fillna(0)**2 +
-                       self.data.uc_s.fillna(0)**2 +
-                       self.data.uc_t.fillna(0)**2)
+        return np.sqrt(self.data.ucn.fillna(0)**2 +
+                       self.data.ucr.fillna(0)**2 +
+                       self.data.ucs.fillna(0)**2 +
+                       self.data.uct.fillna(0)**2)

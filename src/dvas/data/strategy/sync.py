@@ -14,7 +14,7 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 
 # Import from current package
-from .data import TimeProfileManager
+from .data import Profile
 from ..math import crosscorr
 
 
@@ -86,7 +86,7 @@ class TimeSynchronizeStrategy(SynchronizeStrategy):
         for key, val in data.items():
             for i, arg in enumerate(val):
                 res = arg.data.shift(window_values[idx_offset[i]])
-                val[i] = TimeProfileManager(arg.event_mngr, data=res)
+                val[i] = Profile(arg.event_mngr, data=res)
 
             data.update({key: val})
 
