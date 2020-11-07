@@ -10,7 +10,7 @@ Module contents: Loader strategies
 """
 
 # Import from external packages
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta#, abstractmethod
 import pandas as pd
 import numpy as np
 

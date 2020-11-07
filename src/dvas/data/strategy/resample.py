@@ -13,7 +13,7 @@ Module contents: Resample strategies
 from abc import ABCMeta, abstractmethod
 
 # Import from current package
-from .data import RSProfile
+#from .data import RSProfile
 
 
 class ResampleDataStrategy(metaclass=ABCMeta):

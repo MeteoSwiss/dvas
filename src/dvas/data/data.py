@@ -10,9 +10,9 @@ Module contents: Data management
 """
 
 # Import from external packages
-from abc import abstractmethod
+#from abc import abstractmethod
 from copy import deepcopy
-from pampy.pampy import match, List
+#from pampy.pampy import match, List
 
 # Import from current package
 from .linker import LocalDBLinker, CSVHandler, GDPHandler

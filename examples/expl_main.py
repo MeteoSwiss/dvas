@@ -17,18 +17,54 @@ path_var.orig_data_path = Path(__file__).parent / 'data'
 path_var.config_dir_path = Path(__file__).parent / 'config'
 
 # Import
-from dvas.data.data import TemporalMultiProfileManager
-from dvas.data.data import AltitudeMultiProfileManager
+from dvas.data.data import MultiProfile, MultiRSProfile, MultiGDPProfile
 from dvas.data.data import update_db
 from dvas.dvas_logger import LogManager
 from dvas.database.database import DatabaseManager
 
-# Define
-time_mngr = TemporalMultiProfileManager()
-alt_mngr = AltitudeMultiProfileManager()
-
 if __name__ == '__main__':
 
+    # Define
+    RESET_DB = False
+
+    filt_gdp = "tag('gdp')"
+    filt_raw = "tag('raw')"
+    filt_dt = "dt('20160715T120000Z', '==')"
+
+    filt_in = "and_(%s,%s,%s)" % (filt_gdp, filt_raw, filt_dt)
+    filt_ws = "and_(%s,not_(%s),%s)" % (filt_gdp, filt_raw, filt_dt)
+    filt_all = "and_(%s,%s)" % (filt_gdp, filt_dt)
+
+    # Create database
+    db_mngr = DatabaseManager(reset_db=RESET_DB)
+
+    # Update DB + log
+    if RESET_DB:
+        with LogManager():
+            update_db('trepros1', strict=True)
+            update_db('treprosu_r', strict=True)
+            update_db('treprosu_s', strict=True)
+            update_db('treprosu_t', strict=True)
+            update_db('altpros1', strict=True)
+
+    # Load a basic profile, with a variable, and altitude.
+    prf = MultiProfile()
+    prf.load(filt_in, 'trepros1', alt_abbr='altpros1', inplace=True)
+
+    # Load a regular radiosonde profile, with a variable, altitude, and time deltas.
+    rs_prf = MultiRSProfile()
+    rs_prf.load(filt_in, 'trepros1', alt_abbr='altpros1', inplace=True)
+
+    # Load the GDPs for temperature, including all the errors
+    gdp_prf = MultiGDPProfile()
+    gdp_prf.load(filt_in, 'trepros1', alt_abbr='altpros1', ucr_abbr='treprosu_r',
+                 ucs_abbr='treprosu_s', uct_abbr='treprosu_t', inplace=True)
+
+    # Use convenience getters to extract some info
+    srns = gdp_prf.get_evt_prm('sn')
+    vals_alt = gdp_prf.get_prms(['val', 'alt'])
+
+""" Original code ... kept for now until I get time to come clean it up.
     # Define
     RESET_DB = False
     filt = "tag('e1')"
@@ -65,3 +101,4 @@ if __name__ == '__main__':
     test = data_t = alt_mngr.load(filt, 'dummy_0', 'dummy_1')
     test = test.sort()
     data_sy_t.plot()
+"""
