@@ -12,26 +12,52 @@ Running dvas
 Naming conventions
 ------------------
 
-The following applies throughout dvas:
+Default database variable names
+...............................
 
- * all radiosonde profiles must be associated to a unique **serial number** ``sn``.
- * all radiosonde profiles must be associated to a specific ``site``, ``event``, and ``rig``,
-   which respectively encode the spatial, temporal, and payload configurations of the launch.
-   This information must be provided to dvas via `tags` in the metadata associated to each dataset.
+* ``altpros1``: altitude
+* ``trepros1``: temperature
+* ``trepros_r``: rig-uncorrelated temperature uncertainty
+* ``trepros_s``: spatial-correlated temperature uncertainty
+* ``trepros_t``: temporal-correlated temperature uncertainty
 
-   .. hint::
-       If two radiosondes are launched from the same location and at the same time, but with two
-       distinct balloons, they have an identical **site** and **event** value, but distinct **rig**
-       and **serial number** values.
+Parameter names
+...............
 
- * GDPs are automatically associated to a specific **GDP model**.
+For instances of `Profile`, `MultiProfile`, and their children, the following parameter (`prm`)
+names are applicable:
 
-Filtering syntax
-----------------
+   * ``val``: primary Profile value
+   * ``alt``: altitude
+   * ``tdt``: time delta
+   * ``ucn``: true uncorrelated uncertainty
+   * ``ucr``: rig-uncorrelated uncertainty
+   * ``ucs``: spatial-correlated uncertainty
+   * ``uct``: temporal-correlated uncertainty
 
-The following grammatic rules allow to filter and extract specific datasets from the database:
+The following parameters are applicable to their event metadata:
 
-.. code-block:: none
+ * ``srn``: Serial Number
+ * ``sit``: launch/measurement site
+ * ``evt``: measurement event ID
+ * ``rig``: rig ID (in case of multiple flights)
+ * ``mdl``: the GDP model and version
+
+All radiosonde profiles must be associated to a specific ``site``, ``event``, and ``rig``,
+which (respectively) encode the spatial, temporal, and payload configurations of the launch.
+This information must be provided to dvas via `tags` in the metadata associated to each dataset.
+
+.. hint::
+    If two radiosondes are launched from the same location and at the same time, but with two
+    distinct balloons, they have an identical **site** and **event** value, but distinct **rig**
+    and **serial number** values.
+
+Event filtering syntax
+----------------------
+
+The following grammatic rules allow to filter and extract specific event datasets from the database:
+
+.. code-block::
 
  - all(): Select all
  - [datetime|dt]('<ISO datetime>', ['=='(default)|'>='|'>'|'<='|'<'|'!=']): Select by datetime
