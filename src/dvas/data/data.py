@@ -186,7 +186,8 @@ class MultiProfile(metaclass=RequiredAttrMetaClass):
         self._save_stgy = save_stgy
 
         # Init attributes
-        self._profiles = {} #TODO: do we really need to keep this as a dictionnary ? In case of a mix ?
+        #TODO: do we really need to keep this as a dictionnary ? In case of a mix ?
+        self._profiles = {}
         for key in self._DATA_TYPES:
             self._profiles[key] = []
 
@@ -205,30 +206,48 @@ class MultiProfile(metaclass=RequiredAttrMetaClass):
 
         assert isinstance(val, dict), "Was expecting a dict, not: %s" % (type(val))
         assert self._DATA_TYPES.keys() == val.keys(), "Invalid keys: %s" % (val.keys())
-        #TODO: check that all the profiles have the correct type
+
+        #TODO: check that all the profiles have the correct type before settign them.
 
         self._profiles = val
 
-    #@property
-    #def datas(self):
-    #    """dict of list of ProfileManger datas: Datas"""
-    #    return {key: [arg.data for arg in val] for key, val in self.data.items()}
+    def get_prms(self, prm_list=':'):
+        """ Convenience getter to extract one specific parameter from the DataFrames of all the
+        Profile instances.
 
-    #@property
-    #def values(self):
-    #    """dict of list of ProfileManger values: Values"""
-    #    return {key: [arg.value for arg in val] for key, val in self.data.items()}
+        Args:
+            prm_list (list of str): names of the parameter to extract from all the Profile
+                DataFrame. Defaults to ':' (=return all the data from the DataFrame)
 
-    #@property
-    #def flags(self):
-    #    """dict of list of ProfileManger flags: Flags"""
-    #    return {key: [arg.flag for arg in val] for key, val in self.data.items()}
+        Returns:
+            dict of list of DataFrame: idem to self.profiles, but with only the requested data.
+
+        """
+
+        # TODO: Here, I am directly calling the DataFrame columns ...
+        # But how could I also allow to call "convenience functions" like uc_tot in GDPProfile ?
+        return {key: [arg.data[prm_list] for arg in item] for key, item in self.profiles.items()}
 
     @property
-    def event_mngrs(self):
-        """dict of list of ProfileManger event_mngr: Event managers"""
-        return {key: [arg.event_mngr for arg in val] for key, val in self.profiles.items()}
+    def events(self):
+        """dict of list of ProfileManger event: Event metadata"""
+        return {key: [arg.event for arg in val] for key, val in self.profiles.items()}
 
+    def get_evt_prm(self, prm):
+        """ Convenience function to extract specific (a unique!) Event metadata from all the
+        Profile instances.
+
+        Args:
+            prm (str): parameter name (unique!) to extract from all the Events.
+
+        Returns:
+            dict of list: idem to self.profiles, but with only the requested metadata.
+
+        """
+
+        return {key: [evt.as_dict()[prm] for evt in item] for key, item in self.events.items()}
+
+    # TODO: why do we need this ?
     def __getitem__(self, item):
         return self.profiles[item]
 

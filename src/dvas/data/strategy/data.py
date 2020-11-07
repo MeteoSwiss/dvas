@@ -42,7 +42,7 @@ class Profile(metaclass=ABCMeta):
 
     db_mngr = DatabaseManager()
 
-    def __init__(self, event_mngr, data=None):
+    def __init__(self, event, data=None):
         """ Profile Constructor.
 
         Args:
@@ -56,7 +56,7 @@ class Profile(metaclass=ABCMeta):
         self._data = pd.concat([pd.Series(dtype=self.PD_COLS[item]) for item in self.PD_COLS],
                                axis=1)
         self._data.columns = self.PD_COLS.keys()
-        self._event_mngr = event_mngr
+        self._event = event
         self._flags_abbr = {arg[self.FLAG_ABBR_NM]: arg for arg in self.db_mngr.get_flags()}
 
         # Set the data if applicable
@@ -79,9 +79,9 @@ class Profile(metaclass=ABCMeta):
         self._data = val[list(self.PD_COLS.keys())]
 
     @property
-    def event_mngr(self):
-        """EventManager: Corresponding data event manager"""
-        return self._event_mngr
+    def event(self):
+        """Event: Corresponding data event metadata"""
+        return self._event
 
     @property
     def flags_abbr(self):
