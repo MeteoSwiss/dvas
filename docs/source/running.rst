@@ -15,11 +15,14 @@ Naming conventions
 Default database variable names
 ...............................
 
-* ``altpros1``: altitude
-* ``trepros1``: temperature
-* ``trepros_r``: rig-uncorrelated temperature uncertainty
-* ``trepros_s``: spatial-correlated temperature uncertainty
-* ``trepros_t``: temporal-correlated temperature uncertainty
+The following names can be altered by the users in the different config files. These are the ones
+implemented by defaults. They follow MeteoSwiss conventions:
+
+    * ``altpros1``: altitude
+    * ``trepros1``: temperature
+    * ``trepros_r``: rig-uncorrelated temperature uncertainty
+    * ``trepros_s``: spatial-correlated temperature uncertainty
+    * ``trepros_t``: temporal-correlated temperature uncertainty
 
 Parameter names
 ...............
@@ -34,7 +37,7 @@ names are applicable:
    * ``ucr``: rig-uncorrelated uncertainty
    * ``ucs``: spatial-correlated uncertainty
    * ``uct``: temporal-correlated uncertainty
-   # ``flg``: flags
+   * ``flg``: flags
 
 The following parameters are applicable to their event metadata:
 
