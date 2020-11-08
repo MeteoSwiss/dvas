@@ -34,6 +34,7 @@ names are applicable:
    * ``ucr``: rig-uncorrelated uncertainty
    * ``ucs``: spatial-correlated uncertainty
    * ``uct``: temporal-correlated uncertainty
+   # ``flg``: flags
 
 The following parameters are applicable to their event metadata:
 

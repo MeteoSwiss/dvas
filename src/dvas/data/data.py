@@ -26,8 +26,7 @@ from .strategy.sort import TimeSortDataStrategy
 
 from .strategy.sync import TimeSynchronizeStrategy
 
-from .strategy.plot import TimePlotStrategy
-from .strategy.plot import AltTimePlotStartegy
+from .strategy.plot import PlotStrategy, RSPlotStrategy, GDPPlotStrategy
 
 from .strategy.save import SaveTimeDataStrategy
 
@@ -44,15 +43,20 @@ FLAG = 'flag'
 VALUE = 'value'
 cfg_linker = OneDimArrayConfigLinker()
 
+# Loading strategies
 load_prf_stgy = LoadProfileStrategy()
 load_rsprf_stgy = LoadRSProfileStrategy()
 load_gdpprf_stgy = LoadGDPProfileStrategy()
 
+# Plotting strategies
+plt_prf_stgy = PlotStrategy()
+plt_rsprf_stgy = RSPlotStrategy()
+plt_gdpprf_stgy = GDPPlotStrategy()
+
 sort_time_stgy = TimeSortDataStrategy()
 rspl_time_rs_stgy = ResampleRSDataStrategy()
 sync_time_stgy = TimeSynchronizeStrategy()
-plt_time_stgy = TimePlotStrategy()
-plt_alt_time_stgy = AltTimePlotStartegy()
+
 save_time_stgy = SaveTimeDataStrategy()
 
 
@@ -173,7 +177,7 @@ class MultiProfile(metaclass=RequiredAttrMetaClass):
     _DATA_TYPES = {'prf': Profile}
 
     def __init__(self,
-                 load_stgy=load_prf_stgy, sort_stgy=sort_time_stgy, plot_stgy=plt_time_stgy,
+                 load_stgy=load_prf_stgy, sort_stgy=sort_time_stgy, plot_stgy=plt_prf_stgy,
                  save_stgy=save_time_stgy):
         """ Init function, setting up the applicable strategies. """
 
@@ -211,18 +215,21 @@ class MultiProfile(metaclass=RequiredAttrMetaClass):
 
         self._profiles = val
 
-    def get_prms(self, prm_list=':'):
+    def get_prms(self, prm_list=None):
         """ Convenience getter to extract one specific parameter from the DataFrames of all the
         Profile instances.
 
         Args:
             prm_list (list of str): names of the parameter to extract from all the Profile
-                DataFrame. Defaults to ':' (=return all the data from the DataFrame)
+                DataFrame. Defaults to None (=return all the data from the DataFrame)
 
         Returns:
             dict of list of DataFrame: idem to self.profiles, but with only the requested data.
 
         """
+
+        if prm_list is None:
+            return {key: [arg.data for arg in item] for key, item in self.profiles.items()}
 
         # TODO: Here, I am directly calling the DataFrame columns ...
         # But how could I also allow to call "convenience functions" like uc_tot in GDPProfile ?
@@ -307,18 +314,18 @@ class MultiProfile(metaclass=RequiredAttrMetaClass):
 
         return res
 
-    #def plot(self, *args, **kwargs):
-    #    """Plot method
-    #
-    #    Args:
-    #        *args: Variable length argument list.
-    #        **kwargs: Arbitrary keyword arguments.
-    #
-    #    Returns:
-    #        None
-    #
-    #    """
-    #    self._plot_stgy.plot(self.values, self.event_mngrs, *args, **kwargs)
+    def plot(self, **kwargs):
+        """ Plot method
+
+        Args:
+            **kwargs: Arbitrary keyword arguments, to be passed down to the plotting function.
+
+        Returns:
+            None
+
+        """
+
+        self._plot_stgy.plot(self.profiles, self.keys, **kwargs)
 
     #def save(self, prm_abbr):
     #    """Save method
@@ -347,7 +354,7 @@ class MultiRSProfile(MultiProfile):
     _DATA_TYPES = {'rs_prf': RSProfile}
 
     def __init__(self,
-                 load_stgy=load_rsprf_stgy, sort_stgy=sort_time_stgy, plot_stgy=plt_time_stgy,
+                 load_stgy=load_rsprf_stgy, sort_stgy=sort_time_stgy, plot_stgy=plt_rsprf_stgy,
                  save_stgy=save_time_stgy, resample_stgy=rspl_time_rs_stgy,
                  sync_stgy=sync_time_stgy):
         """ Init function, to set the appropriate strategies"""
@@ -410,7 +417,7 @@ class MultiGDPProfile(MultiRSProfile):
     _DATA_TYPES = {'gdp_prf': GDPProfile}
 
     def __init__(self,
-                 load_stgy=load_gdpprf_stgy, sort_stgy=sort_time_stgy, plot_stgy=plt_time_stgy,
+                 load_stgy=load_gdpprf_stgy, sort_stgy=sort_time_stgy, plot_stgy=plt_gdpprf_stgy,
                  save_stgy=save_time_stgy, resample_stgy=rspl_time_rs_stgy,
                  sync_stgy=sync_time_stgy):
         """ Init function, to set the appropriate strategies"""
@@ -419,6 +426,30 @@ class MultiGDPProfile(MultiRSProfile):
         super().__init__(load_stgy=load_stgy, sort_stgy=sort_stgy, plot_stgy=plot_stgy,
                          save_stgy=save_stgy, resample_stgy=resample_stgy, sync_stgy=sync_stgy)
 
+    @property
+    def uc_tot(self):
+        """ Convenience getter to extract the total uncertainty from all the GDPProfile instances.
+
+        Returns:
+            dict of list of DataFrame: idem to self.profiles, but with only the requested data.
+
+        """
+
+        return {key: [arg.uc_tot for arg in item] for key, item in self.profiles.items()}
+
+    def plot(self, x='alt', **kwargs):
+        """ Plot method
+
+        Args:
+            x (str): parameter name for the x axis. Defaults to 'alt'.
+            **kwargs: Arbitrary keyword arguments, to be passed down to the plotting function.
+
+        Returns:
+            None
+
+        """
+
+        self._plot_stgy.plot(self.profiles, self.keys, x=x, **kwargs)
 
     #def synchronize(self, *args, inplace=False, method='time', **kwargs):
     #    """Overwrite of synchronize method
