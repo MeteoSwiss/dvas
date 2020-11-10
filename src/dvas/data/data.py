@@ -100,24 +100,26 @@ def update_db(search, strict=False):
 
     # Search prm_abbr
     if strict is True:
-        search = {'where': Parameter.prm_abbr == search}
+        search_dict = {'where': Parameter.prm_abbr == search}
     else:
-        search = {'where': Parameter.prm_abbr.contains(search)}
+        search_dict = {'where': Parameter.prm_abbr.contains(search)}
 
     prm_abbr_list = [
         arg[0] for arg in db_mngr.get_or_none(
             Parameter,
-            search=search,
+            search=search_dict,
             attr=[[Parameter.prm_abbr.name]],
             get_first=False
         )
     ]
 
+    # If no matching poarameters were found, issue a warning and stop here.
+    if len(prm_abbr_list) == 0:
+        localdb.info("No database parameter found for the query: %s", search)
+        return None
+
     # Log
-    localdb.info(
-        "Update db for following parameters: %s",
-        prm_abbr_list
-    )
+    localdb.info("Update db for following parameters: %s", prm_abbr_list)
 
     # Scan path
     origdata_path_scan = list(path_var.orig_data_path.rglob("*.*"))
