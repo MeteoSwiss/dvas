@@ -28,7 +28,7 @@ from .strategy.sync import TimeSynchronizeStrategy
 
 from .strategy.plot import PlotStrategy, RSPlotStrategy, GDPPlotStrategy
 
-from .strategy.save import SaveTimeDataStrategy
+from .strategy.save import SaveDataStrategy
 
 from ..database.database import DatabaseManager
 from ..database.model import Parameter
@@ -36,6 +36,8 @@ from ..database.database import OneDimArrayConfigLinker
 from ..dvas_logger import localdb, rawcsv
 from ..dvas_environ import path_var
 from ..dvas_helper import RequiredAttrMetaClass
+
+from ..dvas_logger import dvasError
 
 
 # Define
@@ -57,7 +59,7 @@ sort_time_stgy = TimeSortDataStrategy()
 rspl_time_rs_stgy = ResampleRSDataStrategy()
 sync_time_stgy = TimeSynchronizeStrategy()
 
-save_time_stgy = SaveTimeDataStrategy()
+save_prf_stgy = SaveDataStrategy()
 
 
 def update_db(search, strict=False):
@@ -175,12 +177,15 @@ class MultiProfile(metaclass=RequiredAttrMetaClass):
 
     REQUIRED_ATTRIBUTES = {'_DATA_TYPES': dict}
 
-    #: dict: list of supported Profile Types
+    #: dict: dictionnary of supported Profile Types
     _DATA_TYPES = {'prf': Profile}
+
+    #: dict: stored database variable names, updated by load() and exploited by save()
+    DB_VARIABLES = {'prf':{}}
 
     def __init__(self,
                  load_stgy=load_prf_stgy, sort_stgy=sort_time_stgy, plot_stgy=plt_prf_stgy,
-                 save_stgy=save_time_stgy):
+                 save_stgy=save_prf_stgy):
         """ Init function, setting up the applicable strategies. """
 
         # Init strategy
@@ -233,8 +238,18 @@ class MultiProfile(metaclass=RequiredAttrMetaClass):
         if prm_list is None:
             return {key: [arg.data for arg in item] for key, item in self.profiles.items()}
 
+        if isinstance(prm_list, str):
+            # Assume the user forgot to put the key into a list.
+            prm_list = [prm_list]
+
         # TODO: Here, I am directly calling the DataFrame columns ...
         # But how could I also allow to call "convenience functions" like uc_tot in GDPProfile ?
+
+        # Check that the parameters are valid and exist
+        for key in self.DB_VARIABLES:
+            assert all([prm in self.DB_VARIABLES[key] for prm in prm_list]), \
+                "Unknown parameter name. Should be one of %s" % (self.DB_VARIABLES[key].keys())
+
         return {key: [arg.data[prm_list] for arg in item] for key, item in self.profiles.items()}
 
     @property
@@ -285,14 +300,16 @@ class MultiProfile(metaclass=RequiredAttrMetaClass):
         #else:
 
         # Call the appropriate Data Startegy
-        data = self._load_stgy.load(*args, **kwargs)
+        data, db_df_keys = self._load_stgy.load(*args, **kwargs)
 
         # Modify inplace or not
         if inplace is True:
+            self.DB_VARIABLES = db_df_keys
             self.profiles = data
             res = None
         else:
             res = self.copy()
+            res.DB_VARIABLES = db_df_keys
             res.profiles = data
 
         return res
@@ -329,25 +346,33 @@ class MultiProfile(metaclass=RequiredAttrMetaClass):
 
         self._plot_stgy.plot(self.profiles, self.keys, **kwargs)
 
-    #def save(self, prm_abbr):
-    #    """Save method
-    #
-    #    Args:
-    #        prm_abbr (dict): Parameter abbr.
-    #
-    #    Returns:
-    #        None
-    #
-    #    """
-    #
-    #    # Test
-    #    assert match(
-    #        prm_abbr, {key: str for key in self._DATA_TYPES.keys()},
-    #        True, default=False
-    #    )
-    #
-    #    # Call save strategy
-    #    self._save_stgy.save(self.copy().values, self.event_mngrs, prm_abbr)
+    def save(self, add_tags=None, rm_tags=None, prm_list=None):
+        """Save method to store the *entire* content of the Multiprofile instance back into the
+        database with an updated set of tags.
+
+        Args:
+            add_tags (list of str): list of tags to add to event.
+            rm_tags (list of str, optional): list of *existing* tags to remove from the event.
+                Defaults to None.
+            prms (list of str, optional): list of column names to save to the database.
+                Defaults to None (= save all possible parameters).
+
+        """
+
+        if add_tags is None and rm_tags is None:
+            raise dvasError('Need either add_tags or rm_tags to be specified.')
+        # Restructure the parameters into a dict, to be consistent with the rest of the class.
+        #if prm_list is None:
+        #    prms = {item:self.DB_VARIABLES[item].keys() for item in self.DB_VARIABLES}
+        #else:
+        #    prms = {item:prms for item in self.DB_VARIABLES}
+
+        # Call save strategy
+        self._save_stgy.save(self.get_prms(prm_list), self.copy().events,
+                             self.DB_VARIABLES, add_tags, rm_tags)
+
+    # TODO: implement an "export" function that can export specific DataFrame columns back into
+    # the database under new variable names ?
 
 
 class MultiRSProfile(MultiProfile):
@@ -357,7 +382,7 @@ class MultiRSProfile(MultiProfile):
 
     def __init__(self,
                  load_stgy=load_rsprf_stgy, sort_stgy=sort_time_stgy, plot_stgy=plt_rsprf_stgy,
-                 save_stgy=save_time_stgy, resample_stgy=rspl_time_rs_stgy,
+                 save_stgy=save_prf_stgy, resample_stgy=rspl_time_rs_stgy,
                  sync_stgy=sync_time_stgy):
         """ Init function, to set the appropriate strategies"""
 
@@ -420,7 +445,7 @@ class MultiGDPProfile(MultiRSProfile):
 
     def __init__(self,
                  load_stgy=load_gdpprf_stgy, sort_stgy=sort_time_stgy, plot_stgy=plt_gdpprf_stgy,
-                 save_stgy=save_time_stgy, resample_stgy=rspl_time_rs_stgy,
+                 save_stgy=save_prf_stgy, resample_stgy=rspl_time_rs_stgy,
                  sync_stgy=sync_time_stgy):
         """ Init function, to set the appropriate strategies"""
 

@@ -101,7 +101,9 @@ class LoadProfileStrategy(metaclass=ABCMeta):
         """
 
         # Fetch the data from the database
-        (evts, out) = self.__fetch__(search, {'val':prm_abbr, 'alt':alt_abbr})
+        # TODO: this needs to include some flags as well
+        db_vs_df_keys = {'val':prm_abbr, 'alt':alt_abbr}
+        (evts, out) = self.__fetch__(search, db_vs_df_keys)
 
         # Deal with the None
         if alt_abbr is None:
@@ -113,7 +115,7 @@ class LoadProfileStrategy(metaclass=ABCMeta):
 
         out = [Profile(evts[j], data=out[j]) for j in range(len(evts))]
 
-        return {'prf': out}
+        return {'prf': out}, {'prf': db_vs_df_keys}
 
 class LoadRSProfileStrategy(LoadProfileStrategy):
     """Child class to manage the data loading strategy of RSProfile instances."""
@@ -130,7 +132,8 @@ class LoadRSProfileStrategy(LoadProfileStrategy):
         """
 
         # Fetch the data from the database
-        (evts, out) = self.__fetch__(search, {'val':prm_abbr, 'alt':alt_abbr, 'tdt':tdt_abbr})
+        db_vs_df_keys = {'val':prm_abbr, 'alt':alt_abbr, 'tdt':tdt_abbr}
+        (evts, out) = self.__fetch__(search, db_vs_df_keys)
 
         # Deal with the None
         if alt_abbr is None:
@@ -151,7 +154,7 @@ class LoadRSProfileStrategy(LoadProfileStrategy):
 
         out = [RSProfile(evts[j], data=out[j]) for j in range(len(evts))]
 
-        return {'rs_prf': out}
+        return {'rs_prf': out}, {'rs_prf': db_vs_df_keys}
 
 
 class LoadGDPProfileStrategy(LoadProfileStrategy):
@@ -178,9 +181,9 @@ class LoadGDPProfileStrategy(LoadProfileStrategy):
         """
 
         # Fetch the data from the database
-        (evts, out) = self.__fetch__(search, {'val':prm_abbr, 'alt':alt_abbr, 'tdt':tdt_abbr,
-                                              'ucn':ucn_abbr, 'ucr':ucr_abbr, 'ucs':ucs_abbr,
-                                              'uct':uct_abbr})
+        db_vs_df_keys = {'val':prm_abbr, 'alt':alt_abbr, 'tdt':tdt_abbr, 'ucn':ucn_abbr,
+                         'ucr':ucr_abbr, 'ucs':ucs_abbr, 'uct':uct_abbr}
+        (evts, out) = self.__fetch__(search, db_vs_df_keys)
 
         # Deal with the None
         if alt_abbr is None:
@@ -208,4 +211,4 @@ class LoadGDPProfileStrategy(LoadProfileStrategy):
 
         out = [GDPProfile(evts[j], data=out[j]) for j in range(len(evts))]
 
-        return {'gdp_prf': out}
+        return {'gdp_prf': out}, {'gdp_prf': db_vs_df_keys}
