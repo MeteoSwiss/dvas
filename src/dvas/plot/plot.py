@@ -45,13 +45,21 @@ def multiprf_plot(prfs, keys, x='alt', y='val', fig_num=None, save_fn=None):
 
     # Instantiate the axes
     ax1 = plt.subplot(fig_gs[0, 0])
-    xmin, xmax = 0, np.infty
+    xmin, xmax = -np.infty, np.infty
 
     for key in keys:
         for arg in prfs[key]:
 
-            xmin = np.nanmax([xmin, np.min(arg.data[x])])
-            xmax = np.nanmin([xmax, np.max(arg.data[x])])
+            # TODO: implement the option to scale the axis with different units. E.g. 'sec' for
+            # time deltas, etc ...
+
+            # For time deltas, I need to get a float out for the limits.
+            if x == 'tdt':
+                xmin = np.nanmax([xmin, arg.data[x].min(skipna=True).value])
+                xmax = np.nanmin([xmax, arg.data[x].max(skipna=True).value])
+            else:
+                xmin = np.nanmax([xmin, arg.data[x].min(skipna=True)])
+                xmax = np.nanmin([xmax, arg.data[x].max(skipna=True)])
 
             ax1.plot(arg.data[x], arg.data[y], linestyle='-', drawstyle='steps-mid')
 
@@ -59,7 +67,9 @@ def multiprf_plot(prfs, keys, x='alt', y='val', fig_num=None, save_fn=None):
     ax1.set_xlabel(x)
     ax1.set_ylabel(y)
 
+    # Here, let's make sure I only ever feed floats
     ax1.set_xlim(xmin, xmax)
+
 
     # If requested, save the plot.
     if save_fn is not None:
