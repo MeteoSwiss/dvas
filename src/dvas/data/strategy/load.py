@@ -73,7 +73,7 @@ class LoadProfileStrategy(metaclass=ABCMeta):
                 ref_evts = [item['event'] for item in res]
                 # How many events do I get ?
                 n_evts = len(ref_evts)
-                #If I know how many events I have, I can create a suitable number of DataFrame to
+                # If I know how many events I have, I can create a suitable number of DataFrame to
                 # store the related data
                 out = [pd.DataFrame() for _ in range(n_evts)]
 
@@ -139,6 +139,11 @@ class LoadRSProfileStrategy(LoadProfileStrategy):
         if tdt_abbr is None:
             out = [pd.concat([item, pd.Series(np.nan, dtype='timedelta64[ns]', name='tdt')], axis=1)
                    for item in out]
+        else:
+            # Here, make sure I have the proper format for the Time Deltas
+            for item in out:
+                item['tdt'] = pd.to_timedelta(item['tdt'], unit='s')
+
 
         #TODO: load flags from the DB
         out = [pd.concat([item, pd.Series([0]*len(item), dtype=np.int64, name='flg')], axis=1)
@@ -183,6 +188,11 @@ class LoadGDPProfileStrategy(LoadProfileStrategy):
         if tdt_abbr is None:
             out = [pd.concat([item, pd.Series(np.nan, dtype='timedelta64[ns]', name='tdt')], axis=1)
                    for item in out]
+        else:
+            # Here, make sure I have the proper format for the Time Deltas
+            for item in out:
+                item['tdt'] = pd.to_timedelta(item['tdt'], unit='s')
+
         if ucn_abbr is None:
             out = [pd.concat([item, pd.Series(np.nan, name='ucn')], axis=1) for item in out]
         if ucr_abbr is None:
