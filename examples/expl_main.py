@@ -64,6 +64,9 @@ if __name__ == '__main__':
     gdp_prf.load(filt_in, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1',
                  ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t', inplace=True)
 
+    # Make a plot
+    gdp_prf.plot(fig_num=2, x='tdt', save_fn='plot2')
+
     # Use convenience getters to extract some info
     srns = gdp_prf.get_evt_prm('sn')
     vals_alt = gdp_prf.get_prms(['val', 'alt'])
