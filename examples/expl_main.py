@@ -41,6 +41,7 @@ if __name__ == '__main__':
     # Update DB + log
     if RESET_DB:
         with LogManager():
+            update_db('tdtpros1', strict=True)
             update_db('trepros1', strict=True)
             update_db('treprosu_r', strict=True)
             update_db('treprosu_s', strict=True)
@@ -51,20 +52,28 @@ if __name__ == '__main__':
     prf = MultiProfile()
     prf.load(filt_in, 'trepros1', alt_abbr='altpros1', inplace=True)
 
+    # Make a plot
+    prf.plot(fig_num=1, save_fn='plot1')
+
     # Load a regular radiosonde profile, with a variable, altitude, and time deltas.
     rs_prf = MultiRSProfile()
-    rs_prf.load(filt_in, 'trepros1', alt_abbr='altpros1', inplace=True)
+    rs_prf.load(filt_in, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1', inplace=True)
 
     # Load the GDPs for temperature, including all the errors
     gdp_prf = MultiGDPProfile()
-    gdp_prf.load(filt_in, 'trepros1', alt_abbr='altpros1', ucr_abbr='treprosu_r',
-                 ucs_abbr='treprosu_s', uct_abbr='treprosu_t', inplace=True)
+    gdp_prf.load(filt_in, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1',
+                 ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t', inplace=True)
 
     # Use convenience getters to extract some info
     srns = gdp_prf.get_evt_prm('sn')
     vals_alt = gdp_prf.get_prms(['val', 'alt'])
 
-""" Original code ... kept for now until I get time to come clean it up.
+    # Compute the total error from GDPs
+    uc_tot = gdp_prf.uc_tot
+
+
+
+""" Original code ... kept for now until everything has been reconnected.
     # Define
     RESET_DB = False
     filt = "tag('e1')"
