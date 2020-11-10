@@ -23,5 +23,5 @@
   prm_desc: *myfct
   # Reference to anchor
 
--prm_abbr: 'tdtpros1'
- prm_desc: 'Time'
+- prm_abbr: 'tdtpros1'
+  prm_desc: 'Time'
