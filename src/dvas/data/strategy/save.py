@@ -43,9 +43,17 @@ class SaveDataStrategy(metaclass=ABCMeta):
                 column names.
             add_tags (list of str): list of tags to add to the event before ingestion by the
                 database.
-            rm_tags (list of str): list of tags to remove before ingestion by teh database.
+            rm_tags (list of str): list of tags to remove before ingestion by the database.
 
+        .. note::
+            The 'raw' tag will always be removed by default when saving anything into the database.
         """
+
+        # Force the removal of the 'raw' tag when saving anything in the 'db'.
+        if rm_tags is None:
+            rm_tags = ['raw']
+        if 'raw' not in rm_tags:
+            rm_tags += ['raw']
 
         # Loop through the different types of profiles
         for key, data_list in values.items():
@@ -60,9 +68,12 @@ class SaveDataStrategy(metaclass=ABCMeta):
                     for tag in add_tags:
                         event_list[evt_ind].tag_abbr.add(tag)
 
-                if rm_tags is not None:
-                    for tag in rm_tags:
+                # Remove the unwanted tags, catching any error in case they do not exist.
+                for tag in rm_tags:
+                    try:
                         event_list[evt_ind].tag_abbr.remove(tag)
+                    except KeyError:
+                        pass
 
             # If I get any time delta in the data, change them to floats
             # TODO: I suppose these 3 lines should warrant a new child class for this strategy ?
