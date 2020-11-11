@@ -10,7 +10,7 @@ Module contents: Plotting strategies
 """
 
 # Import from external packages
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta#, abstractmethod
 
 # Import from current package
 from ...plot.plot import multiprf_plot
@@ -20,7 +20,7 @@ class PlotStrategy(metaclass=ABCMeta):
     """ Base class to manage the data plotting strategy for the MultiProfile class. """
 
     #TODO: interesting pylint suggestion here. It is suggesting to create a simple function
-    # rather than a full class. Any merit to this idea ?
+    # rather than a full class. Any merit to this suggestion ?
     def plot(self, prfs, keys, **kwargs):
         """ Call the proper plotting method for this strategy.
 

@@ -10,10 +10,8 @@ Module contents: Testing classes and function for dvas.data.strategy.save module
 """
 
 # Import from python packages and modules
-import pytest
 import datetime
 import pytz
-from collections import OrderedDict
 import pandas as pd
 
 from dvas.data.data import MultiProfile
@@ -57,8 +55,6 @@ class TestSave:
         filt_raw = "tag('raw')"
         filt_vof = "tag('vof')"
         filt_vof2 = "tag('vof2')"
-
-        filt_in = "and_(%s,%s)" % (filt_gdp, filt_raw)
 
         prf_v0 = MultiProfile()
         prf_v0.DB_VARIABLES = {'prf':{'alt':'altpros1', 'val':'trepros1'}}
