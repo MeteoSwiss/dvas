@@ -30,6 +30,7 @@ if __name__ == '__main__':
     filt_gdp = "tag('gdp')"
     filt_raw = "tag('raw')"
     filt_dt = "dt('20160715T120000Z', '==')"
+    filt_vof = "tag('vof')"
 
     filt_in = "and_(%s,%s,%s)" % (filt_gdp, filt_raw, filt_dt)
     filt_ws = "and_(%s,not_(%s),%s)" % (filt_gdp, filt_raw, filt_dt)
@@ -73,6 +74,16 @@ if __name__ == '__main__':
 
     # Compute the total error from GDPs
     uc_tot = gdp_prf.uc_tot
+
+    # Set some data to 0 just to check
+    rs_prf.profiles['rs_prf'][0].data['val'] = 0
+
+    # Save this back to the DB with new tags
+    rs_prf.save(add_tags=['vof'], rm_tags=['raw'], prm_list=['val', 'alt', 'tdt'])
+
+    # Extract it, and check it is still modified
+    rs_prf_vof = MultiRSProfile()
+    rs_prf_vof.load(filt_vof, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1', inplace=True)
 
 
 

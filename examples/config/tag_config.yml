@@ -16,3 +16,6 @@
   tag_desc: '$lambda x: x.group(1)[0].upper() + x.group(1)[1:].lower()$ event'
   # Use lambda function to set 1st character to upper case and append the rest
   # of the group in lower case.
+
+- tag_abbr: 'vof'
+  tag_desc: 'demo tag'

@@ -70,9 +70,6 @@ class SaveDataStrategy(metaclass=ABCMeta):
                 if 'tdt' in data_list[i].columns:
                     data_list[i] = data_list[i].assign(tdt=data_list[i]['tdt'].dt.total_seconds())
 
-            # TODO: For some reason the time deltas are not stored properly inside the DB.
-            # Why is that ? Is the bug here, or elsewhere ?
-
             # Save to db
             self._local_db_linker.save(
                 [
