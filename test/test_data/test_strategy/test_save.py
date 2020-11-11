@@ -51,8 +51,6 @@ class TestSave:
     def test_full_save(self):
         """ Test the full save strategy chain"""
 
-        filt_gdp = "tag('gdp')"
-        filt_raw = "tag('raw')"
         filt_vof = "tag('vof')"
         filt_vof2 = "tag('vof2')"
 
