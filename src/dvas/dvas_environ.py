@@ -22,7 +22,6 @@ from .dvas_helper import TypedProperty as TProp
 from .dvas_helper import check_path
 from . import __name__ as pkg_name
 from . import expl_path
-from .dvas_logger import dvasError
 
 
 class ABCSingleInstanceMeta(ABCMeta, SingleInstanceMetaClass):
@@ -44,7 +43,8 @@ class VariableManager(ABC, metaclass=ABCSingleInstanceMeta):
             ])
 
         except AssertionError:
-            raise dvasError("Error in matching 'attr_def' pattern")
+
+            "Error in matching 'attr_def' pattern"
 
         # Set attributes
         self.set_attr()
