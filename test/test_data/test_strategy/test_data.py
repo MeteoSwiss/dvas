@@ -16,6 +16,7 @@ import pandas as pd
 from dvas.data.strategy.data import Profile
 from dvas.dvas_logger import dvasError
 
+
 class TestProfile:
     """Test class for Flag Manager"""
 

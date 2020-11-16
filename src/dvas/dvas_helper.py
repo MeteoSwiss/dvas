@@ -92,9 +92,13 @@ class RequiredAttrMetaClass(ABCMeta):
                 )
                 raise ValueError(errmsg)
 
-            if not isinstance(getattr(obj, attr_name), dtype):
+            #TODO
+            # Use pampy to check pattern
+            obj_attr = getattr(obj, attr_name)
+            if not isinstance(obj_attr, dtype):
                 errmsg = (
-                    f"required attribute '{attr_name}' set badly in class {obj}"
+                    f"Attribute '{attr_name}' badly set in class {obj}. " +
+                    f"Must be a {dtype} instead a {type(obj_attr)}"
                 )
                 raise ValueError(errmsg)
 

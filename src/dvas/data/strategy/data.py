@@ -10,8 +10,7 @@ Module contents: Data manager classes used in dvas.data.data.ProfileManager
 """
 
 # Import from external packages
-from copy import deepcopy
-from abc import ABCMeta
+from abc import abstractmethod
 import numpy as np
 import pandas as pd
 
@@ -19,15 +18,143 @@ import pandas as pd
 from ...database.model import Flag
 from ...database.database import DatabaseManager
 from ...dvas_logger import dvasError
+from ...dvas_helper import RequiredAttrMetaClass
 
-class Profile(metaclass=ABCMeta):
+# Define
+INT_TEST = (np.int64, np.int, int)
+FLOAT_TEST = (np.float, float) + INT_TEST
+
+
+class ProfileAbstract(metaclass=RequiredAttrMetaClass):
+    """Abstract Profile class"""
+
+    # dict: Specify required attributes
+    # DF_COLS_ATTR items:
+    # - 'test': types to test (type|tuple of type)
+    # - 'type': type conversion (type|None)
+    # - 'index': use as index (bool)
+    REQUIRED_ATTRIBUTES = {
+        'DF_COLS_ATTR': dict
+    }
+
+    def __init__(self):
+        self.db_mngr = DatabaseManager()
+        self._data = pd.DataFrame()
+
+    @property
+    def data(self):
+        """pd.DataFrame: Data."""
+        return self._data
+
+    @property
+    def columns(self):
+        """pd.Index: DataFrame columns name"""
+        return self.data.columns
+
+    def __getattr__(self, item):
+        try:
+            if item in self.DF_COLS_ATTR.keys():
+                return self.data[item]
+
+            else:
+                return super().__getattribute__(item)
+
+        except KeyError:
+            raise dvasError(f"Valid keys are: {self.columns}")
+
+    def __setattr__(self, item, val):
+        try:
+            if item == 'data':
+
+                # Check that I have all the columns I need in the input, with the proper format.
+                val = self._test_cols(val)
+
+                # Set index
+                val.set_index(
+                    [key for key, val in self.DF_COLS_ATTR.items() if val['idx'] is True],
+                    drop=False, inplace=True
+                )
+                val.sort_index(inplace=True)
+
+                # If so, set things up
+                self._data = val[list(self.DF_COLS_ATTR.keys())]
+
+            elif item in self.DF_COLS_ATTR.keys():
+                # Test input value
+                assert isinstance(val, pd.Series)
+                value = self._test_cols(pd.DataFrame(val, columns=[item,]), cols_key=[item])
+
+                # Update value
+                self._data[item].update(value[item])
+
+            else:
+                super().__setattr__(item, val)
+
+        except KeyError:
+            raise dvasError(f"Valid keys are: {self.columns}")
+        except AssertionError:
+            raise dvasError(f"Value must be a pd.Series")
+
+    def __delattr__(self, item):
+        raise dvasError(f"Can't delete attribute '{item}'")
+
+    def __len__(self):
+        return len(self.data)
+
+    def __str__(self):
+        return str(self.data)
+
+    @abstractmethod
+    def copy(self):
+        """Copy method"""
+
+    def _test_cols(self, val, cols_key=None):
+        """ Test that all the required columns are present, with the correct type.
+
+        Args:
+           val (pandas.DataFrame): The data to fill the Profile.
+           cols_key (list of str, `optional`): Column key to test
+
+        Raises:
+            dvasError: Missing data column.
+            dvasError: Wrong data type.
+        """
+
+        # Init
+        if cols_key is None:
+            cols_key = self.DF_COLS_ATTR.keys()
+
+        # Test val columns
+        for key in filter(lambda x: x in cols_key, self.DF_COLS_ATTR.keys()):
+
+            # Test column name
+            if key not in val.columns:
+                raise dvasError('Required column not found: %s' % key)
+
+            # Test column type
+            if ~val[key].apply(type).apply(
+                    issubclass, args=(self.DF_COLS_ATTR[key]['test'],)
+            ).all():
+                raise dvasError(
+                    'Wrong data type for %s: I need %s but you gave me %s' %
+                    (key, self.DF_COLS_ATTR[key]['test'], val[key].dtype)
+                )
+
+            # Convert
+            if self.DF_COLS_ATTR[key]['type']:
+                val[key] = val[key].astype(self.DF_COLS_ATTR[key]['type'])
+
+        return val
+
+
+class Profile(ProfileAbstract):
     """Base Profile class for atmospheric measurements. Requires only some measured values,
     together with their corresponding altitudes and flags.
 
     The data is stored in a pandas DataFrame with column labels:
       - 'alt' (float)
       - 'val' (float)
-      - 'flg' (int64)
+      - 'flg' (Int64)
 
     The same format is expected as input.
 
@@ -38,45 +165,32 @@ class Profile(metaclass=ABCMeta):
     FLAG_DESC_NM = Flag.flag_desc.name
 
     # The column names for the pandas DataFrame
-    PD_COLS = {'alt': np.float, 'val': np.float, 'flg': np.int64}
-
-    db_mngr = DatabaseManager()
+    DF_COLS_ATTR = {
+        'alt': {'test': FLOAT_TEST, 'type': np.float, 'idx': True},
+        'val': {'test': FLOAT_TEST, 'type': np.float, 'idx': False},
+        'flg': {'test': INT_TEST, 'type': 'Int64', 'idx': False}
+    }
 
     def __init__(self, event, data=None):
         """ Profile Constructor.
 
         Args:
-            event_mngr (int): Event id
+            event (int): Event id
             data (pd.DataFrame, optional): The profile values in a pandas DataFrame.
                Default to None.
 
         """
+        super(Profile, self).__init__()
 
         # Set attributes
-        self._data = pd.concat([pd.Series(dtype=self.PD_COLS[item]) for item in self.PD_COLS],
-                               axis=1)
-        self._data.columns = self.PD_COLS.keys()
-        self._event = event
-        self._flags_abbr = {arg[self.FLAG_ABBR_NM]: arg for arg in self.db_mngr.get_flags()}
-
-        # Set the data if applicable
         if data is not None:
             self.data = data
-
-    @property
-    def data(self):
-        """pd.DataFrame: Data."""
-        return self._data
-
-    @data.setter
-    def data(self, val):
-        """ Setter for the data"""
-
-        # Check that I have all the columns I need in the input, with the proper format.
-        self._test_cols(val)
-
-        # If so, set things up.
-        self._data = val[list(self.PD_COLS.keys())]
+        else:
+            self.data = pd.DataFrame(
+                {key: np.array([], dtype=val['type']) for key, val in self.DF_COLS_ATTR.items()}
+            )
+        self._event = event
+        self._flags_abbr = {arg[self.FLAG_ABBR_NM]: arg for arg in self.db_mngr.get_flags()}
 
     @property
     def event(self):
@@ -91,69 +205,30 @@ class Profile(metaclass=ABCMeta):
     @property
     def alt(self):
         """pd.Series: Corresponding data altitude"""
-        return self._data['alt']
+        return super().__getattr__('alt')
 
     @property
     def val(self):
         """pd.Series: Corresponding data 'val'"""
-        return self._data['val']
-
-    # fpavogt, 05.11.2020: Disabling this for now. The new spirit has all the data in a DataFrame.
-    # We should avoid encouraging the modifcation of single columns directly to remind the user
-    # that alt, val and flags should always go together ... at least for now ?
-    #@value.setter
-    #def value(self, val):
-    #
-    #    # Test arg
-    #    self._test_index(val.index)
-    #
-    #    # Set series name/dtype
-    #    val.name = 'value'
-    #    val = val.astype('float')
-    #
-    #    if len(self) == 0:
-    #        self.data['value'] = val
-    #    else:
-    #        self.data.update(val)
+        return super().__getattr__('val')
 
     @property
     def flg(self):
         """pd.Series: Corresponding data 'flag'"""
-        return self._data['flg']
+        return super().__getattr__('flg')
 
-    @flg.setter
-    def flg(self, val):
-        """ Flag setter function.
-
-        Args:
-           val: pd.DataFrame with a column 'flag' (Int64)
-        """
-
-        if val.name != 'flg':
-            raise dvasError('Flag column not found.')
-
-        # Force the dtype (Int64 uses special NaN for integers)
-        val = val.astype('Int64')
-
-        # Set the data
-        if len(self) == 0:
-            self._data['flg'] = val
-        else:
-            self._data.update(val)
+    def __str__(self):
+        return f"event: {self.event}\n{super().__str__()}"
 
     def copy(self):
-        """Copy method"""
-        return deepcopy(self)
-
-    def __len__(self):
-        return len(self.data)
+        return self.__class__(self.event, self.data.copy(deep=True))
 
     def _get_flg_bit_nbr(self, abbr):
         """Get bit number corresponding to given flag abbr"""
         return self.flags_abbr[abbr][self.FLAG_BIT_NM]
 
-    def toogle_flg(self, abbr, set_val=True, index=None):
-        """Toogle flag values on/off.
+    def set_flg(self, abbr, set_val, index=None):
+        """Set flag values to True/False.
 
         Args:
             abbr (str): flag name
@@ -204,25 +279,6 @@ class Profile(metaclass=ABCMeta):
         bit_nbr = self._get_flg_bit_nbr(abbr)
         return self.flg.apply(lambda x: (x >> bit_nbr) & 1)
 
-    def _test_cols(self, val):
-        """ Test that all the required columns are present, with the correct type.
-
-        Args:
-           val (pandas.DataFrame): The data to fill the Profile.
-
-        Raises:
-            dvasError: Missing data column.
-            dvasError: Wrong data type.
-        """
-
-        for item in self.PD_COLS:
-            if item not in val.columns:
-                raise dvasError('Required column not found: %s' % (item))
-
-            if pd.Series(dtype=self.PD_COLS[item]).dtype != val[item].dtype:
-                raise dvasError('Wrong data type for %s: I need %s but you gave me %s' %
-                                (item, self.PD_COLS[item], val[item].dtype))
-
 
 class RSProfile(Profile):
     """ Child Profile class for *basic radiosonde* atmospheric measurements.
@@ -233,19 +289,24 @@ class RSProfile(Profile):
     - 'alt' (float)
     - 'tdt' (timedelta64[ns])
     - 'val' (float)
-    - 'flag' (int64)
+    - 'flag' (Int64)
 
     The same format is expected as input.
 
     """
 
     # The column names for the pandas DataFrame
-    PD_COLS = {'alt': np.float, 'tdt': 'timedelta64[ns]', 'val': np.float, 'flg': np.int64}
+    DF_COLS_ATTR = {
+        'alt': {'test': FLOAT_TEST, 'type': np.float, 'idx': False},
+        'val': {'test': FLOAT_TEST, 'type': np.float, 'idx': False},
+        'flg': {'test': INT_TEST, 'type': 'Int64', 'idx': False},
+        'tdt': {'test': 'timedelta64[ns]', 'type': None, 'idx': True},
+    }
 
     @property
     def tdt(self):
         """pd.Series: Corresponding data time delta since launch"""
-        return self._data['tdt']
+        return super().__getattr__('tdt')
 
 
 class GDPProfile(RSProfile):
@@ -262,21 +323,28 @@ class GDPProfile(RSProfile):
 
     The data is stored in a pandas DataFrame with column labels:
     - 'alt' (float)
-    - 'tdt' (datetime.datetime)
+    - 'tdt' (timedelta64[ns])
     - 'val' (float)
     - 'ucn' (float)
     - 'ucr' (float)
     - 'ucs' (float)
     - 'uct' (float)
-    - 'flg' (int64)
+    - 'flg' (Int64)
 
     The same format is expected as input.
 
     """
 
     # The column names for the pandas DataFrame
-    PD_COLS = {'alt': np.float, 'tdt': 'timedelta64[ns]', 'val': np.float, 'ucn': np.float,
-               'ucr': np.float, 'ucs': np.float, 'uct': np.float, 'flg': np.int64}
+    DF_COLS_ATTR = dict(
+        **RSProfile.DF_COLS_ATTR,
+        **{
+            'ucn': {'test': FLOAT_TEST, 'type': np.float, 'idx': False},
+            'ucr': {'test': FLOAT_TEST, 'type': np.float, 'idx': False},
+            'ucs': {'test': FLOAT_TEST, 'type': np.float, 'idx': False},
+            'uct': {'test': FLOAT_TEST, 'type': np.float, 'idx': False},
+          }
+    )
 
     @property
     def uc_tot(self):
@@ -286,7 +354,7 @@ class GDPProfile(RSProfile):
             pd.Series: uc_tot = np.sqrt(uc_n**2 + uc_r**2 + uc_s**2 + uc_t**2)
         """
 
-        return np.sqrt(self.data.ucn.fillna(0)**2 +
-                       self.data.ucr.fillna(0)**2 +
-                       self.data.ucs.fillna(0)**2 +
-                       self.data.uct.fillna(0)**2)
+        return np.sqrt(self.ucn.fillna(0)**2 +
+                       self.ucr.fillna(0)**2 +
+                       self.ucs.fillna(0)**2 +
+                       self.uct.fillna(0)**2)
