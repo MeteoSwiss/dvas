@@ -10,15 +10,17 @@ Module contents: Loader strategies
 """
 
 # Import from external packages
-from abc import ABCMeta#, abstractmethod
+from abc import ABCMeta, abstractmethod
 import pandas as pd
 import numpy as np
 
 # Import from current package
 from .data import Profile, RSProfile, GDPProfile
 from ..linker import LocalDBLinker
+from ...database.database import EventManager
 from ...database.model import Data
 from ...dvas_logger import dvasError
+from ...dvas_helper import unzip
 
 
 # Define
@@ -26,101 +28,97 @@ INDEX_NM = Data.index.name
 VALUE_NM = Data.value.name
 
 
-class LoadProfileStrategy(metaclass=ABCMeta):
-    """Base class to manage the data loading strategy of Profile instances."""
+class LoadStrategyAbstract(metaclass=ABCMeta):
+    """Abstract load strategy class"""
 
     def __init__(self):
         self._db_linker = LocalDBLinker()
 
-    def __fetch__(self, search, abbrs):
+    @abstractmethod
+    def load(self, *args, **kwargs):
+        """Load method"""
+
+    def _fetch(self, search, **kwargs):
         """ A base function that fetches data from the database.
 
         Args:
             search (str): selection criteria
-            abbrs (dict): dict of id: 'parameter names' to extract.
+            **kwargs (dict): Key word parameter to extract.
 
         Returns:
+            list of events: Each event found
             list of pd.DataFrame: a DataFrame for each of the events found.
 
-        Exemple:
+        Example:
             ```
             import dvas.data.strategy.load as ld
             t = ld.LoadProfileStrategy()
-            t.__fetch__("dt('20160715T120000Z', '==')", {'alt':'altpros1', 'val':'trepros1'})
+            t._fetch("dt('20160715T120000Z', '==')", {'alt':'altpros1', 'val':'trepros1'})
             ```
 
         """
 
-        n_evts = 0
-
         # Loop through the requested parameters and extract them from the database.
-        for i, item in enumerate(abbrs):
+        res = {
+            key: self._db_linker.load(search, val)
+            for key, val in kwargs.items() if val
+        }
 
-            # First of all, ignore
-            if abbrs[item] is None:
-                continue
+        # Check data retrieve
+        assert any([len(val) > 0 for val in res.values()]), \
+            f"No data found within the database with criteria: {search}"
 
-            # Query the db
-            res = self._db_linker.load(search, abbrs[item])
+        # Create tuple of unique events
+        events, _ = EventManager.sort(
+            set([arg['event'] for val in res.values() for arg in val])
+        )
 
-            # Make sure some data was returned.
-            assert len(res) > 0, \
-                "No %s data found with in the database with criteria: %s" % (abbrs[item], search)
+        # Create DataFrame by concatenation and append
+        data = [
+            pd.concat(
+                [pd.Series(arg['value'], index=arg['index'], name=key)
+                 for key, val in res.items() for arg in val if arg['event'] == evt],
+                axis=1, ignore_index=False
+            ) for evt in events
+        ]
 
-            if i == 0:
-                # Since the order through which abbreviations are queried will vary, keep track
-                # of the first event manually.
-                ref_evts = [item['event'] for item in res]
-                # How many events do I get ?
-                n_evts = len(ref_evts)
-                # If I know how many events I have, I can create a suitable number of DataFrame to
-                # store the related data
-                out = [pd.DataFrame() for _ in range(n_evts)]
+        # Add missing columns
+        for i in range(len(data)):
+            for val in kwargs.keys():
+                if val not in data[-1].columns:
+                    data[i][val] = None
 
-            # Now loop through each event returned
-            for j, jtem in enumerate(res):
-
-                # Check that the order of events that was returned indeed matches that of the
-                # first parameter queried.
-                if jtem['event'] != ref_evts[j]:
-                    raise dvasError('Bad fetch order from the database.')
-
-                # Very well, let us add this data to the appropriate DataFrame
-                out[j][item] = jtem['data']['value']
-
-        return (ref_evts, out)
+        return events, data
 
 
-    def load(self, search, prm_abbr, alt_abbr=None):
+class LoadProfileStrategy(LoadStrategyAbstract):
+    """Base class to manage the data loading strategy of Profile instances."""
+
+    def load(self, search, prm_abbr, alt_abbr=None, flg_abbr=None):
         """ Load method to fetch data from the databse.
 
         Args:
             search (str): selection criteria
             prm_abbr (str): name of the parameter values to extract
-            alt_abbr (str, optional): name of the altitude parameter to extract. Dafaults to None.
+            alt_abbr (str, optional): name of the altitude parameter to extract. Defaults to None.
         """
 
         # Fetch the data from the database
-        # TODO: this needs to include some flags as well
-        db_vs_df_keys = {'val':prm_abbr, 'alt':alt_abbr}
-        (evts, out) = self.__fetch__(search, db_vs_df_keys)
+        db_vs_df_keys = {'val': prm_abbr, 'alt': alt_abbr, 'flg': flg_abbr}
 
-        # Deal with the None
-        if alt_abbr is None:
-            out = [pd.concat([item, pd.Series(np.nan, name='alt')], axis=1) for item in out]
+        # Fetch data
+        events, data = self._fetch(search, **db_vs_df_keys)
 
-        #TODO: load flags from the DB
-        out = [pd.concat([item, pd.Series([0]*len(item), dtype=np.int64, name='flg')], axis=1)
-               for item in out]
+        # Create profiles
+        out = [Profile(arg[0], data=arg[1]) for arg in zip(events, data)]
 
-        out = [Profile(evts[j], data=out[j]) for j in range(len(evts))]
+        return out, db_vs_df_keys
 
-        return {'prf': out}, {'prf': db_vs_df_keys}
 
 class LoadRSProfileStrategy(LoadProfileStrategy):
     """Child class to manage the data loading strategy of RSProfile instances."""
 
-    def load(self, search, prm_abbr, alt_abbr=None, tdt_abbr=None):
+    def load(self, search, prm_abbr, alt_abbr=None, tdt_abbr=None, flg_abbr=None):
         """ Load method to fetch data from the databse.
 
         Args:
@@ -132,36 +130,24 @@ class LoadRSProfileStrategy(LoadProfileStrategy):
         """
 
         # Fetch the data from the database
-        db_vs_df_keys = {'val':prm_abbr, 'alt':alt_abbr, 'tdt':tdt_abbr}
-        (evts, out) = self.__fetch__(search, db_vs_df_keys)
+        db_vs_df_keys = {'val': prm_abbr, 'alt': alt_abbr, 'tdt': tdt_abbr, 'flg': flg_abbr}
 
-        # Deal with the None
-        if alt_abbr is None:
-            out = [pd.concat([item, pd.Series(np.nan, name='alt')], axis=1) for item in out]
+        # Fetch data
+        events, data = self._fetch(search, **db_vs_df_keys)
 
-        if tdt_abbr is None:
-            out = [pd.concat([item, pd.Series(np.nan, dtype='timedelta64[ns]', name='tdt')], axis=1)
-                   for item in out]
-        else:
-            # Here, make sure I have the proper format for the Time Deltas
-            for item in out:
-                item['tdt'] = pd.to_timedelta(item['tdt'], unit='s')
+        # Create profiles
+        out = [RSProfile(arg[0], data=arg[1]) for arg in zip(events, data)]
 
-
-        #TODO: load flags from the DB
-        out = [pd.concat([item, pd.Series([0]*len(item), dtype=np.int64, name='flg')], axis=1)
-               for item in out]
-
-        out = [RSProfile(evts[j], data=out[j]) for j in range(len(evts))]
-
-        return {'rs_prf': out}, {'rs_prf': db_vs_df_keys}
+        return out, db_vs_df_keys
 
 
 class LoadGDPProfileStrategy(LoadProfileStrategy):
     """Child class to manage the data loading strategy of GDPProfile instances."""
 
-    def load(self, search, prm_abbr, alt_abbr=None, tdt_abbr=None,
-             ucn_abbr=None, ucr_abbr=None, ucs_abbr=None, uct_abbr=None):
+    def load(
+        self, search, prm_abbr, alt_abbr=None, tdt_abbr=None,
+        ucn_abbr=None, ucr_abbr=None, ucs_abbr=None, uct_abbr=None, flg_abbr=None
+    ):
         """ Load method to fetch data from the databse.
 
         Args:
@@ -177,38 +163,20 @@ class LoadGDPProfileStrategy(LoadProfileStrategy):
                extract. Defaults to None.
             uct_abbr (str, optional): name of the true time-correlated uncertainty parameter to
                extract. Defaults to None.
+            flg_abbr (str, optional): name of the flag parameter to extract. Default to None.
 
         """
 
         # Fetch the data from the database
-        db_vs_df_keys = {'val':prm_abbr, 'alt':alt_abbr, 'tdt':tdt_abbr, 'ucn':ucn_abbr,
-                         'ucr':ucr_abbr, 'ucs':ucs_abbr, 'uct':uct_abbr}
-        (evts, out) = self.__fetch__(search, db_vs_df_keys)
+        db_vs_df_keys = {
+            'val': prm_abbr, 'alt': alt_abbr, 'tdt': tdt_abbr, 'flg': flg_abbr,
+            'ucn': ucn_abbr, 'ucr': ucr_abbr, 'ucs': ucs_abbr, 'uct': uct_abbr
+        }
 
-        # Deal with the None
-        if alt_abbr is None:
-            out = [pd.concat([item, pd.Series(np.nan, name='alt')], axis=1) for item in out]
-        if tdt_abbr is None:
-            out = [pd.concat([item, pd.Series(np.nan, dtype='timedelta64[ns]', name='tdt')], axis=1)
-                   for item in out]
-        else:
-            # Here, make sure I have the proper format for the Time Deltas
-            for item in out:
-                item['tdt'] = pd.to_timedelta(item['tdt'], unit='s')
+        # Fetch data
+        events, data = self._fetch(search, **db_vs_df_keys)
 
-        if ucn_abbr is None:
-            out = [pd.concat([item, pd.Series(np.nan, name='ucn')], axis=1) for item in out]
-        if ucr_abbr is None:
-            out = [pd.concat([item, pd.Series(np.nan, name='ucr')], axis=1) for item in out]
-        if ucs_abbr is None:
-            out = [pd.concat([item, pd.Series(np.nan, name='ucs')], axis=1) for item in out]
-        if uct_abbr is None:
-            out = [pd.concat([item, pd.Series(np.nan, name='uct')], axis=1) for item in out]
+        # Create profiles
+        out = [GDPProfile(arg[0], data=arg[1]) for arg in zip(events, data)]
 
-        #TODO: load flags from the DB
-        out = [pd.concat([item, pd.Series([0]*len(item), dtype=np.int64, name='flg')], axis=1)
-               for item in out]
-
-        out = [GDPProfile(evts[j], data=out[j]) for j in range(len(evts))]
-
-        return {'gdp_prf': out}, {'gdp_prf': db_vs_df_keys}
+        return out, db_vs_df_keys

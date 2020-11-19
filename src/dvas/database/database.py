@@ -24,6 +24,7 @@ from peewee import chunked, DoesNotExist
 from peewee import IntegrityError
 from peewee import PeeweeException
 from playhouse.shortcuts import model_to_dict
+import numpy as np
 from pandas import DataFrame, Timestamp
 from pampy.helpers import Iterable, Union
 import sre_yield
@@ -225,9 +226,9 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         self._db = db
 
         # Init db
-        exists_db = self._init_db()
+        exists_db = self._init_db(reset_db)
 
-        if (reset_db is True) or (exists_db is False):
+        if exists_db is False:
             self._create_db()
 
     @property
@@ -235,39 +236,49 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         """peewee.SqliteDatabase: Database instance"""
         return self._db
 
-    def _init_db(self):
+    def _init_db(self, reset):
         """Init db
+
+        Args:
+            reset (bool): Reset DB
 
         Returns:
             bool: DB already exists or not
 
         """
 
+        # Define
+        file_path = env_path_var.local_db_path / DB_FILE_NM
+
+        # Reset
+        if reset:
+            file_path.unlink(missing_ok=True)
+
+        # Create local DB directory
+        if file_path.exists():
+            exists = True
+        else:
+            exists = False
+            try:
+                file_path.parent.mkdir(parents=True, exist_ok=True)
+                # Set user read/write permission
+                file_path.parent.chmod(
+                    file_path.parent.stat().st_mode | 0o600
+                )
+            except (OSError,) as exc:
+                raise DBDirError(
+                    f"Error in creating '{self._db.database.parent}' ({exc})"
+                )
+
         # Init DB
         self._db.init(
-            env_path_var.local_db_path / DB_FILE_NM,
+            file_path,
             pragmas={
                 'foreign_keys': True,
                 # Set cache to 10MB
                 'cache_size': -DB_CACHE_SIZE
             }
         )
-
-        # Create local DB directory
-        if self._db.database.exists():
-            exists = True
-        else:
-            exists = False
-            try:
-                self._db.database.parent.mkdir(parents=True, exist_ok=True)
-                # Set user read/write permission
-                self._db.database.parent.chmod(
-                    self._db.database.parent.stat().st_mode | 0o600
-                )
-            except (OSError,) as exc:
-                raise DBDirError(
-                    f"Error in creating '{self._db.database.parent}' ({exc})"
-                )
 
         return exists
 
@@ -424,17 +435,25 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         return out
 
-    def add_data(self, data, event, prm_abbr, source_info=None):
-        """Add data
+    def add_data(self, index, value, event, prm_abbr, source_info=None):
+        """Add profile data to the DB.
 
         Args:
-            data (pd.Series):
+            index (np.array of int): Data index
+            value (np.array of float): Data value
             event (EventManager):
             prm_abbr (str):
             source_info (str, optional): Data source
 
         """
 
+        # Test input
+        assert len(index) == len(value),\
+            "Data index and data value are of different length"
+        assert isinstance(index, np.ndarray), "Data index is not an np.ndarray"
+        assert isinstance(value, np.ndarray), "Data value is not an np.ndarray"
+
+        # Add data
         try:
             with DBAccess(self) as _:
 
@@ -498,26 +517,21 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     ]
                     EventsTags.insert_many(tag_event_source).execute()  # noqa pylint: disable=E1120
 
-                    # Format series as list of tuples
-                    n_data = len(data)
-                    data = DataFrame(data, columns=[VALUE_NM])
-                    data.index.name = INDEX_NM
-                    data.reset_index(inplace=True)
-                    data = data.to_dict(orient='list')
-                    data = list(
-                        zip(
-                            data[INDEX_NM],
-                            data[VALUE_NM],
-                            [event_info]*n_data
-                        )
-                    )
-
                     # Create batch index
                     fields = [Data.index, Data.value, Data.event_info]
+
+                    # Create batch data
+                    batch_data = zip(
+                        index,
+                        value,
+                        [event_info] * len(value)
+                    )
+
+                    # Calculate max batch size
                     n_max = floor(SQLITE_MAX_VARIABLE_NUMBER / len(fields))
 
                     # Insert to db
-                    for batch in chunked(data, n_max):
+                    for batch in chunked(batch_data, n_max):
                         Data.insert_many(batch, fields=fields).execute()  # noqa pylint: disable=E1120
 
         except DBInsertError as exc:
@@ -586,7 +600,8 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                             sn=eventsinfo_id_list[i].instrument.sn,
                             tag_abbr=tag_abbr,
                         ),
-                        'data': qry.res
+                        'index': qry.index,
+                        'value': qry.value,
                     }
                 )
 
@@ -709,14 +724,25 @@ class DBAccessQ(ContextDecorator):
 
 
 class Queryer(Thread):
-    """Data queryer"""
+    """Data queryer
+
+    Attributes:
+        index (list): Data index
+        value (list): Data value
+        exc (Exception): Exception if occurs
+
+    """
 
     def __init__(self, db_mngr, eventsinfo_id):
-        """Constructor"""
+
+        # Call super constructor
         super().__init__()
-        self.eventsinfo_id = eventsinfo_id
-        self.db_mngr = db_mngr
-        self.res = None
+
+        # Init attributes
+        self._eventsinfo_id = eventsinfo_id
+        self._db_mngr = db_mngr
+        self.index = None
+        self.value = None
         self.exc = None
 
     def run(self):
@@ -726,18 +752,16 @@ class Queryer(Thread):
             qry = (
                 Data.
                 select(Data.index, Data.value).
-                where(Data.event_info == self.eventsinfo_id)
+                where(Data.event_info == self._eventsinfo_id)
             )
 
-            with DBAccess(self.db_mngr, close_by_exit=False):
-                data = list(qry.tuples().iterator())
+            with DBAccess(self._db_mngr, close_by_exit=False):
 
-            # Convert to data frame
-            data = DataFrame(
-                data,
-                columns=[INDEX_NM, VALUE_NM]
-            )
-            self.res = data
+                data = list(unzip(qry.tuples().iterator()))
+
+            # Set result
+            self.index = data[0]
+            self.value = data[1]
 
         except Exception as ex:
             self.exc = Exception(ex)
@@ -756,16 +780,15 @@ class EventManager:
 
     #: datetime.datetime: UTC datetime
     event_dt = TProp(Union[str, Timestamp, datetime], check_datetime)
+
     #: str: Instrument id
     sn = TProp(str, lambda *x: x[0])
-    #: str: Parameter abbr
 
-    #TODO
-    # Delet prm_Abbr
-    prm_abbr = TProp(re.compile(rf'^({PARAM_PAT})$'), lambda *x: x[0])
     #: str: Tag abbr
     tag_abbr = TProp(
-        Union[None, Iterable[str]], lambda x: set(x) if x else set()
+        Union[None, Iterable[str]],
+        setter_fct=lambda x: set(x) if x else set(),
+        getter_fct=lambda x: sorted(x)
     )
 
     def __init__(self, event_dt, sn, tag_abbr=None):
@@ -785,7 +808,12 @@ class EventManager:
 
     def __repr__(self):
         p_printer = pprint.PrettyPrinter()
-        return p_printer.pformat(self.as_dict())
+        return p_printer.pformat(
+            (f'dt: {self.event_dt}', f'sn: {self.sn}', f'tag: {self.tag_abbr}')
+        )
+
+    def __hash__(self):
+        return hash(self.sort_attr)
 
     def add_tag(self, val):
         """Add a tag abbr
@@ -802,7 +830,7 @@ class EventManager:
         #self.add_tag(TAG_DERIVED_VAL)
 
         # Add new tag
-        self.tag_abbr.add(val)
+        self.tag_abbr = self.tag_abbr + [val,]
 
     def rm_tag(self, val):
         """Remove a tag abbr
@@ -813,14 +841,6 @@ class EventManager:
         """
         if self.tag_abbr.intersection({val}):
             self.tag_abbr.remove(val)
-
-    def as_dict(self):
-        """Convert EventManager to dict"""
-        out = OrderedDict()
-        keys_nm = ['event_dt', 'sn', 'tag_abbr']
-        for key in keys_nm:
-            out.update({key: self.__getattribute__(key)})
-        return out
 
     @staticmethod
     def sort(event_list):
@@ -842,14 +862,14 @@ class EventManager:
         val.sort()
 
         # Unzip index
-        out = unzip(val)
+        out = list(unzip(val))
 
         return list(out[0]), out[1]
 
     @property
     def sort_attr(self):
         """ list of EventManger attributes: Attributes sort order"""
-        return [self.event_dt, self.sn]
+        return tuple((self.event_dt, self.sn, *self.tag_abbr))
 
     def __eq__(self, other):
         return self.sort_attr == other.sort_attr

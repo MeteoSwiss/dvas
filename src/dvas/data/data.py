@@ -10,7 +10,7 @@ Module contents: Data management
 """
 
 # Import from external packages
-#from abc import abstractmethod
+from abc import abstractmethod
 from copy import deepcopy
 #from pampy.pampy import match, List
 
@@ -115,7 +115,7 @@ def update_db(search, strict=False):
         )
     ]
 
-    # If no matching poarameters were found, issue a warning and stop here.
+    # If no matching parameters were found, issue a warning and stop here.
     if len(prm_abbr_list) == 0:
         localdb.info("No database parameter found for the query: %s", search)
         return None
@@ -172,40 +172,27 @@ def update_db(search, strict=False):
         )
 
 
-class MultiProfile(metaclass=RequiredAttrMetaClass):
-    """Multi profile base class, designed to handle multiple Profile."""
+class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
+    """Abstract MultiProfile class"""
 
-    REQUIRED_ATTRIBUTES = {'_DATA_TYPES': dict}
+    # Specify required attributes
+    # _DATA_TYPES:
+    # - type (Profile|RSProfile|GDPProfile|...)
+    REQUIRED_ATTRIBUTES = {
+        '_DATA_TYPES': type
+    }
 
-    #: dict: dictionnary of supported Profile Types
-    _DATA_TYPES = {'prf': Profile}
+    #: type: Data type
+    _DATA_TYPES = None
 
-    #: dict: stored database variable names, updated by load() and exploited by save()
-    DB_VARIABLES = {'prf':{}}
+    @abstractmethod
+    def __init__(self, load_stgy=None):
 
-    def __init__(self,
-                 load_stgy=load_prf_stgy, sort_stgy=sort_time_stgy, plot_stgy=plt_prf_stgy,
-                 save_stgy=save_prf_stgy):
-        """ Init function, setting up the applicable strategies. """
-
-        # Init strategy
         self._load_stgy = load_stgy
-        #self._resample_stgy = resample_stgy
-        self._sort_stgy = sort_stgy
-        #self._sync_stgy = sync_stgy
-        self._plot_stgy = plot_stgy
-        self._save_stgy = save_stgy
 
         # Init attributes
-        #TODO: do we really need to keep this as a dictionnary ? In case of a mix ?
-        self._profiles = {}
-        for key in self._DATA_TYPES:
-            self._profiles[key] = []
-
-    @property
-    def keys(self):
-        """list: Data types"""
-        return self._DATA_TYPES.keys()
+        self._db_variables = {}
+        self._profiles = []
 
     @property
     def profiles(self):
@@ -215,12 +202,69 @@ class MultiProfile(metaclass=RequiredAttrMetaClass):
     @profiles.setter
     def profiles(self, val):
 
-        assert isinstance(val, dict), "Was expecting a dict, not: %s" % (type(val))
-        assert self._DATA_TYPES.keys() == val.keys(), "Invalid keys: %s" % (val.keys())
+        # Check input type
+        assert isinstance(val, list), "Was expecting a list, not: %s" % (type(val))
 
-        #TODO: check that all the profiles have the correct type before settign them.
+        # Check input value type
+        assert all(
+            [isinstance(arg, self._DATA_TYPES) for arg in val]
+        ), f"Invalid value type: {[type(arg) for arg in val]}"
 
         self._profiles = val
+
+    @property
+    def keys(self):
+        """list: Profiles keys"""
+        return self._DATA_TYPES.keys()
+
+    @property
+    def events(self):
+        """list of ProfileManger event: Event metadata"""
+        return [arg.event for arg in self.profiles]
+
+    def copy(self):
+        """Return a deep copy of the object"""
+        return deepcopy(self)
+
+    def load(self, *args, **kwargs):
+        """Load data.
+
+        Args:
+            *args: positional arguments
+            **kwargs: key word arguments
+
+        Returns:
+            MultiProfile: only if inplace=False
+
+        """
+
+        # Call the appropriate Data strategy
+        data, db_df_keys = self._load_stgy.load(*args, **kwargs)
+
+        self._db_variables = db_df_keys
+        self.profiles = data
+
+
+class MultiProfile(MutliProfileAbstract):
+    """Multi profile base class, designed to handle multiple Profile."""
+
+    #: type: supported Profile Types
+    _DATA_TYPES = Profile
+
+    def __init__(
+            self,
+            load_stgy=load_prf_stgy,
+            #sort_stgy=sort_time_stgy,
+            #plot_stgy=plt_prf_stgy, save_stgy=save_prf_stgy
+    ):
+        super().__init__(load_stgy=load_stgy)
+
+        # Init strategy
+        #self._resample_stgy = resample_stgy
+        #self._sort_stgy = sort_stgy
+        #self._sync_stgy = sync_stgy
+        #self._plot_stgy = plot_stgy
+        #self._save_stgy = save_stgy
 
     def get_prms(self, prm_list=None):
         """ Convenience getter to extract one specific parameter from the DataFrames of all the
@@ -252,11 +296,6 @@ class MultiProfile(metaclass=RequiredAttrMetaClass):
 
         return {key: [arg.data[prm_list] for arg in item] for key, item in self.profiles.items()}
 
-    @property
-    def events(self):
-        """dict of list of ProfileManger event: Event metadata"""
-        return {key: [arg.event for arg in val] for key, val in self.profiles.items()}
-
     def get_evt_prm(self, prm):
         """ Convenience function to extract specific (a unique!) Event metadata from all the
         Profile instances.
@@ -271,48 +310,7 @@ class MultiProfile(metaclass=RequiredAttrMetaClass):
 
         return {key: [evt.as_dict()[prm] for evt in item] for key, item in self.events.items()}
 
-    # TODO: why do we need this ?
-    def __getitem__(self, item):
-        return self.profiles[item]
-
-    def copy(self):
-        """Retrun a deep copy of the object"""
-        return deepcopy(self)
-
     #TODO: add an "append" method to add new data manually
-
-    def load(self, *args, inplace=False, **kwargs):
-        """Load classmethod
-
-        Args:
-            inplace (bool, `optional`): If True, perform operation in-place.
-                Default to False.
-
-        Returns:
-            MultiProfile: only if inplace=False
-
-        """
-
-        # vof: removing this in favor of a dedicated "append" method.
-        # Load data
-        #if len(args) == 1:
-        #    data = args[0]
-        #else:
-
-        # Call the appropriate Data Startegy
-        data, db_df_keys = self._load_stgy.load(*args, **kwargs)
-
-        # Modify inplace or not
-        if inplace is True:
-            self.DB_VARIABLES = db_df_keys
-            self.profiles = data
-            res = None
-        else:
-            res = self.copy()
-            res.DB_VARIABLES = db_df_keys
-            res.profiles = data
-
-        return res
 
     def sort(self, inplace=False):
         """Sort method
@@ -378,21 +376,10 @@ class MultiProfile(metaclass=RequiredAttrMetaClass):
 class MultiRSProfile(MultiProfile):
     """Multi RS profile manager, designed to handle multiple RSProfile instances."""
 
-    _DATA_TYPES = {'rs_prf': RSProfile}
+    _DATA_TYPES = RSProfile
 
-    def __init__(self,
-                 load_stgy=load_rsprf_stgy, sort_stgy=sort_time_stgy, plot_stgy=plt_rsprf_stgy,
-                 save_stgy=save_prf_stgy, resample_stgy=rspl_time_rs_stgy,
-                 sync_stgy=sync_time_stgy):
-        """ Init function, to set the appropriate strategies"""
-
-        # First call the parent __init__() for the common strategies.
-        super().__init__(load_stgy=load_stgy, sort_stgy=sort_stgy, plot_stgy=plot_stgy,
-                         save_stgy=save_stgy)
-
-        # Then also set the specific strategies for this Class
-        self._resample_stgy = resample_stgy
-        self._sync_stgy = sync_stgy
+    def __init__(self):
+        super().__init__(load_stgy=load_rsprf_stgy)
 
     #def resample(self, *args, inplace=False, **kwargs):
     #    """Resample method
@@ -438,31 +425,25 @@ class MultiRSProfile(MultiProfile):
     #
     #    return res
 
-class MultiGDPProfile(MultiRSProfile):
+
+class MultiGDPProfile(MultiProfile):
     """Multi GDP profile manager, designed to handle multiple GDPProfile instances."""
 
-    _DATA_TYPES = {'gdp_prf': GDPProfile}
+    _DATA_TYPES = GDPProfile
 
-    def __init__(self,
-                 load_stgy=load_gdpprf_stgy, sort_stgy=sort_time_stgy, plot_stgy=plt_gdpprf_stgy,
-                 save_stgy=save_prf_stgy, resample_stgy=rspl_time_rs_stgy,
-                 sync_stgy=sync_time_stgy):
-        """ Init function, to set the appropriate strategies"""
-
-        # First call the parent __init_() to set the common strategies.
-        super().__init__(load_stgy=load_stgy, sort_stgy=sort_stgy, plot_stgy=plot_stgy,
-                         save_stgy=save_stgy, resample_stgy=resample_stgy, sync_stgy=sync_stgy)
+    def __init__(self):
+        super().__init__(load_stgy=load_gdpprf_stgy)
 
     @property
     def uc_tot(self):
         """ Convenience getter to extract the total uncertainty from all the GDPProfile instances.
 
         Returns:
-            dict of list of DataFrame: idem to self.profiles, but with only the requested data.
+            list of DataFrame: idem to self.profiles, but with only the requested data.
 
         """
 
-        return {key: [arg.uc_tot for arg in item] for key, item in self.profiles.items()}
+        return [arg.uc_tot for arg in self.profiles]
 
     def plot(self, x='alt', **kwargs):
         """ Plot method

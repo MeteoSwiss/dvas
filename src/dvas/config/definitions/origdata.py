@@ -22,7 +22,7 @@ TAG_FLD_NM = 'tag_field'  # Tag field name
 INDEX_FLD_NM = 'index_col'  # Index column field name
 PARAM_FLD_NM = 'value_col'  # Value column field name
 
-IDX_UNIT_FLD_NM = 'index_unit'  # Index unit field name
+UNIT_FLD_NM = 'unit'  # Index unit field name
 
 LAMBDA_FLD_NM = 'lambda'  # Lambda field name
 
@@ -50,7 +50,7 @@ NODE_PATTERN = [INSTR_TYPE_PAT, PARAM_PAT]
 #: dict: Node parameters default value
 NODE_PARAMS_DEF = {
     TAG_FLD_NM: [],
-    IDX_UNIT_FLD_NM: 's',
+    UNIT_FLD_NM: '1',
     LAMBDA_FLD_NM: 'lambda x: x',
     CSV_DELIMITER_FLD_NM: ';',
     CSV_HEADER_FLD_NM: 'infer',
@@ -65,8 +65,7 @@ NODE_PARAMS_DEF = {
 #: dict: Constant nodes
 CONST_NODES = {
     CSV_HEADER_FLD_NM: 0,
-    CSV_INDEX_COL_FLD_NM: INDEX_NM,
-    CSV_NAMES_FLD_NM: [INDEX_NM, VALUE_NM],
+    CSV_NAMES_FLD_NM: [VALUE_NM],
 }
 
 #: dict: Parameter pattern properties (JSON_SCHEMA)
@@ -85,10 +84,6 @@ PARAMETER_PATTERN_PROP = {
         "minItems": 1,
         "uniqueItems": True
     },
-    rf"^{INDEX_FLD_NM}$": {
-        "type": ['integer', 'string'],  # see https://cswr.github.io/JsonSchema/spec/multiple_types/
-        "minimum": 0
-    },
     rf"^{PARAM_FLD_NM}$": {
         "anyOf": [
             {
@@ -100,9 +95,8 @@ PARAMETER_PATTERN_PROP = {
             }
         ]
     },
-    rf"^{IDX_UNIT_FLD_NM}$": {
+    rf"^{UNIT_FLD_NM}$": {
         "type": "string",
-        "enum": ['s', 'm']
     },
     rf"^{LAMBDA_FLD_NM}$": {
         "type": 'string',

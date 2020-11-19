@@ -200,7 +200,7 @@ class TypedProperty:
         Adapted from `Stackoverflow. <https://stackoverflow.com/questions/34884947/understanding-a-python-descriptors-example-typedproperty>`__
 
     """
-    def __init__(self, pampy_match, setter_fct=None, args=None, kwargs=None):
+    def __init__(self, pampy_match, setter_fct=None, args=None, kwargs=None, getter_fct=None):
         """Constructor
 
         Args:
@@ -213,6 +213,7 @@ class TypedProperty:
         """
         # Set attributes
         self._pampy_match = pampy_match
+        self._getter_fct = (lambda x: x) if getter_fct is None else getter_fct
         self._setter_fct = (lambda x: x) if setter_fct is None else setter_fct
         self._setter_fct_args = tuple() if args is None else args
         self._setter_fct_kwargs = dict() if kwargs is None else kwargs
@@ -220,7 +221,7 @@ class TypedProperty:
     def __get__(self, instance, owner):
         if instance is None:
             return self
-        return instance.__dict__[self._name]
+        return self._getter_fct(instance.__dict__[self._name])
 
     def __set__(self, instance, val):
         # Test type
@@ -373,4 +374,4 @@ def unzip(val):
         list
 
     """
-    return list(zip(*val))
+    return zip(*val)

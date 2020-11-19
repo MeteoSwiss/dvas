@@ -22,6 +22,11 @@ from dvas.data.data import update_db
 from dvas.dvas_logger import LogManager
 from dvas.database.database import DatabaseManager
 
+from dvas.data.linker import LocalDBLinker
+from dvas.database.model import Data
+from dvas.data.strategy.load import LoadProfileStrategy
+
+
 if __name__ == '__main__':
 
     # Define
@@ -29,12 +34,7 @@ if __name__ == '__main__':
 
     filt_gdp = "tag('gdp')"
     filt_raw = "tag('raw')"
-    filt_dt = "dt('20160715T120000Z', '==')"
-    filt_vof = "tag('vof')"
-
-    filt_in = "and_(%s,%s,%s)" % (filt_gdp, filt_raw, filt_dt)
-    filt_ws = "and_(%s,not_(%s),%s)" % (filt_gdp, filt_raw, filt_dt)
-    filt_all = "and_(%s,%s)" % (filt_gdp, filt_dt)
+    filt_all = "all()"
 
     # Create database
     db_mngr = DatabaseManager(reset_db=RESET_DB)
@@ -49,42 +49,54 @@ if __name__ == '__main__':
             update_db('treprosu_t', strict=True)
             update_db('altpros1', strict=True)
 
+
     # Load a basic profile, with a variable, and altitude.
     prf = MultiProfile()
-    prf.load(filt_in, 'trepros1', alt_abbr='altpros1', inplace=True)
+    prf.load(filt_all, 'trepros1', alt_abbr='altpros1')
 
-    # Make a plot
-    prf.plot(fig_num=1, save_fn='plot1')
-
-    # Load a regular radiosonde profile, with a variable, altitude, and time deltas.
+    # Loas a basic time profile, with a variable and altitude
     rs_prf = MultiRSProfile()
-    rs_prf.load(filt_in, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1', inplace=True)
+    rs_prf.load(filt_raw, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1')
 
-    # Load the GDPs for temperature, including all the errors
     gdp_prf = MultiGDPProfile()
-    gdp_prf.load(filt_in, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1',
-                 ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t', inplace=True)
+    gdp_prf.load(
+        filt_gdp, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1',
+        ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t'
+    )
 
-    # Make a plot
-    gdp_prf.plot(fig_num=2, x='tdt', save_fn='plot2')
-
-    # Use convenience getters to extract some info
-    srns = gdp_prf.get_evt_prm('sn')
-    vals_alt = gdp_prf.get_prms(['val', 'alt'])
-
-    # Compute the total error from GDPs
-    uc_tot = gdp_prf.uc_tot
-
-    # Set some data to 0 just to check
-    rs_prf.profiles['rs_prf'][0].data['val'] = 0
-
-    # Save this back to the DB with new tags
-    rs_prf.save(add_tags=['vof'], rm_tags=['raw'], prm_list=['val', 'alt', 'tdt'])
-
-    # Extract it, and check it is still modified
-    rs_prf_vof = MultiRSProfile()
-    rs_prf_vof.load(filt_vof, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1', inplace=True)
-
+    #
+    # # Make a plot
+    # prf.plot(fig_num=1, save_fn='plot1')
+    #
+    # # Load a regular radiosonde profile, with a variable, altitude, and time deltas.
+    # rs_prf = MultiRSProfile()
+    # rs_prf.load(filt_in, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1', inplace=True)
+    #
+    # # Load the GDPs for temperature, including all the errors
+    # gdp_prf = MultiGDPProfile()
+    # gdp_prf.load(filt_in, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1',
+    #              ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t', inplace=True)
+    #
+    # # Make a plot
+    # gdp_prf.plot(fig_num=2, x='tdt', save_fn='plot2')
+    #
+    # # Use convenience getters to extract some info
+    # srns = gdp_prf.get_evt_prm('sn')
+    # vals_alt = gdp_prf.get_prms(['val', 'alt'])
+    #
+    # # Compute the total error from GDPs
+    # uc_tot = gdp_prf.uc_tot
+    #
+    # # Set some data to 0 just to check
+    # rs_prf.profiles['rs_prf'][0].data['val'] = 0
+    #
+    # # Save this back to the DB with new tags
+    # rs_prf.save(add_tags=['vof'], rm_tags=['raw'], prm_list=['val', 'alt', 'tdt'])
+    #
+    # # Extract it, and check it is still modified
+    # rs_prf_vof = MultiRSProfile()
+    # rs_prf_vof.load(filt_vof, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1', inplace=True)
+    #
 
 
 """ Original code ... kept for now until everything has been reconnected.

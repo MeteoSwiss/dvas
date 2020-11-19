@@ -65,8 +65,8 @@ def instantiate_config_managers(*args, read=True):
     return {arg.CLASS_KEY: arg for arg in instances}
 
 
-class ConfigManager(ABC, metaclass=RequiredAttrMetaClass):
-    """Abstract clas for managing YAML config"""
+class ConfigManager(metaclass=RequiredAttrMetaClass):
+    """Abstract class for managing YAML config"""
 
     REQUIRED_ATTRIBUTES = {
         'DOC_TYPE': type,

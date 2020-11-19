@@ -13,11 +13,11 @@ _RS92:
         - '{day_night}'
 
     # -- ORIG DATA ----------------------------------
-    index_unit: 's'
-    index_col: 0
-
     csv_delimiter: ','
     csv_skipinitialspace: True
+
+    _tdtpros1:
+        value_col: 0
 
     _trepros1:
         value_col: 2
@@ -42,11 +42,11 @@ _YT:
         - '{day_night}'
 
     # -- ORIG DATA ----------------------------------
-    index_unit: 's'
-    index_col: 0
-
     csv_delimiter: ','
     csv_skipinitialspace: True
+
+    _tdtpros1:
+        value_col: 0
 
     _trepros1:
         value_col: 1
@@ -71,11 +71,11 @@ _ZT:
         - '{day_night}'
 
     # -- ORIG DATA ----------------------------------
-    index_unit: 's'
-    index_col: 0
-
     csv_delimiter: ';'
     csv_skip_blank_lines: True
+
+    _tdtpros1:
+        value_col: 0
 
     _trepros1:
         value_col: 1
@@ -99,8 +99,8 @@ _AR-GDP_001:
         - 'r{rig}'
 
     # -- ORIG DATA ----------------------------------
-    index_unit: 's'
-    index_col: 'time'
+    _tdtpros1:
+        value_col: 'time'
 
     _trepros1:
         value_col: 'temp'
@@ -134,8 +134,8 @@ _BR-GDP_001:
         - 'r{rig}'
 
     # -- ORIG DATA ----------------------------------
-    index_unit: 's'
-    index_col: 'time'
+    _tdtpros1:
+        value_col: 'time'
 
     _trepros1:
         value_col: 'temp'
@@ -166,9 +166,6 @@ _RS41-GDP-BETA_001:
     #    - 'r{rig}'
 
     # -- ORIG DATA ----------------------------------
-    index_unit: 's'
-    index_col: 'time'
-
     _tdtpros1:
         value_col: 'time'
 

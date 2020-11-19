@@ -51,8 +51,6 @@ class Handler(ABC):
 
     """
 
-    db_mngr = DatabaseManager()
-
     @abstractmethod
     def set_next(self, handler):
         """Method to set next handler
@@ -109,6 +107,9 @@ class AbstractHandler(Handler):
     """
 
     def __init__(self):
+
+        # Init attributes
+        self._db_mngr = DatabaseManager()
         self._next_handler = None
 
     def set_next(self, handler):
@@ -197,7 +198,7 @@ class FileHandler(AbstractHandler):
         instr_type_name = grp.group(1)
 
         # Check instr_type name existence in DB
-        if self.db_mngr.get_or_none(
+        if self._db_mngr.get_or_none(
                 InstrType,
                 search={
                     'where': InstrType.type_name == instr_type_name
@@ -217,7 +218,7 @@ class FileHandler(AbstractHandler):
         # Check instr_type name existence
         # (need it for loading origdata config)
         if (
-            instr_type_name_from_sn := self.db_mngr.get_or_none(
+            instr_type_name_from_sn := self._db_mngr.get_or_none(
                 Instrument,
                 search={
                     'join_order': [InstrType],
@@ -246,7 +247,7 @@ class FileHandler(AbstractHandler):
         """Exclude file method"""
 
         # Search exclude file names
-        exclude_file_name = self.db_mngr.get_or_none(
+        exclude_file_name = self._db_mngr.get_or_none(
             EventsInfo,
             search={
                 'where': (
@@ -468,22 +469,21 @@ class CSVHandler(FileHandler):
 
         # Add usecols
         try:
+            # Set read_csv arguments
             raw_csv_read_args.update(
                 {
                     'usecols': [
                         self.origdata_config_mngr.get_val(
-                            [instr_type_name, prm_abbr], INDEX_FLD_NM
-                        ),
-                        self.origdata_config_mngr.get_val(
                             [instr_type_name, prm_abbr], PARAM_FLD_NM
                         ),
-                    ]
+                    ],
+                    'squeeze': True,
                 }
             )
 
             # Read raw csv
             data = pd.read_csv(file_path, **raw_csv_read_args)
-            data = data.applymap(
+            data = data.map(
                 eval(self.origdata_config_mngr.get_val(
                     [instr_type_name, prm_abbr], 'lambda')
                 )
@@ -498,8 +498,7 @@ class CSVHandler(FileHandler):
         except KeyError:
 
             # Create empty data set
-            data = pd.DataFrame({INDEX_NM: [], VALUE_NM: []})
-            data.set_index(INDEX_NM, inplace=True)
+            data = pd.Series([])
 
             # Add empty tag
             event.add_tag(TAG_EMPTY_VAL)
@@ -520,7 +519,8 @@ class CSVHandler(FileHandler):
         out = {
             'event': event,
             'prm_abbr': prm_abbr,
-            'data': data,
+            'index': data.index.values,
+            'value': data.values,
             'source_info': self.apply_file_check_rule(file_path)
         }
 
@@ -595,21 +595,12 @@ class GDPHandler(FileHandler):
 
             # Read data
             with nc.Dataset(file_path, 'r') as self._fid:
-                index_col_nn = self.origdata_config_mngr.get_val(
-                    [instr_type_name, prm_abbr], INDEX_FLD_NM
-                )
                 data_col_nm = self.origdata_config_mngr.get_val(
                     [instr_type_name, prm_abbr], PARAM_FLD_NM
                 )
 
-                data = pd.DataFrame(
-                    {
-                        INDEX_NM: self._fid[index_col_nn][:],
-                        VALUE_NM: self._fid[data_col_nm][:],
-                    }
-                )
-                data.set_index(INDEX_NM, inplace=True)
-                data = data.applymap(
+                data = pd.Series(self._fid[data_col_nm][:])
+                data = data.map(
                     eval(self.origdata_config_mngr.get_val(
                         [instr_type_name, prm_abbr], 'lambda')
                     )
@@ -618,8 +609,7 @@ class GDPHandler(FileHandler):
         except KeyError:
 
             # Create empty data set
-            data = pd.DataFrame({INDEX_NM: [], VALUE_NM: []})
-            data.set_index(INDEX_NM, inplace=True)
+            data = pd.Series([])
 
             # Add empty tag
             event.add_tag(TAG_EMPTY_VAL)
@@ -640,7 +630,8 @@ class GDPHandler(FileHandler):
         # Append data
         out = {
             'event': event,
-            'data': data,
+            'index': data.index.values,
+            'value': data.values,
             'prm_abbr': prm_abbr,
             'source_info': self.apply_file_check_rule(file_path)
         }
@@ -659,36 +650,17 @@ class DataLinker(ABC):
     def save(self, *args, **kwargs):
         """Data saving method"""
 
-    def to_frame(self, data, key):
-        """Convert to pd.DataFrame
-
-        Args:
-            data (pd.DataFrame or pd.Series): Data dict to convert
-            key (str): Data key
-
-        Returns:
-            pd.Series
-
-        """
-
-        if isinstance(data[key], pd.Series):
-            data[key] = data[key].to_frame(VALUE_NM)
-            data[key].index.name = INDEX_NM
-            data[key].reset_index(inplace=True)
-
-        elif len(data[key].columns) == 1:
-            data[key].columns = [VALUE_NM]
-            data[key].index.name = INDEX_NM
-            data[key].reset_index(inplace=True)
-
-        else:
-            data[key].columns = [INDEX_NM, VALUE_NM]
-
 
 class LocalDBLinker(DataLinker):
     """Local DB data linker """
 
-    db_mngr = DatabaseManager()
+    def __init__(self):
+
+        # Call super constructor
+        super().__init__()
+
+        # Init attributes
+        self._db_mngr = DatabaseManager()
 
     def load(self, search, prm_abbr, filter_empty=True):
         """Load parameter method
@@ -700,7 +672,7 @@ class LocalDBLinker(DataLinker):
                 Default to True.
 
         Returns:
-            list of pd.DataFrame
+            list of dict
 
         .. uml::
 
@@ -715,7 +687,7 @@ class LocalDBLinker(DataLinker):
         """
 
         # Retrieve data from DB
-        data = self.db_mngr.get_data(
+        data = self._db_mngr.get_data(
             where=search, prm_abbr=prm_abbr, filter_empty=filter_empty
         )
 
@@ -725,18 +697,15 @@ class LocalDBLinker(DataLinker):
         """Save data method
 
         Args:
-            data_list (list of dict):
-                [{'data': pd.DataFrame or pd.Series, 'event': EventManager', 'prm_abbr': str}]
+            data_list (list of dict): dict mandatory items are 'index' (np.array),
+                'value' (np.array), 'event' (EventManager), 'prm_abbr' (str).
+                dict optional key is 'source_info' (str)
 
         """
 
+        # Add data to DB
         for args in data_list:
-
-            # Convert data to pd.DataFrame
-            self.to_frame(args, 'data')
-
-            # Add data to DB
-            self.db_mngr.add_data(**args)
+            self._db_mngr.add_data(**args)
 
 
 class CSVOutputLinker(DataLinker):

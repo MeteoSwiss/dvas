@@ -28,15 +28,16 @@ FLOAT_TEST = (np.float, float) + INT_TEST
 class ProfileAbstract(metaclass=RequiredAttrMetaClass):
     """Abstract Profile class"""
 
-    # dict: Specify required attributes
-    # DF_COLS_ATTR items:
-    # - 'test': types to test (type|tuple of type)
+    # Specify required attributes
+    # DF_COLS_ATTR dict items:
+    # - 'test': types to test (tuple of type)
     # - 'type': type conversion (type|None)
     # - 'index': use as index (bool)
     REQUIRED_ATTRIBUTES = {
         'DF_COLS_ATTR': dict
     }
 
+    @abstractmethod
     def __init__(self):
         self.db_mngr = DatabaseManager()
         self._data = pd.DataFrame()
@@ -133,7 +134,7 @@ class ProfileAbstract(metaclass=RequiredAttrMetaClass):
 
             # Test column type
             if ~val[key].apply(type).apply(
-                    issubclass, args=(self.DF_COLS_ATTR[key]['test'],)
+                    issubclass, args=(self.DF_COLS_ATTR[key]['test']+(type(None),),)
             ).all():
                 raise dvasError(
                     'Wrong data type for %s: I need %s but you gave me %s' %
@@ -300,7 +301,7 @@ class RSProfile(Profile):
         'alt': {'test': FLOAT_TEST, 'type': np.float, 'idx': False},
         'val': {'test': FLOAT_TEST, 'type': np.float, 'idx': False},
         'flg': {'test': INT_TEST, 'type': 'Int64', 'idx': False},
-        'tdt': {'test': 'timedelta64[ns]', 'type': None, 'idx': True},
+        'tdt': {'test': FLOAT_TEST, 'type': 'timedelta64[s]', 'idx': True},
     }
 
     @property

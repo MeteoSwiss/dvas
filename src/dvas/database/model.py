@@ -136,5 +136,5 @@ class Data(MetadataModel):
     event_info = ForeignKeyField(
         EventsInfo,
         backref='datas')
-    index = FloatField(null=False)
+    index = IntegerField(null=False)
     value = FloatField(null=True)
