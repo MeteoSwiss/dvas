@@ -53,16 +53,20 @@ if __name__ == '__main__':
     # Load a basic profile, with a variable, and altitude.
     prf = MultiProfile()
     prf.load(filt_all, 'trepros1', alt_abbr='altpros1')
+    prf.sort()
 
-    # Loas a basic time profile, with a variable and altitude
+    # Load a basic time profile, with a variable and altitude
     rs_prf = MultiRSProfile()
     rs_prf.load(filt_raw, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1')
+    rs_prf.sort()
 
+    # Load the GDPs for temperature, including all the errors
     gdp_prf = MultiGDPProfile()
     gdp_prf.load(
         filt_gdp, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1',
         ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t'
     )
+    gdp_prf.sort()
 
     #
     # # Make a plot

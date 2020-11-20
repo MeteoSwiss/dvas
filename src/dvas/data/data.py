@@ -22,7 +22,7 @@ from .strategy.load import LoadProfileStrategy, LoadRSProfileStrategy, LoadGDPPr
 
 from .strategy.resample import ResampleRSDataStrategy
 
-from .strategy.sort import TimeSortDataStrategy
+from .strategy.sort import SortProfileStrategy
 
 from .strategy.sync import TimeSynchronizeStrategy
 
@@ -55,7 +55,7 @@ plt_prf_stgy = PlotStrategy()
 plt_rsprf_stgy = RSPlotStrategy()
 plt_gdpprf_stgy = GDPPlotStrategy()
 
-sort_time_stgy = TimeSortDataStrategy()
+sort_prf_stgy = SortProfileStrategy()
 rspl_time_rs_stgy = ResampleRSDataStrategy()
 sync_time_stgy = TimeSynchronizeStrategy()
 
@@ -186,9 +186,10 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
     _DATA_TYPES = None
 
     @abstractmethod
-    def __init__(self, load_stgy=None):
+    def __init__(self, load_stgy=None, sort_stgy=None):
 
         self._load_stgy = load_stgy
+        self._sort_stgy = sort_stgy
 
         # Init attributes
         self._db_variables = {}
@@ -199,18 +200,10 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         """list of Profile"""
         return self._profiles
 
-    @profiles.setter
-    def profiles(self, val):
-
-        # Check input type
-        assert isinstance(val, list), "Was expecting a list, not: %s" % (type(val))
-
-        # Check input value type
-        assert all(
-            [isinstance(arg, self._DATA_TYPES) for arg in val]
-        ), f"Invalid value type: {[type(arg) for arg in val]}"
-
-        self._profiles = val
+    @property
+    def db_variables(self):
+        """dict: Correspondence between DataFrame and DB parameter"""
+        return self._db_variables
 
     @property
     def keys(self):
@@ -224,7 +217,9 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
 
     def copy(self):
         """Return a deep copy of the object"""
-        return deepcopy(self)
+        obj = self.__class__()
+        obj.update(self.db_variables, self.profiles, inplace=True)
+        return obj
 
     def load(self, *args, **kwargs):
         """Load data.
@@ -241,8 +236,60 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         # Call the appropriate Data strategy
         data, db_df_keys = self._load_stgy.load(*args, **kwargs)
 
-        self._db_variables = db_df_keys
-        self.profiles = data
+        self.update(db_df_keys, data, inplace=True)
+
+    def sort(self, inplace=False):
+        """Sort method
+
+        Args:
+            inplace (bool, `optional`): If True, perform operation in-place
+                Default to False.
+        Returns
+            MultiProfileManager if inplace is True, otherwise None
+
+        """
+
+        # Sort
+        out = self._sort_stgy.sort(self.copy().profiles)
+
+        # Load
+        res = self.update(self.db_variables, out, inplace=inplace)
+
+        return res
+
+    def update(self, db_df_keys, data, inplace=True):
+        """Update whole Multiprofile list
+
+        Args:
+            db_df_keys
+            data (list of Profile)
+            inplace (bool, optional): Default to True
+
+        """
+
+        # Check input type
+        assert isinstance(data, list), "Was expecting a list, not: %s" % (type(data))
+
+        # Check input value type
+        assert all(
+            [isinstance(arg, self._DATA_TYPES) for arg in data]
+        ), f"Invalid value type: {[type(arg) for arg in data]}"
+
+        # Check db keys
+        assert set(db_df_keys.keys()) == set(data[0].columns),\
+            f"Key {db_df_keys} doesn't match data columns"
+
+        # Update in place or not
+        if inplace is True:
+            self._db_variables = db_df_keys
+            self._profiles = data
+            res = None
+
+        else:
+            res = self.copy()
+            res.update(db_df_keys, data, inplace=True)
+
+        return res
 
 
 class MultiProfile(MutliProfileAbstract):
@@ -252,16 +299,16 @@ class MultiProfile(MutliProfileAbstract):
     _DATA_TYPES = Profile
 
     def __init__(
-            self,
-            load_stgy=load_prf_stgy,
-            #sort_stgy=sort_time_stgy,
-            #plot_stgy=plt_prf_stgy, save_stgy=save_prf_stgy
+        self,
+        #load_stgy=load_prf_stgy, sort_stgy=sort_prf_stgy,
+        #plot_stgy=plt_prf_stgy, save_stgy=save_prf_stgy
     ):
-        super().__init__(load_stgy=load_stgy)
+        super().__init__(
+            load_stgy=load_prf_stgy, sort_stgy=sort_prf_stgy
+        )
 
         # Init strategy
         #self._resample_stgy = resample_stgy
-        #self._sort_stgy = sort_stgy
         #self._sync_stgy = sync_stgy
         #self._plot_stgy = plot_stgy
         #self._save_stgy = save_stgy
@@ -312,25 +359,6 @@ class MultiProfile(MutliProfileAbstract):
 
     #TODO: add an "append" method to add new data manually
 
-    def sort(self, inplace=False):
-        """Sort method
-
-        Args:
-            inplace (bool, `optional`): If True, perform operation in-place
-                Default to False.
-        Returns
-            MultiProfileManager if inplace is True, otherwise None
-
-        """
-
-        # Sort
-        out = self._sort_stgy.sort(self.copy().data)
-
-        # Load
-        res = self.load(out, inplace=inplace)
-
-        return res
-
     def plot(self, **kwargs):
         """ Plot method
 
@@ -373,13 +401,15 @@ class MultiProfile(MutliProfileAbstract):
     # the database under new variable names ?
 
 
-class MultiRSProfile(MultiProfile):
+class MultiRSProfile(MutliProfileAbstract):
     """Multi RS profile manager, designed to handle multiple RSProfile instances."""
 
     _DATA_TYPES = RSProfile
 
     def __init__(self):
-        super().__init__(load_stgy=load_rsprf_stgy)
+        super().__init__(
+            load_stgy=load_rsprf_stgy, sort_stgy=sort_prf_stgy
+        )
 
     #def resample(self, *args, inplace=False, **kwargs):
     #    """Resample method
@@ -426,13 +456,15 @@ class MultiRSProfile(MultiProfile):
     #    return res
 
 
-class MultiGDPProfile(MultiProfile):
+class MultiGDPProfile(MutliProfileAbstract):
     """Multi GDP profile manager, designed to handle multiple GDPProfile instances."""
 
     _DATA_TYPES = GDPProfile
 
     def __init__(self):
-        super().__init__(load_stgy=load_gdpprf_stgy)
+        super().__init__(
+            load_stgy=load_gdpprf_stgy, sort_stgy=sort_prf_stgy
+        )
 
     @property
     def uc_tot(self):
