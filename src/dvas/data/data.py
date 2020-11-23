@@ -88,7 +88,6 @@ def update_db(search, strict=False):
 
         @enduml
 
-
     """
 
     # Init linkers

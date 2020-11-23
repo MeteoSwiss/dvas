@@ -558,6 +558,7 @@ class GDPHandler(FileHandler):
         """Method to get file metadata"""
 
         with nc.Dataset(file_path, 'r') as self._fid:
+
             # Read metadata fields
             try:
                 out = self.read_metaconfig_fields(instr_type_name, prm_abbr)

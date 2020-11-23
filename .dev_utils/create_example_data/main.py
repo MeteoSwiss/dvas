@@ -1,9 +1,5 @@
 
 
-from dvas.database.database import db_mngr
-from dvas.config import config
-from dvas.data.data import update_db
-from dvas.dvas_logger import LogManager
 
 import os
 from shutil import copyfile
@@ -16,6 +12,9 @@ import re
 
 expl_path = Path('.').resolve().parents[1] / 'test_examples'
 N = 1000
+
+#expl_path = Path('.').resolve().parents[1] / 'examples'
+#N = 100000
 
 def sin_rand(n, scale=1):
     return np.sin(np.arange(n)*np.pi/(2*n) + np.random.rand()*2*np.pi) / scale
@@ -47,11 +46,16 @@ def from_rs92():
 
                 # Set metadata
                 new_fid.setncattr('description', 'Dummy ' + new_gdp_type + ' GDP - version 001 - modified data from real Gruan Data Product')
-                new_fid.event_dt = fid.getncattr('g.Ascent.StandardTime')
-                new_fid.rig = '1'
-                new_fid.event_id = '1' if re.search(r'2018\-01\-10', new_fid.event_dt) else '2'
-                new_fid.sn = new_gdp_type + f'-00{i}'
-                new_fid.station = meassite
+                new_fid.setncattr(
+                    'g.Measurement.StandardTime', fid.getncattr('g.Ascent.StandardTime')
+                )
+                new_fid.setncattr('g.Measurement.BalloonNumber', '1')
+                new_fid.setncattr(
+                    'g.Measurement.Id',
+                    '1' if re.search(r'2018\-01\-10', new_fid.getncattr('g.Measurement.StandardTime')) else '2'
+                )
+                new_fid.setncattr('g.MainSonde.SerialNumber', new_gdp_type + f'-00{i}')
+                new_fid.setncattr('g.Site.Key', meassite)
                 new_fid.sensor_temp_u_enlarged = 0.1
 
                 # Set data
@@ -106,12 +110,17 @@ def from_rs92():
 
             # Create metadata
             metadata = []
-            for arg in ['event_dt', 'rig', 'event_id', 'station']:
-                metadata.append(f"{arg}: '{new_gdp_fid.getncattr(arg)}'")
+            for key, arg in {
+                'event_dt': 'g.Measurement.StandardTime',
+                'rig': 'g.Measurement.BalloonNumber',
+                'event_id': 'g.Measurement.Id',
+                'station': 'g.Site.Key'
+            }.items():
+                metadata.append(f"{key}: '{new_gdp_fid.getncattr(arg)}'")
 
             metadata.append(f"sn: '{test_type + f'-10{i}'}'")
 
-            if re.search('T12', new_gdp_fid.getncattr('event_dt')) is not None:
+            if re.search('T12', new_gdp_fid.getncattr('g.Measurement.StandardTime')) is not None:
                 metadata.append(f"day_night: 'day'")
             else:
                 metadata.append(f"day_night: 'night'")
@@ -159,11 +168,16 @@ def from_rs41():
 
                 # Set metadata
                 new_fid.setncattr('description', 'Dummy ' + new_gdp_type + ' GDP - version 001 - modified data from real Gruan Data Product')
-                new_fid.event_dt = fid.getncattr('g.Measurement.StandardTime')
-                new_fid.rig = '1'
-                new_fid.event_id = '1' if re.search(r'2018\-01\-10', new_fid.event_dt) else '2'
-                new_fid.sn = new_gdp_type + f'-00{i}'
-                new_fid.station = meassite
+                new_fid.setncattr(
+                    'g.Measurement.StandardTime', fid.getncattr('g.Measurement.StandardTime')
+                )
+                new_fid.setncattr('g.Measurement.BalloonNumber', '1')
+                new_fid.setncattr(
+                    'g.Measurement.Id',
+                    '1' if re.search(r'2018\-01\-10', new_fid.getncattr('g.Measurement.StandardTime')) else '2'
+                )
+                new_fid.setncattr('g.MainSonde.SerialNumber', new_gdp_type + f'-00{i}')
+                new_fid.setncattr('g.Site.Key', meassite)
                 new_fid.sensor_temp_u_enlarged = 0.1
 
                 # Set data
@@ -223,12 +237,17 @@ def from_rs41():
 
             # Create metadata
             metadata = []
-            for arg in ['event_dt', 'rig', 'event_id', 'station']:
-                metadata.append(f"{arg}: '{new_gdp_fid.getncattr(arg)}'")
+            for key, arg in {
+                'event_dt': 'g.Measurement.StandardTime',
+                'rig': 'g.Measurement.BalloonNumber',
+                'event_id': 'g.Measurement.Id',
+                'station': 'g.Site.Key'
+            }.items():
+                metadata.append(f"{key}: '{new_gdp_fid.getncattr(arg)}'")
 
             metadata.append(f"sn: '{test_type + f'-10{i}'}'")
 
-            if re.search('T12', new_gdp_fid.getncattr('event_dt')) is not None:
+            if re.search('T12', new_gdp_fid.getncattr('g.Measurement.StandardTime')) is not None:
                 metadata.append(f"day_night: 'day'")
             else:
                 metadata.append(f"day_night: 'night'")
