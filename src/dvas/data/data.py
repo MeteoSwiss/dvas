@@ -11,8 +11,6 @@ Module contents: Data management
 
 # Import from external packages
 from abc import abstractmethod
-from copy import deepcopy
-#from pampy.pampy import match, List
 
 # Import from current package
 from .linker import LocalDBLinker, CSVHandler, GDPHandler
@@ -56,7 +54,7 @@ plt_rsprf_stgy = RSPlotStrategy()
 plt_gdpprf_stgy = GDPPlotStrategy()
 
 sort_prf_stgy = SortProfileStrategy()
-rspl_time_rs_stgy = ResampleRSDataStrategy()
+rspl_rs_stgy = ResampleRSDataStrategy()
 sync_time_stgy = TimeSynchronizeStrategy()
 
 save_prf_stgy = SaveDataStrategy()
@@ -238,7 +236,7 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
 
         self.update(db_df_keys, data, inplace=True)
 
-    def sort(self, inplace=False):
+    def sort(self, inplace=True):
         """Sort method
 
         Args:
@@ -337,9 +335,9 @@ class MultiProfile(MutliProfileAbstract):
         # But how could I also allow to call "convenience functions" like uc_tot in GDPProfile ?
 
         # Check that the parameters are valid and exist
-        for key in self.DB_VARIABLES:
-            assert all([prm in self.DB_VARIABLES[key] for prm in prm_list]), \
-                "Unknown parameter name. Should be one of %s" % (self.DB_VARIABLES[key].keys())
+        for key in self._db_variables:
+            assert all([prm in self._db_variables[key] for prm in prm_list]), \
+                "Unknown parameter name. Should be one of %s" % (self._db_variables[key].keys())
 
         return {key: [arg.data[prm_list] for arg in item] for key, item in self.profiles.items()}
 
@@ -401,37 +399,49 @@ class MultiProfile(MutliProfileAbstract):
     # the database under new variable names ?
 
 
-class MultiRSProfile(MutliProfileAbstract):
+class MultiRSProfileAbstract(MutliProfileAbstract):
+    """Abstract MultiRSProfile class"""
+
+    @abstractmethod
+    def __init__(self, load_stgy=None, sort_stgy=None, rspl_stgy=None):
+        super().__init__(load_stgy=load_stgy, sort_stgy=sort_stgy)
+
+        # Set attributes
+        self._rspl_stgy = rspl_stgy
+
+    def resample(self, *args, inplace=True, **kwargs):
+        """Resample method
+
+        Args:
+            *args: Variable length argument list.
+            inplace (bool, `optional`): If True, perform operation in-place.
+                Default to False.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            MultiProfileManager if inplace is True, otherwise None
+
+        """
+
+        # Resample
+        out = self._rspl_stgy.resample(self.copy().profiles, *args, **kwargs)
+
+        # Load
+        res = self.update(self.db_variables, out, inplace=inplace)
+
+        return res
+
+
+class MultiRSProfile(MultiRSProfileAbstract):
     """Multi RS profile manager, designed to handle multiple RSProfile instances."""
 
     _DATA_TYPES = RSProfile
 
     def __init__(self):
         super().__init__(
-            load_stgy=load_rsprf_stgy, sort_stgy=sort_prf_stgy
+            load_stgy=load_rsprf_stgy, sort_stgy=sort_prf_stgy,
+            rspl_stgy=rspl_rs_stgy
         )
-
-    #def resample(self, *args, inplace=False, **kwargs):
-    #    """Resample method
-    #
-    #    Args:
-    #        *args: Variable length argument list.
-    #        inplace (bool, `optional`): If True, perform operation in-place.
-    #            Default to False.
-    #        **kwargs: Arbitrary keyword arguments.
-    #
-    #    Returns:
-    #        MultiProfileManager if inplace is True, otherwise None
-    #
-    #    """
-    #
-    #    # Resample
-    #    out = self._resample_stgy.resample(self.copy().data, *args, **kwargs)
-    #
-    #    # Load
-    #    res = self.load(out, inplace=inplace)
-    #
-    #    return res
 
     #def synchronize(self, *args, inplace=False, **kwargs):
     #    """Synchronize method
@@ -456,14 +466,15 @@ class MultiRSProfile(MutliProfileAbstract):
     #    return res
 
 
-class MultiGDPProfile(MutliProfileAbstract):
+class MultiGDPProfile(MultiRSProfileAbstract):
     """Multi GDP profile manager, designed to handle multiple GDPProfile instances."""
 
     _DATA_TYPES = GDPProfile
 
     def __init__(self):
         super().__init__(
-            load_stgy=load_gdpprf_stgy, sort_stgy=sort_prf_stgy
+            load_stgy=load_gdpprf_stgy, sort_stgy=sort_prf_stgy,
+            rspl_stgy=rspl_rs_stgy
         )
 
     @property

@@ -16,7 +16,6 @@ from abc import abstractmethod, ABCMeta
 from itertools import chain, zip_longest
 import operator
 from functools import wraps, reduce
-from collections import OrderedDict
 from math import floor
 from threading import Thread
 from datetime import datetime
@@ -25,7 +24,7 @@ from peewee import IntegrityError
 from peewee import PeeweeException
 from playhouse.shortcuts import model_to_dict
 import numpy as np
-from pandas import DataFrame, Timestamp
+from pandas import Timestamp
 from pampy.helpers import Iterable, Union
 import sre_yield
 
@@ -34,7 +33,6 @@ from .model import db
 from .model import Instrument, InstrType, EventsInfo
 from .model import Parameter, Flag, OrgiDataInfo, Data
 from .model import Tag, EventsTags
-from ..config.pattern import PARAM_PAT
 from ..config.config import instantiate_config_managers
 from ..config.config import InstrType as CfgInstrType
 from ..config.config import Instrument as CfgInstrument

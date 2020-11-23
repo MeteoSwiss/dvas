@@ -12,7 +12,6 @@ Module contents: User configuration management.
 # Import python packages and modules
 import re
 import pprint
-from abc import ABC
 from pathlib import Path
 import json
 from jsonschema import validate, exceptions

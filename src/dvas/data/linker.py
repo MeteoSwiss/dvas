@@ -27,8 +27,7 @@ from ..config.config import OrigData, CSVOrigMeta
 from ..config.config import ConfigReadError
 from ..config.definitions.origdata import META_FIELD_KEYS
 from ..config.definitions.origdata import EVENT_DT_FLD_NM, SN_FLD_NM, TAG_FLD_NM
-from ..config.definitions.origdata import INDEX_FLD_NM, PARAM_FLD_NM
-from ..config.definitions.origdata import INDEX_NM, VALUE_NM
+from ..config.definitions.origdata import PARAM_FLD_NM
 from ..dvas_logger import rawcsv
 from ..dvas_environ import glob_var
 from ..config.pattern import INSTR_TYPE_PAT

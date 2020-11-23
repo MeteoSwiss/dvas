@@ -59,6 +59,7 @@ if __name__ == '__main__':
     rs_prf = MultiRSProfile()
     rs_prf.load(filt_raw, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1')
     rs_prf.sort()
+    a=rs_prf.resample(inplace=False)
 
     # Load the GDPs for temperature, including all the errors
     gdp_prf = MultiGDPProfile()
@@ -67,6 +68,7 @@ if __name__ == '__main__':
         ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t'
     )
     gdp_prf.sort()
+    gdp_prf.resample()
 
     #
     # # Make a plot

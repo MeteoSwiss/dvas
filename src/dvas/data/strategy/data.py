@@ -21,8 +21,9 @@ from ...dvas_logger import dvasError
 from ...dvas_helper import RequiredAttrMetaClass
 
 # Define
-INT_TEST = (np.int64, np.int, int)
+INT_TEST = (np.int64, np.int, int, type(pd.NA))
 FLOAT_TEST = (np.float, float) + INT_TEST
+TIME_TEST = FLOAT_TEST + (pd.Timedelta,)
 
 
 class ProfileAbstract(metaclass=RequiredAttrMetaClass):
@@ -109,7 +110,8 @@ class ProfileAbstract(metaclass=RequiredAttrMetaClass):
     def copy(self):
         """Copy method"""
 
-    def _test_cols(self, val, cols_key=None):
+    @classmethod
+    def _test_cols(cls, val, cols_key=None):
         """ Test that all the required columns are present, with the correct type.
 
         Args:
@@ -123,10 +125,10 @@ class ProfileAbstract(metaclass=RequiredAttrMetaClass):
 
         # Init
         if cols_key is None:
-            cols_key = self.DF_COLS_ATTR.keys()
+            cols_key = cls.DF_COLS_ATTR.keys()
 
         # Test val columns
-        for key in filter(lambda x: x in cols_key, self.DF_COLS_ATTR.keys()):
+        for key in filter(lambda x: x in cols_key, cls.DF_COLS_ATTR.keys()):
 
             # Test column name
             if key not in val.columns:
@@ -134,16 +136,16 @@ class ProfileAbstract(metaclass=RequiredAttrMetaClass):
 
             # Test column type
             if ~val[key].apply(type).apply(
-                    issubclass, args=(self.DF_COLS_ATTR[key]['test']+(type(None),),)
+                    issubclass, args=(cls.DF_COLS_ATTR[key]['test']+(type(None),),)
             ).all():
                 raise dvasError(
-                    'Wrong data type for %s: I need %s but you gave me %s' %
-                    (key, self.DF_COLS_ATTR[key]['test'], val[key].dtype)
+                    "Wrong data type for '%s': I need %s but you gave me %s" %
+                    (key, cls.DF_COLS_ATTR[key]['test'], val[key].dtype)
                 )
 
             # Convert
-            if self.DF_COLS_ATTR[key]['type']:
-                val[key] = val[key].astype(self.DF_COLS_ATTR[key]['type'])
+            if cls.DF_COLS_ATTR[key]['type']:
+                val[key] = val[key].astype(cls.DF_COLS_ATTR[key]['type'])
 
         return val
 
@@ -299,9 +301,9 @@ class RSProfile(Profile):
     # The column names for the pandas DataFrame
     DF_COLS_ATTR = {
         'alt': {'test': FLOAT_TEST, 'type': np.float, 'idx': False},
+        'tdt': {'test': TIME_TEST, 'type': 'timedelta64[ns]', 'idx': True},
         'val': {'test': FLOAT_TEST, 'type': np.float, 'idx': False},
         'flg': {'test': INT_TEST, 'type': 'Int64', 'idx': False},
-        'tdt': {'test': FLOAT_TEST, 'type': 'timedelta64[s]', 'idx': True},
     }
 
     @property

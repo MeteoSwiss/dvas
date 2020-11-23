@@ -11,16 +11,20 @@ Module contents: Resample strategies
 
 # Import from external packages
 from abc import ABCMeta, abstractmethod
+from pandas.core.resample import TimedeltaIndexResampler
 
 # Import from current package
-#from .data import RSProfile
+from ...dvas_logger import dvasError
 
 
-class ResampleDataStrategy(metaclass=ABCMeta):
+class ResampleStrategyAbstract(metaclass=ABCMeta):
     """Abstract class to manage data resample strategy.
 
     Resample strategy goal's is to obtain an homogeneous
     index, i.e constant interval and same for all profiles.
+
+    Resampling can only applied to radiosonde profile, i.e. with a
+    datetime delta index.
     """
 
     @abstractmethod
@@ -28,39 +32,51 @@ class ResampleDataStrategy(metaclass=ABCMeta):
         """Strategy required method"""
 
 
-class ResampleRSDataStrategy(ResampleDataStrategy):
+class ResampleRSDataStrategy(ResampleStrategyAbstract):
     """Class to manage resample of time data parameter"""
 
-    def resample(self, data, interval='1s', method='mean'):
+    def resample(
+            self, data, method='mean', rule='1s',
+            closed='right', label='right', **kwargs
+    ):
         """Implementation of resample method
 
         Args:
-            data (dict): Dict or list of RSProfile
-            interval (str, optional): Resample interval. Default is '1s'.
-            method (str, optional): Resample method, 'mean' (default) | 'sum'
+            data (list of Profile): Data to resample
+            method (str, optional): Resample method, 'mean' (default) | 'sum' | 'max' | 'min'
+            rule (str, optional): See pandas doc
+            closed (str, optional): See pandas doc
+            label (str, optional): See pandas doc
+            **kwargs: Arbitrary keyword arguments
 
-        """
+        Note:
+            Resampling uses `pandas.DataFrame.resample https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.resample.html` method arguments"""
 
-        # TODO: THIS NEEDS TO BE FIXED !!!
+        # Define
+        oper = {
+            'mean': TimedeltaIndexResampler.mean,
+            'sum': TimedeltaIndexResampler.sum,
+            'max': TimedeltaIndexResampler.max,
+            'min': TimedeltaIndexResampler.min,
+        }
 
-        """
-        for key, val in data.items():
-            for i, arg in enumerate(val):
+        data_rspl = []
+        for arg in data:
 
-                resampler = arg.data.resample(
-                    interval, label='right', closed='right'
+            # Resampler
+            rspler = arg.data.resample(
+                rule=rule, closed=closed, label=label, **kwargs
+            )
+
+            # Set data
+            try:
+                data_rspl.append(
+                    arg.__class__(
+                        arg.event,
+                        oper[method](rspler).reset_index()
+                    )
                 )
+            except KeyError:
+                raise dvasError(f"Unknown resample method '{method}'")
 
-                if method == 'mean':
-                    res = resampler.mean()
-
-                elif method == 'sum':
-                    res = resampler.sum()
-
-                res.index -= res.index[0]
-                val[i] = RSProfile(arg.event_mngr, data=res)
-
-            data.update({key: val})
-
-        return data
-        """
+        return data_rspl

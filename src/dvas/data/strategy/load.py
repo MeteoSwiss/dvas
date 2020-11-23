@@ -12,15 +12,12 @@ Module contents: Loader strategies
 # Import from external packages
 from abc import ABCMeta, abstractmethod
 import pandas as pd
-import numpy as np
 
 # Import from current package
 from .data import Profile, RSProfile, GDPProfile
 from ..linker import LocalDBLinker
 from ...database.database import EventManager
 from ...database.model import Data
-from ...dvas_logger import dvasError
-from ...dvas_helper import unzip
 
 
 # Define
