@@ -49,7 +49,6 @@ if __name__ == '__main__':
             update_db('treprosu_t', strict=True)
             update_db('altpros1', strict=True)
 
-
     # Load a basic profile, with a variable, and altitude.
     prf = MultiProfile()
     prf.load(filt_all, 'trepros1', alt_abbr='altpros1')
@@ -59,7 +58,7 @@ if __name__ == '__main__':
     rs_prf = MultiRSProfile()
     rs_prf.load(filt_raw, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1')
     rs_prf.sort()
-    a=rs_prf.resample(inplace=False)
+    rs_prf.resample()
 
     # Load the GDPs for temperature, including all the errors
     gdp_prf = MultiGDPProfile()

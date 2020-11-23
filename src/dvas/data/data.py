@@ -11,6 +11,7 @@ Module contents: Data management
 
 # Import from external packages
 from abc import abstractmethod
+import pandas as pd
 
 # Import from current package
 from .linker import LocalDBLinker, CSVHandler, GDPHandler
@@ -184,12 +185,13 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
     _DATA_TYPES = None
 
     @abstractmethod
-    def __init__(self, load_stgy=None, sort_stgy=None):
-
-        self._load_stgy = load_stgy
-        self._sort_stgy = sort_stgy
+    def __init__(self, load_stgy=None, sort_stgy=None, save_stgy=None):
 
         # Init attributes
+        self._load_stgy = load_stgy
+        self._sort_stgy = sort_stgy
+        self._save_stgy = save_stgy
+
         self._db_variables = {}
         self._profiles = []
 
@@ -255,121 +257,6 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
 
         return res
 
-    def update(self, db_df_keys, data, inplace=True):
-        """Update whole Multiprofile list
-
-        Args:
-            db_df_keys
-            data (list of Profile)
-            inplace (bool, optional): Default to True
-
-        """
-
-        # Check input type
-        assert isinstance(data, list), "Was expecting a list, not: %s" % (type(data))
-
-        # Check input value type
-        assert all(
-            [isinstance(arg, self._DATA_TYPES) for arg in data]
-        ), f"Invalid value type: {[type(arg) for arg in data]}"
-
-        # Check db keys
-        assert set(db_df_keys.keys()) == set(data[0].columns),\
-            f"Key {db_df_keys} doesn't match data columns"
-
-        # Update in place or not
-        if inplace is True:
-            self._db_variables = db_df_keys
-            self._profiles = data
-            res = None
-
-        else:
-            res = self.copy()
-            res.update(db_df_keys, data, inplace=True)
-
-        return res
-
-
-class MultiProfile(MutliProfileAbstract):
-    """Multi profile base class, designed to handle multiple Profile."""
-
-    #: type: supported Profile Types
-    _DATA_TYPES = Profile
-
-    def __init__(
-        self,
-        #load_stgy=load_prf_stgy, sort_stgy=sort_prf_stgy,
-        #plot_stgy=plt_prf_stgy, save_stgy=save_prf_stgy
-    ):
-        super().__init__(
-            load_stgy=load_prf_stgy, sort_stgy=sort_prf_stgy
-        )
-
-        # Init strategy
-        #self._resample_stgy = resample_stgy
-        #self._sync_stgy = sync_stgy
-        #self._plot_stgy = plot_stgy
-        #self._save_stgy = save_stgy
-
-    def get_prms(self, prm_list=None):
-        """ Convenience getter to extract one specific parameter from the DataFrames of all the
-        Profile instances.
-
-        Args:
-            prm_list (list of str): names of the parameter to extract from all the Profile
-                DataFrame. Defaults to None (=return all the data from the DataFrame)
-
-        Returns:
-            dict of list of DataFrame: idem to self.profiles, but with only the requested data.
-
-        """
-
-        if prm_list is None:
-            return {key: [arg.data for arg in item] for key, item in self.profiles.items()}
-
-        if isinstance(prm_list, str):
-            # Assume the user forgot to put the key into a list.
-            prm_list = [prm_list]
-
-        # TODO: Here, I am directly calling the DataFrame columns ...
-        # But how could I also allow to call "convenience functions" like uc_tot in GDPProfile ?
-
-        # Check that the parameters are valid and exist
-        for key in self._db_variables:
-            assert all([prm in self._db_variables[key] for prm in prm_list]), \
-                "Unknown parameter name. Should be one of %s" % (self._db_variables[key].keys())
-
-        return {key: [arg.data[prm_list] for arg in item] for key, item in self.profiles.items()}
-
-    def get_evt_prm(self, prm):
-        """ Convenience function to extract specific (a unique!) Event metadata from all the
-        Profile instances.
-
-        Args:
-            prm (str): parameter name (unique!) to extract from all the Events.
-
-        Returns:
-            dict of list: idem to self.profiles, but with only the requested metadata.
-
-        """
-
-        return {key: [evt.as_dict()[prm] for evt in item] for key, item in self.events.items()}
-
-    #TODO: add an "append" method to add new data manually
-
-    def plot(self, **kwargs):
-        """ Plot method
-
-        Args:
-            **kwargs: Arbitrary keyword arguments, to be passed down to the plotting function.
-
-        Returns:
-            None
-
-        """
-
-        self._plot_stgy.plot(self.profiles, self.keys, **kwargs)
-
     def save(self, add_tags=None, rm_tags=None, prm_list=None):
         """Save method to store the *entire* content of the Multiprofile instance back into the
         database with an updated set of tags.
@@ -397,6 +284,134 @@ class MultiProfile(MutliProfileAbstract):
 
     # TODO: implement an "export" function that can export specific DataFrame columns back into
     # the database under new variable names ?
+
+    def update(self, db_df_keys, data, inplace=True):
+        """Update whole Multiprofile list
+
+        Args:
+            db_df_keys (dict): Relationship between database parameters and
+                Profile.data columns.
+            data (list of Profile): Data
+            inplace (bool, optional): Default to True
+
+        """
+
+        # Check input type
+        assert isinstance(data, list), "Was expecting a list, not: %s" % (type(data))
+
+        # Check input value type
+        assert all(
+            [isinstance(arg, self._DATA_TYPES) for arg in data]
+        ), f"Wrong data type: I need {self._DATA_TYPES} but you gave me {[type(arg) for arg in data]}"
+
+        # Check db keys
+        assert set(db_df_keys.keys()) == set(data[0].columns),\
+            f"Key {db_df_keys} doesn't match data columns"
+
+        # Update in place or not
+        if inplace is True:
+            self._db_variables = db_df_keys
+            self._profiles = data
+            res = None
+
+        else:
+            res = self.copy()
+            res.update(db_df_keys, data, inplace=True)
+
+        return res
+
+    def append(self, data):
+        """Append method
+
+        Args:
+            data (Profile): Data
+
+        """
+
+        self.update(self.db_variables, self.data + [data], inplace=True)
+
+    def get_prms(self, prm_list=None):
+        """ Convenience getter to extract one specific parameter from the DataFrames of all the
+        Profile instances.
+
+        Args:
+            prm_list (list of str): names of the parameter to extract from all the Profile
+                DataFrame. Defaults to None (=return all the data from the DataFrame)
+
+        Returns:
+            dict of list of DataFrame: idem to self.profiles, but with only the requested data.
+
+        """
+
+        if prm_list is None:
+            prm_list = self.db_variables.keys()
+
+        if isinstance(prm_list, str):
+            # Assume the user forgot to put the key into a list.
+            prm_list = [prm_list]
+
+        # Select data
+        try:
+            out = [
+                pd.concat(
+                    [getattr(arg, prm) for prm in prm_list],
+                    axis=1, ignore_index=False
+                )
+                for arg in self.profiles
+            ]
+        except AttributeError:
+            raise dvasError(f"Unknown parameter/attribute name in {prm_list}")
+
+        return out
+
+
+class MultiProfile(MutliProfileAbstract):
+    """Multi profile base class, designed to handle multiple Profile."""
+
+    #: type: supported Profile Types
+    _DATA_TYPES = Profile
+
+    def __init__(
+        self,
+        #load_stgy=load_prf_stgy, sort_stgy=sort_prf_stgy,
+        #plot_stgy=plt_prf_stgy, save_stgy=save_prf_stgy
+    ):
+        super().__init__(
+            load_stgy=load_prf_stgy, sort_stgy=sort_prf_stgy
+        )
+
+        # Init strategy
+        #self._sync_stgy = sync_stgy
+        #self._plot_stgy = plot_stgy
+        #self._save_stgy = save_stgy
+
+    def get_evt_prm(self, prm):
+        """ Convenience function to extract specific (a unique!) Event metadata from all the
+        Profile instances.
+
+        Args:
+            prm (str): parameter name (unique!) to extract from all the Events.
+
+        Returns:
+            dict of list: idem to self.profiles, but with only the requested metadata.
+
+        """
+
+        return {key: [evt.as_dict()[prm] for evt in item] for key, item in self.events.items()}
+
+    def plot(self, **kwargs):
+        """ Plot method
+
+        Args:
+            **kwargs: Arbitrary keyword arguments, to be passed down to the plotting function.
+
+        Returns:
+            None
+
+        """
+
+        self._plot_stgy.plot(self.profiles, self.keys, **kwargs)
+
 
 
 class MultiRSProfileAbstract(MutliProfileAbstract):
