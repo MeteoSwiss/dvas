@@ -13,9 +13,10 @@ This module contains GRUAN-related routines, including correlation rules for GDP
 
 # Import from Python packages
 import numpy as np
+import pandas as pd
 
 # Import from current package
-from ..dvas_logger import gruan_logger, log_func_call
+from ..dvas_logger import gruan_logger, log_func_call, dvasError
 
 @log_func_call(gruan_logger)
 def corcoef_gdps(i, j, uc_type,
@@ -25,22 +26,12 @@ def corcoef_gdps(i, j, uc_type,
                  evt_i=None, evt_j=None,
                  sit_i=None, sit_j=None):
     ''' Computes the correlation coefficient(s), for the specific uncertainty types of GRUAN Data
-    Products (GDPs), between specific measurements.
-
-    The different uncertainty families are:
-
-    - sigma_u (uncorrelated): no correlation between distinct measurements.
-    - sigma_e (environmental-correlated): TODO
-    - sigma_s (spatial-correlated errors): full correlation between measurements acquired during the
-      same event at the same site, irrespective of the altitude or radiosonde model.
-    - sigma_t (temporal-correlated errors): full correlation between measurements acquired at
-      distinct sites during distinct events, with distinct radiosondes models.
+    Products (GDPs), between measurements.
 
     Args:
-        i (numpy.ndarray of int or float): time step or altitude of measurement 1.
-        j (numpy.ndarray of int or float): time step or altitude of measurement 2.
-        uc_type (str): uncertainty type. Must be one of
-                       ['sigma_u', 'sigma_e', 'sigma_s', 'sigma_t'].
+        i (numpy.ndarray of int or float): synchronized time step or altitude of measurement 1.
+        j (numpy.ndarray of int or float): synchronized time step or altitude of measurement 2.
+        uc_type (str): uncertainty type. Must be one of ['r', 's', 't', 'u'].
         srn_i (numpy.ndarray of int or str, optional): serial number of RS from measurement 1.
         srn_j (numpy.ndarray of int or str, optional): seriel number of RS from measurement 2.
         mod_i (numpy.ndarray of int or str, optional): GDP model from measurement 1.
@@ -56,17 +47,26 @@ def corcoef_gdps(i, j, uc_type,
         numpy.ndarray of float(s): the correlation coefficient(s), in the range [0, 1].
 
     Note:
-        This function returns the pair-wise correlation coefficients, and
+        This function returns the pair-wise correlation coefficients,
         **not** the full correlation matrix, i.e::
 
             len(corcoef_gdps(i, j, uc_type)) == len(i) == len(j)
 
+    The supported uncertainty types are:
+
+    - 'r': rig-correlated uncertainty.
+           Intended for the so-called "uncorrelated" GRUAN uncertainty.
+    - 's': spatial-correlated uncertainty.
+           Full correlation between measurements acquired during the same event at the same site,
+           irrespective of the time step/altitude, rig, radiosonde model, or serial number.
+    - 't': temporal-correlated uncertainty.
+           Full correlation between measurements acquired at distinct sites during distinct events,
+           with distinct radiosondes models and serial numbers.
+    - 'u': uncorrelated.
+           No correlation whatsoever between distinct measurements.
+
     Todo:
-        - Consider refactoring the input using `collections.namedtuple` ?
-        - Add reference to GRUAN docs in this docstring.
-        - Add additional tests for sigma_e
-        - Confirm environmental correlations
-        - Confirm model-dependent correlations
+        - Add reference to GRUAN docs & dvas articles in this docstring.
 
     '''
 
@@ -80,29 +80,28 @@ def corcoef_gdps(i, j, uc_type,
             raise Exception('Ouch ! All items should have the same shape !')
 
     # Make sure to return something with the same shape as what came in.
-    corcoef = np.zeros(np.shape(i))
+    corcoef = np.zeros_like(i)
 
     # All variables always correlate fully with themselves
-    corcoef[(i == j) * (srn_i == srn_j) * (mod_i == mod_j) *
-            (rig_i == rig_j) * (evt_i == evt_j) * (sit_i == sit_j)] = 1.0
+    corcoef[(i == j) * (srn_i == srn_j) * (mod_i == mod_j) * (rig_i == rig_j) * (evt_i == evt_j) *
+            (sit_i == sit_j)] = 1.0
 
     # Now work in the required level of correlation depending on the uncertainty type.
-    if uc_type == 'sigma_u':
+    if uc_type == 'u':
         # Nothing to add in case of uncorrelated uncertainties.
         pass
 
-    elif uc_type == 'sigma_e':
-        warn_msg = 'Environmental correlations are not defined yet. Defaults to uncorrelation.'
-        gruan_logger.warning(warn_msg)
-        #TODO: specify the environmental correlations for simultaneous flights.
+    elif uc_type == 'r':
+        gruan_logger.warning('Rig-correlated uncertainties not yet defined.')
+        #TODO: specify the rig-correlation rules.
 
-    elif uc_type == 'sigma_s':
+    elif uc_type == 's':
         # 1) Full spatial-correlation between measurements acquired in the same event and at the
-        # same site.
+        #    same site, irrespective of the rig number, radiosonde model or serial number.
         # TODO: confirm this is correct: incl. for different RS models ?
         corcoef[(evt_i == evt_j) * (sit_i == sit_j)] = 1.0
 
-    elif uc_type == 'sigma_t':
+    elif uc_type == 't':
         # 1) Full temporal-correlation between measurements acquired in the same event and at the
         # same site.
         # TODO: confirm this is correct: incl. for different RS models ?
@@ -113,58 +112,33 @@ def corcoef_gdps(i, j, uc_type,
         corcoef = np.ones_like(corcoef)
 
     else:
-        raise Exception("Ouch ! valid uc_type are ['sigma_u', 'sigma_e', 'sigma_s', 'sigma_t']")
+        raise dvasError("Ouch ! uc_type must be one of ['r', 's', 't', 'u'], not: %s" % (uc_type))
 
     return corcoef
 
 @log_func_call(gruan_logger)
-def merge_andor_rebin_gdps(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
-                           srns=None, mods=None, rigs=None, evts=None, sits=None,
-                           binning=1, method='weighted mean'):
-    ''' Combines and (possibly) rebin GDP profiles, with full error propagation.
+def combine_gdps(gdp_prfs, binning=1, method='weighted mean'):
+    ''' Combines and (possibly) rebins GDP profiles, with full error propagation.
 
     Args:
-        profiles (list of ndarray): list of profiles to combine. All must have the same length!
-        sigma_us (list of ndarray): list of associated uncorrelated errors.
-        sigma_es (list of ndarray): list of associated environmental-correlated errors.
-        sigma_ss (list of ndarray): list of associated spatial-correlated errors.
-        sigma_ts (list of ndarray): list of associated temporal-correlated errors.
-        srns (list of numpy.ndarray of int or str, optional): list of RS Serial Numbers.
-        mods (list of numpy.ndarray of int or str, optional): list of GDP models.
-        rigs (list of numpy.ndarray of int or str, optional): list of associated rigs.
-        evts (list of numpy.ndarray of int or str, optional): list of associated events.
-        sits (list of numpy.ndarray of int or str, optional): list of associated sites.
+        gdp_profs (dvas.data.data.MultiGDPProfile): synchronized GDP profiles to combine.
         binning (int, optional): the number of profile steps to put in a bin. Defaults to 1.
         method (str, optional): combination rule. Can be 'weighted mean', or 'delta'.
             Defaults to 'weighted mean'.
 
     Returns:
-        (ndarray, ndarray, ndarray, ndarray, ndarray, list of list, ndarray): the merged profile,
-           merged sigma_u, merged sigma_e, merged_sigma_s, merged sigma_t,
-           merged indices, new indices.
+        (dvas.data.data.MultiGDPProfile): the combined GDP profile.
 
     Warnings:
-        If more than 1 profile is given (i.e. len(profiles)>1) and srns is None, then the code will
-        assume it is distinct for each profile (i.e. srn is different for each profile). For mods,
-        rigs, evts, sits, the opposite is True: setting them to None implies that they are the same
-        for all the profiles.
-
-    Todo:
-        * Feed 2 TimeProfileManager rather than all these ndarrays ...
+        * If the Serial Numbers are not specified, it will be assumed that they are **distinct** for
+          each GDPProfile.
+        * For the GDP models, as well as the rigs, events, and sites, the opposite is True. If they
+          are not specified for each GDPProfiles, it will be assumed that they are the **same**
+          for all.
 
     '''
 
     # Some safety checks first of all
-    for (ind, item) in enumerate([profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
-                                  srns, mods, rigs, evts, sits]):
-        if ind > 4 and item is None:
-            # Only allow the optional components to be None.
-            continue
-        if not isinstance(item, list):
-            raise Exception('Ouch ! I was expecting a list (even with only 1 profile) !')
-        if len(item) != len(profiles):
-            raise Exception('Ouch ! I need the same number of profiles and errors for each types !')
-
     if not isinstance(binning, int):
         raise Exception('Ouch! binning must be of type int, not %s' % (type(binning)))
     if binning <= 0:
@@ -174,56 +148,57 @@ def merge_andor_rebin_gdps(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
         raise Exception('Ouch ! Method %s unsupported.' % (method))
 
     # How many gdps do we have ?
-    n_profiles = len(profiles)
+    n_prf = len(gdp_prfs.profiles)
     # How long are the profiles ?
-    n_steps = len(profiles[0])
+    # n_steps = len(profiles[0])
 
     # If I have more than 1 profile, and no SRN was specified, the user most likely forgot to
     # specify it.
-    if n_profiles >= 2 and srns is None:
-        warn_msg = 'merge_andor_rebin_gdps() received %i profiles' % (n_profiles)
-        warn_msg += ', but no SRN for them. Assuming they come from different RS.'
-        gruan_logger.warning(warn_msg)
-        srns = [np.ones(n_steps) + ind for ind in range(n_profiles)]
+    #if n_profiles >= 2 and srns is None:
+    #    warn_msg = 'merge_andor_rebin_gdps() received %i profiles' % (n_profiles)
+    #    warn_msg += ', but no SRN for them. Assuming they come from different RS.'
+    #    gruan_logger.warning(warn_msg)
+    #    srns = [np.ones(n_steps) + ind for ind in range(n_profiles)]
 
-    # For a delta , I can only have two profiles
-    if method == 'delta' and n_profiles != 2:
-        raise Exception('Ouch! I can only make the delta between 2 GDPs, not %i !' % (n_profiles))
+    # For a delta, I can only have two profiles
+    if method == 'delta' and n_prf != 2:
+        raise dvasError('Ouch! I can only make a delta between 2 GDPs, not %i !' % (n_prf))
 
     # Check that all the profiles/errors have the same length
-    for item in [profiles, sigma_us, sigma_es, sigma_ss, sigma_ts]:
-        for p_ind in range(n_profiles):
-            if len(item[p_ind]) != n_steps:
-                raise Exception('Ouch ! All profiles and errors should have the same length!')
+    for item in gdp_prfs.profiles:
+        if len(item.data) != len(gdp_prfs.profiles[0].data):
+            raise dvasError('Ouch ! All GDP profiles must have the same length !')
 
     # let's get started
     if method == 'weighted mean':
 
         # Let's compute the total error for each profile
-        sigma_tots = [np.sqrt(sigma_us[p_ind]**2 +
-                              sigma_es[p_ind]**2 +
-                              sigma_ss[p_ind]**2 +
-                              sigma_ts[p_ind]**2) for p_ind in range(n_profiles)]
+        #sigma_tots = [item.uc_tot for item in gdp_prfs.profiles]
 
         # Let's compute the weights vectors for each profile
-        w_ps = np.array([1/sigma_tot**2 for sigma_tot in sigma_tots])
+        w_ps = pd.DataFrame([1/item.uc_tot**2 for item in gdp_prfs.get_prms('uc_tot')])
+
+        prfs = pd.DataFrame([item.val for item in gdp_prfs.get_prmns()])
 
         # Let's assemble the arrays of w * x for all profiles
-        wx_ps = np.array([w_ps[p_ind] * profiles[p_ind] for p_ind in range(n_profiles)])
+        #wx_ps = np.array([w_ps[p_ind] * profiles[p_ind] for p_ind in range(n_profiles)])
 
         # Sum these along the number of probes
-        wx_s = np.nansum(wx_ps, axis=0)
-        w_s = np.nansum(w_ps, axis=0)
+        #wx_s = np.nansum(wx_ps, axis=0)
+        #w_s = np.nansum(w_ps, axis=0)
 
         # Then sum these along the altitude layers according to the binning
         # Make sure to deal with potential NaN's by using the where function to swap them with 0's
-        # This is because I can't find the reduceat function
-        wx_ms = np.add.reduceat(np.where(np.isnan(wx_s), 0, wx_s), range(0, n_steps, binning))
-        w_ms = np.add.reduceat(np.where(np.isnan(w_s), 0, w_s), range(0, n_steps, binning))
+        # This is because I can't find the "np.nanadd.reduceat" function
+        #wx_ms = np.add.reduceat(np.where(np.isnan(wx_s), 0, wx_s), range(0, n_steps, binning))
+        #w_ms = np.add.reduceat(np.where(np.isnan(w_s), 0, w_s), range(0, n_steps, binning))
 
         # Compute the weighted mean
         # To avoid some runtime Warning, replace any 0 weight with nan's
-        x_ms = wx_ms / np.where(w_ms == 0, np.nan, w_ms)
+        #x_ms = wx_ms / np.where(w_ms == 0, np.nan, w_ms)
+
+        # Compute the weighted mean
+        x_ms, G_mat = stats.weighted_mean(prfs, w_ps, binning=binning)
 
     elif method == 'delta':
 
