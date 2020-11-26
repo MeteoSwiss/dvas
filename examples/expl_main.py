@@ -22,10 +22,13 @@ from dvas.data.data import update_db
 from dvas.dvas_logger import LogManager
 from dvas.database.database import DatabaseManager
 
+from dvas.dvas_logger import dvasError
+
 from dvas.data.linker import LocalDBLinker
 from dvas.database.model import Data
 from dvas.data.strategy.load import LoadProfileStrategy
 
+from dvas.database.model import EventsInfo, Parameter
 
 if __name__ == '__main__':
 
@@ -33,8 +36,10 @@ if __name__ == '__main__':
     RESET_DB = False
 
     filt_gdp = "tag('gdp')"
+    filt_gdp_der = "and_(tag('derived'), tag('gdp'))"
     filt_raw = "tag('raw')"
     filt_all = "all()"
+    filt_der = "and_(tag('derived'), not_(tag('gdp')))"
 
     # Create database
     db_mngr = DatabaseManager(reset_db=RESET_DB)
@@ -49,25 +54,44 @@ if __name__ == '__main__':
             update_db('treprosu_t', strict=True)
             update_db('altpros1', strict=True)
 
-    # Load a basic profile, with a variable, and altitude.
-    prf = MultiProfile()
-    prf.load(filt_all, 'trepros1', alt_abbr='altpros1')
-    prf.sort()
+    # # Load a basic profile, with a variable, and altitude.
+    # prf = MultiProfile()
+    # try:
+    #     prf.load(filt_der, 'trepros1', 'altpros1')
+    #
+    # except dvasError:
+    #     prf.load(filt_raw, 'trepros1', 'altpros1')
+    #     prf.sort()
+    #     prf.save()
 
     # Load a basic time profile, with a variable and altitude
     rs_prf = MultiRSProfile()
-    rs_prf.load(filt_raw, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1')
-    rs_prf.sort()
-    rs_prf.resample()
+    try:
+        rs_prf.load(filt_der, 'trepros1', 'tdtpros1', alt_abbr='altpros1')
 
-    # Load the GDPs for temperature, including all the errors
-    gdp_prf = MultiGDPProfile()
-    gdp_prf.load(
-        filt_gdp, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1',
-        ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t'
-    )
-    gdp_prf.sort()
-    gdp_prf.resample()
+    except dvasError:
+        rs_prf.load(filt_raw, 'trepros1', 'tdtpros1', alt_abbr='altpros1')
+        rs_prf.sort()
+    #     rs_prf.resample()
+        rs_prf.save()
+
+    #
+    # # Load the GDPs for temperature, including all the errors
+    # gdp_prf = MultiGDPProfile()
+    # try:
+    #     gdp_prf.load(
+    #         filt_gdp_der, 'trepros1', 'tdtpros1', alt_abbr='altpros1',
+    #         ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t'
+    #     )
+    #
+    # except dvasError:
+    #     gdp_prf.load(
+    #         filt_gdp, 'trepros1', 'tdtpros1', alt_abbr='altpros1',
+    #         ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t'
+    #     )
+    #     gdp_prf.sort()
+    #     gdp_prf.resample()
+    #     gdp_prf.save()
 
     #
     # # Make a plot

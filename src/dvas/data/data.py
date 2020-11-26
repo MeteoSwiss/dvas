@@ -33,11 +33,13 @@ from ..database.database import DatabaseManager
 from ..database.model import Parameter
 from ..database.database import OneDimArrayConfigLinker
 from ..dvas_logger import localdb, rawcsv
+from ..dvas_logger import DBIOError
 from ..dvas_environ import path_var
 from ..dvas_helper import RequiredAttrMetaClass
 
 from ..dvas_logger import dvasError
 
+from ..config.definitions.tag import TAG_RAW_VAL, TAG_DERIVED_VAL
 
 # Define
 FLAG = 'flag'
@@ -183,6 +185,9 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
     #: type: Data type
     _DATA_TYPES = None
 
+    _DATA_EMPTY = []
+    _DB_VAR_EMPTY = {}
+
     @abstractmethod
     def __init__(self, load_stgy=None, sort_stgy=None, save_stgy=None):
 
@@ -191,8 +196,8 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         self._sort_stgy = sort_stgy
         self._save_stgy = save_stgy
 
-        self._db_variables = {}
-        self._profiles = []
+        self._profiles = self._DATA_EMPTY
+        self._db_variables = self._DB_VAR_EMPTY
 
     @property
     def profiles(self):
@@ -214,17 +219,21 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         """list of ProfileManger event: Event metadata"""
         return [arg.event for arg in self.profiles]
 
+    def __len__(self):
+        return len(self.profiles)
+
     def copy(self):
         """Return a deep copy of the object"""
         obj = self.__class__()
         obj.update(self.db_variables, self.profiles, inplace=True)
         return obj
 
-    def load(self, *args, **kwargs):
+    def load(self, *args, inplace=True, **kwargs):
         """Load data.
 
         Args:
             *args: positional arguments
+            inplace (bool): Modify in place. Defaults to True.
             **kwargs: key word arguments
 
         Returns:
@@ -235,7 +244,12 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         # Call the appropriate Data strategy
         data, db_df_keys = self._load_stgy.load(*args, **kwargs)
 
-        self.update(db_df_keys, data, inplace=True)
+        # Test data len
+        if not data:
+            raise DBIOError('Load empty data')
+
+        # Update
+        return self.update(db_df_keys, data, inplace=inplace)
 
     def sort(self, inplace=True):
         """Sort method
@@ -256,30 +270,36 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
 
         return res
 
-    def save(self, add_tags=None, rm_tags=None, prm_list=None):
-        """Save method to store the *entire* content of the Multiprofile instance back into the
-        database with an updated set of tags.
+    def save(self, add_tags=None, rm_tags=None, prms=None):
+        """Save method to store the *entire* content of the Multiprofile
+        instance back into the database with an updated set of tags.
 
         Args:
-            add_tags (list of str): list of tags to add to event.
-            rm_tags (list of str, optional): list of *existing* tags to remove from the event.
+            add_tags (list of str, optional): list of tags to add to event.
                 Defaults to None.
-            prms (list of str, optional): list of column names to save to the database.
-                Defaults to None (= save all possible parameters).
+            rm_tags (list of str, optional): list of *existing* tags to remove
+                from the event. Defaults to None.
+            prms (list of str, optional): list of column names to save to the
+                database. Defaults to None (= save all possible parameters).
+
+        Notes:
+            The 'raw' tag will always be removed and the 'derived' tag will
+            always be added by default when saving anything into the database.
 
         """
 
-        if add_tags is None and rm_tags is None:
-            raise dvasError('Need either add_tags or rm_tags to be specified.')
+        # Add tag DERIVED
+        add_tags = [TAG_DERIVED_VAL] if add_tags is None else add_tags + [TAG_DERIVED_VAL]
+
+        # Remove tag RAW
+        rm_tags = [TAG_RAW_VAL] if rm_tags is None else rm_tags + [TAG_RAW_VAL]
+
         # Restructure the parameters into a dict, to be consistent with the rest of the class.
-        #if prm_list is None:
-        #    prms = {item:self.DB_VARIABLES[item].keys() for item in self.DB_VARIABLES}
-        #else:
-        #    prms = {item:prms for item in self.DB_VARIABLES}
+        if prms is None:
+            prms = list(self.db_variables.keys())
 
         # Call save strategy
-        self._save_stgy.save(self.get_prms(prm_list), self.copy().events,
-                             self.DB_VARIABLES, add_tags, rm_tags)
+        self._save_stgy.save(self.copy(), prms, add_tags, rm_tags)
 
     # TODO: implement an "export" function that can export specific DataFrame columns back into
     # the database under new variable names ?
@@ -298,14 +318,22 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         # Check input type
         assert isinstance(data, list), "Was expecting a list, not: %s" % (type(data))
 
-        # Check input value type
-        assert all(
-            [isinstance(arg, self._DATA_TYPES) for arg in data]
-        ), f"Wrong data type: I need {self._DATA_TYPES} but you gave me {[type(arg) for arg in data]}"
+        # Test data if not empty
+        if data:
 
-        # Check db keys
-        assert set(db_df_keys.keys()) == set(data[0].columns),\
-            f"Key {db_df_keys} doesn't match data columns"
+            # Check input value type
+            assert all(
+                [isinstance(arg, self._DATA_TYPES) for arg in data]
+            ), f"Wrong data type: I need {self._DATA_TYPES} but you gave me {[type(arg) for arg in data]}"
+
+            # Check db keys
+            assert (
+                set(db_df_keys.keys()) == set(data[0].get_col_attr() + data[0].get_index_attr())
+            ), f"Key {db_df_keys} does not match data columns"
+
+        else:
+            data = self._DATA_EMPTY
+            db_df_keys = self._DB_VAR_EMPTY
 
         # Update in place or not
         if inplace is True:
@@ -376,7 +404,8 @@ class MultiProfile(MutliProfileAbstract):
         #plot_stgy=plt_prf_stgy, save_stgy=save_prf_stgy
     ):
         super().__init__(
-            load_stgy=load_prf_stgy, sort_stgy=sort_prf_stgy
+            load_stgy=load_prf_stgy, sort_stgy=sort_prf_stgy,
+            save_stgy=save_prf_stgy
         )
 
         # Init strategy
@@ -412,38 +441,45 @@ class MultiProfile(MutliProfileAbstract):
         self._plot_stgy.plot(self.profiles, self.keys, **kwargs)
 
 
-
 class MultiRSProfileAbstract(MutliProfileAbstract):
     """Abstract MultiRSProfile class"""
 
     @abstractmethod
-    def __init__(self, load_stgy=None, sort_stgy=None, rspl_stgy=None):
-        super().__init__(load_stgy=load_stgy, sort_stgy=sort_stgy)
+    def __init__(
+            self, load_stgy=None, sort_stgy=None,
+            rspl_stgy=None, save_stgy=None
+    ):
+        super().__init__(
+            load_stgy=load_stgy, sort_stgy=sort_stgy,
+            save_stgy=save_stgy
+        )
 
         # Set attributes
-        self._rspl_stgy = rspl_stgy
+        #self._rspl_stgy = rspl_stgy
 
-    def resample(self, *args, inplace=True, **kwargs):
-        """Resample method
-
-        Args:
-            *args: Variable length argument list.
-            inplace (bool, `optional`): If True, perform operation in-place.
-                Default to False.
-            **kwargs: Arbitrary keyword arguments.
-
-        Returns:
-            MultiProfileManager if inplace is True, otherwise None
-
-        """
-
-        # Resample
-        out = self._rspl_stgy.resample(self.copy().profiles, *args, **kwargs)
-
-        # Load
-        res = self.update(self.db_variables, out, inplace=inplace)
-
-        return res
+    # TODO
+    #  Adapt for MultiIndex
+    # def resample(self, *args, inplace=True, **kwargs):
+    #     """Resample method
+    #
+    #     Args:
+    #         *args: Variable length argument list.
+    #         inplace (bool, `optional`): If True, perform operation in-place.
+    #             Default to False.
+    #         **kwargs: Arbitrary keyword arguments.
+    #
+    #     Returns:
+    #         MultiProfileManager if inplace is True, otherwise None
+    #
+    #     """
+    #
+    #     # Resample
+    #     out = self._rspl_stgy.resample(self.copy().profiles, *args, **kwargs)
+    #
+    #     # Load
+    #     res = self.update(self.db_variables, out, inplace=inplace)
+    #
+    #     return res
 
 
 class MultiRSProfile(MultiRSProfileAbstract):
@@ -454,7 +490,7 @@ class MultiRSProfile(MultiRSProfileAbstract):
     def __init__(self):
         super().__init__(
             load_stgy=load_rsprf_stgy, sort_stgy=sort_prf_stgy,
-            rspl_stgy=rspl_rs_stgy
+            save_stgy=save_prf_stgy
         )
 
     #def synchronize(self, *args, inplace=False, **kwargs):
@@ -488,7 +524,7 @@ class MultiGDPProfile(MultiRSProfileAbstract):
     def __init__(self):
         super().__init__(
             load_stgy=load_gdpprf_stgy, sort_stgy=sort_prf_stgy,
-            rspl_stgy=rspl_rs_stgy
+            save_stgy=save_prf_stgy
         )
 
     @property

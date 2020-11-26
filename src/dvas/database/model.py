@@ -96,6 +96,7 @@ class OrgiDataInfo(MetadataModel):
     """Original data information model"""
     id = AutoField(primary_key=True)
     source = CharField(null=True)
+    source_hash = IntegerField()
 
 
 class EventsInfo(MetadataModel):
@@ -111,6 +112,9 @@ class EventsInfo(MetadataModel):
     orig_data_info = ForeignKeyField(
         OrgiDataInfo, backref='event_info'
     )
+    event_hash = IntegerField()
+    """int: Hash of the event attributes. Using a hash allows you to manage
+    identical events with varying degrees of work steps."""
 
 
 class EventsTags(MetadataModel):

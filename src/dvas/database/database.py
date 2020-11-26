@@ -280,8 +280,8 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         return exists
 
-    #TODO
-    # Fix with DB can't be create several times
+    # TODO
+    #  Fix with DB can't be create several times
     def _create_db(self):
         """Method for creating the database.
 
@@ -325,7 +325,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         Args:
             table ():
             search (dict):
-            attr (list of (list of str)):
+            attr (list of (list of str)): Get query result attributes by path
             get_first (bool): return first occurrence or all. Default ot False.
 
         """
@@ -433,16 +433,19 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         return out
 
-    def add_data(self, index, value, event, prm_abbr, source_info=None):
+    def add_data(
+            self, index, value, event, prm_abbr,
+            source_info=None, force_write=False
+    ):
         """Add profile data to the DB.
 
         Args:
             index (np.array of int): Data index
             value (np.array of float): Data value
-            event (EventManager):
+            event (EventManager): event information
             prm_abbr (str):
             source_info (str, optional): Data source
-
+            force_write (bool, optional): force rewrite of already save data
         """
 
         # Test input
@@ -495,16 +498,32 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
                 # Create original data information
                 orig_data_info, _ = OrgiDataInfo.get_or_create(
-                    source=source_info)
+                    source=source_info, source_hash=hash(source_info))
 
                 # Create event info
                 event_info, created = EventsInfo.get_or_create(
                     event_dt=event.event_dt, instrument=instr,
-                    param=param, orig_data_info=orig_data_info
+                    param=param, orig_data_info=orig_data_info,
+                    event_hash=hash(event)
                 )
 
-                # Insert data
-                if created:
+                # Erase data (created == False indicate that data already exists)
+                if (created is False) and (force_write is True):
+
+                    # Delete EventsTags entries
+                    EventsTags.delete().\
+                        where(EventsTags.events_info == event_info).\
+                        execute()
+
+                    # Delete Data entries
+                    Data.delete().\
+                        where(Data.event_info == event_info)
+
+                    # TODO
+                    #  Add log
+
+                # Insert data (created == True indicate that data are new)
+                if (created is True) or (force_write is True):
 
                     # Link event to tag
                     tag_event_source = [
@@ -531,6 +550,9 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     # Insert to db
                     for batch in chunked(batch_data, n_max):
                         Data.insert_many(batch, fields=fields).execute()  # noqa pylint: disable=E1120
+
+                    # TODO
+                    #  Add log
 
         except DBInsertError as exc:
             raise DBInsertError(exc)
@@ -817,28 +839,31 @@ class EventManager:
         """Add a tag abbr
 
         Args:
-            val (str): New tag abbr
+            val (list of str): tag abbr to add
 
         """
 
-        #TODO
-        # consider to use the observer pattern
-        # Modify tag 'raw' -> 'derived'
-        #self.rm_tag(TAG_RAW_VAL)
-        #self.add_tag(TAG_DERIVED_VAL)
+        if isinstance(val, str):
+            # Assume the user forgot to put the key into a list.
+            val = [val]
 
-        # Add new tag
-        self.tag_abbr = self.tag_abbr + [val,]
+        # Add
+        self.tag_abbr = self.tag_abbr + val
 
     def rm_tag(self, val):
         """Remove a tag abbr
 
         Args:
-            val (str): Tag abbr to remove
+            val (list of str): tag abbr to remove
 
         """
-        if self.tag_abbr.intersection({val}):
-            self.tag_abbr.remove(val)
+
+        if isinstance(val, str):
+            # Assume the user forgot to put the key into a list.
+            val = [val]
+
+        # Remove
+        self.tag_abbr = list(filter(lambda x: x not in val, self.tag_abbr))
 
     @staticmethod
     def sort(event_list):
@@ -853,14 +878,13 @@ class EventManager:
 
         """
 
-        # Zip index
-        val = list(zip(event_list, range(len(event_list))))
-
         # Sort
-        val.sort()
+        val = sorted(
+            zip(event_list, range(len(event_list)))
+        )
 
         # Unzip index
-        out = list(unzip(val))
+        out = list(unzip(val)) if val else ([], [])
 
         return list(out[0]), out[1]
 

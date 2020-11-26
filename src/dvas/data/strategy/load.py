@@ -33,7 +33,7 @@ class LoadStrategyAbstract(metaclass=ABCMeta):
 
     @abstractmethod
     def load(self, *args, **kwargs):
-        """Load method"""
+        """Strategy required method"""
 
     def _fetch(self, search, **kwargs):
         """ A base function that fetches data from the database.
@@ -61,23 +61,24 @@ class LoadStrategyAbstract(metaclass=ABCMeta):
             for key, val in kwargs.items() if val
         }
 
-        # Check data retrieve
-        assert any([len(val) > 0 for val in res.values()]), \
-            f"No data found within the database with criteria: {search}"
-
         # Create tuple of unique events
         events, _ = EventManager.sort(
             set([arg['event'] for val in res.values() for arg in val])
         )
 
         # Create DataFrame by concatenation and append
-        data = [
-            pd.concat(
-                [pd.Series(arg['value'], index=arg['index'], name=key)
-                 for key, val in res.items() for arg in val if arg['event'] == evt],
-                axis=1, ignore_index=False
-            ) for evt in events
-        ]
+        try:
+            data = [
+                pd.concat(
+                    [pd.Series(arg['value'], index=arg['index'], name=key)
+                     for key, val in res.items() for arg in val if arg['event'] == evt],
+                    axis=1, ignore_index=False
+                ) for evt in events
+            ]
+        # TODO
+        #  raise Exception for data index coherence
+        except Exception as exc:
+            raise Exception(exc)
 
         # Add missing columns
         for i in range(len(data)):
@@ -91,17 +92,19 @@ class LoadStrategyAbstract(metaclass=ABCMeta):
 class LoadProfileStrategy(LoadStrategyAbstract):
     """Base class to manage the data loading strategy of Profile instances."""
 
-    def load(self, search, prm_abbr, alt_abbr=None, flg_abbr=None):
+    def load(self, search, val_abbr, alt_abbr, flg_abbr=None):
         """ Load method to fetch data from the databse.
 
         Args:
             search (str): selection criteria
-            prm_abbr (str): name of the parameter values to extract
-            alt_abbr (str, optional): name of the altitude parameter to extract. Defaults to None.
+            val_abbr (str): name of the parameter values to extract
+            alt_abbr (str, optional): name of the altitude parameter to extract.
+            flg_abbr (str, optional): name of the flag parameter to extract. Defaults to None.
+
         """
 
         # Fetch the data from the database
-        db_vs_df_keys = {'val': prm_abbr, 'alt': alt_abbr, 'flg': flg_abbr}
+        db_vs_df_keys = {'val': val_abbr, 'alt': alt_abbr, 'flg': flg_abbr}
 
         # Fetch data
         events, data = self._fetch(search, **db_vs_df_keys)
@@ -115,19 +118,20 @@ class LoadProfileStrategy(LoadStrategyAbstract):
 class LoadRSProfileStrategy(LoadProfileStrategy):
     """Child class to manage the data loading strategy of RSProfile instances."""
 
-    def load(self, search, prm_abbr, alt_abbr=None, tdt_abbr=None, flg_abbr=None):
-        """ Load method to fetch data from the databse.
+    def load(self, search, val_abbr, tdt_abbr, alt_abbr=None, flg_abbr=None):
+        """Load method to fetch data from the databse.
 
         Args:
             search (str): selection criteria
-            prm_abbr (str): name of the parameter values to extract
+            val_abbr (str): name of the parameter values to extract.
+            tdt_abbr (str): name of the time delta parameter to extract.
             alt_abbr (str, optional): name of the altitude parameter to extract. Dafaults to None.
-            tdt_abbr (str, optional): name of the time delta parameter to extract. Defaults to None.
+            flg_abbr (str, optional): name of the flag parameter to extract. Defaults to None.
 
         """
 
         # Fetch the data from the database
-        db_vs_df_keys = {'val': prm_abbr, 'alt': alt_abbr, 'tdt': tdt_abbr, 'flg': flg_abbr}
+        db_vs_df_keys = {'val': val_abbr, 'tdt': tdt_abbr, 'alt': alt_abbr, 'flg': flg_abbr}
 
         # Fetch data
         events, data = self._fetch(search, **db_vs_df_keys)
@@ -142,16 +146,17 @@ class LoadGDPProfileStrategy(LoadProfileStrategy):
     """Child class to manage the data loading strategy of GDPProfile instances."""
 
     def load(
-        self, search, prm_abbr, alt_abbr=None, tdt_abbr=None,
-        ucn_abbr=None, ucr_abbr=None, ucs_abbr=None, uct_abbr=None, flg_abbr=None
+        self, search, val_abbr, tdt_abbr, alt_abbr=None,
+        ucn_abbr=None, ucr_abbr=None, ucs_abbr=None, uct_abbr=None,
+        flg_abbr=None
     ):
-        """ Load method to fetch data from the databse.
+        """ Load method to fetch data from the database.
 
         Args:
             search (str): selection criteria
-            prm_abbr (str): name of the parameter values to extract
+            val_abbr (str): name of the parameter values to extract
+            tdt_abbr (str): name of the time delta parameter to extract.
             alt_abbr (str, optional): name of the altitude parameter to extract. Dafaults to None.
-            tdt_abbr (str, optional): name of the time delta parameter to extract. Defaults to None.
             ucn_abbr (str, optional): name of the true un-correlated uncertainty parameter to
                extract. Defaults to None.
             ucr_abbr (str, optional): name of the true rig un-correlated uncertainty parameter to
@@ -166,8 +171,9 @@ class LoadGDPProfileStrategy(LoadProfileStrategy):
 
         # Fetch the data from the database
         db_vs_df_keys = {
-            'val': prm_abbr, 'alt': alt_abbr, 'tdt': tdt_abbr, 'flg': flg_abbr,
-            'ucn': ucn_abbr, 'ucr': ucr_abbr, 'ucs': ucs_abbr, 'uct': uct_abbr
+            'val': val_abbr, 'tdt': tdt_abbr, 'alt': alt_abbr,
+            'ucn': ucn_abbr, 'ucr': ucr_abbr, 'ucs': ucs_abbr, 'uct': uct_abbr,
+            'flg': flg_abbr
         }
 
         # Fetch data

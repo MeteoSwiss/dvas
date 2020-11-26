@@ -30,17 +30,18 @@ class ProfileAbstract(metaclass=RequiredAttrMetaClass):
     """Abstract Profile class"""
 
     # Specify required attributes
-    # DF_COLS_ATTR dict items:
+    # DF_COLS_ATTR dictionary items:
     # - 'test': types to test (tuple of type)
     # - 'type': type conversion (type|None)
     # - 'index': use as index (bool)
     REQUIRED_ATTRIBUTES = {
-        'DF_COLS_ATTR': dict
+        'DF_COLS_ATTR': dict,
     }
+
+    DF_COLS_ATTR = None
 
     @abstractmethod
     def __init__(self):
-        self.db_mngr = DatabaseManager()
         self._data = pd.DataFrame()
 
     @property
@@ -52,6 +53,63 @@ class ProfileAbstract(metaclass=RequiredAttrMetaClass):
     def columns(self):
         """pd.Index: DataFrame columns name"""
         return self.data.columns
+
+    @classmethod
+    def reset_data_index(cls, val):
+        """Return the data with reset index
+
+        Args:
+            val (pandas.DataFrame): DataFrame with index to be reset
+
+        Returns:
+            pandas.DataFrame
+
+        """
+        val = val.reset_index()
+        val.index.name = '_idx'
+        return val[sorted(cls.DF_COLS_ATTR.keys())]
+
+    @classmethod
+    def set_data_index(cls, val):
+        """Return the data with reset index
+
+        Args:
+            val (pandas.DataFrame): DataFrame with index to be reset
+
+        Returns:
+            pandas.DataFrame
+
+        """
+        val = cls.reset_data_index(val)
+        val = val.set_index(cls.get_index_attr(), drop=True, append=True)
+
+        return val
+
+    @classmethod
+    def get_index_attr(cls):
+        """Get index attributes
+
+        Returns:
+            list
+
+        """
+        return sorted([
+            key for key, val in
+            cls.DF_COLS_ATTR.items() if val['index'] is True
+        ])
+
+    @classmethod
+    def get_col_attr(cls):
+        """Get columns attributes
+
+                Returns:
+                    list
+
+                """
+        return sorted([
+            key for key, val in
+            cls.DF_COLS_ATTR.items() if val['index'] is False
+        ])
 
     def __getattr__(self, item):
         try:
@@ -69,22 +127,18 @@ class ProfileAbstract(metaclass=RequiredAttrMetaClass):
             if item == 'data':
 
                 # Check that I have all the columns I need in the input, with the proper format.
-                val = self._test_cols(val)
+                val = self._prepare_df(val)
 
                 # Set index
-                val.set_index(
-                    [key for key, val in self.DF_COLS_ATTR.items() if val['idx'] is True],
-                    drop=False, inplace=True
-                )
-                val.sort_index(inplace=True)
+                val = self.set_data_index(val)
 
                 # If so, set things up
-                self._data = val[list(self.DF_COLS_ATTR.keys())]
+                self._data = val[self.get_col_attr()]
 
             elif item in self.DF_COLS_ATTR.keys():
                 # Test input value
                 assert isinstance(val, pd.Series)
-                value = self._test_cols(pd.DataFrame(val, columns=[item,]), cols_key=[item])
+                value = self._prepare_df(pd.DataFrame(val, columns=[item,]), cols_key=[item])
 
                 # Update value
                 self._data[item].update(value[item])
@@ -93,7 +147,7 @@ class ProfileAbstract(metaclass=RequiredAttrMetaClass):
                 super().__setattr__(item, val)
 
         except KeyError:
-            raise dvasError(f"Valid keys are: {self.columns}")
+            raise dvasError(f"Valid keys are: {list(self.DF_COLS_ATTR.keys())}. You gave {val.columns}")
         except AssertionError:
             raise dvasError(f"Value must be a pd.Series")
 
@@ -111,12 +165,16 @@ class ProfileAbstract(metaclass=RequiredAttrMetaClass):
         """Copy method"""
 
     @classmethod
-    def _test_cols(cls, val, cols_key=None):
-        """ Test that all the required columns are present, with the correct type.
+    def _prepare_df(cls, val, cols_key=None):
+        """ Prepare the DataFrame. Test that all the required columns are present,
+        with the correct type and convert the column type.
 
         Args:
            val (pandas.DataFrame): The data to fill the Profile.
            cols_key (list of str, `optional`): Column key to test
+
+        Returns:
+            pandas.DataFrame
 
         Raises:
             dvasError: Missing data column.
@@ -169,9 +227,9 @@ class Profile(ProfileAbstract):
 
     # The column names for the pandas DataFrame
     DF_COLS_ATTR = {
-        'alt': {'test': FLOAT_TEST, 'type': np.float, 'idx': True},
-        'val': {'test': FLOAT_TEST, 'type': np.float, 'idx': False},
-        'flg': {'test': INT_TEST, 'type': 'Int64', 'idx': False}
+        'val': {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+        'alt': {'test': FLOAT_TEST, 'type': np.float, 'index': True},
+        'flg': {'test': FLOAT_TEST, 'type': 'Int64', 'index': False}
     }
 
     def __init__(self, event, data=None):
@@ -185,6 +243,9 @@ class Profile(ProfileAbstract):
         """
         super(Profile, self).__init__()
 
+        # Init
+        db_mngr = DatabaseManager()
+
         # Set attributes
         if data is not None:
             self.data = data
@@ -193,7 +254,7 @@ class Profile(ProfileAbstract):
                 {key: np.array([], dtype=val['type']) for key, val in self.DF_COLS_ATTR.items()}
             )
         self._event = event
-        self._flags_abbr = {arg[self.FLAG_ABBR_NM]: arg for arg in self.db_mngr.get_flags()}
+        self._flags_abbr = {arg[self.FLAG_ABBR_NM]: arg for arg in db_mngr.get_flags()}
 
     @property
     def event(self):
@@ -300,10 +361,10 @@ class RSProfile(Profile):
 
     # The column names for the pandas DataFrame
     DF_COLS_ATTR = {
-        'alt': {'test': FLOAT_TEST, 'type': np.float, 'idx': False},
-        'tdt': {'test': TIME_TEST, 'type': 'timedelta64[ns]', 'idx': True},
-        'val': {'test': FLOAT_TEST, 'type': np.float, 'idx': False},
-        'flg': {'test': INT_TEST, 'type': 'Int64', 'idx': False},
+        'alt': {'test': FLOAT_TEST, 'type': np.float, 'index': True},
+        'tdt': {'test': TIME_TEST, 'type': 'timedelta64[ns]', 'index': True},
+        'val': {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+        'flg': {'test': FLOAT_TEST, 'type': 'Int64', 'index': False},
     }
 
     @property
@@ -342,10 +403,10 @@ class GDPProfile(RSProfile):
     DF_COLS_ATTR = dict(
         **RSProfile.DF_COLS_ATTR,
         **{
-            'ucn': {'test': FLOAT_TEST, 'type': np.float, 'idx': False},
-            'ucr': {'test': FLOAT_TEST, 'type': np.float, 'idx': False},
-            'ucs': {'test': FLOAT_TEST, 'type': np.float, 'idx': False},
-            'uct': {'test': FLOAT_TEST, 'type': np.float, 'idx': False},
+            'ucn': {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+            'ucr': {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+            'ucs': {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+            'uct': {'test': FLOAT_TEST, 'type': np.float, 'index': False},
           }
     )
 

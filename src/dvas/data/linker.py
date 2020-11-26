@@ -245,7 +245,7 @@ class FileHandler(AbstractHandler):
     def exclude_file(self, path_scan, prm_abbr):
         """Exclude file method"""
 
-        # Search exclude file names
+        # Search exclude file names source hash
         exclude_file_name = self._db_mngr.get_or_none(
             EventsInfo,
             search={
@@ -254,13 +254,13 @@ class FileHandler(AbstractHandler):
                     (Instrument.sn != '')
                 ),
                 'join_order': [Parameter, OrgiDataInfo, Instrument]},
-            attr=[[EventsInfo.orig_data_info.name, OrgiDataInfo.source.name]],
+            attr=[[EventsInfo.orig_data_info.name, OrgiDataInfo.source_hash.name]],
             get_first=False
         )
 
         origdata_path_new = [
             arg for arg in path_scan
-            if self.apply_file_check_rule(arg) not in exclude_file_name
+            if hash(self.get_source_unique_id(arg)) not in exclude_file_name
         ]
 
         return origdata_path_new
@@ -325,16 +325,21 @@ class FileHandler(AbstractHandler):
         return out
 
     @staticmethod
-    def apply_file_check_rule(file_path):
-        """
+    def get_source_unique_id(file_path):
+        """Return string use to determine if a file have already be read.
 
         Args:
-            file_path:
+            file_path (pathlib.Path): Original file path
 
         Returns:
+            int
 
         """
-        return file_path.name
+
+        # Get file name
+        out = file_path.name
+
+        return out
 
 
 class CSVHandler(FileHandler):
@@ -520,7 +525,7 @@ class CSVHandler(FileHandler):
             'prm_abbr': prm_abbr,
             'index': data.index.values,
             'value': data.values,
-            'source_info': self.apply_file_check_rule(file_path)
+            'source_info': self.get_source_unique_id(file_path)
         }
 
         return out
@@ -633,7 +638,7 @@ class GDPHandler(FileHandler):
             'index': data.index.values,
             'value': data.values,
             'prm_abbr': prm_abbr,
-            'source_info': self.apply_file_check_rule(file_path)
+            'source_info': self.get_source_unique_id(file_path)
         }
 
         return out
@@ -704,8 +709,8 @@ class LocalDBLinker(DataLinker):
         """
 
         # Add data to DB
-        for args in data_list:
-            self._db_mngr.add_data(**args)
+        for kwargs in data_list:
+            self._db_mngr.add_data(**kwargs)
 
 
 class CSVOutputLinker(DataLinker):
