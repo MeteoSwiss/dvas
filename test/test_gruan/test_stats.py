@@ -18,6 +18,31 @@ import pandas as pd
 # Import from this package
 from dvas.gruan import stats
 
+def test_fancy_nansum():
+    """ Function to test if the fancy_nansum works as intended.
+
+    This function test:
+      - ability to use it in a vectorial manner
+      - ability to use it via .apply() for groupby() entities.
+    """
+
+    # Create a fake dataset
+    vals = pd.DataFrame(np.ones((5, 3)))
+    vals.iloc[0] = np.nan
+    vals[0][1] = np.nan
+    vals[1][1] = np.nan
+    vals[0][2] = np.nan
+
+    # First some basi tests to make sure all works as intended.
+    assert stats.fancy_nansum(vals) == 9.0
+    assert np.all(stats.fancy_nansum(vals, axis=0).values == [2, 3, 4])
+    assert np.isnan(stats.fancy_nansum(vals, axis=1).values[0])
+    assert np.all(stats.fancy_nansum(vals, axis=1).values[1:] == [1, 2, 3, 3])
+
+    #Now something more specific, to make sure I can use these function also for a groupby() entity.
+    assert np.isnan(vals[0].groupby(vals.index//2).aggregate(stats.fancy_nansum, axis=0)[0])
+    assert np.all(vals[0].groupby(vals.index//2).aggregate(stats.fancy_nansum, axis=0)[1:] ==
+                  [1, 1])
 
 def test_stats_gdp_ks_test():
     """Function used to test if the KS test between 2 GDPs is behaving ok.

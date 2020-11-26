@@ -17,158 +17,9 @@ from scipy import stats
 import pandas as pd
 
 # Import from this package
-from . import gruan
 from ..dvas_logger import gruan_logger, log_func_call, dvasError
 from ..plot import plot_gruan
-
-
-@log_func_call(gruan_logger)
-def dvas_nansum(vals):
-    """ A custom nansum routine that treats NaNs as zeros, unless the data contains *only* NaNs,
-    if which case it returns a NaN.
-
-    Args:
-        vals (pandas.DataFrame): the data to sum.
-
-    Returns:
-        float: the .sum(skipna=True) of the DataFrame, or nan if I have only nans.
-
-    This function is intended to be fed to the ".apply()" method of pandas DataFrame, to provide a
-    finer handling of NaNs when combining profiles with bad data. E.g.::
-
-        In: vals = pd.DataFrame(np.ones((10,3)))
-        In: vals.iloc[0] = np.nan
-        In: vals[0][1] = np.nan
-        In: vals[1][1] = np.nan
-        In: vals[0][2] = np.nan
-        In: vals
-        0    1    2
-        0  NaN  NaN  NaN
-        1  NaN  NaN  1.0
-        2  NaN  1.0  1.0
-        3  1.0  1.0  1.0
-
-        In: vals.apply(dvas_nansum, axis=1)
-        0    NaN
-        1    1.0
-        2    2.0
-        3    3.0
-        dtype: float64
-
-        In: vals.sum(skipna=True)
-        0    0.0
-        1    1.0
-        2    2.0
-        3    3.0
-        dtype: float64
-
-    """
-
-    if vals.isna().all():
-        return np.nan
-
-    return vals.sum(skipna=True)
-
-@log_func_call(gruan_logger)
-def gdp_ks_test(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
-                alpha=0.0027, binning_list=None, do_plot=False, **kwargs):
-    ''' Runs a KS test to assess the consistency between 2 GDP profiles.
-
-    Args:
-        profiles (list of ndarray): list of profiles to combine. All must have the same length!
-        sigma_us (list of ndarray): list of associated uncorrelated errors.
-        sigma_es (list of ndarray): list of associated environmental-correlated errors.
-        sigma_ss (list of ndarray): list of associated spatial-correlated errors.
-        sigma_ts (list of ndarray): list of associated temporal-correlated errors.
-        alpha (float, optional): The significance level for the KS test. Default: 0.27%
-        binning_list (ndarray of int): The rolling binning sizes.
-        do_plot (bool, optional): Whether to create the diagnostic plot, or not.
-
-    Returns:
-        ndarray: The array of flags of len(binning_list), with 1's where the KS test failed.
-        That is, where the p-value of the KS test is <= alpha.
-
-    Note:
-        The diagnostic plot will be generated only if a binning of 1 is included in the
-        binning_list.
-
-    Todo:
-        * Improve the input format.
-        * When rolling, take into account the previously flagged data point.
-        * Deal with the plot tag.
-
-    '''
-
-    # Some sanity checks
-    if binning_list is None:
-        binning_list = [1]
-
-    if not isinstance(binning_list, list):
-        raise Exception('Ouch! binning_list should be a list, not %s' % (type(binning_list)))
-
-    if any([not isinstance(val, np.int) for val in binning_list]):
-        raise Exception('Ouch! binning_list must be a list of int, not %s' % (np.str(binning_list)))
-
-    if not isinstance(alpha, np.float):
-        raise Exception('Ouch! alpha should be a float, not %s.' % (type(alpha)))
-
-    if alpha > 1 or alpha < 0:
-        raise Exception('Ouch! alpha should be 0<alpha<1, not %.1f.' % (alpha))
-
-    # How long are the profiles ?
-    n_steps = len(profiles[0])
-
-    # Let's create a flag array, and also one for storing the p_values (for a plot).
-    f_pqi = np.zeros((len(binning_list), n_steps))
-    p_ksi = np.zeros_like(f_pqi)
-
-    # Let's start rolling
-    k_pqis = []
-
-    for (b_ind, binning) in enumerate(binning_list):
-
-        # Compute the profile delta with the specified sampling
-        # TODO: account for previously flagged bad data points
-        (prof_del, prof_del_sigma_u, prof_del_sigma_e, prof_del_sigma_s, prof_del_sigma_t,
-         prof_del_old_inds) = (False, False, False, False, False, False)
-         # TODO: fix me !
-         #gruan.merge_andor_rebin_gdps(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
-         #                          binning=binning, method='delta', **kwargs)
-
-        # Extract the variance of the difference
-        delta_pqi = prof_del
-        vu_delta_pqi = prof_del_sigma_u**2
-        ve_delta_pqi = prof_del_sigma_e**2
-        vs_delta_pqi = prof_del_sigma_s**2
-        vt_delta_pqi = prof_del_sigma_t**2
-
-        # Compute the total variance
-        v_delta_pqi = vu_delta_pqi + ve_delta_pqi + vs_delta_pqi + vt_delta_pqi
-
-        # Compute k_pqi (the normalized profile delta)
-        k_pqi = delta_pqi/np.sqrt(v_delta_pqi)
-        k_pqis += [k_pqi]
-
-        # Loop through each level and run a KS test on it.
-        for k_ind in range(len(k_pqi)):
-
-            # Get the p-value of the KS test
-            p_val = stats.kstest(np.array([k_pqi[k_ind]]), 'norm', args=(0, 1)).pvalue
-
-            # Store it
-            p_ksi[b_ind][prof_del_old_inds[k_ind][0] : prof_del_old_inds[k_ind][-1]+1] = p_val
-
-    # Compute the flags.
-    f_pqi[p_ksi <= alpha] = 1
-
-    # Create a diagnostic plot. I can do this only if one of the binning values is 1.
-    if 1 in binning_list and do_plot:
-        plot_gruan.plot_ks_test(k_pqis[binning_list.index(1)], f_pqi, p_ksi, binning_list, alpha,
-                                tag='')
-    else:
-        gruan_logger.warning('KS test ran without binning of 1. Skipping the diagnostic plot.')
-
-    return (f_pqi, p_ksi)
+from .gruan import combine_gdps
 
 # Run a chi-square analysis between a merged profile and its components
 @log_func_call(gruan_logger)
@@ -219,88 +70,138 @@ def chi_square(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
 
     return chi_sq
 
+
 @log_func_call(gruan_logger)
-def weighted_mean(vals, weights, binning=1):
-    """ Compute the weighted mean of the columns of a pd.DataFrame, given weights specified in a
-        separate DataFrame.
+def ks_test(gdp_pair, alpha=0.0027, binning_list=None, do_plot=False, **kwargs):
+    ''' Runs a "rolling" KS test between two columns of a pandas.DataFrame.
+
+    The rolling refers to the KS test being executed on a series of binned versions of the column
+    deltas.
 
     Args:
-        vals (pands.DataFrame): 2-D data to weighted-average on a row-per-row basis.
-        weights (pands.DataFrame): 2-D weights, with the same shape as vals.
+        vals (pd.DataFrame): 2-column DataFrame with the data
+        uc_tots (pd.DataFrame): 2-column DataFrame with the total uncertainties, with the same shape
+            as vals.
+        alpha (float or list, optional): The significance level for the KS test. Defaults to 0.27%
+        binning_list (ndarray of int, optional): The rolling binning sizes. Defaults to [1].
+        do_plot (bool, optional): Whether to create the diagnostic plot, or not. Defaults to False.
+        **kwargs: will be fed to the underlying plot function.
 
     Returns:
-        (pandas.DataFrame, np.array): weighted mean, and G matrix for error propagation.
+        ndarray of int: The array of flags with shape (len(binning_list), len(vals)), with 1's where
+        the KS test failed, and 0 otherwise. That is, 1 <=> the p-value of the KS test is <= alpha.
 
     Note:
-        The function will ignore NaNs, unless *all* the values in a given bin are NaNs.
+        The diagnostic plot will be generated only if a binning of 1 is included in the
+        binning_list.
 
     Todo:
-        * add link to the dvas article for more details
+        * When rolling, take into account the previously flagged data point.
+        * Deal with the plot tag.
 
-    """
+    '''
 
-    # First, some sanity checks
-    if np.shape(vals) != np.shape(weights):
-        raise dvasError("vals and weights must have the same shape.")
-    if vals.ndim != 2:
-        raise dvasError("vals and weights must be 2-D.")
+    # Some sanity checks
+    if binning_list is None:
+        binning_list = [1]
 
-    # Force the weights to be NaNs if the data is a NaN. Else, the normalization will be off.
-    weights[vals.isna()] = np.nan
+    if not isinstance(binning_list, list):
+        raise Exception('Ouch! binning_list should be a list, not %s' % (type(binning_list)))
 
-    # Compute the val * weights DataFrame
-    wx_ps = vals * weights
+    if any([not isinstance(val, np.int) for val in binning_list]):
+        raise Exception('Ouch! binning_list must be a list of int, not %s' % (np.str(binning_list)))
 
-    # Sum val * weight and weights accross profiles.
-    # Note the special treatment of NaNs: ignored, unless that is all I for all the profiles.
-    wx_s = wx_ps.apply(dvas_nansum, axis=1)
-    w_s = weights.apply(dvas_nansum, axis=1)
+    if not isinstance(alpha, np.float):
+        raise Exception('Ouch! alpha should be a float, not %s.' % (type(alpha)))
 
-    # Then sum these along the time/altitude layers according to the binning
-    # Note again the special treatment of NaNs: ignored, unless that is all I have in a given bin.
-    wx_ms = wx_s.groupby(wx_s.index//binning).apply(dvas_nansum)
-    w_ms = w_s.groupby(w_s.index//binning).apply(dvas_nansum)
+    if alpha > 1 or alpha < 0:
+        raise Exception('Ouch! alpha should be 0<alpha<1, not %.1f.' % (alpha))
 
-    # Compute the weighted mean
-    # To avoid some runtime Warning, replace any 0 weight with nan's
-    x_ms = wx_ms / w_ms.mask(w_ms == 0, np.nan)
+    # How long are the profiles ?
+    len_prf = vals.shape[0]
 
-    return x_ms, False
+    # Let's create a flag array, and also one for storing the p_values (for a plot).
+    f_pqi = np.zeros((len(binning_list), len_prf))
+    p_ksi = np.zeros_like(f_pqi)
+
+    # Let's start rolling
+    k_pqis = []
+
+    for (b_ind, binning) in enumerate(binning_list):
+
+        # Compute the profile delta with the specified sampling
+        gdp_delta = combine_gdps(gdp_pair, binning=binning, method='delta')
+
+        # Compute k_pqi (the normalized profile delta)
+        k_pqi = gdp_delta.profiles[0].values/gdp_delta.get_prms('uc_tot')[0].values
+        k_pqis += [k_pqi]
+
+        # Loop through each level and run a KS test on it.
+        for k_ind in range(len(k_pqi)):
+
+            # Get the p-value of the KS test
+            p_val = stats.kstest(np.array([k_pqi[k_ind]]), 'norm', args=(0, 1)).pvalue
+
+            # Store it
+            p_ksi[b_ind][prof_del_old_inds[k_ind][0] : prof_del_old_inds[k_ind][-1]+1] = p_val
+
+    # Compute the flags.
+    f_pqi[p_ksi <= alpha] = 1
+
+    # Create a diagnostic plot. I can do this only if one of the binning values is 1.
+    if 1 in binning_list and do_plot:
+        plot_gruan.plot_ks_test(k_pqis[binning_list.index(1)], f_pqi, p_ksi, binning_list, alpha,
+                                tag='')
+    else:
+        gruan_logger.warning('KS test ran without binning of 1. Skipping the diagnostic plot.')
+
+    return (f_pqi, p_ksi)
 
 @log_func_call(gruan_logger)
-def delta(vals, binning=1):
-    """ Compute the delta of the columns of a pd.DataFrame.
+def check_gdp_compatibility(gdp_prfs, alpha=0.0027, binning_list=None, do_plot=False, **kwargs):
+    ''' Runs a series of KS test to assess the consistency of several GDP profiles.
 
     Args:
-        vals (pands.DataFrame): 2-D data with 2 columns.
+        gdp_profs (dvas.data.data.MultiGDPProfile): synchronized GDP profiles to check.
+        alpha (float, optional): The significance level for the KS test. Defaults to 0.27%
+        binning_list (ndarray of int, optional): The rolling binning sizes. Defaults to [1].
+        do_plot (bool, optional): Whether to create the diagnostic plot, or not. Defaults to False.
 
     Returns:
-        (pandas.DataFrame, np.array): weighted mean, and G matrix for error propagation.
+        ndarray: The array of flags of len(binning_list), with 1's where the KS test failed.
+        That is, where the p-value of the KS test is <= alpha.
 
     Note:
-        The function will ignore NaNs, unless *all* the values in a given bin are NaNs.
-        See dvas_nansum() for details.
+        The diagnostic plot will be generated only if a binning of 1 is included in the
+        binning_list.
 
-    """
+    Todo:
+        * When rolling, take into account the previously flagged data point.
+        * Deal with the plot tag.
 
-    # First, some sanity checks
-    if vals.shape[1] != 2:
-        raise dvasError("vals should have 2 columns only.")
-    if vals.ndim != 2:
-        raise dvasError("vals must be 2-D.")
+    '''
 
-    # Compute the difference between the two profiles (full resolution)
-    delta_pqs = vals[0] - vals[1]
 
-    # Next, bin the array as required.
-    # Note the special treatment of NaNs: ignored, unless that is all I have in a given bin.
-    delta_pqm = delta_pqs.groupby(delta_pqs.index//binning).apply(dvas_nansum)
+    # How many gdp Proficles do I have ?
+    n_prf = len(gdp_prfs)
+    # How many KS tests do I need to make ? (They are symetric)
+    n_test = (n_prf-1)*n_prf//2
 
-    # Keep track of how many valid rows I am summing in each bin.
-    valid_rows = pd.Series(np.ones(len(vals))).mask(delta_pqs.isna(), 0)
-    valid_rows = valid_rows.groupby(delta_pqs.index//binning).apply(dvas_nansum)
+    # What the are the indices of the profile pairs I want to check. Make sure to check each pair
+    # only once.
+    prf_a_inds = [[i]*(n_prf-1-i) for i in range(n_prf-1)]
+    prf_a_inds = [item for sublist in prf_a_inds for item in sublist]
+    prf_b_inds = [[i for i in range(k, n_prf)] for k in range(1, n_prf)]
+    prf_b_inds = [item for sublist in prf_b_inds for item in sublist]
 
-    # Build the mean by normalizing the sum by the number of time/altitude steps combined
-    x_ms = delta_pqm / valid_rows
+    # I'll want to keep track of the compatibility of each pofile pairs
+    f_pqi = []
 
-    return x_ms, False
+    # Let us loop through all these test and run them sequentially.
+    for test_id in range(n_test):
+
+        # Exctract the specific profile pair I need to assess
+        gdp_pair = gdp_prfs.extract([prf_a_inds[test_id], prf_b_inds[test_id]])
+
+        # Run the KS test on it
+        ks_test(gdp_pair, alpha=alpha, binning_list=binning_list, do_plot=do_plot, **kwargs)
