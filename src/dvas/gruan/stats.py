@@ -23,8 +23,7 @@ from .gruan import combine_gdps
 
 # Run a chi-square analysis between a merged profile and its components
 @log_func_call(gruan_logger)
-def chi_square(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
-               profile_m, sigma_u_m, sigma_e_m, sigma_s_m, sigma_t_m):
+def chi_square(gdp_prfs, cws_prf):
     ''' Computes a chi-square given a series of individual profiles, and a merged one.
 
     This function does not work with resampled profiles: a chi-square is meaningless when computed
@@ -32,38 +31,30 @@ def chi_square(profiles, sigma_us, sigma_es, sigma_ss, sigma_ts,
 
     The chi-square, for n profiles, is computed as::
 
-        1/(n-1) * sum(x_i - <x>)**2/sigma_i**2
+        1/(n-1) * sum (x_i - <x>)**2/sigma_i**2
 
     Args:
-        profiles (list of ndarray): list of individual profiles. All must have the same length!
-        sigma_us (list of ndarray): list of associated uncorrelated errors.
-        sigma_es (list of ndarray): list of associated environmental-correlated errors.
-        sigma_ss (list of ndarray): list of associated spatial-correlated errors.
-        sigma_ts (list of ndarray): list of associated temporal-correlated errors.
-        profile_m (ndarray): Mean profile. Must have the same length!
-        sigma_u_m (ndarray): list of associated uncorrelated errors.
-        sigma_e_m (ndarray): list of associated environmental-correlated errors.
-        sigma_s_m (ndarray): list of associated spatial-correlated errors.
-        sigma_t_m (ndarray): list of associated temporal-correlated errors.
+        gdp_prfs (dvas.data.data.MultiProfile): individual (synchronized!) profiles.
+        cws_prf (dvas.dvas.data.MultiProfile): combined (weighted-averaged, binning=1) profile.
 
     Return:
-        ndarray: the chi-square array, with a size of ``len(profile_m)``.
-
-    TODO:
-        - implement dedicated test(s)
+        ndarray: the chi-square array, with a size of ``len(cws_prf.profiles[0])``.
 
     '''
 
-    # Figure out the common length
-    n_steps = len(profile_m)
+    # Let's extract the profile data
+    prfs = gdp_prfs.get_prms(['val'])
+    cws = cws_prf.get_prms(['val'])[0].values
+    cws_uc = cws_prf.get_prms(['uc_tot'])[0].values
 
-    for profile in profiles:
-        if len(profile) != n_steps:
-            raise Exception('Ouch ! All profiles should have the same length.')
+    # Make sure no binning was employed.
+    for vals in prfs:
+        if len(vals) != len(cws):
+            raise dvasError('Ouch ! GDP and CWS profiles should have the same length.')
 
     # Compute the chi square
-    chi_sq = np.array([(profiles[ind] - profile_m)**2/(sigma_us[ind]**2 + sigma_es[ind]**2 + sigma_ss[ind]**2 + sigma_ts[ind]**2) for ind in range(len(profiles))])
-    chi_sq *= (len(profiles)-1)**-1
+    chi_sq = np.array([(prf.values - cws)**2/cws_uc**2 for prf in prfs])
+    chi_sq *= (len(prfs)-1)**-1
 
     # Use np.where to return nan (instead of 0) when this is all I have
     chi_sq = np.where(np.all(np.isnan(chi_sq), axis=0), np.nan, np.nansum(chi_sq, axis=0))

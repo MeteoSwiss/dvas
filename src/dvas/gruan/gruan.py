@@ -124,7 +124,7 @@ def combine_gdps(gdp_prfs, binning=1, method='weighted mean'):
     Args:
         gdp_profs (dvas.data.data.MultiGDPProfile): synchronized GDP profiles to combine.
         binning (int, optional): the number of profile steps to put into a bin. Defaults to 1.
-        method (str, optional): combination rule. Can be 'weighted mean', or 'delta'.
+        method (str, optional): combination rule. Can be 'weighted mean', 'mean', or 'delta'.
             Defaults to 'weighted mean'.
 
     Returns:
@@ -144,7 +144,7 @@ def combine_gdps(gdp_prfs, binning=1, method='weighted mean'):
         raise Exception('Ouch! binning must be of type int, not %s' % (type(binning)))
     if binning <= 0:
         raise Exception('Ouch! binning must be greater or equal to 1 !')
-    if method not in ['weighted mean', 'delta']:
+    if method not in ['weighted mean', 'mean', 'delta']:
         raise Exception('Ouch ! Method %s unsupported.' % (method))
 
     # How many gdps do we have ?
@@ -162,12 +162,17 @@ def combine_gdps(gdp_prfs, binning=1, method='weighted mean'):
             raise dvasError('Ouch ! All GDP profiles must have the same length !')
 
     # let's get started
-    if method == 'weighted mean':
+    if 'mean' in method:
 
         # To do this, I need to extract the profile values
         x_ps = pd.DataFrame([item.val for item in gdp_prfs.get_prmns('val')])
-        # I also need the associated weights, which are computed from the total errors
-        w_ps = pd.DataFrame([1/item.uc_tot**2 for item in gdp_prfs.get_prms('uc_tot')])
+
+        if method == 'weighted mean':
+            # I also need the associated weights, which are computed from the total errors
+            w_ps = pd.DataFrame([1/item.uc_tot**2 for item in gdp_prfs.get_prms('uc_tot')])
+        else:
+            # Set all the wights to 1 to make a basic "mean"
+            w_ps = pd.DataFrame(np.ones_like(x_ps))
 
         # Compute the weighted mean
         x_ms, jac_elmts = weighted_mean(x_ps, w_ps, binning=binning)
@@ -181,6 +186,8 @@ def combine_gdps(gdp_prfs, binning=1, method='weighted mean'):
         x_ms, jac_elmts = delta(x_ps, binning=binning)
 
     # TODO: what happens to the 'alt' and 'tdt' variables ?
+    # -> Nothing. We will request/assume that the profiles are synchronized and all share the same
+    # altitude/tdt bins.
 
     # What is the length of my combined profile ?
     len_comb = len(x_ms)
