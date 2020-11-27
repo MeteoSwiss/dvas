@@ -57,7 +57,9 @@ class Instrument(MetadataModel):
     """Instrument model """
     id = AutoField(primary_key=True)
     sn = CharField(null=True, unique=True)
-    instr_type = ForeignKeyField(InstrType, backref='instruments')
+    instr_type = ForeignKeyField(
+        InstrType, backref='instruments', on_delete='CASCADE'
+    )
     remark = TextField()
 
 
@@ -99,18 +101,15 @@ class OrgiDataInfo(MetadataModel):
     source_hash = IntegerField()
 
 
-class EventsInfo(MetadataModel):
-    """Events/Instruments/Parameter model"""
+class Event(MetadataModel):
+    """Event model"""
     id = AutoField(primary_key=True)
     event_dt = DateTimeField(null=False)
-    instrument = ForeignKeyField(
-        Instrument, backref='event_info'
-    )
     param = ForeignKeyField(
-        Parameter, backref='event_info'
+        Parameter, backref='event_info', on_delete='CASCADE'
     )
     orig_data_info = ForeignKeyField(
-        OrgiDataInfo, backref='event_info'
+        OrgiDataInfo, backref='event_info', on_delete='CASCADE'
     )
     event_hash = IntegerField()
     """int: Hash of the event attributes. Using a hash allows you to manage
@@ -118,27 +117,40 @@ class EventsInfo(MetadataModel):
 
 
 class EventsTags(MetadataModel):
-    """Many-to-Many link between EventsInfo and Tag tables"""
+    """Many-to-Many link between Event and Tag tables"""
+    id = AutoField(primary_key=True)
     tag = ForeignKeyField(
-        Tag, backref='events_tags'
+        Tag, backref='events_tags', on_delete='CASCADE'
     )
     events_info = ForeignKeyField(
-        EventsInfo, backref='events_tags'
+        Event, backref='events_tags', on_delete='CASCADE'
     )
 
 
-#TODO
-#class MetaData
-#    prm
-#    value
-#    event
+class EventsInstruments(MetadataModel):
+    """Many-to-Many link between Event and Instrument tables"""
+    id = AutoField(primary_key=True)
+    instr = ForeignKeyField(
+        Instrument, backref='instruments_tags', on_delete='CASCADE'
+    )
+    events_info = ForeignKeyField(
+        Event, backref='instruments_tags', on_delete='CASCADE'
+    )
 
+# TODO
+#  Add the capability to link metadata to an event.
+#  Tag should be used to search data in the DB.
+#  Metadata should be used to save metadata of a result profile
+#  class MetaData
+#     prm
+#     value
+#     event
 
 class Data(MetadataModel):
     """Data model"""
     id = AutoField(primary_key=True)
     event_info = ForeignKeyField(
-        EventsInfo,
-        backref='datas')
+        Event,
+        backref='datas', on_delete='CASCADE')
     index = IntegerField(null=False)
     value = FloatField(null=True)

@@ -28,7 +28,7 @@ from dvas.data.linker import LocalDBLinker
 from dvas.database.model import Data
 from dvas.data.strategy.load import LoadProfileStrategy
 
-from dvas.database.model import EventsInfo, Parameter
+from dvas.database.model import Event, Parameter
 
 if __name__ == '__main__':
 
@@ -53,6 +53,7 @@ if __name__ == '__main__':
             update_db('treprosu_s', strict=True)
             update_db('treprosu_t', strict=True)
             update_db('altpros1', strict=True)
+
 
     # # Load a basic profile, with a variable, and altitude.
     # prf = MultiProfile()

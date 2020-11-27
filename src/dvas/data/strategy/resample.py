@@ -20,7 +20,6 @@ from ...dvas_logger import dvasError
 # TODO
 #  Adapt this strategy to MultiIndex
 
-
 class ResampleStrategyAbstract(metaclass=ABCMeta):
     """Abstract class to manage data resample strategy.
 

@@ -20,7 +20,7 @@ import pandas as pd
 
 # Import from current package
 from ..dvas_environ import path_var as env_path_var
-from ..database.model import InstrType, Instrument, EventsInfo
+from ..database.model import InstrType, Instrument, Event
 from ..database.model import Parameter, OrgiDataInfo
 from ..database.database import DatabaseManager, EventManager
 from ..config.config import OrigData, CSVOrigMeta
@@ -247,14 +247,14 @@ class FileHandler(AbstractHandler):
 
         # Search exclude file names source hash
         exclude_file_name = self._db_mngr.get_or_none(
-            EventsInfo,
+            Event,
             search={
                 'where': (
                     (Parameter.prm_abbr == prm_abbr) &
                     (Instrument.sn != '')
                 ),
                 'join_order': [Parameter, OrgiDataInfo, Instrument]},
-            attr=[[EventsInfo.orig_data_info.name, OrgiDataInfo.source_hash.name]],
+            attr=[[Event.orig_data_info.name, OrgiDataInfo.source_hash.name]],
             get_first=False
         )
 

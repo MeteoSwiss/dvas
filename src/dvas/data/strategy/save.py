@@ -19,9 +19,6 @@ from ..linker import LocalDBLinker
 class SaveDataStrategy(metaclass=ABCMeta):
     """Abstract class to manage data saving strategy"""
 
-    def __init__(self):
-        self._local_db_linker = LocalDBLinker()
-
     @abstractmethod
     def save(self, *args, **kwargs):
         """Strategy required method"""
@@ -29,9 +26,6 @@ class SaveDataStrategy(metaclass=ABCMeta):
 
 class SaveDataStrategy(SaveDataStrategy):
     """Class to manage saving of time data"""
-
-    def __init__(self):
-        self._local_db_linker = LocalDBLinker()
 
     def save(self, data, prms, add_tags, rm_tags):
         """ Implementation of save method.
@@ -47,6 +41,9 @@ class SaveDataStrategy(SaveDataStrategy):
 
         """
 
+        # Init
+        local_db_linker = LocalDBLinker()
+
         # Loop on profile
         for prf in data.profiles:
 
@@ -60,7 +57,7 @@ class SaveDataStrategy(SaveDataStrategy):
             val = prf.reset_data_index(prf.data)
 
             # Save to db
-            self._local_db_linker.save(
+            local_db_linker.save(
                 [
                     {
                         'index': val.index.values.astype(int),

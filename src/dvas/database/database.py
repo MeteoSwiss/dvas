@@ -30,9 +30,9 @@ import sre_yield
 
 # Import from current package
 from .model import db
-from .model import Instrument, InstrType, EventsInfo
+from .model import Instrument, InstrType, Event
 from .model import Parameter, Flag, OrgiDataInfo, Data
-from .model import Tag, EventsTags
+from .model import Tag, EventsTags, EventsInstruments
 from ..config.config import instantiate_config_managers
 from ..config.config import InstrType as CfgInstrType
 from ..config.config import Instrument as CfgInstrument
@@ -55,9 +55,6 @@ from ..dvas_environ import path_var as env_path_var
 SQLITE_MAX_VARIABLE_NUMBER = 999
 INDEX_NM = Data.index.name
 VALUE_NM = Data.value.name
-EVENT_DT_NM = EventsInfo.event_dt.name
-EVENT_INSTR_NM = EventsInfo.instrument.id.name
-EVENT_PARAM_NM = EventsInfo.param.prm_abbr.name
 
 #: int: Database cache size in kB
 DB_CACHE_SIZE = 10 * 1024
@@ -199,9 +196,13 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
     """
 
     DB_TABLES = [
-        InstrType, Instrument,
-        EventsInfo, Parameter,
-        Flag, Tag, EventsTags, Data, OrgiDataInfo
+        Event,
+        EventsInstruments, Instrument, InstrType,
+        EventsTags, Tag,
+        OrgiDataInfo,
+        Data,
+        Parameter,
+        Flag,
     ]
     DB_TABLES_PRINT = [
         Parameter, InstrType,
@@ -213,7 +214,8 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         """
 
         Args:
-            reset_db (bool): Force the data base to be reset.
+            reset_db (bool, optional): Force the data base to be reset.
+                Defaults to False.
 
         """
 
@@ -224,39 +226,37 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         self._db = db
 
         # Init db
-        exists_db = self._init_db(reset_db)
+        db_new = self._init_db()
 
-        if exists_db is False:
-            self._create_db()
+        # Create table
+        self._create_tables()
+
+        if reset_db or db_new:
+            self._delete_tables()
+            self._fill_metadata()
 
     @property
     def db(self):
         """peewee.SqliteDatabase: Database instance"""
         return self._db
 
-    def _init_db(self, reset):
-        """Init db
-
-        Args:
-            reset (bool): Reset DB
+    def _init_db(self):
+        """Init db. Create new file if missing or take existing file.
 
         Returns:
-            bool: DB already exists or not
+            bool: True if the DB is newly created
 
         """
 
         # Define
         file_path = env_path_var.local_db_path / DB_FILE_NM
 
-        # Reset
-        if reset:
-            file_path.unlink(missing_ok=True)
-
         # Create local DB directory
         if file_path.exists():
-            exists = True
+            db_new = False
+
         else:
-            exists = False
+            db_new = True
             try:
                 file_path.parent.mkdir(parents=True, exist_ok=True)
                 # Set user read/write permission
@@ -278,46 +278,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             }
         )
 
-        return exists
-
-    # TODO
-    #  Fix with DB can't be create several times
-    def _create_db(self):
-        """Method for creating the database.
-
-        Note:
-            If database already exists, the old one will be flushed
-
-        """
-
-        with DBAccess(self) as _:
-
-            try:
-
-                # Drop table
-                self._drop_tables()
-
-                # Create table
-                self._create_tables()
-
-                # Fill simple tables
-                for tbl in [Parameter, InstrType, Flag, Tag]:
-                    self._fill_table(tbl)
-
-                # File instruments
-                self._fill_table(
-                    Instrument,
-                    foreign_constraint=[
-                        {
-                            'attr': Instrument.instr_type.name,
-                            'class': InstrType,
-                            'foreign_attr': InstrType.type_name.name
-                        },
-                    ]
-                )
-
-            except IntegrityError as exc:
-                raise DBCreateError(exc)
+        return db_new
 
     def get_or_none(self, table, search=None, attr=None, get_first=True):
         """Get from DB
@@ -372,16 +333,58 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
     @staticmethod
     def _model_to_dict(query, recurse=False):
+        """Convert a query to a dictionary
+
+        Notes:
+            Must be used in a DB context manager
+
+        Args:
+
+
+        Returns:
+            dict
+
+        """
         return [model_to_dict(qry, recurse=recurse) for qry in query]
 
-    def _drop_tables(self):
-        """Drop db tables"""
-        self._db.drop_tables(DatabaseManager.DB_TABLES, safe=True)
-
     def _create_tables(self):
+        """Create table (safe mode)"""
+        with DBAccess(self) as _:
+            for table in DatabaseManager.DB_TABLES:
+                table.create_table(safe=True)
+
+    def _delete_tables(self):
+        """Delete table instances"""
+        with DBAccess(self) as _:
+            for table in DatabaseManager.DB_TABLES:
+                table.delete().execute()
+                print(self.__str__(print_tables=[table]))
+
+    def _fill_metadata(self):
         """Create db tables"""
 
-        self._db.create_tables(DatabaseManager.DB_TABLES, safe=True)
+        with DBAccess(self) as _:
+
+            try:
+
+                # Fill simple tables
+                for tbl in [Parameter, InstrType, Flag, Tag]:
+                    self._fill_table(tbl)
+
+                # File instruments
+                self._fill_table(
+                    Instrument,
+                    foreign_constraint=[
+                        {
+                            'attr': Instrument.instr_type.name,
+                            'class': InstrType,
+                            'foreign_attr': InstrType.type_name.name
+                        },
+                    ]
+                )
+
+            except IntegrityError as exc:
+                raise DBCreateError(exc)
 
     def _fill_table(self, table, foreign_constraint=None):
         """
@@ -459,13 +462,24 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             with DBAccess(self) as _:
 
                 # Get/Check instrument
-                instr = Instrument.get_or_none(
-                    Instrument.sn == event.sn
-                )
-                if not instr:
-                    err_msg = "instr_id '%s' is missing in DB" % (event.sn)
-                    localdb.error(err_msg)
-                    raise DBInsertError(err_msg)
+                try:
+                    instr_id_list = [
+                        arg[0] for arg in
+                        self.get_or_none(
+                            Instrument,
+                            search={
+                                'where': Instrument.sn.in_(event.sn)
+                            },
+                            attr=[[Instrument.id.name]],
+                            get_first=False
+                        )
+                    ]
+                    assert len(instr_id_list) == len(event.sn)
+
+                except AssertionError:
+                    raise DBInsertError(
+                        f"Many instrument sn in {event.sn} are missing in DB",
+                    )
 
                 # Get/Check parameter
                 param = Parameter.get_or_none(
@@ -493,7 +507,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
                 except AssertionError:
                     raise DBInsertError(
-                        f"Many tag_abbr in {event.tag_abbr} are missing in DB",
+                        f"Many tags in {event.tag_abbr} are missing in DB",
                     )
 
                 # Create original data information
@@ -501,10 +515,9 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     source=source_info, source_hash=hash(source_info))
 
                 # Create event info
-                event_info, created = EventsInfo.get_or_create(
-                    event_dt=event.event_dt, instrument=instr,
-                    param=param, orig_data_info=orig_data_info,
-                    event_hash=hash(event)
+                event_info, created = Event.get_or_create(
+                    event_dt=event.event_dt, param=param,
+                    orig_data_info=orig_data_info, event_hash=hash(event)
                 )
 
                 # Erase data (created == False indicate that data already exists)
@@ -513,6 +526,11 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     # Delete EventsTags entries
                     EventsTags.delete().\
                         where(EventsTags.events_info == event_info).\
+                        execute()
+
+                    # Delete EventsInstruments entries
+                    EventsInstruments.delete().\
+                        where(EventsInstruments.events_info == event_info).\
                         execute()
 
                     # Delete Data entries
@@ -533,6 +551,15 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                         } for tag_id in tag_id_list
                     ]
                     EventsTags.insert_many(tag_event_source).execute()  # noqa pylint: disable=E1120
+
+                    # Link event to instrument
+                    instr_event_source = [
+                        {
+                            EventsInstruments.instr.name: instr_id,
+                            EventsInstruments.events_info.name: event_info
+                        } for instr_id in instr_id_list
+                    ]
+                    EventsInstruments.insert_many(instr_event_source).execute()  # noqa pylint: disable=E1120
 
                     # Create batch index
                     fields = [Data.index, Data.value, Data.event_info]
@@ -584,6 +611,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         Returns:
 
         """
+
         # Get event_info id
         eventsinfo_id_list = self._get_eventsinfo_id(where, prm_abbr, filter_empty)
 
@@ -609,15 +637,22 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                 tag_abbr = [
                     arg.tag_abbr for arg in
                     Tag.select().distinct().
-                    join(EventsTags).join(EventsInfo).
-                    where(EventsInfo.id == eventsinfo_id_list[i].id).
+                    join(EventsTags).join(Event).
+                    where(Event.id == eventsinfo_id_list[i].id).
+                    iterator()
+                ]
+                sn = [
+                    arg.sn for arg in
+                    Instrument.select().distinct().
+                    join(EventsInstruments).join(Event).
+                    where(Event.id == eventsinfo_id_list[i].id).
                     iterator()
                 ]
                 out.append(
                     {
                         'event': EventManager(
                             event_dt=eventsinfo_id_list[i].event_dt,
-                            sn=eventsinfo_id_list[i].instrument.sn,
+                            sn=sn,
                             tag_abbr=tag_abbr,
                         ),
                         'index': qry.index,
@@ -802,7 +837,11 @@ class EventManager:
     event_dt = TProp(Union[str, Timestamp, datetime], check_datetime)
 
     #: str: Instrument id
-    sn = TProp(str, lambda *x: x[0])
+    sn = TProp(
+        Union[str, Iterable[str]],
+        setter_fct=lambda x: (x,) if isinstance(x, str) else tuple(x),
+        getter_fct = lambda x: sorted(x)
+    )
 
     #: str: Tag abbr
     tag_abbr = TProp(
@@ -891,7 +930,7 @@ class EventManager:
     @property
     def sort_attr(self):
         """ list of EventManger attributes: Attributes sort order"""
-        return tuple((self.event_dt, self.sn, *self.tag_abbr))
+        return tuple((self.event_dt, *self.sn, *self.tag_abbr))
 
     def __eq__(self, other):
         return self.sort_attr == other.sort_attr
@@ -959,7 +998,7 @@ class SearchEventExpr(metaclass=ABCMeta):
             filter_empty (bool): Filter for empty data
 
         Returns:
-            List of EventsInfo
+            List of Event
 
         Search expression grammar:
             - all(): Select all
@@ -999,7 +1038,7 @@ class SearchEventExpr(metaclass=ABCMeta):
             expr_res = expr.interpret()
 
             # Convert id as table element
-            qry = EventsInfo.select().where(EventsInfo.id.in_(expr_res))
+            qry = Event.select().where(Event.id.in_(expr_res))
             out = [arg for arg in qry.iterator()]
 
             return out
@@ -1059,11 +1098,11 @@ class TerminalSearchEventExpr(SearchEventExpr):
     """
 
     QRY_BASE = (
-        EventsInfo
+        Event
         .select().distinct()
-        .join(Instrument).switch(EventsInfo)
-        .join(Parameter).switch(EventsInfo)
-        .join(EventsTags).join(Tag)
+        .join(EventsInstruments).join(Instrument).switch(Event)
+        .join(Parameter).switch(Event)
+        .join(EventsTags).join(Tag).switch(Event)
     )
 
     def __init__(self, arg):
@@ -1111,7 +1150,7 @@ class DatetimeExpr(TerminalSearchEventExpr):
 
     def get_filter(self):
         """Implement get_filter method"""
-        return self._op(EventsInfo.event_dt, self.expression)
+        return self._op(Event.event_dt, self.expression)
 
 
 class SerialNumberExpr(TerminalSearchEventExpr):

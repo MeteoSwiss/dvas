@@ -302,7 +302,7 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         self._save_stgy.save(self.copy(), prms, add_tags, rm_tags)
 
     # TODO: implement an "export" function that can export specific DataFrame columns back into
-    # the database under new variable names ?
+    #  the database under new variable names ?
 
     def update(self, db_df_keys, data, inplace=True):
         """Update whole Multiprofile list
@@ -398,11 +398,7 @@ class MultiProfile(MutliProfileAbstract):
     #: type: supported Profile Types
     _DATA_TYPES = Profile
 
-    def __init__(
-        self,
-        #load_stgy=load_prf_stgy, sort_stgy=sort_prf_stgy,
-        #plot_stgy=plt_prf_stgy, save_stgy=save_prf_stgy
-    ):
+    def __init__(self):
         super().__init__(
             load_stgy=load_prf_stgy, sort_stgy=sort_prf_stgy,
             save_stgy=save_prf_stgy
@@ -411,14 +407,13 @@ class MultiProfile(MutliProfileAbstract):
         # Init strategy
         #self._sync_stgy = sync_stgy
         #self._plot_stgy = plot_stgy
-        #self._save_stgy = save_stgy
 
     def get_evt_prm(self, prm):
         """ Convenience function to extract specific (a unique!) Event metadata from all the
         Profile instances.
 
         Args:
-            prm (str): parameter name (unique!) to extract from all the Events.
+            prm (str): parameter name (unique!) to extract from all the events.
 
         Returns:
             dict of list: idem to self.profiles, but with only the requested metadata.
@@ -447,7 +442,7 @@ class MultiRSProfileAbstract(MutliProfileAbstract):
     @abstractmethod
     def __init__(
             self, load_stgy=None, sort_stgy=None,
-            rspl_stgy=None, save_stgy=None
+            save_stgy=None
     ):
         super().__init__(
             load_stgy=load_stgy, sort_stgy=sort_stgy,

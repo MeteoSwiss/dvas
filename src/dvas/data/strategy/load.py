@@ -28,9 +28,6 @@ VALUE_NM = Data.value.name
 class LoadStrategyAbstract(metaclass=ABCMeta):
     """Abstract load strategy class"""
 
-    def __init__(self):
-        self._db_linker = LocalDBLinker()
-
     @abstractmethod
     def load(self, *args, **kwargs):
         """Strategy required method"""
@@ -55,9 +52,12 @@ class LoadStrategyAbstract(metaclass=ABCMeta):
 
         """
 
+        # Init
+        db_linker = LocalDBLinker()
+
         # Loop through the requested parameters and extract them from the database.
         res = {
-            key: self._db_linker.load(search, val)
+            key: db_linker.load(search, val)
             for key, val in kwargs.items() if val
         }
 
