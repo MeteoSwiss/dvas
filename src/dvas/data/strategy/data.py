@@ -423,7 +423,7 @@ class GDPProfile(RSProfile):
             pd.Series: uc_tot = np.sqrt(uc_n**2 + uc_r**2 + uc_s**2 + uc_t**2)
         """
 
-        return np.sqrt(self.ucn.fillna(0)**2 +
-                       self.ucr.fillna(0)**2 +
-                       self.ucs.fillna(0)**2 +
-                       self.uct.fillna(0)**2)
+        out = np.sqrt(self.ucn.fillna(0)**2 + self.ucr.fillna(0)**2 + self.ucs.fillna(0)**2 +
+                      self.uct.fillna(0)**2)
+        # Make sure to give a proper name to the Series
+        return out.rename('uc_tot')
