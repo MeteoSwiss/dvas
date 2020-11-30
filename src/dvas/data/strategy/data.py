@@ -425,5 +425,7 @@ class GDPProfile(RSProfile):
 
         out = np.sqrt(self.ucn.fillna(0)**2 + self.ucr.fillna(0)**2 + self.ucs.fillna(0)**2 +
                       self.uct.fillna(0)**2)
+        # For those cases where all I have is NaN, then return a NaN (and not a 0.)
+        out[self.data[['ucn', 'ucr', 'ucs', 'uct']].isna().all(axis=1)] = np.nan
         # Make sure to give a proper name to the Series
         return out.rename('uc_tot')
