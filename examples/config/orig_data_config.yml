@@ -5,10 +5,10 @@
 _RS92:
 
     # -- META DATA ----------------------------------
-    dt_field: '{event_dt}'
-    sn_field: '{sn}'
+    dt_field: '{evt_dt}'
+    srn_field: '{srn}'
     tag_field:
-        - 'e{event_id}'
+        - 'e{evt_id}'
         - 'r{rig}'
         - '{day_night}'
 
@@ -35,10 +35,10 @@ _RS92:
 _YT:
 
     # -- META DATA ----------------------------------
-    dt_field: '{event_dt}Z'
-    sn_field: '{sn}'
+    dt_field: '{evt_dt}Z'
+    srn_field: '{srn}'
     tag_field:
-        - 'e{event_id}'
+        - 'e{evt_id}'
         - 'r{rig}'
         - '{day_night}'
 
@@ -65,10 +65,10 @@ _YT:
 _ZT:
 
     # -- META DATA ----------------------------------
-    dt_field: '{event_dt}'
-    sn_field: '{sn}'
+    dt_field: '{evt_dt}'
+    srn_field: '{srn}'
     tag_field:
-        - 'e{event_id}'
+        - 'e{evt_id}'
         - 'r{rig}'
         - '{day_night}'
 
@@ -96,7 +96,7 @@ _AR-GDP_001:
 
     # -- META DATA ----------------------------------
     dt_field: '{g.Measurement.StandardTime}'
-    sn_field: '{g.MainSonde.SerialNumber}'
+    srn_field: '{g.MainSonde.SerialNumber}'
     tag_field:
         - 'e{g.Measurement.Id}'
         - 'r{g.Measurement.BalloonNumber}'
@@ -132,7 +132,7 @@ _BR-GDP_001:
 
     # -- META DATA ----------------------------------
     dt_field: '{g.Measurement.StandardTime}Z'
-    sn_field: '{g.MainSonde.SerialNumber}'
+    srn_field: '{g.MainSonde.SerialNumber}'
     tag_field:
         - 'e{g.Measurement.Id}'
         - 'r{g.Measurement.BalloonNumber}'
@@ -165,7 +165,7 @@ _RS41-GDP-BETA_001:
 
     # -- META DATA ----------------------------------
     dt_field: '{g.Measurement.StandardTime}'
-    sn_field: '{g.MainSonde.SerialNumber}'
+    srn_field: '{g.MainSonde.SerialNumber}'
     tag_field:
         - 'e{g.Measurement.Id}'
         - 'r{g.Measurement.BalloonNumber}'

@@ -16,7 +16,7 @@ import pandas as pd
 # Import from current package
 from .data import Profile, RSProfile, GDPProfile
 from ..linker import LocalDBLinker
-from ...database.database import EventManager
+from ...database.database import InfoManager
 from ...database.model import Data
 
 
@@ -40,8 +40,8 @@ class LoadStrategyAbstract(metaclass=ABCMeta):
             **kwargs (dict): Key word parameter to extract.
 
         Returns:
-            list of events: Each event found
-            list of pd.DataFrame: a DataFrame for each of the events found.
+            list of InfoManager: Data related info
+            list of pd.DataFrame: Data
 
         Example:
             ```
@@ -61,9 +61,9 @@ class LoadStrategyAbstract(metaclass=ABCMeta):
             for key, val in kwargs.items() if val
         }
 
-        # Create tuple of unique events
-        events, _ = EventManager.sort(
-            set([arg['event'] for val in res.values() for arg in val])
+        # Create tuple of unique info
+        info, _ = InfoManager.sort(
+            set([arg['info'] for val in res.values() for arg in val])
         )
 
         # Create DataFrame by concatenation and append
@@ -71,9 +71,9 @@ class LoadStrategyAbstract(metaclass=ABCMeta):
             data = [
                 pd.concat(
                     [pd.Series(arg['value'], index=arg['index'], name=key)
-                     for key, val in res.items() for arg in val if arg['event'] == evt],
+                     for key, val in res.items() for arg in val if arg['info'] == info_arg],
                     axis=1, ignore_index=False
-                ) for evt in events
+                ) for info_arg in info
             ]
         # TODO
         #  raise Exception for data index coherence
@@ -86,7 +86,7 @@ class LoadStrategyAbstract(metaclass=ABCMeta):
                 if val not in data[-1].columns:
                     data[i][val] = None
 
-        return events, data
+        return info, data
 
 
 class LoadProfileStrategy(LoadStrategyAbstract):
@@ -107,10 +107,10 @@ class LoadProfileStrategy(LoadStrategyAbstract):
         db_vs_df_keys = {'val': val_abbr, 'alt': alt_abbr, 'flg': flg_abbr}
 
         # Fetch data
-        events, data = self._fetch(search, **db_vs_df_keys)
+        info, data = self._fetch(search, **db_vs_df_keys)
 
         # Create profiles
-        out = [Profile(arg[0], data=arg[1]) for arg in zip(events, data)]
+        out = [Profile(arg[0], data=arg[1]) for arg in zip(info, data)]
 
         return out, db_vs_df_keys
 
@@ -134,10 +134,10 @@ class LoadRSProfileStrategy(LoadProfileStrategy):
         db_vs_df_keys = {'val': val_abbr, 'tdt': tdt_abbr, 'alt': alt_abbr, 'flg': flg_abbr}
 
         # Fetch data
-        events, data = self._fetch(search, **db_vs_df_keys)
+        info, data = self._fetch(search, **db_vs_df_keys)
 
         # Create profiles
-        out = [RSProfile(arg[0], data=arg[1]) for arg in zip(events, data)]
+        out = [RSProfile(arg[0], data=arg[1]) for arg in zip(info, data)]
 
         return out, db_vs_df_keys
 
@@ -177,9 +177,9 @@ class LoadGDPProfileStrategy(LoadProfileStrategy):
         }
 
         # Fetch data
-        events, data = self._fetch(search, **db_vs_df_keys)
+        info, data = self._fetch(search, **db_vs_df_keys)
 
         # Create profiles
-        out = [GDPProfile(arg[0], data=arg[1]) for arg in zip(events, data)]
+        out = [GDPProfile(arg[0], data=arg[1]) for arg in zip(info, data)]
 
         return out, db_vs_df_keys

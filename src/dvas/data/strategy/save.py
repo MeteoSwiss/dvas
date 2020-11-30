@@ -27,17 +27,13 @@ class SaveDataStrategyAbstract(metaclass=ABCMeta):
 class SaveDataStrategy(SaveDataStrategyAbstract):
     """Class to manage saving of time data"""
 
-    def save(self, data, prms, add_tags, rm_tags):
+    def save(self, data, prms):
         """ Implementation of save method.
 
         Args:
             data (MultiProfile): the data to save into the database.
             prms (list of str): list of column names to save to the
                 database.
-            add_tags (list of str): list of tags to add to the event before
-                ingestion by the database.
-            rm_tags (list of str): list of tags to remove before ingestion by
-                the database.
 
         """
 
@@ -46,12 +42,6 @@ class SaveDataStrategy(SaveDataStrategyAbstract):
 
         # Loop on profile
         for prf in data.profiles:
-
-            # Add tags
-            prf.event.add_tag(add_tags)
-
-            # Remove tags
-            prf.event.rm_tag(rm_tags)
 
             # Reset index (necessary to fix DataFrame state)
             val = prf.reset_data_index(prf.data)
@@ -62,7 +52,7 @@ class SaveDataStrategy(SaveDataStrategyAbstract):
                     {
                         'index': val.index.values.astype(int),
                         'value': val[prm].values.astype(float),
-                        'event': prf.event,
+                        'info': prf.info,
                         'prm_abbr': data.db_variables[prm],
                         'source_info': 'user_script',
                         'force_write': True

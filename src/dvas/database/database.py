@@ -30,9 +30,9 @@ import sre_yield
 
 # Import from current package
 from .model import db
-from .model import Instrument, InstrType, Event
-from .model import Parameter, Flag, OrgiDataInfo, Data
-from .model import Tag, EventsTags, EventsInstruments
+from .model import Instrument, InstrType, Info
+from .model import Parameter, Flag, DataSource, Data
+from .model import Tag, InfosTags, InfosInstruments
 from ..config.config import instantiate_config_managers
 from ..config.config import InstrType as CfgInstrType
 from ..config.config import Instrument as CfgInstrument
@@ -196,10 +196,10 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
     """
 
     DB_TABLES = [
-        Event,
-        EventsInstruments, Instrument, InstrType,
-        EventsTags, Tag,
-        OrgiDataInfo,
+        Info,
+        InfosInstruments, Instrument, InstrType,
+        InfosTags, Tag,
+        DataSource,
         Data,
         Parameter,
         Flag,
@@ -437,7 +437,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         return out
 
     def add_data(
-            self, index, value, event, prm_abbr,
+            self, index, value, info, prm_abbr,
             source_info=None, force_write=False
     ):
         """Add profile data to the DB.
@@ -445,7 +445,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         Args:
             index (np.array of int): Data index
             value (np.array of float): Data value
-            event (EventManager): event information
+            info (InfoManager): Data info
             prm_abbr (str):
             source_info (str, optional): Data source
             force_write (bool, optional): force rewrite of already save data
@@ -468,17 +468,17 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                         self.get_or_none(
                             Instrument,
                             search={
-                                'where': Instrument.sn.in_(event.sn)
+                                'where': Instrument.srn.in_(info.srn)
                             },
                             attr=[[Instrument.id.name]],
                             get_first=False
                         )
                     ]
-                    assert len(instr_id_list) == len(event.sn)
+                    assert len(instr_id_list) == len(info.srn)
 
                 except AssertionError:
                     raise DBInsertError(
-                        f"Many instrument sn in {event.sn} are missing in DB",
+                        f"Many instrument srn in {info.srn} are missing in DB",
                     )
 
                 # Get/Check parameter
@@ -497,45 +497,45 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                         self.get_or_none(
                             Tag,
                             search={
-                                'where': Tag.tag_abbr.in_(event.tag_abbr)
+                                'where': Tag.tag_abbr.in_(info.tag_abbr)
                             },
                             attr=[[Tag.id.name]],
                             get_first=False
                         )
                     ]
-                    assert len(tag_id_list) == len(event.tag_abbr)
+                    assert len(tag_id_list) == len(info.tag_abbr)
 
                 except AssertionError:
                     raise DBInsertError(
-                        f"Many tags in {event.tag_abbr} are missing in DB",
+                        f"Many tags in {info.tag_abbr} are missing in DB",
                     )
 
                 # Create original data information
-                orig_data_info, _ = OrgiDataInfo.get_or_create(
+                data_src, _ = DataSource.get_or_create(
                     source=source_info, source_hash=hash(source_info))
 
-                # Create event info
-                event_info, created = Event.get_or_create(
-                    event_dt=event.event_dt, param=param,
-                    orig_data_info=orig_data_info, event_hash=hash(event)
+                # Create info
+                info_id, created = Info.get_or_create(
+                    evt_dt=info.evt_dt, param=param,
+                    data_src=data_src, evt_hash=hash(info)
                 )
 
                 # Erase data (created == False indicate that data already exists)
                 if (created is False) and (force_write is True):
 
-                    # Delete EventsTags entries
-                    EventsTags.delete().\
-                        where(EventsTags.events_info == event_info).\
+                    # Delete InfosTags entries
+                    InfosTags.delete().\
+                        where(InfosTags.info == info_id).\
                         execute()
 
-                    # Delete EventsInstruments entries
-                    EventsInstruments.delete().\
-                        where(EventsInstruments.events_info == event_info).\
+                    # Delete InfosInstruments entries
+                    InfosInstruments.delete().\
+                        where(InfosInstruments.info == info_id).\
                         execute()
 
                     # Delete Data entries
                     Data.delete().\
-                        where(Data.event_info == event_info)
+                        where(Data.info == info)
 
                     # TODO
                     #  Add log
@@ -543,32 +543,32 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                 # Insert data (created == True indicate that data are new)
                 if (created is True) or (force_write is True):
 
-                    # Link event to tag
-                    tag_event_source = [
+                    # Link info to tag
+                    tag_info = [
                         {
-                            EventsTags.tag.name: tag_id,
-                            EventsTags.events_info.name: event_info
+                            InfosTags.tag.name: tag_id,
+                            InfosTags.info.name: info_id
                         } for tag_id in tag_id_list
                     ]
-                    EventsTags.insert_many(tag_event_source).execute()  # noqa pylint: disable=E1120
+                    InfosTags.insert_many(tag_info).execute()  # noqa pylint: disable=E1120
 
-                    # Link event to instrument
-                    instr_event_source = [
+                    # Link info to instrument
+                    instr_info = [
                         {
-                            EventsInstruments.instr.name: instr_id,
-                            EventsInstruments.events_info.name: event_info
+                            InfosInstruments.instr.name: instr_id,
+                            InfosInstruments.info.name: info_id
                         } for instr_id in instr_id_list
                     ]
-                    EventsInstruments.insert_many(instr_event_source).execute()  # noqa pylint: disable=E1120
+                    InfosInstruments.insert_many(instr_info).execute()  # noqa pylint: disable=E1120
 
                     # Create batch index
-                    fields = [Data.index, Data.value, Data.event_info]
+                    fields = [Data.index, Data.value, Data.info]
 
                     # Create batch data
                     batch_data = zip(
                         index,
                         value,
-                        [event_info] * len(value)
+                        [info_id] * len(value)
                     )
 
                     # Calculate max batch size
@@ -585,11 +585,11 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             raise DBInsertError(exc)
 
     @staticmethod
-    def _get_eventsinfo_id(where_arg, prm_abbr, filter_empty):
-        """Get events id"""
+    def _get_info_id(where_arg, prm_abbr, filter_empty):
+        """Get info id"""
 
         try:
-            out = list(SearchEventExpr.eval(where_arg, prm_abbr, filter_empty))
+            out = list(SearchInfoExpr.eval(where_arg, prm_abbr, filter_empty))
 
         # TODO Detail exception
         except Exception as exc:
@@ -612,10 +612,10 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         """
 
-        # Get event_info id
-        eventsinfo_id_list = self._get_eventsinfo_id(where, prm_abbr, filter_empty)
+        # Get info id
+        info_id_list = self._get_info_id(where, prm_abbr, filter_empty)
 
-        if not eventsinfo_id_list:
+        if not info_id_list:
             localdb.warning(
                 "Empty search '%s' for '%s", where, prm_abbr
             )
@@ -623,8 +623,8 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         # Query data
         qryer = []
 
-        for eventsinfo_id in eventsinfo_id_list:
-            qryer.append(Queryer(self, eventsinfo_id))
+        for info_id in info_id_list:
+            qryer.append(Queryer(self, info_id))
 
         with DBAccess(self) as _:
             for qry in qryer:
@@ -637,22 +637,22 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                 tag_abbr = [
                     arg.tag_abbr for arg in
                     Tag.select().distinct().
-                    join(EventsTags).join(Event).
-                    where(Event.id == eventsinfo_id_list[i].id).
+                    join(InfosTags).join(Info).
+                    where(Info.id == info_id_list[i].id).
                     iterator()
                 ]
-                sn = [
-                    arg.sn for arg in
+                srn = [
+                    arg.srn for arg in
                     Instrument.select().distinct().
-                    join(EventsInstruments).join(Event).
-                    where(Event.id == eventsinfo_id_list[i].id).
+                    join(InfosInstruments).join(Info).
+                    where(Info.id == info_id_list[i].id).
                     iterator()
                 ]
                 out.append(
                     {
-                        'event': EventManager(
-                            event_dt=eventsinfo_id_list[i].event_dt,
-                            sn=sn,
+                        'info': InfoManager(
+                            evt_dt=info_id_list[i].evt_dt,
+                            srn=srn,
                             tag_abbr=tag_abbr,
                         ),
                         'index': qry.index,
@@ -788,13 +788,13 @@ class Queryer(Thread):
 
     """
 
-    def __init__(self, db_mngr, eventsinfo_id):
+    def __init__(self, db_mngr, info_id):
 
         # Call super constructor
         super().__init__()
 
         # Init attributes
-        self._eventsinfo_id = eventsinfo_id
+        self._info_id = info_id
         self._db_mngr = db_mngr
         self.index = None
         self.value = None
@@ -807,7 +807,7 @@ class Queryer(Thread):
             qry = (
                 Data.
                 select(Data.index, Data.value).
-                where(Data.event_info == self._eventsinfo_id)
+                where(Data.info == self._info_id)
             )
 
             with DBAccess(self._db_mngr, close_by_exit=False):
@@ -830,14 +830,14 @@ class Queryer(Thread):
             raise self.exc
 
 
-class EventManager:
-    """Class for create an unique event identifier"""
+class InfoManager:
+    """Data info manager"""
 
     #: datetime.datetime: UTC datetime
-    event_dt = TProp(Union[str, Timestamp, datetime], check_datetime)
+    evt_dt = TProp(Union[str, Timestamp, datetime], check_datetime)
 
     #: str: Instrument id
-    sn = TProp(
+    srn = TProp(
         Union[str, Iterable[str]],
         setter_fct=lambda x: (x,) if isinstance(x, str) else tuple(x),
         getter_fct=lambda x: sorted(x)
@@ -850,19 +850,19 @@ class EventManager:
         getter_fct=lambda x: sorted(x)
     )
 
-    def __init__(self, event_dt, sn, tag_abbr=None):
+    def __init__(self, evt_dt, srn, tag_abbr=None):
         """Constructor
 
         Args:
-            event_dt (str | datetime | pd.Timestamp): UTC datetime
-            sn (str): Instrument serial number
+            evt_dt (str | datetime | pd.Timestamp): UTC datetime
+            srn (str): Instrument serial number
             tag_abbr (`optional`, iterable of str): Tag abbr iterable
 
         """
 
         # Set attributes
-        self.event_dt = event_dt
-        self.sn = sn
+        self.evt_dt = evt_dt
+        self.srn = srn
         self.tag_abbr = tag_abbr
 
     def __getitem__(self, item):
@@ -871,7 +871,7 @@ class EventManager:
     def __repr__(self):
         p_printer = pprint.PrettyPrinter()
         return p_printer.pformat(
-            (f'dt: {self.event_dt}', f'sn: {self.sn}', f'tag: {self.tag_abbr}')
+            (f'dt: {self.evt_dt}', f'srn: {self.srn}', f'tag: {self.tag_abbr}')
         )
 
     def __hash__(self):
@@ -908,21 +908,21 @@ class EventManager:
         self.tag_abbr = list(filter(lambda x: x not in val, self.tag_abbr))
 
     @staticmethod
-    def sort(event_list):
-        """Sort list of event manager. Sorting order [event_dt, instr_id]
+    def sort(info_list):
+        """Sort list of InfoManager. Sorting order [evt_dt, srn, tags]
 
         Args:
-            event_list (list of EventManager): List to sort
+            info_list (list of InfoManager): List to sort
 
         Returns:
-            list: Sorted event manager list
+            list: Sorted InfoManager
             tuple: Original list index
 
         """
 
         # Sort
         val = sorted(
-            zip(event_list, range(len(event_list)))
+            zip(info_list, range(len(info_list)))
         )
 
         # Unzip index
@@ -932,8 +932,8 @@ class EventManager:
 
     @property
     def sort_attr(self):
-        """ list of EventManger attributes: Attributes sort order"""
-        return tuple((self.event_dt, *self.sn, *self.tag_abbr))
+        """ list of InfoManger attributes: Attributes sort order"""
+        return tuple((self.evt_dt, *self.srn, *self.tag_abbr))
 
     def __eq__(self, other):
         return self.sort_attr == other.sort_attr
@@ -954,34 +954,34 @@ class EventManager:
         return self.sort_attr >= other.sort_attr
 
 
-class SearchEventExpr(metaclass=ABCMeta):
-    """Abstract search event expression interpreter class.
+class SearchInfoExpr(metaclass=ABCMeta):
+    """Abstract search info expression interpreter class.
 
     .. uml::
 
         @startuml
         footer Interpreter design pattern
 
-        class SearchEventExpr {
+        class SearchInfoExpr {
             {abstract} interpret()
             {static} eval()
         }
 
-        class LogicalSearchEventExpr {
+        class LogicalSearchInfoExpr {
             _expression: List
             interpret()
             {abstract} fct(*arg)
         }
 
-        SearchEventExpr <|-- LogicalSearchEventExpr : extends
-        LogicalSearchEventExpr o--> SearchEventExpr
+        SearchInfoExpr <|-- LogicalSearchInfoExpr : extends
+        LogicalSearchInfoExpr o--> SearchInfoExpr
 
-        class TerminalSearchEventExpr {
+        class TerminalSearchInfoExpr {
             interpret()
             {abstract} get_filter()
         }
 
-        SearchEventExpr <|-- TerminalSearchEventExpr : extends
+        SearchInfoExpr <|-- TerminalSearchInfoExpr : extends
 
         @enduml
 
@@ -1001,12 +1001,12 @@ class SearchEventExpr(metaclass=ABCMeta):
             filter_empty (bool): Filter for empty data
 
         Returns:
-            List of Event
+            List of Info.id
 
         Search expression grammar:
             - all(): Select all
             - [datetime ; dt]('<ISO datetime>', ['=='(default) ; '>=' ; '>' ; '<=' ; '<' ; '!=']): Select by datetime
-            - [serialnumber ; sn]('<Serial number>'): Select by serial number
+            - [serialnumber ; srn]('<Serial number>'): Select by serial number
             - tag(['<Tag>' ; ('<Tag 1>', ...,'<Tag n>')]): Select by tag
             - and_(<expr 1>, ..., <expr n>): Intersection
             - or_(<expr 1>, ..., <expr n>): Union
@@ -1017,7 +1017,7 @@ class SearchEventExpr(metaclass=ABCMeta):
         str_expr_dict = {
             'all': AllExpr,
             'datetime': DatetimeExpr, 'dt': DatetimeExpr,
-            'serialnumber': SerialNumberExpr, 'sn': SerialNumberExpr,
+            'serialnumber': SerialNumberExpr, 'srn': SerialNumberExpr,
             'tag': TagExpr,
             'and_': AndExpr,
             'or_': OrExpr,
@@ -1041,13 +1041,13 @@ class SearchEventExpr(metaclass=ABCMeta):
             expr_res = expr.interpret()
 
             # Convert id as table element
-            qry = Event.select().where(Event.id.in_(expr_res))
+            qry = Info.select().where(Info.id.in_(expr_res))
             out = [arg for arg in qry.iterator()]
 
             return out
 
 
-class LogicalSearchEventExpr(SearchEventExpr):
+class LogicalSearchInfoExpr(SearchInfoExpr):
     """
     Implement an interpret operation for nonterminal symbols in the grammar.
     """
@@ -1067,7 +1067,7 @@ class LogicalSearchEventExpr(SearchEventExpr):
         """Logical function between expression args"""
 
 
-class AndExpr(LogicalSearchEventExpr):
+class AndExpr(LogicalSearchInfoExpr):
     """And operation"""
 
     def fct(self, a, b):
@@ -1075,7 +1075,7 @@ class AndExpr(LogicalSearchEventExpr):
         return operator.and_(a, b)
 
 
-class OrExpr(LogicalSearchEventExpr):
+class OrExpr(LogicalSearchInfoExpr):
     """Or operation"""
 
     def fct(self, a, b):
@@ -1083,7 +1083,7 @@ class OrExpr(LogicalSearchEventExpr):
         return operator.or_(a, b)
 
 
-class NotExpr(LogicalSearchEventExpr):
+class NotExpr(LogicalSearchInfoExpr):
     """Not operation"""
 
     def __init__(self, arg):
@@ -1094,18 +1094,18 @@ class NotExpr(LogicalSearchEventExpr):
         return operator.sub(a, b)
 
 
-class TerminalSearchEventExpr(SearchEventExpr):
+class TerminalSearchInfoExpr(SearchInfoExpr):
     """
     Implement an interpret operation associated with terminal symbols in
     the grammar.
     """
 
     QRY_BASE = (
-        Event
+        Info
         .select().distinct()
-        .join(EventsInstruments).join(Instrument).switch(Event)
-        .join(Parameter).switch(Event)
-        .join(EventsTags).join(Tag).switch(Event)
+        .join(InfosInstruments).join(Instrument).switch(Info)
+        .join(Parameter).switch(Info)
+        .join(InfosTags).join(Tag).switch(Info)
     )
 
     def __init__(self, arg):
@@ -1123,7 +1123,7 @@ class TerminalSearchEventExpr(SearchEventExpr):
         """Return query where method filter"""
 
 
-class AllExpr(TerminalSearchEventExpr):
+class AllExpr(TerminalSearchInfoExpr):
     """All filter"""
 
     def __init__(self):
@@ -1134,7 +1134,7 @@ class AllExpr(TerminalSearchEventExpr):
         return
 
 
-class DatetimeExpr(TerminalSearchEventExpr):
+class DatetimeExpr(TerminalSearchInfoExpr):
     """Datetime filter"""
 
     _OPER_DICT = {
@@ -1153,20 +1153,20 @@ class DatetimeExpr(TerminalSearchEventExpr):
 
     def get_filter(self):
         """Implement get_filter method"""
-        return self._op(Event.event_dt, self.expression)
+        return self._op(Info.evt_dt, self.expression)
 
 
-class SerialNumberExpr(TerminalSearchEventExpr):
+class SerialNumberExpr(TerminalSearchInfoExpr):
     """Serial number filter"""
 
     expression = TProp(str, lambda *x: x[0])
 
     def get_filter(self):
         """Implement get_filter method"""
-        return Instrument.sn == self.expression
+        return Instrument.srn == self.expression
 
 
-class TagExpr(TerminalSearchEventExpr):
+class TagExpr(TerminalSearchInfoExpr):
     """Tag filter"""
 
     expression = TProp(
@@ -1178,7 +1178,7 @@ class TagExpr(TerminalSearchEventExpr):
         return Tag.tag_abbr.in_(self.expression)
 
 
-class ParameterExpr(TerminalSearchEventExpr):
+class ParameterExpr(TerminalSearchInfoExpr):
     """Parameter filter"""
 
     expression = TProp(str, lambda x: x)

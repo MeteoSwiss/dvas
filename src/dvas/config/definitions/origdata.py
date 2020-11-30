@@ -15,8 +15,8 @@ from ..pattern import INSTR_TYPE_PAT, PARAM_PAT
 from ...database.model import Data
 
 # Define global field name
-EVENT_DT_FLD_NM = 'dt_field'  # Datetime field name
-SN_FLD_NM = 'sn_field'  # Serial number field name
+EVT_DT_FLD_NM = 'dt_field'  # Datetime field name
+SRN_FLD_NM = 'srn_field'  # Serial number field name
 TAG_FLD_NM = 'tag_field'  # Tag field name
 
 INDEX_FLD_NM = 'index_col'  # Index column field name
@@ -42,7 +42,7 @@ INDEX_NM = Data.index.name
 VALUE_NM = Data.value.name
 
 #: list: Metadata fields keys
-META_FIELD_KEYS = [EVENT_DT_FLD_NM, SN_FLD_NM, TAG_FLD_NM]
+META_FIELD_KEYS = [EVT_DT_FLD_NM, SRN_FLD_NM, TAG_FLD_NM]
 
 #: list: Node pattern
 NODE_PATTERN = [INSTR_TYPE_PAT, PARAM_PAT]
@@ -70,10 +70,10 @@ CONST_NODES = {
 
 #: dict: Parameter pattern properties (JSON_SCHEMA)
 PARAMETER_PATTERN_PROP = {
-    rf"^{EVENT_DT_FLD_NM}$": {
+    rf"^{EVT_DT_FLD_NM}$": {
         "type": "string",
     },
-    rf"^{SN_FLD_NM}$": {
+    rf"^{SRN_FLD_NM}$": {
         "type": "string",
     },
     rf"^{TAG_FLD_NM}$": {

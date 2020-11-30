@@ -22,7 +22,7 @@ NODE_PARAMS_DEF = {
 #: list: Constant node values
 CONST_NODES = [
     {
-        Instrument.sn.name: '',
+        Instrument.srn.name: '',
         Instrument.instr_type.name: '',
         Instrument.remark.name: 'Null instrument',
     }
@@ -30,7 +30,7 @@ CONST_NODES = [
 
 #: dict: Parameter pattern properties (JSON_SCHEMA)
 PARAMETER_PATTERN_PROP = {
-    rf"^{Instrument.sn.name}$": {
+    rf"^{Instrument.srn.name}$": {
         "type": "string"
     },
     rf"^{Instrument.instr_type.name}$": {

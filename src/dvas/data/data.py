@@ -216,13 +216,13 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         return self._DATA_TYPES.keys()
 
     @property
-    def events(self):
-        """list of ProfileManger event: Event metadata"""
-        return [arg.event for arg in self.profiles]
+    def info(self):
+        """list of ProfileManger info: Data info"""
+        return [arg.info for arg in self.profiles]
 
     @deepcopy
-    def rm_event_tag(self, val, inplace=True):
-        """Remove tag from all events tags
+    def rm_info_tag(self, val, inplace=True):
+        """Remove tag from all info tags
 
         Args:
             val (str|list of str): Tag values to remove
@@ -230,7 +230,19 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
 
         """
         for i in range(len(self)):
-            self.profiles[i].event.rm_tag(val)
+            self.profiles[i].info.rm_tag(val)
+
+    @deepcopy
+    def add_info_tag(self, val, inplace=True):
+        """Add tag from all info tags
+
+        Args:
+            val (str|list of str): Tag values to add.
+            inplace (bool, optional): Modify in place. Defaults to True.
+
+        """
+        for i in range(len(self)):
+            self.profiles[i].info.add_tag(val)
 
     def __len__(self):
         return len(self.profiles)
@@ -289,10 +301,10 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         instance back into the database with an updated set of tags.
 
         Args:
-            add_tags (list of str, optional): list of tags to add to event.
+            add_tags (list of str, optional): list of tags to add to info.
                 Defaults to None.
             rm_tags (list of str, optional): list of *existing* tags to remove
-                from the event. Defaults to None.
+                from the info. Defaults to None.
             prms (list of str, optional): list of column names to save to the
                 database. Defaults to None (= save all possible parameters).
 
@@ -302,18 +314,27 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
 
         """
 
+        # Init
+        obj = self.copy()
+
         # Add tag DERIVED
         add_tags = [TAG_DERIVED_VAL] if add_tags is None else add_tags + [TAG_DERIVED_VAL]
 
+        # Add tags
+        obj.add_info_tag(add_tags)
+
         # Remove tag RAW
         rm_tags = [TAG_RAW_VAL] if rm_tags is None else rm_tags + [TAG_RAW_VAL]
+
+        # Remove tags
+        obj.rm_info_tag(rm_tags)
 
         # Restructure the parameters into a dict, to be consistent with the rest of the class.
         if prms is None:
             prms = list(self.db_variables.keys())
 
         # Call save strategy
-        self._save_stgy.save(self.copy(), prms, add_tags, rm_tags)
+        self._save_stgy.save(obj, prms)
 
     # TODO: implement an "export" function that can export specific DataFrame columns back into
     #  the database under new variable names ?
@@ -396,19 +417,19 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
 
         return out
 
-    def get_evt_prm(self, prm):
-        """ Convenience function to extract specific (a unique!) Event metadata from all the
+    def get_info(self, prm):
+        """ Convenience function to extract specific (a unique!) Info from all the
         Profile instances.
 
         Args:
-            prm (str): parameter name (unique!) to extract from all the events.
+            prm (str): parameter name (unique!) to extract.
 
         Returns:
             dict of list: idem to self.profiles, but with only the requested metadata.
 
         """
 
-        return {key: [evt.as_dict()[prm] for evt in item] for key, item in self.events.items()}
+        return [info[prm] for info in self.info]
 
 
 class MultiProfile(MutliProfileAbstract):

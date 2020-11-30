@@ -235,11 +235,11 @@ class Profile(ProfileAbstract):
         'flg': {'test': FLOAT_TEST, 'type': 'Int64', 'index': False}
     }
 
-    def __init__(self, event, data=None):
+    def __init__(self, info, data=None):
         """ Profile Constructor.
 
         Args:
-            event (int): Event id
+            info (InfoManager): Data information
             data (pd.DataFrame, optional): The profile values in a pandas DataFrame.
                Default to None.
 
@@ -256,13 +256,13 @@ class Profile(ProfileAbstract):
             self.data = pd.DataFrame(
                 {key: np.array([], dtype=val['type']) for key, val in self.DF_COLS_ATTR.items()}
             )
-        self._event = event
+        self._info = info
         self._flags_abbr = {arg[self.FLAG_ABBR_NM]: arg for arg in db_mngr.get_flags()}
 
     @property
-    def event(self):
-        """Event: Corresponding data event metadata"""
-        return self._event
+    def info(self):
+        """InfoManager: Corresponding data info"""
+        return self._info
 
     @property
     def flags_abbr(self):
@@ -285,11 +285,11 @@ class Profile(ProfileAbstract):
         return super().__getattr__('flg')
 
     def __str__(self):
-        return f"event: {self.event}\n{super().__str__()}"
+        return f"info: {self.info}\n{super().__str__()}"
 
     def copy(self):
         return self.__class__(
-            deepcopy(self.event), self.reset_data_index(self.data.copy(deep=True))
+            deepcopy(self.info), self.reset_data_index(self.data.copy(deep=True))
         )
 
     def _get_flg_bit_nbr(self, abbr):

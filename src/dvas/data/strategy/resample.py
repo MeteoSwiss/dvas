@@ -75,7 +75,7 @@ class ResampleRSDataStrategy(ResampleStrategyAbstract):
             try:
                 data_rspl.append(
                     arg.__class__(
-                        arg.event,
+                        arg.info,
                         oper[method](rspler).reset_index()
                     )
                 )

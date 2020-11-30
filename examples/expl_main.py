@@ -28,7 +28,6 @@ from dvas.data.linker import LocalDBLinker
 from dvas.database.model import Data
 from dvas.data.strategy.load import LoadProfileStrategy
 
-from dvas.database.model import Event, Parameter
 
 if __name__ == '__main__':
 

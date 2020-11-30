@@ -13,7 +13,7 @@ Module contents: Sort strategy
 from abc import ABCMeta, abstractmethod
 
 # Import from current package
-from ...database.database import EventManager
+from ...database.database import InfoManager
 
 
 class SortStrategyAbstract(metaclass=ABCMeta):
@@ -39,8 +39,8 @@ class SortProfileStrategy(SortStrategyAbstract):
         """
 
         # Get index sort position
-        _, sort_idx = EventManager.sort(
-            [arg.event for arg in data]
+        _, sort_idx = InfoManager.sort(
+            [arg.info for arg in data]
         )
 
         # Arrange position

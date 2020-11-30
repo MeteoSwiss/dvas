@@ -20,13 +20,13 @@ import pandas as pd
 
 # Import from current package
 from ..dvas_environ import path_var as env_path_var
-from ..database.model import InstrType, Instrument, Event
-from ..database.model import Parameter, OrgiDataInfo
-from ..database.database import DatabaseManager, EventManager
+from ..database.model import InstrType, Instrument, Info
+from ..database.model import Parameter, DataSource
+from ..database.database import DatabaseManager, InfoManager
 from ..config.config import OrigData, CSVOrigMeta
 from ..config.config import ConfigReadError
 from ..config.definitions.origdata import META_FIELD_KEYS
-from ..config.definitions.origdata import EVENT_DT_FLD_NM, SN_FLD_NM, TAG_FLD_NM
+from ..config.definitions.origdata import EVT_DT_FLD_NM, SRN_FLD_NM, TAG_FLD_NM
 from ..config.definitions.origdata import PARAM_FLD_NM
 from ..dvas_logger import rawcsv
 from ..dvas_environ import glob_var
@@ -221,7 +221,7 @@ class FileHandler(AbstractHandler):
                 Instrument,
                 search={
                     'join_order': [InstrType],
-                    'where': Instrument.sn == metadata[SN_FLD_NM]
+                    'where': Instrument.srn == metadata[SRN_FLD_NM]
                 },
                 attr=[
                     [Instrument.instr_type.name, InstrType.type_name.name]
@@ -230,14 +230,14 @@ class FileHandler(AbstractHandler):
         ) is None:
             # TODO Detail exception
             raise Exception(
-                f"Missing instrument SN '{metadata[SN_FLD_NM]}' in DB while reading " +
+                f"Missing instrument SN '{metadata[SRN_FLD_NM]}' in DB while reading " +
                 f"data file '{file_path}'"
             )
 
         if instr_type_name != instr_type_name_from_sn[0]:
             #TODO Detail exception
             raise Exception(
-                f"Instrument SN '{metadata[SN_FLD_NM]}' does not correspond to instr_type in " +
+                f"Instrument SN '{metadata[SRN_FLD_NM]}' does not correspond to instr_type in " +
                 f"('{instr_type_name}' != '{instr_type_name_from_sn}') " +
                 f"for data file '{file_path}'"
             )
@@ -247,14 +247,14 @@ class FileHandler(AbstractHandler):
 
         # Search exclude file names source hash
         exclude_file_name = self._db_mngr.get_or_none(
-            Event,
+            Info,
             search={
                 'where': (
                     (Parameter.prm_abbr == prm_abbr) &
-                    (Instrument.sn != '')
+                    (Instrument.srn != '')
                 ),
-                'join_order': [Parameter, OrgiDataInfo, Instrument]},
-            attr=[[Event.orig_data_info.name, OrgiDataInfo.source_hash.name]],
+                'join_order': [Parameter, DataSource, Instrument]},
+            attr=[[Info.data_src.name, DataSource.source_hash.name]],
             get_first=False
         )
 
@@ -454,10 +454,10 @@ class CSVHandler(FileHandler):
         # (need it for loading origdata config)
         self.check_sn(file_path, instr_type_name, metadata)
 
-        # Create event with 'raw' tag
-        event = EventManager(
-            event_dt=metadata[EVENT_DT_FLD_NM],
-            sn=metadata[SN_FLD_NM],
+        # Create info with 'raw' tag
+        info_mngr = InfoManager(
+            evt_dt=metadata[EVT_DT_FLD_NM],
+            srn=metadata[SRN_FLD_NM],
             tag_abbr=metadata[TAG_FLD_NM] + [TAG_RAW_VAL],
         )
 
@@ -505,7 +505,7 @@ class CSVHandler(FileHandler):
             data = pd.Series([])
 
             # Add empty tag
-            event.add_tag(TAG_EMPTY_VAL)
+            info_mngr.add_tag(TAG_EMPTY_VAL)
 
             # Log
             rawcsv.warn(
@@ -521,7 +521,7 @@ class CSVHandler(FileHandler):
 
         # Append data
         out = {
-            'event': event,
+            'info': info_mngr,
             'prm_abbr': prm_abbr,
             'index': data.index.values,
             'value': data.values,
@@ -590,9 +590,9 @@ class GDPHandler(FileHandler):
         self.check_sn(file_path, instr_type_name, metadata)
 
         # Create event with 'raw' and 'gdp' tag
-        event = EventManager(
-            event_dt=metadata[EVENT_DT_FLD_NM],
-            sn=metadata[SN_FLD_NM],
+        info_mngr = InfoManager(
+            evt_dt=metadata[EVT_DT_FLD_NM],
+            srn=metadata[SRN_FLD_NM],
             tag_abbr=metadata[TAG_FLD_NM] + [TAG_RAW_VAL, TAG_GDP_VAL],
         )
 
@@ -617,7 +617,7 @@ class GDPHandler(FileHandler):
             data = pd.Series([])
 
             # Add empty tag
-            event.add_tag(TAG_EMPTY_VAL)
+            info_mngr.add_tag(TAG_EMPTY_VAL)
 
             # Log
             rawcsv.warn(
@@ -634,7 +634,7 @@ class GDPHandler(FileHandler):
 
         # Append data
         out = {
-            'event': event,
+            'info': info_mngr,
             'index': data.index.values,
             'value': data.values,
             'prm_abbr': prm_abbr,
@@ -703,7 +703,7 @@ class LocalDBLinker(DataLinker):
 
         Args:
             data_list (list of dict): dict mandatory items are 'index' (np.array),
-                'value' (np.array), 'event' (EventManager), 'prm_abbr' (str).
+                'value' (np.array), 'info' (InfoManager), 'prm_abbr' (str).
                 dict optional key is 'source_info' (str)
 
         """

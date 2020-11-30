@@ -56,7 +56,9 @@ class InstrType(MetadataModel):
 class Instrument(MetadataModel):
     """Instrument model """
     id = AutoField(primary_key=True)
-    sn = CharField(null=True, unique=True)
+
+    # Serial number
+    srn = CharField(null=True, unique=True)
     instr_type = ForeignKeyField(
         InstrType, backref='instruments', on_delete='CASCADE'
     )
@@ -94,63 +96,63 @@ class Tag(MetadataModel):
     tag_desc = TextField()
 
 
-class OrgiDataInfo(MetadataModel):
-    """Original data information model"""
+class DataSource(MetadataModel):
+    """Data source model"""
     id = AutoField(primary_key=True)
     source = CharField(null=True)
     source_hash = IntegerField()
 
 
-class Event(MetadataModel):
-    """Event model"""
+class Info(MetadataModel):
+    """Info model"""
     id = AutoField(primary_key=True)
-    event_dt = DateTimeField(null=False)
+    evt_dt = DateTimeField(null=False)
     param = ForeignKeyField(
-        Parameter, backref='event_info', on_delete='CASCADE'
+        Parameter, backref='info', on_delete='CASCADE'
     )
-    orig_data_info = ForeignKeyField(
-        OrgiDataInfo, backref='event_info', on_delete='CASCADE'
+    data_src = ForeignKeyField(
+        DataSource, backref='info', on_delete='CASCADE'
     )
-    event_hash = IntegerField()
-    """int: Hash of the event attributes. Using a hash allows you to manage
-    identical events with varying degrees of work steps."""
+    evt_hash = IntegerField()
+    """int: Hash of the info attributes. Using a hash allows you to manage
+    identical info with varying degrees of work steps."""
 
 
-class EventsTags(MetadataModel):
-    """Many-to-Many link between Event and Tag tables"""
+class InfosTags(MetadataModel):
+    """Many-to-Many link between Info and Tag tables"""
     id = AutoField(primary_key=True)
     tag = ForeignKeyField(
-        Tag, backref='events_tags', on_delete='CASCADE'
+        Tag, backref='infos_tags', on_delete='CASCADE'
     )
-    events_info = ForeignKeyField(
-        Event, backref='events_tags', on_delete='CASCADE'
+    info = ForeignKeyField(
+        Info, backref='infos_tags', on_delete='CASCADE'
     )
 
 
-class EventsInstruments(MetadataModel):
-    """Many-to-Many link between Event and Instrument tables"""
+class InfosInstruments(MetadataModel):
+    """Many-to-Many link between Info and Instrument tables"""
     id = AutoField(primary_key=True)
     instr = ForeignKeyField(
-        Instrument, backref='instruments_tags', on_delete='CASCADE'
+        Instrument, backref='instruments_infos', on_delete='CASCADE'
     )
-    events_info = ForeignKeyField(
-        Event, backref='instruments_tags', on_delete='CASCADE'
+    info = ForeignKeyField(
+        Info, backref='instruments_infos', on_delete='CASCADE'
     )
 
 # TODO
-#  Add the capability to link metadata to an event.
+#  Add the capability to link metadata to an info.
 #  Tag should be used to search data in the DB.
 #  Metadata should be used to save metadata of a result profile
 #  class MetaData
 #     prm
 #     value
-#     event
+#     info
 
 class Data(MetadataModel):
     """Data model"""
     id = AutoField(primary_key=True)
-    event_info = ForeignKeyField(
-        Event,
+    info = ForeignKeyField(
+        Info,
         backref='datas', on_delete='CASCADE')
     index = IntegerField(null=False)
     value = FloatField(null=True)
