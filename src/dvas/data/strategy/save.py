@@ -16,7 +16,7 @@ from abc import ABCMeta, abstractmethod
 from ..linker import LocalDBLinker
 
 
-class SaveDataStrategy(metaclass=ABCMeta):
+class SaveDataStrategyAbstract(metaclass=ABCMeta):
     """Abstract class to manage data saving strategy"""
 
     @abstractmethod
@@ -24,7 +24,7 @@ class SaveDataStrategy(metaclass=ABCMeta):
         """Strategy required method"""
 
 
-class SaveDataStrategy(SaveDataStrategy):
+class SaveDataStrategy(SaveDataStrategyAbstract):
     """Class to manage saving of time data"""
 
     def save(self, data, prms, add_tags, rm_tags):

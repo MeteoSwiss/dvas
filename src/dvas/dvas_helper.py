@@ -13,6 +13,7 @@ Module contents: Package helper classes and functions.
 from pathlib import Path
 from re import compile, IGNORECASE
 from datetime import datetime
+from copy import deepcopy as dc
 from functools import wraps, reduce
 from abc import ABC, ABCMeta, abstractmethod
 from inspect import getmodule
@@ -191,6 +192,25 @@ class TimeIt(ContextDecorator):
 
         # Print
         print(f'{self._head_msg}: {delta}', flush=True)
+
+
+def deepcopy(func):
+    """Use a deepcopy of the class when calling the method.
+    The method keywords must contain the 'inplace' argument.
+    """
+
+    @wraps(func)
+    def decorated(*args, inplace=True, **kwargs):
+
+        if inplace:
+            func(*args, **kwargs)
+            res = None
+        else:
+            res = dc(args[0])
+            func(res, *args[1:], **kwargs)
+        return res
+
+    return decorated
 
 
 class TypedProperty:

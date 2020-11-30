@@ -33,6 +33,9 @@ class SortProfileStrategy(SortStrategyAbstract):
         Args:
             data (list): list of Profile
 
+        Returns:
+            list of Profile
+
         """
 
         # Get index sort position

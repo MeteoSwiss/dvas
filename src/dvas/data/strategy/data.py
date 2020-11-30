@@ -11,6 +11,7 @@ Module contents: Data manager classes used in dvas.data.data.ProfileManager
 
 # Import from external packages
 from abc import abstractmethod
+from copy import deepcopy
 import numpy as np
 import pandas as pd
 
@@ -65,7 +66,7 @@ class ProfileAbstract(metaclass=RequiredAttrMetaClass):
             pandas.DataFrame
 
         """
-        val = val.reset_index()
+        val = val.reset_index(inplace=False)
         val.index.name = '_idx'
         return val[sorted(cls.DF_COLS_ATTR.keys())]
 
@@ -81,7 +82,9 @@ class ProfileAbstract(metaclass=RequiredAttrMetaClass):
 
         """
         val = cls.reset_data_index(val)
-        val = val.set_index(cls.get_index_attr(), drop=True, append=True)
+        val = val.set_index(
+            cls.get_index_attr(), drop=True, append=True, inplace=False
+        )
 
         return val
 
@@ -285,7 +288,9 @@ class Profile(ProfileAbstract):
         return f"event: {self.event}\n{super().__str__()}"
 
     def copy(self):
-        return self.__class__(self.event, self.data.copy(deep=True))
+        return self.__class__(
+            deepcopy(self.event), self.reset_data_index(self.data.copy(deep=True))
+        )
 
     def _get_flg_bit_nbr(self, abbr):
         """Get bit number corresponding to given flag abbr"""

@@ -37,7 +37,7 @@ if __name__ == '__main__':
 
     filt_gdp = "tag('gdp')"
     filt_gdp_der = "and_(tag('derived'), tag('gdp'))"
-    filt_raw = "tag('raw')"
+    filt_raw = "and_(tag('raw'), not_(tag('gdp')))"
     filt_all = "all()"
     filt_der = "and_(tag('derived'), not_(tag('gdp')))"
 
@@ -73,7 +73,7 @@ if __name__ == '__main__':
     except dvasError:
         rs_prf.load(filt_raw, 'trepros1', 'tdtpros1', alt_abbr='altpros1')
         rs_prf.sort()
-    #     rs_prf.resample()
+        #     rs_prf.resample()
         rs_prf.save()
 
     #

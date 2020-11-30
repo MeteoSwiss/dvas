@@ -36,6 +36,7 @@ from ..dvas_logger import localdb, rawcsv
 from ..dvas_logger import DBIOError
 from ..dvas_environ import path_var
 from ..dvas_helper import RequiredAttrMetaClass
+from ..dvas_helper import deepcopy
 
 from ..dvas_logger import dvasError
 
@@ -219,15 +220,29 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         """list of ProfileManger event: Event metadata"""
         return [arg.event for arg in self.profiles]
 
+    @deepcopy
+    def rm_event_tag(self, val, inplace=True):
+        """Remove tag from all events tags
+
+        Args:
+            val (str|list of str): Tag values to remove
+            inplace (bool, optional): Modify in place. Defaults to True.
+
+        """
+        for i in range(len(self)):
+            self.profiles[i].event.rm_tag(val)
+
     def __len__(self):
         return len(self.profiles)
 
     def copy(self):
         """Return a deep copy of the object"""
         obj = self.__class__()
-        obj.update(self.db_variables, self.profiles, inplace=True)
+        obj._db_variables = self.db_variables.copy()
+        obj._profiles = [arg.copy() for arg in self.profiles]
         return obj
 
+    @deepcopy
     def load(self, *args, inplace=True, **kwargs):
         """Load data.
 
@@ -249,8 +264,9 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
             raise DBIOError('Load empty data')
 
         # Update
-        return self.update(db_df_keys, data, inplace=inplace)
+        self.update(db_df_keys, data)
 
+    @deepcopy
     def sort(self, inplace=True):
         """Sort method
 
@@ -263,12 +279,10 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         """
 
         # Sort
-        out = self._sort_stgy.sort(self.copy().profiles)
+        data = self._sort_stgy.sort(self.profiles)
 
         # Load
-        res = self.update(self.db_variables, out, inplace=inplace)
-
-        return res
+        self.update(self.db_variables, data)
 
     def save(self, add_tags=None, rm_tags=None, prms=None):
         """Save method to store the *entire* content of the Multiprofile
@@ -304,14 +318,13 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
     # TODO: implement an "export" function that can export specific DataFrame columns back into
     #  the database under new variable names ?
 
-    def update(self, db_df_keys, data, inplace=True):
+    def update(self, db_df_keys, data):
         """Update whole Multiprofile list
 
         Args:
             db_df_keys (dict): Relationship between database parameters and
                 Profile.data columns.
             data (list of Profile): Data
-            inplace (bool, optional): Default to True
 
         """
 
@@ -335,27 +348,19 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
             data = self._DATA_EMPTY
             db_df_keys = self._DB_VAR_EMPTY
 
-        # Update in place or not
-        if inplace is True:
-            self._db_variables = db_df_keys
-            self._profiles = data
-            res = None
+        # Update
+        self._db_variables = db_df_keys
+        self._profiles = data
 
-        else:
-            res = self.copy()
-            res.update(db_df_keys, data, inplace=True)
-
-        return res
-
-    def append(self, data):
+    def append(self, val):
         """Append method
 
         Args:
-            data (Profile): Data
+            val (Profile): Data
 
         """
 
-        self.update(self.db_variables, self.data + [data], inplace=True)
+        self.update(self.db_variables, self.profiles + [val])
 
     def get_prms(self, prm_list=None):
         """ Convenience getter to extract one specific parameter from the DataFrames of all the
@@ -391,6 +396,20 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
 
         return out
 
+    def get_evt_prm(self, prm):
+        """ Convenience function to extract specific (a unique!) Event metadata from all the
+        Profile instances.
+
+        Args:
+            prm (str): parameter name (unique!) to extract from all the events.
+
+        Returns:
+            dict of list: idem to self.profiles, but with only the requested metadata.
+
+        """
+
+        return {key: [evt.as_dict()[prm] for evt in item] for key, item in self.events.items()}
+
 
 class MultiProfile(MutliProfileAbstract):
     """Multi profile base class, designed to handle multiple Profile."""
@@ -408,32 +427,18 @@ class MultiProfile(MutliProfileAbstract):
         #self._sync_stgy = sync_stgy
         #self._plot_stgy = plot_stgy
 
-    def get_evt_prm(self, prm):
-        """ Convenience function to extract specific (a unique!) Event metadata from all the
-        Profile instances.
-
-        Args:
-            prm (str): parameter name (unique!) to extract from all the events.
-
-        Returns:
-            dict of list: idem to self.profiles, but with only the requested metadata.
-
-        """
-
-        return {key: [evt.as_dict()[prm] for evt in item] for key, item in self.events.items()}
-
-    def plot(self, **kwargs):
-        """ Plot method
-
-        Args:
-            **kwargs: Arbitrary keyword arguments, to be passed down to the plotting function.
-
-        Returns:
-            None
-
-        """
-
-        self._plot_stgy.plot(self.profiles, self.keys, **kwargs)
+    # def plot(self, **kwargs):
+    #     """ Plot method
+    #
+    #     Args:
+    #         **kwargs: Arbitrary keyword arguments, to be passed down to the plotting function.
+    #
+    #     Returns:
+    #         None
+    #
+    #     """
+    #
+    #     self._plot_stgy.plot(self.profiles, self.keys, **kwargs)
 
 
 class MultiRSProfileAbstract(MutliProfileAbstract):
@@ -533,19 +538,19 @@ class MultiGDPProfile(MultiRSProfileAbstract):
 
         return [arg.uc_tot for arg in self.profiles]
 
-    def plot(self, x='alt', **kwargs):
-        """ Plot method
-
-        Args:
-            x (str): parameter name for the x axis. Defaults to 'alt'.
-            **kwargs: Arbitrary keyword arguments, to be passed down to the plotting function.
-
-        Returns:
-            None
-
-        """
-
-        self._plot_stgy.plot(self.profiles, self.keys, x=x, **kwargs)
+    # def plot(self, x='alt', **kwargs):
+    #     """ Plot method
+    #
+    #     Args:
+    #         x (str): parameter name for the x axis. Defaults to 'alt'.
+    #         **kwargs: Arbitrary keyword arguments, to be passed down to the plotting function.
+    #
+    #     Returns:
+    #         None
+    #
+    #     """
+    #
+    #     self._plot_stgy.plot(self.profiles, self.keys, x=x, **kwargs)
 
     #def synchronize(self, *args, inplace=False, method='time', **kwargs):
     #    """Overwrite of synchronize method

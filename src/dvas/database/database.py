@@ -350,15 +350,15 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
     def _create_tables(self):
         """Create table (safe mode)"""
         with DBAccess(self) as _:
-            for table in DatabaseManager.DB_TABLES:
+            for table in self.DB_TABLES:
                 table.create_table(safe=True)
 
     def _delete_tables(self):
         """Delete table instances"""
         with DBAccess(self) as _:
-            for table in DatabaseManager.DB_TABLES:
-                table.delete().execute()
-                print(self.__str__(print_tables=[table]))
+            for table in self.DB_TABLES:
+                qry = table.delete()
+                qry.execute()  # noqa pylint: disable=E1120
 
     def _fill_metadata(self):
         """Create db tables"""
@@ -840,7 +840,7 @@ class EventManager:
     sn = TProp(
         Union[str, Iterable[str]],
         setter_fct=lambda x: (x,) if isinstance(x, str) else tuple(x),
-        getter_fct = lambda x: sorted(x)
+        getter_fct=lambda x: sorted(x)
     )
 
     #: str: Tag abbr
@@ -864,6 +864,9 @@ class EventManager:
         self.event_dt = event_dt
         self.sn = sn
         self.tag_abbr = tag_abbr
+
+    def __getitem__(self, item):
+        return getattr(self, item)
 
     def __repr__(self):
         p_printer = pprint.PrettyPrinter()
