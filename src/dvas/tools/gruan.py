@@ -375,9 +375,9 @@ def combine_gdps(gdp_prfs, binning=1, method='weighted mean'):
     # Let's create a dedicated Profile for the CWS. It's not much different from a GDP.
     cws_prf = ddsd.GDPProfile(info_dict, data=df_out)
 
-    out.update(gdp_prfs.db_variables, [ 
+    #out.update(gdp_prfs.db_variables, [
 
-    import pdb
-    pdb.set_trace()
+    #import pdb
+    #pdb.set_trace()
 
     return (x_ms, comb_us, comb_rs, comb_ss, comb_ts, old_inds)

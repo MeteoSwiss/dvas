@@ -7,7 +7,7 @@ Distributed under the terms of the GNU General Public License v3.0 or later.
 
 SPDX-License-Identifier: GPL-3.0-or-later
 
-This module contains GRUAN-related stats routines.
+This module contains low-level, stand-alone, dvas tools.
 
 """
 
@@ -130,7 +130,8 @@ def weighted_mean(vals, weights, binning=1):
 
     # Then sum these across the time/altitude layers according to the binning
     if binning > 1:
-        # Note again the special treatment of NaNs: ignored, unless that is all I have in a given bin.
+        # Note again the special treatment of NaNs:
+        # ignored, unless that is all I have in a given bin.
         wx_ms = wx_s.groupby(wx_s.index//binning).aggregate(fancy_nansum)
         w_ms = w_s.groupby(w_s.index//binning).aggregate(fancy_nansum)
     else:
@@ -249,6 +250,6 @@ def delta(vals, binning=1):
     # returning the full Jacobian matrix (which is pretty much filled with 0's.)
 
     jac_elmts = [len(x_ms) * ([1/binning for i in range(binning)] +
-                            [-1/binning for i in range(binning)])]
+                              [-1/binning for i in range(binning)])]
 
     return x_ms, jac_elmts

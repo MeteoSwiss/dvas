@@ -6,7 +6,7 @@ _RS92:
 
     # -- META DATA ----------------------------------
     dt_field: '{event_dt}'
-    srn_field: '{sn}'
+    srn_field: '{srn}'
     tag_field:
         - 'e:{event_id}'
         - 'r:{rig}'
@@ -36,7 +36,7 @@ _YT:
 
     # -- META DATA ----------------------------------
     dt_field: '{event_dt}Z'
-    srn_field: '{sn}'
+    srn_field: '{srn}'
     tag_field:
         - 'e:{event_id}'
         - 'r:{rig}'
@@ -66,7 +66,7 @@ _ZT:
 
     # -- META DATA ----------------------------------
     dt_field: '{event_dt}'
-    srn_field: '{sn}'
+    srn_field: '{srn}'
     tag_field:
         - 'e:{event_id}'
         - 'r:{rig}'
