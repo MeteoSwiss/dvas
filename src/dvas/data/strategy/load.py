@@ -147,7 +147,7 @@ class LoadGDPProfileStrategy(LoadProfileStrategy):
 
     def load(
         self, search, val_abbr, tdt_abbr, alt_abbr=None,
-        ucn_abbr=None, ucr_abbr=None, ucs_abbr=None, uct_abbr=None,
+        ucr_abbr=None, ucs_abbr=None, uct_abbr=None, ucu_abbr=None,
         flg_abbr=None
     ):
         """ Load method to fetch data from the database.
@@ -157,13 +157,13 @@ class LoadGDPProfileStrategy(LoadProfileStrategy):
             val_abbr (str): name of the parameter values to extract
             tdt_abbr (str): name of the time delta parameter to extract.
             alt_abbr (str, optional): name of the altitude parameter to extract. Dafaults to None.
-            ucn_abbr (str, optional): name of the true un-correlated uncertainty parameter to
-               extract. Defaults to None.
             ucr_abbr (str, optional): name of the true rig un-correlated uncertainty parameter to
                extract. Defaults to None.
             ucs_abbr (str, optional): name of the true spatial-correlated uncertainty parameter to
                extract. Defaults to None.
             uct_abbr (str, optional): name of the true time-correlated uncertainty parameter to
+               extract. Defaults to None.
+            ucu_abbr (str, optional): name of the true un-correlated uncertainty parameter to
                extract. Defaults to None.
             flg_abbr (str, optional): name of the flag parameter to extract. Default to None.
 
@@ -172,7 +172,7 @@ class LoadGDPProfileStrategy(LoadProfileStrategy):
         # Fetch the data from the database
         db_vs_df_keys = {
             'val': val_abbr, 'tdt': tdt_abbr, 'alt': alt_abbr,
-            'ucn': ucn_abbr, 'ucr': ucr_abbr, 'ucs': ucs_abbr, 'uct': uct_abbr,
+            'ucr': ucr_abbr, 'ucs': ucs_abbr, 'uct': uct_abbr, 'ucu': ucu_abbr,
             'flg': flg_abbr
         }
 

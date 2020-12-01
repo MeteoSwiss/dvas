@@ -256,6 +256,7 @@ class Profile(ProfileAbstract):
             self.data = pd.DataFrame(
                 {key: np.array([], dtype=val['type']) for key, val in self.DF_COLS_ATTR.items()}
             )
+        #TODO: we need a check here, to make sure the info is actually a proper InfoManager entity
         self._info = info
         self._flags_abbr = {arg[self.FLAG_ABBR_NM]: arg for arg in db_mngr.get_flags()}
 
@@ -383,10 +384,10 @@ class GDPProfile(RSProfile):
     Requires some measured values, together with their corresponding measurement times since launch,
     altitudes, flags, as well as 4 distinct types uncertainties:
 
-      - 'uc_n' : True uncorrelated uncertainties.
       - 'uc_r' : Rig "uncorrelated" uncertainties.
       - 'uc_s' : Spatial-correlated uncertainties.
       - 'uc_t' : Temporal correlated uncertainties.
+      - 'uc_u' : True uncorrelated uncertainties.
 
     The property "uc_tot" returns the total uncertainty, and is prodvided for convenience.
 
@@ -394,10 +395,10 @@ class GDPProfile(RSProfile):
     - 'alt' (float)
     - 'tdt' (timedelta64[ns])
     - 'val' (float)
-    - 'ucn' (float)
     - 'ucr' (float)
     - 'ucs' (float)
     - 'uct' (float)
+    - 'ucu' (float)
     - 'flg' (Int64)
 
     The same format is expected as input.
@@ -408,10 +409,10 @@ class GDPProfile(RSProfile):
     DF_COLS_ATTR = dict(
         **RSProfile.DF_COLS_ATTR,
         **{
-            'ucn': {'test': FLOAT_TEST, 'type': np.float, 'index': False},
             'ucr': {'test': FLOAT_TEST, 'type': np.float, 'index': False},
             'ucs': {'test': FLOAT_TEST, 'type': np.float, 'index': False},
             'uct': {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+            'ucu': {'test': FLOAT_TEST, 'type': np.float, 'index': False},
           }
     )
 
@@ -420,12 +421,12 @@ class GDPProfile(RSProfile):
         """ Computes the total uncertainty from the individual components.
 
         Returns:
-            pd.Series: uc_tot = np.sqrt(uc_n**2 + uc_r**2 + uc_s**2 + uc_t**2)
+            pd.Series: uc_tot = np.sqrt(uc_r**2 + uc_s**2 + uc_t**2 + uc_u**2)
         """
 
-        out = np.sqrt(self.ucn.fillna(0)**2 + self.ucr.fillna(0)**2 + self.ucs.fillna(0)**2 +
-                      self.uct.fillna(0)**2)
+        out = np.sqrt(self.ucr.fillna(0)**2 + self.ucs.fillna(0)**2 +
+                      self.uct.fillna(0)**2 + self.ucu.fillna(0)**2)
         # For those cases where all I have is NaN, then return a NaN (and not a 0.)
-        out[self.data[['ucn', 'ucr', 'ucs', 'uct']].isna().all(axis=1)] = np.nan
+        out[self.data[['ucr', 'ucs', 'uct', 'ucu']].isna().all(axis=1)] = np.nan
         # Make sure to give a proper name to the Series
         return out.rename('uc_tot')

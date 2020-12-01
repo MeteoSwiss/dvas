@@ -884,10 +884,10 @@ class InfoManager:
         return out
 
     @property
-    def gdp_mdl_id(self):
+    def mdl_id(self):
         """str: GDP model ID which match 1st corresponding pattern in tags. Defaults to None."""
         try:
-            out = next(filter(glob_var.gdp_mdl_id_pat.match, self.tags))
+            out = next(filter(glob_var.mdl_id_pat.match, self.tags))
         except StopIteration:
             out = None
         return out

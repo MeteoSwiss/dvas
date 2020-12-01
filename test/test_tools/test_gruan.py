@@ -13,7 +13,7 @@ Module contents: Testing 'gruan' classes and function of the tools submodule.
 # Import from python packages and modules
 import numpy as np
 import pytest
-from dvas.gruan import corcoef_gdps, merge_andor_rebin_gdps
+from dvas.tools import corcoef_gdps, merge_andor_rebin_gdps
 
 # Define a series of reference measurement parameters, to test the different combination options.
 T_OK = [np.zeros(1), np.zeros(1)]                       # Same time

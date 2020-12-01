@@ -183,7 +183,7 @@ class GlobalPackageVariableManager(VariableManager):
     #: str: Rig ID pattern use in InfoManager to extract event tag.
     rig_id_pat = TProp(str, lambda x: compile(x))
     #: str: GDP model ID pattern use in InfoManager to extract event tag.
-    gdp_mdl_id_pat = TProp(str, lambda x: compile(x))
+    mdl_id_pat = TProp(str, lambda x: compile(x))
 
     @property
     def attr_def(self):
@@ -198,8 +198,8 @@ class GlobalPackageVariableManager(VariableManager):
              'default': r'^e:\w+$'},
             {'name': 'rig_id_pat',
              'default': r'^r:\w+$'},
-            {'name': 'gdp_mdl_id_pat',
-             'default': r'^mdl:\w+$'},
+            {'name': 'mdl_id_pat',
+             'default': r'^m:\w+$'},
         ]
 
 

@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 
 # Import from this package
-from dvas.gruan import tools
+from dvas.tools import tools
 
 def test_fancy_nansum():
     """ Function to test if the fancy_nansum works as intended.

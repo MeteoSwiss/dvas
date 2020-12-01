@@ -211,17 +211,12 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         return self._db_variables
 
     @property
-    def keys(self):
-        """list: Profiles keys"""
-        return self._DATA_TYPES.keys()
-
-    @property
     def info(self):
         """list of ProfileManger info: Data info"""
         return [arg.info for arg in self.profiles]
 
     @deepcopy
-    def rm_info_tag(self, val, inplace=True):
+    def rm_info_tag(self, val):
         """Remove tag from all info tags
 
         Args:
@@ -233,7 +228,7 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
             self.profiles[i].info.rm_tag(val)
 
     @deepcopy
-    def add_info_tag(self, val, inplace=True):
+    def add_info_tag(self, val):
         """Add tag from all info tags
 
         Args:
@@ -255,7 +250,7 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         return obj
 
     @deepcopy
-    def load(self, *args, inplace=True, **kwargs):
+    def load_from_db(self, *args, **kwargs):
         """Load data.
 
         Args:
@@ -279,7 +274,7 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         self.update(db_df_keys, data)
 
     @deepcopy
-    def sort(self, inplace=True):
+    def sort(self):
         """Sort method
 
         Args:
@@ -296,15 +291,15 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         # Load
         self.update(self.db_variables, data)
 
-    def save(self, add_tags=None, rm_tags=None, prms=None):
+    def save_to_db(self, add_tags=None, rm_tags=None, prms=None):
         """Save method to store the *entire* content of the Multiprofile
         instance back into the database with an updated set of tags.
 
         Args:
-            add_tags (list of str, optional): list of tags to add to info.
-                Defaults to None.
+            add_tags (list of str, optional): list of tags to add to the entity when inserting it
+                into the database. Defaults to None.
             rm_tags (list of str, optional): list of *existing* tags to remove
-                from the info. Defaults to None.
+                from the entity before inserting ot into the database. Defaults to None.
             prms (list of str, optional): list of column names to save to the
                 database. Defaults to None (= save all possible parameters).
 
@@ -338,6 +333,8 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
 
     # TODO: implement an "export" function that can export specific DataFrame columns back into
     #  the database under new variable names ?
+    # THis may be confusing. WOuldn't it be sufficient to change the keys in db_variables and then
+    # use the existing "save_to_db" method ?
 
     def update(self, db_df_keys, data):
         """Update whole Multiprofile list

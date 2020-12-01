@@ -16,7 +16,7 @@ import scipy.stats as ss
 import pandas as pd
 
 # Import from this package
-from dvas.gruan import stats
+from dvas.tools import stats
 
 def test_fancy_nansum():
     """ Function to test if the fancy_nansum works as intended.
