@@ -32,7 +32,7 @@ from dvas.data.strategy.load import LoadProfileStrategy
 if __name__ == '__main__':
 
     # Define
-    RESET_DB = True
+    RESET_DB = False
 
     filt_gdp = "tag('gdp')"
     filt_gdp_der = "and_(tag('derived'), tag('gdp'))"
@@ -52,6 +52,7 @@ if __name__ == '__main__':
             update_db('treprosu_s', strict=True)
             update_db('treprosu_t', strict=True)
             update_db('altpros1', strict=True)
+
 
 
     # # Load a basic profile, with a variable, and altitude.
@@ -74,6 +75,11 @@ if __name__ == '__main__':
         rs_prf.sort()
         #     rs_prf.resample()
         rs_prf.save()
+
+    print(rs_prf.get_info('evt_id'))
+    print(rs_prf.get_info('rig_id'))
+    print(rs_prf.get_info('gdp_mdl_id'))
+
 
     #
     # # Load the GDPs for temperature, including all the errors
