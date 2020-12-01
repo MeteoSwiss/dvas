@@ -148,7 +148,7 @@ def combine_gdps(gdp_prfs, binning=1, method='weighted mean'):
         raise Exception('Ouch ! Method %s unsupported.' % (method))
 
     # How many gdps do we have ?
-    n_prf = len(gdp_prfs.profiles)
+    n_prf = len(gdp_prfs)
     # How long are the profiles ?
     len_gdp = len(gdp_prfs.profiles[0].data)
 
@@ -165,11 +165,16 @@ def combine_gdps(gdp_prfs, binning=1, method='weighted mean'):
     if 'mean' in method:
 
         # To do this, I need to extract the profile values
-        x_ps = pd.DataFrame([item.val for item in gdp_prfs.get_prmns('val')])
+        x_ps = pd.DataFrame([item['val'].values for item in gdp_prfs.get_prms('val')]).T
+
+        # TODO: the following "cleaner" line would work if all frames have the same alt and tdt
+        # indexes
+        # x_ps = pd.concat(gdp_prfs.get_prms('val'), axis=1)
 
         if method == 'weighted mean':
             # I also need the associated weights, which are computed from the total errors
-            w_ps = pd.DataFrame([1/item.uc_tot**2 for item in gdp_prfs.get_prms('uc_tot')])
+            w_ps = pd.DataFrame([1/item['uc_tot'].values**2
+                                 for item in gdp_prfs.get_prms('uc_tot')]).T
         else:
             # Set all the wights to 1 to make a basic "mean"
             w_ps = pd.DataFrame(np.ones_like(x_ps))
@@ -180,7 +185,10 @@ def combine_gdps(gdp_prfs, binning=1, method='weighted mean'):
     elif method == 'delta':
 
         # To do this, I need to extract the profile values
-        x_ps = pd.DataFrame([item.val for item in gdp_prfs.get_prmns('val')])
+        x_ps = pd.DataFrame([item['val'].values for item in gdp_prfs.get_prms('val')]).T
+        # TODO: the following "cleaner" line would work if all frames have the same alt and tdt
+        # indexes
+        # x_ps = pd.concat(gdp_prfs.get_prms('val'), axis=1)
 
         # Compute the weighted mean
         x_ms, jac_elmts = delta(x_ps, binning=binning)
@@ -223,19 +231,36 @@ def combine_gdps(gdp_prfs, binning=1, method='weighted mean'):
 
     # First, the SN (identical for all measurement points within a profile)
     srns = gdp_prfs.get_evt_prm('srn')
+    # Let us make sure that a single srn is tied to each profile. I would not know how to deal with
+    # the correlation matrix of a combined profile!
+
+    if np.any([len(item) > 1 for item in srns]):
+        raise dvasError('Ouch! I need a single srn per profile to be combined.')
+    # Clean-up all the sublists.
+    srns = [item[0] for item in srns]
+    # Build the full array of indices
     srns_inds = np.array([[item] * len_gdp for item in srns]).flatten()
     # idem for the GDP models
-    mods = gdp_prfs.get_evt_prm('mod')
-    mods_inds = np.array([[item] * len_gdp for item in mods]).flatten()
-    # idem for the rigs
-    rigs = gdp_prfs.get_evt_prm('rig')
+    # TODO: include these inside the events
+    #mods = gdp_prfs.get_evt_prm('mod')
+    #mods_inds = np.array([[item] * len_gdp for item in mods]).flatten()
+    mods_ind = None
+
+    # I will also need some tags ...
+    tags = gdp_prfs.get_evt_prm('tag')
+    # TODO: the folllowing is not robust, in the sense that a new tag starting with 'r' would be
+    # picked up. Is there any way to select only the rig tags with 100% certainty ?
+    # ...including the rig id
+    rigs = [tag for sublist in tags for tag in sublist if (tag[0] == 'r' and tag != 'raw')]
     rigs_inds = np.array([[item] * len_gdp for item in rigs]).flatten()
     # idem for the events
-    evts = gdp_prfs.get_evt_prm('evt')
+    evts = [tag for sublist in tags for tag in sublist if (tag[0] == 'e')]
     evts_inds = np.array([[item] * len_gdp for item in evts]).flatten()
     # idem for the sites
-    sits = gdp_prfs.get_evt_prm('sit')
-    sits_inds = np.array([[item] * len_gdp for item in sits]).flatten()
+    # TODO: add the sites to the EventManager
+    #sits = gdp_prfs.get_evt_prm('sit')
+    #sits_inds = np.array([[item] * len_gdp for item in sits]).flatten()
+    sits_ind = None
 
     # Let's also keep track of the original indices of the data
     i_inds = np.array(n_prf * list(range(len_gdp))).ravel()
@@ -261,37 +286,31 @@ def combine_gdps(gdp_prfs, binning=1, method='weighted mean'):
         # uncorrelated, rig-correlated, spatial-correlated, temporal-correlated
 
         # Let's assemble the uncertainties of this specific step
-        # TODO
-        us_k = np.array([sigma[j_min:j_max] for sigma in sigma_us]).ravel()
-        rs_k = np.array([sigma[j_min:j_max] for sigma in sigma_es]).ravel()
-        ss_k = np.array([sigma[j_min:j_max] for sigma in sigma_ss]).ravel()
-        ts_k = np.array([sigma[j_min:j_max] for sigma in sigma_ts]).ravel()
+        # Here I leave pandas in favor of  numpy arrays.
+        us_k = np.array([sigma[j_min:j_max].values for sigma in gdp_prfs.get_prms('ucn')]).ravel()
+        rs_k = np.array([sigma[j_min:j_max].values for sigma in gdp_prfs.get_prms('ucr')]).ravel()
+        ss_k = np.array([sigma[j_min:j_max].values for sigma in gdp_prfs.get_prms('ucs')]).ravel()
+        ts_k = np.array([sigma[j_min:j_max].values for sigma in gdp_prfs.get_prms('uct')]).ravel()
 
         # Let us now assemble the U matrices, filling all the cross-correlations for the different
         # types of uncertainties
         u_mats = []
-        for (sigma_name, sigma_vals) in [('sigma_u', us_k), ('sigma_e', rs_k),
-                                         ('sigma_s', ss_k), ('sigma_t', ts_k)]:
-
+        for (sigma_name, sigma_vals) in [('u', us_k), ('r', rs_k), ('s', ss_k), ('t', ts_k)]:
+            # TODO: add the sites and RS models once available
             u_mat = corcoef_gdps(np.tile(i_inds[in_layer], (n_in_layer, 1)), # i
                                  np.tile(i_inds[in_layer], (n_in_layer, 1)).T, # j
                                  sigma_name,
                                  srn_i=np.tile(srns_inds[in_layer], (n_in_layer, 1)),
                                  srn_j=np.tile(srns_inds[in_layer], (n_in_layer, 1)).T,
-                                 mod_i=np.tile(mods_inds[in_layer], (n_in_layer, 1)),
-                                 mod_j=np.tile(mods_inds[in_layer], (n_in_layer, 1)).T,
+                                 #mod_i=np.tile(mods_inds[in_layer], (n_in_layer, 1)),
+                                 #mod_j=np.tile(mods_inds[in_layer], (n_in_layer, 1)).T,
                                  rig_i=np.tile(rigs_inds[in_layer], (n_in_layer, 1)),
                                  rig_j=np.tile(rigs_inds[in_layer], (n_in_layer, 1)).T,
                                  evt_i=np.tile(evts_inds[in_layer], (n_in_layer, 1)),
                                  evt_j=np.tile(evts_inds[in_layer], (n_in_layer, 1)).T,
-                                 sit_i=np.tile(sits_inds[in_layer], (n_in_layer, 1)),
-                                 sit_j=np.tile(sits_inds[in_layer], (n_in_layer, 1)).T,
+                                 #sit_i=np.tile(sits_inds[in_layer], (n_in_layer, 1)),
+                                 #sit_j=np.tile(sits_inds[in_layer], (n_in_layer, 1)).T,
                                 )
-
-            # Include a sanity check: if U_mat is not an identity matrix for sigma_u,
-            # something is very wrong.
-            #if sigma_name == 'sigma_u' and np.any(u_mat != np.identity(n_in_layer)):
-            #    raise Exception('Ouch ! Something is very wrong here.')
 
             # Implement the multiplication. Mind the structure of these arrays to get the correct
             # mix of Hadamard and dot products where I need them !
@@ -309,24 +328,56 @@ def combine_gdps(gdp_prfs, binning=1, method='weighted mean'):
 
         else:
             # Replace all the nan's with zeros so they do not intervene in the sums
-            comb_us[k_ind] = np.where(np.isnan(G_mat), 0, G_mat) @ \
-                                  np.where(np.isnan(u_mats[0]), 0, u_mats[0]) @ \
-                                  np.where(np.isnan(G_mat.T), 0, G_mat.T)
+            comb_us[k_ind] = np.where(np.isnan(jac_elmts[k_ind]), 0, jac_elmts[k_ind]) @ \
+                                np.where(np.isnan(u_mats[0]), 0, u_mats[0]) @ \
+                                np.where(np.isnan(jac_elmts[k_ind].T), 0, jac_elmts[k_ind].T)
             comb_us[k_ind] = np.sqrt(comb_us[k_ind])
 
-            comb_rs[k_ind] = np.where(np.isnan(G_mat), 0, G_mat) @ \
+            comb_rs[k_ind] = np.where(np.isnan(jac_elmts[k_ind]), 0, jac_elmts[k_ind]) @ \
                                   np.where(np.isnan(u_mats[1]), 0, u_mats[1]) @ \
-                                  np.where(np.isnan(G_mat.T), 0, G_mat.T)
+                                  np.where(np.isnan(jac_elmts[k_ind].T), 0, jac_elmts[k_ind].T)
             comb_rs[k_ind] = np.sqrt(comb_rs[k_ind])
 
-            comb_ss[k_ind] = np.where(np.isnan(G_mat), 0, G_mat) @ \
+            comb_ss[k_ind] = np.where(np.isnan(jac_elmts[k_ind]), 0, jac_elmts[k_ind]) @ \
                                   np.where(np.isnan(u_mats[2]), 0, u_mats[2]) @ \
-                                  np.where(np.isnan(G_mat.T), 0, G_mat.T)
+                                  np.where(np.isnan(jac_elmts[k_ind].T), 0, jac_elmts[k_ind].T)
             comb_ss[k_ind] = np.sqrt(comb_ss[k_ind])
 
-            comb_ts[k_ind] = np.where(np.isnan(G_mat), 0, G_mat) @ \
+            comb_ts[k_ind] = np.where(np.isnan(jac_elmts[k_ind]), 0, jac_elmts[k_ind]) @ \
                                   np.where(np.isnan(u_mats[3]), 0, u_mats[3]) @ \
-                                  np.where(np.isnan(G_mat.T), 0, G_mat.T)
+                                  np.where(np.isnan(jac_elmts[k_ind].T), 0, jac_elmts[k_ind].T)
             comb_ts[k_ind] = np.sqrt(comb_ts[k_ind])
 
-    return (x_ms, comb_us, comb_rs, comb_ss, comb_ts, old_inds, new_inds)
+    # Very well, I now need to build a MultiProfile with the data that I have.
+    # First, I need to build a profile which includes a DataFrame. Let us copy the first one
+    # and replace the column as required.
+    # TODO: omce x_ms comes as a dataframe with the proper indexes (see previous TODOS),
+    # I should be able to do something cleaner than this to assemble the combined DataFrame.
+    df_out = gdp_prfs.profiles[0].data.copy(deep=True)
+    # Assign the proper values
+    df_out['val'] = x_ms.values
+    df_out['ucn'] = comb_us
+    df_out['ucr'] = comb_rs
+    df_out['ucs'] = comb_ss
+    df_out['uct'] = comb_ts
+
+    # TODO
+    # That next line is not exactly the best ... undoing the index to then set it again in the
+    # Profile. Something should be done about that.
+    df_out.reset_index(['alt', 'tdt'], inplace=True)
+
+    # Let's prepare the info dict
+    # TODO: this needs to be imporved (tags handling, many datetime, etc ... ?)
+    info_dict = {'dt': gdp_prfs.events[0].event_dt,
+                 'sn': srns,
+                 'tag': ['cws']}
+
+    # Let's create a dedicated Profile for the CWS. It's not much different from a GDP.
+    cws_prf = ddsd.GDPProfile(info_dict, data=df_out)
+
+    out.update(gdp_prfs.db_variables, [ 
+
+    import pdb
+    pdb.set_trace()
+
+    return (x_ms, comb_us, comb_rs, comb_ss, comb_ts, old_inds)
