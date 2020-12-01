@@ -5,11 +5,11 @@
 _RS92:
 
     # -- META DATA ----------------------------------
-    dt_field: '{evt_dt}'
-    srn_field: '{srn}'
+    dt_field: '{event_dt}'
+    srn_field: '{sn}'
     tag_field:
-        - 'e{evt_id}'
-        - 'r{rig}'
+        - 'e:{event_id}'
+        - 'r:{rig}'
         - '{day_night}'
 
     # -- ORIG DATA ----------------------------------
@@ -35,11 +35,11 @@ _RS92:
 _YT:
 
     # -- META DATA ----------------------------------
-    dt_field: '{evt_dt}Z'
-    srn_field: '{srn}'
+    dt_field: '{event_dt}Z'
+    srn_field: '{sn}'
     tag_field:
-        - 'e{evt_id}'
-        - 'r{rig}'
+        - 'e:{event_id}'
+        - 'r:{rig}'
         - '{day_night}'
 
     # -- ORIG DATA ----------------------------------
@@ -65,11 +65,11 @@ _YT:
 _ZT:
 
     # -- META DATA ----------------------------------
-    dt_field: '{evt_dt}'
-    srn_field: '{srn}'
+    dt_field: '{event_dt}'
+    srn_field: '{sn}'
     tag_field:
-        - 'e{evt_id}'
-        - 'r{rig}'
+        - 'e:{event_id}'
+        - 'r:{rig}'
         - '{day_night}'
 
     # -- ORIG DATA ----------------------------------
@@ -98,8 +98,8 @@ _AR-GDP_001:
     dt_field: '{g.Measurement.StandardTime}'
     srn_field: '{g.MainSonde.SerialNumber}'
     tag_field:
-        - 'e{g.Measurement.Id}'
-        - 'r{g.Measurement.BalloonNumber}'
+        - 'e:{g.Measurement.Id}'
+        - 'r:{g.Measurement.BalloonNumber}'
 
     # -- ORIG DATA ----------------------------------
     _tdtpros1:
@@ -134,8 +134,8 @@ _BR-GDP_001:
     dt_field: '{g.Measurement.StandardTime}Z'
     srn_field: '{g.MainSonde.SerialNumber}'
     tag_field:
-        - 'e{g.Measurement.Id}'
-        - 'r{g.Measurement.BalloonNumber}'
+        - 'e:{g.Measurement.Id}'
+        - 'r:{g.Measurement.BalloonNumber}'
 
     # -- ORIG DATA ----------------------------------
     _tdtpros1:
@@ -167,8 +167,8 @@ _RS41-GDP-BETA_001:
     dt_field: '{g.Measurement.StandardTime}'
     srn_field: '{g.MainSonde.SerialNumber}'
     tag_field:
-        - 'e{g.Measurement.Id}'
-        - 'r{g.Measurement.BalloonNumber}'
+        - 'e:{g.Measurement.Id}'
+        - 'r:{g.Measurement.BalloonNumber}'
 
     # -- ORIG DATA ----------------------------------
     _tdtpros1:

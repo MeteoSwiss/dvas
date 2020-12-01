@@ -32,7 +32,7 @@ from dvas.data.strategy.load import LoadProfileStrategy
 if __name__ == '__main__':
 
     # Define
-    RESET_DB = False
+    RESET_DB = True
 
     filt_gdp = "tag('gdp')"
     filt_gdp_der = "and_(tag('derived'), tag('gdp'))"

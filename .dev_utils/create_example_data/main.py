@@ -13,8 +13,8 @@ import re
 expl_path = Path('.').resolve().parents[1] / 'test_examples'
 N = 1000
 
-#expl_path = Path('.').resolve().parents[1] / 'examples'
-#N = 100000
+expl_path = Path('.').resolve().parents[1] / 'examples'
+N = 100000
 
 def sin_rand(n, scale=1):
     return np.sin(np.arange(n)*np.pi/(2*n) + np.random.rand()*2*np.pi) / scale

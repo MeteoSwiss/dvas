@@ -1,11 +1,11 @@
 
-- tag_abbr: 'e([1-9]\d{0,1})'
+- tag_abbr: 'e:([1-9]\d{0,1})'
   # Generate e1, e2, ..., e99
   tag_desc: 'Event $\1$'
   # Use standard re.sub group syntax to refer group number from regexp
   # generator.
 
-- tag_abbr: 'r([12])'
+- tag_abbr: 'r:([12])'
   # Generate r1, r2
   tag_desc: 'Rig $\1$'
 

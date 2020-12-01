@@ -865,6 +865,33 @@ class InfoManager:
         self.srn = srn
         self.tag_abbr = tag_abbr
 
+    @property
+    def evt_id(self):
+        """str: Event ID which match 1st corresponding pattern in tags. Defaults to None."""
+        try:
+            out = next(filter(glob_var.evt_id_pat.match, self.tag_abbr))
+        except StopIteration:
+            out = None
+        return out
+
+    @property
+    def rig_id(self):
+        """str: Rig ID which match 1st corresponding pattern in tags. Defaults to None."""
+        try:
+            out = next(filter(glob_var.rig_id_pat.match, self.tag_abbr))
+        except StopIteration:
+            out = None
+        return out
+
+    @property
+    def gdp_mdl_id(self):
+        """str: GDP model ID which match 1st corresponding pattern in tags. Defaults to None."""
+        try:
+            out = next(filter(glob_var.gdp_mdl_id_pat.match, self.tag_abbr))
+        except StopIteration:
+            out = None
+        return out
+
     def __getitem__(self, item):
         return getattr(self, item)
 
