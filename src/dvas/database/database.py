@@ -490,24 +490,24 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     localdb.error(err_msg)
                     raise DBInsertError(err_msg)
 
-                # Check tag_abbr existence
+                # Check tag_txt existence
                 try:
                     tag_id_list = [
                         arg[0] for arg in
                         self.get_or_none(
                             Tag,
                             search={
-                                'where': Tag.tag_abbr.in_(info.tag_abbr)
+                                'where': Tag.tag_txt.in_(info.tags)
                             },
                             attr=[[Tag.id.name]],
                             get_first=False
                         )
                     ]
-                    assert len(tag_id_list) == len(info.tag_abbr)
+                    assert len(tag_id_list) == len(info.tags)
 
                 except AssertionError:
                     raise DBInsertError(
-                        f"Many tags in {info.tag_abbr} are missing in DB",
+                        f"Many tags in {info.tags} are missing in DB",
                     )
 
                 # Create original data information
@@ -634,14 +634,14 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             # Group data
             out = []
             for i, qry in enumerate(qryer):
-                tag_abbr = [
-                    arg.tag_abbr for arg in
+                tag_txt_list = [
+                    arg.tag_txt for arg in
                     Tag.select().distinct().
                     join(InfosTags).join(Info).
                     where(Info.id == info_id_list[i].id).
                     iterator()
                 ]
-                srn = [
+                srn_list = [
                     arg.srn for arg in
                     Instrument.select().distinct().
                     join(InfosInstruments).join(Info).
@@ -652,8 +652,8 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     {
                         'info': InfoManager(
                             evt_dt=info_id_list[i].evt_dt,
-                            srn=srn,
-                            tag_abbr=tag_abbr,
+                            srn=srn_list,
+                            tags=tag_txt_list,
                         ),
                         'index': qry.index,
                         'value': qry.value,
@@ -844,32 +844,32 @@ class InfoManager:
     )
 
     #: str: Tag abbr
-    tag_abbr = TProp(
+    tags = TProp(
         Union[None, Iterable[str]],
         setter_fct=lambda x: set(x) if x else set(),
         getter_fct=lambda x: sorted(x)
     )
 
-    def __init__(self, evt_dt, srn, tag_abbr=None):
+    def __init__(self, evt_dt, srn, tags=None):
         """Constructor
 
         Args:
             evt_dt (str | datetime | pd.Timestamp): UTC datetime
             srn (str): Instrument serial number
-            tag_abbr (`optional`, iterable of str): Tag abbr iterable
+            tags (`optional`, iterable of str): Tags
 
         """
 
         # Set attributes
         self.evt_dt = evt_dt
         self.srn = srn
-        self.tag_abbr = tag_abbr
+        self.tags = tags
 
     @property
     def evt_id(self):
         """str: Event ID which match 1st corresponding pattern in tags. Defaults to None."""
         try:
-            out = next(filter(glob_var.evt_id_pat.match, self.tag_abbr))
+            out = next(filter(glob_var.evt_id_pat.match, self.tags))
         except StopIteration:
             out = None
         return out
@@ -878,7 +878,7 @@ class InfoManager:
     def rig_id(self):
         """str: Rig ID which match 1st corresponding pattern in tags. Defaults to None."""
         try:
-            out = next(filter(glob_var.rig_id_pat.match, self.tag_abbr))
+            out = next(filter(glob_var.rig_id_pat.match, self.tags))
         except StopIteration:
             out = None
         return out
@@ -887,7 +887,7 @@ class InfoManager:
     def gdp_mdl_id(self):
         """str: GDP model ID which match 1st corresponding pattern in tags. Defaults to None."""
         try:
-            out = next(filter(glob_var.gdp_mdl_id_pat.match, self.tag_abbr))
+            out = next(filter(glob_var.gdp_mdl_id_pat.match, self.tags))
         except StopIteration:
             out = None
         return out
@@ -898,7 +898,7 @@ class InfoManager:
     def __repr__(self):
         p_printer = pprint.PrettyPrinter()
         return p_printer.pformat(
-            (f'dt: {self.evt_dt}', f'srn: {self.srn}', f'tag: {self.tag_abbr}')
+            (f'dt: {self.evt_dt}', f'srn: {self.srn}', f'tag: {self.tags}')
         )
 
     def __hash__(self):
@@ -917,7 +917,7 @@ class InfoManager:
             val = [val]
 
         # Add
-        self.tag_abbr = self.tag_abbr + val
+        self.tags = self.tags + val
 
     def rm_tag(self, val):
         """Remove a tag abbr
@@ -932,7 +932,7 @@ class InfoManager:
             val = [val]
 
         # Remove
-        self.tag_abbr = list(filter(lambda x: x not in val, self.tag_abbr))
+        self.tags = list(filter(lambda x: x not in val, self.tags))
 
     @staticmethod
     def sort(info_list):
@@ -960,7 +960,7 @@ class InfoManager:
     @property
     def sort_attr(self):
         """ list of InfoManger attributes: Attributes sort order"""
-        return tuple((self.evt_dt, *self.srn, *self.tag_abbr))
+        return tuple((self.evt_dt, *self.srn, *self.tags))
 
     def __eq__(self, other):
         return self.sort_attr == other.sort_attr
@@ -1202,7 +1202,7 @@ class TagExpr(TerminalSearchInfoExpr):
 
     def get_filter(self):
         """Implement get_filter method"""
-        return Tag.tag_abbr.in_(self.expression)
+        return Tag.tag_txt.in_(self.expression)
 
 
 class ParameterExpr(TerminalSearchInfoExpr):

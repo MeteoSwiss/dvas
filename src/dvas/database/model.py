@@ -92,7 +92,7 @@ class Flag(MetadataModel):
 class Tag(MetadataModel):
     """Tag model"""
     id = AutoField(primary_key=True)
-    tag_abbr = CharField(null=False, unique=True)
+    tag_txt = CharField(null=False, unique=True)
     tag_desc = TextField()
 
 

@@ -1,15 +1,15 @@
 
-- tag_abbr: 'e:([1-9]\d{0,1})'
+- tag_txt: 'e:([1-9]\d{0,1})'
   # Generate e1, e2, ..., e99
   tag_desc: 'Event $\1$'
   # Use standard re.sub group syntax to refer group number from regexp
   # generator.
 
-- tag_abbr: 'r:([12])'
+- tag_txt: 'r:([12])'
   # Generate r1, r2
   tag_desc: 'Rig $\1$'
 
-- tag_abbr: '^((day)|(night))'
+- tag_txt: '^((day)|(night))'
   # Generate day, night
   # In this example, '^' is required at the beginning to
   # create regexp groups almost no group will be catch.
@@ -17,8 +17,8 @@
   # Use lambda function to set 1st character to upper case and append the rest
   # of the group in lower case.
 
-- tag_abbr: 'vof'
+- tag_txt: 'vof'
   tag_desc: 'demo tag'
 
-- tag_abbr: 'vof2'
+- tag_txt: 'vof2'
   tag_desc: 'demo tag'

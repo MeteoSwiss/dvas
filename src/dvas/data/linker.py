@@ -458,7 +458,7 @@ class CSVHandler(FileHandler):
         info_mngr = InfoManager(
             evt_dt=metadata[EVT_DT_FLD_NM],
             srn=metadata[SRN_FLD_NM],
-            tag_abbr=metadata[TAG_FLD_NM] + [TAG_RAW_VAL],
+            tags=metadata[TAG_FLD_NM] + [TAG_RAW_VAL],
         )
 
         # Get config params for (instr_type, prm_abbr) couple
@@ -593,7 +593,7 @@ class GDPHandler(FileHandler):
         info_mngr = InfoManager(
             evt_dt=metadata[EVT_DT_FLD_NM],
             srn=metadata[SRN_FLD_NM],
-            tag_abbr=metadata[TAG_FLD_NM] + [TAG_RAW_VAL, TAG_GDP_VAL],
+            tags=metadata[TAG_FLD_NM] + [TAG_RAW_VAL, TAG_GDP_VAL],
         )
 
         try:
