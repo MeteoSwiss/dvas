@@ -190,10 +190,12 @@ Until its release, the dvas repository will remain private: branching will thus 
               git pull --rebase origin develop
 
 10. You can now push your branch to the dvas repository. If warranted (it most likely will be!),
-   remember to update the `CHANGELOG` and add your name to the `AUTHORS` before doing so.
+    remember to update the `CHANGELOG` and add your name to the `AUTHORS` before doing so.
 
-       git push origin your_branch_name
+       git push -f origin your_branch_name
 
+    Note the `-f` flag, required because of the `--rebase` to update the commit history of the
+    branch stored on Github.
 
 11. Next, go to `your_branch_name` on the dvas Github repository, and draft a new pull request. By
     default, the pull request should go from `your_branch_name` to the `develop` branch. Do not forget to link the pull request to a specific issue if warranted. Once the pull request is issued, automated checks will be run (pytest, pylint, changelog, ...), which should all succeed (if not, there might be something wrong with your changes).
