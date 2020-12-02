@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
 from ..dvas_environ import path_var as env_path_var
-from . import plot_utils as pu
+from . import utils as pu
 
 
 def multiprf_plot(prfs, keys, x='alt', y='val', fig_num=None, save_fn=None):

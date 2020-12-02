@@ -82,11 +82,11 @@ def set_mplstyle(style='base'):
                         % (style, ', '.join(PLOT_STYLES.keys())))
 
     # Always apply the base style first.
-    plt.style.use(str(Path(pkg_path, 'plot', 'mpl_styles', PLOT_STYLES['base'])))
+    plt.style.use(str(Path(pkg_path, 'plots', 'mpl_styles', PLOT_STYLES['base'])))
 
     # Then apply which ever alternative style was requested, if we haven't already.
     if style != 'base':
-        plt.style.use(str(Path(pkg_path, 'plot', 'mpl_styles', PLOT_STYLES[style])))
+        plt.style.use(str(Path(pkg_path, 'plots', 'mpl_styles', PLOT_STYLES[style])))
 
 
 def cmap_discretize(cmap, n_cols):
