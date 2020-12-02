@@ -33,28 +33,27 @@ names are applicable:
    * ``val``: primary Profile value
    * ``alt``: altitude
    * ``tdt``: time delta
-   * ``ucn``: true uncorrelated uncertainty
    * ``ucr``: rig-uncorrelated uncertainty
    * ``ucs``: spatial-correlated uncertainty
    * ``uct``: temporal-correlated uncertainty
+   * ``ucu``: true uncorrelated uncertainty
    * ``flg``: flags
 
 The following parameters are applicable to their event metadata:
 
- * ``srn``: Serial Number
- * ``sit``: launch/measurement site
+ * ``srn``: radiosonde Serial Number
  * ``evt``: measurement event ID
  * ``rig``: rig ID (in case of multiple flights)
  * ``mdl``: the GDP model and version
 
-All radiosonde profiles must be associated to a specific ``site``, ``event``, and ``rig``,
-which (respectively) encode the spatial, temporal, and payload configurations of the launch.
+All radiosonde profiles must be associated to a specific ``event`` and ``rig``,
+which (respectively) encode the spatial+temporal and payload configurations of the launch.
 This information must be provided to dvas via `tags` in the metadata associated to each dataset.
 
 .. hint::
     If two radiosondes are launched from the same location and at the same time, but with two
-    distinct balloons, they have an identical **site** and **event** value, but distinct **rig**
-    and **serial number** values.
+    distinct balloons, they have an identical **event** value, but distinct **rig** and
+    **serial number** values.
 
 Event filtering syntax
 ----------------------
