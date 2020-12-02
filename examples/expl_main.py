@@ -28,17 +28,25 @@ from dvas.data.linker import LocalDBLinker
 from dvas.database.model import Data
 from dvas.data.strategy.load import LoadProfileStrategy
 
+import dvas.tools.gruan as dtg
+import dvas.plot.plot_gruan as dpg
+
 
 if __name__ == '__main__':
 
     # Define
-    RESET_DB = False
+    RESET_DB = True
 
     filt_gdp = "tag('gdp')"
+    filt_dt = "dt('20180125T120000Z', '==')"
+    filt_vof = "and_(%s,%s)" % (filt_gdp, filt_dt)
+
+
     filt_gdp_der = "and_(tag('derived'), tag('gdp'))"
     filt_raw = "and_(tag('raw'), not_(tag('gdp')))"
     filt_all = "all()"
     filt_der = "and_(tag('derived'), not_(tag('gdp')))"
+    filt_cws = "tag('cws')"
 
     # Create database
     db_mngr = DatabaseManager(reset_db=RESET_DB)
@@ -68,107 +76,33 @@ if __name__ == '__main__':
     # Load a basic time profile, with a variable and altitude
     rs_prf = MultiRSProfile()
     try:
-        rs_prf.load(filt_der, 'trepros1', 'tdtpros1', alt_abbr='altpros1')
+        rs_prf.load_from_db(filt_der, 'trepros1', 'tdtpros1', alt_abbr='altpros1')
 
     except dvasError:
-        rs_prf.load(filt_raw, 'trepros1', 'tdtpros1', alt_abbr='altpros1')
+        rs_prf.load_from_db(filt_raw, 'trepros1', 'tdtpros1', alt_abbr='altpros1')
         rs_prf.sort()
         #     rs_prf.resample()
-        rs_prf.save()
+        rs_prf.save_to_db()
 
     print(rs_prf.get_info('evt_id'))
     print(rs_prf.get_info('rig_id'))
-    print(rs_prf.get_info('gdp_mdl_id'))
+    print(rs_prf.get_info('mdl_id'))
+
+    # Load the GDPs for temperature, including all the errors
+    gdp_prfs = MultiGDPProfile()
+    gdp_prfs.load_from_db(filt_vof, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1',
+                          ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t',
+                          inplace=True)
 
 
-    #
-    # # Load the GDPs for temperature, including all the errors
-    # gdp_prf = MultiGDPProfile()
-    # try:
-    #     gdp_prf.load(
-    #         filt_gdp_der, 'trepros1', 'tdtpros1', alt_abbr='altpros1',
-    #         ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t'
-    #     )
-    #
-    # except dvasError:
-    #     gdp_prf.load(
-    #         filt_gdp, 'trepros1', 'tdtpros1', alt_abbr='altpros1',
-    #         ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t'
-    #     )
-    #     gdp_prf.sort()
-    #     gdp_prf.resample()
-    #     gdp_prf.save()
+    out = dtg.combine_gdps(gdp_prfs, binning=1, method='weighted mean')
+    # For the sake of the exemple, save this to the database
+    out.save_to_db()
 
-    #
-    # # Make a plot
-    # prf.plot(fig_num=1, save_fn='plot1')
-    #
-    # # Load a regular radiosonde profile, with a variable, altitude, and time deltas.
-    # rs_prf = MultiRSProfile()
-    # rs_prf.load(filt_in, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1', inplace=True)
-    #
-    # # Load the GDPs for temperature, including all the errors
-    # gdp_prf = MultiGDPProfile()
-    # gdp_prf.load(filt_in, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1',
-    #              ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t', inplace=True)
-    #
-    # # Make a plot
-    # gdp_prf.plot(fig_num=2, x='tdt', save_fn='plot2')
-    #
-    # # Use convenience getters to extract some info
-    # srns = gdp_prf.get_evt_prm('sn')
-    # vals_alt = gdp_prf.get_prms(['val', 'alt'])
-    #
-    # # Compute the total error from GDPs
-    # uc_tot = gdp_prf.uc_tot
-    #
-    # # Set some data to 0 just to check
-    # rs_prf.profiles['rs_prf'][0].data['val'] = 0
-    #
-    # # Save this back to the DB with new tags
-    # rs_prf.save(add_tags=['vof'], rm_tags=['raw'], prm_list=['val', 'alt', 'tdt'])
-    #
-    # # Extract it, and check it is still modified
-    # rs_prf_vof = MultiRSProfile()
-    # rs_prf_vof.load(filt_vof, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1', inplace=True)
-    #
+    # And re-load it.
+    cws_prf = MultiGDPProfile()
+    cws_prf.load_from_db(filt_cws, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1',
+                         ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t',
+                         inplace=True)
 
-
-""" Original code ... kept for now until everything has been reconnected.
-    # Define
-    RESET_DB = False
-    filt = "tag('e1')"
-
-    # Create database
-    db_mngr = DatabaseManager(reset_db=RESET_DB)
-
-    # Update DB + log
-    if RESET_DB:
-        with LogManager():
-            update_db('trepros1', strict=True)
-            update_db('treprosu_')
-            update_db('altpros1')
-            update_db('prepros1')
-
-    # Time
-    data_t = time_mngr.load(filt, 'trepros1')
-    data_s = data_t.sort()
-    data_r = data_s.resample()
-    data_sy = data_r.synchronize()
-    data_sy.plot()
-    data_sy.save({'data': 'dummy_3'})
-    test = time_mngr.load(filt, 'dummy_3')
-    test = test.sort()
-    data_sy.plot()
-
-    # Alt
-    data_t = alt_mngr.load(filt, 'trepros1', 'altpros1')
-    data_s = data_t.sort()
-    data_r = data_s.resample()
-    data_sy_t = data_r.synchronize(method='time')
-    data_sy_a = data_r.synchronize(method='alt')
-    data_sy_t.save({'data': 'dummy_0', 'alt': 'dummy_1'})
-    test = data_t = alt_mngr.load(filt, 'dummy_0', 'dummy_1')
-    test = test.sort()
-    data_sy_t.plot()
-"""
+    dpg.gdps_vs_cws(gdp_prfs, cws_prf)

@@ -47,7 +47,7 @@ def corcoef_gdps(i, j, uc_type,
 
     Warning:
         If no serial numbers are specified, the function will assume that the data originates
-        **from the exaxct same radiosonde.** Idem for the GDP models, rig id and event id.
+        **from the exact same radiosonde.** Idem for the GDP models, rig id and event id.
 
     Returns:
         numpy.ndarray of float(s): the correlation coefficient(s), in the range [0, 1].
