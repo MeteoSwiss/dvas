@@ -6,14 +6,14 @@ Distributed under the terms of the GNU General Public License v3.0 or later.
 
 SPDX-License-Identifier: GPL-3.0-or-later
 
-Module contents: Testing 'gruan' classes and function of the gruan submodule.
+Module contents: Testing 'gruan' classes and function of the tools submodule.
 
 """
 
 # Import from python packages and modules
 import numpy as np
 import pytest
-from dvas.gruan import corcoef_gdps, merge_andor_rebin_gdps
+from dvas.tools import corcoef_gdps, merge_andor_rebin_gdps
 
 # Define a series of reference measurement parameters, to test the different combination options.
 T_OK = [np.zeros(1), np.zeros(1)]                       # Same time

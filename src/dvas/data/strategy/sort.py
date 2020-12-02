@@ -13,10 +13,10 @@ Module contents: Sort strategy
 from abc import ABCMeta, abstractmethod
 
 # Import from current package
-from ...database.database import EventManager
+from ...database.database import InfoManager
 
 
-class SortDataStrategy(metaclass=ABCMeta):
+class SortStrategyAbstract(metaclass=ABCMeta):
     """Abstract class to manage data sort strategy"""
 
     @abstractmethod
@@ -24,26 +24,26 @@ class SortDataStrategy(metaclass=ABCMeta):
         """Strategy required method"""
 
 
-class TimeSortDataStrategy(SortDataStrategy):
+class SortProfileStrategy(SortStrategyAbstract):
     """Class to manage sort of time data parameter"""
 
     def sort(self, data):
         """Implementation of sort method
 
         Args:
-            data (dict): Dict of list of ProfileManager
+            data (list): list of Profile
+
+        Returns:
+            list of Profile
 
         """
 
-        for key, val in data.items():
+        # Get index sort position
+        _, sort_idx = InfoManager.sort(
+            [arg.info for arg in data]
+        )
 
-            # Get index sort position
-            _, sort_idx = EventManager.sort(
-                [arg.event_mngr for arg in val]
-            )
-
-            data.update(
-                {key: [val[i] for i in sort_idx]}
-            )
+        # Arrange position
+        data = [data[i] for i in sort_idx]
 
         return data

@@ -10,38 +10,54 @@ Module contents: Plotting strategies
 """
 
 # Import from external packages
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta#, abstractmethod
 
 # Import from current package
-from ...plot.plot import basic_plot, basic_alt_plot
+from ...plot.plot import multiprf_plot
 
 
 class PlotStrategy(metaclass=ABCMeta):
-    """Abstract class to manage data plotting strategy"""
+    """ Base class to manage the data plotting strategy for the MultiProfile class. """
 
-    @abstractmethod
-    def plot(self, *args, **kwargs):
-        """Strategy required method"""
+    #TODO: interesting pylint suggestion here. It is suggesting to create a simple function
+    # rather than a full class. Any merit to this suggestion ?
+    def plot(self, prfs, keys, **kwargs):
+        """ Call the proper plotting method for this strategy.
 
+        Args:
+            prfs (dict of Profile or RSProfile or GDPprofile): data to plot
+            keys (list of str or int): list of prfs dictionnary keys to extract
 
-class TimePlotStrategy(PlotStrategy):
-    """CLass to manage plotting of time data parameter"""
+        """
 
-    def plot(self, values, event_mngr, **kwargs):
-        """Plot time profiles"""
+        multiprf_plot(prfs, keys, x='alt', y='val', **kwargs)
 
-        basic_plot(values['data'], **kwargs)
+class RSPlotStrategy(PlotStrategy):
+    """ Child class to manage the plotting strategy for the MultiRSProfile class. """
 
+    def plot(self, prfs, keys, x='tdt', **kwargs):
+        """ Call the proper plotting method for this strategy.
 
-class AltTimePlotStartegy(PlotStrategy):
-    """Class to manage plotting of time data parameter"""
+        Args:
+            prfs (dict of Profile or RSProfile or GDPprofile): data to plot
+            keys (list of str or int): list of prfs dictionnary keys to extract
+            x (str): parameter name for the x axis. Defaults to 'tdt'.
 
-    def plot(self, values, event_mngr, *args, **kwargs):
-        """PLot data in altitude"""
+        """
 
-        values_new = []
-        for arg_data, arg_alt in zip(values['data'], values['alt']):
-            arg_data.index = arg_alt.values
-            values_new.append(arg_data)
+        multiprf_plot(prfs, keys, x=x, y='val', **kwargs)
 
-        basic_alt_plot(values_new, **kwargs)
+class GDPPlotStrategy(PlotStrategy):
+    """ Child class to manage the plotting strategy for the MultiGDPProfile class. """
+
+    def plot(self, prfs, keys, x='tdt', **kwargs):
+        """ Call the proper plotting method for this strategy.
+
+        Args:
+            prfs (dict of Profile or RSProfile or GDPprofile): data to plot
+            keys (list of str or int): list of prfs dictionnary keys to extract
+            x (str): parameter name for the x axis. Defaults to 'tdt'.
+
+        """
+
+        multiprf_plot(prfs, keys, x=x, y='val', **kwargs)

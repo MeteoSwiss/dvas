@@ -43,6 +43,7 @@ class VariableManager(ABC, metaclass=ABCSingleInstanceMeta):
             ])
 
         except AssertionError:
+
             "Error in matching 'attr_def' pattern"
 
         # Set attributes
@@ -177,6 +178,12 @@ class GlobalPackageVariableManager(VariableManager):
     )
     #: list of str: Config file allowed extensions. Default to ['yml', 'yaml']
     config_file_ext = TProp(Iterable[str], lambda x: tuple(x))
+    #: str: Event ID pattern use in InfoManager to extract event tag.
+    evt_id_pat = TProp(str, lambda x: compile(x))
+    #: str: Rig ID pattern use in InfoManager to extract event tag.
+    rig_id_pat = TProp(str, lambda x: compile(x))
+    #: str: GDP model ID pattern use in InfoManager to extract event tag.
+    mdl_id_pat = TProp(str, lambda x: compile(x))
 
     @property
     def attr_def(self):
@@ -186,7 +193,13 @@ class GlobalPackageVariableManager(VariableManager):
             {'name': 'config_gen_grp_sep',
              'default': '$'},
             {'name': 'config_file_ext',
-             'default': ['yml', 'yaml']}
+             'default': ['yml', 'yaml']},
+            {'name': 'evt_id_pat',
+             'default': r'^e:\w+$'},
+            {'name': 'rig_id_pat',
+             'default': r'^r:\w+$'},
+            {'name': 'mdl_id_pat',
+             'default': r'^m:\w+$'},
         ]
 
 

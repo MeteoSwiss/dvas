@@ -14,7 +14,7 @@ from abc import ABCMeta, abstractmethod
 import numpy as np
 
 # Import from current package
-from .data import TimeProfileManager
+from .data import Profile
 from ..math import crosscorr
 
 
@@ -50,11 +50,11 @@ class TimeSynchronizeStrategy(SynchronizeStrategy):
 
         # Check data ordering
         keys = list(data.keys())
-        event_mngrs = {
-            key: [arg.event_mngr for arg in val] for key, val in data.items()
+        info = {
+            key: [arg.info for arg in val] for key, val in data.items()
         }
         tst = all(
-            [event_mngrs[key] == event_mngrs[keys[0]] for key in keys[1:]]
+            [info[key] == info[keys[0]] for key in keys[1:]]
         )
         assert tst is True, 'Unsorted data or of different length'
 
@@ -86,7 +86,7 @@ class TimeSynchronizeStrategy(SynchronizeStrategy):
         for key, val in data.items():
             for i, arg in enumerate(val):
                 res = arg.data.shift(window_values[idx_offset[i]])
-                val[i] = TimeProfileManager(arg.event_mngr, data=res)
+                val[i] = Profile(arg.info, data=res)
 
             data.update({key: val})
 

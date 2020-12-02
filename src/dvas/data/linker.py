@@ -20,15 +20,14 @@ import pandas as pd
 
 # Import from current package
 from ..dvas_environ import path_var as env_path_var
-from ..database.model import InstrType, Instrument, EventsInfo
-from ..database.model import Parameter, OrgiDataInfo
-from ..database.database import DatabaseManager, EventManager
+from ..database.model import InstrType, Instrument, Info
+from ..database.model import Parameter, DataSource
+from ..database.database import DatabaseManager, InfoManager
 from ..config.config import OrigData, CSVOrigMeta
 from ..config.config import ConfigReadError
 from ..config.definitions.origdata import META_FIELD_KEYS
-from ..config.definitions.origdata import EVENT_DT_FLD_NM, SN_FLD_NM, TAG_FLD_NM
-from ..config.definitions.origdata import INDEX_FLD_NM, PARAM_FLD_NM
-from ..config.definitions.origdata import INDEX_NM, VALUE_NM
+from ..config.definitions.origdata import EVT_DT_FLD_NM, SRN_FLD_NM, TAG_FLD_NM
+from ..config.definitions.origdata import PARAM_FLD_NM
 from ..dvas_logger import rawcsv
 from ..dvas_environ import glob_var
 from ..config.pattern import INSTR_TYPE_PAT
@@ -50,8 +49,6 @@ class Handler(ABC):
         `Source <https://refactoring.guru/design-patterns/chain-of-responsibility/python/example>`__
 
     """
-
-    db_mngr = DatabaseManager()
 
     @abstractmethod
     def set_next(self, handler):
@@ -109,6 +106,9 @@ class AbstractHandler(Handler):
     """
 
     def __init__(self):
+
+        # Init attributes
+        self._db_mngr = DatabaseManager()
         self._next_handler = None
 
     def set_next(self, handler):
@@ -197,7 +197,7 @@ class FileHandler(AbstractHandler):
         instr_type_name = grp.group(1)
 
         # Check instr_type name existence in DB
-        if self.db_mngr.get_or_none(
+        if self._db_mngr.get_or_none(
                 InstrType,
                 search={
                     'where': InstrType.type_name == instr_type_name
@@ -217,11 +217,11 @@ class FileHandler(AbstractHandler):
         # Check instr_type name existence
         # (need it for loading origdata config)
         if (
-            instr_type_name_from_sn := self.db_mngr.get_or_none(
+            instr_type_name_from_sn := self._db_mngr.get_or_none(
                 Instrument,
                 search={
                     'join_order': [InstrType],
-                    'where': Instrument.sn == metadata[SN_FLD_NM]
+                    'where': Instrument.srn == metadata[SRN_FLD_NM]
                 },
                 attr=[
                     [Instrument.instr_type.name, InstrType.type_name.name]
@@ -230,14 +230,14 @@ class FileHandler(AbstractHandler):
         ) is None:
             # TODO Detail exception
             raise Exception(
-                f"Missing instrument SN '{metadata[SN_FLD_NM]}' in DB while reading " +
+                f"Missing instrument SN '{metadata[SRN_FLD_NM]}' in DB while reading " +
                 f"data file '{file_path}'"
             )
 
         if instr_type_name != instr_type_name_from_sn[0]:
             #TODO Detail exception
             raise Exception(
-                f"Instrument SN '{metadata[SN_FLD_NM]}' does not correspond to instr_type in " +
+                f"Instrument SN '{metadata[SRN_FLD_NM]}' does not correspond to instr_type in " +
                 f"('{instr_type_name}' != '{instr_type_name_from_sn}') " +
                 f"for data file '{file_path}'"
             )
@@ -245,22 +245,22 @@ class FileHandler(AbstractHandler):
     def exclude_file(self, path_scan, prm_abbr):
         """Exclude file method"""
 
-        # Search exclude file names
-        exclude_file_name = self.db_mngr.get_or_none(
-            EventsInfo,
+        # Search exclude file names source hash
+        exclude_file_name = self._db_mngr.get_or_none(
+            Info,
             search={
                 'where': (
                     (Parameter.prm_abbr == prm_abbr) &
-                    (Instrument.sn != '')
+                    (Instrument.srn != '')
                 ),
-                'join_order': [Parameter, OrgiDataInfo, Instrument]},
-            attr=[[EventsInfo.orig_data_info.name, OrgiDataInfo.source.name]],
+                'join_order': [Parameter, DataSource, Instrument]},
+            attr=[[Info.data_src.name, DataSource.source_hash.name]],
             get_first=False
         )
 
         origdata_path_new = [
             arg for arg in path_scan
-            if self.apply_file_check_rule(arg) not in exclude_file_name
+            if hash(self.get_source_unique_id(arg)) not in exclude_file_name
         ]
 
         return origdata_path_new
@@ -325,16 +325,21 @@ class FileHandler(AbstractHandler):
         return out
 
     @staticmethod
-    def apply_file_check_rule(file_path):
-        """
+    def get_source_unique_id(file_path):
+        """Return string use to determine if a file have already be read.
 
         Args:
-            file_path:
+            file_path (pathlib.Path): Original file path
 
         Returns:
+            int
 
         """
-        return file_path.name
+
+        # Get file name
+        out = file_path.name
+
+        return out
 
 
 class CSVHandler(FileHandler):
@@ -449,11 +454,11 @@ class CSVHandler(FileHandler):
         # (need it for loading origdata config)
         self.check_sn(file_path, instr_type_name, metadata)
 
-        # Create event with 'raw' tag
-        event = EventManager(
-            event_dt=metadata[EVENT_DT_FLD_NM],
-            sn=metadata[SN_FLD_NM],
-            tag_abbr=metadata[TAG_FLD_NM] + [TAG_RAW_VAL],
+        # Create info with 'raw' tag
+        info_mngr = InfoManager(
+            evt_dt=metadata[EVT_DT_FLD_NM],
+            srn=metadata[SRN_FLD_NM],
+            tags=metadata[TAG_FLD_NM] + [TAG_RAW_VAL],
         )
 
         # Get config params for (instr_type, prm_abbr) couple
@@ -468,22 +473,21 @@ class CSVHandler(FileHandler):
 
         # Add usecols
         try:
+            # Set read_csv arguments
             raw_csv_read_args.update(
                 {
                     'usecols': [
                         self.origdata_config_mngr.get_val(
-                            [instr_type_name, prm_abbr], INDEX_FLD_NM
-                        ),
-                        self.origdata_config_mngr.get_val(
                             [instr_type_name, prm_abbr], PARAM_FLD_NM
                         ),
-                    ]
+                    ],
+                    'squeeze': True,
                 }
             )
 
             # Read raw csv
             data = pd.read_csv(file_path, **raw_csv_read_args)
-            data = data.applymap(
+            data = data.map(
                 eval(self.origdata_config_mngr.get_val(
                     [instr_type_name, prm_abbr], 'lambda')
                 )
@@ -498,11 +502,10 @@ class CSVHandler(FileHandler):
         except KeyError:
 
             # Create empty data set
-            data = pd.DataFrame({INDEX_NM: [], VALUE_NM: []})
-            data.set_index(INDEX_NM, inplace=True)
+            data = pd.Series([])
 
             # Add empty tag
-            event.add_tag(TAG_EMPTY_VAL)
+            info_mngr.add_tag(TAG_EMPTY_VAL)
 
             # Log
             rawcsv.warn(
@@ -518,10 +521,11 @@ class CSVHandler(FileHandler):
 
         # Append data
         out = {
-            'event': event,
+            'info': info_mngr,
             'prm_abbr': prm_abbr,
-            'data': data,
-            'source_info': self.apply_file_check_rule(file_path)
+            'index': data.index.values,
+            'value': data.values,
+            'source_info': self.get_source_unique_id(file_path)
         }
 
         return out
@@ -559,6 +563,7 @@ class GDPHandler(FileHandler):
         """Method to get file metadata"""
 
         with nc.Dataset(file_path, 'r') as self._fid:
+
             # Read metadata fields
             try:
                 out = self.read_metaconfig_fields(instr_type_name, prm_abbr)
@@ -585,31 +590,22 @@ class GDPHandler(FileHandler):
         self.check_sn(file_path, instr_type_name, metadata)
 
         # Create event with 'raw' and 'gdp' tag
-        event = EventManager(
-            event_dt=metadata[EVENT_DT_FLD_NM],
-            sn=metadata[SN_FLD_NM],
-            tag_abbr=metadata[TAG_FLD_NM] + [TAG_RAW_VAL, TAG_GDP_VAL],
+        info_mngr = InfoManager(
+            evt_dt=metadata[EVT_DT_FLD_NM],
+            srn=metadata[SRN_FLD_NM],
+            tags=metadata[TAG_FLD_NM] + [TAG_RAW_VAL, TAG_GDP_VAL],
         )
 
         try:
 
             # Read data
             with nc.Dataset(file_path, 'r') as self._fid:
-                index_col_nn = self.origdata_config_mngr.get_val(
-                    [instr_type_name, prm_abbr], INDEX_FLD_NM
-                )
                 data_col_nm = self.origdata_config_mngr.get_val(
                     [instr_type_name, prm_abbr], PARAM_FLD_NM
                 )
 
-                data = pd.DataFrame(
-                    {
-                        INDEX_NM: self._fid[index_col_nn][:],
-                        VALUE_NM: self._fid[data_col_nm][:],
-                    }
-                )
-                data.set_index(INDEX_NM, inplace=True)
-                data = data.applymap(
+                data = pd.Series(self._fid[data_col_nm][:])
+                data = data.map(
                     eval(self.origdata_config_mngr.get_val(
                         [instr_type_name, prm_abbr], 'lambda')
                     )
@@ -618,11 +614,10 @@ class GDPHandler(FileHandler):
         except KeyError:
 
             # Create empty data set
-            data = pd.DataFrame({INDEX_NM: [], VALUE_NM: []})
-            data.set_index(INDEX_NM, inplace=True)
+            data = pd.Series([])
 
             # Add empty tag
-            event.add_tag(TAG_EMPTY_VAL)
+            info_mngr.add_tag(TAG_EMPTY_VAL)
 
             # Log
             rawcsv.warn(
@@ -639,10 +634,11 @@ class GDPHandler(FileHandler):
 
         # Append data
         out = {
-            'event': event,
-            'data': data,
+            'info': info_mngr,
+            'index': data.index.values,
+            'value': data.values,
             'prm_abbr': prm_abbr,
-            'source_info': self.apply_file_check_rule(file_path)
+            'source_info': self.get_source_unique_id(file_path)
         }
 
         return out
@@ -659,36 +655,17 @@ class DataLinker(ABC):
     def save(self, *args, **kwargs):
         """Data saving method"""
 
-    def to_frame(self, data, key):
-        """Convert to pd.DataFrame
-
-        Args:
-            data (pd.DataFrame or pd.Series): Data dict to convert
-            key (str): Data key
-
-        Returns:
-            pd.Series
-
-        """
-
-        if isinstance(data[key], pd.Series):
-            data[key] = data[key].to_frame(VALUE_NM)
-            data[key].index.name = INDEX_NM
-            data[key].reset_index(inplace=True)
-
-        elif len(data[key].columns) == 1:
-            data[key].columns = [VALUE_NM]
-            data[key].index.name = INDEX_NM
-            data[key].reset_index(inplace=True)
-
-        else:
-            data[key].columns = [INDEX_NM, VALUE_NM]
-
 
 class LocalDBLinker(DataLinker):
     """Local DB data linker """
 
-    db_mngr = DatabaseManager()
+    def __init__(self):
+
+        # Call super constructor
+        super().__init__()
+
+        # Init attributes
+        self._db_mngr = DatabaseManager()
 
     def load(self, search, prm_abbr, filter_empty=True):
         """Load parameter method
@@ -700,7 +677,7 @@ class LocalDBLinker(DataLinker):
                 Default to True.
 
         Returns:
-            list of pd.DataFrame
+            list of dict
 
         .. uml::
 
@@ -715,7 +692,7 @@ class LocalDBLinker(DataLinker):
         """
 
         # Retrieve data from DB
-        data = self.db_mngr.get_data(
+        data = self._db_mngr.get_data(
             where=search, prm_abbr=prm_abbr, filter_empty=filter_empty
         )
 
@@ -725,18 +702,15 @@ class LocalDBLinker(DataLinker):
         """Save data method
 
         Args:
-            data_list (list of dict):
-                [{'data': pd.DataFrame or pd.Series, 'event': EventManager', 'prm_abbr': str}]
+            data_list (list of dict): dict mandatory items are 'index' (np.array),
+                'value' (np.array), 'info' (InfoManager), 'prm_abbr' (str).
+                dict optional key is 'source_info' (str)
 
         """
 
-        for args in data_list:
-
-            # Convert data to pd.DataFrame
-            self.to_frame(args, 'data')
-
-            # Add data to DB
-            self.db_mngr.add_data(**args)
+        # Add data to DB
+        for kwargs in data_list:
+            self._db_mngr.add_data(**kwargs)
 
 
 class CSVOutputLinker(DataLinker):

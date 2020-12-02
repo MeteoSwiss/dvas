@@ -13,6 +13,7 @@ Module contents: Package helper classes and functions.
 from pathlib import Path
 from re import compile, IGNORECASE
 from datetime import datetime
+from copy import deepcopy as dc
 from functools import wraps, reduce
 from abc import ABC, ABCMeta, abstractmethod
 from inspect import getmodule
@@ -92,9 +93,13 @@ class RequiredAttrMetaClass(ABCMeta):
                 )
                 raise ValueError(errmsg)
 
-            if not isinstance(getattr(obj, attr_name), dtype):
+            #TODO
+            # Use pampy to check pattern
+            obj_attr = getattr(obj, attr_name)
+            if not isinstance(obj_attr, dtype):
                 errmsg = (
-                    f"required attribute '{attr_name}' bad set in class {obj}"
+                    f"Attribute '{attr_name}' badly set in class {obj}. " +
+                    f"Must be a {dtype} instead a {type(obj_attr)}"
                 )
                 raise ValueError(errmsg)
 
@@ -189,6 +194,25 @@ class TimeIt(ContextDecorator):
         print(f'{self._head_msg}: {delta}', flush=True)
 
 
+def deepcopy(func):
+    """Use a deepcopy of the class when calling the method.
+    The method keywords must contain the 'inplace' argument.
+    """
+
+    @wraps(func)
+    def decorated(*args, inplace=True, **kwargs):
+
+        if inplace:
+            func(*args, **kwargs)
+            res = None
+        else:
+            res = dc(args[0])
+            func(res, *args[1:], **kwargs)
+        return res
+
+    return decorated
+
+
 class TypedProperty:
     """Typed property class
 
@@ -196,7 +220,7 @@ class TypedProperty:
         Adapted from `Stackoverflow. <https://stackoverflow.com/questions/34884947/understanding-a-python-descriptors-example-typedproperty>`__
 
     """
-    def __init__(self, pampy_match, setter_fct=None, args=None, kwargs=None):
+    def __init__(self, pampy_match, setter_fct=None, args=None, kwargs=None, getter_fct=None):
         """Constructor
 
         Args:
@@ -209,6 +233,7 @@ class TypedProperty:
         """
         # Set attributes
         self._pampy_match = pampy_match
+        self._getter_fct = (lambda x: x) if getter_fct is None else getter_fct
         self._setter_fct = (lambda x: x) if setter_fct is None else setter_fct
         self._setter_fct_args = tuple() if args is None else args
         self._setter_fct_kwargs = dict() if kwargs is None else kwargs
@@ -216,7 +241,7 @@ class TypedProperty:
     def __get__(self, instance, owner):
         if instance is None:
             return self
-        return instance.__dict__[self._name]
+        return self._getter_fct(instance.__dict__[self._name])
 
     def __set__(self, instance, val):
         # Test type
@@ -369,4 +394,4 @@ def unzip(val):
         list
 
     """
-    return list(zip(*val))
+    return zip(*val)

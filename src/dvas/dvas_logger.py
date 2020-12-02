@@ -30,6 +30,24 @@ LOGGER_NAME = [
     'gruan',
 ]
 
+
+class dvasError(Exception):
+    """General error class for dvas."""
+
+    ERR_MSG = 'dvas Error'
+
+    def __str__(self):
+        return f"{super().__str__()}\n\n{'*' * 5}{self.ERR_MSG}{'*' * 5}"
+
+
+class LogDirError(dvasError):
+    """Exception for error in creating log directory"""
+
+
+class DBIOError(dvasError):
+    """Exception for dvas database IOError"""
+
+
 def get_logger(name):
     """Get logger"""
 
@@ -175,7 +193,3 @@ data = get_logger('data')
 plot_logger = get_logger('plot')
 #: logging.logger: GRUAN logger
 gruan_logger = get_logger('gruan')
-
-
-class LogDirError(Exception):
-    """Exception for error in creating log directory"""

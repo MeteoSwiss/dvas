@@ -12,11 +12,11 @@ Module contents: Loader strategies
 # Import from external packages
 from abc import ABCMeta, abstractmethod
 import pandas as pd
-import numpy as np
 
 # Import from current package
-from .data import TimeProfileManager
+from .data import Profile, RSProfile, GDPProfile
 from ..linker import LocalDBLinker
+from ...database.database import InfoManager
 from ...database.model import Data
 
 
@@ -25,54 +25,161 @@ INDEX_NM = Data.index.name
 VALUE_NM = Data.value.name
 
 
-class LoadDataStrategy(metaclass=ABCMeta):
-    """Abstract class to manage data loading strategy"""
-
-    def __init__(self):
-        self._db_linker = LocalDBLinker()
+class LoadStrategyAbstract(metaclass=ABCMeta):
+    """Abstract load strategy class"""
 
     @abstractmethod
     def load(self, *args, **kwargs):
         """Strategy required method"""
 
+    def _fetch(self, search, **kwargs):
+        """ A base function that fetches data from the database.
 
-class LoadTimeDataStrategy(LoadDataStrategy):
-    """Class to manage loading of same time data parameter"""
+        Args:
+            search (str): selection criteria
+            **kwargs (dict): Key word parameter to extract.
 
-    def load(self, search, prm_abbr):
-        """Implementation of load method"""
+        Returns:
+            list of InfoManager: Data related info
+            list of pd.DataFrame: Data
 
-        # Get data
-        res = self._db_linker.load(search, prm_abbr)
+        Example:
+            ```
+            import dvas.data.strategy.load as ld
+            t = ld.LoadProfileStrategy()
+            t._fetch("dt('20160715T120000Z', '==')", {'alt':'altpros1', 'val':'trepros1'})
+            ```
 
-        # Test
-        assert len(res) > 0, "No data"
+        """
 
-        # Format dataframe index
-        for i, arg in enumerate(res):
-            res[i]['data'][INDEX_NM] = pd.TimedeltaIndex(arg['data'][INDEX_NM], 's')
-            res[i]['data'] = arg['data'].set_index([INDEX_NM])[[VALUE_NM]]
+        # Init
+        db_linker = LocalDBLinker()
 
-            #TODO
-            # Load flag from DB too
-            res[i]['data']['flag'] = np.nan
+        # Loop through the requested parameters and extract them from the database.
+        res = {
+            key: db_linker.load(search, val)
+            for key, val in kwargs.items() if val
+        }
 
-        # Load data
-        out = [TimeProfileManager(data['event'], data=data['data']) for data in res]
+        # Create tuple of unique info
+        info, _ = InfoManager.sort(
+            set([arg['info'] for val in res.values() for arg in val])
+        )
 
-        return {'data': out}
+        # Create DataFrame by concatenation and append
+        try:
+            data = [
+                pd.concat(
+                    [pd.Series(arg['value'], index=arg['index'], name=key)
+                     for key, val in res.items() for arg in val if arg['info'] == info_arg],
+                    axis=1, ignore_index=False
+                ) for info_arg in info
+            ]
+        # TODO
+        #  raise Exception for data index coherence
+        except Exception as exc:
+            raise Exception(exc)
+
+        # Add missing columns
+        for i in range(len(data)):
+            for val in kwargs.keys():
+                if val not in data[-1].columns:
+                    data[i][val] = None
+
+        return info, data
 
 
-class LoadAltDataStrategy(LoadTimeDataStrategy):
-    """Class to manage loading of same time data parameter"""
+class LoadProfileStrategy(LoadStrategyAbstract):
+    """Base class to manage the data loading strategy of Profile instances."""
 
-    def load(self, search, prm_abbr, alt_prm_abbr):
-        """Implementation of load method"""
+    def load(self, search, val_abbr, alt_abbr, flg_abbr=None):
+        """ Load method to fetch data from the databse.
 
-        # Load prm_abbr
-        out_prm = super().load(search, prm_abbr)
+        Args:
+            search (str): selection criteria
+            val_abbr (str): name of the parameter values to extract
+            alt_abbr (str, optional): name of the altitude parameter to extract.
+            flg_abbr (str, optional): name of the flag parameter to extract. Defaults to None.
 
-        # Load alt
-        out_alt_prm = super().load(search, alt_prm_abbr)
+        """
 
-        return {'data': out_prm['data'], 'alt': out_alt_prm['data']}
+        # Fetch the data from the database
+        db_vs_df_keys = {'val': val_abbr, 'alt': alt_abbr, 'flg': flg_abbr}
+
+        # Fetch data
+        info, data = self._fetch(search, **db_vs_df_keys)
+
+        # Create profiles
+        out = [Profile(arg[0], data=arg[1]) for arg in zip(info, data)]
+
+        return out, db_vs_df_keys
+
+
+class LoadRSProfileStrategy(LoadProfileStrategy):
+    """Child class to manage the data loading strategy of RSProfile instances."""
+
+    def load(self, search, val_abbr, tdt_abbr, alt_abbr=None, flg_abbr=None):
+        """Load method to fetch data from the databse.
+
+        Args:
+            search (str): selection criteria
+            val_abbr (str): name of the parameter values to extract.
+            tdt_abbr (str): name of the time delta parameter to extract.
+            alt_abbr (str, optional): name of the altitude parameter to extract. Dafaults to None.
+            flg_abbr (str, optional): name of the flag parameter to extract. Defaults to None.
+
+        """
+
+        # Fetch the data from the database
+        db_vs_df_keys = {'val': val_abbr, 'tdt': tdt_abbr, 'alt': alt_abbr, 'flg': flg_abbr}
+
+        # Fetch data
+        info, data = self._fetch(search, **db_vs_df_keys)
+
+        # Create profiles
+        out = [RSProfile(arg[0], data=arg[1]) for arg in zip(info, data)]
+
+        return out, db_vs_df_keys
+
+
+class LoadGDPProfileStrategy(LoadProfileStrategy):
+    """Child class to manage the data loading strategy of GDPProfile instances."""
+
+    def load(
+        self, search, val_abbr, tdt_abbr, alt_abbr=None,
+        ucr_abbr=None, ucs_abbr=None, uct_abbr=None, ucu_abbr=None,
+        flg_abbr=None
+    ):
+        """ Load method to fetch data from the database.
+
+        Args:
+            search (str): selection criteria
+            val_abbr (str): name of the parameter values to extract
+            tdt_abbr (str): name of the time delta parameter to extract.
+            alt_abbr (str, optional): name of the altitude parameter to extract. Dafaults to None.
+            ucr_abbr (str, optional): name of the true rig un-correlated uncertainty parameter to
+               extract. Defaults to None.
+            ucs_abbr (str, optional): name of the true spatial-correlated uncertainty parameter to
+               extract. Defaults to None.
+            uct_abbr (str, optional): name of the true time-correlated uncertainty parameter to
+               extract. Defaults to None.
+            ucu_abbr (str, optional): name of the true un-correlated uncertainty parameter to
+               extract. Defaults to None.
+            flg_abbr (str, optional): name of the flag parameter to extract. Default to None.
+
+        """
+
+        # Fetch the data from the database
+        db_vs_df_keys = {
+            'val': val_abbr, 'tdt': tdt_abbr, 'alt': alt_abbr,
+            'ucr': ucr_abbr, 'ucs': ucs_abbr, 'uct': uct_abbr, 'ucu': ucu_abbr,
+            'flg': flg_abbr
+        }
+
+        # Fetch data
+        info, data = self._fetch(search, **db_vs_df_keys)
+
+        # Create profiles
+        out = [GDPProfile(arg[0], data=arg[1]) for arg in zip(info, data)]
+
+        return out, db_vs_df_keys

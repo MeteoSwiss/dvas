@@ -16,43 +16,46 @@ from abc import ABCMeta, abstractmethod
 from ..linker import LocalDBLinker
 
 
-class SaveDataStrategy(metaclass=ABCMeta):
+class SaveDataStrategyAbstract(metaclass=ABCMeta):
     """Abstract class to manage data saving strategy"""
-
-    def __init__(self):
-        self._local_db_linker = LocalDBLinker()
 
     @abstractmethod
     def save(self, *args, **kwargs):
         """Strategy required method"""
 
 
-class SaveTimeDataStrategy(SaveDataStrategy):
+class SaveDataStrategy(SaveDataStrategyAbstract):
     """Class to manage saving of time data"""
 
-    def save(self, values, event_mngrs, prm_abbr):
-        """Implementation of save method
+    def save(self, data, prms):
+        """ Implementation of save method.
 
         Args:
-
+            data (MultiProfile): the data to save into the database.
+            prms (list of str): list of column names to save to the
+                database.
 
         """
 
-        # Convert time index to seconds values
-        for key, data_list in values.items():
+        # Init
+        local_db_linker = LocalDBLinker()
 
-            event_list = event_mngrs[key]
+        # Loop on profile
+        for prf in data.profiles:
 
-            for i, arg in enumerate(zip(data_list, event_list)):
-                data_list[i].index = arg[0].index.total_seconds()
+            # Reset index (necessary to fix DataFrame state)
+            val = prf.reset_data_index(prf.data)
 
             # Save to db
-            self._local_db_linker.save(
+            local_db_linker.save(
                 [
                     {
-                        'data': arg_data,
-                        'event': arg_event,
-                        'prm_abbr': prm_abbr[key],
-                    } for arg_data, arg_event in zip(data_list, event_list)
+                        'index': val.index.values.astype(int),
+                        'value': val[prm].values.astype(float),
+                        'info': prf.info,
+                        'prm_abbr': data.db_variables[prm],
+                        'source_info': 'user_script',
+                        'force_write': True
+                    } for prm in prms if data.db_variables[prm] is not None
                 ]
             )

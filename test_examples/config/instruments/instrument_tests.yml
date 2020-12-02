@@ -13,5 +13,6 @@
 - sn: 'ZT-101'
   instr_type: 'ZT'
 
-
-
+# Totally fake instrument for test purposes
+- sn: '123456789'
+  instr_type: 'ZT'

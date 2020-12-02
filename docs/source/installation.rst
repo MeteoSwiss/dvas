@@ -16,12 +16,13 @@ dvas will be available on pypi, which should make its installation straighforwar
 And that will take care of things. dvas uses `semantic versioning <https://semver.org/>`_. The latest
 stable version is |version|.
 
-The most recent release of dvas is also available for download from its 
-`Github repository <https://github.com/MeteoSwiss-MDA/dvas/releases/latest/>`_. 
+The most recent release of dvas is also available for download from its
+`Github repository <https://github.com/MeteoSwiss-MDA/dvas/releases/latest/>`_.
 
 .. Caution::
-    The dvas Github repository will remain private until the code is being released. If you want to 
-    know more about the current status of the code, feel free to `get in touch <frederic.vogt@meteoswiss.ch>`_.
+    The dvas Github repository will remain private until the code is being released. If you want to
+    know more about the current status of the code, feel free to
+    `get in touch <frederic.vogt@meteoswiss.ch>`_.
 
 Requirements
 ------------
@@ -41,7 +42,14 @@ if required:
 Testing the installation
 ------------------------
 
-.. todo::
+To ensure that dvas was installed properly, try to call the help of its high-level entry point. In a
+terminal, type:
 
-    Describe how to test that dvas was properly installed.
- 
+.. code-block:: none
+
+   dvas -h
+
+This should return the following information:
+
+.. literalinclude:: dvas_help_msg.txt
+    :language: none
