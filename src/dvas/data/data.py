@@ -395,6 +395,7 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
 
         if prm_list is None:
             prm_list = self.db_variables.keys()
+            #TODO: Here I need to remove all the keys that are indices.
 
         if isinstance(prm_list, str):
             # Assume the user forgot to put the key into a list.

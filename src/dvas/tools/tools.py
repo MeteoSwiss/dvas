@@ -189,13 +189,10 @@ def weighted_mean(vals, weights, binning=1):
     w_ind = np.indices([len(w_flat)])[0] % len(vals)
 
     # Next build a list of list, where each element contains the non-zero Jacobian elements.
-    jac_elmt = [w_flat[w_ind//binning == i]
+    jac_elmt = [w_flat[w_ind//binning == i]/w_tot
                 for i, w_tot in enumerate(w_ms.mask(w_ms == 0, np.nan))]
 
-    #jac_elmt_ind = [w_ind[w_ind//binning == i]
-    #                for i, w_tot in enumerate(w_ms.mask(w_ms == 0, np.nan))]
-
-    return x_ms, jac_elmt #, jac_elmt_ind
+    return x_ms, jac_elmt
 
 @log_func_call(gruan_logger)
 def delta(vals, binning=1):
