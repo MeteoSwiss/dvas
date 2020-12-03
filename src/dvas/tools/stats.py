@@ -13,7 +13,7 @@ This module contains statistical routines and tools.
 
 # Import from Python packages
 import numpy as np
-from scipy import stats
+#from scipy import stats
 
 # Import from this package
 from ..dvas_logger import gruan_logger, log_func_call, dvasError
