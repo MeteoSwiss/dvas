@@ -892,6 +892,9 @@ class InfoManager:
         self.srn = srn
         self.tags = tags
 
+    def __copy__(self):
+        return self.__class__(self.evt_dt, self.srn.copy(), self.tags.copy())
+
     @property
     def evt_id(self):
         """str: Event ID which match 1st corresponding pattern in tags. Defaults to None."""
