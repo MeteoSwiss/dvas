@@ -1,18 +1,18 @@
 
 # 2018.01.10 00:00:00
-- sn: 'YT-100'
+- srn: 'YT-100'
   instr_type: 'YT'
 
-- sn: 'ZT-100'
+- srn: 'ZT-100'
   instr_type: 'ZT'
 
 # 2018.01.25 12:00:00
-- sn: 'YT-101'
+- srn: 'YT-101'
   instr_type: 'YT'
 
-- sn: 'ZT-101'
+- srn: 'ZT-101'
   instr_type: 'ZT'
 
-# Totally fake instrument for test purposes
-- sn: '123456789'
+# Totally fake example
+- srn: '123456789'
   instr_type: 'ZT'

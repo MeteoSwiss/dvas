@@ -395,3 +395,22 @@ def unzip(val):
 
     """
     return zip(*val)
+
+
+def get_dict_len(val):
+    """Return the length of a dict (recursively)
+
+    Args:
+        val (dict): Dict to get length
+
+    Returns:
+        int
+
+    """
+    out = 0
+    for arg in val.values():
+        if isinstance(arg, dict):
+            out += get_dict_len(arg)
+        else:
+            out += 1
+    return out

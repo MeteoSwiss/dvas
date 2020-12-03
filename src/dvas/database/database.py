@@ -45,7 +45,7 @@ from ..dvas_helper import SingleInstanceMetaClass
 from ..dvas_helper import TypedProperty as TProp
 from ..dvas_helper import TimeIt
 from ..dvas_helper import get_by_path, check_datetime
-from ..dvas_helper import unzip
+from ..dvas_helper import unzip, get_dict_len
 from ..dvas_logger import localdb
 from ..dvas_environ import glob_var
 from ..dvas_environ import path_var as env_path_var
@@ -395,7 +395,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         """
 
-        # Define
+        # Init
         document = self._cfg_linker.get_document(table.__name__)
 
         # get foreign constraint attribute
@@ -406,8 +406,21 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     cmp_res = getattr(mdl_cls, arg['foreign_attr']) == doc[arg['attr']]
                     doc[arg['attr']] = mdl_cls.get_or_none(cmp_res)
 
-        # Insert
-        table.insert_many(document).execute()
+        # Test if document is empty
+        if document:
+
+            # Calculate max batch size
+            n_max = floor(SQLITE_MAX_VARIABLE_NUMBER / get_dict_len(document[0]))
+
+            # Insert to db
+            for batch in chunked(document, n_max):
+                table.insert_many(batch).execute()
+
+        else:
+            pass
+
+            # TODO
+            #  Log
 
     def _get_table(self, table, search=None, recurse=False):
         """
@@ -550,7 +563,14 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                             InfosTags.info.name: info_id
                         } for tag_id in tag_id_list
                     ]
-                    InfosTags.insert_many(tag_info).execute()  # noqa pylint: disable=E1120
+                    if tag_info:
+
+                        # Calculate max batch size
+                        n_max = floor(SQLITE_MAX_VARIABLE_NUMBER/get_dict_len(tag_info[0]))
+
+                        # Insert
+                        for batch in chunked(tag_info, n_max):
+                            InfosTags.insert_many(batch).execute()  # noqa pylint: disable=E1120
 
                     # Link info to instrument
                     instr_info = [
@@ -559,7 +579,14 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                             InfosInstruments.info.name: info_id
                         } for instr_id in instr_id_list
                     ]
-                    InfosInstruments.insert_many(instr_info).execute()  # noqa pylint: disable=E1120
+                    if instr_info:
+
+                        # Calculate max batch size
+                        n_max = floor(SQLITE_MAX_VARIABLE_NUMBER / get_dict_len(instr_info[0]))
+
+                        # Insert
+                        for batch in chunked(instr_info, n_max):
+                            InfosInstruments.insert_many(batch).execute()  # noqa pylint: disable=E1120
 
                     # Create batch index
                     fields = [Data.index, Data.value, Data.info]

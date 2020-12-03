@@ -1,13 +1,9 @@
 # Parameter configuration file
 
-- prm_abbr: '^([tup])repros(1|(u_u)|(u_e)|(u_s)|(u_t))'
+- prm_abbr: '^([tup])repros(1|(u_u)|(u_e)|(u_s)|(u_t)|(u_r))'
   # Generate variables from regex generator for temperature, humidity and
   #pressure for both instant and uncertainty values.
-  prm_desc: &myfct '$lambda x:{"t": "Temperature", "u": "Relative humidity", "p": "Pressure", "f": "Wind speed", "d": "Wind direction"}[x.group(1)]$$lambda x:{"u_u": " uncorrelated uncertainty", "u_e": " environmental correlated uncertainty", "u_s": " spatial correlated uncertainty", "u_t": " temporal correlated uncertainty", "1": ""}[x.group(2)]$'
-  # Link anchor to str
-
-- prm_abbr: '^dummy_((\d))'
-  prm_desc: 'Dummy variable $lambda x: str(x.group(1))$'
+  prm_desc: &myfct '$lambda x:{"t": "Temperature", "u": "Relative humidity", "p": "Pressure", "f": "Wind speed", "d": "Wind direction"}[x.group(1)]$$lambda x:{"u_u": " uncorrelated uncertainty", "u_e": " environmental correlated uncertainty", "u_s": " spatial correlated uncertainty", "u_t": " temporal correlated uncertainty", "u_r": " rig uncorrelated uncertainty", "1": ""}[x.group(2)]$'
   # Link anchor to str
 
 - prm_abbr: 'altpros1'
@@ -22,3 +18,6 @@
   # for both instant and uncertainty values
   prm_desc: *myfct
   # Reference to anchor
+
+- prm_abbr: 'tdtpros1'
+  prm_desc: 'Time'
