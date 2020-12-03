@@ -11,12 +11,9 @@ Module contents: Testing 'stats' classes and function of the tools submodule.
 """
 
 # Import from python packages and modules
-import numpy as np
-import scipy.stats as ss
-import pandas as pd
-
-# Import from this package
-from dvas.tools import stats
+#import numpy as np
+#import scipy.stats as ss
+#import pandas as pd
 
 def test_stats_gdp_ks_test():
     """Function used to test if the KS test between 2 GDPs is behaving ok.

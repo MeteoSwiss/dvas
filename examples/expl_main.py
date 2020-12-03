@@ -24,11 +24,7 @@ from dvas.database.database import DatabaseManager
 
 from dvas.dvas_logger import dvasError
 
-from dvas.data.linker import LocalDBLinker
-from dvas.database.model import Data
-from dvas.data.strategy.load import LoadProfileStrategy
-
-import dvas.tools.gruan as dtg
+#import dvas.tools.gruan as dtg
 import dvas.plots.utils as dpu
 
 
@@ -74,14 +70,8 @@ if __name__ == '__main__':
 
 
     # # Load a basic profile, with a variable, and altitude.
-    # prf = MultiProfile()
-    # try:
-    #     prf.load(filt_der, 'trepros1', 'altpros1')
-    #
-    # except dvasError:
-    #     prf.load(filt_raw, 'trepros1', 'altpros1')
-    #     prf.sort()
-    #     prf.save()
+    prf = MultiProfile()
+    prf.load(filt_raw, 'trepros1', 'altpros1')
 
     # Load a basic time profile, with a variable and altitude
     rs_prf = MultiRSProfile()

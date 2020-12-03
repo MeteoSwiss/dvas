@@ -14,12 +14,11 @@ This module contains statistical routines and tools.
 # Import from Python packages
 import numpy as np
 from scipy import stats
-import pandas as pd
 
 # Import from this package
 from ..dvas_logger import gruan_logger, log_func_call, dvasError
-from ..plots import gruan
 from .gruan import combine_gdps
+from ..plots import gruan as dpg
 
 # Run a chi-square analysis between a merged profile and its components
 @log_func_call(gruan_logger)
@@ -109,7 +108,7 @@ def ks_test(gdp_pair, alpha=0.0027, binning_list=None, do_plot=False, **kwargs):
         raise Exception('Ouch! alpha should be 0<alpha<1, not %.1f.' % (alpha))
 
     # How long are the profiles ?
-    len_prf = vals.shape[0]
+    len_prf = False #vals.shape[0]
 
     # Let's create a flag array, and also one for storing the p_values (for a plot).
     f_pqi = np.zeros((len(binning_list), len_prf))
@@ -134,14 +133,14 @@ def ks_test(gdp_pair, alpha=0.0027, binning_list=None, do_plot=False, **kwargs):
             p_val = stats.kstest(np.array([k_pqi[k_ind]]), 'norm', args=(0, 1)).pvalue
 
             # Store it
-            p_ksi[b_ind][prof_del_old_inds[k_ind][0] : prof_del_old_inds[k_ind][-1]+1] = p_val
+            #p_ksi[b_ind][prof_del_old_inds[k_ind][0] : prof_del_old_inds[k_ind][-1]+1] = p_val
 
     # Compute the flags.
     f_pqi[p_ksi <= alpha] = 1
 
     # Create a diagnostic plot. I can do this only if one of the binning values is 1.
     if 1 in binning_list and do_plot:
-        plot_gruan.plot_ks_test(k_pqis[binning_list.index(1)], f_pqi, p_ksi, binning_list, alpha,
+        dpg.plot_ks_test(k_pqis[binning_list.index(1)], f_pqi, p_ksi, binning_list, alpha,
                                 tag='')
     else:
         gruan_logger.warning('KS test ran without binning of 1. Skipping the diagnostic plot.')
@@ -186,7 +185,7 @@ def check_gdp_compatibility(gdp_prfs, alpha=0.0027, binning_list=None, do_plot=F
     prf_b_inds = [item for sublist in prf_b_inds for item in sublist]
 
     # I'll want to keep track of the compatibility of each pofile pairs
-    f_pqi = []
+    #f_pqi = []
 
     # Let us loop through all these test and run them sequentially.
     for test_id in range(n_test):
