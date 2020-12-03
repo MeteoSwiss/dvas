@@ -15,11 +15,10 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 # Import from current package
-from dvas.plots.utils import PLOT_TYPES
 import dvas.plots.utils as dpu
 
-def test_plot_types():
-    """ Function used to test if the default plot types are supported by the OS
+def test_plot_fmts():
+    """ Function used to test if the default plot formats are supported by the OS
 
     The function tests:
         - compatibility of plt.savefig file extensions with the OS
@@ -32,7 +31,7 @@ def test_plot_types():
     fig = plt.figure()
     ok_exts = fig.canvas.get_supported_filetypes()
 
-    assert all([dvas_ext[1:] in ok_exts.keys() for dvas_ext in PLOT_TYPES])
+    assert all([dvas_ext in ok_exts.keys() for dvas_ext in dpu.PLOT_FMTS])
 
 def test_plot_styles():
     """ Function to test if I can properly set the dvas plotting styles.

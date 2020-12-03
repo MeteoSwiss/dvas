@@ -34,7 +34,7 @@ PLOT_STYLES = {'base': 'base.mplstyle',
                'latex': 'latex.mplstyle'}
 
 #: list[str]: The default file extensions to save the plots into.
-PLOT_FMTS = ['.png', '.pdf']
+PLOT_FMTS = ['png']
 
 #: bool: A flag to display the plots or not.
 PLOT_SHOW = True
@@ -131,7 +131,7 @@ def cmap_discretize(cmap, n_cols):
     return colors.LinearSegmentedColormap(cmap.name + "_%d" % (n_cols), cdict, 1024)
 
 @log_func_call(plot_logger)
-def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None):
+def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show_plt=None):
     """ A custom savefig function that provides finer handling of the filename.
 
     Args:
@@ -141,7 +141,9 @@ def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None):
             Defauts to None.
         fn_suffix (str, optional): a suffix, that will be appended to fn_core with a '_'.
         fmts (str or list of str, optional): which formats to export the plot to, e.g.: 'png'.
-            Defaults to None (= dvas.plots.utils.PLOT_FMTS)
+            Defaults to None (= as specified by dvas.plots.utils.PLOT_FMTS)
+        show_plt (bool, optional): whether to display the plot after saving it, or not. Defaults to
+            None (= as specified by dvas.plots.utils.PLOT_SHOW)
     """
 
     # Same sanity checks first. If the fmt is a str, turn it into a list.
@@ -149,6 +151,9 @@ def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None):
         fmts = PLOT_FMTS
     if isinstance(fmts, str):
         fmts = [fmts]
+
+    if show_plt is None:
+        show_plt = PLOT_SHOW
 
     # Build the fileneame
     fn_out = '_'.join([item for item in [fn_prefix, fn_core, fn_suffix] if item is not None])
@@ -163,3 +168,9 @@ def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None):
         # Note: never use a tight box fix here. If the plot looks weird, the gridspec
         # params should be altered. This is essential for the consistency of the DVAS plots.
         fig.savefig(Path(env_path_var.output_path, '.'.join([fn_out, fmt])))
+
+    # Show the plot, or just close it and move on
+    if show_plt:
+        fig.show()
+    else:
+        plt.close(fig.number)

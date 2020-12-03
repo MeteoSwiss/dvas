@@ -9,34 +9,30 @@ Module contents: Primary plotting functions of dvas.
 
 """
 
-from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
-from ..dvas_environ import path_var as env_path_var
 from . import utils as pu
 
 
-def multiprf_plot(prfs, keys, x='alt', y='val', fig_num=None, save_fn=None):
+def multiprf(prfs, index_name='alt', uc=None, **kwargs):
     """ Plots the content of a MultiProfile instance.
 
     Args:
-        prfs (dict of Profile or RSProfile or GDPprofile): data to plot
+        prfs (MultiProfile or MultiRSProfile or MultiGDPprofile): MultiProfile instance to plot
         keys (list of str or int): list of prfs dictionnary keys to extract
-        x (str): parameter name for the x axis. Defaults to 'alt'.
-        y (str): parameter name for the y axis. Defaults to 'val'.
-        fig_num (int, optional): figure number
-        save_fn (str, optional): name of the plot file to save. If None, no plot is saved.
+        index_name (str, optional): reference variables for the plots, either 'tdt' or 'alt'.
+            Defaults to 'alt'.
+        uc (str, optional): which uncertainty to plot, if any. Can be one of  ['r', 's', 't', 'u',
+            'tot']. Defaults to None.
+        **kwargs: these get fed to the dvas.plots.utils.fancy_savefig() routine.
 
     """
 
-    # Instantiate the figure, closing it first if it already exists.
-    if fig_num is not None:
-        plt.close(fig_num)
-
     # Create the figure, with a suitable width.
-    fig = plt.figure(fig_num, figsize=(pu.WIDTH_ONECOL, 5.0))
+    plt.close(10)
+    fig = plt.figure(10, figsize=(pu.WIDTH_ONECOL, 5.0))
 
     # Use gridspec for a fine control of the figure area.
     fig_gs = gridspec.GridSpec(1, 1, height_ratios=[1], width_ratios=[1],
@@ -44,47 +40,46 @@ def multiprf_plot(prfs, keys, x='alt', y='val', fig_num=None, save_fn=None):
                                wspace=0.05, hspace=0.05)
 
     # Instantiate the axes
-    ax1 = plt.subplot(fig_gs[0, 0])
+    ax1 = fig.add_subplot(fig_gs[0, 0])
     xmin, xmax = -np.infty, np.infty
 
-    for key in keys:
-        for arg in prfs[key]:
+    # Do I need to extract uncertainties ?
+    if uc is None:
+        prms = ['val']
+    elif uc == 'tot':
+        prms = ['val', 'uc_tot']
+    else:
+        prms = ['val', 'uc%s' % (uc)]
 
-            # TODO: implement the option to scale the axis with different units. E.g. 'sec' for
-            # time deltas, etc ...
+    for prf in prfs.get_prms(prms):
 
-            # For time deltas, I need to get a float out for the limits.
-            if x == 'tdt':
-                xmin = np.nanmax([xmin, arg.data[x].min(skipna=True).value])
-                xmax = np.nanmin([xmax, arg.data[x].max(skipna=True).value])
-            else:
-                xmin = np.nanmax([xmin, arg.data[x].min(skipna=True)])
-                xmax = np.nanmin([xmax, arg.data[x].max(skipna=True)])
+        # TODO: implement the option to scale the axis with different units. E.g. 'sec' for
+        # time deltas, etc ...
 
-            ax1.plot(arg.data[x], arg.data[y], linestyle='-', drawstyle='steps-mid')
+        # Let's extract the abscissa
+        x = prf.index.get_level_values(index_name)
+
+        # For time deltas, I need to get a float out for the limits.
+        if index_name == 'tdt':
+            xmin = np.nanmax([xmin, x.min(skipna=True).value])
+            xmax = np.nanmin([xmax, x.max(skipna=True).value])
+        else:
+            xmin = np.nanmax([xmin, x.min(skipna=True)])
+            xmax = np.nanmin([xmax, x.max(skipna=True)])
+
+        # Plot the uncertainties
+        if len(prms) > 1:
+            ax1.fill_between(x, prf[prms[0]]-prf[prms[1]], prf[prms[0]]+prf[prms[1]],
+                             alpha=0.3)
+        # Plot the values
+        ax1.plot(x, prf['val'].values, linestyle='-', drawstyle='steps-mid', lw=1)
 
     # Deal with the axes
-    ax1.set_xlabel(x)
-    ax1.set_ylabel(y)
+    ax1.set_xlabel(index_name)
+    ax1.set_ylabel(prfs.db_variables['val'])
 
     # Here, let's make sure I only ever feed floats
     ax1.set_xlim(xmin, xmax)
 
-
-    # If requested, save the plot.
-    if save_fn is not None:
-        for this_type in pu.PLOT_TYPES:
-            if this_type not in fig.canvas.get_supported_filetypes().keys():
-            # TODO: log this as a warning: request style not available
-                pass
-
-            # Save the file.
-            # Note: never use a tight box fix here. If the plot looks weird, the gridspec
-            # params should be altered. THis is essential for the consistency of the DVAS plots.
-            plt.savefig(Path(env_path_var.output_path, save_fn+this_type))
-
-    # Show the plot, or just close it and move on
-    if pu.PLOT_SHOW:
-        plt.show()
-    else:
-        plt.close(fig_num)
+    # Save the plot.
+    pu.fancy_savefig(fig, 'multiprf', **kwargs)

@@ -18,7 +18,7 @@ import pandas as pd
 
 # Import from this package
 from ..dvas_logger import gruan_logger, log_func_call, dvasError
-from ..plot import plot_gruan
+from ..plots import gruan
 from .gruan import combine_gdps
 
 # Run a chi-square analysis between a merged profile and its components

@@ -8,6 +8,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 """
 
 # Import from Python packages
+from pathlib import Path
 import matplotlib.pyplot as plt
 
 # Import from this package
