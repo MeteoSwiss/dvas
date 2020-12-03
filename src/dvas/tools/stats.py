@@ -117,7 +117,8 @@ def ks_test(gdp_pair, alpha=0.0027, binning_list=None, do_plot=False, **kwargs):
     # Let's start rolling
     k_pqis = []
 
-    for (b_ind, binning) in enumerate(binning_list):
+    #for (b_ind, binning) in enumerate(binning_list):
+    for (_, binning) in enumerate(binning_list):
 
         # Compute the profile delta with the specified sampling
         gdp_delta = combine_gdps(gdp_pair, binning=binning, method='delta')
@@ -127,10 +128,10 @@ def ks_test(gdp_pair, alpha=0.0027, binning_list=None, do_plot=False, **kwargs):
         k_pqis += [k_pqi]
 
         # Loop through each level and run a KS test on it.
-        for k_ind in range(len(k_pqi)):
+        #for k_ind in range(len(k_pqi)):
 
             # Get the p-value of the KS test
-            p_val = stats.kstest(np.array([k_pqi[k_ind]]), 'norm', args=(0, 1)).pvalue
+            #p_val = stats.kstest(np.array([k_pqi[k_ind]]), 'norm', args=(0, 1)).pvalue
 
             # Store it
             #p_ksi[b_ind][prof_del_old_inds[k_ind][0] : prof_del_old_inds[k_ind][-1]+1] = p_val
@@ -140,8 +141,7 @@ def ks_test(gdp_pair, alpha=0.0027, binning_list=None, do_plot=False, **kwargs):
 
     # Create a diagnostic plot. I can do this only if one of the binning values is 1.
     if 1 in binning_list and do_plot:
-        dpg.plot_ks_test(k_pqis[binning_list.index(1)], f_pqi, p_ksi, binning_list, alpha,
-                                tag='')
+        dpg.plot_ks_test(k_pqis[binning_list.index(1)], f_pqi, p_ksi, binning_list, alpha, tag='')
     else:
         gruan_logger.warning('KS test ran without binning of 1. Skipping the diagnostic plot.')
 
