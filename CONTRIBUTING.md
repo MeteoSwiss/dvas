@@ -198,6 +198,7 @@ Until its release, the dvas repository will remain private: branching will thus 
     branch stored on Github.
 
 11. Next, go to `your_branch_name` on the dvas Github repository, and draft a new pull request. By
-    default, the pull request should go from `your_branch_name` to the `develop` branch. Do not forget to link the pull request to a specific issue if warranted. Once the pull request is issued, automated checks will be run (pytest, pylint, changelog, ...), which should all succeed (if not, there might be something wrong with your changes).
+    default, the pull request should go from `your_branch_name` to the `develop` branch. Do not forget to link the pull request to a specific issue if warranted. Once the pull request is issued, automated checks will be run (pytest, pylint, changelog, ...). These must all succeed before the changes can be merged (if they do not, there might be something wrong with your changes).
 
-   The code devs will then come and take a look and review the pull request.
+    The code devs will then come to formally review the pull request (some reviewers might also be
+    set automatically based on the `.github/CODEOWNERS` info).
