@@ -53,7 +53,7 @@ For the sake of clarity, and to facilitate the maintenance, we list here (succin
      the dvas tests on Windows, macOS and Linux, a linting of the code, a validation
      of the docs, and a check of the `CHANGELOG`. Upon any push to the `master` branch, the docs
      will also be automatically compiled and published onto the `gh-pages` branch.
-   * A `.pylintrc` refines the behavior of pylint for dvas.
+   * The `.pylintrc` file refines the behavior of pylint for dvas.
 
 3. **Documentation:**
    * The dvas documentation is generated using Sphinx, with the Read-the-docs theme. The compiled
@@ -126,7 +126,7 @@ You should of course feel free to use more of the tools offered by [sphinx](http
 
 We are currently in the early stages of development of dvas. If you would like to contribute to the code, please contact [frederic.vogt@meteoswiss.ch](mailto:frederic.vogt@meteoswiss.ch).
 
-Until its release, the dvas repository will remain private: branching will thus remain the only way to contribute to the code. To get a local copy of dvas and contribute to its improvement, one can collow the following steps:
+Until its release, the dvas repository will remain private: branching will thus remain the only way to contribute to the code. To get a local copy of dvas and contribute to its improvement, one can follow the following steps:
 
 0. Make sure you have git installed. Check that the setup is correct:
 
@@ -184,7 +184,7 @@ Until its release, the dvas repository will remain private: branching will thus 
        sh build_docs.sh
 
 9. Once ready with all your modifications, we'll ask that you do a rebase of your branch to
-           incorporate any modification that may have occured on the original `develop` branch in the meantime:
+           incorporate any modification that may have occurred on the original `develop` branch in the meantime:
 
               git fetch origin develop
               git pull --rebase origin develop
