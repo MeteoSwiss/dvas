@@ -77,7 +77,7 @@ The following grammatic rules allow to filter and extract specific event dataset
  # Extract all the profiles associated to the event tagged "1":
  filt_evt = "tag('e1')"
 
- # Extract all the profiles from a specifc launch time:
+ # Extract all the profiles from a specific launch time:
  filt_dt = "dt('20160715T120000Z', '==')"
 
  # Two or more conditions can also be combined, for example:
