@@ -1,4 +1,0 @@
-
-b_1:
-    config_values:
-lambda: 'lambda x: 3 * x'

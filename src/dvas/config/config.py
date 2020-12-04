@@ -165,11 +165,10 @@ class OneLayerConfigManager(ConfigManager):
         }
 
     def read(self, doc_in=None):
-        """Read config
+        """Read config from config files
 
         Args:
-            doc_in (:obj:`str`, optional): Default None -> read from directory
-                Else read from doc.
+            doc_in (str, optional): Read input str instead of file. Defaults to None.
 
         """
 
@@ -238,12 +237,13 @@ class OneLayerConfigManager(ConfigManager):
 
     @staticmethod
     def read_yaml(file):
-        """
+        """Read YAML document.
 
         Args:
-            file (str | pathlib.Path):
+            file (str | pathlib.Path): YAML document
 
         Returns:
+            dict
 
         """
 
@@ -291,19 +291,20 @@ class OneDimArrayConfigManager(OneLayerConfigManager):
 
     'one-dim-array' means YAML file of such type::
 
-        tag11: value_tag11
-        tag12: value_tag12
+        - tag11: value_tag11
+          tag12: value_tag12
+          ...
+          tag1N: value_tag1N
+
+        - tag21: value_tag21
+          tag22: value_tag22
+          ...
+          tag2N: value_tag2N
         ...
-        tag1N: value_tag1N
-        tag21: value_tag21
-        tag22: value_tag22
-        ...
-        tag2N: value_tag2N
-        ...
-        tagM1: value_tagM1
-        tagM2: value_tagM2
-        ...
-        tagMN: value_tagMN
+        - tagM1: value_tagM1
+          tagM2: value_tagM2
+          ...
+          tagMN: value_tagMN
 
     """
     REQUIRED_ATTRIBUTES = dict(
