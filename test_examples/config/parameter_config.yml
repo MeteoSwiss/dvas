@@ -21,3 +21,6 @@
 
 - prm_abbr: 'tdtpros1'
   prm_desc: 'Time'
+
+- prm_abbr: 'dummytst_(param\d)'
+  prm_desc: '$lambda x: x.group(1)$'
