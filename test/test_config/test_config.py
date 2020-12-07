@@ -10,7 +10,6 @@ Module contents: Testing classes and function for dvas.config.config module.
 """
 
 # Import from python packages and modules
-from pathlib import Path
 import pytest
 
 from dvas.config.config import instantiate_config_managers
@@ -18,7 +17,6 @@ from dvas.config.config import CSVOrigMeta
 from dvas.config.config import OrigData, Instrument, InstrType
 from dvas.config.config import Parameter, Flag, Tag
 from dvas.config.config import ConfigReadError
-from dvas.dvas_environ import path_var as env_path_var
 
 
 def test_instantiate_config_managers():
@@ -43,7 +41,7 @@ def test_instantiate_config_managers():
 
     # Read each manager
     cfg_mngrs = instantiate_config_managers(*cfg_mngrs_class, read=True)
-    for key, cfg_mngr in cfg_mngrs.items():
+    for cfg_mngr in cfg_mngrs.values():
 
         # Test read
         assert cfg_mngr.document is not None

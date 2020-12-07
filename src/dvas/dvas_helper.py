@@ -10,7 +10,6 @@ Module contents: Package helper classes and functions.
 """
 
 # Import external packages and modules
-import os
 from pathlib import Path
 from re import compile, IGNORECASE
 from datetime import datetime

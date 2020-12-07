@@ -11,9 +11,9 @@ Module contents: Testing classes and function for dvas.database.database module.
 
 # Import external packages and modules
 import re
+from copy import deepcopy
 from datetime import datetime, timedelta
 import pytz
-from copy import deepcopy
 import pytest
 import numpy as np
 
@@ -27,12 +27,13 @@ from dvas.database.database import SearchInfoExpr
 from dvas.database.database import OneDimArrayConfigLinker
 from dvas.database.database import ConfigGenMaxLenError
 from dvas.database.database import DBInsertError
-from dvas.dvas_environ import glob_var, path_var
+from dvas.dvas_environ import glob_var
 from dvas.config.config import Parameter
 
 
 @pytest.fixture
 def db_mngr():
+    """Get DatabaseManager"""
     return DatabaseManager()
 
 
