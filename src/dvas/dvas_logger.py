@@ -48,6 +48,10 @@ class DBIOError(dvasError):
     """Exception for dvas database IOError"""
 
 
+class ProfileError(dvasError):
+    """Exception for dvas profile error"""
+
+
 def get_logger(name):
     """Get logger"""
 

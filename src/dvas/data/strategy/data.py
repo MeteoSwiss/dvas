@@ -17,8 +17,8 @@ import pandas as pd
 
 # Import from current package
 from ...database.model import Flag
-from ...database.database import DatabaseManager
-from ...dvas_logger import dvasError
+from ...database.database import DatabaseManager, InfoManager
+from ...dvas_logger import ProfileError
 from ...dvas_helper import RequiredAttrMetaClass
 
 # Define
@@ -49,6 +49,10 @@ class ProfileAbstract(metaclass=RequiredAttrMetaClass):
     def data(self):
         """pd.DataFrame: Data."""
         return self._data
+
+    @data.setter
+    def data(self, value):
+        setattr(self, 'data', value)
 
     @property
     def columns(self):
@@ -123,7 +127,7 @@ class ProfileAbstract(metaclass=RequiredAttrMetaClass):
                 return super().__getattribute__(item)
 
         except KeyError:
-            raise dvasError(f"Valid keys are: {self.columns}")
+            raise ProfileError(f"Valid keys are: {self.columns}")
 
     def __setattr__(self, item, val):
         try:
@@ -139,7 +143,8 @@ class ProfileAbstract(metaclass=RequiredAttrMetaClass):
                 self._data = val[self.get_col_attr()]
 
             elif item in self.DF_COLS_ATTR.keys():
-                # Test input value
+
+                # Prepare value
                 assert isinstance(val, pd.Series)
                 value = self._prepare_df(pd.DataFrame(val, columns=[item,]), cols_key=[item])
 
@@ -149,13 +154,16 @@ class ProfileAbstract(metaclass=RequiredAttrMetaClass):
             else:
                 super().__setattr__(item, val)
 
-        except KeyError:
-            raise dvasError(f"Valid keys are: {list(self.DF_COLS_ATTR.keys())}. You gave {val.columns}")
+        except (KeyError, ProfileError):
+            raise ProfileError(
+                f"Valid keys are: {list(self.DF_COLS_ATTR.keys())}. " +\
+                f"You gave {val.name if isinstance(val, pd.Series) else val.columns}"
+            )
         except AssertionError:
-            raise dvasError(f"Value must be a pd.Series")
+            raise ProfileError(f"Value must be a pd.Series")
 
     def __delattr__(self, item):
-        raise dvasError(f"Can't delete attribute '{item}'")
+        raise ProfileError(f"Can't delete attribute '{item}'")
 
     def __len__(self):
         return len(self.data)
@@ -180,8 +188,8 @@ class ProfileAbstract(metaclass=RequiredAttrMetaClass):
             pandas.DataFrame
 
         Raises:
-            dvasError: Missing data column.
-            dvasError: Wrong data type.
+            ProfileError: Missing data column.
+            ProfileError: Wrong data type.
         """
 
         # Init
@@ -193,13 +201,13 @@ class ProfileAbstract(metaclass=RequiredAttrMetaClass):
 
             # Test column name
             if key not in val.columns:
-                raise dvasError('Required column not found: %s' % key)
+                raise ProfileError('Required column not found: %s' % key)
 
             # Test column type
             if ~val[key].apply(type).apply(
                     issubclass, args=(cls.DF_COLS_ATTR[key]['test']+(type(None),),)
             ).all():
-                raise dvasError(
+                raise ProfileError(
                     "Wrong data type for '%s': I need %s but you gave me %s" %
                     (key, cls.DF_COLS_ATTR[key]['test'], val[key].dtype)
                 )
@@ -249,6 +257,12 @@ class Profile(ProfileAbstract):
         # Init
         db_mngr = DatabaseManager()
 
+        # Test info
+        try:
+            assert isinstance(info, InfoManager)
+        except AssertionError:
+            raise ProfileError('Bad argument type. Must be an InfoManager.')
+
         # Set attributes
         if data is not None:
             self.data = data
@@ -256,7 +270,7 @@ class Profile(ProfileAbstract):
             self.data = pd.DataFrame(
                 {key: np.array([], dtype=val['type']) for key, val in self.DF_COLS_ATTR.items()}
             )
-        #TODO: we need a check here, to make sure the info is actually a proper InfoManager entity
+
         self._info = info
         self._flags_abbr = {arg[self.FLAG_ABBR_NM]: arg for arg in db_mngr.get_flags()}
 
@@ -275,15 +289,27 @@ class Profile(ProfileAbstract):
         """pd.Series: Corresponding data altitude"""
         return super().__getattr__('alt')
 
+    @alt.setter
+    def alt(self, value):
+        setattr(self, 'alt', value)
+
     @property
     def val(self):
         """pd.Series: Corresponding data 'val'"""
         return super().__getattr__('val')
 
+    @val.setter
+    def val(self, value):
+        setattr(self, 'val', value)
+
     @property
     def flg(self):
         """pd.Series: Corresponding data 'flag'"""
         return super().__getattr__('flg')
+
+    @flg.setter
+    def flg(self, value):
+        setattr(self, 'flg', value)
 
     def __str__(self):
         return f"info: {self.info}\n{super().__str__()}"
@@ -377,6 +403,10 @@ class RSProfile(Profile):
     def tdt(self):
         """pd.Series: Corresponding data time delta since launch"""
         return super().__getattr__('tdt')
+
+    @tdt.setter
+    def tdt(self, value):
+        setattr(self, 'tdt', value)
 
 
 class GDPProfile(RSProfile):

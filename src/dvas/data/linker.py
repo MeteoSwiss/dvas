@@ -704,7 +704,7 @@ class LocalDBLinker(DataLinker):
         Args:
             data_list (list of dict): dict mandatory items are 'index' (np.array),
                 'value' (np.array), 'info' (InfoManager), 'prm_abbr' (str).
-                dict optional key is 'source_info' (str)
+                dict optional key are 'source_info' (str), force_write (bool)
 
         """
 
