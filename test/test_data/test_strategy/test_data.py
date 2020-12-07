@@ -12,34 +12,137 @@ Module contents: Testing classes and function for dvas.data.strategy.data module
 # Import from python packages and modules
 import pytest
 import pandas as pd
+import numpy as np
 
-from dvas.data.strategy.data import Profile
-from dvas.dvas_logger import dvasError
+# Import from tested package
+from dvas.data.strategy.data import Profile, RSProfile, GDPProfile
+from dvas.dvas_logger import ProfileError
+from dvas.database.database import InfoManager
 
 
 class TestProfile:
-    """Test class for Flag Manager"""
+    """Test Profile class"""
 
+    info = InfoManager('20200101T0000Z', '0')
     ok_data = pd.DataFrame({'alt': [10., 15., 20.], 'val': [1., 2., 3.], 'flg': [0, 0, 0]})
-    ko_index_data = pd.DataFrame({'val': [1, 2, 3], 'flg': [0, 0, 0]})
-    inst = Profile(1, ok_data)
+    ko_index_data = ok_data[['val', 'flg']].copy()
 
-    def test_data(self):
-        """Test data getter and setter method"""
+    def test_init(self):
+        """Test init class"""
+
+        # Init
+        Profile(self.info, self.ok_data)
+
+        # Test argument type info manager
+        with pytest.raises(ProfileError):
+            Profile(1, self.ok_data)
+
+        # Test bad data
+        with pytest.raises(ProfileError):
+            Profile(self.info, self.ko_index_data)
+
+    def test_getter(self):
+        """Test getter method"""
+
+        inst = Profile(self.info, self.ok_data)
 
         # Test data
-        assert self.inst.val.astype('float').equals(
-            self.ok_data['val'].astype('float')
-        )
-        assert self.inst.flg.astype('Int64').equals(
-            self.ok_data['flg'].astype('Int64')
+        assert inst.data.equals(
+            inst.set_data_index(self.ok_data)
         )
 
-        # Test setup errors when some data is missing.
-        with pytest.raises(dvasError):
-             self.inst.data = self.ko_index_data
+        # Test val
+        assert inst.val.equals(
+            inst.set_data_index(self.ok_data)['val']
+        )
+
+        # Test flg
+        assert inst.flg.equals(
+            inst.set_data_index(self.ok_data)['flg']
+        )
+
+    def test_setter(self):
+        """Test setter method"""
+
+        # Init
+        inst = Profile(self.info)
+
+        # Test data
+        inst.data = self.ok_data
+
+        # Test val
+        val_new = inst.val * 2
+        inst.val = val_new
+        assert inst.val.equals(val_new)
+
+        # Test bad data
+        with pytest.raises(ProfileError):
+            val_bad = inst.val
+            val_bad.name = 'xxx'
+            inst.val = val_bad
+
+        with pytest.raises(ProfileError):
+            inst.val = inst.data[['val']]
 
     def test_copy(self):
         """Test copy method"""
-        copy_inst = self.inst.copy()
-        assert copy_inst.data.equals(self.inst.data)
+
+        # Init
+        inst = Profile(self.info, self.ok_data)
+
+        # Test
+        copy_inst = inst.copy()
+        assert id(copy_inst) != id(inst)
+        assert copy_inst.data.equals(inst.data)
+
+
+class TestRSProfile:
+    """Test RSProfile class"""
+
+    info = InfoManager('20200101T0000Z', '0')
+    ok_data = pd.DataFrame(
+        {'alt': [10., 15., 20.], 'val': [1., 2., 3.], 'flg': [0, 0, 0], 'tdt': [0, 1e9, 2e9]}
+    )
+    ko_index_data = ok_data[['val', 'alt', 'flg']].copy()
+
+    def test_init(self):
+        """Test init class"""
+
+        # Init
+        RSProfile(self.info, self.ok_data)
+
+        # Test bad data
+        with pytest.raises(ProfileError):
+            RSProfile(self.info, self.ko_index_data)
+
+
+class TestGDPProfile:
+    """Test GDPProfile class"""
+
+    info = InfoManager('20200101T0000Z', '0')
+    ok_data = pd.DataFrame(
+        {
+            'alt': [10., 15., 20.], 'val': [1., 2., 3.], 'flg': [0, 0, 0], 'tdt': [0, 1e9, 2e9],
+            'ucr': [1, 1, 1], 'ucs': [1, 1, 1], 'uct': [1, 1, 1], 'ucu': [1, 1, 1]}
+    )
+    ko_index_data = ok_data[['val', 'alt', 'flg', 'tdt']].copy()
+
+    def test_init(self):
+        """Test init class"""
+
+        # Init
+        GDPProfile(self.info, self.ok_data)
+
+        # Test bad data
+        with pytest.raises(ProfileError):
+            GDPProfile(self.info, self.ko_index_data)
+
+    def test_getter(self):
+        """Test getter method"""
+
+        # Init
+        inst = GDPProfile(self.info, self.ok_data)
+
+        # Test uc_tot
+        assert np.round(inst.uc_tot.abs().max(), 1) == np.round(np.sqrt(4), 1)
+        inst.uc_tot.name = 'uc_tot'
