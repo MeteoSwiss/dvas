@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added:
  - [fpavogt & modolol, 2020-12-07] Cleanup towards v0.1
+ - [fpavogt & modolol, 2020-12-03] Winter cleanup towards v0.1 
  - [fpavogt, 2020-11-05] Refactor ProfileManager class into Profile, grouping 'alt', 'val' , and 'flag' in a pandas DataFrame
  - [modolol, 2020-11-02] Tropopause calculation function
  - [fpavogt, 2020-07-23] Add gruan submodule, with GDP correlation rules
