@@ -13,51 +13,48 @@ Module contents: Plotting strategies
 from abc import ABCMeta#, abstractmethod
 
 # Import from current package
-from ...plot.plot import multiprf_plot
-
+from ...plots import plots as dpp
 
 class PlotStrategy(metaclass=ABCMeta):
     """ Base class to manage the data plotting strategy for the MultiProfile class. """
 
     #TODO: interesting pylint suggestion here. It is suggesting to create a simple function
     # rather than a full class. Any merit to this suggestion ?
-    def plot(self, prfs, keys, **kwargs):
+    def plot(self, prfs, **kwargs):
         """ Call the proper plotting method for this strategy.
 
         Args:
             prfs (dict of Profile or RSProfile or GDPprofile): data to plot
-            keys (list of str or int): list of prfs dictionnary keys to extract
+            **kwargs: Keyword arguments to be passed down to the plotting function.
 
         """
 
-        multiprf_plot(prfs, keys, x='alt', y='val', **kwargs)
+        dpp.multiprf(prfs, **kwargs)
 
 class RSPlotStrategy(PlotStrategy):
     """ Child class to manage the plotting strategy for the MultiRSProfile class. """
 
-    def plot(self, prfs, keys, x='tdt', **kwargs):
+    def plot(self, prfs, **kwargs):
         """ Call the proper plotting method for this strategy.
 
         Args:
             prfs (dict of Profile or RSProfile or GDPprofile): data to plot
-            keys (list of str or int): list of prfs dictionnary keys to extract
-            x (str): parameter name for the x axis. Defaults to 'tdt'.
+            **kwargs: Keyword arguments to be passed down to the plotting function.
 
         """
 
-        multiprf_plot(prfs, keys, x=x, y='val', **kwargs)
+        dpp.multiprf(prfs, **kwargs)
 
 class GDPPlotStrategy(PlotStrategy):
     """ Child class to manage the plotting strategy for the MultiGDPProfile class. """
 
-    def plot(self, prfs, keys, x='tdt', **kwargs):
+    def plot(self, prfs, **kwargs):
         """ Call the proper plotting method for this strategy.
 
         Args:
             prfs (dict of Profile or RSProfile or GDPprofile): data to plot
-            keys (list of str or int): list of prfs dictionnary keys to extract
-            x (str): parameter name for the x axis. Defaults to 'tdt'.
+            **kwargs: Keyword arguments to be passed down to the plotting function.
 
         """
 
-        multiprf_plot(prfs, keys, x=x, y='val', **kwargs)
+        dpp.multiprf(prfs, **kwargs)

@@ -249,3 +249,6 @@ this_file_of_result.txt
 
 # MacOS stuff
 *.DS_Store
+
+# Example stuff
+examples/output/

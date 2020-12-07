@@ -190,12 +190,13 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
     _DB_VAR_EMPTY = {}
 
     @abstractmethod
-    def __init__(self, load_stgy=None, sort_stgy=None, save_stgy=None):
+    def __init__(self, load_stgy=None, sort_stgy=None, save_stgy=None, plot_stgy=None):
 
         # Init attributes
         self._load_stgy = load_stgy
         self._sort_stgy = sort_stgy
         self._save_stgy = save_stgy
+        self._plot_stgy = plot_stgy
 
         self._profiles = self._DATA_EMPTY
         self._db_variables = self._DB_VAR_EMPTY
@@ -429,6 +430,19 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
 
         return [info[prm] for info in self.info]
 
+    def plot(self, **kwargs):
+        """ Plot method
+
+        Args:
+            **kwargs: Keyword arguments to be passed down to the plotting function.
+
+        Returns:
+            None
+
+        """
+
+        self._plot_stgy.plot(self, **kwargs)
+
 
 class MultiProfile(MutliProfileAbstract):
     """Multi profile base class, designed to handle multiple Profile."""
@@ -439,26 +453,11 @@ class MultiProfile(MutliProfileAbstract):
     def __init__(self):
         super().__init__(
             load_stgy=load_prf_stgy, sort_stgy=sort_prf_stgy,
-            save_stgy=save_prf_stgy
+            save_stgy=save_prf_stgy, plot_stgy=plt_prf_stgy,
         )
 
         # Init strategy
         #self._sync_stgy = sync_stgy
-        #self._plot_stgy = plot_stgy
-
-    # def plot(self, **kwargs):
-    #     """ Plot method
-    #
-    #     Args:
-    #         **kwargs: Arbitrary keyword arguments, to be passed down to the plotting function.
-    #
-    #     Returns:
-    #         None
-    #
-    #     """
-    #
-    #     self._plot_stgy.plot(self.profiles, self.keys, **kwargs)
-
 
 class MultiRSProfileAbstract(MutliProfileAbstract):
     """Abstract MultiRSProfile class"""
@@ -466,11 +465,11 @@ class MultiRSProfileAbstract(MutliProfileAbstract):
     @abstractmethod
     def __init__(
             self, load_stgy=None, sort_stgy=None,
-            save_stgy=None
+            save_stgy=None, plot_stgy=None,
     ):
         super().__init__(
             load_stgy=load_stgy, sort_stgy=sort_stgy,
-            save_stgy=save_stgy
+            save_stgy=save_stgy, plot_stgy=plt_prf_stgy,
         )
 
         # Set attributes
@@ -509,7 +508,7 @@ class MultiRSProfile(MultiRSProfileAbstract):
     def __init__(self):
         super().__init__(
             load_stgy=load_rsprf_stgy, sort_stgy=sort_prf_stgy,
-            save_stgy=save_prf_stgy
+            save_stgy=save_prf_stgy, plot_stgy=plt_prf_stgy,
         )
 
     #def synchronize(self, *args, inplace=False, **kwargs):
@@ -543,7 +542,7 @@ class MultiGDPProfile(MultiRSProfileAbstract):
     def __init__(self):
         super().__init__(
             load_stgy=load_gdpprf_stgy, sort_stgy=sort_prf_stgy,
-            save_stgy=save_prf_stgy
+            save_stgy=save_prf_stgy, plot_stgy=plt_prf_stgy,
         )
 
     @property
