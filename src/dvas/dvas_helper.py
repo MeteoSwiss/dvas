@@ -10,6 +10,7 @@ Module contents: Package helper classes and functions.
 """
 
 # Import external packages and modules
+import os
 from pathlib import Path
 from re import compile, IGNORECASE
 from datetime import datetime
@@ -60,7 +61,10 @@ class SingleInstanceMetaClass(type):
 
     def __call__(cls, *args, **kwargs):
         """Class __call__ method"""
-        if cls.__single_instance:
+
+        # Will return 1st created instance if empty and if class name is not
+        # in 'DVAS_SKIP_SINGLETON' environment variable
+        if cls.__single_instance is not None:
             return cls.__single_instance
         single_obj = cls.__new__(cls)
         single_obj.__init__(*args, **kwargs)

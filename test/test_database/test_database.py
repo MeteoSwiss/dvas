@@ -10,14 +10,164 @@ Module contents: Testing classes and function for dvas.database.database module.
 """
 
 # Import external packages and modules
+import re
 from datetime import datetime, timedelta
 import pytz
 from copy import deepcopy
+import pytest
+import numpy as np
 
 # Import from python packages and modules
+from dvas.database.model import Parameter as MdlParameter
+from dvas.database.model import Instrument as MdlInstrument
+from dvas.database.model import InstrType as MdlInstrType
+from dvas.database.database import DatabaseManager
 from dvas.database.database import InfoManager
 from dvas.database.database import SearchInfoExpr
-from dvas.dvas_environ import glob_var
+from dvas.database.database import OneDimArrayConfigLinker
+from dvas.database.database import ConfigGenMaxLenError
+from dvas.database.database import DBInsertError
+from dvas.dvas_environ import glob_var, path_var
+from dvas.config.config import Parameter
+
+
+@pytest.fixture
+def db_mngr():
+    return DatabaseManager()
+
+
+class TestDatabaseManager:
+    """Test DatabaseManager class"""
+
+    # Define
+    n_data = 3
+    index = np.arange(n_data)
+    values = np.random.rand(n_data)
+    prm = 'trepros1'
+    info = InfoManager('20200101T0000Z', 'YT-100')
+
+    def test_get_or_none(self, db_mngr):
+        """Test get_or_none method"""
+
+        assert db_mngr.get_or_none(
+            MdlParameter,
+            search={
+                'where': MdlParameter.prm_abbr.in_(
+                    ['dummytst_param1', 'dummytst_param2']
+                )
+            },
+            attr=[[MdlParameter.prm_abbr.name]],
+        ) == ['dummytst_param1']
+
+        assert db_mngr.get_or_none(
+            MdlInstrument,
+            search={
+                'where': MdlInstrType.type_name == 'YT',
+                'join_order': [MdlInstrType],
+            },
+            attr=[[MdlInstrument.srn.name]],
+            get_first=True
+        ) in [['YT-100']]
+
+        assert db_mngr.get_or_none(
+            MdlParameter,
+            search={
+                'where': MdlParameter.prm_abbr.in_(
+                    ['dummytst_param1', 'dummytst_param2']
+                )
+            },
+            attr=[[MdlParameter.prm_abbr.name]],
+            get_first=False
+        ) == [['dummytst_param1'], ['dummytst_param2']]
+
+    def test_add_data(self, db_mngr):
+        """Test add_data method"""
+
+        # Test add data
+        db_mngr.add_data(
+            self.index,
+            self.values,
+            self.info,
+            self.prm, source_info='test_add_data'
+        )
+
+        with pytest.raises(AssertionError):
+            db_mngr.add_data(
+                [],
+                self.values,
+                self.info,
+                self.prm, source_info='test_add_data'
+            )
+
+        with pytest.raises(AssertionError):
+            db_mngr.add_data(
+                self.index,
+                [],
+                self.info,
+                self.prm, source_info='test_add_data'
+            )
+
+        with pytest.raises(DBInsertError):
+            db_mngr.add_data(
+                self.index,
+                self.values,
+                self.info,
+                'xxxxxxx', source_info='test_add_data'
+            )
+
+    def test_get_data(self, db_mngr):
+        """Test get_data method"""
+
+        db_mngr.get_data(
+            f"and(dt('{self.info.evt_dt}'), sn('{self.info.srn}'))",
+            'trepros1', True
+        )
+
+    def test_get_flags(self, db_mngr):
+        """Test get_flags"""
+        assert isinstance(db_mngr.get_flags(), list)
+
+
+class TestOneDimArrayConfigLinker:
+    """Test OneDimArrayConfigLinker class
+
+    Tests:
+        - String generator
+        - Catch generated string
+
+    """
+
+    # String generator patern
+    prm_pat = re.compile(r'^dummytst_(param\d+)$')
+
+    # Catched string patern
+    desc_pat = re.compile(r'^param\d+$')
+
+    # Config linker
+    cfg_lkr = OneDimArrayConfigLinker([Parameter])
+
+    def test_get_document(self):
+        """Test get_document method
+
+        Test:
+            Returned type
+            Item generator
+            Raises ConfigGenMaxLenError
+
+        """
+
+        doc = self.cfg_lkr.get_document(Parameter.CLASS_KEY)
+
+        assert isinstance(doc, list)
+        assert sum(
+            [self.prm_pat.match(arg['prm_abbr']) is not None for arg in doc]
+        ) == 10
+        assert sum(
+            [self.desc_pat.match(arg['prm_desc']) is not None for arg in doc]
+        ) == 10
+        with glob_var.set_many_attr({'config_gen_max': 2}):
+            with pytest.raises(ConfigGenMaxLenError):
+                self.cfg_lkr.get_document(Parameter.CLASS_KEY)
 
 
 class TestInfoManager:

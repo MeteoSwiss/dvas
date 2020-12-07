@@ -70,11 +70,9 @@ class OneDimArrayConfigLinker:
     CFG_MNGRS = [CfgParameter, CfgInstrType, CfgInstrument, CfgFlag, CfgTag]
 
     def __init__(self, cfg_mngrs=None):
-        """Constructor
-
+        """
         Args:
             cfg_mngrs (list of OneDimArrayConfigManager): Config managers
-
         """
 
         if cfg_mngrs is None:
@@ -84,7 +82,14 @@ class OneDimArrayConfigLinker:
         self._cfg_mngr = instantiate_config_managers(*cfg_mngrs)
 
     def get_document(self, key):
-        """Return config document.
+        """Interpret the generator syntax if necessary and
+        return the config document.
+
+        The generator syntax is apply only in OneDimArrayConfig  with
+        not empty NODE_GEN. Generator sytax is based on regexpr. Fields which
+        are not generator can contain expression to be evaluated. Expressions
+        must be surrouded by '$'. To catch regexpr group in expression use
+        'lambda x: x.group(N)'.
 
         Args:
             key (str): Config manager key
@@ -212,7 +217,6 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
     def __init__(self, reset_db=False):
         """
-
         Args:
             reset_db (bool, optional): Force the data base to be reset.
                 Defaults to False.
@@ -250,6 +254,11 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         # Define
         file_path = env_path_var.local_db_path / DB_FILE_NM
+        pragmas = {
+            'foreign_keys': True,
+            # Set cache to 10MB
+            'cache_size': -DB_CACHE_SIZE
+        }
 
         # Create local DB directory
         if file_path.exists():
@@ -269,14 +278,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                 )
 
         # Init DB
-        self._db.init(
-            file_path,
-            pragmas={
-                'foreign_keys': True,
-                # Set cache to 10MB
-                'cache_size': -DB_CACHE_SIZE
-            }
-        )
+        self._db.init(file_path, pragmas=pragmas)
 
         return db_new
 
@@ -284,8 +286,8 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         """Get from DB
 
         Args:
-            table ():
-            search (dict):
+            table (peewee.Model):
+            search (dict): Keys ['join_order', 'where']
             attr (list of (list of str)): Get query result attributes by path
             get_first (bool): return first occurrence or all. Default ot False.
 
@@ -462,6 +464,10 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             prm_abbr (str):
             source_info (str, optional): Data source
             force_write (bool, optional): force rewrite of already save data
+
+        Raises:
+            DBInsertError: Error while add data
+
         """
 
         # Test input
@@ -632,8 +638,8 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         Args:
             where:
-            prm_abbr:
-            filter_empty:
+            prm_abbr (str): Parameter
+            filter_empty (bool): Filter empty data or not
 
         Returns:
 
@@ -716,7 +722,12 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         return out
 
     def get_flags(self):
-        """Get config flags"""
+        """Get config flags
+
+        Returns:
+            list
+
+        """
         return self._get_table(Flag)
 
 
