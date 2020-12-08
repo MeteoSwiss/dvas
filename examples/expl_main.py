@@ -71,7 +71,7 @@ if __name__ == '__main__':
 
     # # Load a basic profile, with a variable, and altitude.
     prf = MultiProfile()
-    prf.load(filt_raw, 'trepros1', 'altpros1')
+    prf.load_from_db(filt_raw, 'trepros1', 'altpros1')
 
     # Load a basic time profile, with a variable and altitude
     rs_prf = MultiRSProfile()
