@@ -45,7 +45,7 @@ class InstrType(MetadataModel):
     """Instrument type model"""
     id = AutoField(primary_key=True)
     type_name = CharField(
-        null=True, unique=True,
+        null=False, unique=True,
         constraints=[
             Check(f"re_fullmatch('({INSTR_TYPE_PAT})|()', type_name)")
         ]
@@ -58,7 +58,7 @@ class Instrument(MetadataModel):
     id = AutoField(primary_key=True)
 
     # Serial number
-    srn = CharField(null=True, unique=True)
+    srn = CharField(null=False, unique=True)
     instr_type = ForeignKeyField(
         InstrType, backref='instruments', on_delete='CASCADE'
     )
@@ -85,7 +85,7 @@ class Flag(MetadataModel):
         null=False,
         unique=True,
         constraints=[Check("bit_number >= 0")])
-    flag_abbr = CharField(null=False)
+    flag_abbr = CharField(null=False, unique=True)
     flag_desc = TextField(null=False, default='')
 
 
@@ -100,7 +100,6 @@ class DataSource(MetadataModel):
     """Data source model"""
     id = AutoField(primary_key=True)
     source = CharField(null=True)
-    source_hash = IntegerField()
 
 
 class Info(MetadataModel):
@@ -113,8 +112,8 @@ class Info(MetadataModel):
     data_src = ForeignKeyField(
         DataSource, backref='info', on_delete='CASCADE'
     )
-    evt_hash = IntegerField()
-    """int: Hash of the info attributes. Using a hash allows you to manage
+    evt_hash = CharField()
+    """str: Hash of the info attributes. Using a hash allows you to manage
     identical info with varying degrees of work steps."""
 
 
@@ -147,6 +146,7 @@ class InfosInstruments(MetadataModel):
 #     prm
 #     value
 #     info
+
 
 class Data(MetadataModel):
     """Data model"""

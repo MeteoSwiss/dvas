@@ -22,3 +22,12 @@
 
 - tag_txt: 'cws'
   tag_desc: 'Combined Working Measurement Standard'
+
+- tag_txt: 'load_profile'
+  tag_desc: 'Load Profile tests'
+
+- tag_txt: 'load_rsprofile'
+  tag_desc: 'Load RSProfile tests'
+
+- tag_txt: 'load_gdpprofile'
+  tag_desc: 'Load GDPProfile tests'

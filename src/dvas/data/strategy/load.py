@@ -18,6 +18,7 @@ from .data import Profile, RSProfile, GDPProfile
 from ..linker import LocalDBLinker
 from ...database.database import InfoManager
 from ...database.model import Data
+from ...dvas_logger import LoadError
 
 
 # Define
@@ -75,10 +76,11 @@ class LoadStrategyAbstract(metaclass=ABCMeta):
                     axis=1, ignore_index=False
                 ) for info_arg in info
             ]
+
         # TODO
-        #  raise Exception for data index coherence
+        #  Details exception (especially for data index coherence)
         except Exception as exc:
-            raise Exception(exc)
+            raise LoadError(exc)
 
         # Add missing columns
         for i in range(len(data)):

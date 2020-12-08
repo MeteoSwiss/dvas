@@ -120,8 +120,11 @@ class ProfileAbstract(metaclass=RequiredAttrMetaClass):
 
     def __getattr__(self, item):
         try:
-            if item in self.DF_COLS_ATTR.keys():
+            if item in self.get_col_attr():
                 return self.data[item]
+
+            elif item in self.get_index_attr():
+                return self.data.index.get_level_values(item)
 
             else:
                 return super().__getattribute__(item)
@@ -142,7 +145,7 @@ class ProfileAbstract(metaclass=RequiredAttrMetaClass):
                 # If so, set things up
                 self._data = val[self.get_col_attr()]
 
-            elif item in self.DF_COLS_ATTR.keys():
+            elif item in self.get_col_attr():
 
                 # Prepare value
                 assert isinstance(val, pd.Series)
@@ -151,8 +154,14 @@ class ProfileAbstract(metaclass=RequiredAttrMetaClass):
                 # Update value
                 self._data[item].update(value[item])
 
+            elif item in self.get_index_attr():
+                raise AttributeError(f"{item} is an index and can not be set")
+
             else:
                 super().__setattr__(item, val)
+
+        except AttributeError as exc:
+            raise AttributeError(exc)
 
         except (KeyError, ProfileError):
             raise ProfileError(
@@ -289,10 +298,6 @@ class Profile(ProfileAbstract):
         """pd.Series: Corresponding data altitude"""
         return super().__getattr__('alt')
 
-    @alt.setter
-    def alt(self, value):
-        setattr(self, 'alt', value)
-
     @property
     def val(self):
         """pd.Series: Corresponding data 'val'"""
@@ -404,10 +409,6 @@ class RSProfile(Profile):
         """pd.Series: Corresponding data time delta since launch"""
         return super().__getattr__('tdt')
 
-    @tdt.setter
-    def tdt(self, value):
-        setattr(self, 'tdt', value)
-
 
 class GDPProfile(RSProfile):
     """ Child RSProfile class for *GDP-like* radiosonde atmospheric measurements.
@@ -445,6 +446,42 @@ class GDPProfile(RSProfile):
             'ucu': {'test': FLOAT_TEST, 'type': np.float, 'index': False},
           }
     )
+
+    @property
+    def ucr(self):
+        """pd.Series: Corresponding data time delta since launch"""
+        return super().__getattr__('ucr')
+
+    @ucr.setter
+    def ucr(self, value):
+        setattr(self, 'ucr', value)
+
+    @property
+    def ucs(self):
+        """pd.Series: Corresponding data time delta since launch"""
+        return super().__getattr__('ucs')
+
+    @ucs.setter
+    def ucs(self, value):
+        setattr(self, 'ucs', value)
+
+    @property
+    def uct(self):
+        """pd.Series: Corresponding data time delta since launch"""
+        return super().__getattr__('uct')
+
+    @uct.setter
+    def uct(self, value):
+        setattr(self, 'uct', value)
+
+    @property
+    def ucu(self):
+        """pd.Series: Corresponding data time delta since launch"""
+        return super().__getattr__('ucu')
+
+    @ucu.setter
+    def ucu(self, value):
+        setattr(self, 'ucu', value)
 
     @property
     def uc_tot(self):

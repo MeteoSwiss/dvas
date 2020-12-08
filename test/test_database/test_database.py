@@ -273,7 +273,7 @@ def test_search_event_expr_eval():
             'datetime("20180110T0000Z")', *args
         ) ==
         SearchInfoExpr.eval(
-            'dt("20180110T0000Z")', *args
+            'dt("2018-01-10 00:00:00+00:00")', *args
         )
     )
 
@@ -289,12 +289,33 @@ def test_search_event_expr_eval():
     )
 
     # Test tag
+    assert len(
+        SearchInfoExpr.eval(
+            'tag(("e:1", "r:1"))', *args
+        )
+    ) > 0
     assert (
         SearchInfoExpr.eval(
-            'tag(("e1", "r1"))', *args
+            'tag(("e:1", "r:1"))', *args
         ) ==
         SearchInfoExpr.eval(
-            'or_(tag("e1"), tag("r1"))',
+            'or_(tag("e:1"), tag("r:1"))',
+            *args
+        )
+    )
+
+    # Test serial number
+    assert len(
+        SearchInfoExpr.eval(
+            'srn(("AR-000", "BR-000"))', *args
+        )
+    ) > 0
+    assert (
+        SearchInfoExpr.eval(
+            'srn(("AR-000", "BR-000"))', *args
+        ) ==
+        SearchInfoExpr.eval(
+            'or_(srn("AR-000"), srn("BR-000"))',
             *args
         )
     )

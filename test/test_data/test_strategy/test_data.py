@@ -61,6 +61,9 @@ class TestProfile:
             inst.set_data_index(self.ok_data)['flg']
         )
 
+        # Test alt
+        assert np.array_equal(inst.alt.values, self.ok_data['alt'].values)
+
     def test_setter(self):
         """Test setter method"""
 
@@ -75,7 +78,7 @@ class TestProfile:
         inst.val = val_new
         assert inst.val.equals(val_new)
 
-        # Test bad data
+        # Test raises
         with pytest.raises(ProfileError):
             val_bad = inst.val
             val_bad.name = 'xxx'
@@ -83,6 +86,9 @@ class TestProfile:
 
         with pytest.raises(ProfileError):
             inst.val = inst.data[['val']]
+
+        with pytest.raises(AttributeError):
+            inst.alt = 0
 
     def test_copy(self):
         """Test copy method"""
@@ -115,6 +121,32 @@ class TestRSProfile:
         with pytest.raises(ProfileError):
             RSProfile(self.info, self.ko_index_data)
 
+    def test_getter(self):
+        """Test getter method"""
+
+        inst = RSProfile(self.info, self.ok_data)
+
+        # Test data
+        assert inst.data.equals(
+            inst.set_data_index(self.ok_data)
+        )
+
+        # Test val
+        assert inst.val.equals(
+            inst.set_data_index(self.ok_data)['val']
+        )
+
+        # Test flg
+        assert inst.flg.equals(
+            inst.set_data_index(self.ok_data)['flg']
+        )
+
+        # Test alt
+        assert np.array_equal(inst.alt.values, self.ok_data['alt'].values)
+
+        # Test tdt
+        assert np.array_equal(inst.tdt.values, self.ok_data['tdt'].values)
+
 
 class TestGDPProfile:
     """Test GDPProfile class"""
@@ -143,6 +175,27 @@ class TestGDPProfile:
         # Init
         inst = GDPProfile(self.info, self.ok_data)
 
+        # Test data
+        assert inst.data.equals(
+            inst.set_data_index(self.ok_data)
+        )
+
+        # Test val
+        assert inst.val.equals(
+            inst.set_data_index(self.ok_data)['val']
+        )
+
+        # Test flg
+        assert inst.flg.equals(
+            inst.set_data_index(self.ok_data)['flg']
+        )
+
         # Test uc_tot
         assert np.round(inst.uc_tot.abs().max(), 1) == np.round(np.sqrt(4), 1)
         inst.uc_tot.name = 'uc_tot'
+
+        # Test alt
+        assert np.array_equal(inst.alt.values, self.ok_data['alt'].values)
+
+        # Test tdt
+        assert np.array_equal(inst.tdt.values, self.ok_data['tdt'].values)
