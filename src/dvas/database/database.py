@@ -11,6 +11,7 @@ Module contents: Local database management tools
 
 # Import from python packages
 import pprint
+from hashlib import blake2b
 import re
 from abc import abstractmethod, ABCMeta
 from itertools import chain, zip_longest
@@ -39,7 +40,7 @@ from ..config.config import Instrument as CfgInstrument
 from ..config.config import Parameter as CfgParameter
 from ..config.config import Flag as CfgFlag
 from ..config.config import Tag as CfgTag
-from ..config.definitions.tag import TAG_EMPTY_VAL
+from ..config.definitions.tag import TAG_NONE, TAG_EMPTY_VAL
 from ..dvas_helper import ContextDecorator
 from ..dvas_helper import SingleInstanceMetaClass
 from ..dvas_helper import TypedProperty as TProp
@@ -530,13 +531,12 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     )
 
                 # Create original data information
-                data_src, _ = DataSource.get_or_create(
-                    source=source_info, source_hash=hash(source_info))
+                data_src, _ = DataSource.get_or_create(source=source_info)
 
                 # Create info
                 info_id, created = Info.get_or_create(
                     evt_dt=info.evt_dt, param=param,
-                    data_src=data_src, evt_hash=hash(info)
+                    data_src=data_src, evt_hash=info.get_hash()
                 )
 
                 # Erase data (created == False indicate that data already exists)
@@ -614,6 +614,13 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     # TODO
                     #  Add log
 
+                else:
+
+                    # TODO
+                    #  Add log
+
+                    pass
+
         except DBInsertError as exc:
             raise DBInsertError(exc)
 
@@ -626,7 +633,8 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         # TODO Detail exception
         except Exception as exc:
-            print(exc)
+            print(f'Error in search expression {exc}')
+
             # TODO Decide if raise or not
             out = []
 
@@ -874,27 +882,27 @@ class InfoManager:
     #: datetime.datetime: UTC datetime
     evt_dt = TProp(Union[str, Timestamp, datetime], check_datetime)
 
-    #: str: Instrument id
+    #: str|iterable of str: Instrument id
     srn = TProp(
         Union[str, Iterable[str]],
         setter_fct=lambda x: (x,) if isinstance(x, str) else tuple(x),
         getter_fct=lambda x: sorted(x)
     )
 
-    #: str: Tag abbr
+    #: str|iterable of str: Tag abbr
     tags = TProp(
-        Union[None, Iterable[str]],
-        setter_fct=lambda x: set(x) if x else set(),
+        Union[str, Iterable[str]],
+        setter_fct=lambda x: set((x,)) if isinstance(x, str) else set(x),
         getter_fct=lambda x: sorted(x)
     )
 
-    def __init__(self, evt_dt, srn, tags=None):
+    def __init__(self, evt_dt, srn, tags=TAG_NONE):
         """Constructor
 
         Args:
             evt_dt (str | datetime | pd.Timestamp): UTC datetime
             srn (str): Instrument serial number
-            tags (`optional`, iterable of str): Tags
+            tags (`optional`, iterable of str): Tags. Defaults to ''
 
         """
 
@@ -941,6 +949,13 @@ class InfoManager:
         return p_printer.pformat(
             (f'dt: {self.evt_dt}', f'srn: {self.srn}', f'tag: {self.tags}')
         )
+
+    def get_hash(self):
+        """Return 20 bytes hash as string"""
+        return blake2b(
+            b''.join([str(arg).encode('utf-8') for arg in self.sort_attr]),
+            digest_size=20
+        ).hexdigest()
 
     def __hash__(self):
         return hash(self.sort_attr)
@@ -1112,6 +1127,9 @@ class SearchInfoExpr(metaclass=ABCMeta):
             qry = Info.select().where(Info.id.in_(expr_res))
             out = [arg for arg in qry.iterator()]
 
+            # TODO
+            #  Raise exception
+
             return out
 
 
@@ -1227,11 +1245,14 @@ class DatetimeExpr(TerminalSearchInfoExpr):
 class SerialNumberExpr(TerminalSearchInfoExpr):
     """Serial number filter"""
 
-    expression = TProp(str, lambda *x: x[0])
+    expression = TProp(
+        Union[str, Iterable[str]],
+        setter_fct=lambda x: [x] if isinstance(x, str) else list(x)
+    )
 
     def get_filter(self):
         """Implement get_filter method"""
-        return Instrument.srn == self.expression
+        return Instrument.srn.in_(self.expression)
 
 
 class TagExpr(TerminalSearchInfoExpr):

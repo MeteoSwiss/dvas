@@ -52,6 +52,10 @@ class ProfileError(dvasError):
     """Exception for dvas profile error"""
 
 
+class LoadError(dvasError):
+    """Exception for dvas load error"""
+
+
 def get_logger(name):
     """Get logger"""
 

@@ -7,7 +7,10 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 """
 
+
 from pathlib import Path
+
+from dvas.data.data import update_db
 from dvas.dvas_environ import path_var
 from dvas.database.database import DatabaseManager
 
@@ -21,4 +24,5 @@ path_var.orig_data_path = test_expl_path / 'data'
 # This is by no means a satisfactory solution.
 # It must be possible to create an independent DB for each test
 # and not a global DB.
-DatabaseManager()
+DatabaseManager(reset_db=True)
+update_db('trepros1', strict=True)

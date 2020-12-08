@@ -245,7 +245,7 @@ class FileHandler(AbstractHandler):
     def exclude_file(self, path_scan, prm_abbr):
         """Exclude file method"""
 
-        # Search exclude file names source hash
+        # Search exclude file names source
         exclude_file_name = self._db_mngr.get_or_none(
             Info,
             search={
@@ -254,13 +254,13 @@ class FileHandler(AbstractHandler):
                     (Instrument.srn != '')
                 ),
                 'join_order': [Parameter, DataSource, Instrument]},
-            attr=[[Info.data_src.name, DataSource.source_hash.name]],
+            attr=[[Info.data_src.name, DataSource.source.name]],
             get_first=False
         )
 
         origdata_path_new = [
             arg for arg in path_scan
-            if hash(self.get_source_unique_id(arg)) not in exclude_file_name
+            if self.get_source_unique_id(arg) not in exclude_file_name
         ]
 
         return origdata_path_new

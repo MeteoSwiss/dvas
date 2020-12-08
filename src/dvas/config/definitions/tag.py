@@ -14,6 +14,7 @@ Module contents: Required attributes definition for
 from ...database.model import Tag
 
 # Define
+TAG_NONE = ''
 TAG_RAW_VAL = 'raw'
 TAG_GDP_VAL = 'gdp'
 TAG_DERIVED_VAL = 'derived'
@@ -31,6 +32,10 @@ PARAMETER_PATTERN_PROP = {
 
 #: list: Constant node values
 CONST_NODES = [
+    {
+        Tag.tag_txt.name: TAG_NONE,
+        Tag.tag_desc.name: 'None'
+    },
     {
         Tag.tag_txt.name: TAG_RAW_VAL,
         Tag.tag_desc.name: 'Data are raw'
