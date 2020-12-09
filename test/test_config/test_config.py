@@ -46,12 +46,12 @@ def test_instantiate_config_managers():
         # Test read
         assert cfg_mngr.document is not None
 
-    # Test content for InstrType. Must contain exactly tst_list items (one time each one)
-    tst_list = ['TEST_01', 'TEST_02', 'TEST_03']
+    # Test content for InstrType. Must contain exactly tst_list items (one time each one
+    # This list will need to be udpated the if the test database changes.
+    tst_list = ['AR-GDP_001', 'BR-GDP_001', 'RS41-GDP-BETA_001', 'YT', 'ZT', 'RS92', '']
     assert (sum(
         [(arg['type_name'] in tst_list) for arg in cfg_mngrs['InstrType']]
     ) == len(tst_list))
-
 
 class TestOneLayerConfigManager():
     """Test class for OneLayerConfigManager
