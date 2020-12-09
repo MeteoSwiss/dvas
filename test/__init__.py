@@ -14,7 +14,7 @@ from dvas.data.data import update_db
 from dvas.dvas_environ import path_var
 from dvas.database.database import DatabaseManager
 
-test_expl_path = Path(__file__).resolve(strict=True).parents[1] / 'test_examples'
+test_expl_path = Path(__file__).resolve(strict=True).parent / 'processing_arena'
 
 path_var.config_dir_path = test_expl_path / 'config'
 path_var.local_db_path = test_expl_path / 'dvas_db'
