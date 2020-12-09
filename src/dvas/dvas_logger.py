@@ -23,11 +23,12 @@ from .dvas_helper import ContextDecorator
 
 # Define logger names
 LOGGER_NAME = [
-    'localdb',
-    'rawcsv',
-    'data',
-    'plot',
-    'gruan',
+    'localdb', # DB stuff
+    'rawcsv', # I/O stuff
+    'data', # Data sub-module
+    'plots', # Plots sub-module
+    'tools', # Tools sub-module
+    'general', # Intended for anything not inside a specific sub-module
 ]
 
 
@@ -69,8 +70,8 @@ def get_logger(name):
     return logging.getLogger(name)
 
 def log_func_call(logger):
-    ''' Intended as a decorator that logs a function call the the log. The message is at the 'DEBUG'
-    level.
+    ''' Intended as a decorator that logs a function call the the log. The message is at the
+    'DEBUG' level.
 
     Args:
         logger (str): one of the loggers defined in dvas_logger.py, e.g.: gruan_logger
@@ -131,7 +132,7 @@ def init_log():
     if log_var.log_mode == 'FILE':
 
         # Set log path
-        log_path = path_var.output_path / 'log'
+        log_path = path_var.output_path / 'logs'
         try:
             log_path.mkdir(parents=True, exist_ok=True)
             # Set user read/write permission
@@ -166,6 +167,11 @@ def init_log():
         logger.addHandler(handler)
         logger.disabled = False
 
+    # All done. Let's start logging !
+    logger = get_logger('general')
+    logger.disabled = False
+    logger.info('This dvas log was started on %s.', datetime.now().strftime('%Y-%m-%d at %H:%M:%S'))
+
 
 def clear_log():
     """Function used to clear log"""
@@ -189,7 +195,6 @@ class LogManager(ContextDecorator):
     def __exit__(self, typ, value, traceback):
         clear_log()
 
-
 # Add logger to locals()
 #: logging.logger: Local DB logger
 localdb = get_logger('localdb')
@@ -197,7 +202,9 @@ localdb = get_logger('localdb')
 rawcsv = get_logger('rawcsv')
 #: logging.logger: Data logger
 data = get_logger('data')
-#: logging.logger: Plot logger
-plot_logger = get_logger('plot')
-#: logging.logger: GRUAN logger
-gruan_logger = get_logger('gruan')
+#: logging.logger: plots logger
+plots_logger = get_logger('plots')
+#: logging.logger: tools logger
+tools_logger = get_logger('tools')
+#: logging.logger: general logger
+general_logger = get_logger('general')

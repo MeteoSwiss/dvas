@@ -16,13 +16,13 @@ import numpy as np
 import pandas as pd
 
 # Import from current package
-from ..dvas_logger import gruan_logger, log_func_call, dvasError
+from ..dvas_logger import tools_logger, log_func_call, dvasError
 from .tools import weighted_mean, delta
 from ..data.data import MultiGDPProfile
 from ..data.strategy.data import GDPProfile
 from ..database.database import InfoManager
 
-@log_func_call(gruan_logger)
+@log_func_call(tools_logger)
 def corcoef_gdps(i, j, uc_type,
                  srn_i=None, srn_j=None,
                  mdl_i=None, mdl_j=None,
@@ -120,7 +120,7 @@ def corcoef_gdps(i, j, uc_type,
 
     return corcoef
 
-@log_func_call(gruan_logger)
+@log_func_call(tools_logger)
 def combine_gdps(gdp_prfs, binning=1, method='weighted mean'):
     ''' Combines and (possibly) rebins GDP profiles, with full error propagation.
 

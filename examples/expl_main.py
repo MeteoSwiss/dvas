@@ -11,10 +11,11 @@ Module content: examples
 from pathlib import Path
 
 # Set the data path to look where we currently are
-from dvas.dvas_environ import path_var
+from dvas.dvas_environ import path_var as dvas_path_var
+from dvas.dvas_environ import log_var as dvas_log_var
 # WARNING: this must be done BEFORE importing anything else ... !
-path_var.orig_data_path = Path(__file__).parent / 'data'
-path_var.config_dir_path = Path(__file__).parent / 'config'
+dvas_path_var.orig_data_path = Path(__file__).parent / 'data'
+dvas_path_var.config_dir_path = Path(__file__).parent / 'config'
 
 # Import
 from dvas.data.data import MultiProfile, MultiRSProfile, MultiGDPProfile
@@ -23,6 +24,7 @@ from dvas.dvas_logger import LogManager
 from dvas.database.database import DatabaseManager
 
 from dvas.dvas_logger import dvasError
+from dvas.dvas_logger import init_log as dvas_init_log
 
 #import dvas.tools.gruan as dtg
 import dvas.plots.utils as dpu
@@ -30,6 +32,12 @@ import dvas.plots.utils as dpu
 
 if __name__ == '__main__':
 
+    # Set the log level we want
+    dvas_log_var.log_level = 'DEBUG' # 'INFO' is the default.
+    dvas_log_var.log_mode = 'FILE' # 'FILE' if you want a live update
+
+    # Start the logging
+    dvas_init_log()
 
     # Let us fine-tune the plotting behavior of dvas
     dpu.set_mplstyle('nolatex') # The safe option. Use 'latex' fo prettier plots.
@@ -39,7 +47,6 @@ if __name__ == '__main__':
 
     # Show the plots on-screen ?
     dpu.PLOT_SHOW = False
-
 
     # Reset the DB to "start fresh" ?
     RESET_DB = True
@@ -59,7 +66,7 @@ if __name__ == '__main__':
 
     # Update the database + log
     if RESET_DB:
-        with LogManager():
+        #with LogManager():
             update_db('tdtpros1', strict=True)
             update_db('trepros1', strict=True)
             update_db('treprosu_r', strict=True)

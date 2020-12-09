@@ -16,12 +16,12 @@ import numpy as np
 #from scipy import stats
 
 # Import from this package
-from ..dvas_logger import gruan_logger, log_func_call, dvasError
+from ..dvas_logger import tools_logger, log_func_call, dvasError
 from .gruan import combine_gdps
 from ..plots import gruan as dpg
 
 # Run a chi-square analysis between a merged profile and its components
-@log_func_call(gruan_logger)
+@log_func_call(tools_logger)
 def chi_square(gdp_prfs, cws_prf):
     ''' Computes a chi-square given a series of individual profiles, and a merged one.
 
@@ -61,7 +61,7 @@ def chi_square(gdp_prfs, cws_prf):
     return chi_sq
 
 
-@log_func_call(gruan_logger)
+@log_func_call(tools_logger)
 def ks_test(gdp_pair, alpha=0.0027, binning_list=None, do_plot=False, **kwargs):
     ''' Runs a "rolling" KS test between two columns of a pandas.DataFrame.
 
@@ -143,11 +143,11 @@ def ks_test(gdp_pair, alpha=0.0027, binning_list=None, do_plot=False, **kwargs):
     if 1 in binning_list and do_plot:
         dpg.plot_ks_test(k_pqis[binning_list.index(1)], f_pqi, p_ksi, binning_list, alpha, tag='')
     else:
-        gruan_logger.warning('KS test ran without binning of 1. Skipping the diagnostic plot.')
+        tools_logger.warning('KS test ran without binning of 1. Skipping the diagnostic plot.')
 
     return (f_pqi, p_ksi)
 
-@log_func_call(gruan_logger)
+@log_func_call(tools_logger)
 def check_gdp_compatibility(gdp_prfs, alpha=0.0027, binning_list=None, do_plot=False, **kwargs):
     ''' Runs a series of KS test to assess the consistency of several GDP profiles.
 
