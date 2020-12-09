@@ -79,7 +79,7 @@ For the sake of clarity, and to facilitate the maintenance, we list here (succin
     ```
 
 - **doctrings:** Google Style. Please try to stick to the following MWE:
-```
+    ```
     """ A brief one-liner description, that finishes with a dot.
 
     Use some
@@ -118,9 +118,31 @@ For the sake of clarity, and to facilitate the maintenance, we list here (succin
         @enduml
 
     """
-```
-You should of course feel free to use more of the tools offered by [sphinx](https://www.sphinx-doc.org/en/master/), [napoleon](https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html), and
-[Google Doc Strings](https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html#example-google). But if you do, **please make sure there are no errors upon generating the docs !**
+    ```
+    You should of course feel free to use more of the tools offered by [sphinx](https://www.sphinx-doc.org/en/master/), [napoleon](https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html), and
+    [Google Doc Strings](https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html#example-google). But if you do, **please make sure there are no errors upon generating the docs !**
+
+- **logging:** Based on the native ``logging`` module. Specific loggers exists for the different
+    sub-modules of dvas. They are defined in ``dvas_logger.py``. For example, here's how you should log messages in the `plots` submodule:
+    ```
+    from ..dvas_logger import plots_logger as logger
+
+    logger.debug('Some info useful only for debug purposes.')
+    logger.info('Some generic info.')
+    logger.warning('Some important info that should not be missed by the user.')
+    ```
+
+    In addition, note also the function ``dvas_logger.log_func_call(logger)``, which is meant to be
+    used as a decorator to log function calls with their arguments:
+    ```
+    from ..dvas_logger import log_func_call
+    from ..dvas_logger import plots_logger as logger
+
+    @log_func_call(logger)
+    def some_function()
+        """ Some function doing something """
+
+    ```
 
 ## Step-by-step guide to contributing
 
