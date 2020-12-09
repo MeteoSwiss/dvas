@@ -947,7 +947,7 @@ class InfoManager:
     def __repr__(self):
         p_printer = pprint.PrettyPrinter()
         return p_printer.pformat(
-            (f'dt: {self.evt_dt}', f'srn: {self.srn}', f'tag: {self.tags}')
+            (f'evt_dt: {self.evt_dt}', f'srn: {self.srn}', f'tags: {self.tags}')
         )
 
     def get_hash(self):
