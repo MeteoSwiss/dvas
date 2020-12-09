@@ -19,7 +19,8 @@ from matplotlib import cm
 # Import from this package
 from .. import pkg_path
 from ..dvas_environ import path_var as env_path_var
-from ..dvas_logger import plots_logger, log_func_call
+from ..dvas_logger import log_func_call
+from ..dvas_logger import plots_logger as logger
 
 # Define some plotting constants
 #: float: Width of a 1-column plot [inches], to fit in scientific articles when scaled by 50%
@@ -49,7 +50,7 @@ UNIT_LABELS = {'K': r'K$^{\circ}$',
                }
 
 
-@log_func_call(plots_logger)
+@log_func_call(logger)
 def set_mplstyle(style='base'):
     """ Set the DVAS plotting style. 'base' contains all the generic commands. 'latex'
     enables the use of a system-wide LaTeX engine. 'nolatex' disables it.
@@ -130,7 +131,7 @@ def cmap_discretize(cmap, n_cols):
     # Return colormap object.
     return colors.LinearSegmentedColormap(cmap.name + "_%d" % (n_cols), cdict, 1024)
 
-@log_func_call(plots_logger)
+@log_func_call(logger)
 def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show_plt=None):
     """ A custom savefig function that provides finer handling of the filename.
 

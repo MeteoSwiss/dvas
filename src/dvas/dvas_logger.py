@@ -170,7 +170,8 @@ def init_log():
     # All done. Let's start logging !
     logger = get_logger('general')
     logger.disabled = False
-    logger.info('This dvas log was started on %s.', datetime.now().strftime('%Y-%m-%d at %H:%M:%S'))
+    logger.info('This dvas log was started on %s.',
+                datetime.now().strftime('%Y-%m-%d at %H:%M:%S.%f'))
 
 
 def clear_log():
