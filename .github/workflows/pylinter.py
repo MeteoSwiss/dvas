@@ -67,6 +67,10 @@ def main():
     # Launch pylint with the appropriate options
     (pylint_stdout, _) = lint.py_run(fn_list + ' ' + pylint_command, return_std=True)
 
+    # fpavogt -2020-12-09: adding a quick check because something broke here ...
+    if isinstance(pylint_stdout, type(None)):
+        raise Exception('Ouch! The linting returned nothing ?!')
+
     # Extract the score ... keep it as an float for now.
     score = round(float(
         re.search(r'\s([\+\-\d\.]+)/10', pylint_stdout.getvalue())[1]
