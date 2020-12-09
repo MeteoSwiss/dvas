@@ -175,7 +175,7 @@ class TestInfoManager:
     """Test class for InfoManager"""
 
     dt_test = '20200101T0000Z'
-    sn_test = ['1', '0']
+    sn_test = ['aaa', 'bbb']
     glob_var.evt_id_pat = r'e\:\d'
     evt_tag = 'e:1'
     glob_var.rig_id_pat = r'r\:\d'
@@ -247,12 +247,33 @@ class TestInfoManager:
         info_mngr_1 = deepcopy(self.info_mngr)
         info_mngr_2 = deepcopy(self.info_mngr)
         info_mngr_2.evt_dt += timedelta(1)
+        info_mngr_3 = deepcopy(info_mngr_2)
+        info_mngr_3.srn = ['zzzz'] + info_mngr_3.srn
 
         # Test
         assert all(
-            [arg[0] == arg[1] for arg in
-            zip(InfoManager.sort([info_mngr_2, info_mngr_1])[0], [info_mngr_1, info_mngr_2])]
+            [
+                arg[0] == arg[1] for arg in
+                zip(
+                    InfoManager.sort(
+                        [info_mngr_3, info_mngr_2, info_mngr_1]
+                    )[0],
+                    [info_mngr_1, info_mngr_2, info_mngr_3]
+                )
+            ]
         )
+
+    def test_logical_operator(self):
+        """Test logical operator methods"""
+
+        info_mngr_eq = deepcopy(self.info_mngr)
+        info_mngr_gt = deepcopy(self.info_mngr)
+        info_mngr_gt.evt_dt += timedelta(1)
+
+        assert info_mngr_eq == self.info_mngr
+        assert info_mngr_gt > self.info_mngr
+        assert self.info_mngr < info_mngr_gt
+        assert self.info_mngr != info_mngr_gt
 
 
 def test_search_event_expr_eval():
@@ -330,3 +351,4 @@ def test_search_event_expr_eval():
             *args
         )
     )
+
