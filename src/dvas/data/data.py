@@ -252,7 +252,7 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
 
     @deepcopy
     def load_from_db(self, *args, **kwargs):
-        """Load data.
+        """Load data from the database.
 
         Args:
             *args: positional arguments
@@ -338,7 +338,7 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
     # use the existing "save_to_db" method ?
 
     def update(self, db_df_keys, data):
-        """Update whole Multiprofile list
+        """Update the whole Multiprofile list with new Profiles.
 
         Args:
             db_df_keys (dict): Relationship between database parameters and
@@ -371,8 +371,13 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         self._db_variables = db_df_keys
         self._profiles = data
 
+<<<<<<< HEAD
     def append(self, db_df_keys, val):
         """Append method
+=======
+    def append(self, val):
+        """Append a single Profile to the exiting list of Profiles. DB keys should match!
+>>>>>>> Improve docstrings
 
         Args:
             db_df_keys (dict): Relationship between database parameters and
