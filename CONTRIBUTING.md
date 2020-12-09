@@ -78,7 +78,8 @@ For the sake of clarity, and to facilitate the maintenance, we list here (succin
     import netCDF4 as nc
     ```
 
-- **doctrings:** Google Style. Please try to stick to the following MWE:
+- **doctrings:**
+    Google Style. Please try to stick to the following MWE:
     ```
     """ A brief one-liner description, that finishes with a dot.
 
@@ -122,7 +123,8 @@ For the sake of clarity, and to facilitate the maintenance, we list here (succin
     You should of course feel free to use more of the tools offered by [sphinx](https://www.sphinx-doc.org/en/master/), [napoleon](https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html), and
     [Google Doc Strings](https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html#example-google). But if you do, **please make sure there are no errors upon generating the docs !**
 
-- **logging:** Based on the native ``logging`` module. Specific loggers exists for the different
+- **logging:**
+    Based on the native ``logging`` module from Python. Specific loggers exists for the different
     sub-modules of dvas. They are defined in ``dvas_logger.py``. For example, here's how you should log messages in the `plots` submodule:
     ```
     from ..dvas_logger import plots_logger as logger
