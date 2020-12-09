@@ -10,7 +10,6 @@ Module contents: Testing classes and function for dvas.data.strategy.load module
 """
 
 # Import from python packages and modules
-import pytest
 import numpy as np
 
 # Import from tested package
@@ -19,12 +18,6 @@ from dvas.data.strategy.load import LoadProfileStrategy, LoadRSProfileStrategy
 from dvas.data.strategy.load import LoadGDPProfileStrategy
 from dvas.data.linker import LocalDBLinker
 from dvas.database.database import InfoManager
-
-from dvas.database.database import DatabaseManager
-from dvas.database.model import Data as MdlData
-from dvas.database.model import Info as MdlInfo
-from dvas.database.model import InfosInstruments, Instrument
-from dvas.database.model import DataSource
 
 
 class TestLoadProfileStrategy:
@@ -43,6 +36,7 @@ class TestLoadProfileStrategy:
     db_linker = LocalDBLinker()
 
     def test_load(self):
+        """Test load method"""
 
         # Create db entry
         self.db_linker.save(
@@ -96,6 +90,7 @@ class TestLoadRSProfileStrategy:
     db_linker = LocalDBLinker()
 
     def test_load(self):
+        """Test load method"""
 
         # Create db entry
         self.db_linker.save(
@@ -149,6 +144,8 @@ class TestLoadGPDProfileStrategy:
     db_linker = LocalDBLinker()
 
     def test_load(self):
+        """Test load method"""
+
         # Create db entry
         self.db_linker.save(
             [
