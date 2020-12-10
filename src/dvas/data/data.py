@@ -32,11 +32,13 @@ from .strategy.save import SaveDataStrategy
 from ..database.database import DatabaseManager
 from ..database.model import Parameter
 from ..database.database import OneDimArrayConfigLinker
-from ..logger import localdb, rawcsv
-from ..environ import path_var
-from ..helper import RequiredAttrMetaClass
-from ..helper import deepcopy
-from ..errors import dvasError, DBIOError
+from ..dvas_logger import localdb, rawcsv
+from ..dvas_logger import DBIOError
+from ..dvas_environ import path_var
+from ..dvas_helper import RequiredAttrMetaClass
+from ..dvas_helper import deepcopy
+
+from ..dvas_logger import dvasError
 
 from ..config.definitions.tag import TAG_RAW_VAL, TAG_DERIVED_VAL
 
@@ -369,13 +371,8 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         self._db_variables = db_df_keys
         self._profiles = data
 
-<<<<<<< HEAD
     def append(self, db_df_keys, val):
         """Append method
-=======
-    def append(self, val):
-        """Append a single Profile to the exiting list of Profiles. DB keys should match!
->>>>>>> Improve docstrings
 
         Args:
             db_df_keys (dict): Relationship between database parameters and
