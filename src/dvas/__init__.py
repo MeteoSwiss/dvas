@@ -9,7 +9,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 from pathlib import Path
 
-from .dvas_version import VERSION
+from .version import VERSION
 
 __version__ = VERSION
 

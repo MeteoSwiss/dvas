@@ -19,7 +19,7 @@ file_absolute_path = Path(__file__).absolute()
 
 # Run the version file
 version_file = \
-    file_absolute_path.parents[2] / 'src' / 'dvas' / 'dvas_version.py'
+    file_absolute_path.parents[2] / 'src' / 'dvas' / 'version.py'
 with version_file.open() as fid:
     vers = next(
         line.split("'")[1] for line in fid.readlines() if 'VERSION' in line

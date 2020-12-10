@@ -22,12 +22,13 @@ from matplotlib import cm
 import netCDF4 as nc
 
 # Import from this package
-from ..dvas_logger import plot_logger, log_func_call, dvasError
+from ..errors import  dvasError
+from ..logger import log_func_call
+from ..logger import plots_logger as logger
+from ..environ import path_var
 from . import utils as pu
-from ..dvas_environ import path_var
 
-
-@log_func_call(plot_logger)
+@log_func_call(logger)
 def gdps_vs_cws(gdp_prfs, cws_prf, index_name='alt', **kwargs):
     """ Makes a plot comparing different GDPs with their associated combined working measurement
     standard.
@@ -86,7 +87,7 @@ def gdps_vs_cws(gdp_prfs, cws_prf, index_name='alt', **kwargs):
     pu.fancy_savefig(fig, fn_core='gdps-vs-cws', **kwargs)
 
 
-@log_func_call(plot_logger)
+@log_func_call(logger)
 def plot_gdps(fn_list, ref_var='time', tag=None, save_loc=None):
     """ Make a basic plot to compare all GDP variables at a glance.
 
@@ -219,7 +220,7 @@ def plot_gdps(fn_list, ref_var='time', tag=None, save_loc=None):
     plt.savefig(save_loc / ('GDPs_%s%s.png' % (ref_var, tag)))
 
 
-@log_func_call(plot_logger)
+@log_func_call(logger)
 def pks_cmap(alpha=0.27/100, vmin=0.0, vmax=3*0.27/100):
     """ Defines a custom colormap for the p-value plot of the KS test function.
 
@@ -258,7 +259,7 @@ def pks_cmap(alpha=0.27/100, vmin=0.0, vmax=3*0.27/100):
     # Build the colormap
     return colors.LinearSegmentedColormap('pks_cmap', cdict, 1024)
 
-@log_func_call(plot_logger)
+@log_func_call(logger)
 def plot_ks_test(k_pqi, f_pqi, p_ksi, binning_list, alpha, tag=None, save_loc=None):
     """ Creates a diagnostic plot for the KS test.
 

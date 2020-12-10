@@ -49,7 +49,8 @@ class SingleInstanceMetaClass(type):
     """Metaclass to create single instance of class
 
     Note:
-        `Source code <https://www.pythonprogramming.in/singleton-class-using-metaclass-in-python.html>`__
+        `Source code
+        <https://www.pythonprogramming.in/singleton-class-using-metaclass-in-python.html>`__
 
     """
 
@@ -220,7 +221,9 @@ class TypedProperty:
     """Typed property class
 
     Note:
-        Adapted from `Stackoverflow. <https://stackoverflow.com/questions/34884947/understanding-a-python-descriptors-example-typedproperty>`__
+        Adapted from `Stackoverflow.
+        <https://stackoverflow.com/questions/34884947/
+        understanding-a-python-descriptors-example-typedproperty>`__
 
     """
     def __init__(self, pampy_match, setter_fct=None, args=None, kwargs=None, getter_fct=None):
@@ -254,10 +257,8 @@ class TypedProperty:
                     val, *self._setter_fct_args, **self._setter_fct_kwargs
                 )
             )
-        except (MatchError, TypeError):
-            raise TypeError(
-                f'Bad type while assignment of {self._name} <- {val}'
-            )
+        except (MatchError, TypeError) as first_error:
+            raise TypeError(f'Bad type while assignment of {self._name} <- {val}') from first_error
 
     def __set_name__(self, instance, name):
         """Attribute name setter"""
@@ -350,13 +351,13 @@ def check_path(value, exist_ok=False):
     if exist_ok is True:
         try:
             out = Path(value).resolve(strict=True)
-        except FileNotFoundError:
-            raise TypeError(f"Path '{value}' does not exist")
+        except FileNotFoundError as first_error:
+            raise TypeError(f"Path '{value}' does not exist") from first_error
     else:
         try:
             out = Path(value).resolve(strict=False)
-        except (TypeError, OSError):
-            raise TypeError(f"Bad path name for '{value}'")
+        except (TypeError, OSError) as first_error:
+            raise TypeError(f"Bad path name for '{value}'") from first_error
 
     return out
 
@@ -375,14 +376,14 @@ def check_datetime(val, utc=True):
     if utc:
         try:
             assert (out := to_datetime(val).to_pydatetime()).tzinfo == pytz.UTC
-        except (ValueError, AssertionError):
-            raise TypeError(f"Not UTC or bad datetime format for '{val}'")
+        except (ValueError, AssertionError) as first_error:
+            raise TypeError(f"Not UTC or bad datetime format for '{val}'") from first_error
 
     else:
         try:
             out = to_datetime(val).to_pydatetime()
-        except ValueError:
-            raise TypeError(f"Bad datetime format for '{val}'")
+        except ValueError as first_error:
+            raise TypeError(f"Bad datetime format for '{val}'") from first_error
 
     return out
 

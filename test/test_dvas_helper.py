@@ -17,12 +17,12 @@ import pytest
 from pampy import ANY
 
 # Import from current package
-from dvas.dvas_helper import SingleInstanceMetaClass
-from dvas.dvas_helper import RequiredAttrMetaClass
-from dvas.dvas_helper import TypedProperty
-from dvas.dvas_helper import get_by_path
-from dvas.dvas_helper import check_path
-from dvas.dvas_helper import check_datetime
+from dvas.helper import SingleInstanceMetaClass
+from dvas.helper import RequiredAttrMetaClass
+from dvas.helper import TypedProperty
+from dvas.helper import get_by_path
+from dvas.helper import check_path
+from dvas.helper import check_datetime
 
 
 def test_single_instance_metaclass():

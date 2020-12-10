@@ -27,7 +27,7 @@ from dvas.database.database import SearchInfoExpr
 from dvas.database.database import OneDimArrayConfigLinker
 from dvas.database.database import ConfigGenMaxLenError
 from dvas.database.database import DBInsertError
-from dvas.dvas_environ import glob_var
+from dvas.environ import glob_var
 from dvas.config.config import Parameter
 
 
@@ -351,4 +351,3 @@ def test_search_event_expr_eval():
             *args
         )
     )
-

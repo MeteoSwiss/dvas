@@ -16,9 +16,11 @@ import numpy as np
 import pandas as pd
 
 # Import from this package
-from ..dvas_logger import gruan_logger, log_func_call, dvasError
+from ..errors import dvasError
+from ..logger import log_func_call
+from ..logger import tools_logger as logger
 
-@log_func_call(gruan_logger)
+@log_func_call(logger)
 def fancy_nansum(vals, axis=None):
     """ A custom nansum routine that treats NaNs as zeros, unless the data contains *only* NaNs,
     if which case it returns a NaN.
@@ -83,7 +85,7 @@ def fancy_nansum(vals, axis=None):
     return vals.sum(axis=axis, skipna=True).mask(vals.isna().all(axis=axis), np.nan)
 
 
-@log_func_call(gruan_logger)
+@log_func_call(logger)
 def weighted_mean(vals, weights, binning=1):
     """ Compute the weighted mean of the columns of a pd.DataFrame, given weights specified in a
     separate DataFrame.
@@ -194,7 +196,7 @@ def weighted_mean(vals, weights, binning=1):
 
     return x_ms, jac_elmt
 
-@log_func_call(gruan_logger)
+@log_func_call(logger)
 def delta(vals, binning=1):
     """ Compute the delta of a 2-columns pd.DataFrame (i.e. col1 - col2).
 

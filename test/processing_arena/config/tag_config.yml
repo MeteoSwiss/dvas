@@ -17,8 +17,8 @@
   # Use lambda function to set 1st character to upper case and append the rest
   # of the group in lower case.
 
-- tag_txt: 'vof'
-  tag_desc: 'demo tag'
+- tag_txt: 'vof(\d{0,1})'
+  tag_desc: 'Test/demo tag $\1$'
 
 - tag_txt: 'cws'
   tag_desc: 'Combined Working Measurement Standard'

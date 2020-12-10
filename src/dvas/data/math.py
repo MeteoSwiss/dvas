@@ -14,7 +14,6 @@ import warnings
 import numpy as np
 import pandas as pd
 
-
 def crosscorr(datax, datay, lag=0, wrap=False, method='kendall'):
     """Lag-N cross correlation.
     If wrap is False, shifted data are filled with NaNs.

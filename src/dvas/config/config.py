@@ -24,12 +24,12 @@ from .definitions import origdata, csvorigmeta
 from .definitions import instrtype, instrument
 from .definitions import parameter, flag
 from .definitions import tag
-from ..dvas_environ import path_var as env_path_var
-from ..dvas_environ import glob_var as env_glob_var
-from ..dvas_helper import get_by_path
-from ..dvas_helper import RequiredAttrMetaClass
-from ..dvas_helper import TypedProperty
-from ..dvas_helper import camel_to_snake
+from ..environ import path_var as env_path_var
+from ..environ import glob_var as env_glob_var
+from ..helper import get_by_path
+from ..helper import RequiredAttrMetaClass
+from ..helper import TypedProperty
+from ..helper import camel_to_snake
 
 
 # Define

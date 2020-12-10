@@ -14,7 +14,7 @@ from abc import ABCMeta, abstractmethod
 from pandas.core.resample import TimedeltaIndexResampler
 
 # Import from current package
-from ...dvas_logger import dvasError
+from ...errors import dvasError
 
 
 # TODO

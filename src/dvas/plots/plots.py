@@ -13,9 +13,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
+from ..logger import log_func_call
+from ..logger import plots_logger as logger
 from . import utils as pu
 
 
+@log_func_call(logger)
 def multiprf(prfs, index_name='alt', uc=None, **kwargs):
     """ Plots the content of a MultiProfile instance.
 

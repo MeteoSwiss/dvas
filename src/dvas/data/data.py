@@ -32,13 +32,12 @@ from .strategy.save import SaveDataStrategy
 from ..database.database import DatabaseManager
 from ..database.model import Parameter
 from ..database.database import OneDimArrayConfigLinker
-from ..dvas_logger import localdb, rawcsv
-from ..dvas_logger import DBIOError
-from ..dvas_environ import path_var
-from ..dvas_helper import RequiredAttrMetaClass
-from ..dvas_helper import deepcopy
+from ..logger import localdb, rawcsv
+from ..environ import path_var
+from ..helper import RequiredAttrMetaClass
+from ..helper import deepcopy
 
-from ..dvas_logger import dvasError
+from ..errors import dvasError, DBIOError
 
 from ..config.definitions.tag import TAG_RAW_VAL, TAG_DERIVED_VAL
 
@@ -252,7 +251,7 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
 
     @deepcopy
     def load_from_db(self, *args, **kwargs):
-        """Load data.
+        """Load data from the database.
 
         Args:
             *args: positional arguments
@@ -338,7 +337,7 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
     # use the existing "save_to_db" method ?
 
     def update(self, db_df_keys, data):
-        """Update whole Multiprofile list
+        """Update the whole Multiprofile list with new Profiles.
 
         Args:
             db_df_keys (dict): Relationship between database parameters and

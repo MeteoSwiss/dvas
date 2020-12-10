@@ -16,7 +16,7 @@ from pathlib import Path
 from datetime import datetime
 import shutil
 
-from .dvas_version import VERSION
+from .version import VERSION
 from . import expl_path
 
 DEFAULT_ARENA_PATH = Path('.', 'dvas_arena')

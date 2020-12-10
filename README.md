@@ -4,9 +4,8 @@
 
 The complete documentation will be published [here](http://meteoswiss-mda.github.io/dvas).
 
-**Warning**: publishing anything on the branch gh-pages will become public immediately, even if the 
-rest of the repository is still private!
+**Note**: the publication of the docs has been voluntarily *broken* in the repo settings, such that anything on the branch gh-pages will **not** become public immediately just yet.
 
 ## License ![License logo][license]
-dvas is distributed under the terms of the GNU General Public License v3.0 or later. See 
+dvas is distributed under the terms of the GNU General Public License v3.0 or later. See
 [here](./docs/source/license.rst) for details.

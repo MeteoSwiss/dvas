@@ -41,16 +41,15 @@ from ..config.config import Parameter as CfgParameter
 from ..config.config import Flag as CfgFlag
 from ..config.config import Tag as CfgTag
 from ..config.definitions.tag import TAG_NONE, TAG_EMPTY_VAL
-from ..dvas_helper import ContextDecorator
-from ..dvas_helper import SingleInstanceMetaClass
-from ..dvas_helper import TypedProperty as TProp
-from ..dvas_helper import TimeIt
-from ..dvas_helper import get_by_path, check_datetime
-from ..dvas_helper import unzip, get_dict_len
-from ..dvas_logger import localdb
-from ..dvas_environ import glob_var
-from ..dvas_environ import path_var as env_path_var
-
+from ..helper import ContextDecorator
+from ..helper import SingleInstanceMetaClass
+from ..helper import TypedProperty as TProp
+from ..helper import TimeIt
+from ..helper import get_by_path, check_datetime
+from ..helper import unzip, get_dict_len
+from ..logger import localdb
+from ..environ import glob_var
+from ..environ import path_var as env_path_var
 
 # Define
 SQLITE_MAX_VARIABLE_NUMBER = 999
@@ -62,7 +61,6 @@ DB_CACHE_SIZE = 10 * 1024
 
 #: str: Local database file name
 DB_FILE_NM = 'local_db.sqlite'
-
 
 class OneDimArrayConfigLinker:
     """Link to OneDimArrayConfigManager
@@ -274,9 +272,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     file_path.parent.stat().st_mode | 0o600
                 )
             except (OSError,) as exc:
-                raise DBDirError(
-                    f"Error in creating '{self._db.database.parent}' ({exc})"
-                )
+                raise DBDirError(f"Error in creating '{self._db.database.parent}' ({exc})") from exc
 
         # Init DB
         self._db.init(file_path, pragmas=pragmas)
@@ -387,7 +383,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                 )
 
             except IntegrityError as exc:
-                raise DBCreateError(exc)
+                raise DBCreateError(exc) from exc
 
     def _fill_table(self, table, foreign_constraint=None):
         """
@@ -918,7 +914,10 @@ class InfoManager:
     def evt_id(self):
         """str: Event ID which match 1st corresponding pattern in tags. Defaults to None."""
         try:
-            out = next(filter(glob_var.evt_id_pat.match, self.tags))
+            # TODO: the following line triggers a *very* weird pylint Error 1101.
+            # I disable it for now ... but someone should really confirm whether this ok or not!
+            # fpavogt - 2020.12.09
+            out = next(filter(glob_var.evt_id_pat.match, self.tags)) # pylint: disable=E1101
         except StopIteration:
             out = None
         return out
@@ -927,7 +926,10 @@ class InfoManager:
     def rig_id(self):
         """str: Rig ID which match 1st corresponding pattern in tags. Defaults to None."""
         try:
-            out = next(filter(glob_var.rig_id_pat.match, self.tags))
+            # TODO: the following line triggers a *very* weird pylint Error 1101.
+            # I disable it for now ... but someone should really confirm whether this ok or not!
+            # fpavogt - 2020.12.09
+            out = next(filter(glob_var.rig_id_pat.match, self.tags)) # pylint: disable=E1101
         except StopIteration:
             out = None
         return out
@@ -936,7 +938,10 @@ class InfoManager:
     def mdl_id(self):
         """str: GDP model ID which match 1st corresponding pattern in tags. Defaults to None."""
         try:
-            out = next(filter(glob_var.mdl_id_pat.match, self.tags))
+            # TODO: the following line triggers a *very* weird pylint Error 1101.
+            # I disable it for now ... but someone should really confirm whether this ok or not!
+            # fpavogt - 2020.12.09
+            out = next(filter(glob_var.mdl_id_pat.match, self.tags)) # pylint: disable=E1101
         except StopIteration:
             out = None
         return out

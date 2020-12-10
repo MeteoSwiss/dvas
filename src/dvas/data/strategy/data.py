@@ -18,8 +18,8 @@ import pandas as pd
 # Import from current package
 from ...database.model import Flag
 from ...database.database import DatabaseManager, InfoManager
-from ...dvas_logger import ProfileError
-from ...dvas_helper import RequiredAttrMetaClass
+from ...errors import ProfileError
+from ...helper import RequiredAttrMetaClass
 
 # Define
 INT_TEST = (np.int64, np.int, int, type(pd.NA))

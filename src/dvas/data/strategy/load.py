@@ -18,7 +18,7 @@ from .data import Profile, RSProfile, GDPProfile
 from ..linker import LocalDBLinker
 from ...database.database import InfoManager
 from ...database.model import Data
-from ...dvas_logger import LoadError
+from ...errors import LoadError
 
 
 # Define

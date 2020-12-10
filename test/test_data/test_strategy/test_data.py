@@ -16,7 +16,7 @@ import numpy as np
 
 # Import from tested package
 from dvas.data.strategy.data import Profile, RSProfile, GDPProfile
-from dvas.dvas_logger import ProfileError
+from dvas.errors import ProfileError
 from dvas.database.database import InfoManager
 
 
