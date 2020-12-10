@@ -217,7 +217,7 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         return [arg.info for arg in self.profiles]
 
     @deepcopy
-    def rm_info_tag(self, val):
+    def rm_info_tag(self, val, inplace=True):
         """Remove tag from all info tags
 
         Args:
@@ -229,7 +229,7 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
             self.profiles[i].info.rm_tag(val)
 
     @deepcopy
-    def add_info_tag(self, val):
+    def add_info_tag(self, val, inplace=True):
         """Add tag from all info tags
 
         Args:
@@ -275,12 +275,12 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         self.update(db_df_keys, data)
 
     @deepcopy
-    def sort(self):
+    def sort(self, inplace=False):
         """Sort method
 
         Args:
             inplace (bool, `optional`): If True, perform operation in-place
-                Default to False.
+                Defaults to True.
         Returns
             MultiProfileManager if inplace is True, otherwise None
 
@@ -371,15 +371,17 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         self._db_variables = db_df_keys
         self._profiles = data
 
-    def append(self, val):
+    def append(self, db_df_keys, val):
         """Append method
 
         Args:
+            db_df_keys (dict): Relationship between database parameters and
+                Profile.data columns.
             val (Profile): Data
 
         """
 
-        self.update(self.db_variables, self.profiles + [val])
+        self.update(db_df_keys, self.profiles + [val])
 
     def get_prms(self, prm_list=None):
         """ Convenience getter to extract one specific parameter from the DataFrames of all the

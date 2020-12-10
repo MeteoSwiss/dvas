@@ -10,7 +10,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 # Import Python packages and module
 import os
 from pathlib import Path
-from re import compile
+import re
 from abc import ABC, ABCMeta, abstractmethod
 from contextlib import contextmanager
 from pampy import match as pmatch
@@ -38,7 +38,7 @@ class VariableManager(ABC, metaclass=ABCSingleInstanceMeta):
         try:
             assert isinstance(self.attr_def, list)
             assert all([
-                pmatch({'name': Any, 'default': Any}, arg, True, default=False)
+                pmatch(arg, {'name': Any, 'default': Any}, True, default=False)
                 for arg in self.attr_def
             ])
 
@@ -145,7 +145,7 @@ class GlobalLoggingVariableManager(VariableManager):
         lambda *x: x[0].upper()
     )
     #: str: Log output file name. Default to 'dvas'
-    log_file_name = TProp(compile(r'\w+'), lambda x: x + '.log')
+    log_file_name = TProp(re.compile(r'\w+'), lambda x: x + '.log')
     #: str: Log level. Default to 'INFO'
     log_level = TProp(
         TProp.re_str_choice(
@@ -179,11 +179,11 @@ class GlobalPackageVariableManager(VariableManager):
     #: list of str: Config file allowed extensions. Default to ['yml', 'yaml']
     config_file_ext = TProp(Iterable[str], lambda x: tuple(x))
     #: str: Event ID pattern use in InfoManager to extract event tag.
-    evt_id_pat = TProp(str, lambda x: compile(x))
+    evt_id_pat = TProp(Union[str, re.Pattern], lambda x: re.compile(x))
     #: str: Rig ID pattern use in InfoManager to extract event tag.
-    rig_id_pat = TProp(str, lambda x: compile(x))
+    rig_id_pat = TProp(Union[str, re.Pattern], lambda x: re.compile(x))
     #: str: GDP model ID pattern use in InfoManager to extract event tag.
-    mdl_id_pat = TProp(str, lambda x: compile(x))
+    mdl_id_pat = TProp(Union[str, re.Pattern], lambda x: re.compile(x))
 
     @property
     def attr_def(self):

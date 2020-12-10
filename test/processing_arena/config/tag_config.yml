@@ -31,3 +31,6 @@
 
 - tag_txt: 'load_gdpprofile'
   tag_desc: 'Load GDPProfile tests'
+
+- tag_txt: 'save_multiprofile'
+  tag_desc: 'Save MultiProfile tests'
