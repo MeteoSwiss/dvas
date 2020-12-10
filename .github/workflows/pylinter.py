@@ -65,18 +65,22 @@ def main():
     fn_list = ' '.join(fn_list)
 
     # Launch pylint with the appropriate options
-    (pylint_stdout, _) = lint.py_run(fn_list + ' ' + pylint_command, return_std=True)
+    (pylint_stdout, pylint_stderr) = lint.py_run(fn_list + ' ' + pylint_command, return_std=True)
 
     # fpavogt -2020-12-09: adding a quick check because something broke here ...
     if isinstance(pylint_stdout, type(None)):
         raise Exception('Ouch! The linting returned nothing ?!')
 
-    # Extract the score ... keep it as an float for now.
     try:
+        # Extract the score ...
         score = re.search(r'\s([\+\-\d\.]+)/10', pylint_stdout.getvalue())[1]
+        # ... and turn it into a float
         score = round(float(score), 2)
     except:
+        print('stdout:')
         print(pylint_stdout.getvalue())
+        print('stderr:')
+        print(pylint_stderr.getvalue())
         raise Exception('Ouch ! The regex failed ?!')
 
     # For the Github Action, raise an exception in case I get any restricted errors.
