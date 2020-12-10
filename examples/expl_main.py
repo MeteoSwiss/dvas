@@ -22,7 +22,7 @@ from dvas.data.data import MultiProfile, MultiRSProfile, MultiGDPProfile
 from dvas.data.data import update_db
 from dvas.database.database import DatabaseManager
 
-from dvas.logger import dvasError
+from dvas.errors import dvasError
 from dvas.logger import init_log as dvas_init_log
 
 #import dvas.tools.gruan as dtg
@@ -72,8 +72,6 @@ if __name__ == '__main__':
             update_db('treprosu_s', strict=True)
             update_db('treprosu_t', strict=True)
             update_db('altpros1', strict=True)
-
-
 
     # # Load a basic profile, with a variable, and altitude.
     prf = MultiProfile()
