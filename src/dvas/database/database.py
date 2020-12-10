@@ -914,7 +914,7 @@ class InfoManager:
     def evt_id(self):
         """str: Event ID which match 1st corresponding pattern in tags. Defaults to None."""
         try:
-            # TODO: the following lines triggers a *very* weird pylint Error 1101.
+            # TODO: the following line triggers a *very* weird pylint Error 1101.
             # I disable it for now ... but someone should really confirm whether this ok or not!
             # fpavogt - 2020.12.09
             out = next(filter(glob_var.evt_id_pat.match, self.tags)) # pylint: disable=E1101
@@ -926,7 +926,7 @@ class InfoManager:
     def rig_id(self):
         """str: Rig ID which match 1st corresponding pattern in tags. Defaults to None."""
         try:
-            # TODO: the following lines triggers a *very* weird pylint Error 1101.
+            # TODO: the following line triggers a *very* weird pylint Error 1101.
             # I disable it for now ... but someone should really confirm whether this ok or not!
             # fpavogt - 2020.12.09
             out = next(filter(glob_var.rig_id_pat.match, self.tags)) # pylint: disable=E1101
@@ -938,7 +938,7 @@ class InfoManager:
     def mdl_id(self):
         """str: GDP model ID which match 1st corresponding pattern in tags. Defaults to None."""
         try:
-            # TODO: the following lines triggers a *very* weird pylint Error 1101.
+            # TODO: the following line triggers a *very* weird pylint Error 1101.
             # I disable it for now ... but someone should really confirm whether this ok or not!
             # fpavogt - 2020.12.09
             out = next(filter(glob_var.mdl_id_pat.match, self.tags)) # pylint: disable=E1101
