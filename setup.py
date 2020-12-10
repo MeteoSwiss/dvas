@@ -44,7 +44,7 @@ setup(
         "netCDF4",
         'numpy',
         "pampy",
-        "pandas",
+        "pandas<=1.1.4",
         "peewee",
         "pytest",
         "pytest-env",
