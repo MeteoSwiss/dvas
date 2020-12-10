@@ -9,13 +9,6 @@ Module contents: Testing classes and function for dvas.data.data module.
 
 """
 
-# Import external packages and modules
-import re
-from copy import deepcopy
-from datetime import datetime, timedelta
-import pytz
-import pytest
-import numpy as np
 
 # Import from python packages and modules
 from dvas.data.data import update_db
