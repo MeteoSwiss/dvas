@@ -182,7 +182,7 @@ Until its release, the dvas repository will remain private: branching will thus 
 
 5. Modify the code locally. This could be the source code, or the docs `.rst` source files.
 
-   :warning: Please read carefully (and adhere to!) the dvas [style conventions](#styles) below.
+   :warning: Please read carefully (and adhere to!) the dvas [style conventions](#styles) above.
 
 6. Commit changes regularly, trying to bundle them in a meaningful manner.
 
