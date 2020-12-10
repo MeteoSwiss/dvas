@@ -22,11 +22,11 @@ from matplotlib import cm
 import netCDF4 as nc
 
 # Import from this package
-from ..dvas_logger import log_func_call, dvasError
-from ..dvas_logger import plots_logger as logger
+from ..errors import  dvasError
+from ..logger import log_func_call
+from ..logger import plots_logger as logger
+from ..environ import path_var
 from . import utils as pu
-from ..dvas_environ import path_var
-
 
 @log_func_call(logger)
 def gdps_vs_cws(gdp_prfs, cws_prf, index_name='alt', **kwargs):

@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 # Import from this package
 from .plots import *
 
-from ..dvas_environ import path_var as env_path_var
+from ..environ import path_var as env_path_var
 from .. import pkg_path
 from . import utils as pu
 

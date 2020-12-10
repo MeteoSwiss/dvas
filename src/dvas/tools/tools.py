@@ -16,8 +16,9 @@ import numpy as np
 import pandas as pd
 
 # Import from this package
-from ..dvas_logger import log_func_call, dvasError
-from ..dvas_logger import tools_logger as logger
+from ..errors import dvasError
+from ..logger import log_func_call
+from ..logger import tools_logger as logger
 
 @log_func_call(logger)
 def fancy_nansum(vals, axis=None):

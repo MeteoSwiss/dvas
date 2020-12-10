@@ -17,9 +17,10 @@ from pampy import match as pmatch
 from pampy.helpers import Union, Iterable, Any
 
 # Import current package's modules
-from .dvas_helper import SingleInstanceMetaClass
-from .dvas_helper import TypedProperty as TProp
-from .dvas_helper import check_path
+from .helper import SingleInstanceMetaClass
+from .helper import TypedProperty as TProp
+from .helper import check_path
+from .errors import dvasError
 from . import __name__ as pkg_name
 from . import expl_path
 
@@ -42,9 +43,8 @@ class VariableManager(ABC, metaclass=ABCSingleInstanceMeta):
                 for arg in self.attr_def
             ])
 
-        except AssertionError:
-
-            "Error in matching 'attr_def' pattern"
+        except AssertionError as first_error:
+            raise dvasError("Error in matching 'attr_def' pattern") from first_error
 
         # Set attributes
         self.set_attr()
@@ -53,7 +53,7 @@ class VariableManager(ABC, metaclass=ABCSingleInstanceMeta):
     @abstractmethod
     def attr_def(self):
         """Class attributes definition"""
-        pass
+        #  pass
 
     def set_attr(self):
         """Set attribute from attr_def. Try first to get attribute value from

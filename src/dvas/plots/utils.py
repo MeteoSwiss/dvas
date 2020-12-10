@@ -18,9 +18,9 @@ from matplotlib import cm
 
 # Import from this package
 from .. import pkg_path
-from ..dvas_environ import path_var as env_path_var
-from ..dvas_logger import log_func_call
-from ..dvas_logger import plots_logger as logger
+from ..environ import path_var as env_path_var
+from ..logger import log_func_call
+from ..logger import plots_logger as logger
 
 # Define some plotting constants
 #: float: Width of a 1-column plot [inches], to fit in scientific articles when scaled by 50%

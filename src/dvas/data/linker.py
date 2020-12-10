@@ -19,7 +19,7 @@ import netCDF4 as nc
 import pandas as pd
 
 # Import from current package
-from ..dvas_environ import path_var as env_path_var
+from ..environ import path_var as env_path_var
 from ..database.model import InstrType, Instrument, Info
 from ..database.model import Parameter, DataSource
 from ..database.database import DatabaseManager, InfoManager
@@ -28,8 +28,8 @@ from ..config.config import ConfigReadError
 from ..config.definitions.origdata import META_FIELD_KEYS
 from ..config.definitions.origdata import EVT_DT_FLD_NM, SRN_FLD_NM, TAG_FLD_NM
 from ..config.definitions.origdata import PARAM_FLD_NM
-from ..dvas_logger import rawcsv
-from ..dvas_environ import glob_var
+from ..logger import rawcsv
+from ..environ import glob_var
 from ..config.pattern import INSTR_TYPE_PAT
 from ..config.definitions.tag import TAG_RAW_VAL, TAG_GDP_VAL, TAG_EMPTY_VAL
 

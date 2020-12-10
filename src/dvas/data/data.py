@@ -32,13 +32,11 @@ from .strategy.save import SaveDataStrategy
 from ..database.database import DatabaseManager
 from ..database.model import Parameter
 from ..database.database import OneDimArrayConfigLinker
-from ..dvas_logger import localdb, rawcsv
-from ..dvas_logger import DBIOError
-from ..dvas_environ import path_var
-from ..dvas_helper import RequiredAttrMetaClass
-from ..dvas_helper import deepcopy
-
-from ..dvas_logger import dvasError
+from ..logger import localdb, rawcsv
+from ..environ import path_var
+from ..helper import RequiredAttrMetaClass
+from ..helper import deepcopy
+from ..errors import dvasError, DBIOError
 
 from ..config.definitions.tag import TAG_RAW_VAL, TAG_DERIVED_VAL
 

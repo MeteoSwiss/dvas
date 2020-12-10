@@ -17,8 +17,9 @@ import inspect
 from functools import wraps
 
 # Current package import
-from .dvas_environ import log_var, path_var
-from .dvas_helper import ContextDecorator
+from .environ import log_var, path_var
+from .helper import ContextDecorator
+from .errors import LogDirError
 
 
 # Define logger names
@@ -30,32 +31,6 @@ LOGGER_NAME = [
     'tools', # Tools sub-module
     'general', # Intended for anything not inside a specific sub-module
 ]
-
-
-class dvasError(Exception):
-    """General error class for dvas."""
-
-    ERR_MSG = 'dvas Error'
-
-    def __str__(self):
-        return f"{super().__str__()}\n\n{'*' * 5}{self.ERR_MSG}{'*' * 5}"
-
-
-class LogDirError(dvasError):
-    """Exception for error in creating log directory"""
-
-
-class DBIOError(dvasError):
-    """Exception for dvas database IOError"""
-
-
-class ProfileError(dvasError):
-    """Exception for dvas profile error"""
-
-
-class LoadError(dvasError):
-    """Exception for dvas load error"""
-
 
 def get_logger(name):
     """Get logger"""
@@ -112,7 +87,8 @@ class DeltaTimeFormatter(logging.Formatter):
     """Delta time formatter
 
     Note:
-       Adapted from `StackOverflow. <https://stackoverflow.com/questions/25194864/python-logging-time-since-start-of-program>`__
+       Adapted from `StackOverflow.
+       <https://stackoverflow.com/questions/25194864/python-logging-time-since-start-of-program>`__
        Author: Keith
 
     """
@@ -138,7 +114,7 @@ def init_log():
             # Set user read/write permission
             log_path.chmod(log_path.stat().st_mode | 0o600)
         except (OSError,) as exc:
-            raise LogDirError(f"Error in creating '{log_path}' ({exc})")
+            raise LogDirError(f"Error in creating '{log_path}' ({exc})") from exc
 
         log_file_path = log_path / log_var.log_file_name
 

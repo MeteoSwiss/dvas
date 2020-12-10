@@ -16,8 +16,9 @@ import numpy as np
 #from scipy import stats
 
 # Import from this package
-from ..dvas_logger import log_func_call, dvasError
-from ..dvas_logger import tools_logger as logger
+from ..logger import log_func_call
+from ..logger import tools_logger as logger
+from ..errors import dvasError
 from .gruan import combine_gdps
 from ..plots import gruan as dpg
 

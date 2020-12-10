@@ -16,8 +16,9 @@ import numpy as np
 import pandas as pd
 
 # Import from current package
-from ..dvas_logger import log_func_call, dvasError
-from ..dvas_logger import tools_logger as logger
+from ..logger import log_func_call
+from ..logger import tools_logger as logger
+from ..errors import dvasError
 from .tools import weighted_mean, delta
 from ..data.data import MultiGDPProfile
 from ..data.strategy.data import GDPProfile
