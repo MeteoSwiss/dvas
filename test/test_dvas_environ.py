@@ -15,8 +15,8 @@ from pathlib import Path
 import pytest
 
 # Import from current package
-from dvas.dvas_environ import path_var
-from dvas.dvas_environ import GlobalPathVariablesManager
+from dvas.environ import path_var
+from dvas.environ import GlobalPathVariablesManager
 
 
 class TestGlobalPathVariablesManager:

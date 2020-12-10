@@ -11,7 +11,7 @@ from pathlib import Path
 from setuptools import setup, find_packages  # Always prefer setuptools over distutils
 
 # Run the version file
-with open(Path('.') / 'src' / 'dvas' / 'dvas_version.py') as fid:
+with open(Path('.') / 'src' / 'dvas' / 'version.py') as fid:
     version = next(
         line.split("'")[1] for line in fid.readlines() if 'VERSION' in line
     )

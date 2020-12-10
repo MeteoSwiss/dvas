@@ -15,7 +15,7 @@ import numpy as np
 # Import from python packages and modules
 from dvas.data.linker import LocalDBLinker
 from dvas.data.linker import CSVHandler, GDPHandler
-from dvas.dvas_environ import path_var
+from dvas.environ import path_var
 from dvas.database.database import InfoManager
 
 
