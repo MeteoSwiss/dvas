@@ -67,28 +67,32 @@ def main():
     # Launch pylint with the appropriate options
     (pylint_stdout, pylint_stderr) = lint.py_run(fn_list + ' ' + pylint_command, return_std=True)
 
+    # Extract the actual messages
+    msgs = pylint_stdout.getvalue()
+
     # fpavogt, 2020-12-09: let's check the error messages, in case something went very wrong ...
-    if not isinstance(pylint_stderr, type(None)):
-        print('stdout:')
-        print(pylint_stdout.getvalue())
-        print('stderr:')
-        print(pylint_stderr.getvalue())
+    err_msgs = pylint_stderr.getvalue()
+    if err_msgs != '':
+        print('pylint stdout:')
+        print(msgs)
+        print('pylint stderr:')
+        print(err_msgs)
 
         raise Exception('Ouch! The linting crashed ?!')
 
     # Extract the score ...
-    score = re.search(r'\s([\+\-\d\.]+)/10', pylint_stdout.getvalue())[1]
+    score = re.search(r'\s([\+\-\d\.]+)/10', msgs)[1]
     # ... and turn it into a float
     score = round(float(score), 2)
 
     # For the Github Action, raise an exception in case I get any restricted errors.
     if args.restrict is not None and score < 10:
         # Display the output, so we can learn something from it if needed
-        print(pylint_stdout.getvalue())
+        print(msgs)
         raise Exception('Ouch! Some forbidden pylint error codes are present!')
 
     # If I do not have any restricted errors, then simply show the pylint errors without failing.
-    print(pylint_stdout.getvalue())
+    print(msgs)
 
     # If a minimum score was set, raise an Exception if it is not met, so that it can be picked-up
     # by a Github Action.
