@@ -11,8 +11,8 @@ Module content: examples
 from pathlib import Path
 
 # Set the data path to look where we currently are
-from dvas.dvas_environ import path_var as dvas_path_var
-from dvas.dvas_environ import log_var as dvas_log_var
+from dvas.environ import path_var as dvas_path_var
+from dvas.environ import log_var as dvas_log_var
 # WARNING: this must be done BEFORE importing anything else ... !
 dvas_path_var.orig_data_path = Path(__file__).parent / 'data'
 dvas_path_var.config_dir_path = Path(__file__).parent / 'config'
@@ -22,8 +22,8 @@ from dvas.data.data import MultiProfile, MultiRSProfile, MultiGDPProfile
 from dvas.data.data import update_db
 from dvas.database.database import DatabaseManager
 
-from dvas.dvas_logger import dvasError
-from dvas.dvas_logger import init_log as dvas_init_log
+from dvas.logger import dvasError
+from dvas.logger import init_log as dvas_init_log
 
 #import dvas.tools.gruan as dtg
 import dvas.plots.utils as dpu
