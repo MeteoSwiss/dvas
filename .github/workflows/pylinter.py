@@ -72,9 +72,12 @@ def main():
         raise Exception('Ouch! The linting returned nothing ?!')
 
     # Extract the score ... keep it as an float for now.
-    score = round(float(
-        re.search(r'\s([\+\-\d\.]+)/10', pylint_stdout.getvalue())[1]
-    ), 2)
+    try:
+        score = re.search(r'\s([\+\-\d\.]+)/10', pylint_stdout.getvalue())[1]
+        score = round(float(score), 2)
+    except:
+        print(pylint_stdout.getvalue())
+        raise Exception('Ouch ! The regex failed ?!')
 
     # For the Github Action, raise an exception in case I get any restricted errors.
     if args.restrict is not None and score < 10:
