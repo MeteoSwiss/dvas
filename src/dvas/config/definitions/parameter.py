@@ -10,6 +10,9 @@ Module contents: Required attributes definition for
 
 """
 
+# TODO
+#  Define whether the creation of constant parameters can be useful
+
 # Import current packages modules
 from ...database.model import Parameter
 
