@@ -17,6 +17,8 @@ from dvas.database.database import DatabaseManager
 test_expl_path = Path(__file__).resolve(strict=True).parent / 'processing_arena'
 
 path_var.config_dir_path = test_expl_path / 'config'
+# TODO
+#  Use a session tmpdir to create the database
 path_var.local_db_path = test_expl_path / 'dvas_db'
 path_var.orig_data_path = test_expl_path / 'data'
 
