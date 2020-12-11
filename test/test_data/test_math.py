@@ -9,6 +9,9 @@ Module contents: Testing classes and function for dvas.data.math module.
 
 """
 
+# TODO
+#  Move math module to tools package
+
 # Import from python packages and modules
 import pytest
 import pandas as pd
