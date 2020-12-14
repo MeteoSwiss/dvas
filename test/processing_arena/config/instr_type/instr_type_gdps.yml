@@ -1,0 +1,9 @@
+
+- type_name: 'AR-GDP_001'
+  desc: 'AR dummy GDP, version 1'
+
+- type_name: 'BR-GDP_001'
+  desc: 'BR dummy GDP, version 1'
+
+- type_name: 'TEST_01'
+  desc: "Test type name for file name with '-'"

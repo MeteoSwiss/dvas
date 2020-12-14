@@ -1,0 +1,12 @@
+
+- type_name: 'YT'
+  desc: 'YT test instrument'
+
+- type_name: 'ZT'
+  desc: 'ZT test instrument'
+
+- type_name: 'RS92'
+  desc: 'Vaisala RS-92'
+  
+- type_name: 'TEST_03'
+  desc: 'Test type name for hybrid file name "-"'

@@ -1,340 +1,606 @@
 """
-Module containing class and function for data management
+Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.
 
+Distributed under the terms of the GNU General Public License v3.0 or later.
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Module contents: Data management
 
 """
 
-from abc import ABC, abstractmethod
-from operator import itemgetter
-import copy
-import numpy as np
+# Import from external packages
+from abc import abstractmethod
 import pandas as pd
-from enum import Enum, unique
-from functools import wraps
-import matplotlib.pyplot as plt
 
-from dataclasses import dataclass, field
-from typing import List
+# Import from current package
+from .linker import LocalDBLinker, CSVHandler, GDPHandler
+from .strategy.data import Profile, RSProfile, GDPProfile
 
-from ..config.config import ConfigManagerMeta
-from ..config.config import OrigData
-from ..config.definitions.flag import RAWNA_ABBR, RESMPL_ABBR, UPSMPL_ABBR
-from ..config.definitions.flag import INTERP_ABBR, SYNC_ABBR, AUTOQC_ABBR
-from .linker import LocalDBLinker, CSVOutputLinker, OriginalCSVLinker
-from ..database.database import db_mngr
-from ..database.model import Flag
-from ..database.database import ConfigLinker
-from .math import crosscorr
+from .strategy.load import LoadProfileStrategy, LoadRSProfileStrategy, LoadGDPProfileStrategy
 
-from mdtpyhelper.misc import timer
+from .strategy.resample import ResampleRSDataStrategy
+
+from .strategy.sort import SortProfileStrategy
+
+from .strategy.sync import TimeSynchronizeStrategy
+
+from .strategy.plot import PlotStrategy, RSPlotStrategy, GDPPlotStrategy
+
+from .strategy.save import SaveDataStrategy
+
+from ..database.database import DatabaseManager
+from ..database.model import Parameter
+from ..database.database import OneDimArrayConfigLinker
+from ..logger import localdb, rawcsv
+from ..environ import path_var
+from ..helper import RequiredAttrMetaClass
+from ..helper import deepcopy
+
+from ..errors import dvasError, DBIOError
+
+from ..config.definitions.tag import TAG_RAW_VAL, TAG_DERIVED_VAL
 
 # Define
 FLAG = 'flag'
 VALUE = 'value'
-cfg_linker = ConfigLinker()
+cfg_linker = OneDimArrayConfigLinker()
 
-class FlagManager:
+# Loading strategies
+load_prf_stgy = LoadProfileStrategy()
+load_rsprf_stgy = LoadRSProfileStrategy()
+load_gdpprf_stgy = LoadGDPProfileStrategy()
 
-    _FLAG_BIT_NM = Flag.bit_number.name
-    _FLAG_ABBR_NM = Flag.flag_abbr.name
-    _FLAG_DESC_NM = Flag.desc.name
+# Plotting strategies
+plt_prf_stgy = PlotStrategy()
+plt_rsprf_stgy = RSPlotStrategy()
+plt_gdpprf_stgy = GDPPlotStrategy()
 
-    def __init__(self, index, ):
+sort_prf_stgy = SortProfileStrategy()
+rspl_rs_stgy = ResampleRSDataStrategy()
+sync_time_stgy = TimeSynchronizeStrategy()
 
-        self._flags = {
-            arg[Flag.flag_abbr.name]: arg
-            for arg in db_mngr.get_flags()
-        }
-
-        self._data = pd.Series(
-            np.zeros(len(index),), index=index, dtype=int
-        )
-
-    @property
-    def flags(self):
-        return self._flags
-
-    @property
-    def data(self):
-        return self._data
-
-    def get_bit_number(self, abbr):
-        return self.flags[abbr][self._FLAG_BIT_NM]
-
-    def set_bit_val(self, abbr, index=None):
-        if index is None:
-            self._data = self.data.apply(
-                lambda x: x | (1 << self.get_bit_number(abbr))
-            )
-        else:
-            self._data.loc[index] = self.data.loc[index].apply(
-                lambda x: x | (1 << self.get_bit_number(abbr))
-            )
-
-    def get_bit_val(self, abbr):
-        return self.data.apply(
-            lambda x: x & (1 << self.get_bit_number(abbr))
-        )
+save_prf_stgy = SaveDataStrategy()
 
 
-class TimeProfileManager:
-    """Time profile manager """
-
-    _COL_NAME = [VALUE, FLAG]
-
-    def __init__(self, data, event_mngr, index_lag=pd.Timedelta('0s')):
-        """
-
-        Parameters
-        ----------
-        data: pd.Series with index of type pd.TimedeltaIndex
-        event_mngr
-        index_lag: pd.Timedelta
-        """
-
-        # Test
-        assert isinstance(data, pd.Series)
-        assert isinstance(data.index, pd.TimedeltaIndex)
-        assert isinstance(index_lag, pd.Timedelta)
-
-        # Init attributes
-        self._flag_mngr = FlagManager(data.index)
-        self._event_mngr = event_mngr
-        self._index_lag = index_lag
-        self._data = data
-
-        # Reset index
-        self._reset_index()
-
-        # Set raw NA
-        self._flag_mngr.set_bit_val(RAWNA_ABBR, self.data.isna())
-
-        # Set data attributes
-        self._data.name = None
-
-    @property
-    def event_mngr(self):
-        """ """
-        return self._event_mngr
-
-    @property
-    def index_lag(self):
-        """ """
-        return self._index_lag
-
-    @property
-    def data(self):
-        """ """
-        return self._data
-
-    @property
-    def flag(self):
-        return self._flag_mngr.data
-
-    def __len__(self):
-        return len(self.data)
-
-    def _interpolate(self):
-        """ """
-
-        # Test if resampled data
-        assert self._flag_mngr.get_bit_val(RESMPL_ABBR).all(), (
-            'Data have not been resampled'
-        )
-
-        #TODO
-        # Add automatique interpolation for polar coord (e.g. wind direction)
-        self._data = self.data.interpolate(method='index')
-
-        # Set flag
-        self._flag_mngr.set_bit_val(INTERP_ABBR)
-
-    def _resample(self, interval='1s', method='mean'):
-        """
-
-        Args:
-            interval (str, optional): Resample interval. Default is '1s'.
-            method (str, optional): Resample method, 'mean' (default) | 'sum'
-            inplace (bool, optional): Default is True
-
-        """
-
-        resampler = self.data.resample(interval, label='right', closed='right')
-        if method == 'mean':
-            self._data = resampler.mean()
-        elif method == 'sum':
-            self._data = resampler.sum()
-        else:
-            raise AttributeError('Bad method value')
-
-        # Set resample flag
-        self._flag_mngr.set_bit_val(RESMPL_ABBR)
-
-        # Set up sampled flag
-        self._flag_mngr.set_bit_val(
-            UPSMPL_ABBR,
-            self.data.isna() & (self._flag_mngr.get_bit_val(RAWNA_ABBR) != 1))
-
-    def _reset_index(self):
-        """Set index start at 0s"""
-        self._data.index = self.data.index - self.data.index[0]
-        self._flag_mngr._data.index = self.flag.index - self.flag.index[0]
-
-    def _shift(self, periods):
-        """
-
-        Args:
-          periods:
-
-        Returns:
-
-
-        """
-
-        self._data = self.data.shift(periods)
-        self._index_lag -= pd.Timedelta(periods, self.data.index.freq.name)
-
-    def change_index_unit(self, new_unit: str):
-        """
-
-        Args:
-          new_unit: str:
-
-        Returns:
-
-
-        """
-        pass
-
-def load(search, prm_abbr):
-    """
+def update_db(search, strict=False):
+    """Update database.
 
     Args:
-        search (str): Data loader search criterion
-        prm_abbr (str):
+        search (str): prm_abbr search criteria.
+        strict (bool, optional): If False, match for any sub-string.
+            If True match for entire string. Default to False.
 
-    Returns:
+    .. uml::
 
+        @startuml
+        hide footbox
+
+        update_db -> CSVHandler: handle(file_path, prm_abbr)
+        activate CSVHandler
+
+        CSVHandler -> GDPHandler: handle(file_path, prm_abbr)
+        activate GDPHandler
+
+        CSVHandler <- GDPHandler: data
+        deactivate  GDPHandler
+
+        update_db <- CSVHandler: data
+        deactivate   CSVHandler
+
+        @enduml
 
     """
 
-    # Init
+    # Init linkers
+    db_mngr = DatabaseManager()
     db_linker = LocalDBLinker()
 
-    # Load data
-    out = MultiTimeProfileManager()
-    for data in db_linker.load(search, prm_abbr):
-        out.append(
-            TimeProfileManager(
-                data['data'],
-                data['event'])
+    # Define chain of responsibility for loadgin from raw
+    handler = CSVHandler()
+    handler.set_next(GDPHandler())
+
+    # Search prm_abbr
+    if strict is True:
+        search_dict = {'where': Parameter.prm_abbr == search}
+    else:
+        search_dict = {'where': Parameter.prm_abbr.contains(search)}
+
+    prm_abbr_list = [
+        arg[0] for arg in db_mngr.get_or_none(
+            Parameter,
+            search=search_dict,
+            attr=[[Parameter.prm_abbr.name]],
+            get_first=False
+        )
+    ]
+
+    # If no matching parameters were found, issue a warning and stop here.
+    if len(prm_abbr_list) == 0:
+        localdb.info("No database parameter found for the query: %s", search)
+        return None
+
+    # Log
+    localdb.info("Update db for following parameters: %s", prm_abbr_list)
+
+    # Scan path
+    origdata_path_scan = list(path_var.orig_data_path.rglob("*.*"))
+
+    # Loop loading
+    for prm_abbr in prm_abbr_list:
+
+        # Log
+        rawcsv.info("Start reading CSV files for '%s'", prm_abbr)
+
+        # Scan files
+        new_orig_data = []
+        for file_path in origdata_path_scan:
+            result = handler.handle(file_path, prm_abbr)
+            if result:
+                new_orig_data.append(result)
+
+                # Log
+                rawcsv.info(
+                    "CSV files '%s' was treated", file_path
+                )
+            else:
+
+                # Log
+                rawcsv.debug(
+                    "CSV files '%s' was left untouched", file_path
+                )
+
+        # Log
+        rawcsv.info("Finish reading CSV files for '%s'", prm_abbr)
+        rawcsv.info(
+            "Found %d new data while reading CSV files for '%s'",
+            len(new_orig_data),
+            prm_abbr
         )
 
-    return out
-
-
-def update_db(prm_abbr):
-    """
-
-    Returns:
-
-    """
-
-    # Load CSV data
-    db_linker = LocalDBLinker()
-    orig_data_linker = OriginalCSVLinker()
-    new_orig_data = orig_data_linker.load(prm_abbr)
-
-    # Save to DB
-    db_linker.save(new_orig_data)
-
-
-class MultiTimeProfileManager(list):
-    """ """
-
-    @staticmethod
-    def map_inplace(obj, func, map_inplace, *args, **kwargs):
-        if map_inplace:
-            MultiTimeProfileManager(
-                map(lambda x: func(x, *args, **kwargs), obj)
-            )
-            return
-        else:
-            out = obj.copy()
-            MultiTimeProfileManager(
-                map(lambda x: func(x, *args, **kwargs), out)
-            )
-            return out
-
-    def copy(self):
-        """Overwrite of copy method"""
-        return copy.deepcopy(self)
-
-    def append(self, value):
-        """Overwrite of append method"""
-        assert isinstance(value, TimeProfileManager)
-        super().append(value)
-
-    def resample(self, interval='1s', method='mean', inplace=False):
-        return self.map_inplace(
-            self, TimeProfileManager._resample, map_inplace=inplace,
-            interval=interval, method=method
+        # Log
+        localdb.info(
+            "Start inserting in local DB new found data for '%s'", prm_abbr
         )
 
-    def interpolate(self, inplace=False):
-        return self.map_inplace(
-            self, TimeProfileManager._interpolate, map_inplace=inplace
+        # Save to DB
+        db_linker.save(new_orig_data)
+
+        # Log
+        localdb.info(
+            "Finish inserting in local DB new found data for '%s'", prm_abbr
         )
 
-    def synchronise(self, i_start=0, n_corr=300, window=30, i_ref=0):
-        """
+
+class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
+    """Abstract MultiProfile class"""
+
+    # Specify required attributes
+    # _DATA_TYPES:
+    # - type (Profile|RSProfile|GDPProfile|...)
+    REQUIRED_ATTRIBUTES = {
+        '_DATA_TYPES': type
+    }
+
+    #: type: Data type
+    _DATA_TYPES = None
+
+    _DATA_EMPTY = []
+    _DB_VAR_EMPTY = {}
+
+    @abstractmethod
+    def __init__(self, load_stgy=None, sort_stgy=None, save_stgy=None, plot_stgy=None):
+
+        # Init attributes
+        self._load_stgy = load_stgy
+        self._sort_stgy = sort_stgy
+        self._save_stgy = save_stgy
+        self._plot_stgy = plot_stgy
+
+        self._profiles = self._DATA_EMPTY
+        self._db_variables = self._DB_VAR_EMPTY
+
+    @property
+    def profiles(self):
+        """list of Profile"""
+        return self._profiles
+
+    @property
+    def db_variables(self):
+        """dict: Correspondence between DataFrame and DB parameter"""
+        return self._db_variables
+
+    @property
+    def info(self):
+        """list of ProfileManger info: Data info"""
+        return [arg.info for arg in self.profiles]
+
+    @deepcopy
+    def rm_info_tag(self, val, inplace=True):
+        """Remove tag from all info tags
 
         Args:
-          profile_series(list of TimeSeriesManager):
-          i_start:  (Default value = 0)
-          n_corr:  (Default value = 300)
-          window:  (Default value = 30)
-          i_ref:  (Default value = 0)
+            val (str|list of str): Tag values to remove
+            inplace (bool, optional): Modify in place. Defaults to True.
+
+        """
+        for i in range(len(self)):
+            self.profiles[i].info.rm_tag(val)
+
+    @deepcopy
+    def add_info_tag(self, val, inplace=True):
+        """Add tag from all info tags
+
+        Args:
+            val (str|list of str): Tag values to add.
+            inplace (bool, optional): Modify in place. Defaults to True.
+
+        """
+        for i in range(len(self)):
+            self.profiles[i].info.add_tag(val)
+
+    def __len__(self):
+        return len(self.profiles)
+
+    def copy(self):
+        """Return a deep copy of the object"""
+        obj = self.__class__()
+        obj._db_variables = self.db_variables.copy()
+        obj._profiles = [arg.copy() for arg in self.profiles]
+        return obj
+
+    @deepcopy
+    def load_from_db(self, *args, **kwargs):
+        """Load data from the database.
+
+        Args:
+            *args: positional arguments
+            inplace (bool): Modify in place. Defaults to True.
+            **kwargs: key word arguments
 
         Returns:
-
+            MultiProfile: only if inplace=False
 
         """
 
-        # Check synchonised flag
-        assert all(
-            [arg._flag_mngr.get_bit_val(INTERP_ABBR).all() for arg in self]
-        ), 'Please interpolate data before'
+        # Call the appropriate Data strategy
+        data, db_df_keys = self._load_stgy.load(*args, **kwargs)
 
-        # Copy
-        out = self.copy()
+        # Test data len
+        if not data:
+            raise DBIOError('Load empty data')
 
-        # Select reference data
-        ref_data = out[i_ref]
+        # Update
+        self.update(db_df_keys, data)
 
-        # Find best corrcoef
-        idx_offset = []
-        window_values = range(-window, window)
-        for test_data in out:
-            corr_res = [
-                crosscorr(
-                    ref_data.data.iloc[i_start:i_start + n_corr],
-                    test_data.data.iloc[i_start:i_start + n_corr],
-                    lag=w)
-                for w in window_values
+    @deepcopy
+    def sort(self, inplace=False):
+        """Sort method
+
+        Args:
+            inplace (bool, `optional`): If True, perform operation in-place
+                Defaults to True.
+        Returns
+            MultiProfileManager if inplace is True, otherwise None
+
+        """
+
+        # Sort
+        data = self._sort_stgy.sort(self.profiles)
+
+        # Load
+        self.update(self.db_variables, data)
+
+    def save_to_db(self, add_tags=None, rm_tags=None, prms=None):
+        """Save method to store the *entire* content of the Multiprofile
+        instance back into the database with an updated set of tags.
+
+        Args:
+            add_tags (list of str, optional): list of tags to add to the entity when inserting it
+                into the database. Defaults to None.
+            rm_tags (list of str, optional): list of *existing* tags to remove
+                from the entity before inserting ot into the database. Defaults to None.
+            prms (list of str, optional): list of column names to save to the
+                database. Defaults to None (= save all possible parameters).
+
+        Notes:
+            The 'raw' tag will always be removed and the 'derived' tag will
+            always be added by default when saving anything into the database.
+
+        """
+
+        # Init
+        obj = self.copy()
+
+        # Add tag DERIVED
+        add_tags = [TAG_DERIVED_VAL] if add_tags is None else add_tags + [TAG_DERIVED_VAL]
+
+        # Add tags
+        obj.add_info_tag(add_tags)
+
+        # Remove tag RAW
+        rm_tags = [TAG_RAW_VAL] if rm_tags is None else rm_tags + [TAG_RAW_VAL]
+
+        # Remove tags
+        obj.rm_info_tag(rm_tags)
+
+        # Restructure the parameters into a dict, to be consistent with the rest of the class.
+        if prms is None:
+            prms = list(self.db_variables.keys())
+
+        # Call save strategy
+        self._save_stgy.save(obj, prms)
+
+    # TODO: implement an "export" function that can export specific DataFrame columns back into
+    #  the database under new variable names ?
+    # THis may be confusing. WOuldn't it be sufficient to change the keys in db_variables and then
+    # use the existing "save_to_db" method ?
+
+    def update(self, db_df_keys, data):
+        """Update the whole Multiprofile list with new Profiles.
+
+        Args:
+            db_df_keys (dict): Relationship between database parameters and
+                Profile.data columns.
+            data (list of Profile): Data
+
+        """
+
+        # Check input type
+        assert isinstance(data, list), "Was expecting a list, not: %s" % (type(data))
+
+        # Test data if not empty
+        if data:
+
+            # Check input value type
+            assert all(
+                [isinstance(arg, self._DATA_TYPES) for arg in data]
+            ), f"Wrong data type: I need {self._DATA_TYPES} but you gave me {[type(arg) for arg in data]}"
+
+            # Check db keys
+            assert (
+                set(db_df_keys.keys()) == set(data[0].get_col_attr() + data[0].get_index_attr())
+            ), f"Key {db_df_keys} does not match data columns"
+
+        else:
+            data = self._DATA_EMPTY
+            db_df_keys = self._DB_VAR_EMPTY
+
+        # Update
+        self._db_variables = db_df_keys
+        self._profiles = data
+
+    def append(self, db_df_keys, val):
+        """Append method
+
+        Args:
+            db_df_keys (dict): Relationship between database parameters and
+                Profile.data columns.
+            val (Profile): Data
+
+        """
+
+        self.update(db_df_keys, self.profiles + [val])
+
+    def get_prms(self, prm_list=None):
+        """ Convenience getter to extract one specific parameter from the DataFrames of all the
+        Profile instances.
+
+        Args:
+            prm_list (list of str): names of the parameter to extract from all the Profile
+                DataFrame. Defaults to None (=return all the data from the DataFrame)
+
+        Returns:
+            dict of list of DataFrame: idem to self.profiles, but with only the requested data.
+
+        """
+
+        if prm_list is None:
+            prm_list = self.db_variables.keys()
+            #TODO: Here I need to remove all the keys that are indices.
+
+        if isinstance(prm_list, str):
+            # Assume the user forgot to put the key into a list.
+            prm_list = [prm_list]
+
+        # Select data
+        try:
+            out = [
+                pd.concat(
+                    [getattr(arg, prm) for prm in prm_list],
+                    axis=1, ignore_index=False
+                )
+                for arg in self.profiles
             ]
-            idx_offset.append(np.argmax(corr_res))
-
-        for i, arg in enumerate(out):
-            arg._shift(window_values[idx_offset[i]])
-            arg._flag_mngr.set_bit_val(SYNC_ABBR)
+        except AttributeError:
+            raise dvasError(f"Unknown parameter/attribute name in {prm_list}")
 
         return out
 
-    @timer
-    def plot(self):
-        """ """
+    def get_info(self, prm):
+        """ Convenience function to extract specific (a unique!) Info from all the
+        Profile instances.
 
-        fig = plt.figure()
-        for arg in self:
-            plt.plot(arg.data)
+        Args:
+            prm (str): parameter name (unique!) to extract.
+
+        Returns:
+            dict of list: idem to self.profiles, but with only the requested metadata.
+
+        """
+
+        return [info[prm] for info in self.info]
+
+    def plot(self, **kwargs):
+        """ Plot method
+
+        Args:
+            **kwargs: Keyword arguments to be passed down to the plotting function.
+
+        Returns:
+            None
+
+        """
+
+        self._plot_stgy.plot(self, **kwargs)
+
+
+class MultiProfile(MutliProfileAbstract):
+    """Multi profile base class, designed to handle multiple Profile."""
+
+    #: type: supported Profile Types
+    _DATA_TYPES = Profile
+
+    def __init__(self):
+        super().__init__(
+            load_stgy=load_prf_stgy, sort_stgy=sort_prf_stgy,
+            save_stgy=save_prf_stgy, plot_stgy=plt_prf_stgy,
+        )
+
+        # Init strategy
+        #self._sync_stgy = sync_stgy
+
+class MultiRSProfileAbstract(MutliProfileAbstract):
+    """Abstract MultiRSProfile class"""
+
+    @abstractmethod
+    def __init__(
+            self, load_stgy=None, sort_stgy=None,
+            save_stgy=None, plot_stgy=None,
+    ):
+        super().__init__(
+            load_stgy=load_stgy, sort_stgy=sort_stgy,
+            save_stgy=save_stgy, plot_stgy=plt_prf_stgy,
+        )
+
+        # Set attributes
+        #self._rspl_stgy = rspl_stgy
+
+    # TODO
+    #  Adapt for MultiIndex
+    # def resample(self, *args, inplace=True, **kwargs):
+    #     """Resample method
+    #
+    #     Args:
+    #         *args: Variable length argument list.
+    #         inplace (bool, `optional`): If True, perform operation in-place.
+    #             Default to False.
+    #         **kwargs: Arbitrary keyword arguments.
+    #
+    #     Returns:
+    #         MultiProfileManager if inplace is True, otherwise None
+    #
+    #     """
+    #
+    #     # Resample
+    #     out = self._rspl_stgy.resample(self.copy().profiles, *args, **kwargs)
+    #
+    #     # Load
+    #     res = self.update(self.db_variables, out, inplace=inplace)
+    #
+    #     return res
+
+
+class MultiRSProfile(MultiRSProfileAbstract):
+    """Multi RS profile manager, designed to handle multiple RSProfile instances."""
+
+    _DATA_TYPES = RSProfile
+
+    def __init__(self):
+        super().__init__(
+            load_stgy=load_rsprf_stgy, sort_stgy=sort_prf_stgy,
+            save_stgy=save_prf_stgy, plot_stgy=plt_prf_stgy,
+        )
+
+    #def synchronize(self, *args, inplace=False, **kwargs):
+    #    """Synchronize method
+    #
+    #    Args:
+    #        *args: Variable length argument list.
+    #        inplace (bool, `optional`): If True, perform operation in-place.
+    #            Default to False.
+    #        **kwargs: Arbitrary keyword arguments.
+    #
+    #    Returns
+    #        MultiProfileManager if inplace is True, otherwise None
+    #
+    #    """
+    #
+    #    # Synchronize
+    #    out = self._sync_stgy.synchronize(self.copy().data, 'data', *args, **kwargs)
+    #
+    #    # Load
+    #    res = self.load(out, inplace=inplace)
+    #
+    #    return res
+
+
+class MultiGDPProfile(MultiRSProfileAbstract):
+    """Multi GDP profile manager, designed to handle multiple GDPProfile instances."""
+
+    _DATA_TYPES = GDPProfile
+
+    def __init__(self):
+        super().__init__(
+            load_stgy=load_gdpprf_stgy, sort_stgy=sort_prf_stgy,
+            save_stgy=save_prf_stgy, plot_stgy=plt_prf_stgy,
+        )
+
+    @property
+    def uc_tot(self):
+        """ Convenience getter to extract the total uncertainty from all the GDPProfile instances.
+
+        Returns:
+            list of DataFrame: idem to self.profiles, but with only the requested data.
+
+        """
+
+        return [arg.uc_tot for arg in self.profiles]
+
+    # def plot(self, x='alt', **kwargs):
+    #     """ Plot method
+    #
+    #     Args:
+    #         x (str): parameter name for the x axis. Defaults to 'alt'.
+    #         **kwargs: Arbitrary keyword arguments, to be passed down to the plotting function.
+    #
+    #     Returns:
+    #         None
+    #
+    #     """
+    #
+    #     self._plot_stgy.plot(self.profiles, self.keys, x=x, **kwargs)
+
+    #def synchronize(self, *args, inplace=False, method='time', **kwargs):
+    #    """Overwrite of synchronize method
+    #
+    #    Args:
+    #        *args: Variable length argument list.
+    #        inplace (bool, `optional`): If True, perform operation in-place.
+    #            Default to False.
+    #        method (str, `optional`): Method used to synchronize series.
+    #            Default to 'time'
+    #            - 'time': Synchronize on time
+    #            - 'alt': Synchronize on altitude
+    #        **kwargs: Arbitrary keyword arguments.
+    #
+    #    Returns
+    #        MultiProfileManager if inplace is True, otherwise None
+    #
+    #    """
+    #
+    #    # Synchronize
+    #    if method == 'time':
+    #        out = self._sync_stgy.synchronize(self.copy().data, 'data', *args, **kwargs)
+    #    else:
+    #        #TODO modify to integrate linear AND offset compesation
+    #        out = self._sync_stgy.synchronize(self.copy().data, 'alt', *args, **kwargs)
+    #
+    #    # Modify inplace or not
+    #    if inplace:
+    #        self.data = out
+    #        res = None
+    #    else:
+    #        res = self.load(out)
+    #
+    #    return res

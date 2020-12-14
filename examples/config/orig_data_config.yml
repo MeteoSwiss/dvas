@@ -1,0 +1,197 @@
+
+# ----------------------------------------------------
+# RS-92 type for pseudo data (NOT THE GDP!)
+# ----------------------------------------------------
+_RS92:
+
+    # -- META DATA ----------------------------------
+    dt_field: '{event_dt}'
+    srn_field: '{srn}'
+    tag_field:
+        - 'e:{event_id}'
+        - 'r:{rig}'
+        - '{day_night}'
+
+    # -- ORIG DATA ----------------------------------
+    csv_delimiter: ','
+    csv_skipinitialspace: True
+
+    _tdtpros1:
+        value_col: 0
+        lambda: 'lambda x: x * 1E9'
+
+    _trepros1:
+        value_col: 2
+
+    _altpros1:
+        value_col: 9
+
+    _prepros1:
+        value_col: 1
+
+# ----------------------------------------------------
+# YT type
+# ----------------------------------------------------
+_YT:
+
+    # -- META DATA ----------------------------------
+    dt_field: '{event_dt}Z'
+    srn_field: '{srn}'
+    tag_field:
+        - 'e:{event_id}'
+        - 'r:{rig}'
+        - '{day_night}'
+
+    # -- ORIG DATA ----------------------------------
+    csv_delimiter: ','
+    csv_skipinitialspace: True
+
+    _tdtpros1:
+        value_col: 0
+        lambda: 'lambda x: x * 1E9'
+
+    _trepros1:
+        value_col: 1
+
+    _altpros1:
+        value_col: 2
+
+    _prepros1:
+        value_col: 3
+
+# ----------------------------------------------------
+# ZT type
+# ----------------------------------------------------
+_ZT:
+
+    # -- META DATA ----------------------------------
+    dt_field: '{event_dt}'
+    srn_field: '{srn}'
+    tag_field:
+        - 'e:{event_id}'
+        - 'r:{rig}'
+        - '{day_night}'
+
+    # -- ORIG DATA ----------------------------------
+    csv_delimiter: ';'
+    csv_skip_blank_lines: True
+
+    _tdtpros1:
+        value_col: 0
+        lambda: 'lambda x: x * 1E9'
+
+    _trepros1:
+        value_col: 1
+
+    _altpros1:
+        value_col: 2
+
+    _prepros1:
+        value_col: 3
+
+# ----------------------------------------------------
+# AR GDP, version 1
+# ----------------------------------------------------
+_AR-GDP_001:
+
+    # -- META DATA ----------------------------------
+    dt_field: '{g.Measurement.StandardTime}'
+    srn_field: '{g.MainSonde.SerialNumber}'
+    tag_field:
+        - 'e:{g.Measurement.Id}'
+        - 'r:{g.Measurement.BalloonNumber}'
+
+    # -- ORIG DATA ----------------------------------
+    _tdtpros1:
+        value_col: 'time'
+        lambda: 'lambda x: x * 1E9'
+
+    _trepros1:
+        value_col: 'temp'
+        lambda: 'lambda x: x - 273.15'
+
+    _treprosu_e:
+        value_col: 'temp_uec'
+
+    _treprosu_s:
+        value_col: 'temp_usc'
+
+    _treprosu_t:
+        value_col: 'temp_utc'
+
+    _altpros1:
+        value_col: 'alt'
+
+    _prepros1:
+        value_col: 'press'
+
+# ----------------------------------------------------
+# BR GDP, version 1
+# ----------------------------------------------------
+_BR-GDP_001:
+
+    # -- META DATA ----------------------------------
+    dt_field: '{g.Measurement.StandardTime}Z'
+    srn_field: '{g.MainSonde.SerialNumber}'
+    tag_field:
+        - 'e:{g.Measurement.Id}'
+        - 'r:{g.Measurement.BalloonNumber}'
+
+    # -- ORIG DATA ----------------------------------
+    _tdtpros1:
+        value_col: 'time'
+        lambda: 'lambda x: x * 1E9'
+
+    _trepros1:
+        value_col: 'temp'
+        lambda: 'lambda x: x - 273.15'
+
+    _treprosu_e:
+        value_col: 'temp_uec'
+
+    _treprosu_t:
+        value_col: 'temp_utc'
+
+    _altpros1:
+        value_col: 'alt'
+
+    _prepros1:
+        value_col: 'press'
+
+# ----------------------------------------------------
+# RS-41 GDP, version beta-1
+# ----------------------------------------------------
+_RS41-GDP-BETA_001:
+
+    # -- META DATA ----------------------------------
+    dt_field: '{g.Measurement.StandardTime}'
+    srn_field: '{g.MainSonde.SerialNumber}'
+    tag_field:
+        - 'e:{g.Measurement.Id}'
+        - 'r:{g.Measurement.BalloonNumber}'
+
+    # -- ORIG DATA ----------------------------------
+    _tdtpros1:
+        value_col: 'time'
+        lambda: 'lambda x: x * 1E9'
+
+    _trepros1:
+        value_col: 'temp'
+
+    _treprosu_r:
+        value_col: 'temp_uc_ncor'
+
+    _treprosu_s:
+        value_col: 'temp_uc_scor'
+
+    _treprosu_t:
+        value_col: 'temp_uc_tcor'
+
+    _altpros1:
+        value_col: 'alt'
+
+    _prepros1:
+        value_col: 'press'
+
+    _preprosu_u:
+        value_col: 'press_uc'

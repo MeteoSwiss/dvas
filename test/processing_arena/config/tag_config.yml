@@ -1,0 +1,36 @@
+
+- tag_txt: 'e:((\d{1,2})|(6000\d))'
+  # Generate e1, e2, ..., e99
+  tag_desc: 'Event $\1$'
+  # Use standard re.sub group syntax to refer group number from regexp
+  # generator.
+
+- tag_txt: 'r:([12])'
+  # Generate r1, r2
+  tag_desc: 'Rig $\1$'
+
+- tag_txt: '^((day)|(night))'
+  # Generate day, night
+  # In this example, '^' is required at the beginning to
+  # create regexp groups almost no group will be catch.
+  tag_desc: '$lambda x: x.group(1)[0].upper() + x.group(1)[1:].lower()$ event'
+  # Use lambda function to set 1st character to upper case and append the rest
+  # of the group in lower case.
+
+- tag_txt: 'vof(\d{0,1})'
+  tag_desc: 'Test/demo tag $\1$'
+
+- tag_txt: 'cws'
+  tag_desc: 'Combined Working Measurement Standard'
+
+- tag_txt: 'load_profile'
+  tag_desc: 'Load Profile tests'
+
+- tag_txt: 'load_rsprofile'
+  tag_desc: 'Load RSProfile tests'
+
+- tag_txt: 'load_gdpprofile'
+  tag_desc: 'Load GDPProfile tests'
+
+- tag_txt: 'save_multiprofile'
+  tag_desc: 'Save MultiProfile tests'

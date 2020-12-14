@@ -1,0 +1,21 @@
+
+# 2018.01.10 00:00:00
+- srn: 'AR-000'
+  instr_type: 'AR-GDP_001'
+
+- srn: 'BR-000'
+  instr_type: 'BR-GDP_001'
+
+
+# 2018.01.25 00:00:00
+- srn: 'AR-001'
+  instr_type: 'AR-GDP_001'
+
+- srn: 'BR-001'
+  instr_type: 'BR-GDP_001'
+
+- srn: '00000'
+  instr_type: 'TEST_01'
+
+- srn: '00001'
+  instr_type: 'TEST_02'

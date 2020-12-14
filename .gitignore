@@ -148,7 +148,8 @@ coverage.xml
 .scrapy
 
 # Sphinx documentation
-docs/_build/
+docs/build/
+docs/source/modules
 
 # PyBuilder
 target/
@@ -243,16 +244,11 @@ pip-selfcheck.json
 .venv/src/
 .venv/tcl/
 db.json
-expl_tmp.py
 local_db.sqlite
-test/test_data/raw_csv/2018-04-05T0.csv
-test/test_data/raw_csv/PAY_RS.f00.b0.i00.2016-11-30T000006Z.vai-rs41.csv
-test/test_data/raw_csv/PAY_RS.f00.b0.i11.2016-11-30T000000Z.metlab-c50.csv
-test/test_data/raw_csv/PAY_RS.f01.b0.i00.2019-11-19T105500Z.vai-rs41.csv
-test/test_data/raw_csv/PAY_RS.f01.b0.i01.2019-11-19T105500.metlab-c34.csv
-test/test_data/raw_csv/PAY_RS.f01.b0.i02.2019-11-19T105500.metlab-c50.csv
-test/test_data/raw_csv/PAY_RS.f01.b0.i03.2019-11-19T105500.vai-rs92.csv
 this_file_of_result.txt
-tiny_vs_mongo.py
-tut.csv
-uaii2021/database/database.py
+
+# MacOS stuff
+*.DS_Store
+
+# Example stuff
+examples/output/

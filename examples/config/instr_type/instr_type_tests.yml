@@ -1,0 +1,9 @@
+
+- type_name: 'YT'
+  desc: 'YT test instrument'
+
+- type_name: 'ZT'
+  desc: 'ZT test instrument'
+
+- type_name: 'RS92'
+  desc: 'Vaisala RS-92'

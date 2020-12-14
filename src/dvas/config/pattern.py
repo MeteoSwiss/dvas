@@ -1,63 +1,25 @@
 """
-This module contains the regex patterns used into the package.
+Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.
 
-Created February 2020, L. Modolo - mol@meteoswiss.ch
+Distributed under the terms of the GNU General Public License v3.0 or later.
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Module contents: Regex patterns used into the package.
 
 """
 
 # Import python packages and modules
 import re
 
-#: str: Instrument type key name
-INSTR_TYPE_KEY = 'instr_type'
+# Define
+RE_UPPER_W = r'[A-Z0-9]'
+RE_LOWER_W = r'[a-z0-9]'
 
-#: str: Instrument type pattern (e.g. vai-rs92, metlab-c50)
-INSTR_TYPE_PAT = r"[a-z0-9]{3,}-[a-z0-9]+"
+#: str: Instrument type pattern (e.g. VAI-RS92, MET_LAB-C50, RS92-GDP_002)
+INSTR_TYPE_PAT = rf"{RE_UPPER_W}+(({RE_UPPER_W})|([\-\_]))*{RE_UPPER_W}"
 INSTR_TYPE_RE = re.compile(INSTR_TYPE_PAT)
 
-#: str: Instrument key name
-INSTR_KEY = 'instrument'
-INSTR_PREFIX = INSTR_KEY[0]
-
-#: str: Instrument pattern (e.g. i1, i10, i203)
-INSTR_PAT = rf'{INSTR_PREFIX}([1-9]\d*)'
-INSTR_RE = re.compile(INSTR_PAT)
-
-#: str: Event key name
-EVENT_KEY = 'event'
-EVENT_PREFIX = EVENT_KEY[0]
-
-#: str: Event pattern (e.g. e1, e10, e203)
-EVENT_PAT = rf'{EVENT_PREFIX}[1-9]\d*'
-EVENT_RE = re.compile(EVENT_PAT)
-
-#: str: Batch key name
-BATCH_KEY = 'batch'
-BATCH_PREFIX = BATCH_KEY[0]
-
-#: str: Batch pattern (e.g. b1, b20, b205)
-BATCH_PAT = rf'{BATCH_PREFIX}[1-9]\d*'
-BATCH_RE = re.compile(BATCH_PAT)
-
-#: str: Parameter key name
-PARAM_KEY = 'parameter'
-
-#: str: Parameter pattern (e.g. tre200s0, uorprot1)
-PARAM_PAT = r"[a-z0-9]{8}"
-PARAM_RE = re.compile(PARAM_PAT)
-
-#: str: Raw data key name
-ORIGDATA_KEY = 'orig_data'
-
-#: str: Raw meta key name
-ORIGMETA_KEY = 'orig_meta'
-
-#: str: Profile datetime stamp
-PROFILEDT_KEY = 'profile_dt'
-
-#: str: Meassite name
-MS_KEY = 'meassite'
-
-#: str: Flag name
-FLAG_KEY = 'flag'
-FLAG_NODE_PAT = rf'{FLAG_KEY}_([1-9]\d*)'
+#: str: Parameter pattern (e.g. tre200s0, uorpros1, uorprosu_r)
+PARAM_PAT = rf"{RE_LOWER_W}+(({RE_LOWER_W})|([\_]))*{RE_LOWER_W}"
+param_re = re.compile(PARAM_PAT)

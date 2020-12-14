@@ -1,89 +1,72 @@
 """
+Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.
+
+Distributed under the terms of the GNU General Public License v3.0 or later.
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+Module contents: Database model (ORM uses PeeWee package)
 
 """
 
 # Import from python packages
-import os
-from pathlib import Path
 import re
 from peewee import SqliteDatabase, Model, Check
 from peewee import AutoField
-from peewee import IntegerField, BooleanField, FloatField
+from peewee import IntegerField, FloatField
 from peewee import DateTimeField, TextField, CharField
-from peewee import ForeignKeyField, CompositeKey
-from playhouse.hybrid import hybrid_property
-from playhouse.shortcuts import fn
-from playhouse.sqliteq import SqliteQueueDatabase
-
+from peewee import ForeignKeyField
 
 # Import from current package
-from ..dvas_environ import LOCAL_DB_PATH_NM
-from ..config.pattern import EVENT_PAT, BATCH_PAT
-from ..config.pattern import INSTR_TYPE_PAT, INSTR_PAT
+from ..config.pattern import INSTR_TYPE_PAT
 from ..config.pattern import PARAM_PAT
 
-# Define
-DATABASE_PATH = os.getenv(LOCAL_DB_PATH_NM)
-DATABASE_FILE_PATH = Path(DATABASE_PATH) / 'local_db.sqlite'
 
-#SqliteDatabase
-#SqliteQueueDatabase
-db = SqliteQueueDatabase(
-    DATABASE_FILE_PATH,
-    pragmas={
-        'foreign_keys': True,
-        # Set cache to 10MB
-        'cache_size': -10*1024
-    },
-    autoconnect=False,
-    use_gevent=False,  # Use the standard library "threading" module.
-    autostart=False,  # The worker thread now must be started manually.
-    queue_max_size=64,  # Max. # of pending writes that can accumulate.
-    results_timeout=5.0  # Max. time to wait for query to be executed.
-)
+# Create db instance
+db = SqliteDatabase(None, autoconnect=True)
 
 
 @db.func('re_fullmatch')
 def re_fullmatch(pattern, string):
-    """Database re.fullmatch function used in Check constraints"""
+    """Database re.fullmatch function. Used it in check constraints"""
     return (
         re.fullmatch(pattern=pattern, string=string) is not None
     )
 
 
 class MetadataModel(Model):
-    """ """
+    """Metadata model class"""
     class Meta:
+        """Meta class"""
         database = db
 
 
 class InstrType(MetadataModel):
-    """ """
+    """Instrument type model"""
     id = AutoField(primary_key=True)
     type_name = CharField(
         null=False, unique=True,
         constraints=[
-            Check(f"re_fullmatch('{INSTR_TYPE_PAT}', type_name)")
+            Check(f"re_fullmatch('({INSTR_TYPE_PAT})|()', type_name)")
         ]
     )
     desc = TextField()
 
 
 class Instrument(MetadataModel):
-    """ """
+    """Instrument model """
     id = AutoField(primary_key=True)
-    instr_id = CharField(
-        constraints=[
-            Check(f"re_fullmatch('{INSTR_PAT}', instr_id)")
-        ]
+
+    # Serial number
+    srn = CharField(null=False, unique=True)
+    instr_type = ForeignKeyField(
+        InstrType, backref='instruments', on_delete='CASCADE'
     )
-    instr_type = ForeignKeyField(InstrType, backref='instruments')
-    sn = TextField()
     remark = TextField()
 
 
 class Parameter(MetadataModel):
-    """ """
+    """Parameter model"""
     id = AutoField(primary_key=True)
     prm_abbr = CharField(
         null=False,
@@ -92,48 +75,84 @@ class Parameter(MetadataModel):
             Check(f"re_fullmatch('{PARAM_PAT}', prm_abbr)"),
         ]
     )
-    prm_desc = TextField(default='')
+    prm_desc = TextField(null=False, default='')
 
 
 class Flag(MetadataModel):
-    """ """
+    """Flag model"""
     id = AutoField(primary_key=True)
     bit_number = IntegerField(
         null=False,
         unique=True,
         constraints=[Check("bit_number >= 0")])
-    flag_abbr = CharField(null=False)
-    desc = TextField(null=False)
+    flag_abbr = CharField(null=False, unique=True)
+    flag_desc = TextField(null=False, default='')
 
 
-class OrgiDataInfo(MetadataModel):
+class Tag(MetadataModel):
+    """Tag model"""
+    id = AutoField(primary_key=True)
+    tag_txt = CharField(null=False, unique=True)
+    tag_desc = TextField()
+
+
+class DataSource(MetadataModel):
+    """Data source model"""
     id = AutoField(primary_key=True)
     source = CharField(null=True)
 
 
-class EventsInstrumentsParameters(MetadataModel):
-    """ """
+class Info(MetadataModel):
+    """Info model"""
     id = AutoField(primary_key=True)
-    event_dt = DateTimeField(null=False)
-    instrument = ForeignKeyField(
-        Instrument, backref='event_instrs_params'
-    )
+    evt_dt = DateTimeField(null=False)
     param = ForeignKeyField(
-        Parameter, backref='event_instrs_params'
+        Parameter, backref='info', on_delete='CASCADE'
     )
-    batch_id = CharField(null=False)
-    day_event = BooleanField(null=False)
-    event_id = CharField(null=True)
-    orig_data_info = ForeignKeyField(
-        OrgiDataInfo, backref='event_instrs_params'
+    data_src = ForeignKeyField(
+        DataSource, backref='info', on_delete='CASCADE'
     )
+    evt_hash = CharField()
+    """str: Hash of the info attributes. Using a hash allows you to manage
+    identical info with varying degrees of work steps."""
+
+
+class InfosTags(MetadataModel):
+    """Many-to-Many link between Info and Tag tables"""
+    id = AutoField(primary_key=True)
+    tag = ForeignKeyField(
+        Tag, backref='infos_tags', on_delete='CASCADE'
+    )
+    info = ForeignKeyField(
+        Info, backref='infos_tags', on_delete='CASCADE'
+    )
+
+
+class InfosInstruments(MetadataModel):
+    """Many-to-Many link between Info and Instrument tables"""
+    id = AutoField(primary_key=True)
+    instr = ForeignKeyField(
+        Instrument, backref='instruments_infos', on_delete='CASCADE'
+    )
+    info = ForeignKeyField(
+        Info, backref='instruments_infos', on_delete='CASCADE'
+    )
+
+# TODO
+#  Add the capability to link metadata to an info.
+#  Tag should be used to search data in the DB.
+#  Metadata should be used to save metadata of a result profile
+#  class MetaData
+#     prm
+#     value
+#     info
 
 
 class Data(MetadataModel):
-    """ """
+    """Data model"""
     id = AutoField(primary_key=True)
-    event_instr_param = ForeignKeyField(
-        EventsInstrumentsParameters,
-        backref='datas')
-    index = FloatField(null=False)
+    info = ForeignKeyField(
+        Info,
+        backref='datas', on_delete='CASCADE')
+    index = IntegerField(null=False)
     value = FloatField(null=True)
