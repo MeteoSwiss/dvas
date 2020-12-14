@@ -13,11 +13,13 @@ Module contents: User configuration management.
 import re
 import pprint
 from pathlib import Path
+from itertools import chain, zip_longest
 import json
 from jsonschema import validate, exceptions
 from ruamel.yaml import YAML
 from ruamel.yaml.error import YAMLError
 from pampy.helpers import Union
+import sre_yield
 
 # Import current package modules
 from .definitions import origdata, csvorigmeta
@@ -30,7 +32,6 @@ from ..helper import get_by_path
 from ..helper import RequiredAttrMetaClass
 from ..helper import TypedProperty
 from ..helper import camel_to_snake
-
 
 # Define
 NODE_ESCAPE_CHAR = '_'
@@ -649,6 +650,136 @@ class OrigData(MultiLayerConfigManager):
     document = TypedProperty(MultiLayerConfigManager.DOC_TYPE)
 
 
+class OneDimArrayConfigLinker:
+    """Link to OneDimArrayConfigManager
+    config managers."""
+
+    #: list: Default instantiated config managers
+    CFG_MNGRS_DFLT = [Parameter, InstrType, Instrument, Flag, Tag]
+
+    def __init__(self, cfg_mngrs=None):
+        """
+        Args:
+            cfg_mngrs (list of OneDimArrayConfigManager): Config managers
+        """
+
+        if cfg_mngrs is None:
+            cfg_mngrs = self.CFG_MNGRS_DFLT
+
+        # Set attributes
+        self._cfg_mngr = instantiate_config_managers(*cfg_mngrs)
+
+    def get_document(self, key):
+        """Interpret the generator syntax if necessary and
+        return the config document.
+
+        The generator syntax is apply only in OneDimArrayConfig  with
+        not empty NODE_GEN. Generator sytax is based on regexpr. Fields which
+        are not generator can contain expression to be evaluated. Expressions
+        must be surrouded by '$'. To catch regexpr group in expression use
+        'lambda x: x.group(N)'.
+
+        Args:
+            key (str): Config manager key
+
+        Returns:
+            dict
+
+        Raises:
+            - ConfigGenMaxLenError: Error for to much generated items.
+
+        """
+
+        def get_grp_fct(grp_fct):
+            """Get group function as callable or str"""
+            try:
+                out = eval(grp_fct, {})
+            except (NameError, SyntaxError):
+                out = grp_fct
+            return out
+
+        # Init
+        sep = env_glob_var.config_gen_grp_sep
+        pat_spilt = r'\{0}[^\n\r\t\{0}]+\{0}'.format(sep)
+        pat_find = r'\{0}([^\n\r\t{0}]+)\{0}'.format(sep)
+
+        # Define
+        array_old = self._cfg_mngr[key].document
+        node_gen = self._cfg_mngr[key].NODE_GEN
+        array_new = []
+
+        # Loop over te config array items
+        for doc in array_old:
+
+            # Test if node generator allowed
+            if node_gen:
+
+                # Init new sub dict
+                sub_dict_new = {}
+
+                # Generate from regexp generator
+                node_gen_val = sre_yield.AllMatches(doc[node_gen])
+
+                # Check length
+                if (n_val := len(node_gen_val)) > env_glob_var.config_gen_max:
+                    raise ConfigGenMaxLenError(
+                        f"{n_val} generated config field. " +
+                        f"Max allowed {env_glob_var.config_gen_max}"
+                    )
+
+                # Update sub dict
+                sub_dict_new.update({node_gen: list(node_gen_val)})
+
+                # Loop over other config item key
+                for key in filter(lambda x: x != node_gen, doc.keys()):
+
+                    # Update new sub dict for current key
+                    sub_dict_new.update(
+                        {
+                            key: [
+                                ''.join(
+                                    [arg for arg in chain(
+                                        *zip_longest(
+
+                                            # Split formula
+                                            re.split(pat_spilt, doc[key]),
+
+                                            # Find formula and substitute
+                                            [
+                                                re.sub(
+                                                    doc[node_gen],
+                                                    get_grp_fct(grp_fct),
+                                                    node_gen_val[i].group()
+                                                ) for grp_fct in
+                                                re.findall(pat_find, doc[key])
+                                            ]
+                                        )
+                                    ) if arg]
+                                )
+                                # Test if groups exists in generated str
+                                if node_gen_val[i].groups() else
+                                doc[key]
+                                for i in range(len(node_gen_val))
+                            ]
+                        }
+                    )
+
+                # Rearange dict of list in list of dict
+                res = [
+                    dict(zip(sub_dict_new, arg))
+                    for arg in zip(*sub_dict_new.values())
+                ]
+
+            # Case without generator
+            else:
+                res = [doc]
+
+            # Append to new array
+            array_new += res
+
+        return array_new
+
+
 class ConfigReadError(Exception):
     """Error while reading config"""
 
@@ -659,3 +790,7 @@ class ConfigNodeError(Exception):
 
 class ConfigItemKeyError(KeyError):
     """Error in config key item"""
+
+
+class ConfigGenMaxLenError(Exception):
+    """Exception class for max length config generator error"""
