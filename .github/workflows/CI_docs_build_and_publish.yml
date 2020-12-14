@@ -16,8 +16,8 @@ on:
     paths:
       - 'docs/**'
   # For dev purposes, doing it on PR helps a lot
-  #pull_request:
-  #  branches: [ master ]
+  pull_request:
+    branches: [ master, develop, develop_vof ]
 
 jobs:
   docs:
