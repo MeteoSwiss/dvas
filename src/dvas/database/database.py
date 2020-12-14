@@ -62,6 +62,9 @@ DB_CACHE_SIZE = 10 * 1024
 #: str: Local database file name
 DB_FILE_NM = 'local_db.sqlite'
 
+
+# TODO
+#  Move it to config. Replace Replace the spaghetti code with an interpreter (design pattern)
 class OneDimArrayConfigLinker:
     """Link to OneDimArrayConfigManager
     config managers."""
