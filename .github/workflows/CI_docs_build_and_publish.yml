@@ -45,8 +45,10 @@ jobs:
       - name: Clean-up the old docs
         run: |
           cd ./docs/build/
+          echo "Existing docs before cleanup:"
           ls -a
           find . -not \( -path '*.git*' -o -name '.nojekyll' -o -name '.-gitignore' \) -delete
+          echo "Existing docs after cleanup:"
           ls -a
           cd ../..
 
@@ -82,9 +84,12 @@ jobs:
       - name: Upload new docs to gh-pages
         run: |
           cd ./docs/build
+          echo "New docs location:"
+          pwd
+          echo "New docs:"
+          ls -a
           git config user.name github-actions
           git config user.email github-actions@github.com
-          pwd
           git status
           git add -A .
           git commit -m "CI auto-update of the docs on `date +'%Y-%m-%d %H:%M:%S'`"
