@@ -56,7 +56,7 @@ def set_mplstyle(style='base'):
     enables the use of a system-wide LaTeX engine. 'nolatex' disables it.
 
     Args:
-        name (str or dict, optional): A style specification. Defaults to 'base'. Valid options are:
+        name (str | dict, optional): A style specification. Defaults to 'base'. Valid options are:
 
             - *str*: One of ['base', 'nolatex', 'latex'] defined inside DVAS.
             - *dict*: Dictionary with valid key/value pairs for matplotlib.rcParams.
@@ -141,7 +141,7 @@ def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show_
         fn_prefix (str, optional): a prefix, to which fn_core will be appended with a '_'.
             Defauts to None.
         fn_suffix (str, optional): a suffix, that will be appended to fn_core with a '_'.
-        fmts (str or list of str, optional): which formats to export the plot to, e.g.: 'png'.
+        fmts (str | list of str, optional): which formats to export the plot to, e.g.: 'png'.
             Defaults to None (= as specified by dvas.plots.utils.PLOT_FMTS)
         show_plt (bool, optional): whether to display the plot after saving it, or not. Defaults to
             None (= as specified by dvas.plots.utils.PLOT_SHOW)
