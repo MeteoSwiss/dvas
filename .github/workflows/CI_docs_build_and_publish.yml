@@ -45,7 +45,9 @@ jobs:
       - name: Clean-up the old docs
         run: |
           cd ./docs/build/
+          ls
           find . -not \( -path '*.git*' -o -name '.nojekyll' -o -name '.-gitignore' \) -delete
+          ls
           cd ../..
 
       # Set up Python
