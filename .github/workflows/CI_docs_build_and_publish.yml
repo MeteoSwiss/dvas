@@ -15,9 +15,9 @@ on:
     # Only run this if the docs were modified in any way
     paths:
       - 'docs/**'
-  # For dev purposes, doing it on PR helps a lot
-  pull_request:
-    branches: [ master, develop, develop_vof ]
+  # For dev/debug purposes, doing it on PR helps a lot
+  #pull_request:
+  #  branches: [ master, develop, develop_vof ]
 
 jobs:
   docs:
