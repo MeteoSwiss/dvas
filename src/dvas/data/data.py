@@ -63,6 +63,8 @@ sync_time_stgy = TimeSynchronizeStrategy()
 save_prf_stgy = SaveDataStrategy()
 
 
+# TODO
+#  Move to another module. Maybe as static method to Databasemanager
 def update_db(search, strict=False):
     """Update database.
 
@@ -172,6 +174,8 @@ def update_db(search, strict=False):
         )
 
 
+# TODO
+#  Create a factory (in terms of design patterns) to easily build MultiProfiles
 class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
     """Abstract MultiProfile class"""
 
