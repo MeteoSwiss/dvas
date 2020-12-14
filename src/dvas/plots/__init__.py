@@ -14,12 +14,11 @@ import matplotlib.pyplot as plt
 # Import from this package
 from .plots import *
 
-from ..environ import path_var as env_path_var
-from .. import pkg_path
+from ..environ import path_var
 from . import utils as pu
 
 # Immediately enable the base look for DVAS plots, as soon as we load the module.
-plt.style.use(str(Path(pkg_path, 'plots', 'mpl_styles', pu.PLOT_STYLES['base'])))
+plt.style.use(str(path_var.plot_style_path / pu.PLOT_STYLES['base']))
 
 # Uncomment the following for having the pretty LaTeX plots by default
-#plt.style.use(str(Path(pkg_path, 'plot', 'mpl_styles', pu.PLOT_STYLES['latex'])))
+#plt.style.use(str(path_var.plot_style_path / pu.PLOT_STYLES['latex']))

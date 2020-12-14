@@ -1,4 +1,6 @@
 
+# TODO
+#  Create a final "examples and tests" dataset from real data and delete this file.
 
 
 import os

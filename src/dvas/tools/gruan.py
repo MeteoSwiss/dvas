@@ -35,17 +35,17 @@ def corcoef_gdps(i, j, uc_type,
     Products (GDPs), between measurements.
 
     Args:
-        i (numpy.ndarray of int or float): synchronized time step or altitude of measurement 1.
-        j (numpy.ndarray of int or float): synchronized time step or altitude of measurement 2.
+        i (numpy.ndarray of int | float): synchronized time step or altitude of measurement 1.
+        j (numpy.ndarray of int | float): synchronized time step or altitude of measurement 2.
         uc_type (str): uncertainty type. Must be one of ['r', 's', 't', 'u'].
-        srn_i (numpy.ndarray of int or str, optional): serial number of RS from measurement 1.
-        srn_j (numpy.ndarray of int or str, optional): seriel number of RS from measurement 2.
-        mdl_i (numpy.ndarray of int or str, optional): GDP model from measurement 1.
-        mdl_j (numpy.ndarray of int or str, optional): GDP model from measurement 2.
-        rig_i (numpy.ndarray of int or str, optional): rig id of measurement 1.
-        rig_j (numpy.ndarray of int or str, optional): rig id of measurement 2.
-        evt_i (numpy.ndarray of int or str, optional): event id of measurement 1.
-        evt_j (numpy.ndarray of int or str, optional): event id of measurement 2.
+        srn_i (numpy.ndarray of int | str, optional): serial number of RS from measurement 1.
+        srn_j (numpy.ndarray of int | str, optional): seriel number of RS from measurement 2.
+        mdl_i (numpy.ndarray of int | str, optional): GDP model from measurement 1.
+        mdl_j (numpy.ndarray of int | str, optional): GDP model from measurement 2.
+        rig_i (numpy.ndarray of int | str, optional): rig id of measurement 1.
+        rig_j (numpy.ndarray of int | str, optional): rig id of measurement 2.
+        evt_i (numpy.ndarray of int | str, optional): event id of measurement 1.
+        evt_j (numpy.ndarray of int | str, optional): event id of measurement 2.
 
     Warning:
         If no serial numbers are specified, the function will assume that the data originates

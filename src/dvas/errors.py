@@ -9,6 +9,9 @@ Module contents: Error management
 
 """
 
+# TODO
+#  Modify exceptions using "raise MyCustomExc from my_raised_exc".
+
 class dvasError(Exception):
     """General error class for dvas."""
 

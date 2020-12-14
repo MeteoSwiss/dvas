@@ -88,12 +88,12 @@ For the sake of clarity, and to facilitate the maintenance, we list here (succin
     more detailed info.
 
     Args:
-        x (float, int): variable x could be of 2 types ...
+        x (float | int): variable x could be of 2 types ... note the use of `|` to say that !
 
            - *float*: x could be a float
            - *int*: x could also be an int
 
-        y (list[str]; optional): variable y info
+        y (list[str] | str, optional): variable y info
 
     Returns:
         bool: some grand Truth about the World.
@@ -109,7 +109,7 @@ For the sake of clarity, and to facilitate the maintenance, we list here (succin
         Please note the double _ _ after the link !
 
     Caution:
-        Something the be careful about.
+        Something to be careful about.
 
     .. uml::
         @startuml

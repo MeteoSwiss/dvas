@@ -74,7 +74,7 @@ def ks_test(gdp_pair, alpha=0.0027, binning_list=None, do_plot=False, **kwargs):
         vals (pd.DataFrame): 2-column DataFrame with the data
         uc_tots (pd.DataFrame): 2-column DataFrame with the total uncertainties, with the same shape
             as vals.
-        alpha (float or list, optional): The significance level for the KS test. Defaults to 0.27%
+        alpha (float | list, optional): The significance level for the KS test. Defaults to 0.27%
         binning_list (ndarray of int, optional): The rolling binning sizes. Defaults to [1].
         do_plot (bool, optional): Whether to create the diagnostic plot, or not. Defaults to False.
         **kwargs: will be fed to the underlying plot function.
