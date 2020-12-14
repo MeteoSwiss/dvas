@@ -1,10 +1,10 @@
 
 .. include:: ./substitutions.rst
 
-dvas |version| |stars| |watch| |license|
-========================================
+dvas |version| |stars| |watch|
+==============================
 
-|github| |pypi| |last-commit| |issues|
+|copyright| |license| |github| |pypi| |last-commit| |issues|
 
 .. todo::
 
