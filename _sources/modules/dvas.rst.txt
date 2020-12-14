@@ -1,0 +1,62 @@
+dvas package
+============
+
+.. automodule:: dvas
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   dvas.config
+   dvas.data
+   dvas.database
+   dvas.plots
+   dvas.tools
+
+Submodules
+----------
+
+dvas.environ module
+-------------------
+
+.. automodule:: dvas.environ
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas.errors module
+------------------
+
+.. automodule:: dvas.errors
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas.helper module
+------------------
+
+.. automodule:: dvas.helper
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas.logger module
+------------------
+
+.. automodule:: dvas.logger
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas.version module
+-------------------
+
+.. automodule:: dvas.version
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,579 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>dvas.tools package &mdash; dvas  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Documentation todos" href="../doc_todo.html" />
+    <link rel="prev" title="dvas.plots package" href="dvas.plots.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> dvas
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running.html">Running dvas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledge.html">Acknowledging dvas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">License &amp; Copyright</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/MeteoSwiss-MDA/dvas/blob/develop/CONTRIBUTING.md">Contributing</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/MeteoSwiss-MDA/dvas">Github repository</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../modules.html">Modules</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="dvas.html">dvas package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="dvas.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html">dvas.config package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html">dvas.data package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html">dvas.database package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.plots.html">dvas.plots package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">dvas.tools package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.environ">dvas.environ module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.errors">dvas.errors module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.helper">dvas.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.logger">dvas.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.version">dvas.version module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../doc_todo.html">Documentation todos</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">dvas</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../modules.html">Modules</a> &raquo;</li>
+        
+          <li><a href="dvas.html">dvas package</a> &raquo;</li>
+        
+      <li>dvas.tools package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/modules/dvas.tools.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-dvas.tools">
+<span id="dvas-tools-package"></span><h1>dvas.tools package<a class="headerlink" href="#module-dvas.tools" title="Permalink to this headline">¶</a></h1>
+<p>Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<p>This sub-package includes all the tools required for the dvas data processing.</p>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-dvas.tools.gruan">
+<span id="dvas-tools-gruan-module"></span><h2>dvas.tools.gruan module<a class="headerlink" href="#module-dvas.tools.gruan" title="Permalink to this headline">¶</a></h2>
+<p>Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<p>This module contains GRUAN-related routines, including correlation rules for GDP uncertainties.</p>
+<dl class="py function">
+<dt id="dvas.tools.gruan.corcoef_gdps">
+<code class="sig-prename descclassname">dvas.tools.gruan.</code><code class="sig-name descname">corcoef_gdps</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">i</span></em>, <em class="sig-param"><span class="n">j</span></em>, <em class="sig-param"><span class="n">uc_type</span></em>, <em class="sig-param"><span class="n">srn_i</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">srn_j</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mdl_i</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mdl_j</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rig_i</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rig_j</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">evt_i</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">evt_j</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gruan.corcoef_gdps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the correlation coefficient(s), for the different uncertainty types of GRUAN Data
+Products (GDPs), between measurements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i</strong> (<em>numpy.ndarray of int | float</em>) – synchronized time step or altitude of measurement 1.</p></li>
+<li><p><strong>j</strong> (<em>numpy.ndarray of int | float</em>) – synchronized time step or altitude of measurement 2.</p></li>
+<li><p><strong>uc_type</strong> (<em>str</em>) – uncertainty type. Must be one of [‘r’, ‘s’, ‘t’, ‘u’].</p></li>
+<li><p><strong>srn_i</strong> (<em>numpy.ndarray of int | str, optional</em>) – serial number of RS from measurement 1.</p></li>
+<li><p><strong>srn_j</strong> (<em>numpy.ndarray of int | str, optional</em>) – seriel number of RS from measurement 2.</p></li>
+<li><p><strong>mdl_i</strong> (<em>numpy.ndarray of int | str, optional</em>) – GDP model from measurement 1.</p></li>
+<li><p><strong>mdl_j</strong> (<em>numpy.ndarray of int | str, optional</em>) – GDP model from measurement 2.</p></li>
+<li><p><strong>rig_i</strong> (<em>numpy.ndarray of int | str, optional</em>) – rig id of measurement 1.</p></li>
+<li><p><strong>rig_j</strong> (<em>numpy.ndarray of int | str, optional</em>) – rig id of measurement 2.</p></li>
+<li><p><strong>evt_i</strong> (<em>numpy.ndarray of int | str, optional</em>) – event id of measurement 1.</p></li>
+<li><p><strong>evt_j</strong> (<em>numpy.ndarray of int | str, optional</em>) – event id of measurement 2.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If no serial numbers are specified, the function will assume that the data originates
+<strong>from the exact same radiosonde.</strong> Idem for the GDP models, rig id and event id.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>numpy.ndarray of float(s)</em> – the correlation coefficient(s), in the range [0, 1].</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function returns the pair-wise correlation coefficients,
+<strong>not</strong> the full correlation matrix, i.e:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">corcoef_gdps</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">uc_type</span><span class="p">))</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>The supported uncertainty types are:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>‘r’: rig-correlated uncertainty.</dt><dd><p>Intended for the so-called “uncorrelated” GRUAN uncertainty.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘s’: spatial-correlated uncertainty.</dt><dd><p>Full correlation between measurements acquired during the same event at the same site,
+irrespective of the time step/altitude, rig, radiosonde model, or serial number.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘t’: temporal-correlated uncertainty.</dt><dd><p>Full correlation between measurements acquired at distinct sites during distinct events,
+with distinct radiosondes models and serial numbers.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>‘u’: uncorrelated.</dt><dd><p>No correlation whatsoever between distinct measurements.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<ul class="simple">
+<li><p>Add reference to GRUAN docs &amp; dvas articles in this docstring.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dvas.tools.gruan.combine_gdps">
+<code class="sig-prename descclassname">dvas.tools.gruan.</code><code class="sig-name descname">combine_gdps</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gdp_prfs</span></em>, <em class="sig-param"><span class="n">binning</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'weighted mean'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gruan.combine_gdps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Combines and (possibly) rebins GDP profiles, with full error propagation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gdp_profs</strong> (<em>dvas.data.data.MultiGDPProfile</em>) – synchronized GDP profiles to combine.</p></li>
+<li><p><strong>binning</strong> (<em>int, optional</em>) – the number of profile steps to put into a bin. Defaults to 1.</p></li>
+<li><p><strong>method</strong> (<em>str, optional</em>) – combination rule. Can be ‘weighted mean’, ‘mean’, or ‘delta’.
+Defaults to ‘weighted mean’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>(dvas.data.data.MultiGDPProfile)</em> – the combined GDP profile.</p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<ul class="simple">
+<li><p>If the Serial Numbers are not specified, it will be assumed that they are <strong>distinct</strong> for
+each GDPProfile.</p></li>
+<li><p>For the GDP models, as well as the rigs, events, and sites, the opposite is True. If they
+are not specified for each GDPProfiles, it will be assumed that they are the <strong>same</strong>
+for all.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-dvas.tools.stats">
+<span id="dvas-tools-stats-module"></span><h2>dvas.tools.stats module<a class="headerlink" href="#module-dvas.tools.stats" title="Permalink to this headline">¶</a></h2>
+<p>Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<p>This module contains statistical routines and tools.</p>
+<dl class="py function">
+<dt id="dvas.tools.stats.chi_square">
+<code class="sig-prename descclassname">dvas.tools.stats.</code><code class="sig-name descname">chi_square</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gdp_prfs</span></em>, <em class="sig-param"><span class="n">cws_prf</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.stats.chi_square" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes a chi-square given a series of individual profiles, and a merged one.</p>
+<p>This function does not work with resampled profiles: a chi-square is meaningless when computed
+over numerous altitudes at once.</p>
+<p>The chi-square, for n profiles, is computed as:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="nb">sum</span> <span class="p">(</span><span class="n">x_i</span> <span class="o">-</span> <span class="o">&lt;</span><span class="n">x</span><span class="o">&gt;</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">sigma_i</span><span class="o">**</span><span class="mi">2</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gdp_prfs</strong> (<em>dvas.data.data.MultiProfile</em>) – individual (synchronized!) profiles.</p></li>
+<li><p><strong>cws_prf</strong> (<em>dvas.dvas.data.MultiProfile</em>) – combined (weighted-averaged, binning=1) profile.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>ndarray</em> – the chi-square array, with a size of <code class="docutils literal notranslate"><span class="pre">len(cws_prf.profiles[0])</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dvas.tools.stats.ks_test">
+<code class="sig-prename descclassname">dvas.tools.stats.</code><code class="sig-name descname">ks_test</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gdp_pair</span></em>, <em class="sig-param"><span class="n">alpha</span><span class="o">=</span><span class="default_value">0.0027</span></em>, <em class="sig-param"><span class="n">binning_list</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">do_plot</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.stats.ks_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs a “rolling” KS test between two columns of a pandas.DataFrame.</p>
+<p>The rolling refers to the KS test being executed on a series of binned versions of the column
+deltas.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vals</strong> (<em>pd.DataFrame</em>) – 2-column DataFrame with the data</p></li>
+<li><p><strong>uc_tots</strong> (<em>pd.DataFrame</em>) – 2-column DataFrame with the total uncertainties, with the same shape
+as vals.</p></li>
+<li><p><strong>alpha</strong> (<em>float | list, optional</em>) – The significance level for the KS test. Defaults to 0.27%</p></li>
+<li><p><strong>binning_list</strong> (<em>ndarray of int, optional</em>) – The rolling binning sizes. Defaults to [1].</p></li>
+<li><p><strong>do_plot</strong> (<em>bool, optional</em>) – Whether to create the diagnostic plot, or not. Defaults to False.</p></li>
+<li><p><strong>**kwargs</strong> – will be fed to the underlying plot function.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>ndarray of int</em> – The array of flags with shape (len(binning_list), len(vals)), with 1’s where
+the KS test failed, and 0 otherwise. That is, 1 &lt;=&gt; the p-value of the KS test is &lt;= alpha.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The diagnostic plot will be generated only if a binning of 1 is included in the
+binning_list.</p>
+</div>
+<div class="admonition-todo admonition" id="id2">
+<p class="admonition-title">Todo</p>
+<ul class="simple">
+<li><p>When rolling, take into account the previously flagged data point.</p></li>
+<li><p>Deal with the plot tag.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dvas.tools.stats.check_gdp_compatibility">
+<code class="sig-prename descclassname">dvas.tools.stats.</code><code class="sig-name descname">check_gdp_compatibility</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gdp_prfs</span></em>, <em class="sig-param"><span class="n">alpha</span><span class="o">=</span><span class="default_value">0.0027</span></em>, <em class="sig-param"><span class="n">binning_list</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">do_plot</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.stats.check_gdp_compatibility" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs a series of KS test to assess the consistency of several GDP profiles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gdp_profs</strong> (<em>dvas.data.data.MultiGDPProfile</em>) – synchronized GDP profiles to check.</p></li>
+<li><p><strong>alpha</strong> (<em>float, optional</em>) – The significance level for the KS test. Defaults to 0.27%</p></li>
+<li><p><strong>binning_list</strong> (<em>ndarray of int, optional</em>) – The rolling binning sizes. Defaults to [1].</p></li>
+<li><p><strong>do_plot</strong> (<em>bool, optional</em>) – Whether to create the diagnostic plot, or not. Defaults to False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>ndarray</em> – The array of flags of len(binning_list), with 1’s where the KS test failed.
+That is, where the p-value of the KS test is &lt;= alpha.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The diagnostic plot will be generated only if a binning of 1 is included in the
+binning_list.</p>
+</div>
+<div class="admonition-todo admonition" id="id3">
+<p class="admonition-title">Todo</p>
+<ul class="simple">
+<li><p>When rolling, take into account the previously flagged data point.</p></li>
+<li><p>Deal with the plot tag.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-dvas.tools.tools">
+<span id="dvas-tools-tools-module"></span><h2>dvas.tools.tools module<a class="headerlink" href="#module-dvas.tools.tools" title="Permalink to this headline">¶</a></h2>
+<p>Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<p>This module contains low-level, stand-alone, dvas tools.</p>
+<dl class="py function">
+<dt id="dvas.tools.tools.fancy_nansum">
+<code class="sig-prename descclassname">dvas.tools.tools.</code><code class="sig-name descname">fancy_nansum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">vals</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.tools.fancy_nansum" title="Permalink to this definition">¶</a></dt>
+<dd><p>A custom nansum routine that treats NaNs as zeros, unless the data contains <em>only</em> NaNs,
+if which case it returns a NaN.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vals</strong> (<em>pandas.DataFrame</em>) – the data to sum.</p></li>
+<li><p><strong>axis</strong> (<em>int, optional</em>) – on which axis to run the fancy nansum. Defaults to None
+(=sum everything).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>float</em> – the nansum(), or nan if the data contains only nans.</p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">In</span><span class="p">:</span> <span class="n">vals</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">)))</span>
+<span class="n">In</span><span class="p">:</span> <span class="n">vals</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+<span class="n">In</span><span class="p">:</span> <span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+<span class="n">In</span><span class="p">:</span> <span class="n">vals</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+<span class="n">In</span><span class="p">:</span> <span class="n">vals</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+<span class="n">In</span><span class="p">:</span> <span class="n">vals</span>
+<span class="mi">0</span>    <span class="mi">1</span>    <span class="mi">2</span>
+<span class="mi">0</span>  <span class="n">NaN</span>  <span class="n">NaN</span>  <span class="n">NaN</span>
+<span class="mi">1</span>  <span class="n">NaN</span>  <span class="n">NaN</span>  <span class="mf">1.0</span>
+<span class="mi">2</span>  <span class="n">NaN</span>  <span class="mf">1.0</span>  <span class="mf">1.0</span>
+<span class="mi">3</span>  <span class="mf">1.0</span>  <span class="mf">1.0</span>  <span class="mf">1.0</span>
+
+<span class="n">In</span><span class="p">:</span> <span class="n">fancy_nansum</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
+<span class="mf">6.0</span>
+
+<span class="n">In</span><span class="p">:</span> <span class="n">fancy_nansum</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="mi">0</span>    <span class="n">NaN</span>
+<span class="mi">1</span>    <span class="mf">1.0</span>
+<span class="mi">2</span>    <span class="mf">2.0</span>
+<span class="mi">3</span>    <span class="mf">3.0</span>
+<span class="n">dtype</span><span class="p">:</span> <span class="n">float64</span>
+
+<span class="n">In</span><span class="p">:</span> <span class="n">vals</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">skipna</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="mi">0</span>    <span class="mf">0.0</span>
+<span class="mi">1</span>    <span class="mf">1.0</span>
+<span class="mi">2</span>    <span class="mf">2.0</span>
+<span class="mi">3</span>    <span class="mf">3.0</span>
+<span class="n">dtype</span><span class="p">:</span> <span class="n">float64</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dvas.tools.tools.weighted_mean">
+<code class="sig-prename descclassname">dvas.tools.tools.</code><code class="sig-name descname">weighted_mean</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">vals</span></em>, <em class="sig-param"><span class="n">weights</span></em>, <em class="sig-param"><span class="n">binning</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.tools.weighted_mean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the weighted mean of the columns of a pd.DataFrame, given weights specified in a
+separate DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vals</strong> (<em>pands.DataFrame</em>) – 2-D data to weighted-average on a row-per-row basis.</p></li>
+<li><p><strong>weights</strong> (<em>pands.DataFrame</em>) – 2-D weights, with the same shape as vals.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>(pandas.DataFrame, list of list)</em> – weighted mean, and non-zero Jacobian matrix elements,
+intended for error propagation purposes.</p>
+</dd>
+</dl>
+<p>Instead of computing a full Jacobian matrix (which is mostly filled with 0’s and seriously
+slows the code down), this function only computes its non-zero elements and feed them back to
+the user. This is not the most ideal, as the user needs to understand what is happening … and
+which elements are being fed back … but it is soooooooo much faster than carrying O(1e8) 0’s
+around !</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>The function will ignore NaNs, unless <em>all</em> the values in a given bin are NaNs. See
+fancy_nansum() for details.</p></li>
+<li><p>The function is <em>significantly</em> slower if binning &gt; 1, because of a .groupby().aggregate()
+function call.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dvas.tools.tools.delta">
+<code class="sig-prename descclassname">dvas.tools.tools.</code><code class="sig-name descname">delta</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">vals</span></em>, <em class="sig-param"><span class="n">binning</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.tools.delta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the delta of a 2-columns pd.DataFrame (i.e. col1 - col2).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>vals</strong> (<em>pandas.DataFrame</em>) – 2-D data with 2 columns.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>(pandas.DataFrame, list of list)</em> – weighted mean, and list of non-zero Jacobian matrix
+elements, intended for error propagation purposes.</p>
+</dd>
+</dl>
+<p>Instead of computing a full Jacobian matrix (which is mostly filled with 0’s and seriously
+slows the code down), this function only computes its non-zero elements and feed them back to
+the user. This is not the most ideal, as the user needs to understand what is happening … and
+which elements are being fed back … but it is soooooooo much faster than carrying O(1e8) 0’s
+around !</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The function will ignore NaNs, unless <em>all</em> the values in a given bin are NaNs.
+See fancy_nansum() for details.</p>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../doc_todo.html" class="btn btn-neutral float-right" title="Documentation todos" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="dvas.plots.html" class="btn btn-neutral float-left" title="dvas.plots package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, MeteoSwiss
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

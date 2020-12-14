@@ -1,0 +1,74 @@
+dvas.data.strategy package
+==========================
+
+.. automodule:: dvas.data.strategy
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+dvas.data.strategy.data module
+------------------------------
+
+.. automodule:: dvas.data.strategy.data
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas.data.strategy.interpolate module
+-------------------------------------
+
+.. automodule:: dvas.data.strategy.interpolate
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas.data.strategy.load module
+------------------------------
+
+.. automodule:: dvas.data.strategy.load
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas.data.strategy.plot module
+------------------------------
+
+.. automodule:: dvas.data.strategy.plot
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas.data.strategy.resample module
+----------------------------------
+
+.. automodule:: dvas.data.strategy.resample
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas.data.strategy.save module
+------------------------------
+
+.. automodule:: dvas.data.strategy.save
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas.data.strategy.sort module
+------------------------------
+
+.. automodule:: dvas.data.strategy.sort
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas.data.strategy.sync module
+------------------------------
+
+.. automodule:: dvas.data.strategy.sync
+   :members:
+   :undoc-members:
+   :show-inheritance:

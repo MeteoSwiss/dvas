@@ -1,0 +1,34 @@
+dvas.config package
+===================
+
+.. automodule:: dvas.config
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   dvas.config.definitions
+
+Submodules
+----------
+
+dvas.config.config module
+-------------------------
+
+.. automodule:: dvas.config.config
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas.config.pattern module
+--------------------------
+
+.. automodule:: dvas.config.pattern
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,34 @@
+dvas.tools package
+==================
+
+.. automodule:: dvas.tools
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+dvas.tools.gruan module
+-----------------------
+
+.. automodule:: dvas.tools.gruan
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas.tools.stats module
+-----------------------
+
+.. automodule:: dvas.tools.stats
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas.tools.tools module
+-----------------------
+
+.. automodule:: dvas.tools.tools
+   :members:
+   :undoc-members:
+   :show-inheritance:

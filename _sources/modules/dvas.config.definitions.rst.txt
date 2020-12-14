@@ -1,0 +1,66 @@
+dvas.config.definitions package
+===============================
+
+.. automodule:: dvas.config.definitions
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+dvas.config.definitions.csvorigmeta module
+------------------------------------------
+
+.. automodule:: dvas.config.definitions.csvorigmeta
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas.config.definitions.flag module
+-----------------------------------
+
+.. automodule:: dvas.config.definitions.flag
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas.config.definitions.instrtype module
+----------------------------------------
+
+.. automodule:: dvas.config.definitions.instrtype
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas.config.definitions.instrument module
+-----------------------------------------
+
+.. automodule:: dvas.config.definitions.instrument
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas.config.definitions.origdata module
+---------------------------------------
+
+.. automodule:: dvas.config.definitions.origdata
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas.config.definitions.parameter module
+----------------------------------------
+
+.. automodule:: dvas.config.definitions.parameter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas.config.definitions.tag module
+----------------------------------
+
+.. automodule:: dvas.config.definitions.tag
+   :members:
+   :undoc-members:
+   :show-inheritance:

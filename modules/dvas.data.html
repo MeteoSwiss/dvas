@@ -1,0 +1,1022 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>dvas.data package &mdash; dvas  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dvas.data.strategy package" href="dvas.data.strategy.html" />
+    <link rel="prev" title="dvas.config.definitions package" href="dvas.config.definitions.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> dvas
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running.html">Running dvas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledge.html">Acknowledging dvas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">License &amp; Copyright</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/MeteoSwiss-MDA/dvas/blob/develop/CONTRIBUTING.md">Contributing</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/MeteoSwiss-MDA/dvas">Github repository</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../modules.html">Modules</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="dvas.html">dvas package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="dvas.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html">dvas.config package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">dvas.data package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html">dvas.database package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.plots.html">dvas.plots package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.tools.html">dvas.tools package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.environ">dvas.environ module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.errors">dvas.errors module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.helper">dvas.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.logger">dvas.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.version">dvas.version module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../doc_todo.html">Documentation todos</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">dvas</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../modules.html">Modules</a> &raquo;</li>
+        
+          <li><a href="dvas.html">dvas package</a> &raquo;</li>
+        
+      <li>dvas.data package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/modules/dvas.data.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-dvas.data">
+<span id="dvas-data-package"></span><h1>dvas.data package<a class="headerlink" href="#module-dvas.data" title="Permalink to this headline">¶</a></h1>
+<p>Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dvas.data.strategy.html">dvas.data.strategy package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dvas.data.strategy.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.data.strategy.html#module-dvas.data.strategy.data">dvas.data.strategy.data module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.data.strategy.html#module-dvas.data.strategy.interpolate">dvas.data.strategy.interpolate module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.data.strategy.html#module-dvas.data.strategy.load">dvas.data.strategy.load module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.data.strategy.html#module-dvas.data.strategy.plot">dvas.data.strategy.plot module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.data.strategy.html#module-dvas.data.strategy.resample">dvas.data.strategy.resample module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.data.strategy.html#module-dvas.data.strategy.save">dvas.data.strategy.save module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.data.strategy.html#module-dvas.data.strategy.sort">dvas.data.strategy.sort module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.data.strategy.html#module-dvas.data.strategy.sync">dvas.data.strategy.sync module</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-dvas.data.data">
+<span id="dvas-data-data-module"></span><h2>dvas.data.data module<a class="headerlink" href="#module-dvas.data.data" title="Permalink to this headline">¶</a></h2>
+<p>Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<p>Module contents: Data management</p>
+<dl class="py function">
+<dt id="dvas.data.data.update_db">
+<code class="sig-prename descclassname">dvas.data.data.</code><code class="sig-name descname">update_db</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">search</span></em>, <em class="sig-param"><span class="n">strict</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.data.update_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>search</strong> (<em>str</em>) – prm_abbr search criteria.</p></li>
+<li><p><strong>strict</strong> (<em>bool, optional</em>) – If False, match for any sub-string.
+If True match for entire string. Default to False.</p></li>
+</ul>
+</dd>
+</dl>
+<img alt="../_images/e9ebcc3398f3058084a7dbe81f2bd72d6ffb24702dd8f6ab7b413d8ebc6174f6.svg" class="align-center" src="../_images/e9ebcc3398f3058084a7dbe81f2bd72d6ffb24702dd8f6ab7b413d8ebc6174f6.svg" /></dd></dl>
+
+<dl class="py class">
+<dt id="dvas.data.data.MutliProfileAbstract">
+<em class="property">class </em><code class="sig-prename descclassname">dvas.data.data.</code><code class="sig-name descname">MutliProfileAbstract</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.data.MutliProfileAbstract" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Abstract MultiProfile class</p>
+<dl class="py attribute">
+<dt id="dvas.data.data.MutliProfileAbstract.REQUIRED_ATTRIBUTES">
+<code class="sig-name descname">REQUIRED_ATTRIBUTES</code><em class="property"> = {'_DATA_TYPES': &lt;class 'type'&gt;}</em><a class="headerlink" href="#dvas.data.data.MutliProfileAbstract.REQUIRED_ATTRIBUTES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.data.MutliProfileAbstract.profiles">
+<em class="property">property </em><code class="sig-name descname">profiles</code><a class="headerlink" href="#dvas.data.data.MutliProfileAbstract.profiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of Profile</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.data.MutliProfileAbstract.db_variables">
+<em class="property">property </em><code class="sig-name descname">db_variables</code><a class="headerlink" href="#dvas.data.data.MutliProfileAbstract.db_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Correspondence between DataFrame and DB parameter</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.data.MutliProfileAbstract.info">
+<em class="property">property </em><code class="sig-name descname">info</code><a class="headerlink" href="#dvas.data.data.MutliProfileAbstract.info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data info</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of ProfileManger info</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.data.MutliProfileAbstract.rm_info_tag">
+<code class="sig-name descname">rm_info_tag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">val</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.data.MutliProfileAbstract.rm_info_tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove tag from all info tags</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>val</strong> (<em>str|list of str</em>) – Tag values to remove</p></li>
+<li><p><strong>inplace</strong> (<em>bool, optional</em>) – Modify in place. Defaults to True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.data.MutliProfileAbstract.add_info_tag">
+<code class="sig-name descname">add_info_tag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">val</span></em>, <em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.data.MutliProfileAbstract.add_info_tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add tag from all info tags</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>val</strong> (<em>str|list of str</em>) – Tag values to add.</p></li>
+<li><p><strong>inplace</strong> (<em>bool, optional</em>) – Modify in place. Defaults to True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.data.MutliProfileAbstract.copy">
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.data.MutliProfileAbstract.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a deep copy of the object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.data.MutliProfileAbstract.load_from_db">
+<code class="sig-name descname">load_from_db</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.data.MutliProfileAbstract.load_from_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load data from the database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*args</strong> – positional arguments</p></li>
+<li><p><strong>inplace</strong> (<em>bool</em>) – Modify in place. Defaults to True.</p></li>
+<li><p><strong>**kwargs</strong> – key word arguments</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>MultiProfile</em> – only if inplace=False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.data.MutliProfileAbstract.sort">
+<code class="sig-name descname">sort</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.data.MutliProfileAbstract.sort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inplace</strong> (bool, <cite>optional</cite>) – If True, perform operation in-place
+Defaults to True.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Returns</dt><dd><p>MultiProfileManager if inplace is True, otherwise None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.data.MutliProfileAbstract.save_to_db">
+<code class="sig-name descname">save_to_db</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">add_tags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rm_tags</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">prms</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.data.MutliProfileAbstract.save_to_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save method to store the <em>entire</em> content of the Multiprofile
+instance back into the database with an updated set of tags.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>add_tags</strong> (<em>list of str, optional</em>) – list of tags to add to the entity when inserting it
+into the database. Defaults to None.</p></li>
+<li><p><strong>rm_tags</strong> (<em>list of str, optional</em>) – list of <em>existing</em> tags to remove
+from the entity before inserting ot into the database. Defaults to None.</p></li>
+<li><p><strong>prms</strong> (<em>list of str, optional</em>) – list of column names to save to the
+database. Defaults to None (= save all possible parameters).</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The ‘raw’ tag will always be removed and the ‘derived’ tag will
+always be added by default when saving anything into the database.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.data.MutliProfileAbstract.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">db_df_keys</span></em>, <em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.data.MutliProfileAbstract.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the whole Multiprofile list with new Profiles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db_df_keys</strong> (<em>dict</em>) – Relationship between database parameters and
+Profile.data columns.</p></li>
+<li><p><strong>data</strong> (<em>list of Profile</em>) – Data</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.data.MutliProfileAbstract.append">
+<code class="sig-name descname">append</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">db_df_keys</span></em>, <em class="sig-param"><span class="n">val</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.data.MutliProfileAbstract.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db_df_keys</strong> (<em>dict</em>) – Relationship between database parameters and
+Profile.data columns.</p></li>
+<li><p><strong>val</strong> (<em>Profile</em>) – Data</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.data.MutliProfileAbstract.get_prms">
+<code class="sig-name descname">get_prms</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prm_list</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.data.MutliProfileAbstract.get_prms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience getter to extract one specific parameter from the DataFrames of all the
+Profile instances.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>prm_list</strong> (<em>list of str</em>) – names of the parameter to extract from all the Profile
+DataFrame. Defaults to None (=return all the data from the DataFrame)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>dict of list of DataFrame</em> – idem to self.profiles, but with only the requested data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.data.MutliProfileAbstract.get_info">
+<code class="sig-name descname">get_info</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">prm</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.data.MutliProfileAbstract.get_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience function to extract specific (a unique!) Info from all the
+Profile instances.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>prm</strong> (<em>str</em>) – parameter name (unique!) to extract.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>dict of list</em> – idem to self.profiles, but with only the requested metadata.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.data.MutliProfileAbstract.plot">
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.data.MutliProfileAbstract.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Keyword arguments to be passed down to the plotting function.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="dvas.data.data.MultiProfile">
+<em class="property">class </em><code class="sig-prename descclassname">dvas.data.data.</code><code class="sig-name descname">MultiProfile</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.data.MultiProfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.data.MutliProfileAbstract" title="dvas.data.data.MutliProfileAbstract"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.data.MutliProfileAbstract</span></code></a></p>
+<p>Multi profile base class, designed to handle multiple Profile.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="dvas.data.data.MultiRSProfileAbstract">
+<em class="property">class </em><code class="sig-prename descclassname">dvas.data.data.</code><code class="sig-name descname">MultiRSProfileAbstract</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.data.MultiRSProfileAbstract" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.data.MutliProfileAbstract" title="dvas.data.data.MutliProfileAbstract"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.data.MutliProfileAbstract</span></code></a></p>
+<p>Abstract MultiRSProfile class</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="dvas.data.data.MultiRSProfile">
+<em class="property">class </em><code class="sig-prename descclassname">dvas.data.data.</code><code class="sig-name descname">MultiRSProfile</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.data.MultiRSProfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.data.MultiRSProfileAbstract" title="dvas.data.data.MultiRSProfileAbstract"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.data.MultiRSProfileAbstract</span></code></a></p>
+<p>Multi RS profile manager, designed to handle multiple RSProfile instances.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="dvas.data.data.MultiGDPProfile">
+<em class="property">class </em><code class="sig-prename descclassname">dvas.data.data.</code><code class="sig-name descname">MultiGDPProfile</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.data.MultiGDPProfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.data.MultiRSProfileAbstract" title="dvas.data.data.MultiRSProfileAbstract"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.data.MultiRSProfileAbstract</span></code></a></p>
+<p>Multi GDP profile manager, designed to handle multiple GDPProfile instances.</p>
+<dl class="py method">
+<dt id="dvas.data.data.MultiGDPProfile.uc_tot">
+<em class="property">property </em><code class="sig-name descname">uc_tot</code><a class="headerlink" href="#dvas.data.data.MultiGDPProfile.uc_tot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience getter to extract the total uncertainty from all the GDPProfile instances.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>list of DataFrame</em> – idem to self.profiles, but with only the requested data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-dvas.data.linker">
+<span id="dvas-data-linker-module"></span><h2>dvas.data.linker module<a class="headerlink" href="#module-dvas.data.linker" title="Permalink to this headline">¶</a></h2>
+<p>Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<p>Module contents: Data linker classes</p>
+<dl class="py class">
+<dt id="dvas.data.linker.Handler">
+<em class="property">class </em><code class="sig-prename descclassname">dvas.data.linker.</code><code class="sig-name descname">Handler</code><a class="headerlink" href="#dvas.data.linker.Handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>The Handler interface declares a method for building the chain of handlers.
+It also declares a method for executing a request.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference external" href="https://refactoring.guru/design-patterns/chain-of-responsibility/python/example">Source</a></p>
+</div>
+<dl class="py method">
+<dt id="dvas.data.linker.Handler.set_next">
+<em class="property">abstract </em><code class="sig-name descname">set_next</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">handler</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.Handler.set_next" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to set next handler</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>handler</strong> (<em>Handler</em>) – Handler class</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Handler</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.Handler.handle">
+<em class="property">abstract </em><code class="sig-name descname">handle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em>, <em class="sig-param"><span class="n">prm_abbr</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.Handler.handle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> (<cite>object</cite>) – Request</p></li>
+<li><p><strong>prm_abbr</strong> (<em>str</em>) – Parameter abbr</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>Optional</em> – ‘object’</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="dvas.data.linker.AbstractHandler">
+<em class="property">class </em><code class="sig-prename descclassname">dvas.data.linker.</code><code class="sig-name descname">AbstractHandler</code><a class="headerlink" href="#dvas.data.linker.AbstractHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.Handler" title="dvas.data.linker.Handler"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.linker.Handler</span></code></a></p>
+<p>The default chaining behavior can be implemented inside a base handler
+class.</p>
+<img alt="../_images/ea0888bc860083ce10b5a56196064f4e4f10b0edb90ead5cfbf585e7ccb4c099.svg" class="align-center" src="../_images/ea0888bc860083ce10b5a56196064f4e4f10b0edb90ead5cfbf585e7ccb4c099.svg" /><dl class="py method">
+<dt id="dvas.data.linker.AbstractHandler.set_next">
+<code class="sig-name descname">set_next</code><span class="sig-paren">(</span><em class="sig-param">handler2).set_next(handler3</em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.AbstractHandler.set_next" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.AbstractHandler.handle">
+<em class="property">abstract </em><code class="sig-name descname">handle</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.AbstractHandler.handle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Super handler behavior</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="dvas.data.linker.FileHandler">
+<em class="property">class </em><code class="sig-prename descclassname">dvas.data.linker.</code><code class="sig-name descname">FileHandler</code><a class="headerlink" href="#dvas.data.linker.FileHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.AbstractHandler" title="dvas.data.linker.AbstractHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.linker.AbstractHandler</span></code></a></p>
+<p>File handler</p>
+<dl class="py method">
+<dt id="dvas.data.linker.FileHandler.origdata_config_mngr">
+<em class="property">property </em><code class="sig-name descname">origdata_config_mngr</code><a class="headerlink" href="#dvas.data.linker.FileHandler.origdata_config_mngr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Yaml original metadata manager</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="dvas.config.html#dvas.config.config.OrigData" title="dvas.config.config.OrigData">config.config.OrigData</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.FileHandler.file_suffix">
+<em class="property">abstract property </em><code class="sig-name descname">file_suffix</code><a class="headerlink" href="#dvas.data.linker.FileHandler.file_suffix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handled file suffix (re.fullmatch of pathlib.Path.suffix)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>re.compile</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.FileHandler.file_instr_type_pat">
+<em class="property">abstract property </em><code class="sig-name descname">file_instr_type_pat</code><a class="headerlink" href="#dvas.data.linker.FileHandler.file_instr_type_pat" title="Permalink to this definition">¶</a></dt>
+<dd><p>File instr_type pattern
+(re.search within pathlib.Path.name). Group #1 must correspond to
+instr_type name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>re.compile</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.FileHandler.handle">
+<code class="sig-name descname">handle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_path</span></em>, <em class="sig-param"><span class="n">prm_abbr</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FileHandler.handle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle method</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.FileHandler.get_metadata_item">
+<em class="property">abstract </em><code class="sig-name descname">get_metadata_item</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FileHandler.get_metadata_item" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to get metadata item</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.FileHandler.get_main">
+<em class="property">abstract </em><code class="sig-name descname">get_main</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FileHandler.get_main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main get method called from handle method</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.FileHandler.get_instr_type">
+<code class="sig-name descname">get_instr_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_path</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FileHandler.get_instr_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get instrument type from file path</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file_path</strong></p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.FileHandler.check_sn">
+<code class="sig-name descname">check_sn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_path</span></em>, <em class="sig-param"><span class="n">instr_type_name</span></em>, <em class="sig-param"><span class="n">metadata</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FileHandler.check_sn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check serial number in DB</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.FileHandler.exclude_file">
+<code class="sig-name descname">exclude_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path_scan</span></em>, <em class="sig-param"><span class="n">prm_abbr</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FileHandler.exclude_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exclude file method</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.FileHandler.read_metaconfig_fields">
+<code class="sig-name descname">read_metaconfig_fields</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">instr_type_name</span></em>, <em class="sig-param"><span class="n">prm_abbr</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FileHandler.read_metaconfig_fields" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read field from metaconfig</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.FileHandler.get_source_unique_id">
+<em class="property">static </em><code class="sig-name descname">get_source_unique_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_path</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FileHandler.get_source_unique_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return string use to determine if a file have already be read.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file_path</strong> (<em>pathlib.Path</em>) – Original file path</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="dvas.data.linker.CSVHandler">
+<em class="property">class </em><code class="sig-prename descclassname">dvas.data.linker.</code><code class="sig-name descname">CSVHandler</code><a class="headerlink" href="#dvas.data.linker.CSVHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.FileHandler" title="dvas.data.linker.FileHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.linker.FileHandler</span></code></a></p>
+<p>CSV Hanlder class</p>
+<dl class="py method">
+<dt id="dvas.data.linker.CSVHandler.origmeta_mngr">
+<em class="property">property </em><code class="sig-name descname">origmeta_mngr</code><a class="headerlink" href="#dvas.data.linker.CSVHandler.origmeta_mngr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Yaml original CSV file metadata manager</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="dvas.config.html#dvas.config.config.CSVOrigMeta" title="dvas.config.config.CSVOrigMeta">config.config.CSVOrigMeta</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.CSVHandler.file_suffix">
+<em class="property">property </em><code class="sig-name descname">file_suffix</code><a class="headerlink" href="#dvas.data.linker.CSVHandler.file_suffix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handled file suffix (re.fullmatch of pathlib.Path.suffix)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>re.compile</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.CSVHandler.file_instr_type_pat">
+<em class="property">property </em><code class="sig-name descname">file_instr_type_pat</code><a class="headerlink" href="#dvas.data.linker.CSVHandler.file_instr_type_pat" title="Permalink to this definition">¶</a></dt>
+<dd><p>File instr_type pattern
+(re.search within pathlib.Path.name). Group #1 must correspond to
+instr_type name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>re.compile</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.CSVHandler.get_metadata_item">
+<code class="sig-name descname">get_metadata_item</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.CSVHandler.get_metadata_item" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of abstract method</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.CSVHandler.get_metadata">
+<code class="sig-name descname">get_metadata</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_path</span></em>, <em class="sig-param"><span class="n">instr_type_name</span></em>, <em class="sig-param"><span class="n">prm_abbr</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.CSVHandler.get_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to get metadata</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.CSVHandler.get_main">
+<code class="sig-name descname">get_main</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_path</span></em>, <em class="sig-param"><span class="n">prm_abbr</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.CSVHandler.get_main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of abstract method</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="dvas.data.linker.GDPHandler">
+<em class="property">class </em><code class="sig-prename descclassname">dvas.data.linker.</code><code class="sig-name descname">GDPHandler</code><a class="headerlink" href="#dvas.data.linker.GDPHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.FileHandler" title="dvas.data.linker.FileHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.linker.FileHandler</span></code></a></p>
+<p>GDP Handler class</p>
+<dl class="py method">
+<dt id="dvas.data.linker.GDPHandler.file_suffix">
+<em class="property">property </em><code class="sig-name descname">file_suffix</code><a class="headerlink" href="#dvas.data.linker.GDPHandler.file_suffix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handled file suffix (re.fullmatch of pathlib.Path.suffix)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>re.compile</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.GDPHandler.file_instr_type_pat">
+<em class="property">property </em><code class="sig-name descname">file_instr_type_pat</code><a class="headerlink" href="#dvas.data.linker.GDPHandler.file_instr_type_pat" title="Permalink to this definition">¶</a></dt>
+<dd><p>File instr_type pattern
+(re.search within pathlib.Path.name). Group #1 must correspond to
+instr_type name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>re.compile</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.GDPHandler.get_metadata_item">
+<code class="sig-name descname">get_metadata_item</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">item</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.GDPHandler.get_metadata_item" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of abstract method</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.GDPHandler.get_metadata">
+<code class="sig-name descname">get_metadata</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_path</span></em>, <em class="sig-param"><span class="n">instr_type_name</span></em>, <em class="sig-param"><span class="n">prm_abbr</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.GDPHandler.get_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to get file metadata</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.GDPHandler.get_main">
+<code class="sig-name descname">get_main</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_path</span></em>, <em class="sig-param"><span class="n">prm_abbr</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.GDPHandler.get_main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of abstract method</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="dvas.data.linker.DataLinker">
+<em class="property">class </em><code class="sig-prename descclassname">dvas.data.linker.</code><code class="sig-name descname">DataLinker</code><a class="headerlink" href="#dvas.data.linker.DataLinker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Data linker abstract class</p>
+<dl class="py method">
+<dt id="dvas.data.linker.DataLinker.load">
+<em class="property">abstract </em><code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.DataLinker.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data loading method</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.DataLinker.save">
+<em class="property">abstract </em><code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.DataLinker.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data saving method</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="dvas.data.linker.LocalDBLinker">
+<em class="property">class </em><code class="sig-prename descclassname">dvas.data.linker.</code><code class="sig-name descname">LocalDBLinker</code><a class="headerlink" href="#dvas.data.linker.LocalDBLinker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.DataLinker" title="dvas.data.linker.DataLinker"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.linker.DataLinker</span></code></a></p>
+<p>Local DB data linker</p>
+<dl class="py method">
+<dt id="dvas.data.linker.LocalDBLinker.load">
+<code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">search</span></em>, <em class="sig-param"><span class="n">prm_abbr</span></em>, <em class="sig-param"><span class="n">filter_empty</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.LocalDBLinker.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load parameter method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>search</strong> (<em>str</em>) – Data loader search criterion</p></li>
+<li><p><strong>prm_abbr</strong> (<em>str</em>) – Positional parameter abbr</p></li>
+<li><p><strong>filter_empty</strong> (bool, <cite>optional</cite>) – Filter empty data from search.
+Default to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of dict</p>
+</dd>
+</dl>
+<img alt="../_images/98e54a0f52bec72207aa87a75ee0823fa22a16f8d9c9d71f10e20fb693315ed2.svg" class="align-center" src="../_images/98e54a0f52bec72207aa87a75ee0823fa22a16f8d9c9d71f10e20fb693315ed2.svg" /></dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.LocalDBLinker.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_list</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.LocalDBLinker.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save data method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data_list</strong> (<em>list of dict</em>) – dict mandatory items are ‘index’ (np.array),
+‘value’ (np.array), ‘info’ (InfoManager), ‘prm_abbr’ (str).
+dict optional key are ‘source_info’ (str), force_write (bool)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="dvas.data.linker.CSVOutputLinker">
+<em class="property">class </em><code class="sig-prename descclassname">dvas.data.linker.</code><code class="sig-name descname">CSVOutputLinker</code><a class="headerlink" href="#dvas.data.linker.CSVOutputLinker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.DataLinker" title="dvas.data.linker.DataLinker"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.linker.DataLinker</span></code></a></p>
+<p>CSV output data linker class</p>
+<dl class="py method">
+<dt id="dvas.data.linker.CSVOutputLinker.load">
+<code class="sig-name descname">load</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.CSVOutputLinker.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data loading method</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.CSVOutputLinker.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.CSVOutputLinker.save" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong></p>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt id="dvas.data.linker.ConfigInstrIdError">
+<em class="property">exception </em><code class="sig-prename descclassname">dvas.data.linker.</code><code class="sig-name descname">ConfigInstrIdError</code><a class="headerlink" href="#dvas.data.linker.ConfigInstrIdError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Error for missing instrument id</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="dvas.data.linker.OutputDirError">
+<em class="property">exception </em><code class="sig-prename descclassname">dvas.data.linker.</code><code class="sig-name descname">OutputDirError</code><a class="headerlink" href="#dvas.data.linker.OutputDirError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Error for bad output directory path</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="dvas.data.linker.OrigConfigError">
+<em class="property">exception </em><code class="sig-prename descclassname">dvas.data.linker.</code><code class="sig-name descname">OrigConfigError</code><a class="headerlink" href="#dvas.data.linker.OrigConfigError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Error for bad orig config</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-dvas.data.math">
+<span id="dvas-data-math-module"></span><h2>dvas.data.math module<a class="headerlink" href="#module-dvas.data.math" title="Permalink to this headline">¶</a></h2>
+<p>Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<p>Module contents: Specialized mathematical operation on data</p>
+<dl class="py function">
+<dt id="dvas.data.math.crosscorr">
+<code class="sig-prename descclassname">dvas.data.math.</code><code class="sig-name descname">crosscorr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">datax</span></em>, <em class="sig-param"><span class="n">datay</span></em>, <em class="sig-param"><span class="n">lag</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">wrap</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'kendall'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.math.crosscorr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lag-N cross correlation.
+If wrap is False, shifted data are filled with NaNs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datax, datay</strong> (<em>pandas.Series</em>) – Must be of equal length</p></li>
+<li><p><strong>lag(`obj`</strong> – int, optional):  Default is 0</p></li>
+<li><p><strong>wrap (`obj`</strong> – bool, optional:  (Default value = False)</p></li>
+<li><p><strong>method (`obj`</strong> – str, optional): kendall, pearson, spearman.
+Default is ‘kendall’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dvas.data.math.calc_tropopause">
+<code class="sig-prename descclassname">dvas.data.math.</code><code class="sig-name descname">calc_tropopause</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">temp</span></em>, <em class="sig-param"><span class="n">alt</span></em>, <em class="sig-param"><span class="n">start_alt</span><span class="o">=</span><span class="default_value">5000</span></em>, <em class="sig-param"><span class="n">layer</span><span class="o">=</span><span class="default_value">2000</span></em>, <em class="sig-param"><span class="n">grad_cond</span><span class="o">=</span><span class="default_value">- 2</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.math.calc_tropopause" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate tropopause altitude</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>From the WMO definition, the tropopause is defined as the lowest
+altitude where the vertical thermal gradient becomes less than -2 K per
+km in a layer at least 2 km thick.</p>
+</div>
+<dl class="simple">
+<dt>Source:</dt><dd><ol class="upperalpha simple" start="7">
+<li><p>Romanens, MeteoSwiss</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temp</strong> (<em>pd.Series</em>) – Temperature profile (°C).</p></li>
+<li><p><strong>alt</strong> (<em>pd.Series</em>) – Altitude profile in (m).</p></li>
+<li><p><strong>start_alt</strong> (<em>float</em>) – Starting search altitude (m). Default to 5000.</p></li>
+<li><p><strong>layer</strong> (<em>flaot</em>) – Layer in which the thermal gradient is checked (m).
+Default to 2000.</p></li>
+<li><p><strong>grad_cond</strong> (<em>float</em>) – Minimal allowed thermal gradient (°C). Default to -2.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>pd.index</em> – Tropopause index</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="dvas.data.math.TropopauseError">
+<em class="property">exception </em><code class="sig-prename descclassname">dvas.data.math.</code><code class="sig-name descname">TropopauseError</code><a class="headerlink" href="#dvas.data.math.TropopauseError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Exception if no tropopause where found</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dvas.data.math.calc_tropopause_old">
+<code class="sig-prename descclassname">dvas.data.math.</code><code class="sig-name descname">calc_tropopause_old</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">alti</span></em>, <em class="sig-param"><span class="n">press</span></em>, <em class="sig-param"><span class="n">temp</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.math.calc_tropopause_old" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate tropopause altitude</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>From the WMO definition, the tropopause is defined as the lowest
+altitude where the vertical thermal gradient becomes less than -2 K per
+km in a layer at least 2 km thick.</p>
+</div>
+<dl class="simple">
+<dt>Source:</dt><dd><ol class="upperalpha simple" start="7">
+<li><p>Romanens, MeteoSwiss</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mydate</strong></p></li>
+<li><p><strong>alti</strong></p></li>
+<li><p><strong>press</strong></p></li>
+<li><p><strong>temp</strong></p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="dvas.data.strategy.html" class="btn btn-neutral float-right" title="dvas.data.strategy package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="dvas.config.definitions.html" class="btn btn-neutral float-left" title="dvas.config.definitions package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, MeteoSwiss
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

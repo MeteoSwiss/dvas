@@ -1,0 +1,620 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>dvas.config.definitions package &mdash; dvas  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dvas.data package" href="dvas.data.html" />
+    <link rel="prev" title="dvas.config package" href="dvas.config.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> dvas
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running.html">Running dvas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledge.html">Acknowledging dvas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">License &amp; Copyright</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/MeteoSwiss-MDA/dvas/blob/develop/CONTRIBUTING.md">Contributing</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/MeteoSwiss-MDA/dvas">Github repository</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../modules.html">Modules</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="dvas.html">dvas package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="dvas.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="dvas.config.html">dvas.config package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html">dvas.data package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html">dvas.database package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.plots.html">dvas.plots package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.tools.html">dvas.tools package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.environ">dvas.environ module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.errors">dvas.errors module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.helper">dvas.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.logger">dvas.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.version">dvas.version module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../doc_todo.html">Documentation todos</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">dvas</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../modules.html">Modules</a> &raquo;</li>
+        
+          <li><a href="dvas.html">dvas package</a> &raquo;</li>
+        
+          <li><a href="dvas.config.html">dvas.config package</a> &raquo;</li>
+        
+      <li>dvas.config.definitions package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/modules/dvas.config.definitions.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-dvas.config.definitions">
+<span id="dvas-config-definitions-package"></span><h1>dvas.config.definitions package<a class="headerlink" href="#module-dvas.config.definitions" title="Permalink to this headline">¶</a></h1>
+<p>Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-dvas.config.definitions.csvorigmeta">
+<span id="dvas-config-definitions-csvorigmeta-module"></span><h2>dvas.config.definitions.csvorigmeta module<a class="headerlink" href="#module-dvas.config.definitions.csvorigmeta" title="Permalink to this headline">¶</a></h2>
+<p>Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<p>Module contents: Required attributes definition for
+.config.ConfigManager.OrigMeta class.</p>
+<dl class="py data">
+<dt id="dvas.config.definitions.csvorigmeta.PARAMETER_PATTERN_PROP">
+<code class="sig-prename descclassname">dvas.config.definitions.csvorigmeta.</code><code class="sig-name descname">PARAMETER_PATTERN_PROP</code><em class="property"> = {'^\\w+$': {'type': 'string'}}</em><a class="headerlink" href="#dvas.config.definitions.csvorigmeta.PARAMETER_PATTERN_PROP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parameter pattern properties (JSON_SCHEMA)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt id="dvas.config.definitions.csvorigmeta.KEY">
+<code class="sig-prename descclassname">dvas.config.definitions.csvorigmeta.</code><code class="sig-name descname">KEY</code><em class="property"> = 'CSVOrigMeta'</em><a class="headerlink" href="#dvas.config.definitions.csvorigmeta.KEY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Config manager key name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-dvas.config.definitions.flag">
+<span id="dvas-config-definitions-flag-module"></span><h2>dvas.config.definitions.flag module<a class="headerlink" href="#module-dvas.config.definitions.flag" title="Permalink to this headline">¶</a></h2>
+<p>Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<p>Module contents: Required attributes definition for <cite>.config.ConfigManager.Flag class</cite>.</p>
+<dl class="py data">
+<dt id="dvas.config.definitions.flag.PARAMETER_PATTERN_PROP">
+<code class="sig-prename descclassname">dvas.config.definitions.flag.</code><code class="sig-name descname">PARAMETER_PATTERN_PROP</code><em class="property"> = {'^bit_number$': {'minimum': 10, 'type': 'integer'}, '^flag_abbr$': {'type': 'string'}, '^flag_desc$': {'type': 'string'}}</em><a class="headerlink" href="#dvas.config.definitions.flag.PARAMETER_PATTERN_PROP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parameter pattern properties (JSON_SCHEMA)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt id="dvas.config.definitions.flag.CONST_NODES">
+<code class="sig-prename descclassname">dvas.config.definitions.flag.</code><code class="sig-name descname">CONST_NODES</code><em class="property"> = [{'bit_number': 0, 'flag_abbr': 'raw_na', 'flag_desc': 'Raw NA data'}, {'bit_number': 1, 'flag_abbr': 'resampled', 'flag_desc': 'Resampled data'}, {'bit_number': 2, 'flag_abbr': 'interp', 'flag_desc': 'Interpolated data'}, {'bit_number': 3, 'flag_abbr': 'day', 'flag_desc': 'Day measurement point'}, {'bit_number': 4, 'flag_abbr': 'night', 'flag_desc': 'Night measurement point'}]</em><a class="headerlink" href="#dvas.config.definitions.flag.CONST_NODES" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constant node values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt id="dvas.config.definitions.flag.KEY">
+<code class="sig-prename descclassname">dvas.config.definitions.flag.</code><code class="sig-name descname">KEY</code><em class="property"> = 'Flag'</em><a class="headerlink" href="#dvas.config.definitions.flag.KEY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Config manager key name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt id="dvas.config.definitions.flag.NODE_GEN">
+<code class="sig-prename descclassname">dvas.config.definitions.flag.</code><code class="sig-name descname">NODE_GEN</code><em class="property"> = ''</em><a class="headerlink" href="#dvas.config.definitions.flag.NODE_GEN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Node name able to be generated by regexp</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-dvas.config.definitions.instrtype">
+<span id="dvas-config-definitions-instrtype-module"></span><h2>dvas.config.definitions.instrtype module<a class="headerlink" href="#module-dvas.config.definitions.instrtype" title="Permalink to this headline">¶</a></h2>
+<p>Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<p>Module contents: Required attributes definition for
+.config.ConfigManager.InstrType class.</p>
+<dl class="py data">
+<dt id="dvas.config.definitions.instrtype.CONST_NODES">
+<code class="sig-prename descclassname">dvas.config.definitions.instrtype.</code><code class="sig-name descname">CONST_NODES</code><em class="property"> = [{'type_name': '', 'desc': 'Null instrument type'}]</em><a class="headerlink" href="#dvas.config.definitions.instrtype.CONST_NODES" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constant node values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt id="dvas.config.definitions.instrtype.PARAMETER_PATTERN_PROP">
+<code class="sig-prename descclassname">dvas.config.definitions.instrtype.</code><code class="sig-name descname">PARAMETER_PATTERN_PROP</code><em class="property"> = {'^desc$': {'type': 'string'}, '^type_name$': {'pattern': '[A-Z0-9]+(([A-Z0-9])|([\\-\\_]))*[A-Z0-9]', 'type': 'string'}}</em><a class="headerlink" href="#dvas.config.definitions.instrtype.PARAMETER_PATTERN_PROP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parameter pattern properties (JSON_SCHEMA)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt id="dvas.config.definitions.instrtype.KEY">
+<code class="sig-prename descclassname">dvas.config.definitions.instrtype.</code><code class="sig-name descname">KEY</code><em class="property"> = 'InstrType'</em><a class="headerlink" href="#dvas.config.definitions.instrtype.KEY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Config manager key name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt id="dvas.config.definitions.instrtype.NODE_GEN">
+<code class="sig-prename descclassname">dvas.config.definitions.instrtype.</code><code class="sig-name descname">NODE_GEN</code><em class="property"> = ''</em><a class="headerlink" href="#dvas.config.definitions.instrtype.NODE_GEN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Node name able to be generated by regexp</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-dvas.config.definitions.instrument">
+<span id="dvas-config-definitions-instrument-module"></span><h2>dvas.config.definitions.instrument module<a class="headerlink" href="#module-dvas.config.definitions.instrument" title="Permalink to this headline">¶</a></h2>
+<p>Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<p>Module contents: Required attributes definition for
+.config.ConfigManager.Instrument class.</p>
+<dl class="py data">
+<dt id="dvas.config.definitions.instrument.NODE_PARAMS_DEF">
+<code class="sig-prename descclassname">dvas.config.definitions.instrument.</code><code class="sig-name descname">NODE_PARAMS_DEF</code><em class="property"> = {'remark': ''}</em><a class="headerlink" href="#dvas.config.definitions.instrument.NODE_PARAMS_DEF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Node parameters default value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt id="dvas.config.definitions.instrument.CONST_NODES">
+<code class="sig-prename descclassname">dvas.config.definitions.instrument.</code><code class="sig-name descname">CONST_NODES</code><em class="property"> = [{'srn': '', 'instr_type': '', 'remark': 'Null instrument'}]</em><a class="headerlink" href="#dvas.config.definitions.instrument.CONST_NODES" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constant node values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt id="dvas.config.definitions.instrument.PARAMETER_PATTERN_PROP">
+<code class="sig-prename descclassname">dvas.config.definitions.instrument.</code><code class="sig-name descname">PARAMETER_PATTERN_PROP</code><em class="property"> = {'^instr_type$': {'pattern': '[A-Z0-9]+(([A-Z0-9])|([\\-\\_]))*[A-Z0-9]', 'type': 'string'}, '^remark$': {'type': 'string'}, '^srn$': {'type': 'string'}}</em><a class="headerlink" href="#dvas.config.definitions.instrument.PARAMETER_PATTERN_PROP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parameter pattern properties (JSON_SCHEMA)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt id="dvas.config.definitions.instrument.KEY">
+<code class="sig-prename descclassname">dvas.config.definitions.instrument.</code><code class="sig-name descname">KEY</code><em class="property"> = 'Instrument'</em><a class="headerlink" href="#dvas.config.definitions.instrument.KEY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Config manager key name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt id="dvas.config.definitions.instrument.NODE_GEN">
+<code class="sig-prename descclassname">dvas.config.definitions.instrument.</code><code class="sig-name descname">NODE_GEN</code><em class="property"> = ''</em><a class="headerlink" href="#dvas.config.definitions.instrument.NODE_GEN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Node name able to be generated by regexp</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-dvas.config.definitions.origdata">
+<span id="dvas-config-definitions-origdata-module"></span><h2>dvas.config.definitions.origdata module<a class="headerlink" href="#module-dvas.config.definitions.origdata" title="Permalink to this headline">¶</a></h2>
+<p>Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<p>Module contents: Required attributes definition for
+.config.ConfigManager.OrigData class.</p>
+<dl class="py data">
+<dt id="dvas.config.definitions.origdata.META_FIELD_KEYS">
+<code class="sig-prename descclassname">dvas.config.definitions.origdata.</code><code class="sig-name descname">META_FIELD_KEYS</code><em class="property"> = ['dt_field', 'srn_field', 'tag_field']</em><a class="headerlink" href="#dvas.config.definitions.origdata.META_FIELD_KEYS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Metadata fields keys</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt id="dvas.config.definitions.origdata.NODE_PATTERN">
+<code class="sig-prename descclassname">dvas.config.definitions.origdata.</code><code class="sig-name descname">NODE_PATTERN</code><em class="property"> = ['[A-Z0-9]+(([A-Z0-9])|([\\-\\_]))*[A-Z0-9]', '[a-z0-9]+(([a-z0-9])|([\\_]))*[a-z0-9]']</em><a class="headerlink" href="#dvas.config.definitions.origdata.NODE_PATTERN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Node pattern</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt id="dvas.config.definitions.origdata.NODE_PARAMS_DEF">
+<code class="sig-prename descclassname">dvas.config.definitions.origdata.</code><code class="sig-name descname">NODE_PARAMS_DEF</code><em class="property"> = {'csv_comment': '#', 'csv_delim_whitespace': False, 'csv_delimiter': ';', 'csv_header': 'infer', 'csv_na_values': ['/'], 'csv_skip_blank_lines': True, 'csv_skipinitialspace': False, 'csv_skiprows': 0, 'lambda': 'lambda x: x', 'tag_field': [], 'unit': '1'}</em><a class="headerlink" href="#dvas.config.definitions.origdata.NODE_PARAMS_DEF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Node parameters default value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt id="dvas.config.definitions.origdata.CONST_NODES">
+<code class="sig-prename descclassname">dvas.config.definitions.origdata.</code><code class="sig-name descname">CONST_NODES</code><em class="property"> = {'csv_header': 0, 'csv_names': ['value']}</em><a class="headerlink" href="#dvas.config.definitions.origdata.CONST_NODES" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constant nodes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt id="dvas.config.definitions.origdata.PARAMETER_PATTERN_PROP">
+<code class="sig-prename descclassname">dvas.config.definitions.origdata.</code><code class="sig-name descname">PARAMETER_PATTERN_PROP</code><em class="property"> = {'^csv_comment$': {'enum': ['#'], 'type': 'string'}, '^csv_delim_whitespace$': {'type': 'boolean'}, '^csv_delimiter$': {'anyOf': [{'type': 'null'}, {'type': 'string'}]}, '^csv_na_values$': {'items': {'type': 'string'}, 'minItems': 1, 'type': 'array', 'uniqueItems': True}, '^csv_skip_blank_lines$': {'type': 'boolean'}, '^csv_skipinitialspace$': {'type': 'boolean'}, '^csv_skiprows$': {'minimum': 0, 'type': 'integer'}, '^dt_field$': {'type': 'string'}, '^lambda$': {'pattern': '^\\s*lambda\\s*\\w+\\s*\\:.+', 'type': 'string'}, '^srn_field$': {'type': 'string'}, '^tag_field$': {'items': {'type': 'string'}, 'minItems': 1, 'type': 'array', 'uniqueItems': True}, '^unit$': {'type': 'string'}, '^value_col$': {'anyOf': [{'type': 'integer', 'minimum': 0}, {'type': 'string'}]}}</em><a class="headerlink" href="#dvas.config.definitions.origdata.PARAMETER_PATTERN_PROP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parameter pattern properties (JSON_SCHEMA)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt id="dvas.config.definitions.origdata.KEY">
+<code class="sig-prename descclassname">dvas.config.definitions.origdata.</code><code class="sig-name descname">KEY</code><em class="property"> = 'OrigData'</em><a class="headerlink" href="#dvas.config.definitions.origdata.KEY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Config manager key name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-dvas.config.definitions.parameter">
+<span id="dvas-config-definitions-parameter-module"></span><h2>dvas.config.definitions.parameter module<a class="headerlink" href="#module-dvas.config.definitions.parameter" title="Permalink to this headline">¶</a></h2>
+<p>Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<p>Module contents: Required attributes definition for
+.config.ConfigManager.Parameter class.</p>
+<dl class="py data">
+<dt id="dvas.config.definitions.parameter.PARAMETER_PATTERN_PROP">
+<code class="sig-prename descclassname">dvas.config.definitions.parameter.</code><code class="sig-name descname">PARAMETER_PATTERN_PROP</code><em class="property"> = {'^prm_abbr$': {'type': 'string'}, '^prm_desc$': {'type': 'string'}}</em><a class="headerlink" href="#dvas.config.definitions.parameter.PARAMETER_PATTERN_PROP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parameter pattern properties (JSON_SCHEMA)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt id="dvas.config.definitions.parameter.KEY">
+<code class="sig-prename descclassname">dvas.config.definitions.parameter.</code><code class="sig-name descname">KEY</code><em class="property"> = 'Parameter'</em><a class="headerlink" href="#dvas.config.definitions.parameter.KEY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Config manager key name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt id="dvas.config.definitions.parameter.NODE_GEN">
+<code class="sig-prename descclassname">dvas.config.definitions.parameter.</code><code class="sig-name descname">NODE_GEN</code><em class="property"> = 'prm_abbr'</em><a class="headerlink" href="#dvas.config.definitions.parameter.NODE_GEN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Node name able to be generated by regexp</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-dvas.config.definitions.tag">
+<span id="dvas-config-definitions-tag-module"></span><h2>dvas.config.definitions.tag module<a class="headerlink" href="#module-dvas.config.definitions.tag" title="Permalink to this headline">¶</a></h2>
+<p>Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<p>Module contents: Required attributes definition for
+.config.ConfigManager.Tag class.</p>
+<dl class="py data">
+<dt id="dvas.config.definitions.tag.PARAMETER_PATTERN_PROP">
+<code class="sig-prename descclassname">dvas.config.definitions.tag.</code><code class="sig-name descname">PARAMETER_PATTERN_PROP</code><em class="property"> = {'^tag_desc$': {'type': 'string'}, '^tag_txt$': {'type': 'string'}}</em><a class="headerlink" href="#dvas.config.definitions.tag.PARAMETER_PATTERN_PROP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parameter pattern properties (JSON_SCHEMA)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt id="dvas.config.definitions.tag.CONST_NODES">
+<code class="sig-prename descclassname">dvas.config.definitions.tag.</code><code class="sig-name descname">CONST_NODES</code><em class="property"> = [{'tag_txt': '', 'tag_desc': 'None'}, {'tag_txt': 'raw', 'tag_desc': 'Data are raw'}, {'tag_txt': 'gdp', 'tag_desc': 'GRUAN Data Product'}, {'tag_txt': 'derived', 'tag_desc': 'Data are derived from raw'}, {'tag_txt': 'empty', 'tag_desc': 'Data are empty'}, {'tag_txt': 'resampled', 'tag_desc': 'Data are resampled'}, {'tag_txt': 'sync', 'tag_desc': 'Data are synchronized'}]</em><a class="headerlink" href="#dvas.config.definitions.tag.CONST_NODES" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constant node values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt id="dvas.config.definitions.tag.KEY">
+<code class="sig-prename descclassname">dvas.config.definitions.tag.</code><code class="sig-name descname">KEY</code><em class="property"> = 'Tag'</em><a class="headerlink" href="#dvas.config.definitions.tag.KEY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Config manager key name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt id="dvas.config.definitions.tag.NODE_GEN">
+<code class="sig-prename descclassname">dvas.config.definitions.tag.</code><code class="sig-name descname">NODE_GEN</code><em class="property"> = 'tag_txt'</em><a class="headerlink" href="#dvas.config.definitions.tag.NODE_GEN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Node name able to be generated by regexp</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="dvas.data.html" class="btn btn-neutral float-right" title="dvas.data package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="dvas.config.html" class="btn btn-neutral float-left" title="dvas.config package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, MeteoSwiss
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

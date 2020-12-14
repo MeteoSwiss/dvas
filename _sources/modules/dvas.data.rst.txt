@@ -1,0 +1,42 @@
+dvas.data package
+=================
+
+.. automodule:: dvas.data
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   dvas.data.strategy
+
+Submodules
+----------
+
+dvas.data.data module
+---------------------
+
+.. automodule:: dvas.data.data
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas.data.linker module
+-----------------------
+
+.. automodule:: dvas.data.linker
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas.data.math module
+---------------------
+
+.. automodule:: dvas.data.math
+   :members:
+   :undoc-members:
+   :show-inheritance:
