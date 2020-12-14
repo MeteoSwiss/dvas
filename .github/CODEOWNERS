@@ -22,3 +22,9 @@ src/dvas/plots          @fpavogt
 
 # All processing tools
 src/dvas/tools          @fpavogt
+
+# All data
+src/dvas/data           @modolol
+
+# All database
+src/dvas/database       @modolol
