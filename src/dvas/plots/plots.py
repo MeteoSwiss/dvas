@@ -23,8 +23,8 @@ def multiprf(prfs, index_name='alt', uc=None, **kwargs):
     """ Plots the content of a MultiProfile instance.
 
     Args:
-        prfs (MultiProfile or MultiRSProfile or MultiGDPprofile): MultiProfile instance to plot
-        keys (list of str or int): list of prfs dictionnary keys to extract
+        prfs (MultiProfile | MultiRSProfile | MultiGDPprofile): MultiProfile instance to plot
+        keys (list of str | int): list of prfs dictionnary keys to extract
         index_name (str, optional): reference variables for the plots, either 'tdt' or 'alt'.
             Defaults to 'alt'.
         uc (str, optional): which uncertainty to plot, if any. Can be one of  ['r', 's', 't', 'u',
