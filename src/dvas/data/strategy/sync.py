@@ -15,7 +15,7 @@ import numpy as np
 
 # Import from current package
 from .data import Profile
-from ..math import crosscorr
+from ...tools.math import crosscorr
 
 
 class SynchronizeStrategy(metaclass=ABCMeta):

@@ -16,7 +16,7 @@ Module contents: Testing classes and function for dvas.data.math module.
 import pytest
 import pandas as pd
 
-from dvas.data.math import calc_tropopause, TropopauseError
+from dvas.tools.math import calc_tropopause, TropopauseError
 
 
 def test_calc_tropopause():
