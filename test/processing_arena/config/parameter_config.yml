@@ -3,7 +3,7 @@
 - prm_abbr: '^([tup])repros(1|(u_u)|(u_e)|(u_s)|(u_t)|(u_r))'
   # Generate variables from regex generator for temperature, humidity and
   #pressure for both instant and uncertainty values.
-  prm_desc: &myfct '$lambda x:{"t": "Temperature", "u": "Relative humidity", "p": "Pressure", "f": "Wind speed", "d": "Wind direction"}[x.group(1)]$$lambda x:{"u_u": " uncorrelated uncertainty", "u_e": " environmental correlated uncertainty", "u_s": " spatial correlated uncertainty", "u_t": " temporal correlated uncertainty", "u_r": " rig uncorrelated uncertainty", "1": ""}[x.group(2)]$'
+  prm_desc: &myfct 'cat(rpls({"t": "Temperature", "u": "Relative humidity", "p": "Pressure", "f": "Wind speed", "d": "Wind direction"}, get(1)), repl_strict({"u_u": " uncorrelated uncertainty", "u_e": " environmental correlated uncertainty", "u_s": " spatial correlated uncertainty", "u_t": " temporal correlated uncertainty", "u_r": " rig uncorrelated uncertainty"}, get(2)))'
   # Link anchor to str
 
 - prm_abbr: 'altpros1'
@@ -26,4 +26,4 @@
   prm_desc: 'Flag'
 
 - prm_abbr: 'dummytst_(param\d)'
-  prm_desc: '$lambda x: x.group(1)$'
+  prm_desc: 'get(1)'

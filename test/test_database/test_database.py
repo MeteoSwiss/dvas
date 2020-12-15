@@ -10,25 +10,21 @@ Module contents: Testing classes and function for dvas.database.database module.
 """
 
 # Import external packages and modules
-import re
 from copy import deepcopy
 from datetime import datetime, timedelta
 import pytz
 import pytest
 import numpy as np
 
-# Import from python packages and modules
+# Import from current python packages and modules
 from dvas.database.model import Parameter as MdlParameter
 from dvas.database.model import Instrument as MdlInstrument
 from dvas.database.model import InstrType as MdlInstrType
 from dvas.database.database import DatabaseManager
 from dvas.database.database import InfoManager
 from dvas.database.database import SearchInfoExpr
-from dvas.database.database import OneDimArrayConfigLinker
-from dvas.database.database import ConfigGenMaxLenError
 from dvas.database.database import DBInsertError
 from dvas.environ import glob_var
-from dvas.config.config import Parameter
 
 
 @pytest.fixture
@@ -127,48 +123,6 @@ class TestDatabaseManager:
     def test_get_flags(self, db_mngr):
         """Test get_flags"""
         assert isinstance(db_mngr.get_flags(), list)
-
-
-class TestOneDimArrayConfigLinker:
-    """Test OneDimArrayConfigLinker class
-
-    Tests:
-        - String generator
-        - Catch generated string
-
-    """
-
-    # String generator patern
-    prm_pat = re.compile(r'^dummytst_(param\d+)$')
-
-    # Catched string patern
-    desc_pat = re.compile(r'^param\d+$')
-
-    # Config linker
-    cfg_lkr = OneDimArrayConfigLinker([Parameter])
-
-    def test_get_document(self):
-        """Test get_document method
-
-        Test:
-            Returned type
-            Item generator
-            Raises ConfigGenMaxLenError
-
-        """
-
-        doc = self.cfg_lkr.get_document(Parameter.CLASS_KEY)
-
-        assert isinstance(doc, list)
-        assert sum(
-            [self.prm_pat.match(arg['prm_abbr']) is not None for arg in doc]
-        ) == 10
-        assert sum(
-            [self.desc_pat.match(arg['prm_desc']) is not None for arg in doc]
-        ) == 10
-        with glob_var.set_many_attr({'config_gen_max': 2}):
-            with pytest.raises(ConfigGenMaxLenError):
-                self.cfg_lkr.get_document(Parameter.CLASS_KEY)
 
 
 class TestInfoManager:

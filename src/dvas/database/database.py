@@ -12,9 +12,7 @@ Module contents: Local database management tools
 # Import from python packages
 import pprint
 from hashlib import blake2b
-import re
 from abc import abstractmethod, ABCMeta
-from itertools import chain, zip_longest
 import operator
 from functools import wraps, reduce
 from math import floor
@@ -27,19 +25,13 @@ from playhouse.shortcuts import model_to_dict
 import numpy as np
 from pandas import Timestamp
 from pampy.helpers import Iterable, Union
-import sre_yield
 
 # Import from current package
 from .model import db
 from .model import Instrument, InstrType, Info
 from .model import Parameter, Flag, DataSource, Data
 from .model import Tag, InfosTags, InfosInstruments
-from ..config.config import instantiate_config_managers
-from ..config.config import InstrType as CfgInstrType
-from ..config.config import Instrument as CfgInstrument
-from ..config.config import Parameter as CfgParameter
-from ..config.config import Flag as CfgFlag
-from ..config.config import Tag as CfgTag
+from ..config.config import OneDimArrayConfigLinker
 from ..config.definitions.tag import TAG_NONE, TAG_EMPTY_VAL
 from ..helper import ContextDecorator
 from ..helper import SingleInstanceMetaClass
@@ -61,137 +53,6 @@ DB_CACHE_SIZE = 10 * 1024
 
 #: str: Local database file name
 DB_FILE_NM = 'local_db.sqlite'
-
-
-# TODO
-#  Move it to config. Replace Replace the spaghetti code with an interpreter (design pattern)
-class OneDimArrayConfigLinker:
-    """Link to OneDimArrayConfigManager
-    config managers."""
-
-    CFG_MNGRS = [CfgParameter, CfgInstrType, CfgInstrument, CfgFlag, CfgTag]
-
-    def __init__(self, cfg_mngrs=None):
-        """
-        Args:
-            cfg_mngrs (list of OneDimArrayConfigManager): Config managers
-        """
-
-        if cfg_mngrs is None:
-            cfg_mngrs = self.CFG_MNGRS
-
-        # Set attributes
-        self._cfg_mngr = instantiate_config_managers(*cfg_mngrs)
-
-    def get_document(self, key):
-        """Interpret the generator syntax if necessary and
-        return the config document.
-
-        The generator syntax is apply only in OneDimArrayConfig  with
-        not empty NODE_GEN. Generator sytax is based on regexpr. Fields which
-        are not generator can contain expression to be evaluated. Expressions
-        must be surrouded by '$'. To catch regexpr group in expression use
-        'lambda x: x.group(N)'.
-
-        Args:
-            key (str): Config manager key
-
-        Returns:
-            dict
-
-        Raises:
-            - ConfigGenMaxLenError: Error for to much generated items.
-
-        """
-
-        def get_grp_fct(grp_fct):
-            """Get group function as callable or str"""
-            try:
-                out = eval(grp_fct, {})
-            except (NameError, SyntaxError):
-                out = grp_fct
-            return out
-
-        # Init
-        sep = glob_var.config_gen_grp_sep
-        pat_spilt = r'\{0}[^\n\r\t\{0}]+\{0}'.format(sep)
-        pat_find = r'\{0}([^\n\r\t{0}]+)\{0}'.format(sep)
-
-        # Define
-        array_old = self._cfg_mngr[key].document
-        node_gen = self._cfg_mngr[key].NODE_GEN
-        array_new = []
-
-        # Loop over te config array items
-        for doc in array_old:
-
-            # Test if node generator allowed
-            if node_gen:
-
-                # Init new sub dict
-                sub_dict_new = {}
-
-                # Generate from regexp generator
-                node_gen_val = sre_yield.AllMatches(doc[node_gen])
-
-                # Check length
-                if (n_val := len(node_gen_val)) > glob_var.config_gen_max:
-                    raise ConfigGenMaxLenError(
-                        f"{n_val} generated config field. " +
-                        f"Max allowed {glob_var.config_gen_max}"
-                    )
-
-                # Update sub dict
-                sub_dict_new.update({node_gen: list(node_gen_val)})
-
-                # Loop over other config item key
-                for key in filter(lambda x: x != node_gen, doc.keys()):
-
-                    # Update new sub dict for current key
-                    sub_dict_new.update(
-                        {
-                            key: [
-                                ''.join(
-                                    [arg for arg in chain(
-                                        *zip_longest(
-
-                                            # Split formula
-                                            re.split(pat_spilt, doc[key]),
-
-                                            # Find formula and substitute
-                                            [
-                                                re.sub(
-                                                    doc[node_gen],
-                                                    get_grp_fct(grp_fct),
-                                                    node_gen_val[i].group()
-                                                ) for grp_fct in
-                                                re.findall(pat_find, doc[key])
-                                            ]
-                                        )
-                                    ) if arg]
-                                )
-                                # Test if groups exists in generated str
-                                if node_gen_val[i].groups() else
-                                doc[key]
-                                for i in range(len(node_gen_val))
-                            ]
-                        }
-                    )
-
-                # Rearange dict of list in list of dict
-                res = [
-                    dict(zip(sub_dict_new, arg))
-                    for arg in zip(*sub_dict_new.values())
-                ]
-
-            # Case without generator
-            else:
-                res = [doc]
-
-            # Append to new array
-            array_new += res
-
-        return array_new
 
 
 class DatabaseManager(metaclass=SingleInstanceMetaClass):
@@ -1150,7 +1011,7 @@ class LogicalSearchInfoExpr(SearchInfoExpr):
         self._expression = args
 
     def interpret(self):
-        """Terminal interpreter method"""
+        """Non terminal interpreter method"""
         return reduce(
             self.fct,
             [arg.interpret() for arg in self._expression]
@@ -1295,7 +1156,3 @@ class DBInsertError(Exception):
 
 class DBDirError(Exception):
     """Exception class for DB directory creating error"""
-
-
-class ConfigGenMaxLenError(Exception):
-    """Exception class for max length config generator error"""

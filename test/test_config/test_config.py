@@ -10,13 +10,19 @@ Module contents: Testing classes and function for dvas.config.config module.
 """
 
 # Import from python packages and modules
+import re
 import pytest
 
+# Import from current python packages and modules
 from dvas.config.config import instantiate_config_managers
 from dvas.config.config import CSVOrigMeta
 from dvas.config.config import OrigData, Instrument, InstrType
 from dvas.config.config import Parameter, Flag, Tag
 from dvas.config.config import ConfigReadError
+from dvas.config.config import OneDimArrayConfigLinker
+from dvas.config.config import ConfigGeneratorExpr
+from dvas.config.config import ConfigGenMaxLenError
+from dvas.environ import glob_var
 
 
 def test_instantiate_config_managers():
@@ -52,6 +58,7 @@ def test_instantiate_config_managers():
     assert (sum(
         [(arg['type_name'] in tst_list) for arg in cfg_mngrs['InstrType']]
     ) == len(tst_list))
+
 
 class TestOneLayerConfigManager():
     """Test class for OneLayerConfigManager
@@ -101,3 +108,85 @@ class TestOneDimArrayConfigManager():
         # Test for bad field type
         with pytest.raises(ConfigReadError):
             self.cfg.read("type_name: 'TEST'\ndesc': 'Test'")
+
+
+class TestOneDimArrayConfigLinker:
+    """Test OneDimArrayConfigLinker class
+
+    Tests:
+        - String generator
+        - Catch generated string
+
+    """
+
+    # String generator patern
+    prm_pat = re.compile(r'^dummytst_(param\d+)$')
+
+    # Catched string patern
+    desc_pat = re.compile(r'^param\d+$')
+
+    # Config linker
+    cfg_lkr = OneDimArrayConfigLinker([Parameter])
+
+    def test_get_document(self):
+        """Test get_document method
+
+        Test:
+            Returned type
+            Item generator
+            Raises ConfigGenMaxLenError
+
+        """
+
+        doc = self.cfg_lkr.get_document(Parameter.CLASS_KEY)
+
+        assert isinstance(doc, list)
+        assert sum(
+            [self.prm_pat.match(arg['prm_abbr']) is not None for arg in doc]
+        ) == 10
+        assert sum(
+            [self.desc_pat.match(arg['prm_desc']) is not None for arg in doc]
+        ) == 10
+        with glob_var.set_many_attr({'config_gen_max': 2}):
+            with pytest.raises(ConfigGenMaxLenError):
+                self.cfg_lkr.get_document(Parameter.CLASS_KEY)
+
+
+class TestConfigGeneratorExpr:
+    """Test ConfigGeneratorExpr class"""
+
+    match_val = re.match(r'^a(\d)', 'a1')
+
+    def test_eval(self):
+
+        # Test str
+        assert ConfigGeneratorExpr.eval("a", self.match_val) == 'a'
+
+        # Test cat
+        assert ConfigGeneratorExpr.eval("cat('a', 'b')", self.match_val) == 'ab'
+
+        # Test replace
+        assert ConfigGeneratorExpr.eval("rpl({'b': 'a'}, 'b')", self.match_val) == \
+            ConfigGeneratorExpr.eval("repl({'b': 'a'}, 'b')", self.match_val) == \
+            ConfigGeneratorExpr.eval("repl({'b': 'a'}, 'a')", self.match_val) == \
+            'a'
+
+        # Test replace strict
+        assert ConfigGeneratorExpr.eval("rpls({'b': 'a'}, 'a')", self.match_val) == ''
+        assert ConfigGeneratorExpr.eval("rpls({'b': 'a'}, 'b')", self.match_val) == \
+            ConfigGeneratorExpr.eval("repl_strict({'b': 'a'}, 'b')", self.match_val) == \
+            'a'
+
+        # Test get
+        assert ConfigGeneratorExpr.eval("get(1)", self.match_val) == '1'
+        assert ConfigGeneratorExpr.eval("get(0)", self.match_val) == 'a1'
+
+        # Test upper
+        assert ConfigGeneratorExpr.eval("upper('a')", self.match_val) == 'A'
+
+        # Test lower
+        assert ConfigGeneratorExpr.eval("lower('A')", self.match_val) == 'a'
+
+        # Test small upper
+        assert ConfigGeneratorExpr.eval("supper('aa')", self.match_val) == \
+            ConfigGeneratorExpr.eval("small_upper('aa')", self.match_val) == 'Aa'

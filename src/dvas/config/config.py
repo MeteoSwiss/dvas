@@ -10,14 +10,18 @@ Module contents: User configuration management.
 """
 
 # Import python packages and modules
+from abc import ABCMeta, abstractmethod
 import re
 import pprint
+from functools import reduce
+import operator
 from pathlib import Path
 import json
 from jsonschema import validate, exceptions
 from ruamel.yaml import YAML
 from ruamel.yaml.error import YAMLError
 from pampy.helpers import Union
+import sre_yield
 
 # Import current package modules
 from .definitions import origdata, csvorigmeta
@@ -30,7 +34,6 @@ from ..helper import get_by_path
 from ..helper import RequiredAttrMetaClass
 from ..helper import TypedProperty
 from ..helper import camel_to_snake
-
 
 # Define
 NODE_ESCAPE_CHAR = '_'
@@ -649,6 +652,272 @@ class OrigData(MultiLayerConfigManager):
     document = TypedProperty(MultiLayerConfigManager.DOC_TYPE)
 
 
+class OneDimArrayConfigLinker:
+    """Link to OneDimArrayConfigManager
+    config managers."""
+
+    #: list: Default instantiated config managers
+    CFG_MNGRS_DFLT = [Parameter, InstrType, Instrument, Flag, Tag]
+
+    def __init__(self, cfg_mngrs=None):
+        """
+        Args:
+            cfg_mngrs (list of OneDimArrayConfigManager): Config managers
+        """
+
+        if cfg_mngrs is None:
+            cfg_mngrs = self.CFG_MNGRS_DFLT
+
+        # Set attributes
+        self._cfg_mngr = instantiate_config_managers(*cfg_mngrs)
+
+    def get_document(self, key):
+        """Interpret the generator syntax if necessary and
+        return the config document.
+
+        The generator syntax is apply only in OneDimArrayConfig  with
+        not empty NODE_GEN. Generator sytax is based on regexpr. Fields which
+        are not generator can contain expression to be evaluated. Expressions
+        must be surrouded by '$'. To catch regexpr group in expression use
+        'lambda x: x.group(N)'.
+
+        Args:
+            key (str): Config manager key
+
+        Returns:
+            dict
+
+        Raises:
+            - ConfigGenMaxLenError: Error for to much generated items.
+
+        """
+
+        # Define
+        array_old = self._cfg_mngr[key].document
+        node_gen = self._cfg_mngr[key].NODE_GEN
+        array_new = []
+
+        # Loop over te config array items
+        for doc in array_old:
+
+            # Test if node generator allowed
+            if node_gen:
+
+                # Init new sub dict
+                sub_dict_new = {}
+
+                # Generate from regexp generator
+                node_gen_val = sre_yield.AllMatches(doc[node_gen])
+
+                # Check length
+                if (n_val := len(node_gen_val)) > env_glob_var.config_gen_max:
+                    raise ConfigGenMaxLenError(
+                        f"{n_val} generated config field. " +
+                        f"Max allowed {env_glob_var.config_gen_max}"
+                    )
+
+                # Update sub dict
+                sub_dict_new.update({node_gen: list(node_gen_val)})
+
+                # Loop over other config item key
+                for key in filter(lambda x: x != node_gen, doc.keys()):
+
+                    # Update new sub dict for current key
+                    sub_dict_new.update(
+                        {
+                            key: [
+                                ConfigGeneratorExpr.eval(doc[key], node_gen_val[i])
+                                for i in range(len(node_gen_val))
+                            ]
+                        }
+                    )
+
+                # Rearange dict of list in list of dict
+                res = [
+                    dict(zip(sub_dict_new, arg))
+                    for arg in zip(*sub_dict_new.values())
+                ]
+
+            # Case without generator
+            else:
+                res = [doc]
+
+            # Append to new array
+            array_new += res
+
+        return array_new
+
+
+class ConfigGeneratorExpr(metaclass=ABCMeta):
+    """Abstract config generator interpreter class
+
+    Notes:
+        This class and subclasses construciton are based on the interpreter
+        design pattern.
+
+    """
+
+    _GRP_MATCH = None
+
+    @abstractmethod
+    def interpret(self):
+        """Interpreter method"""
+
+    @staticmethod
+    def eval(expr, grp_match):
+        """Evaluate str expression
+
+        Args:
+            expr (str): Expression to evaluate
+            grp_match
+
+        """
+
+        # Define
+        str_expr_dict = {
+            'cat': CatExpr,
+            'rpl': ReplExpr, 'repl': ReplExpr,
+            'rpls': ReplStrictExpr, 'repl_strict': ReplStrictExpr,
+            'get': GetExpr,
+            'upper': UpperExpr, 'lower': LowerExpr,
+            'supper': SmallUpperExpr, 'small_upper': SmallUpperExpr,
+        }
+
+        # Set get_value
+        ConfigGeneratorExpr.set_get_value(grp_match)
+
+        # Treat expression
+        try:
+            # Eval
+            expr_out = eval(expr, str_expr_dict)
+
+            # Interpret
+            expr_out = expr_out.interpret()
+        except Exception:
+            expr_out = expr
+
+        return expr_out
+
+    @classmethod
+    def set_get_value(cls, get_val):
+        """Set group match object
+
+        Args:
+            get_val (re.Match | sre_yield.Match): Group matching object
+
+        """
+        cls._GRP_MATCH = get_val
+
+
+class NonTerminalConfigGeneratorExpr(ConfigGeneratorExpr):
+    """Implement an interpreter operation for non terminal symbols in the
+    grammar.
+    """
+
+    def __init__(self, *args):
+        self._expression = args
+
+    def interpret(self):
+        """Non terminal interpreter method"""
+
+        # Apply interpreter
+        res_interp = [
+            (arg if isinstance(arg, ConfigGeneratorExpr)
+             else NoneExpr(arg)).interpret()
+            for arg in self._expression
+        ]
+
+        if len(self._expression) > 1:
+            return reduce(self.fct, res_interp)
+        else:
+            return self.fct(res_interp[0])
+
+    @abstractmethod
+    def fct(self, *args):
+        """Function between expression args"""
+
+
+class CatExpr(NonTerminalConfigGeneratorExpr):
+    """String concatenation"""
+
+    def fct(self, a, b):
+        """Implement fct method"""
+        return operator.add(a, b)
+
+
+class ReplExpr(NonTerminalConfigGeneratorExpr):
+    """Replace dict key by its value. If key is missing, return key"""
+
+    def fct(self, a, b):
+        """Implement fct method"""
+        try:
+            out = operator.getitem(a, b)
+        except KeyError:
+            out = b
+        return out
+
+
+class ReplStrictExpr(NonTerminalConfigGeneratorExpr):
+    """Replace dict key by its value. If key is missing, return ''"""
+
+    def fct(self, a, b):
+        """Implement fct method"""
+        try:
+            out = operator.getitem(a, b)
+        except KeyError:
+            out = ''
+        return out
+
+
+class LowerExpr(NonTerminalConfigGeneratorExpr):
+    """Lower case"""
+
+    def fct(self, a):
+        """Implement fct method"""
+        return a.lower()
+
+
+class UpperExpr(NonTerminalConfigGeneratorExpr):
+    """Upper case"""
+
+    def fct(self, a):
+        """Implement fct method"""
+        return a.upper()
+
+
+class SmallUpperExpr(NonTerminalConfigGeneratorExpr):
+    """Upper case 1st character"""
+
+    def fct(self, a):
+        """Implement fct method"""
+        return a[0].upper() + a[1:].lower()
+
+
+class TerminalConfigGeneratorExpr(ConfigGeneratorExpr):
+    """Implement an interpreter operation for terminal symbols in the
+    grammar.
+    """
+
+    def __init__(self, arg):
+        self._expression = arg
+
+
+class GetExpr(TerminalConfigGeneratorExpr):
+    """Get catch value"""
+
+    def interpret(self):
+        """Implement fct method"""
+        return self._GRP_MATCH.group(self._expression)
+
+
+class NoneExpr(TerminalConfigGeneratorExpr):
+    """Apply none interpreter"""
+
+    def interpret(self):
+        """Implement fct method"""
+        return self._expression
+
+
 class ConfigReadError(Exception):
     """Error while reading config"""
 
@@ -659,3 +928,7 @@ class ConfigNodeError(Exception):
 
 class ConfigItemKeyError(KeyError):
     """Error in config key item"""
+
+
+class ConfigGenMaxLenError(Exception):
+    """Exception class for max length config generator error"""
