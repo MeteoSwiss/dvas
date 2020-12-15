@@ -162,8 +162,7 @@ def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show_
     # Save the figure in all the requested formats
     for fmt in fmts:
         if fmt not in fig.canvas.get_supported_filetypes().keys():
-            # TODO: log this as a warning: request style not available
-            pass
+            logger.warning('%s format not supported by the OS. Ignoring it.', fmt)
 
         # Save the file.
         # Note: never use a tight box fix here. If the plot looks weird, the gridspec

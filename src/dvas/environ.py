@@ -22,7 +22,7 @@ from .helper import TypedProperty as TProp
 from .helper import check_path
 from .errors import dvasError
 from . import __name__ as pkg_name
-from . import expl_path
+from . import expl_path, pkg_path
 
 
 class ABCSingleInstanceMeta(ABCMeta, SingleInstanceMetaClass):
@@ -116,6 +116,10 @@ class GlobalPathVariablesManager(VariableManager):
     plot_output_path = TProp(
         Union[Path, str], check_path, kwargs={'exist_ok': False}
     )
+    #: pathlib.Path: plot styles dir path
+    plot_style_path = TProp(
+        Union[Path, str], check_path, kwargs={'exist_ok': True}
+    )
 
     @property
     def attr_def(self):
@@ -129,7 +133,10 @@ class GlobalPathVariablesManager(VariableManager):
             {'name': 'output_path',
              'default': Path('.') / 'output'},
             {'name': 'plot_output_path',
-             'default': Path('.') / 'output' / 'plots'}
+             'default': Path('.') / 'output' / 'plots'},
+            {'name': 'plot_style_path',
+             'default': pkg_path / 'plots' / 'mpl_styles'}
+
         ]
 
 
