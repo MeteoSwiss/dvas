@@ -10,10 +10,12 @@ Module contents: User configuration management.
 """
 
 # Import python packages and modules
+from abc import ABCMeta, abstractmethod
 import re
 import pprint
+from functools import reduce
+import operator
 from pathlib import Path
-from itertools import chain, zip_longest
 import json
 from jsonschema import validate, exceptions
 from ruamel.yaml import YAML
@@ -690,19 +692,6 @@ class OneDimArrayConfigLinker:
 
         """
 
-        def get_grp_fct(grp_fct):
-            """Get group function as callable or str"""
-            try:
-                out = eval(grp_fct, {})
-            except (NameError, SyntaxError):
-                out = grp_fct
-            return out
-
-        # Init
-        sep = env_glob_var.config_gen_grp_sep
-        pat_spilt = r'\{0}[^\n\r\t\{0}]+\{0}'.format(sep)
-        pat_find = r'\{0}([^\n\r\t{0}]+)\{0}'.format(sep)
-
         # Define
         array_old = self._cfg_mngr[key].document
         node_gen = self._cfg_mngr[key].NODE_GEN
@@ -737,28 +726,7 @@ class OneDimArrayConfigLinker:
                     sub_dict_new.update(
                         {
                             key: [
-                                ''.join(
-                                    [arg for arg in chain(
-                                        *zip_longest(
-
-                                            # Split formula
-                                            re.split(pat_spilt, doc[key]),
-
-                                            # Find formula and substitute
-                                            [
-                                                re.sub(
-                                                    doc[node_gen],
-                                                    get_grp_fct(grp_fct),
-                                                    node_gen_val[i].group()
-                                                ) for grp_fct in
-                                                re.findall(pat_find, doc[key])
-                                            ]
-                                        )
-                                    ) if arg]
-                                )
-                                # Test if groups exists in generated str
-                                if node_gen_val[i].groups() else
-                                doc[key]
+                                ConfigGeneratorExpr.eval(doc[key], node_gen_val[i])
                                 for i in range(len(node_gen_val))
                             ]
                         }
@@ -778,6 +746,176 @@ class OneDimArrayConfigLinker:
             array_new += res
 
         return array_new
+
+
+class ConfigGeneratorExpr(metaclass=ABCMeta):
+    """Abstract config generator interpreter class
+
+    Notes:
+        This class and subclasses construciton are based on the interpreter
+        design pattern.
+
+    """
+
+    _GRP_MATCH = None
+
+    @abstractmethod
+    def interpret(self):
+        """Interpreter method"""
+
+    @staticmethod
+    def eval(expr, grp_match):
+        """Evaluate str expression
+
+        Args:
+            expr (str): Expression to evaluate
+            grp_match
+
+        """
+
+        # Define
+        str_expr_dict = {
+            'cat': CatExpr,
+            'rpl': ReplExpr, 'repl': ReplExpr,
+            'rpls': ReplStrictExpr, 'repl_strict': ReplStrictExpr,
+            'get': GetExpr,
+            'upper': UpperExpr, 'lower': LowerExpr,
+            'supper': SmallUpperExpr, 'small_upper': SmallUpperExpr,
+        }
+
+        # Set get_value
+        ConfigGeneratorExpr.set_get_value(grp_match)
+
+        # Treat expression
+        try:
+            # Eval
+            expr_out = eval(expr, str_expr_dict)
+
+            # Interpret
+            expr_out = expr_out.interpret()
+        except Exception:
+            expr_out = expr
+
+        return expr_out
+
+    @classmethod
+    def set_get_value(cls, get_val):
+        """Set group match object
+
+        Args:
+            get_val (re.Match | sre_yield.Match): Group matching object
+
+        """
+        cls._GRP_MATCH = get_val
+
+
+class NonTerminalConfigGeneratorExpr(ConfigGeneratorExpr):
+    """Implement an interpreter operation for non terminal symbols in the
+    grammar.
+    """
+
+    def __init__(self, *args):
+        self._expression = args
+
+    def interpret(self):
+        """Non terminal interpreter method"""
+
+        # Apply interpreter
+        res_interp = [
+            (arg if isinstance(arg, ConfigGeneratorExpr)
+             else NoneExpr(arg)).interpret()
+            for arg in self._expression
+        ]
+
+        if len(self._expression) > 1:
+            return reduce(self.fct, res_interp)
+        else:
+            return self.fct(res_interp[0])
+
+    @abstractmethod
+    def fct(self, *args):
+        """Function between expression args"""
+
+
+class CatExpr(NonTerminalConfigGeneratorExpr):
+    """String concatenation"""
+
+    def fct(self, a, b):
+        """Implement fct method"""
+        return operator.add(a, b)
+
+
+class ReplExpr(NonTerminalConfigGeneratorExpr):
+    """Replace dict key by its value. If key is missing, return key"""
+
+    def fct(self, a, b):
+        """Implement fct method"""
+        try:
+            out = operator.getitem(a, b)
+        except KeyError:
+            out = b
+        return out
+
+
+class ReplStrictExpr(NonTerminalConfigGeneratorExpr):
+    """Replace dict key by its value. If key is missing, return ''"""
+
+    def fct(self, a, b):
+        """Implement fct method"""
+        try:
+            out = operator.getitem(a, b)
+        except KeyError:
+            out = ''
+        return out
+
+
+class LowerExpr(NonTerminalConfigGeneratorExpr):
+    """Lower case"""
+
+    def fct(self, a):
+        """Implement fct method"""
+        return a.lower()
+
+
+class UpperExpr(NonTerminalConfigGeneratorExpr):
+    """Upper case"""
+
+    def fct(self, a):
+        """Implement fct method"""
+        return a.upper()
+
+
+class SmallUpperExpr(NonTerminalConfigGeneratorExpr):
+    """Upper case 1st character"""
+
+    def fct(self, a):
+        """Implement fct method"""
+        return a[0].upper() + a[1:].lower()
+
+
+class TerminalConfigGeneratorExpr(ConfigGeneratorExpr):
+    """Implement an interpreter operation for terminal symbols in the
+    grammar.
+    """
+
+    def __init__(self, arg):
+        self._expression = arg
+
+
+class GetExpr(TerminalConfigGeneratorExpr):
+    """Get catch value"""
+
+    def interpret(self):
+        """Implement fct method"""
+        return self._GRP_MATCH.group(self._expression)
+
+
+class NoneExpr(TerminalConfigGeneratorExpr):
+    """Apply none interpreter"""
+
+    def interpret(self):
+        """Implement fct method"""
+        return self._expression
 
 
 class ConfigReadError(Exception):

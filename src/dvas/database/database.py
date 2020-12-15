@@ -1011,7 +1011,7 @@ class LogicalSearchInfoExpr(SearchInfoExpr):
         self._expression = args
 
     def interpret(self):
-        """Terminal interpreter method"""
+        """Non terminal interpreter method"""
         return reduce(
             self.fct,
             [arg.interpret() for arg in self._expression]
