@@ -206,14 +206,15 @@ def deepcopy(func):
     signature AND its docstring.
 
     Note:
-        This implementation was inspired by the following sources:
-        - The reply from metaperture to `this SO post
+      This implementation was inspired by the following sources:
+
+        - The reply from `metaperture` to `this SO post
           <https://stackoverflow.com/questions/1409295/set-function-signature-in-python>`__
         - `This excellent article
-            <https://utilipy.readthedocs.io/en/latest/examples/making-decorators.html>`__ by
-            N. Starkman.
+          <https://utilipy.readthedocs.io/en/latest/examples/making-decorators.html>`__ by
+          N. Starkman.
         - The `wrapt docs
-          <https://wrapt.readthedocs.io/en/latest/decorators.html#signature-changing-decorators>__`
+          <https://wrapt.readthedocs.io/en/latest/decorators.html#signature-changing-decorators>`__
     """
 
     @wraps(func)
@@ -238,14 +239,15 @@ def deepcopy(func):
     new_param = inspect.Parameter('inplace', inspect.Parameter.KEYWORD_ONLY, default=True)
     sig = inspect.signature(decorated)
     func_params = tuple(sig.parameters.values())
-    # Here, I cannot just add a new Parameter blindly. I have to do keep it in the proper order
+    # Here, I cannot just add a new Parameter blindly. I have to do keep it in the proper order.
     if func_params[-1].name == 'kwargs':
         func_params = func_params[:-1] + (new_param, func_params[-1],)
     else:
         func_params = func_params + (new_param,)
     # Set the nnew parameters in the signature
     sig = sig.replace(parameters=func_params)
-    # I also need to adjsut the docstring to document this inplace parameter.
+    # I also need to adjust the docstring to document this inplace parameter.
+    # I'll append some clear message to the existing docstring.
     decorated.__signature__ = sig
     decorated.__doc__ += """--- Decorating function infos ---
 
