@@ -20,7 +20,7 @@ from dvas.config.config import OrigData, Instrument, InstrType
 from dvas.config.config import Parameter, Flag, Tag
 from dvas.config.config import ConfigReadError
 from dvas.config.config import OneDimArrayConfigLinker
-from dvas.config.config import ConfigGeneratorExpr
+from dvas.config.config import ConfigExprInterpreter
 from dvas.config.config import ConfigGenMaxLenError
 from dvas.environ import glob_var
 
@@ -152,41 +152,51 @@ class TestOneDimArrayConfigLinker:
                 self.cfg_lkr.get_document(Parameter.CLASS_KEY)
 
 
-class TestConfigGeneratorExpr:
-    """Test ConfigGeneratorExpr class"""
+class TestConfigExprInterpreter:
+    """Test ConfigExprInterpreter class"""
 
     match_val = re.match(r'^a(\d)', 'a1')
 
+    def test_set_callable(self):
+        """Test set_method method"""
+
+        assert ConfigExprInterpreter.set_callable(self.match_val.group) is None
+
+        # Test raise
+        with pytest.raises(AssertionError):
+            ConfigExprInterpreter.set_callable('xxx')
+
     def test_eval(self):
+        """Test eval method"""
 
         # Test str
-        assert ConfigGeneratorExpr.eval("a", self.match_val) == 'a'
+        assert ConfigExprInterpreter.eval("a", self.match_val.group) == 'a'
 
         # Test cat
-        assert ConfigGeneratorExpr.eval("cat('a', 'b')", self.match_val) == 'ab'
+        assert ConfigExprInterpreter.eval("cat('a', 'b')", self.match_val.group) == 'ab'
 
         # Test replace
-        assert ConfigGeneratorExpr.eval("rpl({'b': 'a'}, 'b')", self.match_val) == \
-            ConfigGeneratorExpr.eval("repl({'b': 'a'}, 'b')", self.match_val) == \
-            ConfigGeneratorExpr.eval("repl({'b': 'a'}, 'a')", self.match_val) == \
+        assert ConfigExprInterpreter.eval("rpl({'b': 'a'}, 'b')", self.match_val.group) == \
+            ConfigExprInterpreter.eval("repl({'b': 'a'}, 'b')", self.match_val.group) == \
+            ConfigExprInterpreter.eval("repl({'b': 'a'}, 'a')", self.match_val.group) == \
             'a'
 
         # Test replace strict
-        assert ConfigGeneratorExpr.eval("rpls({'b': 'a'}, 'a')", self.match_val) == ''
-        assert ConfigGeneratorExpr.eval("rpls({'b': 'a'}, 'b')", self.match_val) == \
-            ConfigGeneratorExpr.eval("repl_strict({'b': 'a'}, 'b')", self.match_val) == \
+        assert ConfigExprInterpreter.eval("rpls({'b': 'a'}, 'a')", self.match_val.group) == ''
+        assert ConfigExprInterpreter.eval("rpls({'b': 'a'}, 'b')", self.match_val.group) == \
+            ConfigExprInterpreter.eval("repl_strict({'b': 'a'}, 'b')", self.match_val.group) == \
             'a'
 
         # Test get
-        assert ConfigGeneratorExpr.eval("get(1)", self.match_val) == '1'
-        assert ConfigGeneratorExpr.eval("get(0)", self.match_val) == 'a1'
+        assert ConfigExprInterpreter.eval("get(1)", self.match_val.group) == '1'
+        assert ConfigExprInterpreter.eval("get(0)", self.match_val.group) == 'a1'
 
         # Test upper
-        assert ConfigGeneratorExpr.eval("upper('a')", self.match_val) == 'A'
+        assert ConfigExprInterpreter.eval("upper('a')", self.match_val.group) == 'A'
 
         # Test lower
-        assert ConfigGeneratorExpr.eval("lower('A')", self.match_val) == 'a'
+        assert ConfigExprInterpreter.eval("lower('A')", self.match_val.group) == 'a'
 
         # Test small upper
-        assert ConfigGeneratorExpr.eval("supper('aa')", self.match_val) == \
-            ConfigGeneratorExpr.eval("small_upper('aa')", self.match_val) == 'Aa'
+        assert ConfigExprInterpreter.eval("supper('aa')", self.match_val.group) == \
+            ConfigExprInterpreter.eval("small_upper('aa')", self.match_val.group) == 'Aa'
