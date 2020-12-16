@@ -675,11 +675,10 @@ class OneDimArrayConfigLinker:
         """Interpret the generator syntax if necessary and
         return the config document.
 
-        The generator syntax is apply only in OneDimArrayConfig  with
-        not empty NODE_GEN. Generator sytax is based on regexpr. Fields which
-        are not generator can contain expression to be evaluated. Expressions
-        must be surrouded by '$'. To catch regexpr group in expression use
-        'lambda x: x.group(N)'.
+        The generator syntax is apply only in OneDimArrayConfig with
+        not empty NODE_GEN. Generator syntax is based on regexpr. Fields which
+        are not generator can contain expression to be evaluated. The syntax
+        used is the one described in ConfigExprInterpreter.eval
 
         Args:
             key (str): Config manager key
@@ -754,7 +753,7 @@ class ConfigExprInterpreter(metaclass=ABCMeta):
     """Abstract config expression interpreter class
 
         Notes:
-            This class and subclasses construciton are based on the interpreter
+            This class and subclasses construction are based on the interpreter
             design pattern.
 
         """
@@ -785,6 +784,11 @@ class ConfigExprInterpreter(metaclass=ABCMeta):
             expr (str): Expression to evaluate
             get_fct (callable): Function use by 'get'
 
+        Examples:
+            >>> import re
+            >>> mymatch = re.match('^a(\d)', 'a1b')
+            >>> print(ConfigExprInterpreter.eval("cat('My test', ' ', get(1))", mymatch.group))
+            My test 1
         """
 
         # Define
