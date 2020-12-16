@@ -5,12 +5,12 @@
 _RS92:
 
     # -- META DATA ----------------------------------
-    dt_field: '{event_dt}'
-    srn_field: '{srn}'
+    dt_field: "get('event_dt')"
+    srn_field: "get('srn')"
     tag_field:
-        - 'e:{event_id}'
-        - 'r:{rig}'
-        - '{day_night}'
+        - "cat('e:', get('event_id'))"
+        - "cat('r:', get('rig'))"
+        - "get('day_night')"
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter: ','
@@ -35,12 +35,12 @@ _RS92:
 _YT:
 
     # -- META DATA ----------------------------------
-    dt_field: '{event_dt}Z'
-    srn_field: '{srn}'
+    dt_field: "cat(get('event_dt'), 'Z')"
+    srn_field: "get('srn')"
     tag_field:
-        - 'e:{event_id}'
-        - 'r:{rig}'
-        - '{day_night}'
+        - "cat('e:', get('event_id'))"
+        - "cat('r:', get('rig'))"
+        - "get('day_night')"
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter: ','
@@ -65,12 +65,12 @@ _YT:
 _ZT:
 
     # -- META DATA ----------------------------------
-    dt_field: '{event_dt}'
-    srn_field: '{srn}'
+    dt_field: "get('event_dt')"
+    srn_field: "get('srn')"
     tag_field:
-        - 'e:{event_id}'
-        - 'r:{rig}'
-        - '{day_night}'
+        - "cat('e:', get('event_id'))"
+        - "cat('r:', get('rig'))"
+        - "get('day_night')"
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter: ';'
@@ -95,11 +95,11 @@ _ZT:
 _AR-GDP_001:
 
     # -- META DATA ----------------------------------
-    dt_field: '{g.Measurement.StandardTime}'
-    srn_field: '{g.MainSonde.SerialNumber}'
+    dt_field: "get('g.Measurement.StandardTime')"
+    srn_field: "get('g.MainSonde.SerialNumber')"
     tag_field:
-        - 'e:{g.Measurement.Id}'
-        - 'r:{g.Measurement.BalloonNumber}'
+        - "cat('e:', get('g.Measurement.Id'))"
+        - "cat('r:', get('g.Measurement.BalloonNumber'))"
 
     # -- ORIG DATA ----------------------------------
     _tdtpros1:
@@ -131,11 +131,11 @@ _AR-GDP_001:
 _BR-GDP_001:
 
     # -- META DATA ----------------------------------
-    dt_field: '{g.Measurement.StandardTime}Z'
-    srn_field: '{g.MainSonde.SerialNumber}'
+    dt_field: "cat(get('g.Measurement.StandardTime'), 'Z')"
+    srn_field: "get('g.MainSonde.SerialNumber')"
     tag_field:
-        - 'e:{g.Measurement.Id}'
-        - 'r:{g.Measurement.BalloonNumber}'
+        - "cat('e:', get('g.Measurement.Id'))"
+        - "cat('r:', get('g.Measurement.BalloonNumber'))"
 
     # -- ORIG DATA ----------------------------------
     _tdtpros1:
@@ -164,11 +164,11 @@ _BR-GDP_001:
 _RS41-GDP-BETA_001:
 
     # -- META DATA ----------------------------------
-    dt_field: '{g.Measurement.StandardTime}'
-    srn_field: '{g.MainSonde.SerialNumber}'
+    dt_field: "get('g.Measurement.StandardTime')"
+    srn_field: "get('g.MainSonde.SerialNumber')"
     tag_field:
-        - 'e:{g.Measurement.Id}'
-        - 'r:{g.Measurement.BalloonNumber}'
+        - "cat('e:', get('g.Measurement.Id'))"
+        - "cat('r:', get('g.Measurement.BalloonNumber'))"
 
     # -- ORIG DATA ----------------------------------
     _tdtpros1:
