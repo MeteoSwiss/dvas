@@ -11,6 +11,7 @@ Module contents: Testing classes and function for dvas.dvas_helper module.
 
 # Import from python packages and modules
 from pathlib import Path
+import inspect
 from datetime import datetime
 from abc import ABC
 import pytest
@@ -23,7 +24,7 @@ from dvas.helper import TypedProperty
 from dvas.helper import get_by_path
 from dvas.helper import check_path
 from dvas.helper import check_datetime
-
+from dvas.helper import deepcopy
 
 def test_single_instance_metaclass():
     """Function used to test the metaclass SingleInstanceMetaClass
@@ -222,3 +223,36 @@ def test_check_datetime():
 
     with pytest.raises(TypeError):
         check_datetime('20200101')
+
+def test_deepcopy():
+    """ Test the helper.deepcopy() decorator"""
+
+    # To test this in the same way it is being used in the code, I'll create a fake class.
+    class CrashDummy:
+        """ A crash dummy class """
+
+        @deepcopy # This is where I actually set up the test !
+        def crash_test(self, a, *args, b='arg2', **kwargs):
+            """ A routine to crash-test the dummy """
+
+        @property
+        def dummy_id(self):
+            """ Unique dummy id to keep track of easily spot deep copies"""
+            return id(self)
+
+    # Now create an instance, and verify that the decorator had the intended effet.
+    my_dummy = CrashDummy()
+    sig = inspect.signature(my_dummy.crash_test)
+    param_names = [item.name for item in tuple(sig.parameters.values())]
+
+    # Is the actual deepcopy working ?
+    assert my_dummy.crash_test('a') is None
+    assert isinstance(my_dummy.crash_test('a', inplace=False), CrashDummy)
+    assert my_dummy.dummy_id != my_dummy.crash_test('a', inplace=False).dummy_id
+
+    # Was the signature modified correctly ?
+    assert len(sig.parameters) == 5
+    assert param_names == ['a', 'args', 'b', 'inplace', 'kwargs']
+
+    # Was the docstring modified by the decorator ?
+    assert 'Decorating function infos' in my_dummy.crash_test.__doc__
