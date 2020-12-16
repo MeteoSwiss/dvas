@@ -33,7 +33,7 @@ if __name__ == '__main__':
 
     # Set the log level we want
     dvas_log_var.log_level = 'DEBUG' # 'INFO' is the default.
-    dvas_log_var.log_mode = 'FILE' # 'FILE' if you want a live update
+    dvas_log_var.log_mode = 'CONSOLE' # 'FILE' if you want a live update
 
     # Start the logging
     dvas_init_log()

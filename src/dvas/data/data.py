@@ -104,24 +104,22 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         return [arg.info for arg in self.profiles]
 
     @deepcopy
-    def rm_info_tag(self, val, inplace=True):
-        """Remove tag from all info tags
+    def rm_info_tag(self, val):
+        """Remove some tag(s) from all info tag lists.
 
         Args:
-            val (str|list of str): Tag values to remove
-            inplace (bool, optional): Modify in place. Defaults to True.
+            val (str|list of str): Tag value(s) to remove
 
         """
         for i in range(len(self)):
             self.profiles[i].info.rm_tag(val)
 
     @deepcopy
-    def add_info_tag(self, val, inplace=True):
+    def add_info_tag(self, val):
         """Add tag from all info tags
 
         Args:
             val (str|list of str): Tag values to add.
-            inplace (bool, optional): Modify in place. Defaults to True.
 
         """
         for i in range(len(self)):
@@ -143,11 +141,7 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
 
         Args:
             *args: positional arguments
-            inplace (bool): Modify in place. Defaults to True.
             **kwargs: key word arguments
-
-        Returns:
-            MultiProfile: only if inplace=False
 
         """
 
@@ -162,14 +156,8 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         self.update(db_df_keys, data)
 
     @deepcopy
-    def sort(self, inplace=False):
+    def sort(self):
         """Sort method
-
-        Args:
-            inplace (bool, `optional`): If True, perform operation in-place
-                Defaults to True.
-        Returns
-            MultiProfileManager if inplace is True, otherwise None
 
         """
 
