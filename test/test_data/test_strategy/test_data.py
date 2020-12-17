@@ -19,7 +19,6 @@ from dvas.data.strategy.data import Profile, RSProfile, GDPProfile
 from dvas.errors import ProfileError
 from dvas.database.database import InfoManager
 
-
 class TestProfile:
     """Test Profile class"""
 

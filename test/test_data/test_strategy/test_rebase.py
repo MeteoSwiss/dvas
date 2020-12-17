@@ -13,11 +13,9 @@ import numpy as np
 import pandas as pd
 
 # Import from tested package
-from dvas.data.strategy.rebase import RebaseStrategy
 from dvas.data.strategy.data import RSProfile
 from dvas.data.data import MultiRSProfile
 from dvas.database.database import InfoManager
-
 
 class TestRebaseStrategy:
     """Test SortProfileStrategy class"""
