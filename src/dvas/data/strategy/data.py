@@ -18,7 +18,7 @@ import pandas as pd
 # Import from current package
 from ...database.model import Flag
 from ...database.database import DatabaseManager, InfoManager
-from ...errors import ProfileError
+from ...errors import ProfileError, dvasError
 from ...helper import RequiredAttrMetaClass
 
 # Define
@@ -208,21 +208,26 @@ class ProfileAbstract(metaclass=RequiredAttrMetaClass):
         # Test val columns
         for key in filter(lambda x: x in cols_key, cls.DF_COLS_ATTR.keys()):
 
-            # Test column name
+            # If the key is an index, then get it back out as a normal column.
+            # This is a lot easier than having to handle the distinct cases of Index vs Column
+            # in what follows.
+            if key in val.index.names:
+                # Note: do not even think about using inplace=True in the next code line.
+                # Dark things will happen if you do. fpvogt - 2020-12-16
+                val = val.reset_index(key)
+
+            # Test column name. If it is missing, raise an error
             if key not in val.columns:
                 raise ProfileError('Required column not found: %s' % key)
 
-            # Test column type
+            # ... to test if they all have the proper type.
             if ~val[key].apply(type).apply(
-                    issubclass, args=(cls.DF_COLS_ATTR[key]['test']+(type(None),),)
-            ).all():
-                raise ProfileError(
-                    "Wrong data type for '%s': I need %s but you gave me %s" %
-                    (key, cls.DF_COLS_ATTR[key]['test'], val[key].dtype)
-                )
+                    issubclass, args=(cls.DF_COLS_ATTR[key]['test']+(type(None),),)).all():
+                raise ProfileError("Wrong data type for '%s': I need %s but you gave me %s" %
+                                   (key, cls.DF_COLS_ATTR[key]['test'], val[key].dtype))
 
             # Convert
-            if cls.DF_COLS_ATTR[key]['type']:
+            if key in val.columns and cls.DF_COLS_ATTR[key]['type']:
                 val[key] = val[key].astype(cls.DF_COLS_ATTR[key]['type'])
 
         return val

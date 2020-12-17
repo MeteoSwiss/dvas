@@ -90,6 +90,13 @@ class TestProfile:
         with pytest.raises(AttributeError):
             inst.alt = 0
 
+        # Test for #83:
+        inst.data = self.ok_data
+        # Try to set the data from an existing profile (i.e. with index columns already set.)
+        inst_bis = Profile(self.info, data=inst.data)
+
+        assert (inst_bis.data == inst.data).all
+
     def test_copy(self):
         """Test copy method"""
 
