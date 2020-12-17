@@ -18,7 +18,7 @@ import pandas as pd
 # Import from current package
 from ...database.model import Flag
 from ...database.database import DatabaseManager, InfoManager
-from ...errors import ProfileError, dvasError
+from ...errors import ProfileError
 from ...helper import RequiredAttrMetaClass
 
 # Define
