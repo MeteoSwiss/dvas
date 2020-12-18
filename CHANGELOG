@@ -8,6 +8,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Added:
 ### Fixed:
 ### Changed:
+ - [modolol, 2020-12-18] Modify logger
+ - [modolol, 2020-12-18] Add dvas.dvas facade
  - [modolol, 2020-12-16] Move data.data.update_db to new module data.io
  - [modolol, 2020-12-16] Modify config metadata interpreter syntax
  - [modolol, 2020-12-15] Modify config generator interpreter syntax

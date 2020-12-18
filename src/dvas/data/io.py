@@ -5,7 +5,7 @@ Distributed under the terms of the GNU General Public License v3.0 or later.
 
 SPDX-License-Identifier: GPL-3.0-or-later
 
-Module contents: Data management
+Module contents: IO management
 
 """
 
@@ -86,7 +86,7 @@ def update_db(search, strict=False):
     for prm_abbr in prm_abbr_list:
 
         # Log
-        rawcsv.info("Start reading CSV files for '%s'", prm_abbr)
+        rawcsv.info("Start reading files for '%s'", prm_abbr)
 
         # Scan files
         new_orig_data = []
@@ -97,19 +97,19 @@ def update_db(search, strict=False):
 
                 # Log
                 rawcsv.info(
-                    "CSV files '%s' was treated", file_path
+                    "Files '%s' was treated", file_path
                 )
             else:
 
                 # Log
                 rawcsv.debug(
-                    "CSV files '%s' was left untouched", file_path
+                    "Files '%s' was left untouched", file_path
                 )
 
         # Log
-        rawcsv.info("Finish reading CSV files for '%s'", prm_abbr)
+        rawcsv.info("Finish reading files for '%s'", prm_abbr)
         rawcsv.info(
-            "Found %d new data while reading CSV files for '%s'",
+            "Found %d new data while reading files for '%s'",
             len(new_orig_data),
             prm_abbr
         )

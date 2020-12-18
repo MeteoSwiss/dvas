@@ -15,6 +15,7 @@ from abc import ABC, ABCMeta, abstractmethod
 from contextlib import contextmanager
 from pampy import match as pmatch
 from pampy.helpers import Union, Iterable, Any
+from inspect import getmembers, isroutine
 
 # Import current package's modules
 from .helper import SingleInstanceMetaClass
@@ -35,31 +36,41 @@ class VariableManager(ABC, metaclass=ABCSingleInstanceMeta):
     def __init__(self):
         """Constructor"""
 
-        # Check attr_def
+        # Check _attr_def
         try:
-            assert isinstance(self.attr_def, list)
+            assert isinstance(self._attr_def, list)
             assert all([
                 pmatch(arg, {'name': Any, 'default': Any}, True, default=False)
-                for arg in self.attr_def
+                for arg in self._attr_def
             ])
 
         except AssertionError as first_error:
-            raise dvasError("Error in matching 'attr_def' pattern") from first_error
+            raise dvasError("Error in matching '_attr_def' pattern") from first_error
 
         # Set attributes
         self.set_attr()
 
+    def __str__(self):
+        attr = getmembers(self, lambda x: not (isroutine(x)))
+        return '\n'.join(
+            [
+                f"{arg[0]}: {arg[1]}" for arg in attr
+                if not (arg[0].startswith('_'))
+            ]
+
+        )
+
     @property
     @abstractmethod
-    def attr_def(self):
+    def _attr_def(self):
         """Class attributes definition"""
         #  pass
 
     def set_attr(self):
-        """Set attribute from attr_def. Try first to get attribute value from
+        """Set attribute from _attr_def. Try first to get attribute value from
         environment. All attributes can be defined in environment variables
         using <package name>_<attribute name> in upper case."""
-        for arg in self.attr_def:
+        for arg in self._attr_def:
             setattr(
                 self,
                 arg['name'],
@@ -78,7 +89,7 @@ class VariableManager(ABC, metaclass=ABCSingleInstanceMeta):
                 keys: instance attribute name. values: temporarily set values.
         except AssertionError as ass:
         Examples:
-            >>>from dvas.dvas_environ import path_var
+            >>>from dvas.environ import path_var
             >>>with path_var.set_many_attr({})
 
         """
@@ -122,7 +133,7 @@ class GlobalPathVariablesManager(VariableManager):
     )
 
     @property
-    def attr_def(self):
+    def _attr_def(self):
         return [
             {'name': 'orig_data_path',
              'default': expl_path / 'data'},
@@ -137,39 +148,6 @@ class GlobalPathVariablesManager(VariableManager):
             {'name': 'plot_style_path',
              'default': pkg_path / 'plots' / 'mpl_styles'}
 
-        ]
-
-
-class GlobalLoggingVariableManager(VariableManager):
-    """Class used to manage package logging variables"""
-
-    #: tuple: Allowed logging modes
-    MODES = ('FILE', 'CONSOLE')
-
-    #: str: Log output mode, Default to 'CONSOLE'
-    log_mode = TProp(
-        TProp.re_str_choice(MODES, ignore_case=True),
-        lambda *x: x[0].upper()
-    )
-    #: str: Log output file name. Default to 'dvas'
-    log_file_name = TProp(re.compile(r'\w+'), lambda x: x + '.log')
-    #: str: Log level. Default to 'INFO'
-    log_level = TProp(
-        TProp.re_str_choice(
-            ['DEBUG', 'INFO', 'WARNING', 'ERROR'], ignore_case=True
-        ),
-        lambda *x: x[0].upper()
-    )
-
-    @property
-    def attr_def(self):
-        return [
-            {'name': 'log_mode',
-             'default': 'CONSOLE'},
-            {'name': 'log_file_name',
-             'default': pkg_name},
-            {'name': 'log_level',
-             'default': 'INFO'},
         ]
 
 
@@ -193,7 +171,7 @@ class GlobalPackageVariableManager(VariableManager):
     mdl_id_pat = TProp(Union[str, re.Pattern], lambda x: re.compile(x))
 
     @property
-    def attr_def(self):
+    def _attr_def(self):
         return [
             {'name': 'config_gen_max',
              'default': 10000},
@@ -212,9 +190,6 @@ class GlobalPackageVariableManager(VariableManager):
 
 #: GlobalPathVariablesManager: Global variable containing directory path values
 path_var = GlobalPathVariablesManager()
-
-#: GlobalLoggingVariableManager: Global variable containing log package variables
-log_var = GlobalLoggingVariableManager()
 
 #: GlobalPackageVariableManager: Global variable containing global package variables
 glob_var = GlobalPackageVariableManager()
