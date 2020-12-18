@@ -263,15 +263,20 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         self.update(db_df_keys, self.profiles + [val])
 
     def get_prms(self, prm_list=None):
-        """ Convenience getter to extract one specific parameter from the DataFrames of all the
-        Profile instances. This function only allows to select
+        """ Convenience getter to extract specific columns from the DataFrames and/or class
+        properties of all the Profile instances.
+
+        Only column/property names are allowed. Specifying only index names will raise a dvasError.
 
         Args:
-            prm_list (list of str): names of the parameter to extract from all the Profile
-                DataFrame. Defaults to None (=return all the data from the DataFrame)
+            prm_list (str|list of str, optional): names of the columns(s) to extract from all the
+                Profile DataFrames. Defaults to None (=return all the columns from the DataFrame).
 
         Returns:
             dict of list of DataFrame: idem to self.profiles, but with only the requested data.
+
+        Raises:
+            dvasError: if prm_list only contains the names of Indices.
 
         """
 
