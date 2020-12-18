@@ -322,7 +322,7 @@ class TypedProperty:
         """Method to create re.compile for a list of str
 
         Note:
-            Use 'lambda *x: x[0]' to catch the matched string.
+            Use `lambda *x: x[0]` to catch the matched string.
 
         Args:
             choices (list of str): Choice of strings
