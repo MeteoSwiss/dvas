@@ -98,6 +98,9 @@ For the sake of clarity, and to facilitate the maintenance, we list here (succin
     Returns:
         bool: some grand Truth about the World.
 
+    Raises:
+        dvasError: if blah and blah occurs.
+
     Example:
         If needed, you can specify chunks of code using code blocks::
 
@@ -161,9 +164,11 @@ Until its release, the dvas repository will remain private: branching will thus 
        git config --local user.name "your_github_id"
        git config --local user.email "your_github_id@users.noreply.github.com"
 
-1. Clone the develop branch locally:
+1. Clone the `develop` branch locally:
 
        git clone -b develop https://github.com/MeteoSwiss-MDA/dvas.git your_branch_name
+
+   :warning: `develop` is the default branch for dvas that contains all the latest *approved* changes. **Unless you have a good reason to do otherwise**, this is the branch you want to clone and branch-off from.
 
 2. Actually create your new branch locally:
 
@@ -176,9 +181,10 @@ Until its release, the dvas repository will remain private: branching will thus 
        git config --list
        git status
 
-4. Install the packages that are required for doing dev work with dvas:
+4. Install dvas from this local repo, and also the packages that are required for doing dev work :
 
-       pip install -r dev_requirements.txt
+       pip install -e ./
+       pip install -r ./dev_utils/dev_requirements.txt
 
 5. Modify the code locally. This could be the source code, or the docs `.rst` source files.
 
@@ -208,7 +214,7 @@ Until its release, the dvas repository will remain private: branching will thus 
        sh build_docs.sh
 
 9. Once ready with all your modifications, we'll ask that you do a rebase of your branch to
-           incorporate any modification that may have occurred on the original `develop` branch in the meantime:
+   incorporate any modification that may have occurred on the original `develop` branch in the meantime:
 
               git fetch origin develop
               git pull --rebase origin develop
