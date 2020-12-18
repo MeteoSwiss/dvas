@@ -13,9 +13,9 @@ from pathlib import Path
 import re
 from abc import ABC, ABCMeta, abstractmethod
 from contextlib import contextmanager
+from inspect import getmembers, isroutine
 from pampy import match as pmatch
 from pampy.helpers import Union, Iterable, Any
-from inspect import getmembers, isroutine
 
 # Import current package's modules
 from .helper import SingleInstanceMetaClass
