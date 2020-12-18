@@ -279,6 +279,7 @@ class TypedProperty:
                 use TypeError to raise appropriate exception.
             args (tuple): setter function args
             kwargs (dict): setter function kwargs
+            getter_fct: Function applied before returning attributes in getter method.
         """
         # Set attributes
         self._pampy_match = pampy_match
@@ -293,15 +294,24 @@ class TypedProperty:
         return self._getter_fct(instance.__dict__[self._name])
 
     def __set__(self, instance, val):
-        # Test type
+        # Test match
         try:
-            instance.__dict__[self._name] = pmatch(
-                val, self._pampy_match, self._setter_fct(
-                    val, *self._setter_fct_args, **self._setter_fct_kwargs
-                )
-            )
+            match_tuple = pmatch(val, self._pampy_match, lambda *x: x)
+
         except (MatchError, TypeError) as first_error:
             raise TypeError(f'Bad type while assignment of {self._name} <- {val}') from first_error
+
+        # Untuple
+        if len(match_tuple) == 1:
+            match_tuple = match_tuple[0]
+
+        # Apply setter function
+        try:
+            instance.__dict__[self._name] = self._setter_fct(
+                    match_tuple, *self._setter_fct_args, **self._setter_fct_kwargs
+            )
+        except (KeyError, AttributeError) as second_error:
+            raise TypeError(f'Error while apply setter function') from second_error
 
     def __set_name__(self, instance, name):
         """Attribute name setter"""
@@ -310,6 +320,9 @@ class TypedProperty:
     @staticmethod
     def re_str_choice(choices, ignore_case=False):
         """Method to create re.compile for a list of str
+
+        Note:
+            Use `lambda *x: x[0]` to catch the matched string.
 
         Args:
             choices (list of str): Choice of strings
@@ -321,7 +334,7 @@ class TypedProperty:
         """
 
         # Create pattern
-        pattern = '^(' + ')|('.join(choices) + ')$'
+        pattern = '^((' + ')|('.join(choices) + '))$'
 
         # Create re.compile
         if ignore_case:
@@ -416,12 +429,15 @@ def check_datetime(val, utc=True):
         datetime.datetime
 
     """
+
+    # UTC case
     if utc:
         try:
             assert (out := to_datetime(val).to_pydatetime()).tzinfo == pytz.UTC
         except (ValueError, AssertionError) as first_error:
             raise TypeError(f"Not UTC or bad datetime format for '{val}'") from first_error
 
+    # Non UTC case
     else:
         try:
             out = to_datetime(val).to_pydatetime()

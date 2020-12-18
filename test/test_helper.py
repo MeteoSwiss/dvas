@@ -103,11 +103,11 @@ class TestTypedProperty:
         my_truncated_str = TypedProperty(
             str, my_output_fct, args=(2,), kwargs={'start': 3})
         my_matched_str = TypedProperty(
-            TypedProperty.re_str_choice(['A', 'B']), lambda *x: x[0]
+            TypedProperty.re_str_choice(['A', 'B']), lambda x: x[0]
         )
         my_matched_str_ic = TypedProperty(
             TypedProperty.re_str_choice(['A', 'B'], ignore_case=True),
-            lambda *x: x[0]
+            lambda x: x[0]
         )
 
     # Create instance
