@@ -14,7 +14,6 @@ from abc import abstractmethod
 import pandas as pd
 
 # Import from current package
-from .linker import LocalDBLinker, CSVHandler, GDPHandler
 from .strategy.data import Profile, RSProfile, GDPProfile
 
 from .strategy.load import LoadProfileStrategy, LoadRSProfileStrategy, LoadGDPProfileStrategy
@@ -29,11 +28,7 @@ from .strategy.rebase import RebaseStrategy
 
 from .strategy.save import SaveDataStrategy
 
-from ..database.database import DatabaseManager
-from ..database.model import Parameter
 from ..database.database import OneDimArrayConfigLinker
-from ..logger import localdb, rawcsv
-from ..environ import path_var
 from ..helper import RequiredAttrMetaClass
 from ..helper import deepcopy
 
@@ -63,117 +58,6 @@ sort_prf_stgy = SortProfileStrategy()
 rspl_rs_stgy = ResampleRSDataStrategy()
 
 save_prf_stgy = SaveDataStrategy()
-
-
-# TODO
-#  Move to another module. Maybe as static method to Databasemanager
-def update_db(search, strict=False):
-    """Update database.
-
-    Args:
-        search (str): prm_abbr search criteria.
-        strict (bool, optional): If False, match for any sub-string.
-            If True match for entire string. Default to False.
-
-    .. uml::
-
-        @startuml
-        hide footbox
-
-        update_db -> CSVHandler: handle(file_path, prm_abbr)
-        activate CSVHandler
-
-        CSVHandler -> GDPHandler: handle(file_path, prm_abbr)
-        activate GDPHandler
-
-        CSVHandler <- GDPHandler: data
-        deactivate  GDPHandler
-
-        update_db <- CSVHandler: data
-        deactivate   CSVHandler
-
-        @enduml
-
-    """
-
-    # Init linkers
-    db_mngr = DatabaseManager()
-    db_linker = LocalDBLinker()
-
-    # Define chain of responsibility for loadgin from raw
-    handler = CSVHandler()
-    handler.set_next(GDPHandler())
-
-    # Search prm_abbr
-    if strict is True:
-        search_dict = {'where': Parameter.prm_abbr == search}
-    else:
-        search_dict = {'where': Parameter.prm_abbr.contains(search)}
-
-    prm_abbr_list = [
-        arg[0] for arg in db_mngr.get_or_none(
-            Parameter,
-            search=search_dict,
-            attr=[[Parameter.prm_abbr.name]],
-            get_first=False
-        )
-    ]
-
-    # If no matching parameters were found, issue a warning and stop here.
-    if len(prm_abbr_list) == 0:
-        localdb.info("No database parameter found for the query: %s", search)
-        return None
-
-    # Log
-    localdb.info("Update db for following parameters: %s", prm_abbr_list)
-
-    # Scan path
-    origdata_path_scan = list(path_var.orig_data_path.rglob("*.*"))
-
-    # Loop loading
-    for prm_abbr in prm_abbr_list:
-
-        # Log
-        rawcsv.info("Start reading CSV files for '%s'", prm_abbr)
-
-        # Scan files
-        new_orig_data = []
-        for file_path in origdata_path_scan:
-            result = handler.handle(file_path, prm_abbr)
-            if result:
-                new_orig_data.append(result)
-
-                # Log
-                rawcsv.info(
-                    "CSV files '%s' was treated", file_path
-                )
-            else:
-
-                # Log
-                rawcsv.debug(
-                    "CSV files '%s' was left untouched", file_path
-                )
-
-        # Log
-        rawcsv.info("Finish reading CSV files for '%s'", prm_abbr)
-        rawcsv.info(
-            "Found %d new data while reading CSV files for '%s'",
-            len(new_orig_data),
-            prm_abbr
-        )
-
-        # Log
-        localdb.info(
-            "Start inserting in local DB new found data for '%s'", prm_abbr
-        )
-
-        # Save to DB
-        db_linker.save(new_orig_data)
-
-        # Log
-        localdb.info(
-            "Finish inserting in local DB new found data for '%s'", prm_abbr
-        )
 
 
 # TODO
@@ -224,24 +108,22 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         return [arg.info for arg in self.profiles]
 
     @deepcopy
-    def rm_info_tag(self, val, inplace=True):
-        """Remove tag from all info tags
+    def rm_info_tag(self, val):
+        """Remove some tag(s) from all info tag lists.
 
         Args:
-            val (str|list of str): Tag values to remove
-            inplace (bool, optional): Modify in place. Defaults to True.
+            val (str|list of str): Tag value(s) to remove
 
         """
         for i in range(len(self)):
             self.profiles[i].info.rm_tag(val)
 
     @deepcopy
-    def add_info_tag(self, val, inplace=True):
+    def add_info_tag(self, val):
         """Add tag from all info tags
 
         Args:
             val (str|list of str): Tag values to add.
-            inplace (bool, optional): Modify in place. Defaults to True.
 
         """
         for i in range(len(self)):
@@ -263,11 +145,7 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
 
         Args:
             *args: positional arguments
-            inplace (bool): Modify in place. Defaults to True.
             **kwargs: key word arguments
-
-        Returns:
-            MultiProfile: only if inplace=False
 
         """
 
@@ -282,14 +160,8 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         self.update(db_df_keys, data)
 
     @deepcopy
-    def sort(self, inplace=False):
+    def sort(self):
         """Sort method
-
-        Args:
-            inplace (bool, `optional`): If True, perform operation in-place
-                Defaults to True.
-        Returns
-            MultiProfileManager if inplace is True, otherwise None
 
         """
 

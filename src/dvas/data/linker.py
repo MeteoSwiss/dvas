@@ -12,7 +12,6 @@ Module contents: Data linker classes
 # Import external python packages and modules
 from abc import ABC, abstractmethod
 import re
-from itertools import chain, zip_longest
 from itertools import takewhile
 import inspect
 import netCDF4 as nc
@@ -25,6 +24,7 @@ from ..database.model import Parameter, DataSource
 from ..database.database import DatabaseManager, InfoManager
 from ..config.config import OrigData, CSVOrigMeta
 from ..config.config import ConfigReadError
+from ..config.config import ConfigExprInterpreter
 from ..config.definitions.origdata import META_FIELD_KEYS
 from ..config.definitions.origdata import EVT_DT_FLD_NM, SRN_FLD_NM, TAG_FLD_NM
 from ..config.definitions.origdata import PARAM_FLD_NM
@@ -268,36 +268,6 @@ class FileHandler(AbstractHandler):
     def read_metaconfig_fields(self, instr_type_name, prm_abbr):
         """Read field from metaconfig"""
 
-        # Define
-        pat_split = r'\{[^\n\r\t\{\}]+\}'
-        pat_find = r'\{([^\n\r\t\{\}]+)\}'
-
-        def create_meta_val(field_val_arg):
-            """Create meta value
-
-            Args:
-                field_val_arg:
-
-            Returns:
-
-            """
-            return ''.join(
-                [arg for arg in chain(
-                    *zip_longest(
-
-                        # Split formula
-                        re.split(pat_split, field_val_arg),
-
-                        # Find nested item and substitute
-                        [
-                            self.get_metadata_item(item) for item in
-                            re.findall(pat_find, field_val_arg)
-                        ]
-
-                    )
-                ) if arg is not None]
-            )
-
         # Create metadata output
         out = {}
         for key in META_FIELD_KEYS:
@@ -308,11 +278,15 @@ class FileHandler(AbstractHandler):
                 )
 
                 if isinstance(field_val, str):
-                    meta_val = create_meta_val(field_val)
+                    meta_val = ConfigExprInterpreter.eval(
+                        field_val, self.get_metadata_item
+                    )
 
                 else:
                     meta_val = [
-                        create_meta_val(field_val_arg)
+                        ConfigExprInterpreter.eval(
+                            field_val_arg, self.get_metadata_item
+                        )
                         for field_val_arg in field_val
                     ]
 

@@ -10,7 +10,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 from pathlib import Path
 
-from dvas.data.data import update_db
+from dvas.data.io import update_db
 from dvas.environ import path_var
 from dvas.database.database import DatabaseManager
 

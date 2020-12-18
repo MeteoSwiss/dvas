@@ -5,12 +5,12 @@
 _RS92:
 
     # -- META DATA ----------------------------------
-    dt_field: '{event_dt}'
-    srn_field: '{sn}'
+    dt_field: "get('event_dt')"
+    srn_field: "get('sn')"
     tag_field:
-        - 'e:{event_id}'
-        - 'r:{rig}'
-        - '{day_night}'
+        - "cat('e:', get('event_id'))"
+        - "cat('r:', get('rig'))"
+        - "get('day_night')"
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter: ','
@@ -35,12 +35,12 @@ _RS92:
 _YT:
 
     # -- META DATA ----------------------------------
-    dt_field: '{event_dt}Z'
-    srn_field: '{sn}'
+    dt_field: "cat(get('event_dt'), 'Z')"
+    srn_field: "get('sn')"
     tag_field:
-        - 'e:{event_id}'
-        - 'r:{rig}'
-        - '{day_night}'
+        - "cat('e:', get('event_id'))"
+        - "cat('r:', get('rig'))"
+        - "get('day_night')"
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter: ','
@@ -65,12 +65,12 @@ _YT:
 _ZT:
 
     # -- META DATA ----------------------------------
-    dt_field: '{event_dt}'
-    srn_field: '{sn}'
+    dt_field: "get('event_dt')"
+    srn_field: "get('sn')"
     tag_field:
-        - 'e:{event_id}'
-        - 'r:{rig}'
-        - '{day_night}'
+        - "cat('e:', get('event_id'))"
+        - "cat('r:', get('rig'))"
+        - "get('day_night')"
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter: ';'

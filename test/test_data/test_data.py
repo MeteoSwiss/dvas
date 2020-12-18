@@ -11,29 +11,10 @@ Module contents: Testing classes and function for dvas.data.data module.
 
 
 # Import from python packages and modules
-from dvas.data.data import update_db
-from dvas.data.strategy.load import LoadRSProfileStrategy, LoadProfileStrategy
+from dvas.data.io import update_db
+from dvas.data.strategy.load import LoadProfileStrategy
 from dvas.data.data import MultiProfile
 from dvas.config.definitions.tag import TAG_DERIVED_VAL, TAG_RAW_VAL
-
-
-def test_update_db():
-    """Test update_db function"""
-
-    # Update
-    update_db('trepros1', strict=True)
-    update_db('tdtpros1', strict=True)
-    update_db('altpros1', strict=True)
-
-    # Load
-    prf_stgy = LoadRSProfileStrategy()
-    data = prf_stgy.load(
-        'all()', 'trepros1', 'tdtpros1',
-        alt_abbr='altpros1'
-    )
-    assert all([not arg.val.isna().all() for arg in data[0]])
-    assert all([not arg.alt.isna().all() for arg in data[0]])
-    assert all([not arg.tdt.isna().all() for arg in data[0]])
 
 
 class TestMutliProfile:
@@ -46,7 +27,7 @@ class TestMutliProfile:
     update_db('trepros1', strict=True)
     update_db('altpros1', strict=True)
     prf_stgy = LoadProfileStrategy()
-    data = prf_stgy.load('all()', 'trepros1', 'altpros1')
+    data = prf_stgy.load("tag('raw')", 'trepros1', 'altpros1')
     mlt_prf.update(data[1], data[0])
 
     @staticmethod
