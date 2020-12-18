@@ -26,12 +26,12 @@ from dvas.errors import dvasError
 #import dvas.tools.gruan as dtg
 import dvas.plots.utils as dpu
 
-from dvas.dvas import init_log
+from dvas.dvas import start_log
 
 if __name__ == '__main__':
 
     # Start the logging
-    init_log(3)
+    start_log(3)
 
     # Let us fine-tune the plotting behavior of dvas
     dpu.set_mplstyle('nolatex') # The safe option. Use 'latex' fo prettier plots.
