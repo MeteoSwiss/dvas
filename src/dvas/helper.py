@@ -11,7 +11,8 @@ Module contents: Package helper classes and functions.
 
 # Import external packages and modules
 from pathlib import Path
-from re import compile, IGNORECASE
+import inspect
+import re
 from datetime import datetime
 from copy import deepcopy as dc
 from functools import wraps, reduce
@@ -35,8 +36,8 @@ def camel_to_snake(name):
     """
 
     # Define module global
-    first_cap_re = compile('(.)([A-Z][a-z]+)')
-    all_cap_re = compile('([a-z0-9])([A-Z])')
+    first_cap_re = re.compile('(.)([A-Z][a-z]+)')
+    all_cap_re = re.compile('([a-z0-9])([A-Z])')
 
     # Convert
     return all_cap_re.sub(
@@ -199,12 +200,31 @@ class TimeIt(ContextDecorator):
 
 
 def deepcopy(func):
-    """Use a deepcopy of the class when calling the method.
-    The method keywords must contain the 'inplace' argument.
+    """ Use a deepcopy of the class when calling a given "func" function.
+
+    Intended to be used as a decorator, that will "correctly" handle the decorated function
+    signature AND its docstring.
+
+    Note:
+      This implementation was inspired by the following sources:
+
+        - The reply from `metaperture` to `this SO post
+          <https://stackoverflow.com/questions/1409295/set-function-signature-in-python>`__
+        - `This excellent article
+          <https://utilipy.readthedocs.io/en/latest/examples/making-decorators.html>`__ by
+          N. Starkman.
+        - The `wrapt docs
+          <https://wrapt.readthedocs.io/en/latest/decorators.html#signature-changing-decorators>`__
     """
 
     @wraps(func)
     def decorated(*args, inplace=True, **kwargs):
+        """ Decorating function
+
+        Args:
+            inplace (bool, optional): if False, will return a deepcopy. Defaults to True.
+
+        """
 
         if inplace:
             func(*args, **kwargs)
@@ -213,6 +233,29 @@ def deepcopy(func):
             res = dc(args[0])
             func(res, *args[1:], **kwargs)
         return res
+
+    # I now shall deal with the decorated function signature.
+    # I need to add the 'inplace' Parameter to it.
+    new_param = inspect.Parameter('inplace', inspect.Parameter.KEYWORD_ONLY, default=True)
+    sig = inspect.signature(decorated)
+    func_params = tuple(sig.parameters.values())
+    # Here, I cannot just add a new Parameter blindly. I have to do keep it in the proper order.
+    if func_params[-1].name == 'kwargs':
+        func_params = func_params[:-1] + (new_param, func_params[-1],)
+    else:
+        func_params = func_params + (new_param,)
+    # Set the nnew parameters in the signature
+    sig = sig.replace(parameters=func_params)
+    # I also need to adjust the docstring to document this inplace parameter.
+    # I'll append some clear message to the existing docstring.
+    decorated.__signature__ = sig
+    decorated.__doc__ += """--- Decorating function infos ---
+
+        Args:
+            inplace (bool, optional): If False, will return a deepcopy. Defaults to True.
+
+        ---   ---   ---   ---   ---   ---
+    """
 
     return decorated
 
@@ -295,9 +338,9 @@ class TypedProperty:
 
         # Create re.compile
         if ignore_case:
-            out = compile(pattern, IGNORECASE)
+            out = re.compile(pattern, re.IGNORECASE)
         else:
-            out = compile(pattern)
+            out = re.compile(pattern)
 
         return out
 
