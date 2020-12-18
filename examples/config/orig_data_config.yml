@@ -1,72 +1,7 @@
-
 # ----------------------------------------------------
-# RS-92 type for pseudo data (NOT THE GDP!)
+# SRS-C50 type for pseudo data (NOT THE GDP!)
 # ----------------------------------------------------
-_RS92:
-
-    # -- META DATA ----------------------------------
-    dt_field: "get('event_dt')"
-    typ_field: "get('instr_type')"
-    srn_field: "get('sn')"
-    pdt_field: "get('product_id')"
-    tag_field:
-        - "cat('e:', get('event_id'))"
-        - "cat('r:', get('rig'))"
-        - "get('day_night')"
-
-    # -- ORIG DATA ----------------------------------
-    csv_delimiter: ','
-    csv_skipinitialspace: True
-
-    _tdtpros1:
-        value_col: 0
-        lambda: 'lambda x: x * 1E9'
-
-    _trepros1:
-        value_col: 2
-
-    _altpros1:
-        value_col: 9
-
-    _prepros1:
-        value_col: 1
-
-# ----------------------------------------------------
-# YT type
-# ----------------------------------------------------
-_YT:
-
-    # -- META DATA ----------------------------------
-    dt_field: "cat(get('event_dt'), 'Z')"
-    typ_field: "get('instr_type')"
-    srn_field: "get('sn')"
-    pdt_field: "get('product_id')"
-    tag_field:
-        - "cat('e:', get('event_id'))"
-        - "cat('r:', get('rig'))"
-        - "get('day_night')"
-
-    # -- ORIG DATA ----------------------------------
-    csv_delimiter: ','
-    csv_skipinitialspace: True
-
-    _tdtpros1:
-        value_col: 0
-        lambda: 'lambda x: x * 1E9'
-
-    _trepros1:
-        value_col: 1
-
-    _altpros1:
-        value_col: 2
-
-    _prepros1:
-        value_col: 3
-
-# ----------------------------------------------------
-# ZT type
-# ----------------------------------------------------
-_ZT:
+_C50:
 
     # -- META DATA ----------------------------------
     dt_field: "get('event_dt')"
@@ -81,13 +16,83 @@ _ZT:
     # -- ORIG DATA ----------------------------------
     csv_delimiter: ';'
     csv_skip_blank_lines: True
+    csv_skiprows: 40
+    csv_skipfooter: 1
 
     _tdtpros1:
         value_col: 0
         lambda: 'lambda x: x * 1E9'
 
     _trepros1:
+        value_col: 5
+
+    _altpros1:
         value_col: 1
+
+    _prepros1:
+        value_col: 4
+# ----------------------------------------------------
+# SRS-C34 type for pseudo data (NOT THE GDP!)
+# ----------------------------------------------------
+_C34:
+
+    # -- META DATA ----------------------------------
+
+    dt_field: "cat(get('event_dt'), 'Z')"
+    typ_field: "get('instr_type')"
+    srn_field: "get('srn')"
+    pdt_field: "get('product_id')"
+    tag_field:
+        - "cat('e:', get('event_id'))"
+        - "cat('r:', get('rig'))"
+        - "get('day_night')"
+
+    # -- ORIG DATA ----------------------------------
+    csv_delimiter: ';'
+    csv_skip_blank_lines: True
+    csv_skiprows: 48
+    csv_skipfooter: 1
+
+    _tdtpros1:
+        value_col: 0
+        lambda: 'lambda x: x * 1E9'
+
+    _trepros1:
+        value_col: 5
+
+    _altpros1:
+        value_col: 1
+
+    _prepros1:
+        value_col: 4
+
+# ----------------------------------------------------
+# RS-41 type for pseudo data (NOT THE GDP!)
+# ----------------------------------------------------
+_RS41:
+
+    # -- META DATA ----------------------------------
+    dt_field: "get('event_dt')"
+    typ_field: "get('instr_type')"
+    srn_field: "get('sn')"
+    pdt_field: "get('product_id')"
+    tag_field:
+        - "cat('e:', get('event_id'))"
+        - "cat('r:', get('rig'))"
+        - "get('day_night')"
+
+    # -- ORIG DATA ----------------------------------
+    csv_delimiter:
+    csv_skip_blank_lines: True
+    csv_delim_whitespace: True
+    csv_skiprows: 1
+
+    _tdtpros1:
+        value_col: 0
+        lambda: 'lambda x: x * 1E9'
+
+    _trepros1:
+        value_col: 4
 
     _altpros1:
         value_col: 2
@@ -96,80 +101,42 @@ _ZT:
         value_col: 3
 
 # ----------------------------------------------------
-# AR GDP, version 1
+# RS-92 type for pseudo data (NOT THE GDP!)
 # ----------------------------------------------------
-_AR-GDP_001:
+_RS92:
 
     # -- META DATA ----------------------------------
-    dt_field: "get('g.Measurement.StandardTime')"
+    dt_field: "get('event_dt')"
     typ_field: "get('g.Product.Code')"
-    srn_field: "get('g.MainSonde.SerialNumber')"
+    srn_field: "get('srn')"
+
     pdt_field: "get('g.Product.Version')"
     tag_field:
-        - "cat('e:', get('g.Measurement.Id'))"
-        - "cat('r:', get('g.Measurement.BalloonNumber'))"
+      - "cat('e:', get('event_id'))"
+        - "cat('r:', get('rig'))"
+        - "get('day_night')"
     meta_field:
         key_str: '1'
         key_num: 1
 
     # -- ORIG DATA ----------------------------------
+    csv_delimiter:
+    csv_skip_blank_lines: True
+    csv_delim_whitespace: True
+    csv_skiprows: 2
+
     _tdtpros1:
-        value_col: 'time'
+        value_col: 0
         lambda: 'lambda x: x * 1E9'
 
     _trepros1:
-        value_col: 'temp'
-        lambda: 'lambda x: x - 273.15'
-
-    _treprosu_e:
-        value_col: 'temp_uec'
-
-    _treprosu_s:
-        value_col: 'temp_usc'
-
-    _treprosu_t:
-        value_col: 'temp_utc'
+        value_col: 3
 
     _altpros1:
-        value_col: 'alt'
+        value_col: 1
 
     _prepros1:
-        value_col: 'press'
-
-# ----------------------------------------------------
-# BR GDP, version 1
-# ----------------------------------------------------
-_BR-GDP_001:
-
-    # -- META DATA ----------------------------------
-    dt_field: "cat(get('g.Measurement.StandardTime'), 'Z')"
-    typ_field: "get('g.Product.Code')"
-    srn_field: "get('g.MainSonde.SerialNumber')"
-    pdt_field: "get('g.Product.Version')"
-    tag_field:
-        - "cat('e:', get('g.Measurement.Id'))"
-        - "cat('r:', get('g.Measurement.BalloonNumber'))"
-
-    # -- ORIG DATA ----------------------------------
-    _tdtpros1:
-        value_col: 'time'
-        lambda: 'lambda x: x * 1E9'
-
-    _trepros1:
-        value_col: 'temp'
-        lambda: 'lambda x: x - 273.15'
-
-    _treprosu_e:
-        value_col: 'temp_uec'
-
-    _treprosu_t:
-        value_col: 'temp_utc'
-
-    _altpros1:
-        value_col: 'alt'
-
-    _prepros1:
-        value_col: 'press'
+        value_col: 2
 
 # ----------------------------------------------------
 # RS-41 GDP, version beta-1
@@ -177,7 +144,8 @@ _BR-GDP_001:
 _RS41-GDP-BETA_001:
 
     # -- META DATA ----------------------------------
-    dt_field: "get('g.Measurement.StandardTime')"
+
+    dt_field: "cat(get('g.Measurement.StandardTime'), 'Z')"
     typ_field: "get('g.Product.Code')"
     srn_field: "get('g.MainSonde.SerialNumber')"
     pdt_field: "get('g.Product.Version')"
@@ -210,3 +178,44 @@ _RS41-GDP-BETA_001:
 
     _preprosu_u:
         value_col: 'press_uc'
+
+
+# ----------------------------------------------------
+# RS92-GDP, version 2
+# ----------------------------------------------------
+_RS92-GDP_002:
+
+    # -- META DATA ----------------------------------
+    dt_field: "cat(get('g.Ascent.StandardTime'),'Z')"
+    typ_field: "get('g.Product.Code')"
+    srn_field: "get('g.Instrument.SerialNumber')"
+    pdt_field: "get('g.Product.Version')"
+    tag_field:
+        - "cat('e:', get('g.Ascent.ID'))"
+        - "cat('r:', get('g.Ascent.BalloonNumber'))"
+
+    # -- ORIG DATA ----------------------------------
+    _tdtpros1:
+        value_col: 'time'
+        lambda: 'lambda x: x * 1E9'
+
+    _trepros1:
+        value_col: 'temp'
+
+    _treprosu_r:
+        value_col: 'u_std_temp'
+
+    #_treprosu_s:
+    #    value_col: '???'
+
+    _treprosu_t:
+        value_col: 'u_temp'
+
+    _altpros1:
+        value_col: 'alt'
+
+    _prepros1:
+        value_col: 'press'
+
+    _preprosu_u:
+        value_col: 'u_press'
