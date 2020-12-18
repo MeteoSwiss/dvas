@@ -1,15 +1,17 @@
+# 2020.12.17 16:00:00
+- srn: 'M1453523'
+  instr_type: 'RS92-GDP_002'
 
-# 2018.01.10 00:00:00
-- srn: 'AR-000'
-  instr_type: 'AR-GDP_001'
+ # 2020.12.17 16:00:00
+- srn: 'M1453554'
+  instr_type: 'RS92-GDP_002'
 
-- srn: 'BR-000'
-  instr_type: 'BR-GDP_001'
+ # 2020.12.17 16:00:00
+- srn: 'M2710695'
+  instr_type: 'RS41-GDP-BETA_001'
+
+ # 2020.12.17 16:00:00
+- srn: 'M2710728'
+  instr_type: 'RS41-GDP-BETA_001'
 
 
-# 2018.01.25 00:00:00
-- srn: 'AR-001'
-  instr_type: 'AR-GDP_001'
-
-- srn: 'BR-001'
-  instr_type: 'BR-GDP_001'

@@ -1,18 +1,25 @@
+# 2020.12.18 012:00:00
+- srn: 'testM1453523'
+  instr_type: 'RS92'
 
-# 2018.01.10 00:00:00
-- srn: 'YT-100'
-  instr_type: 'YT'
+- srn: 'testM1453554'
+  instr_type: 'RS92'
 
-- srn: 'ZT-100'
-  instr_type: 'ZT'
+- srn: 'testM2710728'
+  instr_type: 'RS41'
 
-# 2018.01.25 12:00:00
-- srn: 'YT-101'
-  instr_type: 'YT'
+- srn: 'testM2710695'
+  instr_type: 'RS41'
 
-- srn: 'ZT-101'
-  instr_type: 'ZT'
+- srn: '6001'
+  instr_type: 'C34'
 
-# Totally fake example
-- srn: '123456789'
-  instr_type: 'ZT'
+- srn: '4677'
+  instr_type: 'C34'
+
+- srn: '761'
+  instr_type: 'C50'
+
+- srn: '1083'
+  instr_type: 'C50'
+

@@ -319,7 +319,7 @@ class FileHandler(AbstractHandler):
 class CSVHandler(FileHandler):
     """CSV Hanlder class"""
 
-    _FILE_SUFFIX = re.compile(r'\.csv', re.IGNORECASE)
+    _FILE_SUFFIX = re.compile(r'\.(csv|txt)', re.IGNORECASE)
     _FILE_INSTR_TYPE_PAT = re.compile(
         r"^(" + INSTR_TYPE_PAT + r")\.\w+"
     )
@@ -561,6 +561,7 @@ class GDPHandler(FileHandler):
 
         # Check instr_type name existence
         # (need it for loading origdata config)
+
         self.check_sn(file_path, instr_type_name, metadata)
 
         # Create event with 'raw' and 'gdp' tag

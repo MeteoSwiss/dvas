@@ -1,9 +1,6 @@
-
-- type_name: 'AR-GDP_001'
-  desc: 'AR dummy GDP, version 1'
-
-- type_name: 'BR-GDP_001'
-  desc: 'BR dummy GDP, version 1'
-
 - type_name: 'RS41-GDP-BETA_001'
   desc: 'RS41 GDP, BETA version 1'
+
+- type_name: 'RS92-GDP_002'
+  desc: 'RS92 GDP, version 2'
+
