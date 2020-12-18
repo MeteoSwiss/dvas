@@ -18,8 +18,8 @@ from .data.data import MultiGDPProfile as DataMultiGDPProfile
 from .logger import LogManager
 
 
-def init_log(mode=1, level='INFO'):
-    """Init logging
+def start_log(mode=1, level='INFO'):
+    """Start logging
 
     Args:
         mode (int): Log output mode. 0 (No log) | 1 (Log to file) | 2 (Log to file + console). Default to 1.
@@ -30,8 +30,8 @@ def init_log(mode=1, level='INFO'):
     log_inst.init_log()
 
 
-def clear_log():
-    """Clear logging"""
+def stop_log():
+    """Stop logging"""
     LogManager.clear_log()
 
 
