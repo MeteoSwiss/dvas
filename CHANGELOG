@@ -30,6 +30,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [v0.1.0] (2020-12-14)
 ### Added:
+ - [GonzagueRomanens, 2020-12-19] add SampleDatasetMultipayload
  - [fpavogt & modolol, 2020-12-07] Cleanup towards v0.1
  - [fpavogt & modolol, 2020-12-03] Winter cleanup towards v0.1
  - [fpavogt, 2020-11-05] Refactor ProfileManager class into Profile, grouping 'alt', 'val' , and 'flag' in a pandas DataFrame

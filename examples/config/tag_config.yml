@@ -28,9 +28,14 @@
   tag_desc: 'Combined Working Measurement Standard'
 
 
-#data_test campaign
+########################################
+# MultiPayload Flight 20170712T000000  #
+########################################
 - tag_txt: 'e:80596'
   tag_desc: 'GRUAN event of the multi-payload (quadruple) nighttime sounding from 20170712T00'
 
+########################################
+# MultiPayload Flight 20171024T120000  #
+########################################
 - tag_txt: 'e:80611'
   tag_desc: 'GRUAN event of the multi-payload (quadruple) daytime sounding from 20171024T12'

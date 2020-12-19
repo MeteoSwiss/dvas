@@ -1,5 +1,5 @@
 # ----------------------------------------------------
-# SRS-C50 type for pseudo data (NOT THE GDP!)
+# SRS-C50 type for data_test (NOT THE GDP!)
 # ----------------------------------------------------
 _C50:
 
@@ -31,8 +31,9 @@ _C50:
 
     _prepros1:
         value_col: 4
+
 # ----------------------------------------------------
-# SRS-C34 type for pseudo data (NOT THE GDP!)
+# SRS-C34 type for data_test (NOT THE GDP!)
 # ----------------------------------------------------
 _C34:
 
@@ -67,7 +68,7 @@ _C34:
         value_col: 4
 
 # ----------------------------------------------------
-# RS-41 type for pseudo data (NOT THE GDP!)
+# RS-41 type for data_test (NOT THE GDP!)
 # ----------------------------------------------------
 _RS41:
 
@@ -101,7 +102,7 @@ _RS41:
         value_col: 3
 
 # ----------------------------------------------------
-# RS-92 type for pseudo data (NOT THE GDP!)
+# RS-92 type for data_test (NOT THE GDP!)
 # ----------------------------------------------------
 _RS92:
 
