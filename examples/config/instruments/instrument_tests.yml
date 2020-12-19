@@ -1,25 +1,33 @@
-# 2020.12.18 012:00:00
-- srn: 'testM1453523'
-  instr_type: 'RS92'
+# 2020-12-19 16:00:00
 
-- srn: 'testM1453554'
-  instr_type: 'RS92'
-
-- srn: 'testM2710728'
-  instr_type: 'RS41'
-
-- srn: 'testM2710695'
-  instr_type: 'RS41'
-
+########################################
+# MultiPayload Flight 20170712T000000  #
+########################################
 - srn: '6001'
-  instr_type: 'C34'
-
-- srn: '4677'
   instr_type: 'C34'
 
 - srn: '761'
   instr_type: 'C50'
 
+- srn: 'testM2710695'
+  instr_type: 'RS41'
+
+- srn: 'testM1453523'
+  instr_type: 'RS92'
+
+########################################
+# MultiPayload Flight 20171024T120000  #
+########################################
+- srn: '4677'
+  instr_type: 'C34'
+
 - srn: '1083'
   instr_type: 'C50'
+
+- srn: 'testM2710728'
+  instr_type: 'RS41'
+
+- srn: 'testM1453554'
+  instr_type: 'RS92'
+
 
