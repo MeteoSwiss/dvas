@@ -164,6 +164,8 @@ Until its release, the dvas repository will remain private: branching will thus 
        git config --local user.name "your_github_id"
        git config --local user.email "your_github_id@users.noreply.github.com"
 
+   *:closed_lock_with_key: Optional but recommended:** use a GPG key to sign your commits. Quoting from [the instructions](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/about-commit-signature-verification): "*GitHub will verify these signatures so other people will know that your commits come from a trusted source.*"
+
 1. Clone the `develop` branch locally:
 
        git clone -b develop git@github.com:MeteoSwiss-MDA/dvas.git your_branch_name
