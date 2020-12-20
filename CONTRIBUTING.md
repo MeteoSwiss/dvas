@@ -159,7 +159,7 @@ Until its release, the dvas repository will remain private: branching will thus 
 
        git config --list
 
-   If `user.name` and `user.email` are missing or do not match those of your Github account account, change them:
+   If `user.name` and `user.email` are missing or do not match those of your Github account, change them:
 
        git config --local user.name "your_github_id"
        git config --local user.email "your_github_id@users.noreply.github.com"
@@ -221,11 +221,11 @@ Until its release, the dvas repository will remain private: branching will thus 
 9. Once ready with all your modifications, we'll ask that you do a rebase of your branch to
    incorporate any modification that may have occurred on the original `develop` branch in the meantime:
 
-              git fetch origin develop
-              git pull --rebase origin develop
+        git fetch origin develop
+        git pull --rebase origin develop
 
 10. You can now push your branch to the dvas repository. If warranted (it most likely will be!),
-    remember to update the `CHANGELOG` and add your name to the `AUTHORS` before doing so.
+    remember to update the `CHANGELOG` and add your name to the `AUTHORS` before doing so:
 
        git push -f origin your_branch_name
 
