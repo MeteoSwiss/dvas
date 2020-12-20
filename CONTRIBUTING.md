@@ -164,7 +164,10 @@ Until its release, the dvas repository will remain private: branching will thus 
        git config --local user.name "your_github_id"
        git config --local user.email "your_github_id@users.noreply.github.com"
 
-   **:closed_lock_with_key: Optional but recommended:** use a GPG key to sign your commits. Quoting from [the instructions](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/about-commit-signature-verification): "*Github will verify these signatures so other people will know that your commits come from a trusted source.*" See also [this SO post](https://superuser.com/questions/1512137/which-email-to-sign-commits-with-for-github-and-retain-privacy) and the reply by *Toby* if you use the *@users.noreply...* email for your commits.
+   **:closed_lock_with_key: Optional but recommended:** use a GPG key to sign your commits. Quoting from [the instructions](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/about-commit-signature-verification): "*Github will verify these signatures so other people will know that your commits come from a trusted source.*" See also [this SO post](https://superuser.com/questions/1512137/which-email-to-sign-commits-with-for-github-and-retain-privacy) and the reply by *Toby* if you use the *@users.noreply...* email for your commits. Do not forget
+   to then actually enable to auto-sign all commits:
+
+       git config --global commit.gpgsign true
 
 1. Clone the `develop` branch locally:
 
