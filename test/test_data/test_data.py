@@ -18,7 +18,6 @@ from dvas.data.data import MultiRSProfile
 from dvas.config.definitions.tag import TAG_DERIVED_VAL, TAG_RAW_VAL
 from dvas.errors import dvasError
 
-
 class TestMutliProfile:
     """Test MultiProfile class"""
 
@@ -29,6 +28,8 @@ class TestMutliProfile:
     update_db('trepros1', strict=True)
     update_db('altpros1', strict=True)
     update_db('tdtpros1', strict=True)
+
+    # Put a MultiRSProfile together
     prf_stgy = LoadRSProfileStrategy()
     data = prf_stgy.load('all()', 'trepros1', 'tdtpros1', alt_abbr='altpros1')
     mlt_prf.update(data[1], data[0])
