@@ -464,7 +464,9 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
 
         """
 
-        self._rebase_stgy.rebase(self, new_index, shift=shift)
+        data = self._rebase_stgy.rebase(self.profiles, new_index, shift=shift)
+
+        self.update(self.db_variables, data)
 
 
 class MultiProfile(MutliProfileAbstract):

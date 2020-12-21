@@ -29,13 +29,13 @@ class AbstractRebaseStrategy(metaclass=ABCMeta):
 class RebaseStrategy(AbstractRebaseStrategy):
     """Class to manage time data synchronization"""
 
-    def rebase(self, multiprf, new_index, shift=None):
-        """ Rebase MultiProfiles on new indices.
+    def rebase(self, prfs, new_index, shift=None):
+        """ Rebase Profiles on new indices.
 
         Any missing data will be filled with NaN. Any superflous data will be cropped.
 
         Args:
-            multiprf (dvas.data.MultiProfile|MultiRSProfile|MultiGDPProfile): MultiProfile to
+            prfs (list of dvas.data.strategy.data.Profile|RSProfile|GDPProfile): Profiles to
                 rebase.
             new_index (pandas.core.indexes.multi.MultiIndex): The new indices to rebase upon.
             shift (int|list of int, optional): row n of the existing data will become row n+shift.
@@ -49,23 +49,20 @@ class RebaseStrategy(AbstractRebaseStrategy):
 
         # Deal with the shifts. Try to be as courteous as possible.
         if shift is None:
-            shift = [0] * len(multiprf)
+            shift = [0] * len(prfs)
         if isinstance(shift, int):
-            shift = [shift] * len(multiprf)
+            shift = [shift] * len(prfs)
         elif isinstance(shift, list):
             if not all([isinstance(item, int) for item in shift]):
                 raise dvasError("Ouch ! shift should be a list of int.")
-            if len(shift) != len(multiprf):
+            if len(shift) != len(prfs):
                 if len(set(shift)) == 1:
-                    shift = shift * len(multiprf)
+                    shift = [shift[0]] * len(prfs)
                 else:
                     raise dvasError("Ouch ! shift should have length of %i, not %i" %
-                                    (len(multiprf), len(shift)))
+                                    (len(prfs), len(shift)))
         else:
             raise dvasError("Type %s unspported for shift. I need str|list of str." % type(shift))
-
-        # First, get the profiles out
-        prfs = multiprf.profiles
 
         # First, let us ensures that I have the same kind of indices
         if not np.all([new_index.names == prf.data.index.names for prf in prfs]):
@@ -98,6 +95,6 @@ class RebaseStrategy(AbstractRebaseStrategy):
             new_data[new_start:new_end] = prf.data[old_start:old_end].to_numpy()
 
             # And finally let's assign it
-            multiprf.profiles[prf_ind].data = new_data
+            prfs[prf_ind].data = new_data
 
-        return multiprf
+        return prfs
