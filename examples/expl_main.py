@@ -12,31 +12,26 @@ from pathlib import Path
 
 # Set the data path to look where we currently are
 from dvas.environ import path_var as dvas_path_var
-from dvas.environ import log_var as dvas_log_var
 # WARNING: this must be done BEFORE importing anything else ... !
 dvas_path_var.orig_data_path = Path(__file__).parent / 'data'
 dvas_path_var.config_dir_path = Path(__file__).parent / 'config'
 
 # Import
 from dvas.data.data import MultiProfile, MultiRSProfile, MultiGDPProfile
-from dvas.data.data import update_db
+from dvas.data.io import update_db
 from dvas.database.database import DatabaseManager
 
 from dvas.errors import dvasError
-from dvas.logger import init_log as dvas_init_log
 
 #import dvas.tools.gruan as dtg
 import dvas.plots.utils as dpu
 
+from dvas.dvas import start_log
 
 if __name__ == '__main__':
 
-    # Set the log level we want
-    dvas_log_var.log_level = 'DEBUG' # 'INFO' is the default.
-    dvas_log_var.log_mode = 'FILE' # 'FILE' if you want a live update
-
     # Start the logging
-    dvas_init_log()
+    start_log(3)
 
     # Let us fine-tune the plotting behavior of dvas
     dpu.set_mplstyle('nolatex') # The safe option. Use 'latex' fo prettier plots.
@@ -65,13 +60,12 @@ if __name__ == '__main__':
 
     # Update the database + log
     if RESET_DB:
-        #with LogManager():
-            update_db('tdtpros1', strict=True)
-            update_db('trepros1', strict=True)
-            update_db('treprosu_r', strict=True)
-            update_db('treprosu_s', strict=True)
-            update_db('treprosu_t', strict=True)
-            update_db('altpros1', strict=True)
+        update_db('tdtpros1', strict=True)
+        update_db('trepros1', strict=True)
+        update_db('treprosu_r', strict=True)
+        update_db('treprosu_s', strict=True)
+        update_db('treprosu_t', strict=True)
+        update_db('altpros1', strict=True)
 
     # # Load a basic profile, with a variable, and altitude.
     prf = MultiProfile()
