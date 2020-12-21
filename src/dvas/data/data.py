@@ -332,7 +332,7 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
             new_index (pandas.core.indexes.multi.MultiIndex): The new indices to rebase upon.
             shift (int|list of int, optional): row n of the existing data will become row n+shift.
                 If specifiying an int, the same shift will be applied to all Profiles. Else, the
-                list of should specify a shift for each Profile. Defaults to None.
+                list should specify a shift for each Profile. Defaults to None.
 
         """
 
