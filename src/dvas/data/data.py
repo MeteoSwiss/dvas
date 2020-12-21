@@ -264,7 +264,7 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
 
     def get_prms(self, prm_list=None):
         """ Convenience getter to extract one specific parameter from the DataFrames of all the
-        Profile instances.
+        Profile instances. This function only allows to select
 
         Args:
             prm_list (list of str): names of the parameter to extract from all the Profile
@@ -276,12 +276,21 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         """
 
         if prm_list is None:
-            prm_list = self.db_variables.keys()
-            #TODO: Here I need to remove all the keys that are indices.
+            prm_list = list(self.db_variables.keys())
 
         if isinstance(prm_list, str):
             # Assume the user forgot to put the key into a list.
             prm_list = [prm_list]
+
+        # Remove any prm that is an index name
+        prm_list = [prm for prm in prm_list
+                    if not (any([arg.DF_COLS_ATTR[prm]['index']
+                                 if prm in arg.DF_COLS_ATTR.keys() else False
+                                 for arg in self.profiles]))]
+
+        # Check that I still have something valid to extract !
+        if len(prm_list) == 0:
+            raise dvasError(" Ouch ! Not a single valid column name was specified.")
 
         # Select data
         try:
