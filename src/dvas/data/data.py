@@ -22,9 +22,9 @@ from .strategy.resample import ResampleRSDataStrategy
 
 from .strategy.sort import SortProfileStrategy
 
-from .strategy.sync import TimeSynchronizeStrategy
-
 from .strategy.plot import PlotStrategy, RSPlotStrategy, GDPPlotStrategy
+
+from .strategy.rebase import RebaseStrategy
 
 from .strategy.save import SaveDataStrategy
 
@@ -51,9 +51,11 @@ plt_prf_stgy = PlotStrategy()
 plt_rsprf_stgy = RSPlotStrategy()
 plt_gdpprf_stgy = GDPPlotStrategy()
 
+# Rebasing strategies
+rebase_prf_stgy = RebaseStrategy()
+
 sort_prf_stgy = SortProfileStrategy()
 rspl_rs_stgy = ResampleRSDataStrategy()
-sync_time_stgy = TimeSynchronizeStrategy()
 
 save_prf_stgy = SaveDataStrategy()
 
@@ -77,13 +79,15 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
     _DB_VAR_EMPTY = {}
 
     @abstractmethod
-    def __init__(self, load_stgy=None, sort_stgy=None, save_stgy=None, plot_stgy=None):
+    def __init__(self, load_stgy=None, sort_stgy=None, save_stgy=None, plot_stgy=None,
+                 rebase_stgy=None):
 
         # Init attributes
         self._load_stgy = load_stgy
         self._sort_stgy = sort_stgy
         self._save_stgy = save_stgy
         self._plot_stgy = plot_stgy
+        self._rebase_stgy = rebase_stgy
 
         self._profiles = self._DATA_EMPTY
         self._db_variables = self._DB_VAR_EMPTY
@@ -320,6 +324,22 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
 
         self._plot_stgy.plot(self, **kwargs)
 
+    @deepcopy
+    def rebase(self, new_index, shift=None):
+        """ Rebase method, which allows to map Profiles on new set of indices.
+
+        Args:
+            new_index (pandas.core.indexes.multi.MultiIndex): The new indices to rebase upon.
+            shift (int|list of int, optional): row n of the existing data will become row n+shift.
+                If specifiying an int, the same shift will be applied to all Profiles. Else, the
+                list should specify a shift for each Profile. Defaults to None.
+
+        """
+
+        data = self._rebase_stgy.rebase(self.profiles, new_index, shift=shift)
+
+        self.update(self.db_variables, data)
+
 
 class MultiProfile(MutliProfileAbstract):
     """Multi profile base class, designed to handle multiple Profile."""
@@ -330,11 +350,8 @@ class MultiProfile(MutliProfileAbstract):
     def __init__(self):
         super().__init__(
             load_stgy=load_prf_stgy, sort_stgy=sort_prf_stgy,
-            save_stgy=save_prf_stgy, plot_stgy=plt_prf_stgy,
+            save_stgy=save_prf_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_prf_stgy,
         )
-
-        # Init strategy
-        #self._sync_stgy = sync_stgy
 
 class MultiRSProfileAbstract(MutliProfileAbstract):
     """Abstract MultiRSProfile class"""
@@ -342,11 +359,11 @@ class MultiRSProfileAbstract(MutliProfileAbstract):
     @abstractmethod
     def __init__(
             self, load_stgy=None, sort_stgy=None,
-            save_stgy=None, plot_stgy=None,
+            save_stgy=None, plot_stgy=None, rebase_stgy=None,
     ):
         super().__init__(
             load_stgy=load_stgy, sort_stgy=sort_stgy,
-            save_stgy=save_stgy, plot_stgy=plt_prf_stgy,
+            save_stgy=save_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_prf_stgy,
         )
 
         # Set attributes
@@ -385,31 +402,8 @@ class MultiRSProfile(MultiRSProfileAbstract):
     def __init__(self):
         super().__init__(
             load_stgy=load_rsprf_stgy, sort_stgy=sort_prf_stgy,
-            save_stgy=save_prf_stgy, plot_stgy=plt_prf_stgy,
+            save_stgy=save_prf_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_prf_stgy,
         )
-
-    #def synchronize(self, *args, inplace=False, **kwargs):
-    #    """Synchronize method
-    #
-    #    Args:
-    #        *args: Variable length argument list.
-    #        inplace (bool, `optional`): If True, perform operation in-place.
-    #            Default to False.
-    #        **kwargs: Arbitrary keyword arguments.
-    #
-    #    Returns
-    #        MultiProfileManager if inplace is True, otherwise None
-    #
-    #    """
-    #
-    #    # Synchronize
-    #    out = self._sync_stgy.synchronize(self.copy().data, 'data', *args, **kwargs)
-    #
-    #    # Load
-    #    res = self.load(out, inplace=inplace)
-    #
-    #    return res
-
 
 class MultiGDPProfile(MultiRSProfileAbstract):
     """Multi GDP profile manager, designed to handle multiple GDPProfile instances."""
@@ -419,7 +413,7 @@ class MultiGDPProfile(MultiRSProfileAbstract):
     def __init__(self):
         super().__init__(
             load_stgy=load_gdpprf_stgy, sort_stgy=sort_prf_stgy,
-            save_stgy=save_prf_stgy, plot_stgy=plt_prf_stgy,
+            save_stgy=save_prf_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_prf_stgy,
         )
 
     @property
@@ -446,37 +440,3 @@ class MultiGDPProfile(MultiRSProfileAbstract):
     #     """
     #
     #     self._plot_stgy.plot(self.profiles, self.keys, x=x, **kwargs)
-
-    #def synchronize(self, *args, inplace=False, method='time', **kwargs):
-    #    """Overwrite of synchronize method
-    #
-    #    Args:
-    #        *args: Variable length argument list.
-    #        inplace (bool, `optional`): If True, perform operation in-place.
-    #            Default to False.
-    #        method (str, `optional`): Method used to synchronize series.
-    #            Default to 'time'
-    #            - 'time': Synchronize on time
-    #            - 'alt': Synchronize on altitude
-    #        **kwargs: Arbitrary keyword arguments.
-    #
-    #    Returns
-    #        MultiProfileManager if inplace is True, otherwise None
-    #
-    #    """
-    #
-    #    # Synchronize
-    #    if method == 'time':
-    #        out = self._sync_stgy.synchronize(self.copy().data, 'data', *args, **kwargs)
-    #    else:
-    #        #TODO modify to integrate linear AND offset compesation
-    #        out = self._sync_stgy.synchronize(self.copy().data, 'alt', *args, **kwargs)
-    #
-    #    # Modify inplace or not
-    #    if inplace:
-    #        self.data = out
-    #        res = None
-    #    else:
-    #        res = self.load(out)
-    #
-    #    return res

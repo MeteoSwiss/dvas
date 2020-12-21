@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 ### Added:
+ - [fpavogt, 2020-12-17] Add a rebase strategy and fix #83.
 ### Fixed:
  - [fpavogt, 2020-12-15] Signature-changing "deepcopy" decorator now leads to correct decorated signatures (see #70).
 
