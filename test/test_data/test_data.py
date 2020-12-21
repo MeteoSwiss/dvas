@@ -9,30 +9,34 @@ Module contents: Testing classes and function for dvas.data.data module.
 
 """
 
+import pytest
 
 # Import from python packages and modules
 from dvas.data.io import update_db
-from dvas.data.strategy.load import LoadProfileStrategy
-from dvas.data.data import MultiProfile
+from dvas.data.strategy.load import LoadRSProfileStrategy
+from dvas.data.data import MultiRSProfile
 from dvas.config.definitions.tag import TAG_DERIVED_VAL, TAG_RAW_VAL
-
+from dvas.errors import dvasError
 
 class TestMutliProfile:
     """Test MultiProfile class"""
 
     # Define
-    mlt_prf = MultiProfile()
+    mlt_prf = MultiRSProfile()
 
     # Load from alternative method
     update_db('trepros1', strict=True)
     update_db('altpros1', strict=True)
-    prf_stgy = LoadProfileStrategy()
-    data = prf_stgy.load("tag('raw')", 'trepros1', 'altpros1')
+    update_db('tdtpros1', strict=True)
+
+    # Put a MultiRSProfile together
+    prf_stgy = LoadRSProfileStrategy()
+    data = prf_stgy.load('all()', 'trepros1', 'tdtpros1', alt_abbr='altpros1')
     mlt_prf.update(data[1], data[0])
 
     @staticmethod
     def mlt_prf_eq(mlt_prf_1, mlt_prf_2):
-        """Test if tow MultiProfile are equals"""
+        """Test if two MultiProfile are equals"""
 
         # Sort
         mlt_prf_1.sort()
@@ -68,6 +72,19 @@ class TestMutliProfile:
             self.mlt_prf.info[i] == self.data[0][i].info
             for i in range(len(self.mlt_prf))
         ])
+
+    def test_get_prms(self):
+        """ Test convenience getter function """
+
+        # Try to get everything out
+        out = self.mlt_prf.get_prms(prm_list=None)
+        assert all([set(item.columns) == set(self.mlt_prf.profiles[ind].data.columns)
+                    for (ind, item) in enumerate(out)])
+
+        # Try to get an index out.
+        with pytest.raises(dvasError):
+            self.mlt_prf.get_prms(prm_list='alt')
+
 
     def test_rm_info_tag(self):
         """Test rm_info_tag method"""
@@ -134,15 +151,12 @@ class TestMutliProfile:
         """Test load_from_db method"""
 
         # Define
-        mlt_prf_1 = MultiProfile()
+        mlt_prf_1 = MultiRSProfile()
 
         # Load from db
-        res = mlt_prf_1.load_from_db(
-            'all()', 'trepros1', 'altpros1',
-        )
-        mlt_prf_2 = MultiProfile().load_from_db(
-            'all()', 'trepros1', 'altpros1', inplace=False,
-        )
+        res = mlt_prf_1.load_from_db('all()', 'trepros1', 'tdtpros1', alt_abbr='altpros1')
+        mlt_prf_2 = MultiRSProfile().load_from_db('all()', 'trepros1', 'tdtpros1',
+                                                  alt_abbr='altpros1', inplace=False)
 
         # Test inplace = True
         assert res is None
@@ -176,15 +190,13 @@ class TestMutliProfile:
 
         # Define
         tag_nm = 'save_multiprofile'
-        mlt_prf_1 = MultiProfile()
+        mlt_prf_1 = MultiRSProfile()
 
         # Load from db
         self.mlt_prf.save_to_db(add_tags=[tag_nm])
 
         # Load from db
-        mlt_prf_1.load_from_db(
-            f"tag('{tag_nm}')", 'trepros1', 'altpros1',
-        )
+        mlt_prf_1.load_from_db(f"tag('{tag_nm}')", 'trepros1', 'tdtpros1', alt_abbr='altpros1')
 
         # Add tag
         self.mlt_prf.add_info_tag([tag_nm, TAG_DERIVED_VAL])
@@ -196,8 +208,8 @@ class TestMutliProfile:
     def test_append(self):
         """Test append method"""
 
-        # Defien
-        mlt_prf = MultiProfile()
+        # Define
+        mlt_prf = MultiRSProfile()
 
         # Append
         for prf in self.mlt_prf.profiles:
@@ -205,4 +217,3 @@ class TestMutliProfile:
 
         # Compare
         self.mlt_prf_eq(mlt_prf, self.mlt_prf)
-

@@ -263,25 +263,37 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         self.update(db_df_keys, self.profiles + [val])
 
     def get_prms(self, prm_list=None):
-        """ Convenience getter to extract one specific parameter from the DataFrames of all the
-        Profile instances.
+        """ Convenience getter to extract specific columns from the DataFrames and/or class
+        properties of all the Profile instances.
+
+        Only column/property names are allowed. Specifying only index names will raise a dvasError.
 
         Args:
-            prm_list (list of str): names of the parameter to extract from all the Profile
-                DataFrame. Defaults to None (=return all the data from the DataFrame)
+            prm_list (str|list of str, optional): names of the columns(s) to extract from all the
+                Profile DataFrames. Defaults to None (=return all the columns from the DataFrame).
 
         Returns:
             dict of list of DataFrame: idem to self.profiles, but with only the requested data.
 
+        Raises:
+            dvasError: if prm_list only contains the names of Indices.
+
         """
 
         if prm_list is None:
-            prm_list = self.db_variables.keys()
-            #TODO: Here I need to remove all the keys that are indices.
+            prm_list = list(self.db_variables.keys())
 
         if isinstance(prm_list, str):
             # Assume the user forgot to put the key into a list.
             prm_list = [prm_list]
+
+        # Remove any prm that is an index name
+        prm_list = [prm for prm in prm_list
+                    if not any([prm in arg.get_index_attr() for arg in self.profiles])]
+
+        # Check that I still have something valid to extract !
+        if len(prm_list) == 0:
+            raise dvasError("Ouch ! Invalid column name(s). Did you only specify index name(s) ?")
 
         # Select data
         try:

@@ -98,6 +98,9 @@ For the sake of clarity, and to facilitate the maintenance, we list here (succin
     Returns:
         bool: some grand Truth about the World.
 
+    Raises:
+        dvasError: if blah and blah occurs.
+
     Example:
         If needed, you can specify chunks of code using code blocks::
 
@@ -156,14 +159,21 @@ Until its release, the dvas repository will remain private: branching will thus 
 
        git config --list
 
-   If `user.name` and `user.email` are missing or do not match those of your Github account account, change them:
+   If `user.name` and `user.email` are missing or do not match those of your Github account, [change them](https://docs.github.com/en/free-pro-team@latest/github/setting-up-and-managing-your-github-user-account/setting-your-commit-email-address):
 
-       git config --local user.name "your_github_id"
-       git config --local user.email "your_github_id@users.noreply.github.com"
+       git config --local user.name "ID+username"
+       git config --local user.email "ID+username@users.noreply.github.com"
 
-1. Clone the develop branch locally:
+   **:closed_lock_with_key: Optional but recommended:** use a GPG key to sign your commits. Quoting from [the instructions](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/about-commit-signature-verification): "*Github will verify these signatures so other people will know that your commits come from a trusted source.*" See also [this SO post](https://superuser.com/questions/1512137/which-email-to-sign-commits-with-for-github-and-retain-privacy) and the reply by *Toby* if you use the *@users.noreply...* email for your commits. Do not forget
+   to then actually enable git to auto-sign all commits:
 
-       git clone -b develop https://github.com/MeteoSwiss-MDA/dvas.git your_branch_name
+       git config --global commit.gpgsign true
+
+1. Clone the `develop` branch locally:
+
+       git clone -b develop git@github.com:MeteoSwiss-MDA/dvas.git your_branch_name
+
+   :warning: `develop` is the default branch for dvas that contains all the latest *approved* changes. **Unless you have a good reason to do otherwise**, this is the branch you want to clone and branch-off from.
 
 2. Actually create your new branch locally:
 
@@ -176,9 +186,10 @@ Until its release, the dvas repository will remain private: branching will thus 
        git config --list
        git status
 
-4. Install the packages that are required for doing dev work with dvas:
+4. Install dvas from this local repo, and also the packages that are required for doing dev work :
 
-       pip install -r dev_requirements.txt
+       pip install -e ./
+       pip install -r ./dev_utils/dev_requirements.txt
 
 5. Modify the code locally. This could be the source code, or the docs `.rst` source files.
 
@@ -208,15 +219,15 @@ Until its release, the dvas repository will remain private: branching will thus 
        sh build_docs.sh
 
 9. Once ready with all your modifications, we'll ask that you do a rebase of your branch to
-           incorporate any modification that may have occurred on the original `develop` branch in the meantime:
+   incorporate any modification that may have occurred on the original `develop` branch in the meantime:
 
-              git fetch origin develop
-              git pull --rebase origin develop
+        git fetch origin develop
+        git pull --rebase origin develop
 
 10. You can now push your branch to the dvas repository. If warranted (it most likely will be!),
-    remember to update the `CHANGELOG` and add your name to the `AUTHORS` before doing so.
+    remember to update the `CHANGELOG` and add your name to the `AUTHORS` before doing so:
 
-       git push -f origin your_branch_name
+        git push -f origin your_branch_name
 
     Note the `-f` flag, required because of the `--rebase` to update the commit history of the
     branch stored on Github.

@@ -123,11 +123,13 @@ class ProfileAbstract(metaclass=RequiredAttrMetaClass):
             if item in self.get_col_attr():
                 return self.data[item]
 
-            elif item in self.get_index_attr():
+            if item in self.get_index_attr():
+                # fpavogt, 2020-12-18: what follows returns an Index. We may need to revise this
+                # at some point. Or not. But as it stands, it's not designed to be concatenated
+                # with anythinbg else.
                 return self.data.index.get_level_values(item)
 
-            else:
-                return super().__getattribute__(item)
+            return super().__getattribute__(item)
 
         except KeyError:
             raise ProfileError(f"Valid keys are: {self.columns}")
