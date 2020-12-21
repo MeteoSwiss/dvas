@@ -289,13 +289,11 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
 
         # Remove any prm that is an index name
         prm_list = [prm for prm in prm_list
-                    if not (any([arg.DF_COLS_ATTR[prm]['index']
-                                 if prm in arg.DF_COLS_ATTR.keys() else False
-                                 for arg in self.profiles]))]
+                    if not any([prm in arg.get_index_attr() for arg in self.profiles])]
 
         # Check that I still have something valid to extract !
         if len(prm_list) == 0:
-            raise dvasError(" Ouch ! Not a single valid column name was specified.")
+            raise dvasError("Ouch ! Invalid column name(s). Did you only specify index name(s) ?")
 
         # Select data
         try:
