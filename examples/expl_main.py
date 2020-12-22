@@ -47,7 +47,7 @@ if __name__ == '__main__':
 
     # Define some search queries
     filt_gdp = "tag('gdp')"
-    filt_dt = "dt('20180125T120000Z', '==')"
+    filt_dt = "dt('20171024T120000Z', '==')"
     filt_vof = "and_(%s,%s)" % (filt_gdp, filt_dt)
     filt_gdp_der = "and_(tag('derived'), tag('gdp'))"
     filt_raw = "and_(tag('raw'), not_(tag('gdp')))"
