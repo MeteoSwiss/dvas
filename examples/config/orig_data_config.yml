@@ -210,8 +210,9 @@ _RS92-GDP_002:
 
     # TODO: uc_s does not exist for the RS92 v2 GDP. However, just commenting this out causes
     # havoc in the code (GDPs cannot be loaded). Why ?
-    #_treprosu_s:
-    #    value_col: '???'
+    # TODO: Issue: #94, this is uncommented and a wrong value_col is givent on _treprosu_s to allow the code running
+    _treprosu_s:
+        value_col: 'u_cor_temp'
 
     _treprosu_t:
         value_col: 'u_cor_temp'
