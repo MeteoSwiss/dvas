@@ -1,5 +1,5 @@
 # ----------------------------------------------------
-# SRS-C50 type for data_test (NOT THE GDP!)
+# SRS-C50 type (NOT THE GDP!)
 # ----------------------------------------------------
 _C50:
 
@@ -33,7 +33,7 @@ _C50:
         value_col: 4
 
 # ----------------------------------------------------
-# SRS-C34 type for data_test (NOT THE GDP!)
+# SRS-C34 type (NOT THE GDP!)
 # ----------------------------------------------------
 _C34:
 
@@ -68,7 +68,7 @@ _C34:
         value_col: 4
 
 # ----------------------------------------------------
-# RS-41 type for data_test (NOT THE GDP!)
+# RS-41 type (NOT THE GDP!)
 # ----------------------------------------------------
 _RS41:
 
@@ -102,7 +102,7 @@ _RS41:
         value_col: 3
 
 # ----------------------------------------------------
-# RS-92 type for data_test (NOT THE GDP!)
+# RS-92 type (NOT THE GDP!)
 # ----------------------------------------------------
 _RS92:
 
@@ -204,13 +204,17 @@ _RS92-GDP_002:
         value_col: 'temp'
 
     _treprosu_r:
+        # TODO: in v2 of the GDP, this value is wrong. It must be reconstructed from:
+        # value_col: sqrt('u_temp' - 'u_cor_temp')
         value_col: 'u_std_temp'
 
+    # TODO: uc_s does not exist for the RS92 v2 GDP. However, just commenting this out causes
+    # havoc in the code (GDPs cannot be loaded). Why ?
     #_treprosu_s:
     #    value_col: '???'
 
     _treprosu_t:
-        value_col: 'u_temp'
+        value_col: 'u_cor_temp'
 
     _altpros1:
         value_col: 'alt'
