@@ -18,7 +18,6 @@ dvas_path_var.orig_data_path = Path(__file__).parent / 'data'
 dvas_path_var.config_dir_path = Path(__file__).parent / 'config'
 
 # Import
-
 from dvas.data.data import MultiProfile, MultiRSProfile, MultiGDPProfile
 from dvas.data.io import update_db
 from dvas.database.database import DatabaseManager
