@@ -147,7 +147,8 @@ class TestOneDimArrayConfigLinker:
         assert sum(
             [self.desc_pat.match(arg['prm_desc']) is not None for arg in doc]
         ) == 10
-        with glob_var.set_many_attr({'config_gen_max': 2}):
+        with glob_var.protect():
+            glob_var.config_gen_max = 2
             with pytest.raises(ConfigGenMaxLenError):
                 self.cfg_lkr.get_document(Parameter.CLASS_KEY)
 

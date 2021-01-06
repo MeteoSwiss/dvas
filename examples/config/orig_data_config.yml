@@ -10,6 +10,7 @@ _RS92:
     tag_field:
         - "cat('e:', get('event_id'))"
         - "cat('r:', get('rig'))"
+        - "cat('p:', get('product_id'))"
         - "get('day_night')"
 
     # -- ORIG DATA ----------------------------------
@@ -40,6 +41,7 @@ _YT:
     tag_field:
         - "cat('e:', get('event_id'))"
         - "cat('r:', get('rig'))"
+        - "cat('p:', get('product_id'))"
         - "get('day_night')"
 
     # -- ORIG DATA ----------------------------------
@@ -70,6 +72,7 @@ _ZT:
     tag_field:
         - "cat('e:', get('event_id'))"
         - "cat('r:', get('rig'))"
+        - "cat('p:', get('product_id'))"
         - "get('day_night')"
 
     # -- ORIG DATA ----------------------------------
@@ -100,6 +103,7 @@ _AR-GDP_001:
     tag_field:
         - "cat('e:', get('g.Measurement.Id'))"
         - "cat('r:', get('g.Measurement.BalloonNumber'))"
+        - 'p:0'  # "cat('p:', get('g.Product.Version'))"
 
     # -- ORIG DATA ----------------------------------
     _tdtpros1:
@@ -136,6 +140,7 @@ _BR-GDP_001:
     tag_field:
         - "cat('e:', get('g.Measurement.Id'))"
         - "cat('r:', get('g.Measurement.BalloonNumber'))"
+        - 'p:0'  # "cat('p:', get('g.Product.Version'))"
 
     # -- ORIG DATA ----------------------------------
     _tdtpros1:
@@ -169,6 +174,7 @@ _RS41-GDP-BETA_001:
     tag_field:
         - "cat('e:', get('g.Measurement.Id'))"
         - "cat('r:', get('g.Measurement.BalloonNumber'))"
+        - 'p:0'  # "cat('p:', get('g.Product.Version'))"
 
     # -- ORIG DATA ----------------------------------
     _tdtpros1:

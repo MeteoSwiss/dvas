@@ -22,6 +22,7 @@ path_var.config_dir_path = test_expl_path / 'config'
 path_var.local_db_path = test_expl_path / 'dvas_db'
 path_var.orig_data_path = test_expl_path / 'data'
 
+
 # Create database
 # This is by no means a satisfactory solution.
 # It must be possible to create an independent DB for each test

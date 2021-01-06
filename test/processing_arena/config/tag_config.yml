@@ -1,13 +1,17 @@
 
 - tag_txt: 'e:((\d{1,2})|(6000\d))'
-  # Generate e1, e2, ..., e99,...
+  # Generate e:1, e:2, ..., e:99,...
   tag_desc: "cat('Event', ' ', get(1))"
   # Use standard re.sub group syntax to refer group number from regexp
   # generator.
 
 - tag_txt: 'r:([12])'
-  # Generate r1, r2
+  # Generate r:1, r:2
   tag_desc: "cat('Rig', ' ', get(1))"
+
+- tag_txt: 'p:(\d)'
+  # Generate p:0, p:1,...
+  tag_desc: "cat('Product', ' ', get(1))"
 
 - tag_txt: '^((day)|(night))'
   # Generate day, night

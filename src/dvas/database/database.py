@@ -793,7 +793,19 @@ class InfoManager:
             # TODO: the following line triggers a *very* weird pylint Error 1101.
             # I disable it for now ... but someone should really confirm whether this ok or not!
             # fpavogt - 2020.12.09
-            out = next(filter(glob_var.rig_id_pat.match, self.tags)) # pylint: disable=E1101
+            out = next(filter(glob_var.rig_id_pat.match, self.tags))  # pylint: disable=E1101
+        except StopIteration:
+            out = None
+        return out
+
+    @property
+    def prd_id(self):
+        """str: Product ID which match 1st corresponding pattern in tags. Defaults to None."""
+        try:
+            # TODO: the following line triggers a *very* weird pylint Error 1101.
+            # I disable it for now ... but someone should really confirm whether this ok or not!
+            # mol - 2021.01.05
+            out = next(filter(glob_var.prd_id_pat.match, self.tags))  # pylint: disable=E1101
         except StopIteration:
             out = None
         return out
@@ -807,6 +819,15 @@ class InfoManager:
             # fpavogt - 2020.12.09
             out = next(filter(glob_var.mdl_id_pat.match, self.tags)) # pylint: disable=E1101
         except StopIteration:
+            out = None
+        return out
+
+    @property
+    def instr_id(self):
+        """str: Instrument ID constructed from srn and prd ID. Defaults to None."""
+        try:
+            out = '_'.join(('_'.join(self.srn), self.prd_id))
+        except TypeError:
             out = None
         return out
 

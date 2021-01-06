@@ -28,7 +28,7 @@ from .definitions import origdata, csvorigmeta
 from .definitions import instrtype, instrument
 from .definitions import parameter, flag
 from .definitions import tag
-from ..environ import path_var as env_path_var
+from ..environ import path_var
 from ..environ import glob_var as env_glob_var
 from ..helper import get_by_path
 from ..helper import RequiredAttrMetaClass
@@ -204,7 +204,7 @@ class OneLayerConfigManager(ConfigManager):
 
             # Filter (case insensitive)
             doc_in = [
-                arg for arg in env_path_var.config_dir_path.rglob("*.*")
+                arg for arg in path_var.config_dir_path.rglob("*.*")
                 if (
                     (pat.search(arg.stem) is not None) and
                     (arg.suffix in cfg_file_suffix)
