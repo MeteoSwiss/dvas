@@ -25,7 +25,7 @@ import sre_yield
 
 # Import current package modules
 from .definitions import origdata, csvorigmeta
-from .definitions import instrtype, instrument
+from .definitions import instrtype
 from .definitions import parameter, flag
 from .definitions import tag
 from ..environ import path_var
@@ -379,19 +379,6 @@ class InstrType(OneDimArrayConfigManager):
     document = TypedProperty(OneDimArrayConfigManager.DOC_TYPE)
 
 
-class Instrument(OneDimArrayConfigManager):
-    """Instrument config manager"""
-
-    PARAMETER_PATTERN_PROP = instrument.PARAMETER_PATTERN_PROP
-    NODE_PARAMS_DEF = instrument.NODE_PARAMS_DEF
-    CLASS_KEY = instrument.KEY
-    CONST_NODES = instrument.CONST_NODES
-    NODE_GEN = instrument.NODE_GEN
-
-    #: dict: Config document
-    document = TypedProperty(OneDimArrayConfigManager.DOC_TYPE)
-
-
 class Parameter(OneDimArrayConfigManager):
     """Parameter config manager """
 
@@ -657,7 +644,7 @@ class OneDimArrayConfigLinker:
     config managers."""
 
     #: list: Default instantiated config managers
-    CFG_MNGRS_DFLT = [Parameter, InstrType, Instrument, Flag, Tag]
+    CFG_MNGRS_DFLT = [Parameter, InstrType, Flag, Tag]
 
     def __init__(self, cfg_mngrs=None):
         """

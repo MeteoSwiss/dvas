@@ -20,10 +20,35 @@ class TestSortProfileStrategy:
 
     sorter = SortProfileStrategy()
     order = [2, 0, 1]
+    sn = 'YT-100'
     prf = [
-        Profile(InfoManager('20200110T0000Z', 'YT-100')),
-        Profile(InfoManager('20200101T0000Z', 'YT-100')),
-        Profile(InfoManager('20200105T0000Z', 'YT-100')),
+        Profile(
+            InfoManager.from_dict(
+                {
+                    'dt_field': '20200110T0000Z',
+                    'srn_field': sn, 'pdt_field': '0',
+                    'tag_field': ''
+                }
+            )
+        ),
+        Profile(
+            InfoManager.from_dict(
+                {
+                    'dt_field': '20200101T0000Z',
+                    'srn_field': sn, 'pdt_field': '0',
+                    'tag_field': ''
+                }
+            )
+        ),
+        Profile(
+            InfoManager.from_dict(
+                {
+                    'dt_field': '20200105T0000Z',
+                    'srn_field': sn, 'pdt_field': '0',
+                    'tag_field': ''
+                }
+            )
+        ),
     ]
 
     def test_sort(self):

@@ -27,6 +27,12 @@
 - tag_txt: 'cws'
   tag_desc: 'Combined Working Measurement Standard'
 
+- tag_txt: 'data_test_db'
+  tag_desc: 'Data for DB tests'
+
+- tag_txt: 'load_profile_from_linker'
+  tag_desc: 'Load Profile from linker tests'
+
 - tag_txt: 'load_profile'
   tag_desc: 'Load Profile tests'
 

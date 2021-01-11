@@ -67,6 +67,10 @@ class LoadStrategyAbstract(metaclass=ABCMeta):
             set([arg['info'] for val in res.values() for arg in val])
         )
 
+        if info[0]['tags'] == ['load_profile']:
+            print(res)
+
+
         # Create DataFrame by concatenation and append
         try:
             data = [
@@ -77,9 +81,17 @@ class LoadStrategyAbstract(metaclass=ABCMeta):
                 ) for info_arg in info
             ]
 
+            # Test column name uniqueness
+            assert all(
+                tst_tmp := [
+                    len(arg.columns.unique()) == len(arg.columns)
+                    for arg in data
+                ]
+            ), f'Data with associated metadata {info[tst_tmp.index(False)]} have non unique metadata for a same parameter'
+
         # TODO
         #  Details exception (especially for data index coherence)
-        except Exception as exc:
+        except AssertionError as exc:
             raise LoadError(exc)
 
         # Add missing columns

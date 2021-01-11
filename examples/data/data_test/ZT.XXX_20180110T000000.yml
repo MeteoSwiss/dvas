@@ -1,13 +1,8 @@
-event_dt: '2018-01-10T00:00:00.000Z'
-
-rig: '1'
-
-event_id: '1'
-
-station: 'XXX'
-
-srn: 'ZT-100'
-
-product_id: '0'
-
+event_dt: '2018-01-10T00:00:00.000Z'
+rig: '1'
+event_id: '1'
+station: 'XXX'
+instr_type: 'ZT'
+sn: 'ZT-100'
+product_id: '0'
 day_night: 'night'

@@ -27,11 +27,24 @@ class TestLoadProfileStrategy:
     loader = LoadProfileStrategy()
     n_data = 3
     index = np.arange(n_data)
-    values = np.random.rand(n_data)
+    values = np.array([100, 101, 102])
     flags_val = np.ones(n_data)
+    sn = 'YT-100'
     infos = [
-        InfoManager('20200101T0000Z', 'YT-100', 'load_profile'),
-        InfoManager('20200202T0000Z', 'YT-100', 'load_profile')
+        InfoManager.from_dict(
+            {
+                'dt_field': '20200101T0000Z',
+                'srn_field': sn, 'pdt_field': '0',
+                'tag_field': 'load_profile'
+            }
+        ),
+        InfoManager.from_dict(
+            {
+                'dt_field': '20200202T0000Z',
+                'srn_field': sn, 'pdt_field': '0',
+                'tag_field': 'load_profile'
+            }
+        ),
     ]
     db_linker = LocalDBLinker()
 
@@ -81,11 +94,24 @@ class TestLoadRSProfileStrategy:
     loader = LoadRSProfileStrategy()
     n_data = 3
     index = np.arange(n_data)
-    values = np.random.rand(n_data)
+    values = np.array([200, 201, 202])
     time_val = np.arange(n_data)*1e9
+    sn = 'YT-100'
     infos = [
-        InfoManager('20200101T0000Z', 'YT-100', 'load_rsprofile'),
-        InfoManager('20200202T0000Z', 'YT-100', 'load_rsprofile')
+        InfoManager.from_dict(
+            {
+                'dt_field': '20200101T0000Z',
+                'srn_field': sn, 'pdt_field': '0',
+                'tag_field': 'load_rsprofile'
+            }
+        ),
+        InfoManager.from_dict(
+            {
+                'dt_field': '20200202T0000Z',
+                'srn_field': sn, 'pdt_field': '0',
+                'tag_field': 'load_rsprofile'
+            }
+        ),
     ]
     db_linker = LocalDBLinker()
 
@@ -135,11 +161,24 @@ class TestLoadGPDProfileStrategy:
     loader = LoadGDPProfileStrategy()
     n_data = 3
     index = np.arange(n_data)
-    values = np.random.rand(n_data)
+    values = np.array([300, 301, 302])
     time_val = np.arange(n_data) * 1e9
+    sn = 'YT-100'
     infos = [
-        InfoManager('20200101T0000Z', 'YT-100', 'load_gdpprofile'),
-        InfoManager('20200202T0000Z', 'YT-100', 'load_gdpprofile')
+        InfoManager.from_dict(
+            {
+                'dt_field': '20200101T0000Z',
+                'srn_field': sn, 'pdt_field': '0',
+                'tag_field': 'load_gdpprofile'
+            }
+        ),
+        InfoManager.from_dict(
+            {
+                'dt_field': '20200202T0000Z',
+                'srn_field': sn, 'pdt_field': '0',
+                'tag_field': 'load_gdpprofile'
+            }
+        ),
     ]
     db_linker = LocalDBLinker()
 

@@ -6,7 +6,9 @@ _AR-GDP_001:
 
     # -- META DATA ----------------------------------
     dt_field: "get('g.Measurement.StandardTime')"
+    typ_field: "get('g.Product.Code')"
     srn_field: "get('g.MainSonde.SerialNumber')"
+    pdt_field: "get('g.Product.Version')"
     tag_field:
         - "cat('e:', get('g.Measurement.Id'))"
         - "cat('r:', get('g.Measurement.BalloonNumber'))"
@@ -42,7 +44,9 @@ _BR-GDP_001:
 
     # -- META DATA ----------------------------------
     dt_field: "cat(get('g.Measurement.StandardTime'), 'Z')"
+    typ_field: "get('g.Product.Code')"
     srn_field: "get('g.MainSonde.SerialNumber')"
+    pdt_field: "get('g.Product.Version')"
     tag_field:
         - "cat('e:', get('g.Measurement.Id'))"
         - "cat('r:', get('g.Measurement.BalloonNumber'))"
@@ -75,7 +79,9 @@ _RS41-GDP-BETA_001:
 
     # -- META DATA ----------------------------------
     dt_field: "get('g.Measurement.StandardTime')"
+    typ_field: "get('g.Product.Code')"
     srn_field: "get('g.MainSonde.SerialNumber')"
+    pdt_field: "get('g.Product.Version')"
     tag_field:
         - "cat('e:', get('g.Measurement.Id'))"
         - "cat('r:', get('g.Measurement.BalloonNumber'))"

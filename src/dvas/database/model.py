@@ -58,11 +58,11 @@ class Instrument(MetadataModel):
     id = AutoField(primary_key=True)
 
     # Serial number
-    srn = CharField(null=False, unique=True)
+    srn = CharField(null=False)
+    pdt = CharField(null=False)
     instr_type = ForeignKeyField(
         InstrType, backref='instruments', on_delete='CASCADE'
     )
-    remark = TextField()
 
 
 class Parameter(MetadataModel):
