@@ -67,35 +67,25 @@ class LoadStrategyAbstract(metaclass=ABCMeta):
             set([arg['info'] for val in res.values() for arg in val])
         )
 
-        if info[0]['tags'] == ['load_profile']:
-            print(res)
-
         # Create DataFrame by concatenation and append
-        try:
-            data = [
-                pd.concat(
-                    [pd.Series(arg['value'], index=arg['index'], name=key)
-                     for key, val in res.items() for arg in val if arg['info'] == info_arg],
-                    axis=1, ignore_index=False
-                ) for info_arg in info
+        data = [
+            pd.concat(
+                [pd.Series(arg['value'], index=arg['index'], name=key)
+                 for key, val in res.items() for arg in val if arg['info'] == info_arg],
+                axis=1, ignore_index=False
+            ) for info_arg in info
+        ]
+
+        # Test column name uniqueness
+        ass_tst = all(
+            tst_tmp := [
+                len(arg.columns.unique()) == len(arg.columns)
+                for arg in data
             ]
-
-            # Test column name uniqueness
-            ass_tst = all(
-                tst_tmp := [
-                    len(arg.columns.unique()) == len(arg.columns)
-                    for arg in data
-                ]
-            )
-            assert (
-                ass_tst,
-                f'Data with associated metadata {info[tst_tmp.index(False)]} have non unique metadata for a same parameter'
-            )
-
-        # TODO
-        #  Details exception (especially for data index coherence)
-        except AssertionError as exc:
-            raise LoadError(exc)
+        )
+        if not ass_tst:
+            err_msg = f'Data with associated metadata {info[tst_tmp.index(False)]} have non unique metadata for a same parameter'
+            raise LoadError(err_msg)
 
         # Add missing columns
         for i in range(len(data)):
