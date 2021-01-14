@@ -25,7 +25,7 @@ class RebaseStrategy(MPStrategyAC):
     def execute(self, prfs, new_index, shift=None):
         """ Rebase Profiles on new indices.
 
-        Any missing data will be filled with NaN. Any superflous data will be cropped.
+        Any missing data will be filled with NaN. Any superfulous data will be cropped.
 
         Args:
             prfs (list of dvas.data.strategy.data.Profile|RSProfile|GDPProfile): Profiles to
