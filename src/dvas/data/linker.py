@@ -19,14 +19,14 @@ import pandas as pd
 
 # Import from current package
 from ..environ import path_var as env_path_var
-from ..database.model import InstrType, Instrument, Info
+from ..database.model import InstrType, Info
 from ..database.model import Parameter, DataSource
-from ..database.database import DatabaseManager, InfoManager
+from ..database.database import DatabaseManager
 from ..config.config import OrigData, CSVOrigMeta
 from ..config.config import ConfigReadError
 from ..config.config import ConfigExprInterpreter
 from ..config.definitions.origdata import META_FIELD_KEYS
-from ..config.definitions.origdata import EVT_DT_FLD_NM, SRN_FLD_NM, TAG_FLD_NM
+from ..config.definitions.origdata import TAG_FLD_NM
 from ..config.definitions.origdata import PARAM_FLD_NM
 from ..logger import rawcsv
 from ..environ import glob_var
@@ -212,35 +212,37 @@ class FileHandler(AbstractHandler):
 
         return instr_type_name
 
-    def check_sn(self, file_path, instr_type_name, metadata):
-        """Check serial number in DB"""
-        # Check instr_type name existence
-        # (need it for loading origdata config)
-        if (
-            instr_type_name_from_sn := self._db_mngr.get_or_none(
-                Instrument,
-                search={
-                    'join_order': [InstrType],
-                    'where': Instrument.srn == metadata[SRN_FLD_NM]
-                },
-                attr=[
-                    [Instrument.instr_type.name, InstrType.type_name.name]
-                ]
-            )
-        ) is None:
-            # TODO Detail exception
-            raise Exception(
-                f"Missing instrument SN '{metadata[SRN_FLD_NM]}' in DB while reading " +
-                f"data file '{file_path}'"
-            )
-
-        if instr_type_name != instr_type_name_from_sn[0]:
-            #TODO Detail exception
-            raise Exception(
-                f"Instrument SN '{metadata[SRN_FLD_NM]}' does not correspond to instr_type in " +
-                f"('{instr_type_name}' != '{instr_type_name_from_sn}') " +
-                f"for data file '{file_path}'"
-            )
+    # TODO
+    #  Erase
+    # def check_sn(self, file_path, instr_type_name, metadata):
+    #     """Check serial number in DB"""
+    #     # Check instr_type name existence
+    #     # (need it for loading origdata config)
+    #     if (
+    #         instr_type_name_from_sn := self._db_mngr.get_or_none(
+    #             Instrument,
+    #             search={
+    #                 'join_order': [InstrType],
+    #                 'where': Instrument.srn == metadata[SRN_FLD_NM]
+    #             },
+    #             attr=[
+    #                 [Instrument.instr_type.name, InstrType.type_name.name]
+    #             ]
+    #         )
+    #     ) is None:
+    #         # TODO Detail exception
+    #         raise Exception(
+    #             f"Missing instrument SN '{metadata[SRN_FLD_NM]}' in DB while reading " +
+    #             f"data file '{file_path}'"
+    #         )
+    #
+    #     if instr_type_name != instr_type_name_from_sn[0]:
+    #         #TODO Detail exception
+    #         raise Exception(
+    #             f"Instrument SN '{metadata[SRN_FLD_NM]}' does not correspond to instr_type in " +
+    #             f"('{instr_type_name}' != '{instr_type_name_from_sn}') " +
+    #             f"for data file '{file_path}'"
+    #         )
 
     def exclude_file(self, path_scan, prm_abbr):
         """Exclude file method"""
@@ -250,10 +252,9 @@ class FileHandler(AbstractHandler):
             Info,
             search={
                 'where': (
-                    (Parameter.prm_abbr == prm_abbr) &
-                    (Instrument.srn != '')
+                    Parameter.prm_abbr == prm_abbr
                 ),
-                'join_order': [Parameter, DataSource, Instrument]},
+                'join_order': [Parameter, DataSource]},
             attr=[[Info.data_src.name, DataSource.source.name]],
             get_first=False
         )
@@ -273,6 +274,8 @@ class FileHandler(AbstractHandler):
         for key in META_FIELD_KEYS:
 
             try:
+                # TODO
+                #  Consider if prm_abbr is mandatory at this point
                 field_val = self.origdata_config_mngr.get_val(
                     [instr_type_name, prm_abbr], key
                 )
@@ -359,6 +362,8 @@ class CSVHandler(FileHandler):
         self.origmeta_mngr.init_document()
 
         # Define metadata file path
+        # Check if data file with config suffix exist. If not, metadata
+        # should be in data file
         try:
             metadata_file_path = next(
                 arg for arg in file_path.parent.glob(
@@ -370,12 +375,16 @@ class CSVHandler(FileHandler):
 
         # Read metadata
         with metadata_file_path.open(mode='r') as fid:
+
+            # Meta data are in data file
             if metadata_file_path == file_path:
                 meta_raw = ''.join(
                     [arg[1:] for arg in
                      takewhile(lambda x: x[0] in ['#', '%'], fid)
                      ]
                 )
+
+            # Meta data are in separate file
             else:
                 meta_raw = fid.read()
 
@@ -417,6 +426,7 @@ class CSVHandler(FileHandler):
         instr_type_name = self.get_instr_type(file_path)
 
         # Get metadata
+        # (need instr_type_name
         if (
                 metadata := self.get_metadata(
                     file_path, instr_type_name, prm_abbr
@@ -424,16 +434,14 @@ class CSVHandler(FileHandler):
         ) is None:
             return
 
-        # Check instr_type name existence
-        # (need it for loading origdata config)
-        self.check_sn(file_path, instr_type_name, metadata)
+        # TODO
+        #  Erase
+        # # Check instr_type name existence
+        # # (need it for loading origdata config)
+        # self.check_sn(file_path, instr_type_name, metadata)
 
         # Create info with 'raw' tag
-        info_mngr = InfoManager(
-            evt_dt=metadata[EVT_DT_FLD_NM],
-            srn=metadata[SRN_FLD_NM],
-            tags=metadata[TAG_FLD_NM] + [TAG_RAW_VAL],
-        )
+        metadata[TAG_FLD_NM] += [TAG_RAW_VAL]
 
         # Get config params for (instr_type, prm_abbr) couple
         origdata_cfg_prm = self.origdata_config_mngr.get_all_default(
@@ -479,7 +487,7 @@ class CSVHandler(FileHandler):
             data = pd.Series([])
 
             # Add empty tag
-            info_mngr.add_tag(TAG_EMPTY_VAL)
+            metadata[TAG_FLD_NM] += [TAG_EMPTY_VAL]
 
             # Log
             rawcsv.warn(
@@ -495,7 +503,7 @@ class CSVHandler(FileHandler):
 
         # Append data
         out = {
-            'info': info_mngr,
+            'info': metadata,
             'prm_abbr': prm_abbr,
             'index': data.index.values,
             'value': data.values,
@@ -559,16 +567,14 @@ class GDPHandler(FileHandler):
             file_path, instr_type_name, prm_abbr
         )
 
-        # Check instr_type name existence
-        # (need it for loading origdata config)
-        self.check_sn(file_path, instr_type_name, metadata)
+        # TODO
+        #  Erase
+        # # Check instr_type name existence
+        # # (need it for loading origdata config)
+        # self.check_sn(file_path, instr_type_name, metadata)
 
         # Create event with 'raw' and 'gdp' tag
-        info_mngr = InfoManager(
-            evt_dt=metadata[EVT_DT_FLD_NM],
-            srn=metadata[SRN_FLD_NM],
-            tags=metadata[TAG_FLD_NM] + [TAG_RAW_VAL, TAG_GDP_VAL],
-        )
+        metadata[TAG_FLD_NM] += [TAG_RAW_VAL, TAG_GDP_VAL]
 
         try:
 
@@ -591,7 +597,7 @@ class GDPHandler(FileHandler):
             data = pd.Series([])
 
             # Add empty tag
-            info_mngr.add_tag(TAG_EMPTY_VAL)
+            metadata[TAG_FLD_NM] += [TAG_EMPTY_VAL]
 
             # Log
             rawcsv.warn(
@@ -608,7 +614,7 @@ class GDPHandler(FileHandler):
 
         # Append data
         out = {
-            'info': info_mngr,
+            'info': metadata,
             'index': data.index.values,
             'value': data.values,
             'prm_abbr': prm_abbr,
@@ -667,7 +673,7 @@ class LocalDBLinker(DataLinker):
 
         # Retrieve data from DB
         data = self._db_mngr.get_data(
-            where=search, prm_abbr=prm_abbr, filter_empty=filter_empty
+            search_expr=search, prm_abbr=prm_abbr, filter_empty=filter_empty
         )
 
         return data
@@ -677,7 +683,7 @@ class LocalDBLinker(DataLinker):
 
         Args:
             data_list (list of dict): dict mandatory items are 'index' (np.array),
-                'value' (np.array), 'info' (InfoManager), 'prm_abbr' (str).
+                'value' (np.array), 'info' (InfoManager|dic), 'prm_abbr' (str).
                 dict optional key are 'source_info' (str), force_write (bool)
 
         """

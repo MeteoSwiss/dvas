@@ -16,7 +16,9 @@ from ...database.model import Data
 
 # Define global field name
 EVT_DT_FLD_NM = 'dt_field'  # Datetime field name
+TYP_FLD_NM = 'typ_field'  # Instrument type field name
 SRN_FLD_NM = 'srn_field'  # Serial number field name
+PDT_FLD_NM = 'pdt_field'  # Product field name
 TAG_FLD_NM = 'tag_field'  # Tag field name
 
 INDEX_FLD_NM = 'index_col'  # Index column field name
@@ -42,7 +44,7 @@ INDEX_NM = Data.index.name
 VALUE_NM = Data.value.name
 
 #: list: Metadata fields keys
-META_FIELD_KEYS = [EVT_DT_FLD_NM, SRN_FLD_NM, TAG_FLD_NM]
+META_FIELD_KEYS = [EVT_DT_FLD_NM, TYP_FLD_NM, SRN_FLD_NM, PDT_FLD_NM, TAG_FLD_NM]
 
 #: list: Node pattern
 NODE_PATTERN = [INSTR_TYPE_PAT, PARAM_PAT]
@@ -73,7 +75,13 @@ PARAMETER_PATTERN_PROP = {
     rf"^{EVT_DT_FLD_NM}$": {
         "type": "string",
     },
+    rf"^{TYP_FLD_NM}$": {
+        "type": "string",
+    },
     rf"^{SRN_FLD_NM}$": {
+        "type": "string",
+    },
+    rf"^{PDT_FLD_NM}$": {
         "type": "string",
     },
     rf"^{TAG_FLD_NM}$": {

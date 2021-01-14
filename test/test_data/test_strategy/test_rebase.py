@@ -17,11 +17,12 @@ from dvas.data.strategy.data import RSProfile
 from dvas.data.data import MultiRSProfile
 from dvas.database.database import InfoManager
 
+
 class TestRebaseStrategy:
     """Test SortProfileStrategy class"""
 
     # Prepare some datasets to play with
-    info_1 = InfoManager('20201217T0000Z', '0')
+    info_1 = InfoManager('20201217T0000Z', 1)
     data_1 = pd.DataFrame({'alt': [10., 15., 20.], 'val': [11., 21., 31.], 'flg': [1, 1, 1],
                            'tdt': [10, 20, 30]})
     data_2 = pd.DataFrame({'alt': [1., 1., 2., 5.], 'val': [1., 2., 3., 4.], 'flg': [0, 0, 0, 0],

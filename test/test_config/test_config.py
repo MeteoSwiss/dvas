@@ -16,7 +16,7 @@ import pytest
 # Import from current python packages and modules
 from dvas.config.config import instantiate_config_managers
 from dvas.config.config import CSVOrigMeta
-from dvas.config.config import OrigData, Instrument, InstrType
+from dvas.config.config import OrigData, InstrType
 from dvas.config.config import Parameter, Flag, Tag
 from dvas.config.config import ConfigReadError
 from dvas.config.config import OneDimArrayConfigLinker
@@ -35,7 +35,7 @@ def test_instantiate_config_managers():
     """
 
     # Define
-    cfg_mngrs_class = [OrigData, Instrument, InstrType, Parameter, Flag, Tag]
+    cfg_mngrs_class = [OrigData, InstrType, Parameter, Flag, Tag]
 
     # Instantiate all managers
     cfg_mngrs = instantiate_config_managers(*cfg_mngrs_class, read=False)
@@ -54,7 +54,7 @@ def test_instantiate_config_managers():
 
     # Test content for InstrType. Must contain exactly tst_list items (one time each one
     # This list will need to be udpated the if the test database changes.
-    tst_list = ['AR-GDP_001', 'BR-GDP_001', 'RS41-GDP-BETA_001', 'YT', 'ZT', 'RS92', '']
+    tst_list = ['AR-GDP_001', 'BR-GDP_001', 'RS41-GDP-BETA_001', 'YT', 'ZT', 'RS92']
     assert (sum(
         [(arg['type_name'] in tst_list) for arg in cfg_mngrs['InstrType']]
     ) == len(tst_list))
@@ -147,7 +147,8 @@ class TestOneDimArrayConfigLinker:
         assert sum(
             [self.desc_pat.match(arg['prm_desc']) is not None for arg in doc]
         ) == 10
-        with glob_var.set_many_attr({'config_gen_max': 2}):
+        with glob_var.protect():
+            glob_var.config_gen_max = 2
             with pytest.raises(ConfigGenMaxLenError):
                 self.cfg_lkr.get_document(Parameter.CLASS_KEY)
 

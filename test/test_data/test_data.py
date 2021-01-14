@@ -18,6 +18,7 @@ from dvas.data.data import MultiRSProfile
 from dvas.config.definitions.tag import TAG_DERIVED_VAL, TAG_RAW_VAL
 from dvas.errors import dvasError
 
+
 class TestMutliProfile:
     """Test MultiProfile class"""
 
@@ -84,7 +85,6 @@ class TestMutliProfile:
         # Try to get an index out.
         with pytest.raises(dvasError):
             self.mlt_prf.get_prms(prm_list='alt')
-
 
     def test_rm_info_tag(self):
         """Test rm_info_tag method"""

@@ -6,7 +6,9 @@ _RS92:
 
     # -- META DATA ----------------------------------
     dt_field: "get('event_dt')"
+    typ_field: "get('instr_type')"
     srn_field: "get('sn')"
+    pdt_field: "get('product_id')"
     tag_field:
         - "cat('e:', get('event_id'))"
         - "cat('r:', get('rig'))"
@@ -36,7 +38,9 @@ _YT:
 
     # -- META DATA ----------------------------------
     dt_field: "cat(get('event_dt'), 'Z')"
+    typ_field: "get('instr_type')"
     srn_field: "get('sn')"
+    pdt_field: "get('product_id')"
     tag_field:
         - "cat('e:', get('event_id'))"
         - "cat('r:', get('rig'))"
@@ -66,7 +70,9 @@ _ZT:
 
     # -- META DATA ----------------------------------
     dt_field: "get('event_dt')"
+    typ_field: "get('instr_type')"
     srn_field: "get('sn')"
+    pdt_field: "get('product_id')"
     tag_field:
         - "cat('e:', get('event_id'))"
         - "cat('r:', get('rig'))"

@@ -43,7 +43,7 @@ if __name__ == '__main__':
     dpu.PLOT_SHOW = False
 
     # Reset the DB to "start fresh" ?
-    RESET_DB = True
+    RESET_DB = False
 
     # Define some search queries
     filt_gdp = "tag('gdp')"
@@ -67,7 +67,8 @@ if __name__ == '__main__':
         update_db('treprosu_t', strict=True)
         update_db('altpros1', strict=True)
 
-    # # Load a basic profile, with a variable, and altitude.
+
+    # Load a basic profile, with a variable, and altitude.
     prf = MultiProfile()
     prf.load_from_db(filt_raw, 'trepros1', 'altpros1')
 

@@ -25,10 +25,10 @@ import sre_yield
 
 # Import current package modules
 from .definitions import origdata, csvorigmeta
-from .definitions import instrtype, instrument
+from .definitions import instrtype
 from .definitions import parameter, flag
 from .definitions import tag
-from ..environ import path_var as env_path_var
+from ..environ import path_var
 from ..environ import glob_var as env_glob_var
 from ..helper import get_by_path
 from ..helper import RequiredAttrMetaClass
@@ -204,7 +204,7 @@ class OneLayerConfigManager(ConfigManager):
 
             # Filter (case insensitive)
             doc_in = [
-                arg for arg in env_path_var.config_dir_path.rglob("*.*")
+                arg for arg in path_var.config_dir_path.rglob("*.*")
                 if (
                     (pat.search(arg.stem) is not None) and
                     (arg.suffix in cfg_file_suffix)
@@ -374,19 +374,6 @@ class InstrType(OneDimArrayConfigManager):
     CLASS_KEY = instrtype.KEY
     CONST_NODES = instrtype.CONST_NODES
     NODE_GEN = instrtype.NODE_GEN
-
-    #: dict: Config document
-    document = TypedProperty(OneDimArrayConfigManager.DOC_TYPE)
-
-
-class Instrument(OneDimArrayConfigManager):
-    """Instrument config manager"""
-
-    PARAMETER_PATTERN_PROP = instrument.PARAMETER_PATTERN_PROP
-    NODE_PARAMS_DEF = instrument.NODE_PARAMS_DEF
-    CLASS_KEY = instrument.KEY
-    CONST_NODES = instrument.CONST_NODES
-    NODE_GEN = instrument.NODE_GEN
 
     #: dict: Config document
     document = TypedProperty(OneDimArrayConfigManager.DOC_TYPE)
@@ -657,7 +644,7 @@ class OneDimArrayConfigLinker:
     config managers."""
 
     #: list: Default instantiated config managers
-    CFG_MNGRS_DFLT = [Parameter, InstrType, Instrument, Flag, Tag]
+    CFG_MNGRS_DFLT = [Parameter, InstrType, Flag, Tag]
 
     def __init__(self, cfg_mngrs=None):
         """

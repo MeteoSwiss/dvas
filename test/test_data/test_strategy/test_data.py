@@ -19,10 +19,11 @@ from dvas.data.strategy.data import Profile, RSProfile, GDPProfile
 from dvas.errors import ProfileError
 from dvas.database.database import InfoManager
 
+
 class TestProfile:
     """Test Profile class"""
 
-    info = InfoManager('20200101T0000Z', '0')
+    info = InfoManager('20200202T0000Z', 1)
     ok_data = pd.DataFrame({'alt': [10., 15., 20.], 'val': [1., 2., 3.], 'flg': [0, 0, 0]})
     ko_index_data = ok_data[['val', 'flg']].copy()
 
@@ -111,7 +112,7 @@ class TestProfile:
 class TestRSProfile:
     """Test RSProfile class"""
 
-    info = InfoManager('20200101T0000Z', '0')
+    info = InfoManager('20200101T0000Z', 1)
     ok_data = pd.DataFrame(
         {'alt': [10., 15., 20.], 'val': [1., 2., 3.], 'flg': [0, 0, 0], 'tdt': [0, 1e9, 2e9]}
     )
@@ -157,7 +158,7 @@ class TestRSProfile:
 class TestGDPProfile:
     """Test GDPProfile class"""
 
-    info = InfoManager('20200101T0000Z', '0')
+    info = InfoManager('20200101T0000Z', 1)
     ok_data = pd.DataFrame(
         {
             'alt': [10., 15., 20.], 'val': [1., 2., 3.], 'flg': [0, 0, 0], 'tdt': [0, 1e9, 2e9],

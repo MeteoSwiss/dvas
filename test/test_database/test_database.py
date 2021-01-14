@@ -39,9 +39,16 @@ class TestDatabaseManager:
     # Define
     n_data = 3
     index = np.arange(n_data)
-    values = np.random.rand(n_data)
+    values = np.array([550, 551, 552])
     prm = 'trepros1'
-    info = InfoManager('20200101T0000Z', 'YT-100')
+    sn = 'YT-100'
+    info = InfoManager.from_dict(
+        {
+            'dt_field': '20200101T0000Z',
+            'srn_field': sn, 'pdt_field': '0',
+            'tag_field': 'data_test_db'
+        }
+    )
 
     def test_get_or_none(self, db_mngr):
         """Test get_or_none method"""
@@ -88,7 +95,25 @@ class TestDatabaseManager:
             self.prm, source_info='test_add_data'
         )
 
-        with pytest.raises(AssertionError):
+        # Test add same data (overwrite)
+        db_mngr.add_data(
+            self.index,
+            self.values,
+            self.info,
+            self.prm, source_info='test_add_data',
+            force_write=True
+        )
+
+        # Test add same data (no overwrite)
+        db_mngr.add_data(
+            self.index,
+            self.values,
+            self.info,
+            self.prm, source_info='test_add_data',
+            force_write=False
+        )
+
+        with pytest.raises(DBInsertError):
             db_mngr.add_data(
                 [],
                 self.values,
@@ -96,7 +121,7 @@ class TestDatabaseManager:
                 self.prm, source_info='test_add_data'
             )
 
-        with pytest.raises(AssertionError):
+        with pytest.raises(DBInsertError):
             db_mngr.add_data(
                 self.index,
                 [],
@@ -115,10 +140,17 @@ class TestDatabaseManager:
     def test_get_data(self, db_mngr):
         """Test get_data method"""
 
-        db_mngr.get_data(
-            f"and(dt('{self.info.evt_dt}'), sn('{self.info.srn}'))",
+        res = db_mngr.get_data(
+            f"and_(dt('{self.info.evt_dt}'), srn('{self.sn}'), tag('data_test_db'))",
             'trepros1', True
         )
+
+        assert isinstance(res, list)
+        assert all([isinstance(arg, dict) for arg in res])
+        assert all([arg.keys() == set(['info', 'index', 'value']) for arg in res])
+        assert all([isinstance(arg['info'], InfoManager) for arg in res])
+        assert all([len(arg['index']) == len(arg['value']) for arg in res])
+        assert all([len(arg['index']) == self.n_data for arg in res])
 
     def test_get_flags(self, db_mngr):
         """Test get_flags"""
@@ -129,7 +161,7 @@ class TestInfoManager:
     """Test class for InfoManager"""
 
     dt_test = '20200101T0000Z'
-    sn_test = ['aaa', 'bbb']
+    uid_test = [1, 2]
     glob_var.evt_id_pat = r'e\:\d'
     evt_tag = 'e:1'
     glob_var.rig_id_pat = r'r\:\d'
@@ -137,13 +169,13 @@ class TestInfoManager:
     glob_var.mdl_id_pat = r'mdl\:\d'
     mdl_tag = 'mdl:1'
     info_mngr = InfoManager(
-        dt_test, sn_test, [evt_tag, rig_tag, mdl_tag]
+        dt_test, uid_test, [evt_tag, rig_tag, mdl_tag]
     )
 
-    def test_srn(self):
-        """Test getting 'srn' attribute"""
-        self.info_mngr.srn = self.sn_test
-        assert self.info_mngr.srn == sorted(self.sn_test)
+    def test_uid(self):
+        """Test getting 'uid' attribute"""
+        self.info_mngr.uid = self.uid_test
+        assert self.info_mngr.uid == sorted(self.uid_test)
 
     def test_evt_dt(self):
         """Test setting/getting 'evt_dt' attribute"""
@@ -202,7 +234,7 @@ class TestInfoManager:
         info_mngr_2 = deepcopy(self.info_mngr)
         info_mngr_2.evt_dt += timedelta(1)
         info_mngr_3 = deepcopy(info_mngr_2)
-        info_mngr_3.srn = ['zzzz'] + info_mngr_3.srn
+        info_mngr_3.uid = [3] + info_mngr_3.uid
 
         # Test
         assert all(
@@ -212,7 +244,7 @@ class TestInfoManager:
                     InfoManager.sort(
                         [info_mngr_3, info_mngr_2, info_mngr_1]
                     )[0],
-                    [info_mngr_1, info_mngr_2, info_mngr_3]
+                    [info_mngr_1, info_mngr_3, info_mngr_2]
                 )
             ]
         )

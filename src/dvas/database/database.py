@@ -32,6 +32,8 @@ from .model import Instrument, InstrType, Info
 from .model import Parameter, Flag, DataSource, Data
 from .model import Tag, InfosTags, InfosInstruments
 from ..config.config import OneDimArrayConfigLinker
+from ..config.definitions.origdata import EVT_DT_FLD_NM, TYP_FLD_NM, SRN_FLD_NM
+from ..config.definitions.origdata import PDT_FLD_NM, TAG_FLD_NM
 from ..config.definitions.tag import TAG_NONE, TAG_EMPTY_VAL
 from ..helper import ContextDecorator
 from ..helper import SingleInstanceMetaClass
@@ -234,18 +236,6 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                 for tbl in [Parameter, InstrType, Flag, Tag]:
                     self._fill_table(tbl)
 
-                # File instruments
-                self._fill_table(
-                    Instrument,
-                    foreign_constraint=[
-                        {
-                            'attr': Instrument.instr_type.name,
-                            'class': InstrType,
-                            'foreign_attr': InstrType.type_name.name
-                        },
-                    ]
-                )
-
             except IntegrityError as exc:
                 raise DBCreateError(exc) from exc
 
@@ -321,7 +311,8 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         Args:
             index (np.array of int): Data index
             value (np.array of float): Data value
-            info (InfoManager): Data info
+            info (InfoManager|dict): Data information. If dict, must fulfill
+                InfoManager.from_dict input args requirements.
             prm_abbr (str):
             source_info (str, optional): Data source
             force_write (bool, optional): force rewrite of already save data
@@ -332,47 +323,52 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         """
 
         # Test input
-        assert len(index) == len(value),\
-            "Data index and data value are of different length"
-        assert isinstance(index, np.ndarray), "Data index is not an np.ndarray"
-        assert isinstance(value, np.ndarray), "Data value is not an np.ndarray"
+        try:
+            assert len(index) == len(value),\
+                "Data index and data value are of different length"
+            assert isinstance(index, np.ndarray), "Data index is not an np.ndarray"
+            assert isinstance(value, np.ndarray), "Data value is not an np.ndarray"
+        except AssertionError as ass:
+            raise DBInsertError(ass)
+
+        # Convert to InfoManager
+        if isinstance(info, dict):
+            info = InfoManager.from_dict(info)
 
         # Add data
         try:
             with DBAccess(self) as _:
 
-                # Get/Check instrument
-                try:
-                    instr_id_list = [
+                # Check instrument id existence
+                if (
+                    instr_id_list := sorted([
                         arg[0] for arg in
                         self.get_or_none(
                             Instrument,
                             search={
-                                'where': Instrument.srn.in_(info.srn)
+                                'where': Instrument.id.in_(info.uid)
                             },
                             attr=[[Instrument.id.name]],
                             get_first=False
                         )
-                    ]
-                    assert len(instr_id_list) == len(info.srn)
-
-                except AssertionError:
-                    raise DBInsertError(
-                        f"Many instrument srn in {info.srn} are missing in DB",
-                    )
+                    ])
+                ) != info.uid:
+                    err_msg = f"Many instrument id in %s are missing in DB"
+                    localdb.error(err_msg, info.uid)
+                    raise DBInsertError(err_msg % info.uid)
 
                 # Get/Check parameter
                 param = Parameter.get_or_none(
                     Parameter.prm_abbr == prm_abbr
                 )
                 if not param:
-                    err_msg = "prm_abbr '%s' is missing in DB" % (prm_abbr)
-                    localdb.error(err_msg)
-                    raise DBInsertError(err_msg)
+                    err_msg = "prm_abbr '%s' is missing in DB"
+                    localdb.error(err_msg, prm_abbr)
+                    raise DBInsertError(err_msg % prm_abbr)
 
                 # Check tag_txt existence
-                try:
-                    tag_id_list = [
+                if len(
+                    tag_id_list := [
                         arg[0] for arg in
                         self.get_or_none(
                             Tag,
@@ -383,12 +379,10 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                             get_first=False
                         )
                     ]
-                    assert len(tag_id_list) == len(info.tags)
-
-                except AssertionError:
-                    raise DBInsertError(
-                        f"Many tags in {info.tags} are missing in DB",
-                    )
+                ) != len(info.tags):
+                    err_msg = "Many tags in %s are missing in DB"
+                    localdb.error(err_msg, info.tags)
+                    raise DBInsertError(err_msg % info.tags)
 
                 # Create original data information
                 data_src, _ = DataSource.get_or_create(source=source_info)
@@ -414,7 +408,8 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
                     # Delete Data entries
                     Data.delete().\
-                        where(Data.info == info)
+                        where(Data.info == info_id).\
+                        execute()
 
                     # TODO
                     #  Add log
@@ -485,15 +480,22 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             raise DBInsertError(exc)
 
     @staticmethod
-    def _get_info_id(where_arg, prm_abbr, filter_empty):
-        """Get info id"""
+    def _get_info_id(search_expr, prm_abbr, filter_empty):
+        """Get Info.id for a give search string expression
+
+        Args:
+            search_expr (str): Search expression
+            prm_abbr (str): Parameter
+            filter_empty (bool): Filter for empty data tag
+
+        """
 
         try:
-            out = list(SearchInfoExpr.eval(where_arg, prm_abbr, filter_empty))
+            out = list(SearchInfoExpr.eval(search_expr, prm_abbr, filter_empty))
 
         # TODO Detail exception
         except Exception as exc:
-            print(f'Error in search expression {exc}')
+            print(f'Error in search expression {search_expr} ({exc})')
 
             # TODO Decide if raise or not
             out = []
@@ -501,11 +503,11 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         return out
 
     @TimeIt()
-    def get_data(self, where, prm_abbr, filter_empty):
+    def get_data(self, search_expr, prm_abbr, filter_empty):
         """Get data from DB
 
         Args:
-            where:
+            search_expr (str): Search expression
             prm_abbr (str): Parameter
             filter_empty (bool): Filter empty data or not
 
@@ -514,11 +516,11 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         """
 
         # Get info id
-        info_id_list = self._get_info_id(where, prm_abbr, filter_empty)
+        info_id_list = self._get_info_id(search_expr, prm_abbr, filter_empty)
 
         if not info_id_list:
             localdb.warning(
-                "Empty search '%s' for '%s", where, prm_abbr
+                "Empty search '%s' for '%s", search_expr, prm_abbr
             )
 
         # Query data
@@ -535,6 +537,17 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             # Group data
             out = []
             for i, qry in enumerate(qryer):
+
+                # Get related instrument id
+                instr_id_list = [
+                    arg.id for arg in
+                    Instrument.select().distinct().
+                        join(InfosInstruments).join(Info).
+                        where(Info.id == info_id_list[i].id).
+                        iterator()
+                ]
+
+                # Get related tags
                 tag_txt_list = [
                     arg.tag_txt for arg in
                     Tag.select().distinct().
@@ -542,18 +555,13 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     where(Info.id == info_id_list[i].id).
                     iterator()
                 ]
-                srn_list = [
-                    arg.srn for arg in
-                    Instrument.select().distinct().
-                    join(InfosInstruments).join(Info).
-                    where(Info.id == info_id_list[i].id).
-                    iterator()
-                ]
+
+                # Append
                 out.append(
                     {
                         'info': InfoManager(
                             evt_dt=info_id_list[i].evt_dt,
-                            srn=srn_list,
+                            uid=instr_id_list,
                             tags=tag_txt_list,
                         ),
                         'index': qry.index,
@@ -742,10 +750,10 @@ class InfoManager:
     #: datetime.datetime: UTC datetime
     evt_dt = TProp(Union[str, Timestamp, datetime], check_datetime)
 
-    #: str|iterable of str: Instrument id
-    srn = TProp(
-        Union[str, Iterable[str]],
-        setter_fct=lambda x: (x,) if isinstance(x, str) else tuple(x),
+    #: int|iterable of int: Instrument id
+    uid = TProp(
+        Union[int, Iterable[int]],
+        setter_fct=lambda x: (x,) if isinstance(x, int) else tuple(x),
         getter_fct=lambda x: sorted(x)
     )
 
@@ -756,23 +764,23 @@ class InfoManager:
         getter_fct=lambda x: sorted(x)
     )
 
-    def __init__(self, evt_dt, srn, tags=TAG_NONE):
+    def __init__(self, evt_dt, uid, tags=TAG_NONE):
         """Constructor
 
         Args:
             evt_dt (str | datetime | pd.Timestamp): UTC datetime
-            srn (str): Instrument serial number
-            tags (`optional`, iterable of str): Tags. Defaults to ''
+            uid (int|iterable of int): Unique identifier (snr, pdt)
+            tags (str|iterable of str, `optional`): Tags. Defaults to ''
 
         """
 
         # Set attributes
         self.evt_dt = evt_dt
-        self.srn = srn
+        self.uid = uid
         self.tags = tags
 
     def __copy__(self):
-        return self.__class__(self.evt_dt, self.srn.copy(), self.tags.copy())
+        return self.__class__(self.evt_dt, self.uid.copy(), self.tags.copy())
 
     @property
     def evt_id(self):
@@ -793,7 +801,7 @@ class InfoManager:
             # TODO: the following line triggers a *very* weird pylint Error 1101.
             # I disable it for now ... but someone should really confirm whether this ok or not!
             # fpavogt - 2020.12.09
-            out = next(filter(glob_var.rig_id_pat.match, self.tags)) # pylint: disable=E1101
+            out = next(filter(glob_var.rig_id_pat.match, self.tags))  # pylint: disable=E1101
         except StopIteration:
             out = None
         return out
@@ -816,18 +824,18 @@ class InfoManager:
     def __repr__(self):
         p_printer = pprint.PrettyPrinter()
         return p_printer.pformat(
-            (f'evt_dt: {self.evt_dt}', f'srn: {self.srn}', f'tags: {self.tags}')
+            (f'evt_dt: {self.evt_dt}', f'uid: {self.uid}', f'tags: {self.tags}')
         )
 
     def get_hash(self):
         """Return 20 bytes hash as string"""
         return blake2b(
-            b''.join([str(arg).encode('utf-8') for arg in self.sort_attr]),
+            b''.join([str(arg).encode('utf-8') for arg in self._get_attr_sort_order()]),
             digest_size=20
         ).hexdigest()
 
     def __hash__(self):
-        return hash(self.sort_attr)
+        return hash(self._get_attr_sort_order())
 
     def add_tag(self, val):
         """Add a tag abbr
@@ -864,7 +872,7 @@ class InfoManager:
         """Sort list of InfoManager. Sorting order [evt_dt, srn, tags]
 
         Args:
-            info_list (list of InfoManager): List to sort
+            info_list (iterable of InfoManager): List to sort
 
         Returns:
             list: Sorted InfoManager
@@ -882,28 +890,92 @@ class InfoManager:
 
         return list(out[0]), out[1]
 
-    @property
-    def sort_attr(self):
-        """ list of InfoManger attributes: Attributes sort order"""
-        return tuple((self.evt_dt, *self.srn, *self.tags))
+    def _get_attr_sort_order(self):
+        """Return attributes used for sorting/hashing
+
+        Returns:
+            tuple
+
+        """
+        return self.evt_dt, *[str(arg) for arg in self.uid], *self.tags
 
     def __eq__(self, other):
-        return self.sort_attr == other.sort_attr
+        return self._get_attr_sort_order() == other._get_attr_sort_order()
 
     def __ne__(self, other):
-        return self.sort_attr != other.sort_attr
+        return self._get_attr_sort_order() != other._get_attr_sort_order()
 
     def __lt__(self, other):
-        return self.sort_attr < other.sort_attr
+        return self._get_attr_sort_order() < other._get_attr_sort_order()
 
     def __le__(self, other):
-        return self.sort_attr <= other.sort_attr
+        return self._get_attr_sort_order() <= other._get_attr_sort_order()
 
     def __gt__(self, other):
-        return self.sort_attr > other.sort_attr
+        return self._get_attr_sort_order() > other._get_attr_sort_order()
 
     def __ge__(self, other):
-        return self.sort_attr >= other.sort_attr
+        return self._get_attr_sort_order() >= other._get_attr_sort_order()
+
+    @staticmethod
+    def from_dict(metadata):
+        """Convert dict of metadata to InfoManager
+
+        Dict keys:
+            - dt_field (str): Datetime
+            - typ_field (str, `optional`): Instrument type (used to create
+                instrument entry if missing in DB)
+            - srn_field (str): Serial number
+            - pdt_field (str): Product identifier
+            - tag_field (list of str): Tags
+
+
+        """
+
+        # Define
+        db_mngr = DatabaseManager()
+
+        # Get instrument id
+        if (
+        instr_id := db_mngr.get_or_none(
+            Instrument,
+            search={
+                'where': (
+                    (Instrument.srn == metadata[SRN_FLD_NM]) &
+                    (Instrument.pdt == metadata[PDT_FLD_NM])
+                )
+            },
+            attr=[[Instrument.id.name]]
+        )) is None:
+
+            # Get instrument type
+            if (
+            instr_type := InstrType.get_or_none(
+                InstrType.type_name == metadata[TYP_FLD_NM]
+            )) is None:
+                # TODO
+                #  Detail exception
+                raise Exception(f"{metadata[TYP_FLD_NM]} is missing in DB/InstrumentType")
+
+            # Create instrument entry
+            instr_id = Instrument.create(
+                srn=metadata[SRN_FLD_NM], pdt=metadata[PDT_FLD_NM],
+                instr_type=instr_type
+            ).id
+
+        # Construct InfoManager
+        try:
+            info = InfoManager(
+                evt_dt=metadata[EVT_DT_FLD_NM],
+                uid=instr_id,
+                tags=metadata[TAG_FLD_NM]
+            )
+        except Exception as exc:
+            # TODO
+            #  Detail exception
+            raise Exception(exc)
+
+        return info
 
 
 class SearchInfoExpr(metaclass=ABCMeta):
@@ -959,6 +1031,7 @@ class SearchInfoExpr(metaclass=ABCMeta):
             - all(): Select all
             - [datetime ; dt]('<ISO datetime>', ['=='(default) ; '>=' ; '>' ; '<=' ; '<' ; '!=']): Select by datetime
             - [serialnumber ; srn]('<Serial number>'): Select by serial number
+            - [product ; pdt](<Product>): Select by product
             - tag(['<Tag>' ; ('<Tag 1>', ...,'<Tag n>')]): Select by tag
             - and_(<expr 1>, ..., <expr n>): Intersection
             - or_(<expr 1>, ..., <expr n>): Union
@@ -970,6 +1043,7 @@ class SearchInfoExpr(metaclass=ABCMeta):
             'all': AllExpr,
             'datetime': DatetimeExpr, 'dt': DatetimeExpr,
             'serialnumber': SerialNumberExpr, 'srn': SerialNumberExpr,
+            'product': ProductExpr, 'pdt': ProductExpr,
             'tag': TagExpr,
             'and_': AndExpr,
             'or_': OrExpr,
@@ -1124,11 +1198,24 @@ class SerialNumberExpr(TerminalSearchInfoExpr):
         return Instrument.srn.in_(self.expression)
 
 
+class ProductExpr(TerminalSearchInfoExpr):
+    """Product filter"""
+
+    expression = TProp(
+        Union[int, Iterable[int]],
+        setter_fct=lambda x: [x] if isinstance(x, int) else list(x)
+    )
+
+    def get_filter(self):
+        """Implement get_filter method"""
+        return Instrument.pdt.in_(self.expression)
+
+
 class TagExpr(TerminalSearchInfoExpr):
     """Tag filter"""
 
     expression = TProp(
-        Union[str, Iterable[str]], lambda x: set([x]) if isinstance(x, str) else set(x)
+        Union[str, Iterable[str]], lambda x: set((x,)) if isinstance(x, str) else set(x)
     )
 
     def get_filter(self):

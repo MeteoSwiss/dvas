@@ -29,7 +29,7 @@ class TestFileHandle:
     gdp_file_path = list(path_var.orig_data_path.rglob('*.nc'))[0]
 
     res_fmt = {
-        'info': InfoManager,
+        'info': dict,
         'prm_abbr': str,
         'index': np.ndarray, 'value': np.ndarray,
         'source_info': str
@@ -74,11 +74,17 @@ class TestLoadDBLinker:
 
     # Define
     db_linker = LocalDBLinker()
-    n_data = 3
-    index = np.arange(n_data)
-    values = np.random.rand(n_data)
+    index = np.arange(3)
+    values = np.array([440, 441, 442])
     prm = 'trepros1'
-    info = InfoManager('20200101T0000Z', 'YT-100')
+    sn = 'YT-100'
+    info = InfoManager.from_dict(
+        {
+            'dt_field': '20200101T0000Z',
+            'srn_field': sn, 'pdt_field': '0',
+            'tag_field': 'load_profile_from_linker'
+        }
+    )
 
     def test_load(self):
         """Test load method"""

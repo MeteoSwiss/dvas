@@ -51,14 +51,16 @@ class VariableManager(ABC, metaclass=ABCSingleInstanceMeta):
         self.set_attr()
 
     def __str__(self):
-        attr = getmembers(self, lambda x: not (isroutine(x)))
         return '\n'.join(
-            [
-                f"{arg[0]}: {arg[1]}" for arg in attr
-                if not (arg[0].startswith('_'))
-            ]
-
+            [f"{key}: {val}" for key, val in self.get_attr().items()]
         )
+
+    def get_attr(self):
+        """Return current attributes"""
+        return {
+            attr: val for attr, val in getmembers(self)
+            if not attr.startswith('_') and not isroutine(val)
+        }
 
     @property
     @abstractmethod
@@ -81,26 +83,19 @@ class VariableManager(ABC, metaclass=ABCSingleInstanceMeta):
             )
 
     @contextmanager
-    def set_many_attr(self, items):
-        """Context manager to set temporarily many global variables.
-
-        Args:
-            items (dict): Temporarily global variables.
-                keys: instance attribute name. values: temporarily set values.
-        except AssertionError as ass:
-        Examples:
-            >>>from dvas.environ import path_var
-            >>>with path_var.set_many_attr({})
-
+    def protect(self):
+        """Context manager to protect temporarily global variables.
+        When existing the context manager, old values are restored.
         """
-        # Set new values and save old values
-        old_items = {}
-        for key, val in items.items():
-            old_items.update({key: getattr(self, key)})
-            setattr(self, key, val)
+
+        # Get current attributes values
+        old_attr = self.get_attr()
+
+        # Yield context manager
         yield
+
         # Restore old values
-        for key, val in old_items.items():
+        for key, val in old_attr.items():
             setattr(self, key, val)
 
 
@@ -156,17 +151,14 @@ class GlobalPackageVariableManager(VariableManager):
 
     #: int: Config regexp generator limit. Default to 10000.
     config_gen_max = TProp(int, lambda x: int(x))
-    #: str: Config regex generator group function separator. Default to '$'.
-    config_gen_grp_sep = TProp(
-        TProp.re_str_choice([r'\$', r'\%']),
-        lambda *x: x[0]
-    )
     #: list of str: Config file allowed extensions. Default to ['yml', 'yaml']
     config_file_ext = TProp(Iterable[str], lambda x: tuple(x))
     #: str: Event ID pattern use in InfoManager to extract event tag.
     evt_id_pat = TProp(Union[str, re.Pattern], lambda x: re.compile(x))
     #: str: Rig ID pattern use in InfoManager to extract event tag.
     rig_id_pat = TProp(Union[str, re.Pattern], lambda x: re.compile(x))
+    #: str: Product ID pattern use in InfoManager to extract event tag.
+    prd_id_pat = TProp(Union[str, re.Pattern], lambda x: re.compile(x))
     #: str: GDP model ID pattern use in InfoManager to extract event tag.
     mdl_id_pat = TProp(Union[str, re.Pattern], lambda x: re.compile(x))
 
@@ -175,14 +167,14 @@ class GlobalPackageVariableManager(VariableManager):
         return [
             {'name': 'config_gen_max',
              'default': 10000},
-            {'name': 'config_gen_grp_sep',
-             'default': '$'},
             {'name': 'config_file_ext',
              'default': ['yml', 'yaml']},
             {'name': 'evt_id_pat',
              'default': r'^e:\w+$'},
             {'name': 'rig_id_pat',
              'default': r'^r:\w+$'},
+            {'name': 'prd_id_pat',
+             'default': r'^p:\w+$'},
             {'name': 'mdl_id_pat',
              'default': r'^m:\w+$'},
         ]
