@@ -924,10 +924,11 @@ class InfoManager:
         Dict keys:
             - dt_field (str): Datetime
             - typ_field (str, `optional`): Instrument type (used to create
-            instrument entry if missing in DB)
+                instrument entry if missing in DB)
             - srn_field (str): Serial number
             - pdt_field (str): Product identifier
             - tag_field (list of str): Tags
+
 
         """
 

@@ -53,7 +53,7 @@ class TestSave:
         # Run some simple checks ... but if I got here, I am pretty much ok.
         assert len(prf_v2) == len(prf_v0)
         assert prf_v2.info[0].evt_dt == prf_v0.info[0].evt_dt
-        assert np.all(prf_v2.info[0].iid == prf_v0.info[0].iid)
-        assert np.all(prf_v2.info[0].iid == prf_v0.info[0].iid)
+        assert np.all(prf_v2.info[0].uid == prf_v0.info[0].uid)
+        assert np.all(prf_v2.info[0].uid == prf_v0.info[0].uid)
         assert 'derived' in prf_v2.info[0].tags
         assert 'vof1' not in prf_v2.info[0].tags

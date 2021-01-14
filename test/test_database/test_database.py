@@ -161,7 +161,7 @@ class TestInfoManager:
     """Test class for InfoManager"""
 
     dt_test = '20200101T0000Z'
-    iid_test = [1, 2]
+    uid_test = [1, 2]
     glob_var.evt_id_pat = r'e\:\d'
     evt_tag = 'e:1'
     glob_var.rig_id_pat = r'r\:\d'
@@ -169,13 +169,13 @@ class TestInfoManager:
     glob_var.mdl_id_pat = r'mdl\:\d'
     mdl_tag = 'mdl:1'
     info_mngr = InfoManager(
-        dt_test, iid_test, [evt_tag, rig_tag, mdl_tag]
+        dt_test, uid_test, [evt_tag, rig_tag, mdl_tag]
     )
 
-    def test_iid(self):
-        """Test getting 'iid' attribute"""
-        self.info_mngr.iid = self.iid_test
-        assert self.info_mngr.iid == sorted(self.iid_test)
+    def test_uid(self):
+        """Test getting 'uid' attribute"""
+        self.info_mngr.uid = self.uid_test
+        assert self.info_mngr.uid == sorted(self.uid_test)
 
     def test_evt_dt(self):
         """Test setting/getting 'evt_dt' attribute"""
@@ -234,7 +234,7 @@ class TestInfoManager:
         info_mngr_2 = deepcopy(self.info_mngr)
         info_mngr_2.evt_dt += timedelta(1)
         info_mngr_3 = deepcopy(info_mngr_2)
-        info_mngr_3.iid = [3] + info_mngr_3.iid
+        info_mngr_3.uid = [3] + info_mngr_3.uid
 
         # Test
         assert all(
