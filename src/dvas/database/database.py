@@ -346,16 +346,16 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                         self.get_or_none(
                             Instrument,
                             search={
-                                'where': Instrument.id.in_(info.iid)
+                                'where': Instrument.id.in_(info.uid)
                             },
                             attr=[[Instrument.id.name]],
                             get_first=False
                         )
                     ])
-                ) != info.iid:
+                ) != info.uid:
                     err_msg = f"Many instrument id in %s are missing in DB"
-                    localdb.error(err_msg, info.iid)
-                    raise DBInsertError(err_msg % info.iid)
+                    localdb.error(err_msg, info.uid)
+                    raise DBInsertError(err_msg % info.uid)
 
                 # Get/Check parameter
                 param = Parameter.get_or_none(
@@ -561,7 +561,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     {
                         'info': InfoManager(
                             evt_dt=info_id_list[i].evt_dt,
-                            iid=instr_id_list,
+                            uid=instr_id_list,
                             tags=tag_txt_list,
                         ),
                         'index': qry.index,
@@ -751,7 +751,7 @@ class InfoManager:
     evt_dt = TProp(Union[str, Timestamp, datetime], check_datetime)
 
     #: int|iterable of int: Instrument id
-    iid = TProp(
+    uid = TProp(
         Union[int, Iterable[int]],
         setter_fct=lambda x: (x,) if isinstance(x, int) else tuple(x),
         getter_fct=lambda x: sorted(x)
@@ -764,7 +764,7 @@ class InfoManager:
         getter_fct=lambda x: sorted(x)
     )
 
-    def __init__(self, evt_dt, iid, tags=TAG_NONE):
+    def __init__(self, evt_dt, uid, tags=TAG_NONE):
         """Constructor
 
         Args:
@@ -776,11 +776,11 @@ class InfoManager:
 
         # Set attributes
         self.evt_dt = evt_dt
-        self.iid = iid
+        self.uid = uid
         self.tags = tags
 
     def __copy__(self):
-        return self.__class__(self.evt_dt, self.iid.copy(), self.tags.copy())
+        return self.__class__(self.evt_dt, self.uid.copy(), self.tags.copy())
 
     @property
     def evt_id(self):
@@ -824,7 +824,7 @@ class InfoManager:
     def __repr__(self):
         p_printer = pprint.PrettyPrinter()
         return p_printer.pformat(
-            (f'evt_dt: {self.evt_dt}', f'iid: {self.iid}', f'tags: {self.tags}')
+            (f'evt_dt: {self.evt_dt}', f'uid: {self.uid}', f'tags: {self.tags}')
         )
 
     def get_hash(self):
@@ -897,7 +897,7 @@ class InfoManager:
             tuple
 
         """
-        return self.evt_dt, *[str(arg) for arg in self.iid], *self.tags
+        return self.evt_dt, *[str(arg) for arg in self.uid], *self.tags
 
     def __eq__(self, other):
         return self._get_attr_sort_order() == other._get_attr_sort_order()
@@ -966,7 +966,7 @@ class InfoManager:
         try:
             info = InfoManager(
                 evt_dt=metadata[EVT_DT_FLD_NM],
-                iid=instr_id,
+                uid=instr_id,
                 tags=metadata[TAG_FLD_NM]
             )
         except Exception as exc:

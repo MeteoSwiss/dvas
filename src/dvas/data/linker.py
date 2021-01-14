@@ -21,12 +21,12 @@ import pandas as pd
 from ..environ import path_var as env_path_var
 from ..database.model import InstrType, Info
 from ..database.model import Parameter, DataSource
-from ..database.database import DatabaseManager, InfoManager
+from ..database.database import DatabaseManager
 from ..config.config import OrigData, CSVOrigMeta
 from ..config.config import ConfigReadError
 from ..config.config import ConfigExprInterpreter
 from ..config.definitions.origdata import META_FIELD_KEYS
-from ..config.definitions.origdata import EVT_DT_FLD_NM, SRN_FLD_NM, TAG_FLD_NM
+from ..config.definitions.origdata import TAG_FLD_NM
 from ..config.definitions.origdata import PARAM_FLD_NM
 from ..logger import rawcsv
 from ..environ import glob_var
