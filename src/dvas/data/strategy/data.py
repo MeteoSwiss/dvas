@@ -20,6 +20,7 @@ from ...database.model import Flag as TableFlag
 from ...database.database import DatabaseManager, InfoManager
 from ...errors import ProfileError
 from ...helper import RequiredAttrMetaClass
+from ..hardcoded import PRF_REF_INDEX_NAME
 
 # Define
 INT_TEST = (np.int64, np.int, int, type(pd.NA))
@@ -79,7 +80,7 @@ class ProfileAC(metaclass=RequiredAttrMetaClass):
 
         """
         val = val.reset_index(inplace=False)
-        val.index.name = '_idx'
+        val.index.name = PRF_REF_INDEX_NAME
         return val[sorted(cls.DF_COLS_ATTR.keys())]
 
     @classmethod
