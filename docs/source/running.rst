@@ -12,6 +12,19 @@ Running dvas
 Naming conventions
 ------------------
 
+Protected tag names
+...................
+
+The following tag names are used by dvas, and thus protected. They are defined in
+`dvas/config/definitions/tag.py`:
+
+    * ``raw``:
+    * ``gdp``:
+    * ``derived``:
+    * ``empty``:
+    * ``sync``:
+    * ``resampled``:
+
 Default database variable names
 ...............................
 
