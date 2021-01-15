@@ -374,18 +374,23 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
         self._plot_stgy.execute(self, **kwargs)
 
     @deepcopy
-    def rebase(self, new_index, shift=None):
-        """ Rebase method, which allows to map Profiles on new set of indices.
+    def rebase(self, new_lengths, shifts=None):
+        """ Rebase method, which allows to map Profiles on new set of integer indices.
+
+        This will move the values around, including the non-integer indices (i.e. anything
+        other than '_idx') if applicable.
 
         Args:
-            new_index (pandas.core.indexes.multi.MultiIndex): The new indices to rebase upon.
-            shift (int|list of int, optional): row n of the existing data will become row n+shift.
+            new_lengths (int|list of int): The length of the DataFrame to rebase upon.
+                If specifiying an int, the same length will be applied to all Profiles. Else, the
+                list should specify a length for each Profile.
+            shifts (int|list of int, optional): row n of the existing data will become row n+shift.
                 If specifiying an int, the same shift will be applied to all Profiles. Else, the
-                list should specify a shift for each Profile. Defaults to None.
+                list should specify a shift for each Profile. Defaults to None (=no shift).
 
         """
 
-        data = self._rebase_stgy.execute(self.profiles, new_index, shift=shift)
+        data = self._rebase_stgy.execute(self.profiles, new_lengths, shift=shifts)
 
         self.update(self.db_variables, data)
 

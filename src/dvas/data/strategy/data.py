@@ -20,12 +20,12 @@ from ...database.model import Flag as TableFlag
 from ...database.database import DatabaseManager, InfoManager
 from ...errors import ProfileError
 from ...helper import RequiredAttrMetaClass
-from ..hardcoded import PRF_REF_INDEX_NAME
+from ...hardcoded import PRF_REF_INDEX_NAME
 
 # Define
 INT_TEST = (np.int64, np.int, int, type(pd.NA))
 FLOAT_TEST = (np.float, float) + INT_TEST
-TIME_TEST = FLOAT_TEST + (pd.Timedelta,)
+TIME_TEST = FLOAT_TEST + (pd.Timedelta, type(pd.NaT))
 
 
 class MPStrategyAC(metaclass=ABCMeta):
