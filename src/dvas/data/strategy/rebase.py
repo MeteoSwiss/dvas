@@ -10,6 +10,7 @@ Module contents: Rebase strategy
 """
 
 # Import from external packages
+import numbers
 import pandas as pd
 
 # Import from current package
@@ -47,10 +48,10 @@ class RebaseStrategy(MPStrategyAC):
             raise dvasError("Ouch ! prfs should be of type list, and not: {}".format(type(prfs)))
 
         # Deal with the length(s). Try to be as courteous as possible.
-        if isinstance(new_lengths, int):
+        if isinstance(new_lengths, numbers.Integral):
             new_lengths = [new_lengths] * len(prfs)
         elif isinstance(new_lengths, list):
-            if not all([isinstance(item, int) for item in new_lengths]):
+            if not all([isinstance(item, numbers.Integral) for item in new_lengths]):
                 raise dvasError("Ouch ! new_lengths should be a list of int.")
             if len(new_lengths) != len(prfs):
                 if len(set(new_lengths)) == 1:
@@ -65,10 +66,10 @@ class RebaseStrategy(MPStrategyAC):
         # Deal with the shift(s). Still try to be as courteous as possible.
         if shifts is None:
             shifts = [0] * len(prfs)
-        if isinstance(shifts, int):
+        if isinstance(shifts, numbers.Integral):
             shifts = [shifts] * len(prfs)
         elif isinstance(shifts, list):
-            if not all([isinstance(item, int) for item in shifts]):
+            if not all([isinstance(item, numbers.Integral) for item in shifts]):
                 raise dvasError("Ouch ! shift should be a list of int.")
             if len(shifts) != len(prfs):
                 if len(set(shifts)) == 1:
@@ -100,7 +101,7 @@ class RebaseStrategy(MPStrategyAC):
                 new_data[col] = new_data[col].astype(this_data[col].dtype)
 
             # Fill the new data where needed. Note here that this line relies on the fact that
-            # pandas will take care of replacing the rows that have the same indices only.
+            # pandas will take care of replacing only the rows that have the same indices.
             # Anything that needs to be dropped from this_data will thus be dropped as required.
             new_data.update(this_data)
 

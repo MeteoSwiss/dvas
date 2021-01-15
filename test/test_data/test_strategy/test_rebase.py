@@ -67,7 +67,7 @@ class TestRebaseStrategy:
                       multiprf.profiles[1].data[:-1].to_numpy()) # Data has moved where it should
 
         # Shift things around a bit ... but in the other direction
-        out_d = multiprf.rebase(4, shift=-2, inplace=False)
+        out_d = multiprf.rebase(4, shift=np.int64(-2), inplace=False)
         assert out_d.profiles[0].data[-2:].isna().all(axis=None) # NaN's where added as needed.
         assert out_d.profiles[1].data[-2:].isna().all(axis=None) # NaN's where added as needed.
         assert np.all(out_d.profiles[0].data[:-3].to_numpy() ==
