@@ -28,6 +28,10 @@ import dvas.plots.utils as dpu
 
 from dvas.dvas import start_log
 
+from dvas.tools import synchro as sync
+from importlib import reload
+reload(sync)
+
 if __name__ == '__main__':
 
     # Start the logging
@@ -40,17 +44,26 @@ if __name__ == '__main__':
     dpu.PLOT_FMTS = ['png', 'pdf']
 
     # Show the plots on-screen ?
-    dpu.PLOT_SHOW = False
+    dpu.PLOT_SHOW = True
 
     # Reset the DB to "start fresh" ?
     RESET_DB = True
 
     # Define some search queries
     filt_gdp = "tag('gdp')"
+<<<<<<< HEAD
     filt_dt = "dt('20171024T120000Z', '==')"
     filt_vof = "and_(%s,%s)" % (filt_gdp, filt_dt)
+=======
+    filt_evt = "tag('e:1')"
+    filt_rig = "tag('r:1')"
+    filt_raw = "tag('raw')"
+    filt_sync = "tag('sync')"
+    filt_flight = "and_(%s,%s,%s)" % (filt_evt, filt_rig, filt_raw)
+    filt_dt = "dt('20180125T120000Z', '==')"
+    filt_vof = "and_(%s, %s, %s)" % (filt_gdp, filt_dt, filt_raw)
+>>>>>>> Fix merge conflict
     filt_gdp_der = "and_(tag('derived'), tag('gdp'))"
-    filt_raw = "and_(tag('raw'), not_(tag('gdp')))"
     filt_all = "all()"
     filt_der = "and_(tag('derived'), not_(tag('gdp')))"
     filt_cws = "tag('cws')"
@@ -67,38 +80,55 @@ if __name__ == '__main__':
         update_db('treprosu_t', strict=True)
         update_db('altpros1', strict=True)
 
+<<<<<<< HEAD
 
     # Load a basic profile, with a variable, and altitude.
     prf = MultiProfile()
     prf.load_from_db(filt_raw, 'trepros1', 'altpros1')
+=======
+    # # Load a basic profile, with a variable, and altitude.
+    #prf = MultiProfile()
+    #prf.load_from_db(filt_flight, 'trepros1', 'altpros1')
+>>>>>>> Tweak examples for synchornizing test
 
     # Load a basic time profile, with a variable and altitude
-    rs_prf = MultiRSProfile()
-    try:
-        rs_prf.load_from_db(filt_der, 'trepros1', 'tdtpros1', alt_abbr='altpros1')
-
-    except dvasError:
-        rs_prf.load_from_db(filt_raw, 'trepros1', 'tdtpros1', alt_abbr='altpros1')
-        rs_prf.sort()
-        #rs_prf.resample()
-        rs_prf.save_to_db()
+    #rs_prf = MultiRSProfile()
+    #try:
+    #    rs_prf.load_from_db(filt_der, 'trepros1', 'tdtpros1', alt_abbr='altpros1')
+    #except dvasError:
+    #    rs_prf.load_from_db(filt_raw, 'trepros1', 'tdtpros1', alt_abbr='altpros1')
+    #    rs_prf.sort()
+    #    #rs_prf.resample()
+    #    rs_prf.save_to_db()
 
     # Acccess some useful info about the data
+<<<<<<< HEAD
     print(rs_prf.get_info('evt_id'))
     print(rs_prf.get_info('rig_id'))
     print(rs_prf.get_info('mdl_id'))
     print(rs_prf.get_info())
+=======
+    #print(rs_prf.get_info('evt_id'))
+    #print(rs_prf.get_info('rig_id'))
+    #print(rs_prf.get_info('mdl_id'))
+>>>>>>> Fix merge conflict
 
     # Load GDPs for temperature, including all the errors
-    gdp_prfs = MultiGDPProfile()
-    gdp_prfs.load_from_db(filt_vof, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1',
-                          ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t',
-                          inplace=True)
+    #gdp_prfs = MultiGDPProfile()
+    #gdp_prfs.load_from_db(filt_vof, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1',
+    #                      ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t',
+    #                      inplace=True)
 
     # Let us inspect the profiles with dedicated plots.
-    gdp_prfs.plot(fn_prefix='01') # Defaults behavior, just adding a prefix to the filename.
-    gdp_prfs.plot(uc='tot', show_plt=True, fmts=[]) # Now with errors. Show it but don't save it.
+    #gdp_prfs.plot(fn_prefix='01') # Defaults behavior, just adding a prefix to the filename.
+    #gdp_prfs.plot(uc='tot', show_plt=True, fmts=[]) # Now with errors. Show it but don't save it.
 
+    sync.synchronize_rs_flight(1, 1, 'trepros1')
+
+    # Load the synced profiles, with a variable, and altitude.
+    prf = MultiProfile()
+    prf.load_from_db(filt_sync, 'trepros1', 'altpros1')
+    print([len(item) for item in prf.profiles])
 
     # Compute a working standard
     # TODO: disabled in the example for now. We must first synchronize the Profiles.
