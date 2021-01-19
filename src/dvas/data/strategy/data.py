@@ -431,10 +431,10 @@ class GDPProfile(RSProfile):
     Requires some measured values, together with their corresponding measurement times since launch,
     altitudes, flags, as well as 4 distinct types uncertainties:
 
-      - 'uc_r' : Rig "uncorrelated" uncertainties.
-      - 'uc_s' : Spatial-correlated uncertainties.
-      - 'uc_t' : Temporal correlated uncertainties.
-      - 'uc_u' : True uncorrelated uncertainties.
+      - 'ucr' : Rig "uncorrelated" uncertainties.
+      - 'ucs' : Spatial-correlated uncertainties.
+      - 'uct' : Temporal correlated uncertainties.
+      - 'ucu' : True uncorrelated uncertainties.
 
     The property "uc_tot" returns the total uncertainty, and is prodvided for convenience.
 

@@ -103,6 +103,10 @@ def synchronize_rs_flight(evt_id, rig_id, vars, ref_var='trepros1', ref_alt=5000
     # First the GDPs
     gdp_shifts = [item for (ind, item) in enumerate(synchro_shifts) if is_gdp[ind]]
     gdps = MultiGDPProfile()
+
+    import pdb
+    pdb.set_trace()
+
     gdps.load_from_db("and_({filt}, tag('gdp'))".format(filt=filt), ref_var, 'tdtpros1',
                       alt_abbr='altpros1', ucr_abbr='treprosu_r', ucs_abbr='treprosu_s',
                       uct_abbr='treprosu_t')

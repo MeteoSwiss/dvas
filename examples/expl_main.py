@@ -51,10 +51,6 @@ if __name__ == '__main__':
 
     # Define some search queries
     filt_gdp = "tag('gdp')"
-<<<<<<< HEAD
-    filt_dt = "dt('20171024T120000Z', '==')"
-    filt_vof = "and_(%s,%s)" % (filt_gdp, filt_dt)
-=======
     filt_evt = "tag('e:1')"
     filt_rig = "tag('r:1')"
     filt_raw = "tag('raw')"
@@ -62,7 +58,6 @@ if __name__ == '__main__':
     filt_flight = "and_(%s,%s,%s)" % (filt_evt, filt_rig, filt_raw)
     filt_dt = "dt('20180125T120000Z', '==')"
     filt_vof = "and_(%s, %s, %s)" % (filt_gdp, filt_dt, filt_raw)
->>>>>>> Fix merge conflict
     filt_gdp_der = "and_(tag('derived'), tag('gdp'))"
     filt_all = "all()"
     filt_der = "and_(tag('derived'), not_(tag('gdp')))"
@@ -80,16 +75,9 @@ if __name__ == '__main__':
         update_db('treprosu_t', strict=True)
         update_db('altpros1', strict=True)
 
-<<<<<<< HEAD
-
-    # Load a basic profile, with a variable, and altitude.
-    prf = MultiProfile()
-    prf.load_from_db(filt_raw, 'trepros1', 'altpros1')
-=======
     # # Load a basic profile, with a variable, and altitude.
     #prf = MultiProfile()
     #prf.load_from_db(filt_flight, 'trepros1', 'altpros1')
->>>>>>> Tweak examples for synchornizing test
 
     # Load a basic time profile, with a variable and altitude
     #rs_prf = MultiRSProfile()
@@ -102,16 +90,10 @@ if __name__ == '__main__':
     #    rs_prf.save_to_db()
 
     # Acccess some useful info about the data
-<<<<<<< HEAD
-    print(rs_prf.get_info('evt_id'))
-    print(rs_prf.get_info('rig_id'))
-    print(rs_prf.get_info('mdl_id'))
-    print(rs_prf.get_info())
-=======
     #print(rs_prf.get_info('evt_id'))
     #print(rs_prf.get_info('rig_id'))
     #print(rs_prf.get_info('mdl_id'))
->>>>>>> Fix merge conflict
+    #print(rs_prf.get_info())
 
     # Load GDPs for temperature, including all the errors
     #gdp_prfs = MultiGDPProfile()
