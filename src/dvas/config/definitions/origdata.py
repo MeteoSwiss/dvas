@@ -20,6 +20,7 @@ TYP_FLD_NM = 'typ_field'  # Instrument type field name
 SRN_FLD_NM = 'srn_field'  # Serial number field name
 PDT_FLD_NM = 'pdt_field'  # Product field name
 TAG_FLD_NM = 'tag_field'  # Tag field name
+META_FLD_NM = 'meta_field' # Metadata field name
 
 INDEX_FLD_NM = 'index_col'  # Index column field name
 PARAM_FLD_NM = 'value_col'  # Value column field name
@@ -52,6 +53,7 @@ NODE_PATTERN = [INSTR_TYPE_PAT, PARAM_PAT]
 #: dict: Node parameters default value
 NODE_PARAMS_DEF = {
     TAG_FLD_NM: [],
+    META_FLD_NM: {},
     UNIT_FLD_NM: '1',
     LAMBDA_FLD_NM: 'lambda x: x',
     CSV_DELIMITER_FLD_NM: ';',
@@ -91,6 +93,18 @@ PARAMETER_PATTERN_PROP = {
         },
         "minItems": 1,
         "uniqueItems": True
+    },
+    rf"^{META_FLD_NM}$": {
+        "type": 'object',
+        "patternProperties": {
+            {r"^[\w][\w\.]*[\w]$": {
+                'oneOf': [
+                    {"type": 'string'}
+                ]
+            }
+            },
+            "additionalProperties": False,
+        }
     },
     rf"^{PARAM_FLD_NM}$": {
         "anyOf": [

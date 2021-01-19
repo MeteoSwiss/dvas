@@ -90,7 +90,12 @@ class Flag(MetadataModel):
 
 
 class Tag(MetadataModel):
-    """Tag model"""
+    """Table containing the tags.
+
+    Note:
+        Tags should be used to search profiles in the DB.
+
+    """
     id = AutoField(primary_key=True)
     tag_txt = CharField(null=False, unique=True)
     tag_desc = TextField()
@@ -138,18 +143,34 @@ class InfosInstruments(MetadataModel):
         Info, backref='instruments_infos', on_delete='CASCADE'
     )
 
-# TODO
-#  Add the capability to link metadata to an info.
-#  Tag should be used to search data in the DB.
-#  Metadata should be used to save metadata of a result profile
-#  class MetaData
-#     prm
-#     value
-#     info
+
+class MetaData(MetadataModel):
+    """Table containing the profiles metadata.
+
+    Note:
+        Metadata table should be used only to save metadata associated
+        to a profile.
+
+    """
+    id = AutoField(primary_key=True)
+
+    #: str: Metadata key name
+    key = CharField(null=False)
+
+    #: str: Metadata key value
+    value = CharField()
+
+    #: str: Metadata value python type
+    type_info = CharField()
+
+    #: peewee.Model: Link to Info table
+    info = ForeignKeyField(
+        Info, backref='instruments_infos', on_delete='CASCADE'
+    )
 
 
 class Data(MetadataModel):
-    """Data model"""
+    """Table containing the profiles data."""
     id = AutoField(primary_key=True)
     info = ForeignKeyField(
         Info,
