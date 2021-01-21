@@ -26,14 +26,15 @@ import numpy as np
 from pandas import Timestamp
 from pampy.helpers import Iterable, Union
 
+
 # Import from current package
 from .model import db
 from .model import Instrument, InstrType, Info
 from .model import Parameter, Flag, DataSource, Data
-from .model import Tag, InfosTags, InfosInstruments
+from .model import Tag, InfosTags, InfosInstruments, MetaData
 from ..config.config import OneDimArrayConfigLinker
 from ..config.definitions.origdata import EVT_DT_FLD_NM, TYP_FLD_NM, SRN_FLD_NM
-from ..config.definitions.origdata import PDT_FLD_NM, TAG_FLD_NM
+from ..config.definitions.origdata import PDT_FLD_NM, TAG_FLD_NM, META_FLD_NM
 from ..config.definitions.tag import TAG_NONE, TAG_EMPTY_VAL
 from ..helper import ContextDecorator
 from ..helper import SingleInstanceMetaClass
@@ -71,6 +72,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         InfosTags, Tag,
         DataSource,
         Data,
+        MetaData,
         Parameter,
         Flag,
     ]
@@ -411,6 +413,11 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                         where(Data.info == info_id).\
                         execute()
 
+                    # Delete Metadata entries
+                    MetaData.delete().\
+                        where(MetaData.info == info_id).\
+                        execute()
+
                     # TODO
                     #  Add log
 
@@ -448,6 +455,34 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                         # Insert
                         for batch in chunked(instr_info, n_max):
                             InfosInstruments.insert_many(batch).execute()  # noqa pylint: disable=E1120
+
+                    # Add metadata
+                    # ------------
+
+                    # Create batch index
+                    fields = [
+                        MetaData.key, MetaData.value_str,
+                        MetaData.value_num, MetaData.info
+                    ]
+
+                    # Create batch data
+                    batch_data = [
+                        (key,
+                         val if isinstance(val, str) else None,
+                         val if isinstance(val, float) else None,
+                         info_id)
+                        for key, val in info.metadata.items()
+                    ]
+
+                    # Calculate max batch size
+                    n_max = floor(SQLITE_MAX_VARIABLE_NUMBER / len(fields))
+
+                    # Insert to db
+                    for batch in chunked(batch_data, n_max):
+                        MetaData.insert_many(batch, fields=fields).execute()  # noqa pylint: disable=E1120
+
+                    # Add Data
+                    # --------
 
                     # Create batch index
                     fields = [Data.index, Data.value, Data.info]
@@ -556,6 +591,16 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     iterator()
                 ]
 
+                # Get related metadata
+                metadata_dict = {
+                    arg.key: arg.value_num if arg.value_str is None else arg.value_str
+                    for arg in
+                    MetaData.select().distinct().
+                    join(Info).
+                    where(Info.id == info_id_list[i].id).
+                    iterator()
+                }
+
                 # Append
                 out.append(
                     {
@@ -563,6 +608,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                             evt_dt=info_id_list[i].evt_dt,
                             uid=instr_id_list,
                             tags=tag_txt_list,
+                            metadata=metadata_dict,
                         ),
                         'index': qry.index,
                         'value': qry.value,
@@ -744,40 +790,104 @@ class Queryer(Thread):
             raise self.exc
 
 
+class InfoManagerMetaData(dict):
+    """Class to define metadata allowed types
+
+    Note:
+        This class is used to bypass the missing class Mapping in
+        pampy package.
+
+    """
+
+    def __init__(self, dict_args={}):
+        """
+        Args:
+            dict_args (dict): keys must be str and values (str, float)
+        """
+        self._check_and_convert(dict_args)
+        super().__init__(**dict_args)
+
+    def copy(self):
+        return InfoManagerMetaData(super().copy())
+
+    def update(self, dict_args):
+        """Update dict
+
+        Args:
+            dict_args (dict): keys must be str and values (str, float)
+
+        """
+        self._check_and_convert(dict_args)
+        super().update(dict_args)
+
+    @staticmethod
+    def _check_and_convert(dict_args):
+        """Method to check dict key and value types.
+
+        Note:
+            Type int will be converted to float.
+
+        Args:
+            dict_args (dict): keys must be str and values (str, float)
+        """
+
+        # Check
+        try:
+            assert isinstance(dict_args, dict)
+            assert all([isinstance(key, str) for key in dict_args.keys()])
+            assert all([isinstance(val, (str, float, int)) for val in dict_args.values()])
+        except AssertionError:
+            raise TypeError()
+
+        # Convert
+        for key, val in dict_args.items():
+            if isinstance(val, int):
+                dict_args.update({key: float(val)})
+
+
 class InfoManager:
     """Data info manager"""
 
     #: datetime.datetime: UTC datetime
     evt_dt = TProp(Union[str, Timestamp, datetime], check_datetime)
 
-    #: int|iterable of int: Instrument id
+    #: int|iterable of int: Instrument unique id
     uid = TProp(
         Union[int, Iterable[int]],
         setter_fct=lambda x: (x,) if isinstance(x, int) else tuple(x),
         getter_fct=lambda x: sorted(x)
     )
 
-    #: str|iterable of str: Tag abbr
+    #: str|iterable of str: Tags
     tags = TProp(
         Union[str, Iterable[str]],
         setter_fct=lambda x: set((x,)) if isinstance(x, str) else set(x),
         getter_fct=lambda x: sorted(x)
     )
 
-    def __init__(self, evt_dt, uid, tags=TAG_NONE):
+    #: dict: Metadata
+    metadata = TProp(InfoManagerMetaData, getter_fct= lambda x: x.copy())
+
+    def __init__(self, evt_dt, uid, tags=TAG_NONE, metadata={}):
         """Constructor
 
         Args:
             evt_dt (str | datetime | pd.Timestamp): UTC datetime
             uid (int|iterable of int): Unique identifier (snr, pdt)
             tags (str|iterable of str, `optional`): Tags. Defaults to ''
+            metadata (dict|InfoManagerMetaData, `optional`): Default to {}
 
         """
+
+        # Init
+        if isinstance(metadata, dict):
+            metadata = InfoManagerMetaData(metadata)
 
         # Set attributes
         self.evt_dt = evt_dt
         self.uid = uid
         self.tags = tags
+        self.metadata = metadata
 
     def __copy__(self):
         return self.__class__(self.evt_dt, self.uid.copy(), self.tags.copy())
@@ -822,9 +932,13 @@ class InfoManager:
         return getattr(self, item)
 
     def __repr__(self):
+        return f'{super().__repr__()}\n{self}'
+
+    def __str__(self):
         p_printer = pprint.PrettyPrinter()
         return p_printer.pformat(
-            (f'evt_dt: {self.evt_dt}', f'uid: {self.uid}', f'tags: {self.tags}')
+            (f'evt_dt: {self.evt_dt}', f'uid: {self.uid}',
+             f'tags: {self.tags}', f'metadata: {self.metadata}')
         )
 
     def get_hash(self):
@@ -866,6 +980,29 @@ class InfoManager:
 
         # Remove
         self.tags = list(filter(lambda x: x not in val, self.tags))
+
+    def add_metadata(self, key, val):
+        """Add metadata
+
+        Args:
+            key (str): Metadata key
+            val (str, float, int, bool): Associated value
+
+        """
+        metadata = self.metadata
+        metadata.update({key: val})
+        self.metadata = metadata
+
+    def rm_metadata(self, key):
+        """Remove metadata
+
+        Args:
+            key (str): Metadata key to be removed
+
+        """
+        metadata = self.metadata
+        metadata.pop(key)
+        self.metadata = metadata
 
     @staticmethod
     def sort(info_list):
@@ -928,7 +1065,7 @@ class InfoManager:
             - srn_field (str): Serial number
             - pdt_field (str): Product identifier
             - tag_field (list of str): Tags
-
+            - meta_field (dict): Metadata as dict
 
         """
 
@@ -937,22 +1074,24 @@ class InfoManager:
 
         # Get instrument id
         if (
-        instr_id := db_mngr.get_or_none(
-            Instrument,
-            search={
-                'where': (
-                    (Instrument.srn == metadata[SRN_FLD_NM]) &
-                    (Instrument.pdt == metadata[PDT_FLD_NM])
-                )
-            },
-            attr=[[Instrument.id.name]]
-        )) is None:
+            instr_id := db_mngr.get_or_none(
+                Instrument,
+                search={
+                    'where': (
+                        (Instrument.srn == metadata[SRN_FLD_NM]) &
+                        (Instrument.pdt == metadata[PDT_FLD_NM])
+                    )
+                },
+                attr=[[Instrument.id.name]]
+            )
+        ) is None:
 
             # Get instrument type
             if (
-            instr_type := InstrType.get_or_none(
-                InstrType.type_name == metadata[TYP_FLD_NM]
-            )) is None:
+                instr_type := InstrType.get_or_none(
+                    InstrType.type_name == metadata[TYP_FLD_NM]
+                )
+            ) is None:
                 # TODO
                 #  Detail exception
                 raise Exception(f"{metadata[TYP_FLD_NM]} is missing in DB/InstrumentType")
@@ -968,7 +1107,8 @@ class InfoManager:
             info = InfoManager(
                 evt_dt=metadata[EVT_DT_FLD_NM],
                 uid=instr_id,
-                tags=metadata[TAG_FLD_NM]
+                tags=metadata[TAG_FLD_NM],
+                metadata=metadata[META_FLD_NM]
             )
         except Exception as exc:
             # TODO

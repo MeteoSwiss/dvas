@@ -27,7 +27,8 @@ class TestSortProfileStrategy:
                 {
                     'dt_field': '20200110T0000Z',
                     'srn_field': sn, 'pdt_field': '0',
-                    'tag_field': ''
+                    'tag_field': '',
+                    'meta_field': {}
                 }
             )
         ),
@@ -36,7 +37,8 @@ class TestSortProfileStrategy:
                 {
                     'dt_field': '20200101T0000Z',
                     'srn_field': sn, 'pdt_field': '0',
-                    'tag_field': ''
+                    'tag_field': '',
+                    'meta_field': {}
                 }
             )
         ),
@@ -45,7 +47,8 @@ class TestSortProfileStrategy:
                 {
                     'dt_field': '20200105T0000Z',
                     'srn_field': sn, 'pdt_field': '0',
-                    'tag_field': ''
+                    'tag_field': '',
+                    'meta_field': {}
                 }
             )
         ),

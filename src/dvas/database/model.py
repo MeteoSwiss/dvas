@@ -157,11 +157,11 @@ class MetaData(MetadataModel):
     #: str: Metadata key name
     key = CharField(null=False)
 
-    #: str: Metadata key value
-    value = CharField()
+    #: str: Metadata key string value
+    value_str = CharField(null=True)
 
-    #: str: Metadata value python type
-    type_info = CharField()
+    #: float: Metadata key float value
+    value_num = FloatField(null=True)
 
     #: peewee.Model: Link to Info table
     info = ForeignKeyField(

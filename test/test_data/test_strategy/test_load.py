@@ -35,14 +35,16 @@ class TestLoadProfileStrategy:
             {
                 'dt_field': '20200101T0000Z',
                 'srn_field': sn, 'pdt_field': '0',
-                'tag_field': 'load_profile'
+                'tag_field': 'load_profile',
+                'meta_field': {}
             }
         ),
         InfoManager.from_dict(
             {
                 'dt_field': '20200202T0000Z',
                 'srn_field': sn, 'pdt_field': '0',
-                'tag_field': 'load_profile'
+                'tag_field': 'load_profile',
+                'meta_field': {}
             }
         ),
     ]
@@ -102,14 +104,16 @@ class TestLoadRSProfileStrategy:
             {
                 'dt_field': '20200101T0000Z',
                 'srn_field': sn, 'pdt_field': '0',
-                'tag_field': 'load_rsprofile'
+                'tag_field': 'load_rsprofile',
+                'meta_field': {},
             }
         ),
         InfoManager.from_dict(
             {
                 'dt_field': '20200202T0000Z',
                 'srn_field': sn, 'pdt_field': '0',
-                'tag_field': 'load_rsprofile'
+                'tag_field': 'load_rsprofile',
+                'meta_field': {},
             }
         ),
     ]
@@ -169,14 +173,16 @@ class TestLoadGPDProfileStrategy:
             {
                 'dt_field': '20200101T0000Z',
                 'srn_field': sn, 'pdt_field': '0',
-                'tag_field': 'load_gdpprofile'
+                'tag_field': 'load_gdpprofile',
+                'meta_field': {},
             }
         ),
         InfoManager.from_dict(
             {
                 'dt_field': '20200202T0000Z',
                 'srn_field': sn, 'pdt_field': '0',
-                'tag_field': 'load_gdpprofile'
+                'tag_field': 'load_gdpprofile',
+                'meta_field': {},
             }
         ),
     ]

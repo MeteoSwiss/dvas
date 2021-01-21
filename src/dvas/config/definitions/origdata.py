@@ -44,8 +44,11 @@ CSV_NA_VALUES_FLD_NM = 'csv_na_values'
 INDEX_NM = Data.index.name
 VALUE_NM = Data.value.name
 
-#: list: Metadata fields keys
-META_FIELD_KEYS = [EVT_DT_FLD_NM, TYP_FLD_NM, SRN_FLD_NM, PDT_FLD_NM, TAG_FLD_NM]
+#: list: Fields keys passed to expression interpreter
+EXPR_FIELD_KEYS = [
+    EVT_DT_FLD_NM, TYP_FLD_NM, SRN_FLD_NM,
+    PDT_FLD_NM, TAG_FLD_NM, META_FLD_NM
+]
 
 #: list: Node pattern
 NODE_PATTERN = [INSTR_TYPE_PAT, PARAM_PAT]
@@ -95,19 +98,24 @@ PARAMETER_PATTERN_PROP = {
         "uniqueItems": True
     },
     rf"^{META_FLD_NM}$": {
-        "type": 'object',
-        "patternProperties": {
-            {r"^[\w][\w\.]*[\w]$": {
-                'oneOf': [
-                    {"type": 'string'}
-                ]
-            }
+        "oneOf": [
+            {"type": 'null'},
+            {
+                "type": 'object',
+                "patternProperties": {
+                    r"^[\w\.]+$": {
+                        'oneOf': [
+                            {"type": 'string'},
+                            {"type": 'number'},
+                        ]
+                    }
+                },
+                "additionalProperties": False,
             },
-            "additionalProperties": False,
-        }
+        ]
     },
     rf"^{PARAM_FLD_NM}$": {
-        "anyOf": [
+        "oneOf": [
             {
                 "type": "integer",
                 "minimum": 0

@@ -46,7 +46,8 @@ class TestDatabaseManager:
         {
             'dt_field': '20200101T0000Z',
             'srn_field': sn, 'pdt_field': '0',
-            'tag_field': 'data_test_db'
+            'tag_field': 'data_test_db',
+            'meta_field': {'test_key_str': 'one', 'test_key_num': '1'}
         }
     )
 
@@ -168,8 +169,9 @@ class TestInfoManager:
     rig_tag = 'r:1'
     glob_var.mdl_id_pat = r'mdl\:\d'
     mdl_tag = 'mdl:1'
+    metadata = {'key_str': 'one', 'key_num': 1.}
     info_mngr = InfoManager(
-        dt_test, uid_test, [evt_tag, rig_tag, mdl_tag]
+        dt_test, uid_test, tags=[evt_tag, rig_tag, mdl_tag], metadata=metadata
     )
 
     def test_uid(self):
@@ -225,6 +227,21 @@ class TestInfoManager:
 
         # Reset
         self.info_mngr.tags = tags_old
+
+    def test_add_metadata(self):
+        """Test add_metadata"""
+
+        self.info_mngr.add_metadata('a', 1)
+        assert self.info_mngr.metadata['a'] == 1
+
+    def test_rm_metadata(self):
+        """Test add_metadata"""
+
+        self.info_mngr.add_metadata('a', 1)
+        self.info_mngr.rm_metadata('a')
+
+        with pytest.raises(KeyError):
+            self.info_mngr.metadata['a']
 
     def test_sort(self):
         """Test sort method"""

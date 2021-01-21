@@ -108,6 +108,9 @@ _AR-GDP_001:
     tag_field:
         - "cat('e:', get('g.Measurement.Id'))"
         - "cat('r:', get('g.Measurement.BalloonNumber'))"
+    meta_field:
+        key_str: '1'
+        key_num: 1
 
     # -- ORIG DATA ----------------------------------
     _tdtpros1:
