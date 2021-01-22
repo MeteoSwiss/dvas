@@ -8,4 +8,6 @@ station: 'PAY'
 
 srn: '6001'
 
+product_id: '0'
+
 day_night: 'night'

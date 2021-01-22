@@ -8,4 +8,6 @@ station: 'PAY'
 
 srn: 'testM1453523'
 
+product_id: '0'
+
 day_night: 'night'
