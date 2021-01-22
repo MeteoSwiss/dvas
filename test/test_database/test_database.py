@@ -21,7 +21,7 @@ from dvas.database.model import Parameter as MdlParameter
 from dvas.database.model import Instrument as MdlInstrument
 from dvas.database.model import InstrType as MdlInstrType
 from dvas.database.database import DatabaseManager
-from dvas.database.database import InfoManager
+from dvas.database.database import InfoManager, InfoManagerMetaData
 from dvas.database.database import SearchInfoExpr
 from dvas.database.database import DBInsertError
 from dvas.environ import glob_var
@@ -156,6 +156,34 @@ class TestDatabaseManager:
     def test_get_flags(self, db_mngr):
         """Test get_flags"""
         assert isinstance(db_mngr.get_flags(), list)
+
+
+class TestInfoManagerMetaData:
+    """Test class for InfoManagerMetaData"""
+
+    inst = InfoManagerMetaData({})
+
+    def test_copy(self):
+        """Test copy method"""
+        assert id(self.inst.copy()) != id(self.inst)
+
+    def test_update(self):
+        """Test update method"""
+        # Test int -> float
+        self.inst.update({'a': 1})
+        assert self.inst['a'] == 1.
+
+        # Test float
+        self.inst.update({'a': 1.})
+        assert self.inst['a'] == 1.
+
+        # Test str
+        self.inst.update({'a': 'one'})
+        assert self.inst['a'] == 'one'
+
+        # Test not str, float or int
+        with pytest.raises(TypeError):
+            self.inst.update({'a': [1]})
 
 
 class TestInfoManager:
