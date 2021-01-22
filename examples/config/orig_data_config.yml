@@ -109,10 +109,8 @@ _RS92:
     # -- META DATA ----------------------------------
     dt_field: "get('event_dt')"
     typ_field: "get('g.Product.Code')"
-    pdt_field: "get('pid')"
     srn_field: "get('srn')"
-
-    pdt_field: "get('g.Product.Version')"
+    pdt_field: "get('product_id')"
     tag_field:
         - "cat('e:', get('event_id'))"
         - "cat('r:', get('rig'))"
@@ -150,7 +148,7 @@ _RS41-GDP-BETA_001:
     dt_field: "cat(get('g.Measurement.StandardTime'), 'Z')"
     typ_field: "get('g.Product.Code')"
     srn_field: "get('g.MainSonde.SerialNumber')"
-    pdt_field: "get('g.Product.Version')"
+    pdt_field: "get('g.Product.ID')"
     tag_field:
         - "cat('e:', get('g.Measurement.Id'))"
         - "cat('r:', get('g.Measurement.BalloonNumber'))"
@@ -189,9 +187,9 @@ _RS92-GDP_002:
 
     # -- META DATA ----------------------------------
     dt_field: "cat(get('g.Ascent.StandardTime'),'Z')"
-    typ_field: "get('g.Product.ID')"
+    typ_field: "get('g.Product.code')"
     srn_field: "get('g.Instrument.SerialNumber')"
-    pdt_field: "get('g.Product.Version')"
+    pdt_field: "get('g.Product.ID')"
     tag_field:
         - "cat('e:', get('g.Ascent.ID'))"
         - "cat('r:', get('g.Ascent.BalloonNumber'))"
@@ -206,12 +204,13 @@ _RS92-GDP_002:
 
     _treprosu_r:
         # TODO: in v2 of the GDP, this value is wrong. It must be reconstructed from:
-        # value_col: sqrt('u_temp' - 'u_cor_temp')
+        # value_col: sqrt('u_temp'**2 - 'u_cor_temp'**2)
         value_col: 'u_std_temp'
 
     # TODO: uc_s does not exist for the RS92 v2 GDP. However, just commenting this out causes
     # havoc in the code (GDPs cannot be loaded). Why ?
-    # TODO: Issue: #94, this is uncommented and a wrong value_col is givent on _treprosu_s to allow the code running
+    # TODO: Issue: #94, this is uncommented and a wrong value_col is givent on _treprosu_s to allow
+    # the code running
     _treprosu_s:
         value_col: 'u_cor_temp'
 
