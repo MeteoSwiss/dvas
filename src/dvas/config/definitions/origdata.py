@@ -40,6 +40,7 @@ CSV_SKIP_BLANK_LINES_FLD_NM = 'csv_skip_blank_lines'
 CSV_DELIM_WHITESPACE_FLD_NM = 'csv_delim_whitespace'
 CSV_COMMENT_FLD_NM = 'csv_comment'
 CSV_NA_VALUES_FLD_NM = 'csv_na_values'
+CSV_SKIPFOOTER_FLD_NM = 'csv_skipfooter'
 
 INDEX_NM = Data.index.name
 VALUE_NM = Data.value.name
@@ -60,13 +61,13 @@ NODE_PARAMS_DEF = {
     UNIT_FLD_NM: '1',
     LAMBDA_FLD_NM: 'lambda x: x',
     CSV_DELIMITER_FLD_NM: ';',
-    CSV_HEADER_FLD_NM: 'infer',
     CSV_SKIPINITSPACE_FLD_NM: False,
     CSV_SKIPROWS_FLD_NM: 0,
     CSV_SKIP_BLANK_LINES_FLD_NM: True,
     CSV_DELIM_WHITESPACE_FLD_NM: False,
     CSV_COMMENT_FLD_NM: '#',
-    CSV_NA_VALUES_FLD_NM: ['/']
+    CSV_NA_VALUES_FLD_NM: ['/'],
+    CSV_SKIPFOOTER_FLD_NM: 0
 }
 
 #: dict: Constant nodes
@@ -142,6 +143,10 @@ PARAMETER_PATTERN_PROP = {
         "type": "boolean"
     },
     rf"^{CSV_SKIPROWS_FLD_NM}$": {
+        "type": "integer",
+        'minimum': 0,
+    },
+    rf"^{CSV_SKIPFOOTER_FLD_NM}$": {
         "type": "integer",
         'minimum': 0,
     },

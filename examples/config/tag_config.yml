@@ -1,5 +1,5 @@
 
-- tag_txt: 'e:((\d{1,2})|(60\d{3}))'
+- tag_txt: 'e:((\d{1,2})|(80\d{3}))'
   # Generate e1, e2, ..., e99,...
   tag_desc: "cat('Event', ' ', get(1))"
   # Use standard re.sub group syntax to refer group number from regexp

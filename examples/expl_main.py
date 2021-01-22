@@ -12,6 +12,7 @@ from pathlib import Path
 
 # Set the data path to look where we currently are
 from dvas.environ import path_var as dvas_path_var
+
 # WARNING: this must be done BEFORE importing anything else ... !
 dvas_path_var.orig_data_path = Path(__file__).parent / 'data'
 dvas_path_var.config_dir_path = Path(__file__).parent / 'config'
@@ -20,7 +21,6 @@ dvas_path_var.config_dir_path = Path(__file__).parent / 'config'
 from dvas.data.data import MultiProfile, MultiRSProfile, MultiGDPProfile
 from dvas.data.io import update_db
 from dvas.database.database import DatabaseManager
-
 from dvas.errors import dvasError
 
 #import dvas.tools.gruan as dtg
@@ -43,11 +43,11 @@ if __name__ == '__main__':
     dpu.PLOT_SHOW = False
 
     # Reset the DB to "start fresh" ?
-    RESET_DB = False
+    RESET_DB = True
 
     # Define some search queries
     filt_gdp = "tag('gdp')"
-    filt_dt = "dt('20180125T120000Z', '==')"
+    filt_dt = "dt('20171024T120000Z', '==')"
     filt_vof = "and_(%s,%s)" % (filt_gdp, filt_dt)
     filt_gdp_der = "and_(tag('derived'), tag('gdp'))"
     filt_raw = "and_(tag('raw'), not_(tag('gdp')))"

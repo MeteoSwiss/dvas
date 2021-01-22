@@ -1,0 +1,15 @@
+event_dt: '20170712T000000Z'
+
+rig: '1'
+
+event_id: '80596'
+
+station: 'PAY'
+
+instr_type: 'RS41'
+
+srn: 'M2710695'
+
+product_id: '0'
+
+day_night: 'night'
