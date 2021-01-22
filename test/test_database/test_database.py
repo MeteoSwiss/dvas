@@ -72,7 +72,7 @@ class TestDatabaseManager:
             },
             attr=[[MdlInstrument.srn.name]],
             get_first=True
-        ) in [['YT-100']]
+        ) in [['YT-100'], ['YT-101']]
 
         assert db_mngr.get_or_none(
             MdlParameter,
