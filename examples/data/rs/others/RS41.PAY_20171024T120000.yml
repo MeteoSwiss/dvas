@@ -6,6 +6,10 @@ event_id: '80611'
 
 station: 'PAY'
 
-srn: 'testM2710728'
+instr_type: 'RS41'
+
+srn: 'M2710728'
+
+product_id: '0'
 
 day_night: 'day'
