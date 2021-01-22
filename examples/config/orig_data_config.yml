@@ -109,11 +109,12 @@ _RS92:
     # -- META DATA ----------------------------------
     dt_field: "get('event_dt')"
     typ_field: "get('g.Product.Code')"
+    pdt_field: "get('pid')"
     srn_field: "get('srn')"
 
     pdt_field: "get('g.Product.Version')"
     tag_field:
-      - "cat('e:', get('event_id'))"
+        - "cat('e:', get('event_id'))"
         - "cat('r:', get('rig'))"
         - "get('day_night')"
     meta_field:
@@ -188,7 +189,7 @@ _RS92-GDP_002:
 
     # -- META DATA ----------------------------------
     dt_field: "cat(get('g.Ascent.StandardTime'),'Z')"
-    typ_field: "get('g.Product.Code')"
+    typ_field: "get('g.Product.ID')"
     srn_field: "get('g.Instrument.SerialNumber')"
     pdt_field: "get('g.Product.Version')"
     tag_field:

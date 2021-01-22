@@ -43,7 +43,7 @@ if __name__ == '__main__':
     dpu.PLOT_SHOW = False
 
     # Reset the DB to "start fresh" ?
-    RESET_DB = False
+    RESET_DB = True
 
     # Define some search queries
     filt_gdp = "tag('gdp')"
