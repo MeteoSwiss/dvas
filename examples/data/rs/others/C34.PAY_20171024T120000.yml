@@ -6,6 +6,8 @@ event_id: '80611'
 
 station: 'PAY'
 
+instr_type: 'C34'
+
 srn: '4677'
 
 product_id: '0'

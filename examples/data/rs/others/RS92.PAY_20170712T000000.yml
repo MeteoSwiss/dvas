@@ -6,6 +6,8 @@ event_id: '80596'
 
 station: 'PAY'
 
+instr_type: 'RS92'
+
 srn: 'testM1453523'
 
 product_id: '0'
