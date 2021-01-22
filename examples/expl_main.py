@@ -28,7 +28,7 @@ import dvas.plots.utils as dpu
 
 from dvas.dvas import start_log
 
-from dvas.tools import synchro as sync
+from dvas.tools import sync
 from importlib import reload
 reload(sync)
 
@@ -96,21 +96,22 @@ if __name__ == '__main__':
     #print(rs_prf.get_info())
 
     # Load GDPs for temperature, including all the errors
-    #gdp_prfs = MultiGDPProfile()
-    #gdp_prfs.load_from_db(filt_vof, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1',
-    #                      ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t',
-    #                      inplace=True)
+    gdp_prfs = MultiGDPProfile()
+    gdp_prfs.load_from_db(filt_vof, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1',
+                          ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t',
+                          ucu_abbr='treprosu_u',
+                          inplace=True)
 
     # Let us inspect the profiles with dedicated plots.
     #gdp_prfs.plot(fn_prefix='01') # Defaults behavior, just adding a prefix to the filename.
     #gdp_prfs.plot(uc='tot', show_plt=True, fmts=[]) # Now with errors. Show it but don't save it.
 
-    sync.synchronize_rs_flight(1, 1, 'trepros1')
+    sync.sync_flight(1, 1)
 
     # Load the synced profiles, with a variable, and altitude.
-    prf = MultiProfile()
-    prf.load_from_db(filt_sync, 'trepros1', 'altpros1')
-    print([len(item) for item in prf.profiles])
+    sync_prfs = MultiProfile()
+    sync_prfs.load_from_db(filt_sync, 'trepros1', 'altpros1')
+    print([len(item) for item in sync_prfs.profiles])
 
     # Compute a working standard
     # TODO: disabled in the example for now. We must first synchronize the Profiles.
