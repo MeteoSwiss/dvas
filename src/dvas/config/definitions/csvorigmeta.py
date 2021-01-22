@@ -14,7 +14,11 @@ Module contents: Required attributes definition for
 #: dict: Parameter pattern properties (JSON_SCHEMA)
 PARAMETER_PATTERN_PROP = {
     rf"^\w+$": {
-        "type": 'string'
+        'oneOf': [
+            {"type": 'string'},
+            {"type": 'number'},
+            {"type": 'boolean'},
+        ]
     },
 }
 

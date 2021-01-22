@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 ### Added:
+ - [modolol, 2020-12] Add metadata management in config and DB.
  - [fpavogt, 2020-12-17] Add a rebase strategy and fix #83.
 ### Fixed:
  - [fpavogt, 2020-12-21] Fix #60

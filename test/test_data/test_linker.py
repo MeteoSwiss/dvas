@@ -82,7 +82,8 @@ class TestLoadDBLinker:
         {
             'dt_field': '20200101T0000Z',
             'srn_field': sn, 'pdt_field': '0',
-            'tag_field': 'load_profile_from_linker'
+            'tag_field': 'load_profile_from_linker',
+            'meta_field': {},
         }
     )
 

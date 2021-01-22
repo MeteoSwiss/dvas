@@ -94,13 +94,11 @@ def update_db(search, strict=False):
             result = handler.handle(file_path, prm_abbr)
             if result:
                 new_orig_data.append(result)
-
                 # Log
                 rawcsv.info(
                     "Files '%s' was treated", file_path
                 )
             else:
-
                 # Log
                 rawcsv.debug(
                     "Files '%s' was left untouched", file_path

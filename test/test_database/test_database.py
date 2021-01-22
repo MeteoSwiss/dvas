@@ -21,7 +21,7 @@ from dvas.database.model import Parameter as MdlParameter
 from dvas.database.model import Instrument as MdlInstrument
 from dvas.database.model import InstrType as MdlInstrType
 from dvas.database.database import DatabaseManager
-from dvas.database.database import InfoManager
+from dvas.database.database import InfoManager, InfoManagerMetaData
 from dvas.database.database import SearchInfoExpr
 from dvas.database.database import DBInsertError
 from dvas.environ import glob_var
@@ -46,7 +46,8 @@ class TestDatabaseManager:
         {
             'dt_field': '20200101T0000Z',
             'srn_field': sn, 'pdt_field': '0',
-            'tag_field': 'data_test_db'
+            'tag_field': 'data_test_db',
+            'meta_field': {'test_key_str': 'one', 'test_key_num': '1'}
         }
     )
 
@@ -71,7 +72,7 @@ class TestDatabaseManager:
             },
             attr=[[MdlInstrument.srn.name]],
             get_first=True
-        ) in [['YT-100']]
+        ) in [['YT-100'], ['YT-101']]
 
         assert db_mngr.get_or_none(
             MdlParameter,
@@ -157,6 +158,34 @@ class TestDatabaseManager:
         assert isinstance(db_mngr.get_flags(), list)
 
 
+class TestInfoManagerMetaData:
+    """Test class for InfoManagerMetaData"""
+
+    inst = InfoManagerMetaData({})
+
+    def test_copy(self):
+        """Test copy method"""
+        assert id(self.inst.copy()) != id(self.inst)
+
+    def test_update(self):
+        """Test update method"""
+        # Test int -> float
+        self.inst.update({'a': 1})
+        assert self.inst['a'] == 1.
+
+        # Test float
+        self.inst.update({'a': 1.})
+        assert self.inst['a'] == 1.
+
+        # Test str
+        self.inst.update({'a': 'one'})
+        assert self.inst['a'] == 'one'
+
+        # Test not str, float or int
+        with pytest.raises(TypeError):
+            self.inst.update({'a': [1]})
+
+
 class TestInfoManager:
     """Test class for InfoManager"""
 
@@ -168,8 +197,9 @@ class TestInfoManager:
     rig_tag = 'r:1'
     glob_var.mdl_id_pat = r'mdl\:\d'
     mdl_tag = 'mdl:1'
+    metadata = {'key_str': 'one', 'key_num': 1.}
     info_mngr = InfoManager(
-        dt_test, uid_test, [evt_tag, rig_tag, mdl_tag]
+        dt_test, uid_test, tags=[evt_tag, rig_tag, mdl_tag], metadata=metadata
     )
 
     def test_uid(self):
@@ -225,6 +255,21 @@ class TestInfoManager:
 
         # Reset
         self.info_mngr.tags = tags_old
+
+    def test_add_metadata(self):
+        """Test add_metadata"""
+
+        self.info_mngr.add_metadata('a', 1)
+        assert self.info_mngr.metadata['a'] == 1
+
+    def test_rm_metadata(self):
+        """Test add_metadata"""
+
+        self.info_mngr.add_metadata('a', 1)
+        self.info_mngr.rm_metadata('a')
+
+        with pytest.raises(KeyError):
+            self.info_mngr.metadata['a']
 
     def test_sort(self):
         """Test sort method"""

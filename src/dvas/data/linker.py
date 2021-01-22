@@ -25,7 +25,7 @@ from ..database.database import DatabaseManager
 from ..config.config import OrigData, CSVOrigMeta
 from ..config.config import ConfigReadError
 from ..config.config import ConfigExprInterpreter
-from ..config.definitions.origdata import META_FIELD_KEYS
+from ..config.definitions.origdata import EXPR_FIELD_KEYS
 from ..config.definitions.origdata import TAG_FLD_NM
 from ..config.definitions.origdata import PARAM_FLD_NM
 from ..logger import rawcsv
@@ -212,38 +212,6 @@ class FileHandler(AbstractHandler):
 
         return instr_type_name
 
-    # TODO
-    #  Erase
-    # def check_sn(self, file_path, instr_type_name, metadata):
-    #     """Check serial number in DB"""
-    #     # Check instr_type name existence
-    #     # (need it for loading origdata config)
-    #     if (
-    #         instr_type_name_from_sn := self._db_mngr.get_or_none(
-    #             Instrument,
-    #             search={
-    #                 'join_order': [InstrType],
-    #                 'where': Instrument.srn == metadata[SRN_FLD_NM]
-    #             },
-    #             attr=[
-    #                 [Instrument.instr_type.name, InstrType.type_name.name]
-    #             ]
-    #         )
-    #     ) is None:
-    #         # TODO Detail exception
-    #         raise Exception(
-    #             f"Missing instrument SN '{metadata[SRN_FLD_NM]}' in DB while reading " +
-    #             f"data file '{file_path}'"
-    #         )
-    #
-    #     if instr_type_name != instr_type_name_from_sn[0]:
-    #         #TODO Detail exception
-    #         raise Exception(
-    #             f"Instrument SN '{metadata[SRN_FLD_NM]}' does not correspond to instr_type in " +
-    #             f"('{instr_type_name}' != '{instr_type_name_from_sn}') " +
-    #             f"for data file '{file_path}'"
-    #         )
-
     def exclude_file(self, path_scan, prm_abbr):
         """Exclude file method"""
 
@@ -271,7 +239,7 @@ class FileHandler(AbstractHandler):
 
         # Create metadata output
         out = {}
-        for key in META_FIELD_KEYS:
+        for key in EXPR_FIELD_KEYS:
 
             try:
                 # TODO
@@ -285,13 +253,24 @@ class FileHandler(AbstractHandler):
                         field_val, self.get_metadata_item
                     )
 
-                else:
+                elif isinstance(field_val, list):
                     meta_val = [
                         ConfigExprInterpreter.eval(
                             field_val_arg, self.get_metadata_item
                         )
                         for field_val_arg in field_val
                     ]
+
+                elif isinstance(field_val, dict):
+                    meta_val = {
+                        field_val_key: ConfigExprInterpreter.eval(
+                            field_val_val, self.get_metadata_item
+                        )
+                        for field_val_key, field_val_val in field_val.items()
+                    }
+
+                else:
+                    raise OrigConfigError(f"Field value '{field_val}' must be a of type (str, list, dict)")
 
                 out.update({key: meta_val})
 
