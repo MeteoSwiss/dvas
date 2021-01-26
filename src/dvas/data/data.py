@@ -150,7 +150,7 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         """
 
         # Call the appropriate Data strategy
-        data, db_df_keys = self._load_stgy.load(*args, **kwargs)
+        data, db_df_keys = self._load_stgy.execute(*args, **kwargs)
 
         # Test data len
         if not data:
@@ -364,6 +364,7 @@ class MultiProfile(MutliProfileAbstract):
             load_stgy=load_prf_stgy, sort_stgy=sort_prf_stgy,
             save_stgy=save_prf_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_prf_stgy,
         )
+
 
 class MultiRSProfileAbstract(MutliProfileAbstract):
     """Abstract MultiRSProfile class"""

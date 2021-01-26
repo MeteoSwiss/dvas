@@ -10,10 +10,10 @@ Module contents: Loader strategies
 """
 
 # Import from external packages
-from abc import ABCMeta, abstractmethod
 import pandas as pd
 
 # Import from current package
+from .data import MPStrategyAC
 from .data import Profile, RSProfile, GDPProfile
 from ..linker import LocalDBLinker
 from ...database.database import InfoManager
@@ -26,15 +26,12 @@ INDEX_NM = Data.index.name
 VALUE_NM = Data.value.name
 
 
-class LoadStrategyAbstract(metaclass=ABCMeta):
+class LoadStrategyAC(MPStrategyAC):
     """Abstract load strategy class"""
 
-    @abstractmethod
-    def load(self, *args, **kwargs):
-        """Strategy required method"""
-
-    def _fetch(self, search, **kwargs):
-        """ A base function that fetches data from the database.
+    @staticmethod
+    def fetch(search, **kwargs):
+        """A base function that fetches data from the database.
 
         Args:
             search (str): selection criteria
@@ -48,7 +45,7 @@ class LoadStrategyAbstract(metaclass=ABCMeta):
             ```
             import dvas.data.strategy.load as ld
             t = ld.LoadProfileStrategy()
-            t._fetch("dt('20160715T120000Z', '==')", {'alt':'altpros1', 'val':'trepros1'})
+            t.fetch("dt('20160715T120000Z', '==')", {'alt':'altpros1', 'val':'trepros1'})
             ```
 
         """
@@ -96,11 +93,11 @@ class LoadStrategyAbstract(metaclass=ABCMeta):
         return info, data
 
 
-class LoadProfileStrategy(LoadStrategyAbstract):
+class LoadProfileStrategy(LoadStrategyAC):
     """Base class to manage the data loading strategy of Profile instances."""
 
-    def load(self, search, val_abbr, alt_abbr, flg_abbr=None):
-        """ Load method to fetch data from the databse.
+    def execute(self, search, val_abbr, alt_abbr, flg_abbr=None):
+        """Execute strategy method to fetch data from the databse.
 
         Args:
             search (str): selection criteria
@@ -114,7 +111,7 @@ class LoadProfileStrategy(LoadStrategyAbstract):
         db_vs_df_keys = {'val': val_abbr, 'alt': alt_abbr, 'flg': flg_abbr}
 
         # Fetch data
-        info, data = self._fetch(search, **db_vs_df_keys)
+        info, data = self.fetch(search, **db_vs_df_keys)
 
         # Create profiles
         out = [Profile(arg[0], data=arg[1]) for arg in zip(info, data)]
@@ -125,8 +122,8 @@ class LoadProfileStrategy(LoadStrategyAbstract):
 class LoadRSProfileStrategy(LoadProfileStrategy):
     """Child class to manage the data loading strategy of RSProfile instances."""
 
-    def load(self, search, val_abbr, tdt_abbr, alt_abbr=None, flg_abbr=None):
-        """Load method to fetch data from the databse.
+    def execute(self, search, val_abbr, tdt_abbr, alt_abbr=None, flg_abbr=None):
+        """Execute strategy method to fetch data from the databse.
 
         Args:
             search (str): selection criteria
@@ -141,7 +138,7 @@ class LoadRSProfileStrategy(LoadProfileStrategy):
         db_vs_df_keys = {'val': val_abbr, 'tdt': tdt_abbr, 'alt': alt_abbr, 'flg': flg_abbr}
 
         # Fetch data
-        info, data = self._fetch(search, **db_vs_df_keys)
+        info, data = self.fetch(search, **db_vs_df_keys)
 
         # Create profiles
         out = [RSProfile(arg[0], data=arg[1]) for arg in zip(info, data)]
@@ -152,12 +149,12 @@ class LoadRSProfileStrategy(LoadProfileStrategy):
 class LoadGDPProfileStrategy(LoadProfileStrategy):
     """Child class to manage the data loading strategy of GDPProfile instances."""
 
-    def load(
+    def execute(
         self, search, val_abbr, tdt_abbr, alt_abbr=None,
         ucr_abbr=None, ucs_abbr=None, uct_abbr=None, ucu_abbr=None,
         flg_abbr=None
     ):
-        """ Load method to fetch data from the database.
+        """Execute strategy method to fetch data from the database.
 
         Args:
             search (str): selection criteria
@@ -184,7 +181,7 @@ class LoadGDPProfileStrategy(LoadProfileStrategy):
         }
 
         # Fetch data
-        info, data = self._fetch(search, **db_vs_df_keys)
+        info, data = self.fetch(search, **db_vs_df_keys)
 
         # Create profiles
         out = [GDPProfile(arg[0], data=arg[1]) for arg in zip(info, data)]

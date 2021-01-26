@@ -413,12 +413,6 @@ class CSVHandler(FileHandler):
         ) is None:
             return
 
-        # TODO
-        #  Erase
-        # # Check instr_type name existence
-        # # (need it for loading origdata config)
-        # self.check_sn(file_path, instr_type_name, metadata)
-
         # Create info with 'raw' tag
         metadata[TAG_FLD_NM] += [TAG_RAW_VAL]
 

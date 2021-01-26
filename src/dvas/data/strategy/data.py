@@ -10,7 +10,7 @@ Module contents: Data manager classes used in dvas.data.data.ProfileManager
 """
 
 # Import from external packages
-from abc import abstractmethod
+from abc import ABCMeta, abstractmethod
 from copy import deepcopy
 import numpy as np
 import pandas as pd
@@ -25,6 +25,14 @@ from ...helper import RequiredAttrMetaClass
 INT_TEST = (np.int64, np.int, int, type(pd.NA))
 FLOAT_TEST = (np.float, float) + INT_TEST
 TIME_TEST = FLOAT_TEST + (pd.Timedelta,)
+
+
+class MPStrategyAC(metaclass=ABCMeta):
+    """Abstract class (AC) for a multiprofile (MP) strategy"""
+
+    @abstractmethod
+    def execute(self, *args, **kwargs):
+        """Execute strategy method"""
 
 
 class ProfileAbstract(metaclass=RequiredAttrMetaClass):

@@ -24,7 +24,7 @@ class TestLoadProfileStrategy:
     """Test for LoadProfileStrategy class"""
 
     # Define
-    loader = LoadProfileStrategy()
+    loader_stgy = LoadProfileStrategy()
     n_data = 3
     index = np.arange(n_data)
     values = np.array([100, 101, 102])
@@ -77,7 +77,7 @@ class TestLoadProfileStrategy:
 
         # Load entry
         filt = f"tag('load_profile')"
-        res = self.loader.load(
+        res = self.loader_stgy.execute(
             filt, 'trepros1', 'altpros1', flg_abbr='flgpros1'
         )
 
@@ -93,7 +93,7 @@ class TestLoadRSProfileStrategy:
     """Test for LoadProfileStrategy class"""
 
     # Define
-    loader = LoadRSProfileStrategy()
+    loader_stgy = LoadRSProfileStrategy()
     n_data = 3
     index = np.arange(n_data)
     values = np.array([200, 201, 202])
@@ -146,7 +146,7 @@ class TestLoadRSProfileStrategy:
 
         # Load entry
         filt = f"tag('load_rsprofile')"
-        res = self.loader.load(
+        res = self.loader_stgy.execute(
             filt, 'trepros1', 'tdtpros1', alt_abbr='altpros1'
         )
 
@@ -162,7 +162,7 @@ class TestLoadGPDProfileStrategy:
     """Test for LoadProfileStrategy class"""
 
     # Define
-    loader = LoadGDPProfileStrategy()
+    loader_stgy = LoadGDPProfileStrategy()
     n_data = 3
     index = np.arange(n_data)
     values = np.array([300, 301, 302])
@@ -215,7 +215,7 @@ class TestLoadGPDProfileStrategy:
 
         # Load entry
         filt = f"tag('load_gdpprofile')"
-        res = self.loader.load(
+        res = self.loader_stgy.execute(
             filt, 'trepros1', 'tdtpros1', alt_abbr='altpros1'
         )
 

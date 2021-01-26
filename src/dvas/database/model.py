@@ -44,12 +44,16 @@ class MetadataModel(Model):
 class InstrType(MetadataModel):
     """Instrument type model"""
     id = AutoField(primary_key=True)
+
+    # Instrument type name
     type_name = CharField(
         null=False, unique=True,
         constraints=[
             Check(f"re_fullmatch('({INSTR_TYPE_PAT})|()', type_name)")
         ]
     )
+
+    # Instrument type description
     desc = TextField()
 
 
@@ -57,9 +61,13 @@ class Instrument(MetadataModel):
     """Instrument model """
     id = AutoField(primary_key=True)
 
-    # Serial number
+    # Instrument serial number
     srn = CharField(null=False)
+
+    # Instrument product identifier
     pdt = CharField(null=False)
+
+    # Link to instr_type
     instr_type = ForeignKeyField(
         InstrType, backref='instruments', on_delete='CASCADE'
     )
