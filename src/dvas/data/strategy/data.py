@@ -35,7 +35,7 @@ class MPStrategyAC(metaclass=ABCMeta):
         """Execute strategy method"""
 
 
-class ProfileAbstract(metaclass=RequiredAttrMetaClass):
+class ProfileAC(metaclass=RequiredAttrMetaClass):
     """Abstract Profile class"""
 
     # Specify required attributes
@@ -243,7 +243,7 @@ class ProfileAbstract(metaclass=RequiredAttrMetaClass):
         return val
 
 
-class Profile(ProfileAbstract):
+class Profile(ProfileAC):
     """Base Profile class for atmospheric measurements. Requires only some measured values,
     together with their corresponding altitudes and flags.
 
