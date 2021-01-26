@@ -334,7 +334,7 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
 
         """
 
-        self._plot_stgy.plot(self, **kwargs)
+        self._plot_stgy.execute(self, **kwargs)
 
     @deepcopy
     def rebase(self, new_index, shift=None):
