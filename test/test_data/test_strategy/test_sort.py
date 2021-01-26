@@ -58,7 +58,7 @@ class TestSortProfileStrategy:
         """Test sort method"""
 
         # Sort
-        prf_sorted = self.sorter.sort(self.prf)
+        prf_sorted = self.sorter.execute(self.prf)
 
         # Test sort result
         assert all(

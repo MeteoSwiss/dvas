@@ -166,7 +166,7 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
         """
 
         # Sort
-        data = self._sort_stgy.sort(self.profiles)
+        data = self._sort_stgy.execute(self.profiles)
 
         # Load
         self.update(self.db_variables, data)
@@ -348,7 +348,7 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
 
         """
 
-        data = self._rebase_stgy.rebase(self.profiles, new_index, shift=shift)
+        data = self._rebase_stgy.execute(self.profiles, new_index, shift=shift)
 
         self.update(self.db_variables, data)
 
