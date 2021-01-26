@@ -62,7 +62,7 @@ save_prf_stgy = SaveDataStrategy()
 
 # TODO
 #  Create a factory (in terms of design patterns) to easily build MultiProfiles
-class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
+class MutliProfileAC(metaclass=RequiredAttrMetaClass):
     """Abstract MultiProfile class"""
 
     # Specify required attributes
@@ -209,7 +209,7 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
             prms = list(self.db_variables.keys())
 
         # Call save strategy
-        self._save_stgy.save(obj, prms)
+        self._save_stgy.execute(obj, prms)
 
     # TODO: implement an "export" function that can export specific DataFrame columns back into
     #  the database under new variable names ?
@@ -353,7 +353,7 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         self.update(self.db_variables, data)
 
 
-class MultiProfile(MutliProfileAbstract):
+class MultiProfile(MutliProfileAC):
     """Multi profile base class, designed to handle multiple Profile."""
 
     #: type: supported Profile Types
@@ -366,7 +366,7 @@ class MultiProfile(MutliProfileAbstract):
         )
 
 
-class MultiRSProfileAbstract(MutliProfileAbstract):
+class MultiRSProfileAC(MutliProfileAC):
     """Abstract MultiRSProfile class"""
 
     @abstractmethod
@@ -407,7 +407,7 @@ class MultiRSProfileAbstract(MutliProfileAbstract):
     #     return res
 
 
-class MultiRSProfile(MultiRSProfileAbstract):
+class MultiRSProfile(MultiRSProfileAC):
     """Multi RS profile manager, designed to handle multiple RSProfile instances."""
 
     _DATA_TYPES = RSProfile
@@ -418,7 +418,8 @@ class MultiRSProfile(MultiRSProfileAbstract):
             save_stgy=save_prf_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_prf_stgy,
         )
 
-class MultiGDPProfile(MultiRSProfileAbstract):
+
+class MultiGDPProfile(MultiRSProfileAC):
     """Multi GDP profile manager, designed to handle multiple GDPProfile instances."""
 
     _DATA_TYPES = GDPProfile

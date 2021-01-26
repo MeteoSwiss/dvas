@@ -9,25 +9,15 @@ Module contents: Strategy used to save data
 
 """
 
-# Import from external packages
-from abc import ABCMeta, abstractmethod
-
 # Import from current package
+from .data import MPStrategyAC
 from ..linker import LocalDBLinker
 
 
-class SaveDataStrategyAbstract(metaclass=ABCMeta):
-    """Abstract class to manage data saving strategy"""
+class SaveDataStrategy(MPStrategyAC):
+    """Class to manage saving strategy of time data"""
 
-    @abstractmethod
-    def save(self, *args, **kwargs):
-        """Strategy required method"""
-
-
-class SaveDataStrategy(SaveDataStrategyAbstract):
-    """Class to manage saving of time data"""
-
-    def save(self, data, prms):
+    def execute(self, data, prms):
         """ Implementation of save method.
 
         Args:

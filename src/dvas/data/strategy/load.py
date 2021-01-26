@@ -94,7 +94,7 @@ class LoadStrategyAC(MPStrategyAC):
 
 
 class LoadProfileStrategy(LoadStrategyAC):
-    """Base class to manage the data loading strategy of Profile instances."""
+    """Class to manage the data loading strategy of Profile instances."""
 
     def execute(self, search, val_abbr, alt_abbr, flg_abbr=None):
         """Execute strategy method to fetch data from the databse.
