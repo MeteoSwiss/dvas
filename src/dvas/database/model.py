@@ -100,14 +100,18 @@ class Flag(MetadataModel):
     """Flag model"""
 
     # Table id
-    id = AutoField(primary_key=True)
+    flag_id = AutoField(primary_key=True)
 
     # Bit position
     bit_pos = IntegerField(
         null=False,
         unique=True,
         constraints=[Check("bit_pos >= 0")])
+
+    # Flag name
     flag_name = CharField(null=False, unique=True)
+
+    # Flag description
     flag_desc = TextField(null=False, default='')
 
 
@@ -180,10 +184,10 @@ class MetaData(MetadataModel):
         to a profile.
 
     """
-    id = AutoField(primary_key=True)
+    metadata_id = AutoField(primary_key=True)
 
     #: str: Metadata key name
-    key = CharField(null=False)
+    key_name = CharField(null=False)
 
     #: str: Metadata key string value
     value_str = CharField(null=True)

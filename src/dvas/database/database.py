@@ -33,8 +33,9 @@ from .model import InstrType as TableInstrType
 from .model import Instrument, Info
 from .model import Parameter as TableParameter
 from .model import Tag as TableTag
+from .model import MetaData as TableMetaData
 from .model import Flag, DataSource, Data
-from .model import InfosTags, InfosInstruments, MetaData
+from .model import InfosTags, InfosInstruments
 from ..config.config import OneDimArrayConfigLinker
 from ..config.definitions.origdata import EVT_DT_FLD_NM, TYP_FLD_NM, SRN_FLD_NM
 from ..config.definitions.origdata import PDT_FLD_NM, TAG_FLD_NM, META_FLD_NM
@@ -75,7 +76,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         InfosTags, TableTag,
         DataSource,
         Data,
-        MetaData,
+        TableMetaData,
         TableParameter,
         Flag,
     ]
@@ -417,8 +418,8 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                         execute()
 
                     # Delete Metadata entries
-                    MetaData.delete().\
-                        where(MetaData.info == info_id).\
+                    TableMetaData.delete().\
+                        where(TableMetaData.info == info_id).\
                         execute()
 
                     # TODO
@@ -464,8 +465,8 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
                     # Create batch index
                     fields = [
-                        MetaData.key, MetaData.value_str,
-                        MetaData.value_num, MetaData.info
+                        TableMetaData.key_name, TableMetaData.value_str,
+                        TableMetaData.value_num, TableMetaData.info
                     ]
 
                     # Create batch data
@@ -482,7 +483,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
                     # Insert to db
                     for batch in chunked(batch_data, n_max):
-                        MetaData.insert_many(batch, fields=fields).execute()  # noqa pylint: disable=E1120
+                        TableMetaData.insert_many(batch, fields=fields).execute()  # noqa pylint: disable=E1120
 
                     # Add Data
                     # --------
@@ -596,9 +597,9 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
                 # Get related metadata
                 metadata_dict = {
-                    arg.key: arg.value_num if arg.value_str is None else arg.value_str
+                    arg.key_name: arg.value_num if arg.value_str is None else arg.value_str
                     for arg in
-                    MetaData.select().distinct().
+                    TableMetaData.select().distinct().
                     join(Info).
                     where(Info.id == info_id_list[i].id).
                     iterator()
