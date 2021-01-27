@@ -58,7 +58,7 @@ class InstrType(MetadataModel):
     )
 
     # Instrument type description
-    type_desc = TextField(null=True, unique=False)
+    type_desc = TextField(null=True, unique=False, default='')
 
 
 class Instrument(MetadataModel):
@@ -98,12 +98,16 @@ class Parameter(MetadataModel):
 
 class Flag(MetadataModel):
     """Flag model"""
+
+    # Table id
     id = AutoField(primary_key=True)
-    bit_number = IntegerField(
+
+    # Bit position
+    bit_pos = IntegerField(
         null=False,
         unique=True,
-        constraints=[Check("bit_number >= 0")])
-    flag_abbr = CharField(null=False, unique=True)
+        constraints=[Check("bit_pos >= 0")])
+    flag_name = CharField(null=False, unique=True)
     flag_desc = TextField(null=False, default='')
 
 
@@ -114,9 +118,15 @@ class Tag(MetadataModel):
         Tags should be used to search profiles in the DB.
 
     """
+
+    # Table id
     id = AutoField(primary_key=True)
-    tag_txt = CharField(null=False, unique=True)
-    tag_desc = TextField()
+
+    # Tag name
+    tag_name = CharField(null=False, unique=True)
+
+    # Tag description
+    tag_desc = TextField(null=True, unique=False, default='')
 
 
 class DataSource(MetadataModel):

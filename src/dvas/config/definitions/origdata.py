@@ -20,7 +20,7 @@ TYP_FLD_NM = 'typ_field'  # Instrument type field name
 SRN_FLD_NM = 'srn_field'  # Serial number field name
 PDT_FLD_NM = 'pdt_field'  # Product field name
 TAG_FLD_NM = 'tag_field'  # Tag field name
-META_FLD_NM = 'meta_field' # Metadata field name
+META_FLD_NM = 'meta_field'  # Metadata field name
 
 INDEX_FLD_NM = 'index_col'  # Index column field name
 PARAM_FLD_NM = 'value_col'  # Value column field name
