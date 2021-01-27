@@ -17,9 +17,9 @@ import pytest
 import numpy as np
 
 # Import from current python packages and modules
-from dvas.database.model import Parameter as MdlParameter
+from dvas.database.model import Parameter as TableParameter
 from dvas.database.model import Instrument as MdlInstrument
-from dvas.database.model import InstrType as MdlInstrType
+from dvas.database.model import InstrType as TableInstrType
 from dvas.database.database import DatabaseManager
 from dvas.database.database import InfoManager, InfoManagerMetaData
 from dvas.database.database import SearchInfoExpr
@@ -55,33 +55,33 @@ class TestDatabaseManager:
         """Test get_or_none method"""
 
         assert db_mngr.get_or_none(
-            MdlParameter,
+            TableParameter,
             search={
-                'where': MdlParameter.prm_abbr.in_(
+                'where': TableParameter.prm_name.in_(
                     ['dummytst_param1', 'dummytst_param2']
                 )
             },
-            attr=[[MdlParameter.prm_abbr.name]],
+            attr=[[TableParameter.prm_name.name]],
         ) == ['dummytst_param1']
 
         assert db_mngr.get_or_none(
             MdlInstrument,
             search={
-                'where': MdlInstrType.type_name == 'YT',
-                'join_order': [MdlInstrType],
+                'where': TableInstrType.type_name == 'YT',
+                'join_order': [TableInstrType],
             },
             attr=[[MdlInstrument.srn.name]],
             get_first=True
         ) in [['YT-100'], ['YT-101']]
 
         assert db_mngr.get_or_none(
-            MdlParameter,
+            TableParameter,
             search={
-                'where': MdlParameter.prm_abbr.in_(
+                'where': TableParameter.prm_name.in_(
                     ['dummytst_param1', 'dummytst_param2']
                 )
             },
-            attr=[[MdlParameter.prm_abbr.name]],
+            attr=[[TableParameter.prm_name.name]],
             get_first=False
         ) == [['dummytst_param1'], ['dummytst_param2']]
 

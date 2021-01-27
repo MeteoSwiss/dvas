@@ -58,7 +58,7 @@ class TestLoadProfileStrategy:
             [
                 {
                     'index': self.index.astype(int), 'value': self.values.astype(float),
-                    'info': info, 'prm_abbr': prm,
+                    'info': info, 'prm_name': prm,
                     'source_info': 'test_add_data', 'force_write': True
                 }
                 for prm in ['trepros1', 'altpros1'] for info in self.infos
@@ -68,7 +68,7 @@ class TestLoadProfileStrategy:
             [
                 {
                     'index': self.index.astype(int), 'value': self.flags_val.astype(float),
-                    'info': info, 'prm_abbr': 'flgpros1',
+                    'info': info, 'prm_name': 'flgpros1',
                     'source_info': 'test_add_data', 'force_write': True
                 }
                 for info in self.infos
@@ -127,7 +127,7 @@ class TestLoadRSProfileStrategy:
             [
                 {
                     'index': self.index.astype(int), 'value': self.values.astype(float),
-                    'info': info, 'prm_abbr': prm,
+                    'info': info, 'prm_name': prm,
                     'source_info': 'test_add_data', 'force_write': True
                 }
                 for prm in ['trepros1', 'altpros1'] for info in self.infos
@@ -137,7 +137,7 @@ class TestLoadRSProfileStrategy:
             [
                 {
                     'index': self.index.astype(int), 'value': self.time_val.astype(float),
-                    'info': info, 'prm_abbr': 'tdtpros1',
+                    'info': info, 'prm_name': 'tdtpros1',
                     'source_info': 'test_add_data', 'force_write': True
                 }
                 for info in self.infos
@@ -196,7 +196,7 @@ class TestLoadGPDProfileStrategy:
             [
                 {
                     'index': self.index.astype(int), 'value': self.values.astype(float),
-                    'info': info, 'prm_abbr': prm,
+                    'info': info, 'prm_name': prm,
                     'source_info': 'test_add_data', 'force_write': True
                 }
                 for prm in ['trepros1', 'altpros1'] for info in self.infos
@@ -206,7 +206,7 @@ class TestLoadGPDProfileStrategy:
             [
                 {
                     'index': self.index.astype(int), 'value': self.time_val.astype(float),
-                    'info': info, 'prm_abbr': 'tdtpros1',
+                    'info': info, 'prm_name': 'tdtpros1',
                     'source_info': 'test_add_data', 'force_write': True
                 }
                 for info in self.infos

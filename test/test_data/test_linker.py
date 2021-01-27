@@ -30,7 +30,7 @@ class TestFileHandle:
 
     res_fmt = {
         'info': dict,
-        'prm_abbr': str,
+        'prm_name': str,
         'index': np.ndarray, 'value': np.ndarray,
         'source_info': str
     }
@@ -105,7 +105,7 @@ class TestLoadDBLinker:
                 'index': self.index,
                 'value': self.values,
                 'info': self.info,
-                'prm_abbr': self.prm,
+                'prm_name': self.prm,
                 'source_info': 'test_add_data'
             }]
         )
@@ -116,7 +116,7 @@ class TestLoadDBLinker:
                 'index': self.index,
                 'value': self.values,
                 'info': self.info,
-                'prm_abbr': self.prm,
+                'prm_name': self.prm,
                 'source_info': 'test_add_data',
                 'force_write': True
             }]

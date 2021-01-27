@@ -16,6 +16,8 @@ from peewee import AutoField
 from peewee import IntegerField, FloatField
 from peewee import DateTimeField, TextField, CharField
 from peewee import ForeignKeyField
+from playhouse.hybrid import hybrid_property
+
 
 # Import from current package
 from ..config.pattern import INSTR_TYPE_PAT
@@ -42,8 +44,10 @@ class MetadataModel(Model):
 
 
 class InstrType(MetadataModel):
-    """Instrument type model"""
-    id = AutoField(primary_key=True)
+    """Instrument type table"""
+
+    # Table id
+    type_id = AutoField(primary_key=True)
 
     # Instrument type name
     type_name = CharField(
@@ -54,7 +58,7 @@ class InstrType(MetadataModel):
     )
 
     # Instrument type description
-    desc = TextField()
+    type_desc = TextField(null=True, unique=False)
 
 
 class Instrument(MetadataModel):
@@ -75,14 +79,20 @@ class Instrument(MetadataModel):
 
 class Parameter(MetadataModel):
     """Parameter model"""
-    id = AutoField(primary_key=True)
-    prm_abbr = CharField(
+
+    # Table id
+    prm_id = AutoField(primary_key=True)
+
+    # Parameter name
+    prm_name = CharField(
         null=False,
         unique=True,
         constraints=[
-            Check(f"re_fullmatch('{PARAM_PAT}', prm_abbr)"),
+            Check(f"re_fullmatch('{PARAM_PAT}', prm_name)"),
         ]
     )
+
+    # Parameter description
     prm_desc = TextField(null=False, default='')
 
 

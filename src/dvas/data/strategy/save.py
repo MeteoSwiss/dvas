@@ -43,7 +43,7 @@ class SaveDataStrategy(MPStrategyAC):
                         'index': val.index.values.astype(int),
                         'value': val[prm].values.astype(float),
                         'info': prf.info,
-                        'prm_abbr': data.db_variables[prm],
+                        'prm_name': data.db_variables[prm],
                         'source_info': 'user_script',
                         'force_write': True
                     } for prm in prms if data.db_variables[prm] is not None

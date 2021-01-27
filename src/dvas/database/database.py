@@ -29,8 +29,10 @@ from pampy.helpers import Iterable, Union
 
 # Import from current package
 from .model import db
-from .model import Instrument, InstrType, Info
-from .model import Parameter, Flag, DataSource, Data
+from .model import InstrType as TableInstrType
+from .model import Instrument, Info
+from .model import Parameter as TableParameter
+from .model import Flag, DataSource, Data
 from .model import Tag, InfosTags, InfosInstruments, MetaData
 from ..config.config import OneDimArrayConfigLinker
 from ..config.definitions.origdata import EVT_DT_FLD_NM, TYP_FLD_NM, SRN_FLD_NM
@@ -68,16 +70,16 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
     DB_TABLES = [
         Info,
-        InfosInstruments, Instrument, InstrType,
+        InfosInstruments, Instrument, TableInstrType,
         InfosTags, Tag,
         DataSource,
         Data,
         MetaData,
-        Parameter,
+        TableParameter,
         Flag,
     ]
     DB_TABLES_PRINT = [
-        Parameter, InstrType,
+        TableParameter, TableInstrType,
         Instrument, Flag,
         Tag
     ]
@@ -235,7 +237,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             try:
 
                 # Fill simple tables
-                for tbl in [Parameter, InstrType, Flag, Tag]:
+                for tbl in [TableParameter, TableInstrType, Flag, Tag]:
                     self._fill_table(tbl)
 
             except IntegrityError as exc:
@@ -305,7 +307,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         return out
 
     def add_data(
-            self, index, value, info, prm_abbr,
+            self, index, value, info, prm_name,
             source_info=None, force_write=False
     ):
         """Add profile data to the DB.
@@ -315,7 +317,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             value (np.array of float): Data value
             info (InfoManager|dict): Data information. If dict, must fulfill
                 InfoManager.from_dict input args requirements.
-            prm_abbr (str):
+            prm_name (str):
             source_info (str, optional): Data source
             force_write (bool, optional): force rewrite of already save data
 
@@ -360,13 +362,13 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     raise DBInsertError(err_msg % info.uid)
 
                 # Get/Check parameter
-                param = Parameter.get_or_none(
-                    Parameter.prm_abbr == prm_abbr
+                param = TableParameter.get_or_none(
+                    TableParameter.prm_name == prm_name
                 )
                 if not param:
-                    err_msg = "prm_abbr '%s' is missing in DB"
-                    localdb.error(err_msg, prm_abbr)
-                    raise DBInsertError(err_msg % prm_abbr)
+                    err_msg = "prm_name '%s' is missing in DB"
+                    localdb.error(err_msg, prm_name)
+                    raise DBInsertError(err_msg % prm_name)
 
                 # Check tag_txt existence
                 if len(
@@ -515,18 +517,18 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             raise DBInsertError(exc)
 
     @staticmethod
-    def _get_info_id(search_expr, prm_abbr, filter_empty):
+    def _get_info_id(search_expr, prm_name, filter_empty):
         """Get Info.id for a give search string expression
 
         Args:
             search_expr (str): Search expression
-            prm_abbr (str): Parameter
+            prm_name (str): Parameter name
             filter_empty (bool): Filter for empty data tag
 
         """
 
         try:
-            out = list(SearchInfoExpr.eval(search_expr, prm_abbr, filter_empty))
+            out = list(SearchInfoExpr.eval(search_expr, prm_name, filter_empty))
 
         # TODO Detail exception
         except Exception as exc:
@@ -538,12 +540,12 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         return out
 
     @TimeIt()
-    def get_data(self, search_expr, prm_abbr, filter_empty):
+    def get_data(self, search_expr, prm_name, filter_empty):
         """Get data from DB
 
         Args:
             search_expr (str): Search expression
-            prm_abbr (str): Parameter
+            prm_name (str): Parameter name
             filter_empty (bool): Filter empty data or not
 
         Returns:
@@ -551,11 +553,11 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         """
 
         # Get info id
-        info_id_list = self._get_info_id(search_expr, prm_abbr, filter_empty)
+        info_id_list = self._get_info_id(search_expr, prm_name, filter_empty)
 
         if not info_id_list:
             localdb.warning(
-                "Empty search '%s' for '%s", search_expr, prm_abbr
+                "Empty search '%s' for '%s", search_expr, prm_name
             )
 
         # Query data
@@ -1088,8 +1090,8 @@ class InfoManager:
 
             # Get instrument type
             if (
-                instr_type := InstrType.get_or_none(
-                    InstrType.type_name == metadata[TYP_FLD_NM]
+                instr_type := TableInstrType.get_or_none(
+                    TableInstrType.type_name == metadata[TYP_FLD_NM]
                 )
             ) is None:
                 # TODO
@@ -1156,12 +1158,12 @@ class SearchInfoExpr(metaclass=ABCMeta):
         """Interpreter method"""
 
     @staticmethod
-    def eval(str_expr, prm_abbr, filter_empty):
+    def eval(str_expr, prm_name, filter_empty):
         """Evaluate search expression
 
         Args:
             str_expr (str): Expression to evaluate
-            prm_abbr (str): Search parameter
+            prm_name (str): Search parameter
             filter_empty (bool): Filter for empty data
 
         Returns:
@@ -1201,7 +1203,7 @@ class SearchInfoExpr(metaclass=ABCMeta):
                 expr = AndExpr(NotExpr(TagExpr(TAG_EMPTY_VAL)), expr)
 
             # Filter parameter
-            expr = AndExpr(ParameterExpr(prm_abbr), expr)
+            expr = AndExpr(ParameterExpr(prm_name), expr)
 
             # Interpret expression
             expr_res = expr.interpret()
@@ -1273,7 +1275,7 @@ class TerminalSearchInfoExpr(SearchInfoExpr):
         Info
         .select().distinct()
         .join(InfosInstruments).join(Instrument).switch(Info)
-        .join(Parameter).switch(Info)
+        .join(TableParameter).switch(Info)
         .join(InfosTags).join(Tag).switch(Info)
     )
 
@@ -1370,7 +1372,7 @@ class ParameterExpr(TerminalSearchInfoExpr):
 
     def get_filter(self):
         """Implement get_filter method"""
-        return Parameter.prm_abbr == self.expression
+        return TableParameter.prm_name == self.expression
 
 
 class DBCreateError(Exception):

@@ -19,8 +19,9 @@ import pandas as pd
 
 # Import from current package
 from ..environ import path_var as env_path_var
-from ..database.model import InstrType, Info
-from ..database.model import Parameter, DataSource
+from ..database.model import InstrType as TableInstrType
+from ..database.model import Info, DataSource
+from ..database.model import Parameter as TableParameter
 from ..database.database import DatabaseManager
 from ..config.config import OrigData, CSVOrigMeta
 from ..config.config import ConfigReadError
@@ -62,12 +63,12 @@ class Handler(ABC):
         """
 
     @abstractmethod
-    def handle(self, request, prm_abbr):
+    def handle(self, request, prm_name):
         """Handle method
 
         Args:
             request (`object`): Request
-            prm_abbr (str): Parameter abbr
+            prm_name (str): Parameter name
 
         Returns:
             Optional: 'object'
@@ -162,12 +163,12 @@ class FileHandler(AbstractHandler):
         (re.search within pathlib.Path.name). Group #1 must correspond to
         instr_type name."""
 
-    def handle(self, file_path, prm_abbr):
+    def handle(self, file_path, prm_name):
         """Handle method"""
         if self.file_suffix.fullmatch(file_path.suffix) is not None:
-            return self.get_main(file_path, prm_abbr)
+            return self.get_main(file_path, prm_name)
         else:
-            return super().handle(file_path, prm_abbr)
+            return super().handle(file_path, prm_name)
 
     @abstractmethod
     def get_metadata_item(self, *args, **kwargs):
@@ -198,11 +199,11 @@ class FileHandler(AbstractHandler):
 
         # Check instr_type name existence in DB
         if self._db_mngr.get_or_none(
-                InstrType,
+                TableInstrType,
                 search={
-                    'where': InstrType.type_name == instr_type_name
+                    'where': TableInstrType.type_name == instr_type_name
                 },
-                attr=[[InstrType.type_name.name]]
+                attr=[[TableInstrType.type_name.name]]
         ) is None:
             # TODO Detail exception
             raise Exception(
@@ -212,7 +213,7 @@ class FileHandler(AbstractHandler):
 
         return instr_type_name
 
-    def exclude_file(self, path_scan, prm_abbr):
+    def exclude_file(self, path_scan, prm_name):
         """Exclude file method"""
 
         # Search exclude file names source
@@ -220,9 +221,9 @@ class FileHandler(AbstractHandler):
             Info,
             search={
                 'where': (
-                    Parameter.prm_abbr == prm_abbr
+                    TableParameter.prm_name == prm_name
                 ),
-                'join_order': [Parameter, DataSource]},
+                'join_order': [TableParameter, DataSource]},
             attr=[[Info.data_src.name, DataSource.source.name]],
             get_first=False
         )
@@ -234,7 +235,7 @@ class FileHandler(AbstractHandler):
 
         return origdata_path_new
 
-    def read_metaconfig_fields(self, instr_type_name, prm_abbr):
+    def read_metaconfig_fields(self, instr_type_name, prm_name):
         """Read field from metaconfig"""
 
         # Create metadata output
@@ -243,9 +244,9 @@ class FileHandler(AbstractHandler):
 
             try:
                 # TODO
-                #  Consider if prm_abbr is mandatory at this point
+                #  Consider if prm_name is mandatory at this point
                 field_val = self.origdata_config_mngr.get_val(
-                    [instr_type_name, prm_abbr], key
+                    [instr_type_name, prm_name], key
                 )
 
                 if isinstance(field_val, str):
@@ -334,7 +335,7 @@ class CSVHandler(FileHandler):
         """Implementation of abstract method"""
         return self.origmeta_mngr[item]
 
-    def get_metadata(self, file_path, instr_type_name, prm_abbr):
+    def get_metadata(self, file_path, instr_type_name, prm_name):
         """Method to get metadata"""
 
         # Init
@@ -391,14 +392,14 @@ class CSVHandler(FileHandler):
 
         # Read metadata fields
         try:
-            out = self.read_metaconfig_fields(instr_type_name, prm_abbr)
+            out = self.read_metaconfig_fields(instr_type_name, prm_name)
 
         except Exception as exc:
             raise Exception(exc)
 
         return out
 
-    def get_main(self, file_path, prm_abbr):
+    def get_main(self, file_path, prm_name):
         """Implementation of abstract method"""
 
         # Get instr_type
@@ -408,7 +409,7 @@ class CSVHandler(FileHandler):
         # (need instr_type_name
         if (
                 metadata := self.get_metadata(
-                    file_path, instr_type_name, prm_abbr
+                    file_path, instr_type_name, prm_name
                 )
         ) is None:
             return
@@ -416,9 +417,9 @@ class CSVHandler(FileHandler):
         # Create info with 'raw' tag
         metadata[TAG_FLD_NM] += [TAG_RAW_VAL]
 
-        # Get config params for (instr_type, prm_abbr) couple
+        # Get config params for (instr_type, prm_name) couple
         origdata_cfg_prm = self.origdata_config_mngr.get_all_default(
-            [instr_type_name, prm_abbr]
+            [instr_type_name, prm_name]
         )
 
         # Get raw data config param
@@ -433,7 +434,7 @@ class CSVHandler(FileHandler):
                 {
                     'usecols': [
                         self.origdata_config_mngr.get_val(
-                            [instr_type_name, prm_abbr], PARAM_FLD_NM
+                            [instr_type_name, prm_name], PARAM_FLD_NM
                         ),
                     ],
                     'squeeze': True,
@@ -444,14 +445,14 @@ class CSVHandler(FileHandler):
             data = pd.read_csv(file_path, **raw_csv_read_args)
             data = data.map(
                 eval(self.origdata_config_mngr.get_val(
-                    [instr_type_name, prm_abbr], 'lambda')
+                    [instr_type_name, prm_name], 'lambda')
                 )
             )
 
             # Log
             rawcsv.info(
                 "Successful reading of '%s' in CSV file '%s'",
-                prm_abbr, file_path,
+                prm_name, file_path,
             )
 
         except KeyError:
@@ -465,19 +466,19 @@ class CSVHandler(FileHandler):
             # Log
             rawcsv.warn(
                 "No data for '%s' in file '%s'",
-                prm_abbr, file_path,
+                prm_name, file_path,
             )
 
         except ValueError as exc:
             raise OrigConfigError(
-                f"Error while reading '{prm_abbr}' in file '{file_path}' " +
+                f"Error while reading '{prm_name}' in file '{file_path}' " +
                 f"({type(exc).__name__}: {exc})"
             )
 
         # Append data
         out = {
             'info': metadata,
-            'prm_abbr': prm_abbr,
+            'prm_name': prm_name,
             'index': data.index.values,
             'value': data.values,
             'source_info': self.get_source_unique_id(file_path)
@@ -514,22 +515,22 @@ class GDPHandler(FileHandler):
         """Implementation of abstract method"""
         return self._fid.getncattr(item)
 
-    def get_metadata(self, file_path, instr_type_name, prm_abbr):
+    def get_metadata(self, file_path, instr_type_name, prm_name):
         """Method to get file metadata"""
 
         with nc.Dataset(file_path, 'r') as self._fid:
 
             # Read metadata fields
             try:
-                out = self.read_metaconfig_fields(instr_type_name, prm_abbr)
+                out = self.read_metaconfig_fields(instr_type_name, prm_name)
 
             #TODO Detail exception
             except Exception as exc:
-                raise Exception(f"{exc} / {instr_type_name} / {prm_abbr}")
+                raise Exception(f"{exc} / {instr_type_name} / {prm_name}")
 
         return out
 
-    def get_main(self, file_path, prm_abbr):
+    def get_main(self, file_path, prm_name):
         """Implementation of abstract method"""
 
         # Get instr_type
@@ -537,7 +538,7 @@ class GDPHandler(FileHandler):
 
         # Get metadata
         metadata = self.get_metadata(
-            file_path, instr_type_name, prm_abbr
+            file_path, instr_type_name, prm_name
         )
 
 
@@ -556,13 +557,13 @@ class GDPHandler(FileHandler):
             # Read data
             with nc.Dataset(file_path, 'r') as self._fid:
                 data_col_nm = self.origdata_config_mngr.get_val(
-                    [instr_type_name, prm_abbr], PARAM_FLD_NM
+                    [instr_type_name, prm_name], PARAM_FLD_NM
                 )
 
                 data = pd.Series(self._fid[data_col_nm][:])
                 data = data.map(
                     eval(self.origdata_config_mngr.get_val(
-                        [instr_type_name, prm_abbr], 'lambda')
+                        [instr_type_name, prm_name], 'lambda')
                     )
                 )
 
@@ -577,13 +578,13 @@ class GDPHandler(FileHandler):
             # Log
             rawcsv.warn(
                 "No data for '%s' in file '%s'",
-                prm_abbr, file_path,
+                prm_name, file_path,
             )
 
         #TODO Detail exception
         except Exception as exc:
             raise OrigConfigError(
-                f"Error while reading '{prm_abbr}' in file '{file_path}' " +
+                f"Error while reading '{prm_name}' in file '{file_path}' " +
                 f"({type(exc).__name__}: {exc})"
             )
 
@@ -592,7 +593,7 @@ class GDPHandler(FileHandler):
             'info': metadata,
             'index': data.index.values,
             'value': data.values,
-            'prm_abbr': prm_abbr,
+            'prm_name': prm_name,
             'source_info': self.get_source_unique_id(file_path)
         }
 
@@ -622,12 +623,12 @@ class LocalDBLinker(DataLinker):
         # Init attributes
         self._db_mngr = DatabaseManager()
 
-    def load(self, search, prm_abbr, filter_empty=True):
+    def load(self, search, prm_name, filter_empty=True):
         """Load parameter method
 
         Args:
             search (str): Data loader search criterion
-            prm_abbr (str): Positional parameter abbr
+            prm_name (str): Parameter name
             filter_empty (bool, `optional`): Filter empty data from search.
                 Default to True.
 
@@ -648,7 +649,7 @@ class LocalDBLinker(DataLinker):
 
         # Retrieve data from DB
         data = self._db_mngr.get_data(
-            search_expr=search, prm_abbr=prm_abbr, filter_empty=filter_empty
+            search_expr=search, prm_name=prm_name, filter_empty=filter_empty
         )
 
         return data
@@ -658,7 +659,7 @@ class LocalDBLinker(DataLinker):
 
         Args:
             data_list (list of dict): dict mandatory items are 'index' (np.array),
-                'value' (np.array), 'info' (InfoManager|dic), 'prm_abbr' (str).
+                'value' (np.array), 'info' (InfoManager|dic), 'prm_name' (str).
                 dict optional key are 'source_info' (str), force_write (bool)
 
         """

@@ -14,7 +14,7 @@ Module contents: IO management
 # Import from current package
 from .linker import LocalDBLinker, CSVHandler, GDPHandler
 from ..database.database import DatabaseManager
-from ..database.model import Parameter
+from ..database.model import Parameter as TableParameter
 from ..logger import localdb, rawcsv
 from ..environ import path_var
 
@@ -23,7 +23,7 @@ def update_db(search, strict=False):
     """Update database.
 
     Args:
-        search (str): prm_abbr search criteria.
+        search (str): Parameter name search criteria.
         strict (bool, optional): If False, match for any sub-string.
             If True match for entire string. Default to False.
 
@@ -32,10 +32,10 @@ def update_db(search, strict=False):
         @startuml
         hide footbox
 
-        update_db -> CSVHandler: handle(file_path, prm_abbr)
+        update_db -> CSVHandler: handle(file_path, prm_name)
         activate CSVHandler
 
-        CSVHandler -> GDPHandler: handle(file_path, prm_abbr)
+        CSVHandler -> GDPHandler: handle(file_path, prm_name)
         activate GDPHandler
 
         CSVHandler <- GDPHandler: data
@@ -56,42 +56,42 @@ def update_db(search, strict=False):
     handler = CSVHandler()
     handler.set_next(GDPHandler())
 
-    # Search prm_abbr
+    # Search prm_name
     if strict is True:
-        search_dict = {'where': Parameter.prm_abbr == search}
+        search_dict = {'where': TableParameter.prm_name == search}
     else:
-        search_dict = {'where': Parameter.prm_abbr.contains(search)}
+        search_dict = {'where': TableParameter.prm_name.contains(search)}
 
-    prm_abbr_list = [
+    prm_name_list = [
         arg[0] for arg in db_mngr.get_or_none(
-            Parameter,
+            TableParameter,
             search=search_dict,
-            attr=[[Parameter.prm_abbr.name]],
+            attr=[[TableParameter.prm_name.name]],
             get_first=False
         )
     ]
 
     # If no matching parameters were found, issue a warning and stop here.
-    if len(prm_abbr_list) == 0:
+    if len(prm_name_list) == 0:
         localdb.info("No database parameter found for the query: %s", search)
         return None
 
     # Log
-    localdb.info("Update db for following parameters: %s", prm_abbr_list)
+    localdb.info("Update db for following parameters: %s", prm_name_list)
 
     # Scan path
     origdata_path_scan = list(path_var.orig_data_path.rglob("*.*"))
 
     # Loop loading
-    for prm_abbr in prm_abbr_list:
+    for prm_name in prm_name_list:
 
         # Log
-        rawcsv.info("Start reading files for '%s'", prm_abbr)
+        rawcsv.info("Start reading files for '%s'", prm_name)
 
         # Scan files
         new_orig_data = []
         for file_path in origdata_path_scan:
-            result = handler.handle(file_path, prm_abbr)
+            result = handler.handle(file_path, prm_name)
             if result:
                 new_orig_data.append(result)
                 # Log
@@ -105,16 +105,16 @@ def update_db(search, strict=False):
                 )
 
         # Log
-        rawcsv.info("Finish reading files for '%s'", prm_abbr)
+        rawcsv.info("Finish reading files for '%s'", prm_name)
         rawcsv.info(
             "Found %d new data while reading files for '%s'",
             len(new_orig_data),
-            prm_abbr
+            prm_name
         )
 
         # Log
         localdb.info(
-            "Start inserting in local DB new found data for '%s'", prm_abbr
+            "Start inserting in local DB new found data for '%s'", prm_name
         )
 
         # Save to DB
@@ -122,5 +122,5 @@ def update_db(search, strict=False):
 
         # Log
         localdb.info(
-            "Finish inserting in local DB new found data for '%s'", prm_abbr
+            "Finish inserting in local DB new found data for '%s'", prm_name
         )

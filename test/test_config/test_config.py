@@ -98,16 +98,16 @@ class TestOneDimArrayConfigManager():
     def test_read(self):
         """Test read method"""
 
-        assert self.cfg.read("- type_name: 'TEST'\n  'desc': 'Test'") is None
+        assert self.cfg.read("- type_name: 'TEST'\n  'type_desc': 'Test'") is None
         assert isinstance(self.cfg.document, list)
 
         # Test for bad field name (replace type_name by type)
         with pytest.raises(ConfigReadError):
-            self.cfg.read("- type: 'TEST'\n  'desc': 'Test'")
+            self.cfg.read("- type: 'TEST'\n  'type_desc': 'Test'")
 
         # Test for bad field type
         with pytest.raises(ConfigReadError):
-            self.cfg.read("type_name: 'TEST'\ndesc': 'Test'")
+            self.cfg.read("type_name: 'TEST'\ntype_desc': 'Test'")
 
 
 class TestOneDimArrayConfigLinker:
@@ -142,7 +142,7 @@ class TestOneDimArrayConfigLinker:
 
         assert isinstance(doc, list)
         assert sum(
-            [self.prm_pat.match(arg['prm_abbr']) is not None for arg in doc]
+            [self.prm_pat.match(arg['prm_name']) is not None for arg in doc]
         ) == 10
         assert sum(
             [self.desc_pat.match(arg['prm_desc']) is not None for arg in doc]
