@@ -175,6 +175,15 @@ class FileHandler(AbstractHandler):
         """Method to get metadata item"""
 
     @abstractmethod
+    def get_metadata(self, file_path, instr_type_name, prm_name):
+        """Method to get metadata"""
+
+        # Add automatic fields to metadata
+        out = {TableInstrType.type_name.name: instr_type_name}
+
+        return out
+
+    @abstractmethod
     def get_main(self, *args, **kwargs):
         """Main get method called from handle method"""
 
@@ -338,6 +347,9 @@ class CSVHandler(FileHandler):
     def get_metadata(self, file_path, instr_type_name, prm_name):
         """Method to get metadata"""
 
+        # Get default output from parent method
+        out = super().get_metadata(file_path, instr_type_name, prm_name)
+
         # Init
         self.origmeta_mngr.init_document()
 
@@ -392,7 +404,9 @@ class CSVHandler(FileHandler):
 
         # Read metadata fields
         try:
-            out = self.read_metaconfig_fields(instr_type_name, prm_name)
+            out.update(
+                self.read_metaconfig_fields(instr_type_name, prm_name)
+            )
 
         except Exception as exc:
             raise Exception(exc)
@@ -518,11 +532,16 @@ class GDPHandler(FileHandler):
     def get_metadata(self, file_path, instr_type_name, prm_name):
         """Method to get file metadata"""
 
+        # Get default output from parent method
+        out = super().get_metadata(file_path, instr_type_name, prm_name)
+
         with nc.Dataset(file_path, 'r') as self._fid:
 
             # Read metadata fields
             try:
-                out = self.read_metaconfig_fields(instr_type_name, prm_name)
+                out.update(
+                    self.read_metaconfig_fields(instr_type_name, prm_name)
+                )
 
             #TODO Detail exception
             except Exception as exc:
@@ -540,14 +559,6 @@ class GDPHandler(FileHandler):
         metadata = self.get_metadata(
             file_path, instr_type_name, prm_name
         )
-
-
-        # TODO
-        #  Erase
-        # # Check instr_type name existence
-        # # (need it for loading origdata config)
-        # self.check_sn(file_path, instr_type_name, metadata)
-
 
         # Create event with 'raw' and 'gdp' tag
         metadata[TAG_FLD_NM] += [TAG_RAW_VAL, TAG_GDP_VAL]

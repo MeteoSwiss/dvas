@@ -37,7 +37,7 @@ from .model import MetaData as TableMetaData
 from .model import Flag, DataSource, Data
 from .model import InfosTags, InfosInstruments
 from ..config.config import OneDimArrayConfigLinker
-from ..config.definitions.origdata import EVT_DT_FLD_NM, TYP_FLD_NM, SRN_FLD_NM
+from ..config.definitions.origdata import EVT_DT_FLD_NM, SRN_FLD_NM
 from ..config.definitions.origdata import PDT_FLD_NM, TAG_FLD_NM, META_FLD_NM
 from ..config.definitions.tag import TAG_NONE, TAG_EMPTY_VAL
 from ..helper import ContextDecorator
@@ -1093,12 +1093,12 @@ class InfoManager:
             # Get instrument type
             if (
                 instr_type := TableInstrType.get_or_none(
-                    TableInstrType.type_name == metadata[TYP_FLD_NM]
+                    TableInstrType.type_name == metadata[TableInstrType.type_name.name]
                 )
             ) is None:
                 # TODO
                 #  Detail exception
-                raise Exception(f"{metadata[TYP_FLD_NM]} is missing in DB/InstrumentType")
+                raise Exception(f"{metadata[TableInstrType.type_name.name]} is missing in DB/InstrumentType")
 
             # Create instrument entry
             instr_id = Instrument.create(
