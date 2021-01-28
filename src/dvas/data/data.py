@@ -31,6 +31,7 @@ from .strategy.save import SaveDataStrategy
 from ..database.database import OneDimArrayConfigLinker
 from ..helper import RequiredAttrMetaClass
 from ..helper import deepcopy
+from ..helper import get_class_public_attr
 
 from ..errors import dvasError, DBIOError
 
@@ -309,19 +310,23 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
 
         return out
 
-    def get_info(self, prm):
-        """ Convenience function to extract specific (a unique!) Info from all the
-        Profile instances.
+    def get_info(self, prm=None):
+        """ Convenience function to extract Info from all the Profile instances.
 
         Args:
-            prm (str): parameter name (unique!) to extract.
+            prm (str, `optional`): Info attribute to extract. Default to None.
 
         Returns:
             dict of list: idem to self.profiles, but with only the requested metadata.
 
         """
 
-        return [info[prm] for info in self.info]
+        if prm:
+            out = [getattr(info, prm) for info in self.info]
+        else:
+            out = [get_class_public_attr(info) for info in self.info]
+
+        return out
 
     def plot(self, **kwargs):
         """ Plot method

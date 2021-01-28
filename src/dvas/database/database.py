@@ -203,7 +203,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         return out
 
     @staticmethod
-    def _model_to_dict(query, recurse=False):
+    def model_to_dict(query, recurse=False):
         """Convert a query to a dictionary
 
         Notes:
@@ -304,7 +304,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     qry = qry.join(jointbl)
                     qry = qry.switch(table)
                 qry = qry.where(search['where'])
-            out = self._model_to_dict(qry, recurse=recurse)
+            out = self.model_to_dict(qry, recurse=recurse)
 
         return out
 
@@ -932,11 +932,42 @@ class InfoManager:
             out = None
         return out
 
-    def __getitem__(self, item):
-        return getattr(self, item)
+    @property
+    def tags_desc(self):
+        """dict: Tags description"""
+
+        # Add tags informations
+        qry = TableTag. \
+            select(). \
+            where(TableTag.tag_name.in_(self.tags))
+        out =  {arg.tag_name: arg.tag_desc for arg in qry.iterator()}
+
+        return out
+
+    @property
+    def instr(self):
+        """list of dict: Instrument informations"""
+
+        # Add instrument informations
+        qry = Instrument.\
+            select().\
+            join(TableInstrType).\
+            where(Instrument.id.in_(self.uid))
+        out = [
+            {
+                'uid': arg.id,
+                'srn': arg.srn,
+                'pdt': arg.pdt,
+                'type_name': arg.instr_type.type_name,
+                'type_desc': arg.instr_type.type_desc
+            }
+            for arg in qry.iterator()
+        ]
+
+        return out
 
     def __repr__(self):
-        return f'{super().__repr__()}\n{self}'
+        return f'{self}'
 
     def __str__(self):
         p_printer = pprint.PrettyPrinter()

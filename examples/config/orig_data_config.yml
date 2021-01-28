@@ -205,8 +205,8 @@ _RS92-GDP_002:
     # havoc in the code (GDPs cannot be loaded). Why ?
     # TODO: Issue: #94, this is uncommented and a wrong value_col is given to allow
     # the code to run
-    _treprosu_s:
-        value_col: 'u_cor_temp'
+    #_treprosu_s:
+    #    value_col: 'u_cor_temp'
 
     _treprosu_t:
         value_col: 'u_cor_temp'
