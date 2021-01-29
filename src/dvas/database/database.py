@@ -894,8 +894,6 @@ class InfoManager:
         self.tags = tags
         self.metadata = metadata
 
-        self._db_mngr = DatabaseManager()
-
     def __copy__(self):
         return self.__class__(self.evt_dt, self.uid.copy(), self.tags.copy())
 
@@ -939,8 +937,11 @@ class InfoManager:
     def tags_desc(self):
         """dict: Tags description"""
 
+        # Define
+        db_mngr = DatabaseManager()
+
         # Query for tags informations
-        qry_res = self._db_mngr.get_table(
+        qry_res = db_mngr.get_table(
             TableTag,
             search={'where': TableTag.tag_name.in_(self.tags)}
         )
@@ -957,8 +958,11 @@ class InfoManager:
     def instr(self):
         """list of dict: Instrument informations"""
 
+        # Define
+        db_mngr = DatabaseManager()
+
         # Query for instrument informations
-        qry_res = self._db_mngr.get_table(
+        qry_res = db_mngr.get_table(
             Instrument,
             search={
                 'join_order': [TableInstrType],

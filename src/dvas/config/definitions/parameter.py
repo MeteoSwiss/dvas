@@ -23,6 +23,9 @@ PARAMETER_PATTERN_PROP = {
     },
     rf"^{TableParameter.prm_desc.name}$": {
         "type": "string"
+    },
+    rf"^{TableParameter.prm_unit.name}$": {
+        "type": "string"
     }
 }
 

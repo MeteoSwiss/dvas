@@ -95,6 +95,9 @@ class Parameter(MetadataModel):
     # Parameter description
     prm_desc = TextField(null=False, default='')
 
+    # Parameter units
+    prm_unit = CharField(null=True, default='')
+
 
 class Flag(MetadataModel):
     """Flag model"""
