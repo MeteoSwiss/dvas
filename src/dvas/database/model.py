@@ -16,7 +16,6 @@ from peewee import AutoField
 from peewee import IntegerField, FloatField
 from peewee import DateTimeField, TextField, CharField
 from peewee import ForeignKeyField
-from playhouse.hybrid import hybrid_property
 
 
 # Import from current package
