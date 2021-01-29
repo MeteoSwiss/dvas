@@ -281,12 +281,13 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             # TODO
             #  Log
 
-    def _get_table(self, table, search=None, recurse=False):
+    def get_table(self, table, search=None, recurse=False):
         """
 
         Args:
             table:
-            search: [join_order (optional), where]
+            search (dict): key 'join_order' must be a list of database.database.MetadataModel, `optional`,
+                key 'where' a logical peewee expression
 
         Returns:
             dict:
@@ -641,7 +642,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         for print_tbl in print_tables:
             out += f"{print_tbl.__name__}\n"
-            for arg in self._get_table(print_tbl, recurse=recurse):
+            for arg in self.get_table(print_tbl, recurse=recurse):
                 out += f"{arg}\n"
             out += "\n"
 
@@ -654,7 +655,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             list
 
         """
-        return self._get_table(Flag)
+        return self.get_table(Flag)
 
 
 class DBAccess(ContextDecorator):
@@ -893,6 +894,8 @@ class InfoManager:
         self.tags = tags
         self.metadata = metadata
 
+        self._db_mngr = DatabaseManager()
+
     def __copy__(self):
         return self.__class__(self.evt_dt, self.uid.copy(), self.tags.copy())
 
@@ -936,11 +939,17 @@ class InfoManager:
     def tags_desc(self):
         """dict: Tags description"""
 
-        # Add tags informations
-        qry = TableTag. \
-            select(). \
-            where(TableTag.tag_name.in_(self.tags))
-        out =  {arg.tag_name: arg.tag_desc for arg in qry.iterator()}
+        # Query for tags informations
+        qry_res = self._db_mngr.get_table(
+            TableTag,
+            search={'where': TableTag.tag_name.in_(self.tags)}
+        )
+
+        # Set output
+        out = {
+            res[TableTag.tag_name.name]: res[TableTag.tag_desc.name]
+            for res in qry_res
+            }
 
         return out
 
@@ -948,20 +957,26 @@ class InfoManager:
     def instr(self):
         """list of dict: Instrument informations"""
 
-        # Add instrument informations
-        qry = Instrument.\
-            select().\
-            join(TableInstrType).\
-            where(Instrument.id.in_(self.uid))
+        # Query for instrument informations
+        qry_res = self._db_mngr.get_table(
+            Instrument,
+            search={
+                'join_order': [TableInstrType],
+                'where': Instrument.id.in_(self.uid)
+            },
+            recurse=True
+        )
+
+        # Set output
         out = [
             {
-                'uid': arg.id,
-                'srn': arg.srn,
-                'pdt': arg.pdt,
-                'type_name': arg.instr_type.type_name,
-                'type_desc': arg.instr_type.type_desc
+                Instrument.id.name: res[Instrument.id.name],
+                Instrument.srn.name: res[Instrument.srn.name],
+                Instrument.pdt.name: res[Instrument.pdt.name],
+                TableInstrType.type_name.name: res[Instrument.instr_type.name][TableInstrType.type_name.name],
+                TableInstrType.type_desc.name: res[Instrument.instr_type.name][TableInstrType.type_desc.name]
             }
-            for arg in qry.iterator()
+            for res in qry_res
         ]
 
         return out

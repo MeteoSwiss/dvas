@@ -28,7 +28,8 @@ from .strategy.rebase import RebaseStrategy
 
 from .strategy.save import SaveDataStrategy
 
-from ..database.database import OneDimArrayConfigLinker
+from ..database.database import OneDimArrayConfigLinker, DatabaseManager
+from ..database.model import Parameter as TableParameter
 from ..helper import RequiredAttrMetaClass
 from ..helper import deepcopy
 from ..helper import get_class_public_attr
@@ -93,6 +94,8 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
         self._profiles = self._DATA_EMPTY
         self._db_variables = self._DB_VAR_EMPTY
 
+        self._db_mngr = DatabaseManager()
+
     @property
     def profiles(self):
         """list of Profile"""
@@ -102,6 +105,24 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
     def db_variables(self):
         """dict: Correspondence between DataFrame and DB parameter"""
         return self._db_variables
+
+    @property
+    def db_var_info(self):
+        """dict: Variable informations"""
+
+        # Query parameter info
+        qry_res = self._db_mngr.get_table(
+            TableParameter,
+            search={'where': TableParameter.prm_name.in_([val for val in self.db_variables.values() if val])}
+        )
+
+        # Swap db variables dict
+        var_db = {val: key for key, val in self.db_variables.items() if val}
+
+        # Set output
+        out = {var_db[res[TableParameter.prm_name.name]]: {TableParameter.prm_desc.name: res[TableParameter.prm_desc.name]} for res in qry_res}
+
+        return out
 
     @property
     def info(self):
