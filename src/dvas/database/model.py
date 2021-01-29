@@ -17,6 +17,7 @@ from peewee import IntegerField, FloatField
 from peewee import DateTimeField, TextField, CharField
 from peewee import ForeignKeyField
 
+
 # Import from current package
 from ..config.pattern import INSTR_TYPE_PAT
 from ..config.pattern import PARAM_PAT
@@ -42,24 +43,34 @@ class MetadataModel(Model):
 
 
 class InstrType(MetadataModel):
-    """Instrument type model"""
-    id = AutoField(primary_key=True)
+    """Instrument type table"""
+
+    # Table id
+    type_id = AutoField(primary_key=True)
+
+    # Instrument type name
     type_name = CharField(
         null=False, unique=True,
         constraints=[
             Check(f"re_fullmatch('({INSTR_TYPE_PAT})|()', type_name)")
         ]
     )
-    desc = TextField()
+
+    # Instrument type description
+    type_desc = TextField(null=True, unique=False, default='')
 
 
 class Instrument(MetadataModel):
     """Instrument model """
     id = AutoField(primary_key=True)
 
-    # Serial number
+    # Instrument serial number
     srn = CharField(null=False)
+
+    # Instrument product identifier
     pdt = CharField(null=False)
+
+    # Link to instr_type
     instr_type = ForeignKeyField(
         InstrType, backref='instruments', on_delete='CASCADE'
     )
@@ -67,25 +78,42 @@ class Instrument(MetadataModel):
 
 class Parameter(MetadataModel):
     """Parameter model"""
-    id = AutoField(primary_key=True)
-    prm_abbr = CharField(
+
+    # Table id
+    prm_id = AutoField(primary_key=True)
+
+    # Parameter name
+    prm_name = CharField(
         null=False,
         unique=True,
         constraints=[
-            Check(f"re_fullmatch('{PARAM_PAT}', prm_abbr)"),
+            Check(f"re_fullmatch('{PARAM_PAT}', prm_name)"),
         ]
     )
+
+    # Parameter description
     prm_desc = TextField(null=False, default='')
+
+    # Parameter units
+    prm_unit = CharField(null=True, default='')
 
 
 class Flag(MetadataModel):
     """Flag model"""
-    id = AutoField(primary_key=True)
-    bit_number = IntegerField(
+
+    # Table id
+    flag_id = AutoField(primary_key=True)
+
+    # Bit position
+    bit_pos = IntegerField(
         null=False,
         unique=True,
-        constraints=[Check("bit_number >= 0")])
-    flag_abbr = CharField(null=False, unique=True)
+        constraints=[Check("bit_pos >= 0")])
+
+    # Flag name
+    flag_name = CharField(null=False, unique=True)
+
+    # Flag description
     flag_desc = TextField(null=False, default='')
 
 
@@ -96,9 +124,15 @@ class Tag(MetadataModel):
         Tags should be used to search profiles in the DB.
 
     """
+
+    # Table id
     id = AutoField(primary_key=True)
-    tag_txt = CharField(null=False, unique=True)
-    tag_desc = TextField()
+
+    # Tag name
+    tag_name = CharField(null=False, unique=True)
+
+    # Tag description
+    tag_desc = TextField(null=True, unique=False, default='')
 
 
 class DataSource(MetadataModel):
@@ -152,10 +186,10 @@ class MetaData(MetadataModel):
         to a profile.
 
     """
-    id = AutoField(primary_key=True)
+    metadata_id = AutoField(primary_key=True)
 
     #: str: Metadata key name
-    key = CharField(null=False)
+    key_name = CharField(null=False)
 
     #: str: Metadata key string value
     value_str = CharField(null=True)

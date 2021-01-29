@@ -1,19 +1,19 @@
 
-- tag_txt: 'e:((\d{1,2})|(80\d{3}))'
+- tag_name: 'e:((\d{1,2})|(80\d{3}))'
   # Generate e1, e2, ..., e99,...
   tag_desc: "cat('Event', ' ', get(1))"
   # Use standard re.sub group syntax to refer group number from regexp
   # generator.
 
-- tag_txt: 'r:([12])'
+- tag_name: 'r:([12])'
   # Generate r1, r2
   tag_desc: "cat('Rig', ' ', get(1))"
 
-- tag_txt: 'p:(\d)'
+- tag_name: 'p:(\d)'
   # Generate p0, r1,...
   tag_desc: "cat('Product', ' ', get(1))"
 
-- tag_txt: '^((day)|(night))'
+- tag_name: '^((day)|(night))'
   # Generate day, night
   # In this example, '^' is required at the beginning to
   # create regexp groups almost no group will be catch.
@@ -21,8 +21,8 @@
   # Use lambda function to set 1st character to upper case and append the rest
   # of the group in lower case.
 
-- tag_txt: 'vof'
+- tag_name: 'vof'
   tag_desc: 'demo tag'
 
-- tag_txt: 'cws'
+- tag_name: 'cws'
   tag_desc: 'Combined Working Measurement Standard'

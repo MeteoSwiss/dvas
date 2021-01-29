@@ -9,25 +9,15 @@ Module contents: Strategy used to save data
 
 """
 
-# Import from external packages
-from abc import ABCMeta, abstractmethod
-
 # Import from current package
+from .data import MPStrategyAC
 from ..linker import LocalDBLinker
 
 
-class SaveDataStrategyAbstract(metaclass=ABCMeta):
-    """Abstract class to manage data saving strategy"""
+class SaveDataStrategy(MPStrategyAC):
+    """Class to manage saving strategy of time data"""
 
-    @abstractmethod
-    def save(self, *args, **kwargs):
-        """Strategy required method"""
-
-
-class SaveDataStrategy(SaveDataStrategyAbstract):
-    """Class to manage saving of time data"""
-
-    def save(self, data, prms):
+    def execute(self, data, prms):
         """ Implementation of save method.
 
         Args:
@@ -53,7 +43,7 @@ class SaveDataStrategy(SaveDataStrategyAbstract):
                         'index': val.index.values.astype(int),
                         'value': val[prm].values.astype(float),
                         'info': prf.info,
-                        'prm_abbr': data.db_variables[prm],
+                        'prm_name': data.db_variables[prm],
                         'source_info': 'user_script',
                         'force_write': True
                     } for prm in prms if data.db_variables[prm] is not None

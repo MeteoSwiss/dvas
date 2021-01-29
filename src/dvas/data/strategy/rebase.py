@@ -10,26 +10,19 @@ Module contents: Rebase strategy
 """
 
 # Import from external packages
-from abc import ABCMeta, abstractmethod
 import numpy as np
 import pandas as pd
 
 # Import from current package
+from .data import MPStrategyAC
 from ...errors import dvasError
 from ...logger import data as logger
 
-class AbstractRebaseStrategy(metaclass=ABCMeta):
-    """Abstract class to manage data rebasing (=index change) strategy"""
 
-    @ abstractmethod
-    def rebase(self, *args, **kwargs):
-        """Strategy required method"""
-
-
-class RebaseStrategy(AbstractRebaseStrategy):
+class RebaseStrategy(MPStrategyAC):
     """Class to manage time data synchronization"""
 
-    def rebase(self, prfs, new_index, shift=None):
+    def execute(self, prfs, new_index, shift=None):
         """ Rebase Profiles on new indices.
 
         Any missing data will be filled with NaN. Any superflous data will be cropped.

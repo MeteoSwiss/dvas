@@ -13,7 +13,6 @@ from pathlib import Path
 import re
 from abc import ABC, ABCMeta, abstractmethod
 from contextlib import contextmanager
-from inspect import getmembers, isroutine
 from pampy import match as pmatch
 from pampy.helpers import Union, Iterable, Any
 
@@ -21,6 +20,7 @@ from pampy.helpers import Union, Iterable, Any
 from .helper import SingleInstanceMetaClass
 from .helper import TypedProperty as TProp
 from .helper import check_path
+from .helper import get_class_public_attr
 from .errors import dvasError
 from . import __name__ as pkg_name
 from . import expl_path, pkg_path
@@ -57,16 +57,12 @@ class VariableManager(ABC, metaclass=ABCSingleInstanceMeta):
 
     def get_attr(self):
         """Return current attributes"""
-        return {
-            attr: val for attr, val in getmembers(self)
-            if not attr.startswith('_') and not isroutine(val)
-        }
+        return get_class_public_attr(self)
 
     @property
     @abstractmethod
     def _attr_def(self):
         """Class attributes definition"""
-        #  pass
 
     def set_attr(self):
         """Set attribute from _attr_def. Try first to get attribute value from

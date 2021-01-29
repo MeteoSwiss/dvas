@@ -12,6 +12,7 @@ Module contents: Package helper classes and functions.
 # Import external packages and modules
 from pathlib import Path
 import inspect
+from inspect import getmembers, isroutine
 import re
 from datetime import datetime
 from copy import deepcopy as dc
@@ -476,4 +477,20 @@ def get_dict_len(val):
             out += get_dict_len(arg)
         else:
             out += 1
+    return out
+
+
+def get_class_public_attr(obj):
+    """Get public attributes from an object
+
+    Returns:
+        dict
+
+    """
+
+    out = {
+        attr: val for attr, val in getmembers(obj)
+        if not attr.startswith('_') and not isroutine(val)
+    }
+
     return out

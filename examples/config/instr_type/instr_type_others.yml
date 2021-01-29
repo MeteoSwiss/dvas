@@ -1,12 +1,12 @@
 
 - type_name: 'RS92'
-  desc: 'Vaisala RS-92'
+  type_desc: 'Vaisala RS-92'
 
 - type_name: 'RS41'
-  desc: 'Vaisala RS-41 SG'
+  type_desc: 'Vaisala RS-41 SG'
 
 - type_name: 'C34'
-  desc: 'Meteolabor SRS-C34'
+  type_desc: 'Meteolabor SRS-C34'
 
 - type_name: 'C50'
-  desc: 'Meteolabor SRS-C50'
+  type_desc: 'Meteolabor SRS-C50'

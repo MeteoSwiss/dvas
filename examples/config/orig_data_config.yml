@@ -5,7 +5,6 @@ _C50:
 
     # -- META DATA ----------------------------------
     dt_field: "get('event_dt')"
-    typ_field: "get('instr_type')"
     srn_field: "get('srn')"
     pdt_field: "get('product_id')"
     tag_field:
@@ -40,7 +39,6 @@ _C34:
     # -- META DATA ----------------------------------
 
     dt_field: "get('event_dt')"
-    typ_field: "get('instr_type')"
     srn_field: "get('srn')"
     pdt_field: "get('product_id')"
     tag_field:
@@ -74,7 +72,6 @@ _RS41:
 
     # -- META DATA ----------------------------------
     dt_field: "get('event_dt')"
-    typ_field: "get('instr_type')"
     srn_field: "get('srn')"
     pdt_field: "get('product_id')"
     tag_field:
@@ -108,7 +105,6 @@ _RS92:
 
     # -- META DATA ----------------------------------
     dt_field: "get('event_dt')"
-    typ_field: "get('instr_type')"
     srn_field: "get('srn')"
     pdt_field: "get('product_id')"
     tag_field:
@@ -146,8 +142,6 @@ _RS41-GDP-BETA_001:
     # -- META DATA ----------------------------------
 
     dt_field: "get('g.Measurement.StandardTime')"
-    # TODO: fix the line below
-    typ_field: "RS41-GDP-BETA_001"
     srn_field: "get('g.MainSonde.SerialNumber')"
     pdt_field: "get('g.Product.ID')"
     tag_field:
@@ -188,8 +182,6 @@ _RS92-GDP_002:
 
     # -- META DATA ----------------------------------
     dt_field: "cat(get('g.Ascent.StandardTime'),'Z')"
-    # TODO: fix the line below
-    typ_field: "RS92-GDP_002"
     srn_field: "get('g.Instrument.SerialNumber')"
     pdt_field: "get('g.Product.ID')"
     tag_field:
@@ -213,8 +205,8 @@ _RS92-GDP_002:
     # havoc in the code (GDPs cannot be loaded). Why ?
     # TODO: Issue: #94, this is uncommented and a wrong value_col is given to allow
     # the code to run
-    _treprosu_s:
-        value_col: 'u_cor_temp'
+    #_treprosu_s:
+    #    value_col: 'u_cor_temp'
 
     _treprosu_t:
         value_col: 'u_cor_temp'

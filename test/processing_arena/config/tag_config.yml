@@ -1,19 +1,19 @@
 
-- tag_txt: 'e:((\d{1,2})|(6000\d))'
+- tag_name: 'e:((\d{1,2})|(6000\d))'
   # Generate e:1, e:2, ..., e:99,...
   tag_desc: "cat('Event', ' ', get(1))"
   # Use standard re.sub group syntax to refer group number from regexp
   # generator.
 
-- tag_txt: 'r:([12])'
+- tag_name: 'r:([12])'
   # Generate r:1, r:2
   tag_desc: "cat('Rig', ' ', get(1))"
 
-- tag_txt: 'p:(\d)'
+- tag_name: 'p:(\d)'
   # Generate p:0, p:1,...
   tag_desc: "cat('Product', ' ', get(1))"
 
-- tag_txt: '^((day)|(night))'
+- tag_name: '^((day)|(night))'
   # Generate day, night
   # In this example, '^' is required at the beginning to
   # create regexp groups almost no group will be catch.
@@ -21,26 +21,26 @@
   # Use lambda function to set 1st character to upper case and append the rest
   # of the group in lower case.
 
-- tag_txt: 'vof(\d{0,1})'
+- tag_name: 'vof(\d{0,1})'
   tag_desc: 'Test/demo tag $\1$'
 
-- tag_txt: 'cws'
+- tag_name: 'cws'
   tag_desc: 'Combined Working Measurement Standard'
 
-- tag_txt: 'data_test_db'
+- tag_name: 'data_test_db'
   tag_desc: 'Data for DB tests'
 
-- tag_txt: 'load_profile_from_linker'
+- tag_name: 'load_profile_from_linker'
   tag_desc: 'Load Profile from linker tests'
 
-- tag_txt: 'load_profile'
+- tag_name: 'load_profile'
   tag_desc: 'Load Profile tests'
 
-- tag_txt: 'load_rsprofile'
+- tag_name: 'load_rsprofile'
   tag_desc: 'Load RSProfile tests'
 
-- tag_txt: 'load_gdpprofile'
+- tag_name: 'load_gdpprofile'
   tag_desc: 'Load GDPProfile tests'
 
-- tag_txt: 'save_multiprofile'
+- tag_name: 'save_multiprofile'
   tag_desc: 'Save MultiProfile tests'

@@ -10,13 +10,13 @@ Module contents: Data manager classes used in dvas.data.data.ProfileManager
 """
 
 # Import from external packages
-from abc import abstractmethod
+from abc import ABCMeta, abstractmethod
 from copy import deepcopy
 import numpy as np
 import pandas as pd
 
 # Import from current package
-from ...database.model import Flag
+from ...database.model import Flag as TableFlag
 from ...database.database import DatabaseManager, InfoManager
 from ...errors import ProfileError
 from ...helper import RequiredAttrMetaClass
@@ -27,7 +27,15 @@ FLOAT_TEST = (np.float, float) + INT_TEST
 TIME_TEST = FLOAT_TEST + (pd.Timedelta,)
 
 
-class ProfileAbstract(metaclass=RequiredAttrMetaClass):
+class MPStrategyAC(metaclass=ABCMeta):
+    """Abstract class (AC) for a multiprofile (MP) strategy"""
+
+    @abstractmethod
+    def execute(self, *args, **kwargs):
+        """Execute strategy method"""
+
+
+class ProfileAC(metaclass=RequiredAttrMetaClass):
     """Abstract Profile class"""
 
     # Specify required attributes
@@ -235,7 +243,7 @@ class ProfileAbstract(metaclass=RequiredAttrMetaClass):
         return val
 
 
-class Profile(ProfileAbstract):
+class Profile(ProfileAC):
     """Base Profile class for atmospheric measurements. Requires only some measured values,
     together with their corresponding altitudes and flags.
 
@@ -248,9 +256,9 @@ class Profile(ProfileAbstract):
 
     """
 
-    FLAG_BIT_NM = Flag.bit_number.name
-    FLAG_ABBR_NM = Flag.flag_abbr.name
-    FLAG_DESC_NM = Flag.flag_desc.name
+    FLAG_BIT_POS_NM = TableFlag.bit_pos.name
+    FLAG_NAME_NM = TableFlag.flag_name.name
+    FLAG_DESC_NM = TableFlag.flag_desc.name
 
     # The column names for the pandas DataFrame
     DF_COLS_ATTR = {
@@ -288,7 +296,7 @@ class Profile(ProfileAbstract):
             )
 
         self._info = info
-        self._flags_abbr = {arg[self.FLAG_ABBR_NM]: arg for arg in db_mngr.get_flags()}
+        self._flags_abbr = {arg[self.FLAG_NAME_NM]: arg for arg in db_mngr.get_flags()}
 
     @property
     def info(self):
@@ -297,7 +305,7 @@ class Profile(ProfileAbstract):
 
     @property
     def flags_abbr(self):
-        """dict: Flag abbr, description and bit position."""
+        """dict: Flag name, description and bit position."""
         return self._flags_abbr
 
     @property
@@ -332,8 +340,8 @@ class Profile(ProfileAbstract):
         )
 
     def _get_flg_bit_nbr(self, abbr):
-        """Get bit number corresponding to given flag abbr"""
-        return self.flags_abbr[abbr][self.FLAG_BIT_NM]
+        """Get bit number corresponding to given flag name"""
+        return self.flags_abbr[abbr][self.FLAG_BIT_POS_NM]
 
     def set_flg(self, abbr, set_val, index=None):
         """Set flag values to True/False.
@@ -375,7 +383,7 @@ class Profile(ProfileAbstract):
             self.flg = self.flg.loc[index].apply(set_to_false)
 
     def is_flagged(self, abbr):
-        """Check if a specific flag tag is set.
+        """Check if a specific flag name is set.
 
         Args:
             abbr (str): flag name

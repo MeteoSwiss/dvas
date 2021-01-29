@@ -24,7 +24,7 @@ class TestLoadProfileStrategy:
     """Test for LoadProfileStrategy class"""
 
     # Define
-    loader = LoadProfileStrategy()
+    loader_stgy = LoadProfileStrategy()
     n_data = 3
     index = np.arange(n_data)
     values = np.array([100, 101, 102])
@@ -58,7 +58,7 @@ class TestLoadProfileStrategy:
             [
                 {
                     'index': self.index.astype(int), 'value': self.values.astype(float),
-                    'info': info, 'prm_abbr': prm,
+                    'info': info, 'prm_name': prm,
                     'source_info': 'test_add_data', 'force_write': True
                 }
                 for prm in ['trepros1', 'altpros1'] for info in self.infos
@@ -68,7 +68,7 @@ class TestLoadProfileStrategy:
             [
                 {
                     'index': self.index.astype(int), 'value': self.flags_val.astype(float),
-                    'info': info, 'prm_abbr': 'flgpros1',
+                    'info': info, 'prm_name': 'flgpros1',
                     'source_info': 'test_add_data', 'force_write': True
                 }
                 for info in self.infos
@@ -77,7 +77,7 @@ class TestLoadProfileStrategy:
 
         # Load entry
         filt = f"tag('load_profile')"
-        res = self.loader.load(
+        res = self.loader_stgy.execute(
             filt, 'trepros1', 'altpros1', flg_abbr='flgpros1'
         )
 
@@ -93,7 +93,7 @@ class TestLoadRSProfileStrategy:
     """Test for LoadProfileStrategy class"""
 
     # Define
-    loader = LoadRSProfileStrategy()
+    loader_stgy = LoadRSProfileStrategy()
     n_data = 3
     index = np.arange(n_data)
     values = np.array([200, 201, 202])
@@ -127,7 +127,7 @@ class TestLoadRSProfileStrategy:
             [
                 {
                     'index': self.index.astype(int), 'value': self.values.astype(float),
-                    'info': info, 'prm_abbr': prm,
+                    'info': info, 'prm_name': prm,
                     'source_info': 'test_add_data', 'force_write': True
                 }
                 for prm in ['trepros1', 'altpros1'] for info in self.infos
@@ -137,7 +137,7 @@ class TestLoadRSProfileStrategy:
             [
                 {
                     'index': self.index.astype(int), 'value': self.time_val.astype(float),
-                    'info': info, 'prm_abbr': 'tdtpros1',
+                    'info': info, 'prm_name': 'tdtpros1',
                     'source_info': 'test_add_data', 'force_write': True
                 }
                 for info in self.infos
@@ -146,7 +146,7 @@ class TestLoadRSProfileStrategy:
 
         # Load entry
         filt = f"tag('load_rsprofile')"
-        res = self.loader.load(
+        res = self.loader_stgy.execute(
             filt, 'trepros1', 'tdtpros1', alt_abbr='altpros1'
         )
 
@@ -162,7 +162,7 @@ class TestLoadGPDProfileStrategy:
     """Test for LoadProfileStrategy class"""
 
     # Define
-    loader = LoadGDPProfileStrategy()
+    loader_stgy = LoadGDPProfileStrategy()
     n_data = 3
     index = np.arange(n_data)
     values = np.array([300, 301, 302])
@@ -196,7 +196,7 @@ class TestLoadGPDProfileStrategy:
             [
                 {
                     'index': self.index.astype(int), 'value': self.values.astype(float),
-                    'info': info, 'prm_abbr': prm,
+                    'info': info, 'prm_name': prm,
                     'source_info': 'test_add_data', 'force_write': True
                 }
                 for prm in ['trepros1', 'altpros1'] for info in self.infos
@@ -206,7 +206,7 @@ class TestLoadGPDProfileStrategy:
             [
                 {
                     'index': self.index.astype(int), 'value': self.time_val.astype(float),
-                    'info': info, 'prm_abbr': 'tdtpros1',
+                    'info': info, 'prm_name': 'tdtpros1',
                     'source_info': 'test_add_data', 'force_write': True
                 }
                 for info in self.infos
@@ -215,7 +215,7 @@ class TestLoadGPDProfileStrategy:
 
         # Load entry
         filt = f"tag('load_gdpprofile')"
-        res = self.loader.load(
+        res = self.loader_stgy.execute(
             filt, 'trepros1', 'tdtpros1', alt_abbr='altpros1'
         )
 

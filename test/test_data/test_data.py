@@ -32,7 +32,7 @@ class TestMutliProfile:
 
     # Put a MultiRSProfile together
     prf_stgy = LoadRSProfileStrategy()
-    data = prf_stgy.load('all()', 'trepros1', 'tdtpros1', alt_abbr='altpros1')
+    data = prf_stgy.execute('all()', 'trepros1', 'tdtpros1', alt_abbr='altpros1')
     mlt_prf.update(data[1], data[0])
 
     @staticmethod

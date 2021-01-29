@@ -9,25 +9,15 @@ Module contents: Sort strategy
 
 """
 
-# Import from external packages
-from abc import ABCMeta, abstractmethod
-
 # Import from current package
+from .data import MPStrategyAC
 from ...database.database import InfoManager
 
 
-class SortStrategyAbstract(metaclass=ABCMeta):
-    """Abstract class to manage data sort strategy"""
-
-    @abstractmethod
-    def sort(self, *args, **kwargs):
-        """Strategy required method"""
-
-
-class SortProfileStrategy(SortStrategyAbstract):
+class SortProfileStrategy(MPStrategyAC):
     """Class to manage sort of time data parameter"""
 
-    def sort(self, data):
+    def execute(self, data):
         """Implementation of sort method
 
         Args:

@@ -87,6 +87,7 @@ if __name__ == '__main__':
     print(rs_prf.get_info('evt_id'))
     print(rs_prf.get_info('rig_id'))
     print(rs_prf.get_info('mdl_id'))
+    print(rs_prf.get_info())
 
     # Load GDPs for temperature, including all the errors
     gdp_prfs = MultiGDPProfile()

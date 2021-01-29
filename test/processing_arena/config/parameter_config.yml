@@ -1,29 +1,36 @@
 # Parameter configuration file
 
-- prm_abbr: '^([tup])repros(1|(u_u)|(u_e)|(u_s)|(u_t)|(u_r))'
+- prm_name: '^([tup])repros(1|(u_u)|(u_e)|(u_s)|(u_t)|(u_r))'
   # Generate variables from regex generator for temperature, humidity and
   #pressure for both instant and uncertainty values.
-  prm_desc: &myfct 'cat(rpls({"t": "Temperature", "u": "Relative humidity", "p": "Pressure", "f": "Wind speed", "d": "Wind direction"}, get(1)), repl_strict({"u_u": " uncorrelated uncertainty", "u_e": " environmental correlated uncertainty", "u_s": " spatial correlated uncertainty", "u_t": " temporal correlated uncertainty", "u_r": " rig uncorrelated uncertainty"}, get(2)))'
+  prm_desc: &fct_desc 'cat(rpls({"t": "Temperature", "u": "Relative humidity", "p": "Pressure", "f": "Wind speed", "d": "Wind direction"}, get(1)), repl_strict({"u_u": " uncorrelated uncertainty", "u_e": " environmental correlated uncertainty", "u_s": " spatial correlated uncertainty", "u_t": " temporal correlated uncertainty", "u_r": " rig uncorrelated uncertainty"}, get(2)))'
   # Link anchor to str
+  prm_unit: &fct_unit 'rpls({"t": "degC", "u": "%", "p": "hPa", "f": "m/s", "d": "°"}, get(1))'
 
-- prm_abbr: 'altpros1'
+- prm_name: 'altpros1'
   # Variable can be generated from str only
   prm_desc: 'Altitude'
+  prm_unit: 'm'
 
-- prm_abbr: 'altprosu'
+- prm_name: 'altprosu'
   prm_desc: 'Altitude uncertainty'
+  prm_unit: 'm'
 
-- prm_abbr: '^([fd])klpros([1])'
+- prm_name: '^([fd])klpros([1])'
   # Generate variables from regex generator for wind force and direction
   # for both instant and uncertainty values
-  prm_desc: *myfct
+  prm_desc: *fct_desc
   # Reference to anchor
+  prm_unit: *fct_unit
 
-- prm_abbr: 'tdtpros1'
+- prm_name: 'tdtpros1'
   prm_desc: 'Time'
+  prm_unit: 's'
 
-- prm_abbr: 'flgpros1'
+- prm_name: 'flgpros1'
   prm_desc: 'Flag'
+  prm_unit: ''
 
-- prm_abbr: 'dummytst_(param\d)'
+- prm_name: 'dummytst_(param\d)'
   prm_desc: 'get(1)'
+  prm_unit: ''

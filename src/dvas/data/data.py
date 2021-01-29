@@ -28,9 +28,11 @@ from .strategy.rebase import RebaseStrategy
 
 from .strategy.save import SaveDataStrategy
 
-from ..database.database import OneDimArrayConfigLinker
+from ..database.database import OneDimArrayConfigLinker, DatabaseManager
+from ..database.model import Parameter as TableParameter
 from ..helper import RequiredAttrMetaClass
 from ..helper import deepcopy
+from ..helper import get_class_public_attr
 
 from ..errors import dvasError, DBIOError
 
@@ -62,7 +64,7 @@ save_prf_stgy = SaveDataStrategy()
 
 # TODO
 #  Create a factory (in terms of design patterns) to easily build MultiProfiles
-class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
+class MutliProfileAC(metaclass=RequiredAttrMetaClass):
     """Abstract MultiProfile class"""
 
     # Specify required attributes
@@ -101,6 +103,37 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
     def db_variables(self):
         """dict: Correspondence between DataFrame and DB parameter"""
         return self._db_variables
+
+    @property
+    def var_info(self):
+        """dict: Variable informations"""
+
+        # Define
+        db_mngr = DatabaseManager()
+
+        # Query parameter info
+        qry_res = db_mngr.get_table(
+            TableParameter,
+            search={
+                'where': TableParameter.prm_name.in_(
+                    [val for val in self.db_variables.values() if val]
+                )
+            }
+        )
+
+        # Swap db variables dict
+        var_db = {val: key for key, val in self.db_variables.items() if val}
+
+        # Set output
+        out = {
+            var_db[res[TableParameter.prm_name.name]]: {
+                TableParameter.prm_name.name: res[TableParameter.prm_name.name],
+                TableParameter.prm_desc.name: res[TableParameter.prm_desc.name],
+                TableParameter.prm_unit.name: res[TableParameter.prm_unit.name],
+            } for res in qry_res
+        }
+
+        return out
 
     @property
     def info(self):
@@ -150,7 +183,7 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         """
 
         # Call the appropriate Data strategy
-        data, db_df_keys = self._load_stgy.load(*args, **kwargs)
+        data, db_df_keys = self._load_stgy.execute(*args, **kwargs)
 
         # Test data len
         if not data:
@@ -166,7 +199,7 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
         """
 
         # Sort
-        data = self._sort_stgy.sort(self.profiles)
+        data = self._sort_stgy.execute(self.profiles)
 
         # Load
         self.update(self.db_variables, data)
@@ -209,7 +242,7 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
             prms = list(self.db_variables.keys())
 
         # Call save strategy
-        self._save_stgy.save(obj, prms)
+        self._save_stgy.execute(obj, prms)
 
     # TODO: implement an "export" function that can export specific DataFrame columns back into
     #  the database under new variable names ?
@@ -309,19 +342,23 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
 
         return out
 
-    def get_info(self, prm):
-        """ Convenience function to extract specific (a unique!) Info from all the
-        Profile instances.
+    def get_info(self, prm=None):
+        """ Convenience function to extract Info from all the Profile instances.
 
         Args:
-            prm (str): parameter name (unique!) to extract.
+            prm (str, `optional`): Info attribute to extract. Default to None.
 
         Returns:
             dict of list: idem to self.profiles, but with only the requested metadata.
 
         """
 
-        return [info[prm] for info in self.info]
+        if prm:
+            out = [getattr(info, prm) for info in self.info]
+        else:
+            out = [get_class_public_attr(info) for info in self.info]
+
+        return out
 
     def plot(self, **kwargs):
         """ Plot method
@@ -334,7 +371,7 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
 
         """
 
-        self._plot_stgy.plot(self, **kwargs)
+        self._plot_stgy.execute(self, **kwargs)
 
     @deepcopy
     def rebase(self, new_index, shift=None):
@@ -348,12 +385,12 @@ class MutliProfileAbstract(metaclass=RequiredAttrMetaClass):
 
         """
 
-        data = self._rebase_stgy.rebase(self.profiles, new_index, shift=shift)
+        data = self._rebase_stgy.execute(self.profiles, new_index, shift=shift)
 
         self.update(self.db_variables, data)
 
 
-class MultiProfile(MutliProfileAbstract):
+class MultiProfile(MutliProfileAC):
     """Multi profile base class, designed to handle multiple Profile."""
 
     #: type: supported Profile Types
@@ -365,7 +402,8 @@ class MultiProfile(MutliProfileAbstract):
             save_stgy=save_prf_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_prf_stgy,
         )
 
-class MultiRSProfileAbstract(MutliProfileAbstract):
+
+class MultiRSProfileAC(MutliProfileAC):
     """Abstract MultiRSProfile class"""
 
     @abstractmethod
@@ -406,7 +444,7 @@ class MultiRSProfileAbstract(MutliProfileAbstract):
     #     return res
 
 
-class MultiRSProfile(MultiRSProfileAbstract):
+class MultiRSProfile(MultiRSProfileAC):
     """Multi RS profile manager, designed to handle multiple RSProfile instances."""
 
     _DATA_TYPES = RSProfile
@@ -417,7 +455,8 @@ class MultiRSProfile(MultiRSProfileAbstract):
             save_stgy=save_prf_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_prf_stgy,
         )
 
-class MultiGDPProfile(MultiRSProfileAbstract):
+
+class MultiGDPProfile(MultiRSProfileAC):
     """Multi GDP profile manager, designed to handle multiple GDPProfile instances."""
 
     _DATA_TYPES = GDPProfile

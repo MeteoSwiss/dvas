@@ -16,11 +16,10 @@ from ...database.model import Data
 
 # Define global field name
 EVT_DT_FLD_NM = 'dt_field'  # Datetime field name
-TYP_FLD_NM = 'typ_field'  # Instrument type field name
 SRN_FLD_NM = 'srn_field'  # Serial number field name
 PDT_FLD_NM = 'pdt_field'  # Product field name
 TAG_FLD_NM = 'tag_field'  # Tag field name
-META_FLD_NM = 'meta_field' # Metadata field name
+META_FLD_NM = 'meta_field'  # Metadata field name
 
 INDEX_FLD_NM = 'index_col'  # Index column field name
 PARAM_FLD_NM = 'value_col'  # Value column field name
@@ -47,7 +46,7 @@ VALUE_NM = Data.value.name
 
 #: list: Fields keys passed to expression interpreter
 EXPR_FIELD_KEYS = [
-    EVT_DT_FLD_NM, TYP_FLD_NM, SRN_FLD_NM,
+    EVT_DT_FLD_NM, SRN_FLD_NM,
     PDT_FLD_NM, TAG_FLD_NM, META_FLD_NM
 ]
 
@@ -79,9 +78,6 @@ CONST_NODES = {
 #: dict: Parameter pattern properties (JSON_SCHEMA)
 PARAMETER_PATTERN_PROP = {
     rf"^{EVT_DT_FLD_NM}$": {
-        "type": "string",
-    },
-    rf"^{TYP_FLD_NM}$": {
         "type": "string",
     },
     rf"^{SRN_FLD_NM}$": {
