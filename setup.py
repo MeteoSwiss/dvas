@@ -55,7 +55,7 @@ setup(
     ],
 
     # Setup entry points to use DVAS from a terminal
-    entry_points={'console_scripts': ['dvas=dvas.__main__:main']},
+    entry_points={'console_scripts': ['dvas_init=dvas_recipes.__main__:dvas_init']},
 
     classifiers=[
 

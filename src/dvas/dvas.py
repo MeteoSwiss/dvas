@@ -19,11 +19,13 @@ from .logger import LogManager
 
 
 def start_log(mode=1, level='INFO'):
-    """Start logging
+    """ Starts the dvas logging.
 
     Args:
-        mode (int): Log output mode. 0 (No log) | 1 (Log to file) | 2 (Log to file + console). Default to 1.
-        level (str): Log level. Allowed: 'DEBUG'|'D'|'INFO'|'I'|'WARNING'|'WARN'|'W'|'ERROR'|'E'. Default to 'INFO'
+        mode (int): Log output mode. 0 (No log) | 1 (Log to file only) | 2 (Log to file + console) |
+            3 (Log to console only). Defaults to 1.
+        level (str): Log level. Allowed: 'DEBUG'|'D'|'INFO'|'I'|'WARNING'|'WARN'|'W'|'ERROR'|'E'.
+            Defaults to 'INFO'
     """
 
     log_inst = LogManager(mode, level)
