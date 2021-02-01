@@ -12,9 +12,10 @@ name: CI_docs_publish
 on:
   push:
     branches: [ master ]
-    # Only run this if the docs were modified in any way
-    paths:
-      - 'docs/**'
+    # Run this if the docs were modified in any way
+    #paths:
+    #  - 'docs/**'
+    #  - 'VERSION'
   # For dev/debug purposes, doing it on PR helps a lot
   #pull_request:
   #  branches: [ master, develop, develop_vof ]
