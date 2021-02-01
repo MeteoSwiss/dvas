@@ -390,7 +390,7 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
 
         """
 
-        data = self._rebase_stgy.execute(self.profiles, new_lengths, shift=shifts)
+        data = self._rebase_stgy.execute(self.profiles, new_lengths, shifts=shifts)
 
         self.update(self.db_variables, data)
 
