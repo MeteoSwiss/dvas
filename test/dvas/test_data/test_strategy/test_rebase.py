@@ -16,7 +16,6 @@ import pandas as pd
 from dvas.data.strategy.data import RSProfile
 from dvas.data.data import MultiRSProfile
 from dvas.database.database import InfoManager
-from dvas.hardcoded import PRF_REF_INDEX_NAME
 
 
 class TestRebaseStrategy:
