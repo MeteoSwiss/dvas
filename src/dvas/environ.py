@@ -151,11 +151,11 @@ class GlobalPackageVariableManager(VariableManager):
     config_file_ext = TProp(Iterable[str], lambda x: tuple(x))
     #: str: Event ID pattern use in InfoManager to extract event tag.
     evt_id_pat = TProp(Union[str, re.Pattern], lambda x: re.compile(x))
-    #: str: Rig ID pattern use in InfoManager to extract event tag.
+    #: str: Rig ID pattern use in InfoManager to extract rig tag.
     rig_id_pat = TProp(Union[str, re.Pattern], lambda x: re.compile(x))
-    #: str: Product ID pattern use in InfoManager to extract event tag.
+    #: str: Product ID pattern use in InfoManager to extract product tag.
     prd_id_pat = TProp(Union[str, re.Pattern], lambda x: re.compile(x))
-    #: str: GDP model ID pattern use in InfoManager to extract event tag.
+    #: str: GDP model ID pattern use in InfoManager to extract model tag.
     mdl_id_pat = TProp(Union[str, re.Pattern], lambda x: re.compile(x))
 
     @property

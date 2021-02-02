@@ -30,15 +30,17 @@ from pampy.helpers import Iterable, Union
 # Import from current package
 from .model import db
 from .model import InstrType as TableInstrType
-from .model import Instrument, Info
+from .model import Object as TableObject
+from .model import Info as TableInfo
 from .model import Parameter as TableParameter
 from .model import Tag as TableTag
 from .model import MetaData as TableMetaData
 from .model import Flag, DataSource, Data
-from .model import InfosTags, InfosInstruments
+from .model import InfosObjects as TableInfosObjects
+from .model import InfosTags
 from ..config.config import OneDimArrayConfigLinker
-from ..config.definitions.origdata import EVT_DT_FLD_NM, SRN_FLD_NM
-from ..config.definitions.origdata import PDT_FLD_NM, TAG_FLD_NM, META_FLD_NM
+from ..config.definitions.origdata import EVT_DT_FLD_NM
+from ..config.definitions.origdata import TAG_FLD_NM, META_FLD_NM
 from ..config.definitions.tag import TAG_NONE, TAG_EMPTY_VAL
 from ..helper import ContextDecorator
 from ..helper import SingleInstanceMetaClass
@@ -71,8 +73,8 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
     """
 
     DB_TABLES = [
-        Info,
-        InfosInstruments, Instrument, TableInstrType,
+        TableInfo,
+        TableInfosObjects, TableObject, TableInstrType,
         InfosTags, TableTag,
         DataSource,
         Data,
@@ -82,7 +84,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
     ]
     DB_TABLES_PRINT = [
         TableParameter, TableInstrType,
-        Instrument, Flag,
+        TableObject, Flag,
         TableTag
     ]
 
@@ -348,21 +350,21 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
                 # Check instrument id existence
                 if (
-                    instr_id_list := sorted([
+                    oid_list := sorted([
                         arg[0] for arg in
                         self.get_or_none(
-                            Instrument,
+                            TableObject,
                             search={
-                                'where': Instrument.id.in_(info.uid)
+                                'where': TableObject.oid.in_(info.oid)
                             },
-                            attr=[[Instrument.id.name]],
+                            attr=[[TableObject.oid.name]],
                             get_first=False
                         )
                     ])
-                ) != info.uid:
+                ) != info.oid:
                     err_msg = f"Many instrument id in %s are missing in DB"
-                    localdb.error(err_msg, info.uid)
-                    raise DBInsertError(err_msg % info.uid)
+                    localdb.error(err_msg, info.oid)
+                    raise DBInsertError(err_msg % info.oid)
 
                 # Get/Check parameter
                 param = TableParameter.get_or_none(
@@ -375,7 +377,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
                 # Check tag_name existence
                 if len(
-                    tag_id_list := [
+                    tags_id_list := [
                         arg[0] for arg in
                         self.get_or_none(
                             TableTag,
@@ -395,7 +397,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                 data_src, _ = DataSource.get_or_create(source=source_info)
 
                 # Create info
-                info_id, created = Info.get_or_create(
+                info_id, created = TableInfo.get_or_create(
                     evt_dt=info.evt_dt, param=param,
                     data_src=data_src, evt_hash=info.get_hash()
                 )
@@ -408,9 +410,9 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                         where(InfosTags.info == info_id).\
                         execute()
 
-                    # Delete InfosInstruments entries
-                    InfosInstruments.delete().\
-                        where(InfosInstruments.info == info_id).\
+                    # Delete TableInfosObjects entries
+                    TableInfosObjects.delete().\
+                        where(TableInfosObjects.info == info_id).\
                         execute()
 
                     # Delete Data entries
@@ -430,36 +432,36 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                 if (created is True) or (force_write is True):
 
                     # Link info to tag
-                    tag_info = [
+                    tags_info = [
                         {
                             InfosTags.tag.name: tag_id,
                             InfosTags.info.name: info_id
-                        } for tag_id in tag_id_list
+                        } for tag_id in tags_id_list
                     ]
-                    if tag_info:
+                    if tags_info:
 
                         # Calculate max batch size
-                        n_max = floor(SQLITE_MAX_VARIABLE_NUMBER/get_dict_len(tag_info[0]))
+                        n_max = floor(SQLITE_MAX_VARIABLE_NUMBER/get_dict_len(tags_info[0]))
 
                         # Insert
-                        for batch in chunked(tag_info, n_max):
+                        for batch in chunked(tags_info, n_max):
                             InfosTags.insert_many(batch).execute()  # noqa pylint: disable=E1120
 
                     # Link info to instrument
-                    instr_info = [
+                    object_info = [
                         {
-                            InfosInstruments.instr.name: instr_id,
-                            InfosInstruments.info.name: info_id
-                        } for instr_id in instr_id_list
+                            TableInfosObjects.object.name: oid,
+                            TableInfosObjects.info.name: info_id
+                        } for oid in oid_list
                     ]
-                    if instr_info:
+                    if object_info:
 
                         # Calculate max batch size
-                        n_max = floor(SQLITE_MAX_VARIABLE_NUMBER / get_dict_len(instr_info[0]))
+                        n_max = floor(SQLITE_MAX_VARIABLE_NUMBER / get_dict_len(object_info[0]))
 
                         # Insert
-                        for batch in chunked(instr_info, n_max):
-                            InfosInstruments.insert_many(batch).execute()  # noqa pylint: disable=E1120
+                        for batch in chunked(object_info, n_max):
+                            TableInfosObjects.insert_many(batch).execute()  # noqa pylint: disable=E1120
 
                     # Add metadata
                     # ------------
@@ -521,7 +523,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
     @staticmethod
     def _get_info_id(search_expr, prm_name, filter_empty):
-        """Get Info.id for a give search string expression
+        """Get Info.info_id for a give search string expression
 
         Args:
             search_expr (str): Search expression
@@ -579,20 +581,20 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             for i, qry in enumerate(qryer):
 
                 # Get related instrument id
-                instr_id_list = [
-                    arg.id for arg in
-                    Instrument.select().distinct().
-                        join(InfosInstruments).join(Info).
-                        where(Info.id == info_id_list[i].id).
+                oid_list = [
+                    arg.oid for arg in
+                    TableObject.select().distinct().
+                        join(TableInfosObjects).join(TableInfo).
+                        where(TableInfo.info_id == info_id_list[i].info_id).
                         iterator()
                 ]
 
                 # Get related tags
-                tag_txt_list = [
+                tag_name_list = [
                     arg.tag_name for arg in
                     TableTag.select().distinct().
-                    join(InfosTags).join(Info).
-                    where(Info.id == info_id_list[i].id).
+                    join(InfosTags).join(TableInfo).
+                    where(TableInfo.info_id == info_id_list[i].info_id).
                     iterator()
                 ]
 
@@ -601,8 +603,8 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     arg.key_name: arg.value_num if arg.value_str is None else arg.value_str
                     for arg in
                     TableMetaData.select().distinct().
-                    join(Info).
-                    where(Info.id == info_id_list[i].id).
+                    join(TableInfo).
+                    where(TableInfo.info_id == info_id_list[i].info_id).
                     iterator()
                 }
 
@@ -611,8 +613,8 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     {
                         'info': InfoManager(
                             evt_dt=info_id_list[i].evt_dt,
-                            uid=instr_id_list,
-                            tags=tag_txt_list,
+                            oid=oid_list,
+                            tags=tag_name_list,
                             metadata=metadata_dict,
                         ),
                         'index': qry.index,
@@ -856,8 +858,8 @@ class InfoManager:
     #: datetime.datetime: UTC datetime
     evt_dt = TProp(Union[str, Timestamp, datetime], check_datetime)
 
-    #: int|iterable of int: Instrument unique id
-    uid = TProp(
+    #: int|iterable of int: Object id
+    oid = TProp(
         Union[int, Iterable[int]],
         setter_fct=lambda x: (x,) if isinstance(x, int) else tuple(x),
         getter_fct=lambda x: sorted(x)
@@ -873,12 +875,12 @@ class InfoManager:
     #: dict: Metadata
     metadata = TProp(InfoManagerMetaData, getter_fct= lambda x: x.copy())
 
-    def __init__(self, evt_dt, uid, tags=TAG_NONE, metadata={}):
+    def __init__(self, evt_dt, oid, tags=TAG_NONE, metadata={}):
         """Constructor
 
         Args:
             evt_dt (str | datetime | pd.Timestamp): UTC datetime
-            uid (int|iterable of int): Unique identifier (snr, pdt)
+            oid (int|iterable of int): Object identifier (snr, pid)
             tags (str|iterable of str, `optional`): Tags. Defaults to ''
             metadata (dict|InfoManagerMetaData, `optional`): Default to {}
 
@@ -890,12 +892,12 @@ class InfoManager:
 
         # Set attributes
         self.evt_dt = evt_dt
-        self.uid = uid
+        self.oid = oid
         self.tags = tags
         self.metadata = metadata
 
     def __copy__(self):
-        return self.__class__(self.evt_dt, self.uid.copy(), self.tags.copy())
+        return self.__class__(self.evt_dt, self.oid.copy(), self.tags.copy())
 
     @property
     def evt_id(self):
@@ -955,18 +957,18 @@ class InfoManager:
         return out
 
     @property
-    def instr(self):
-        """list of dict: Instrument informations"""
+    def object(self):
+        """list of dict: Object details"""
 
         # Define
         db_mngr = DatabaseManager()
 
         # Query for instrument informations
         qry_res = db_mngr.get_table(
-            Instrument,
+            TableObject,
             search={
                 'join_order': [TableInstrType],
-                'where': Instrument.id.in_(self.uid)
+                'where': TableObject.oid.in_(self.oid)
             },
             recurse=True
         )
@@ -974,11 +976,11 @@ class InfoManager:
         # Set output
         out = [
             {
-                Instrument.id.name: res[Instrument.id.name],
-                Instrument.srn.name: res[Instrument.srn.name],
-                Instrument.pdt.name: res[Instrument.pdt.name],
-                TableInstrType.type_name.name: res[Instrument.instr_type.name][TableInstrType.type_name.name],
-                TableInstrType.type_desc.name: res[Instrument.instr_type.name][TableInstrType.type_desc.name]
+                TableObject.oid.name: res[TableObject.oid.name],
+                TableObject.srn.name: res[TableObject.srn.name],
+                TableObject.pid.name: res[TableObject.pid.name],
+                TableInstrType.type_name.name: res[TableObject.instr_type.name][TableInstrType.type_name.name],
+                TableInstrType.type_desc.name: res[TableObject.instr_type.name][TableInstrType.type_desc.name]
             }
             for res in qry_res
         ]
@@ -991,7 +993,7 @@ class InfoManager:
     def __str__(self):
         p_printer = pprint.PrettyPrinter()
         return p_printer.pformat(
-            (f'evt_dt: {self.evt_dt}', f'uid: {self.uid}',
+            (f'evt_dt: {self.evt_dt}', f'oid: {self.oid}',
              f'tags: {self.tags}', f'metadata: {self.metadata}')
         )
 
@@ -1005,11 +1007,11 @@ class InfoManager:
     def __hash__(self):
         return hash(self._get_attr_sort_order())
 
-    def add_tag(self, val):
-        """Add a tag abbr
+    def add_tags(self, val):
+        """Add a tag name
 
         Args:
-            val (list of str): tag abbr to add
+            val (list of str): Tag names to add
 
         """
 
@@ -1020,11 +1022,11 @@ class InfoManager:
         # Add
         self.tags = self.tags + val
 
-    def rm_tag(self, val):
-        """Remove a tag abbr
+    def rm_tags(self, val):
+        """Remove a tag name
 
         Args:
-            val (list of str): tag abbr to remove
+            val (list of str): Tag names to remove
 
         """
 
@@ -1088,7 +1090,7 @@ class InfoManager:
             tuple
 
         """
-        return self.evt_dt, *[str(arg) for arg in self.uid], *self.tags
+        return self.evt_dt, *[str(arg) for arg in self.oid], *self.tags
 
     def __eq__(self, other):
         return self._get_attr_sort_order() == other._get_attr_sort_order()
@@ -1117,8 +1119,8 @@ class InfoManager:
             - typ_field (str, `optional`): Instrument type (used to create
                 instrument entry if missing in DB)
             - srn_field (str): Serial number
-            - pdt_field (str): Product identifier
-            - tag_field (list of str): Tags
+            - pid (str): Product identifier
+            - tags (list of str): Tags
             - meta_field (dict): Metadata as dict
 
         """
@@ -1128,15 +1130,15 @@ class InfoManager:
 
         # Get instrument id
         if (
-            instr_id := db_mngr.get_or_none(
-                Instrument,
+            oid := db_mngr.get_or_none(
+                TableObject,
                 search={
                     'where': (
-                        (Instrument.srn == metadata[SRN_FLD_NM]) &
-                        (Instrument.pdt == metadata[PDT_FLD_NM])
+                        (TableObject.srn == metadata[TableObject.srn.name]) &
+                        (TableObject.pid == metadata[TableObject.pid.name])
                     )
                 },
-                attr=[[Instrument.id.name]]
+                attr=[[TableObject.oid.name]]
             )
         ) is None:
 
@@ -1151,16 +1153,17 @@ class InfoManager:
                 raise Exception(f"{metadata[TableInstrType.type_name.name]} is missing in DB/InstrumentType")
 
             # Create instrument entry
-            instr_id = Instrument.create(
-                srn=metadata[SRN_FLD_NM], pdt=metadata[PDT_FLD_NM],
+            oid = TableObject.create(
+                srn=metadata[TableObject.srn.name],
+                pid=metadata[TableObject.pid.name],
                 instr_type=instr_type
-            ).id
+            ).oid
 
         # Construct InfoManager
         try:
             info = InfoManager(
                 evt_dt=metadata[EVT_DT_FLD_NM],
-                uid=instr_id,
+                oid=oid,
                 tags=metadata[TAG_FLD_NM],
                 metadata=metadata[META_FLD_NM]
             )
@@ -1219,14 +1222,14 @@ class SearchInfoExpr(metaclass=ABCMeta):
             filter_empty (bool): Filter for empty data
 
         Returns:
-            List of Info.id
+            List of Info.info_id
 
         Search expression grammar:
             - all(): Select all
             - [datetime ; dt]('<ISO datetime>', ['=='(default) ; '>=' ; '>' ; '<=' ; '<' ; '!=']): Select by datetime
             - [serialnumber ; srn]('<Serial number>'): Select by serial number
-            - [product ; pdt](<Product>): Select by product
-            - tag(['<Tag>' ; ('<Tag 1>', ...,'<Tag n>')]): Select by tag
+            - [product_id ; pid](<Product>): Select by product
+            - tags(['<Tag>' ; ('<Tag 1>', ...,'<Tag n>')]): Select by tag
             - and_(<expr 1>, ..., <expr n>): Intersection
             - or_(<expr 1>, ..., <expr n>): Union
             - not_(<expr>): Negation, correspond to all() without <expr>
@@ -1237,8 +1240,8 @@ class SearchInfoExpr(metaclass=ABCMeta):
             'all': AllExpr,
             'datetime': DatetimeExpr, 'dt': DatetimeExpr,
             'serialnumber': SerialNumberExpr, 'srn': SerialNumberExpr,
-            'product': ProductExpr, 'pdt': ProductExpr,
-            'tag': TagExpr,
+            'product_id': ProductExpr, 'pid': ProductExpr,
+            'tags': TagExpr,
             'and_': AndExpr,
             'or_': OrExpr,
             'not_': NotExpr
@@ -1261,7 +1264,7 @@ class SearchInfoExpr(metaclass=ABCMeta):
             expr_res = expr.interpret()
 
             # Convert id as table element
-            qry = Info.select().where(Info.id.in_(expr_res))
+            qry = TableInfo.select().where(TableInfo.info_id.in_(expr_res))
             out = [arg for arg in qry.iterator()]
 
             # TODO
@@ -1324,11 +1327,11 @@ class TerminalSearchInfoExpr(SearchInfoExpr):
     """
 
     QRY_BASE = (
-        Info
+        TableInfo
         .select().distinct()
-        .join(InfosInstruments).join(Instrument).switch(Info)
-        .join(TableParameter).switch(Info)
-        .join(InfosTags).join(TableTag).switch(Info)
+        .join(TableInfosObjects).join(TableObject).switch(TableInfo)
+        .join(TableParameter).switch(TableInfo)
+        .join(InfosTags).join(TableTag).switch(TableInfo)
     )
 
     def __init__(self, arg):
@@ -1337,7 +1340,7 @@ class TerminalSearchInfoExpr(SearchInfoExpr):
     def interpret(self):
         """Terminal expression interpreter"""
         return set(
-            arg.id for arg in
+            arg.info_id for arg in
             self.QRY_BASE.where(self.get_filter()).iterator()
         )
 
@@ -1376,7 +1379,7 @@ class DatetimeExpr(TerminalSearchInfoExpr):
 
     def get_filter(self):
         """Implement get_filter method"""
-        return self._op(Info.evt_dt, self.expression)
+        return self._op(TableInfo.evt_dt, self.expression)
 
 
 class SerialNumberExpr(TerminalSearchInfoExpr):
@@ -1389,7 +1392,7 @@ class SerialNumberExpr(TerminalSearchInfoExpr):
 
     def get_filter(self):
         """Implement get_filter method"""
-        return Instrument.srn.in_(self.expression)
+        return TableObject.srn.in_(self.expression)
 
 
 class ProductExpr(TerminalSearchInfoExpr):
@@ -1402,7 +1405,7 @@ class ProductExpr(TerminalSearchInfoExpr):
 
     def get_filter(self):
         """Implement get_filter method"""
-        return Instrument.pdt.in_(self.expression)
+        return TableObject.pid.in_(self.expression)
 
 
 class TagExpr(TerminalSearchInfoExpr):

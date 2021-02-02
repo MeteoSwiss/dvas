@@ -296,7 +296,7 @@ class Profile(ProfileAC):
             )
 
         self._info = info
-        self._flags_abbr = {arg[self.FLAG_NAME_NM]: arg for arg in db_mngr.get_flags()}
+        self._flags_name = {arg[self.FLAG_NAME_NM]: arg for arg in db_mngr.get_flags()}
 
     @property
     def info(self):
@@ -304,9 +304,9 @@ class Profile(ProfileAC):
         return self._info
 
     @property
-    def flags_abbr(self):
+    def flags_name(self):
         """dict: Flag name, description and bit position."""
-        return self._flags_abbr
+        return self._flags_name
 
     @property
     def alt(self):
@@ -339,15 +339,20 @@ class Profile(ProfileAC):
             deepcopy(self.info), self.reset_data_index(self.data.copy(deep=True))
         )
 
-    def _get_flg_bit_nbr(self, abbr):
-        """Get bit number corresponding to given flag name"""
-        return self.flags_abbr[abbr][self.FLAG_BIT_POS_NM]
+    def _get_flg_bit_nbr(self, val):
+        """Get bit number corresponding to given flag name
 
-    def set_flg(self, abbr, set_val, index=None):
+        Args:
+            val (str): Flag name
+
+        """
+        return self.flags_name[val][self.FLAG_BIT_POS_NM]
+
+    def set_flg(self, val, set_val, index=None):
         """Set flag values to True/False.
 
         Args:
-            abbr (str): flag name
+            val (str): Flag name
             set_val (bool): Turn on/off the flag. Defaults to True.
             index (pd.Index, optional): Specific Profile elements to set. Default to None (=all).
 
@@ -357,9 +362,9 @@ class Profile(ProfileAC):
         def set_to_true(x):
             """Set bit to True"""
             if np.isnan(x):
-                out = (1 << self._get_flg_bit_nbr(abbr))
+                out = (1 << self._get_flg_bit_nbr(val))
             else:
-                out = int(x) | (1 << self._get_flg_bit_nbr(abbr))
+                out = int(x) | (1 << self._get_flg_bit_nbr(val))
 
             return out
 
@@ -368,7 +373,7 @@ class Profile(ProfileAC):
             if np.isnan(x):
                 out = 0
             else:
-                out = int(x) & ~(1 << self._get_flg_bit_nbr(abbr))
+                out = int(x) & ~(1 << self._get_flg_bit_nbr(val))
 
             return out
 
@@ -382,17 +387,17 @@ class Profile(ProfileAC):
         else:
             self.flg = self.flg.loc[index].apply(set_to_false)
 
-    def is_flagged(self, abbr):
+    def is_flagged(self, val):
         """Check if a specific flag name is set.
 
         Args:
-            abbr (str): flag name
+            val (str): Flag name
 
         Returns:
             pd.Series: Series of int, with 1's where the requested flag name is True.
 
         """
-        bit_nbr = self._get_flg_bit_nbr(abbr)
+        bit_nbr = self._get_flg_bit_nbr(val)
         return self.flg.apply(lambda x: (x >> bit_nbr) & 1)
 
 

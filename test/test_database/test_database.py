@@ -18,7 +18,7 @@ import numpy as np
 
 # Import from current python packages and modules
 from dvas.database.model import Parameter as TableParameter
-from dvas.database.model import Instrument as MdlInstrument
+from dvas.database.model import Object as TableObject
 from dvas.database.model import InstrType as TableInstrType
 from dvas.database.database import DatabaseManager
 from dvas.database.database import InfoManager, InfoManagerMetaData
@@ -44,10 +44,10 @@ class TestDatabaseManager:
     sn = 'YT-100'
     info = InfoManager.from_dict(
         {
-            'dt_field': '20200101T0000Z',
-            'srn_field': sn, 'pdt_field': '0',
-            'tag_field': 'data_test_db',
-            'meta_field': {'test_key_str': 'one', 'test_key_num': '1'}
+            'evt_dt': '20200101T0000Z',
+            'srn': sn, 'pid': '0',
+            'tags': 'data_test_db',
+            'metadata': {'test_key_str': 'one', 'test_key_num': '1'}
         }
     )
 
@@ -65,12 +65,12 @@ class TestDatabaseManager:
         ) == ['dummytst_param1']
 
         assert db_mngr.get_or_none(
-            MdlInstrument,
+            TableObject,
             search={
                 'where': TableInstrType.type_name == 'YT',
                 'join_order': [TableInstrType],
             },
-            attr=[[MdlInstrument.srn.name]],
+            attr=[[TableObject.srn.name]],
             get_first=True
         ) in [['YT-100'], ['YT-101']]
 
@@ -142,7 +142,7 @@ class TestDatabaseManager:
         """Test get_data method"""
 
         res = db_mngr.get_data(
-            f"and_(dt('{self.info.evt_dt}'), srn('{self.sn}'), tag('data_test_db'))",
+            f"and_(dt('{self.info.evt_dt}'), srn('{self.sn}'), tags('data_test_db'))",
             'trepros1', True
         )
 
@@ -190,7 +190,7 @@ class TestInfoManager:
     """Test class for InfoManager"""
 
     dt_test = '20200101T0000Z'
-    uid_test = [1, 2]
+    oid_test = [1, 2]
     glob_var.evt_id_pat = r'e\:\d'
     evt_tag = 'e:1'
     glob_var.rig_id_pat = r'r\:\d'
@@ -199,13 +199,13 @@ class TestInfoManager:
     mdl_tag = 'mdl:1'
     metadata = {'key_str': 'one', 'key_num': 1.}
     info_mngr = InfoManager(
-        dt_test, uid_test, tags=[evt_tag, rig_tag, mdl_tag], metadata=metadata
+        dt_test, oid_test, tags=[evt_tag, rig_tag, mdl_tag], metadata=metadata
     )
 
-    def test_uid(self):
-        """Test getting 'uid' attribute"""
-        self.info_mngr.uid = self.uid_test
-        assert self.info_mngr.uid == sorted(self.uid_test)
+    def test_oid(self):
+        """Test getting 'oid' attribute"""
+        self.info_mngr.oid = self.oid_test
+        assert self.info_mngr.oid == sorted(self.oid_test)
 
     def test_evt_dt(self):
         """Test setting/getting 'evt_dt' attribute"""
@@ -224,33 +224,33 @@ class TestInfoManager:
         """Test getting 'mdl_id' attribute"""
         assert self.info_mngr.mdl_id == self.mdl_tag
 
-    def test_add_tag(self):
-        """Test add tag"""
+    def test_add_tags(self):
+        """Test add_tags method"""
 
         # Init
         tags_old = self.info_mngr.tags
         tst_tag = 'dummy'
 
         # Test add
-        self.info_mngr.add_tag([tst_tag])
+        self.info_mngr.add_tags([tst_tag])
         assert self.info_mngr.tags == sorted(tags_old + [tst_tag])
 
         # Test double add
-        self.info_mngr.add_tag([tst_tag])
+        self.info_mngr.add_tags([tst_tag])
         assert self.info_mngr.tags == sorted(tags_old + [tst_tag])
 
         # Reset
         self.info_mngr.tags = tags_old
 
-    def test_rm_tag(self):
-        """Test remove tag"""
+    def test_rm_tags(self):
+        """Test rm_tags method"""
 
         # Init
         tags_old = self.info_mngr.tags
         tst_tag = tags_old[0]
 
         # Test remove
-        self.info_mngr.rm_tag([tst_tag])
+        self.info_mngr.rm_tags([tst_tag])
         assert self.info_mngr.tags == sorted(tags_old[1:])
 
         # Reset
@@ -279,7 +279,7 @@ class TestInfoManager:
         info_mngr_2 = deepcopy(self.info_mngr)
         info_mngr_2.evt_dt += timedelta(1)
         info_mngr_3 = deepcopy(info_mngr_2)
-        info_mngr_3.uid = [3] + info_mngr_3.uid
+        info_mngr_3.oid = [3] + info_mngr_3.oid
 
         # Test
         assert all(
@@ -343,15 +343,15 @@ def test_search_event_expr_eval():
     # Test tag
     assert len(
         SearchInfoExpr.eval(
-            'tag(("e:1", "r:1"))', *args
+            'tags(("e:1", "r:1"))', *args
         )
     ) > 0
     assert (
         SearchInfoExpr.eval(
-            'tag(("e:1", "r:1"))', *args
+            'tags(("e:1", "r:1"))', *args
         ) ==
         SearchInfoExpr.eval(
-            'or_(tag("e:1"), tag("r:1"))',
+            'or_(tags("e:1"), tags("r:1"))',
             *args
         )
     )
@@ -375,7 +375,7 @@ def test_search_event_expr_eval():
     # Test and_
     assert (
         SearchInfoExpr.eval(
-            'and_(tag("e1"), not_(tag("e1")))', *args
+            'and_(tags("e1"), not_(tags("e1")))', *args
         ) ==
         SearchInfoExpr.eval(
             'not_(all())',

@@ -80,10 +80,10 @@ class TestLoadDBLinker:
     sn = 'YT-100'
     info = InfoManager.from_dict(
         {
-            'dt_field': '20200101T0000Z',
-            'srn_field': sn, 'pdt_field': '0',
-            'tag_field': 'load_profile_from_linker',
-            'meta_field': {},
+            'evt_dt': '20200101T0000Z',
+            'srn': sn, 'pid': '0',
+            'tags': 'load_profile_from_linker',
+            'metadata': {},
         }
     )
 

@@ -46,14 +46,14 @@ if __name__ == '__main__':
     RESET_DB = True
 
     # Define some search queries
-    filt_gdp = "tag('gdp')"
+    filt_gdp = "tags('gdp')"
     filt_dt = "dt('20171024T120000Z', '==')"
     filt_vof = "and_(%s,%s)" % (filt_gdp, filt_dt)
-    filt_gdp_der = "and_(tag('derived'), tag('gdp'))"
-    filt_raw = "and_(tag('raw'), not_(tag('gdp')))"
+    filt_gdp_der = "and_(tags('derived'), tags('gdp'))"
+    filt_raw = "and_(tags('raw'), not_(tags('gdp')))"
     filt_all = "all()"
-    filt_der = "and_(tag('derived'), not_(tag('gdp')))"
-    filt_cws = "tag('cws')"
+    filt_der = "and_(tags('derived'), not_(tags('gdp')))"
+    filt_cws = "tags('cws')"
 
     # Create the database
     db_mngr = DatabaseManager(reset_db=RESET_DB)

@@ -12,14 +12,17 @@ Module contents: Required attributes definition for
 
 # Import from current packages modules
 from ..pattern import INSTR_TYPE_PAT, PARAM_PAT
+from ...database.model import Info as TableInfo
 from ...database.model import Data
+from ...database.model import MetaData as TableMetaData
+from ...database.model import Tag as TableTag
+from ...database.model import Object as TableObject
+
 
 # Define global field name
-EVT_DT_FLD_NM = 'dt_field'  # Datetime field name
-SRN_FLD_NM = 'srn_field'  # Serial number field name
-PDT_FLD_NM = 'pdt_field'  # Product field name
-TAG_FLD_NM = 'tag_field'  # Tag field name
-META_FLD_NM = 'meta_field'  # Metadata field name
+EVT_DT_FLD_NM = TableInfo.evt_dt.name  # Datetime field name
+TAG_FLD_NM = TableTag.__name__.lower() + 's'  # Tag field name
+META_FLD_NM = TableMetaData.__name__.lower()  # Metadata field name
 
 INDEX_FLD_NM = 'index_col'  # Index column field name
 PARAM_FLD_NM = 'value_col'  # Value column field name
@@ -46,8 +49,8 @@ VALUE_NM = Data.value.name
 
 #: list: Fields keys passed to expression interpreter
 EXPR_FIELD_KEYS = [
-    EVT_DT_FLD_NM, SRN_FLD_NM,
-    PDT_FLD_NM, TAG_FLD_NM, META_FLD_NM
+    EVT_DT_FLD_NM, TableObject.srn.name,
+    TableObject.pid.name, TAG_FLD_NM, META_FLD_NM
 ]
 
 #: list: Node pattern
@@ -80,10 +83,10 @@ PARAMETER_PATTERN_PROP = {
     rf"^{EVT_DT_FLD_NM}$": {
         "type": "string",
     },
-    rf"^{SRN_FLD_NM}$": {
+    rf"^{TableObject.srn.name}$": {
         "type": "string",
     },
-    rf"^{PDT_FLD_NM}$": {
+    rf"^{TableObject.pid.name}$": {
         "type": "string",
     },
     rf"^{TAG_FLD_NM}$": {
