@@ -42,7 +42,7 @@ setup(
         "jsonschema",
         "matplotlib",
         "netCDF4",
-        'numpy',
+        'numpy<1.20',
         "pampy",
         "pandas<=1.1.4",
         "peewee",
