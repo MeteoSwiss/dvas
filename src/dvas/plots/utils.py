@@ -165,6 +165,12 @@ def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show_
             logger.warning('%s format not supported by the OS. Ignoring it.', fmt)
 
         # Save the file.
+        # Let us first make sure the destination folder exists
+        if not env_path_var.output_path.exists():
+            env_path_var.output_path.mkdir(parents=True)
+            # Set user read/write permission
+            env_path_var.output_path.chmod(env_path_var.output_path.stat().st_mode | 0o600)
+
         # Note: never use a tight box fix here. If the plot looks weird, the gridspec
         # params should be altered. This is essential for the consistency of the DVAS plots.
         fig.savefig(Path(env_path_var.output_path, '.'.join([fn_out, fmt])))
