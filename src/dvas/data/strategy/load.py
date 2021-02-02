@@ -87,7 +87,7 @@ class LoadStrategyAC(MPStrategyAC):
         # Add missing columns
         for i in range(len(data)):
             for val in kwargs.keys():
-                if val not in data[-1].columns:
+                if val not in data[i].columns:
                     data[i][val] = None
 
         return info, data

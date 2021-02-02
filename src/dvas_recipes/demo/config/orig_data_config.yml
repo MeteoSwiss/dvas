@@ -201,13 +201,6 @@ _RS92-GDP_002:
         # value_col: sqrt('u_temp'**2 - 'u_cor_temp'**2)
         value_col: 'u_std_temp'
 
-    # TODO: uc_s does not exist for the RS92 v2 GDP. However, just commenting this out causes
-    # havoc in the code (GDPs cannot be loaded). Why ?
-    # TODO: Issue: #94, this is uncommented and a wrong value_col is given to allow
-    # the code to run
-    #_treprosu_s:
-    #    value_col: 'u_cor_temp'
-
     _treprosu_t:
         value_col: 'u_cor_temp'
 

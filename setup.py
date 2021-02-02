@@ -42,7 +42,7 @@ setup(
         "jsonschema",
         "matplotlib",
         "netCDF4",
-        'numpy',
+        'numpy<1.20',
         "pampy",
         "pandas<=1.1.4",
         "peewee",
@@ -54,8 +54,8 @@ setup(
         "sre_yield",
     ],
 
-    # Setup entry points to use DVAS from a terminal
-    entry_points={'console_scripts': ['dvas=dvas.__main__:main']},
+    # Setup entry points to use dvas from a terminal
+    entry_points={'console_scripts': ['dvas_init=dvas_recipes.__main__:dvas_init']},
 
     classifiers=[
 

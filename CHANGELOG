@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 ### Added:
+ - [fpavogt, 2020-02-01] Add dvas_recipes package, to host the demo and high-level UAII routines
  - [modolol, 2020-01-29] Add instrument, tag and parameter informations in MultiProfiles
  - [modolol, 2020-12-29] Add metadata management in config and DB.
  - [fpavogt, 2020-12-17] Add a rebase strategy and fix #83.
