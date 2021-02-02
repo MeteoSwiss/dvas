@@ -292,9 +292,8 @@ class Profile(ProfileAC):
         if data is not None:
             self.data = data
         else:
-            self.data = pd.DataFrame(
-                {key: np.array([], dtype=val['type']) for key, val in self.DF_COLS_ATTR.items()}
-            )
+            self.data = pd.concat([pd.Series(name=key, dtype=val['type'])
+                                   for key, val in self.DF_COLS_ATTR.items()], axis=1)
 
         self._info = info
         self._flags_abbr = {arg[self.FLAG_NAME_NM]: arg for arg in db_mngr.get_flags()}

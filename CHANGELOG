@@ -6,15 +6,15 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 ### Added:
- - [fpavogt, 2020-02-01] Add dvas_recipes package, to host the demo and high-level UAII routines
+ - [fpavogt, 2021-02-01] Add dvas_recipes package, to host the demo and high-level UAII routines
  - [modolol, 2020-01-29] Add instrument, tag and parameter informations in MultiProfiles
  - [modolol, 2020-12-29] Add metadata management in config and DB.
  - [fpavogt, 2020-12-17] Add a rebase strategy and fix #83.
 ### Fixed:
+ - [fpavogt, 2021-02-02] Fix #102 & #87. Lift cap on pandas version.
  - [modolol, 2020-01-29] Fix #94
  - [fpavogt, 2020-12-21] Fix #60
  - [fpavogt, 2020-12-15] Signature-changing "deepcopy" decorator now leads to correct decorated signatures (see #70).
-
 ### Changed:
  - [modolol, 2020-01.29] Standardize table field names
  - [modolol, 2021-01-14] Removes instrument from the mandatory configuration (and all dependencies) + add product id to instrument
