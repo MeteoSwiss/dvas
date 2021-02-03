@@ -453,6 +453,7 @@ class CSVHandler(FileHandler):
                         ),
                     ],
                     'squeeze': True,
+                    'engine': 'python',
                 }
             )
 
