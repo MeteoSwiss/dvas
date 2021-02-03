@@ -38,26 +38,26 @@ class TestRebaseStrategy:
                          RSProfile(self.info_1, self.data_2)])
 
         # Cropping, no shift
-        # Let's set all the Profiles on the same index set as the first
-        ref_ind = multiprf.profiles[0].data.index
-        out_a = multiprf.rebase(ref_ind, shift=0, inplace=False)
-        assert len(out_a.profiles[1].data) == len(self.data_1) # All has the proper length
-        assert all(out_a.profiles[1].data.index == multiprf.profiles[0].data.index) # Index are ok
+        # Let's set all the Profiles on the same length as the first
+        out_a = multiprf.rebase(3, shifts=0, inplace=False)
+        assert len(out_a.profiles[1].data) == 3 # All has the proper length
+        assert all(out_a.profiles[1].data.index ==
+                   multiprf.profiles[1].data.index[:3]) # Index are ok
         assert np.all(out_a.profiles[1].data.to_numpy() ==
                       multiprf.profiles[1].data[:-1].to_numpy()) # Data was cropped as requested.
 
         # Gap filling, no shift
-        # Let's set all the Profiles on the same index set as the second
-        ref_ind = multiprf.profiles[1].data.index
-        out_b = multiprf.rebase(ref_ind, shift=0, inplace=False)
-        assert len(out_b.profiles[0].data) == len(self.data_2) # All has the proper length.
+        # Let's set all the Profiles on the same length as the second
+        out_b = multiprf.rebase(4, shifts=0, inplace=False)
+        assert len(out_b.profiles[0].data) == 4 # All has the proper length.
         assert np.all(out_b.profiles[1].data.to_numpy() ==
                       multiprf.profiles[1].data.to_numpy()) # Data has not changed.
+        assert all(out_b.profiles[0].data.index[:3] ==
+                           multiprf.profiles[0].data.index) # Index are ok
         assert out_b.profiles[0].data[-1:].isna().all(axis=None) # NaN's where added as needed.
 
         # Shift things around a bit
-        ref_ind = multiprf.profiles[1].data.index
-        out_c = multiprf.rebase(ref_ind, shift=1, inplace=False)
+        out_c = multiprf.rebase(4, shifts=1, inplace=False)
         assert out_c.profiles[0].data[:1].isna().all(axis=None) # NaN's where added as needed.
         assert out_c.profiles[1].data[:1].isna().all(axis=None) # NaN's where added as needed.
         assert np.all(out_c.profiles[0].data[1:].to_numpy() ==
@@ -66,8 +66,7 @@ class TestRebaseStrategy:
                       multiprf.profiles[1].data[:-1].to_numpy()) # Data has moved where it should
 
         # Shift things around a bit ... but in the other direction
-        ref_ind = multiprf.profiles[1].data.index
-        out_d = multiprf.rebase(ref_ind, shift=-2, inplace=False)
+        out_d = multiprf.rebase(4, shifts=np.int64(-2), inplace=False)
         assert out_d.profiles[0].data[-2:].isna().all(axis=None) # NaN's where added as needed.
         assert out_d.profiles[1].data[-2:].isna().all(axis=None) # NaN's where added as needed.
         assert np.all(out_d.profiles[0].data[:-3].to_numpy() ==
@@ -75,8 +74,15 @@ class TestRebaseStrategy:
         assert np.all(out_d.profiles[1].data[:-2].to_numpy() ==
                       multiprf.profiles[1].data[2:].to_numpy()) # Data has moved where it should
 
+        # Test uneven length and shifts
+        out_e = multiprf.rebase([4, 3], shifts=[-1, 1], inplace=False)
+        assert len(out_e.profiles[0].data) == 4 # Length ok
+        assert len(out_e.profiles[1].data) == 3 # Length ok
+        assert out_e.profiles[0].data[-1:].isna().all(axis=None) # NaN's where added as needed.
+        assert out_e.profiles[1].data[:1].isna().all(axis=None) # NaN's where added as needed.
+
         # Inplace changes
-        ref_ind = multiprf.profiles[1].data.index
-        out_e = multiprf.rebase(ref_ind, shift=-2, inplace=True)
-        assert out_e is None
-        assert len(multiprf.profiles[0].data) == len(self.data_2) # All has the proper length
+        out_f = multiprf.rebase(5, shifts=-2, inplace=True)
+        assert out_f is None
+        assert len(multiprf.profiles[0].data) == 5 # All has the proper length
+        assert len(multiprf.profiles[1].data) == 5 # All has the proper length

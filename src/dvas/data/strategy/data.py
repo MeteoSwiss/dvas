@@ -20,11 +20,12 @@ from ...database.model import Flag as TableFlag
 from ...database.database import DatabaseManager, InfoManager
 from ...errors import ProfileError
 from ...helper import RequiredAttrMetaClass
+from ...hardcoded import PRF_REF_INDEX_NAME
 
 # Define
 INT_TEST = (np.int64, np.int, int, type(pd.NA))
 FLOAT_TEST = (np.float, float) + INT_TEST
-TIME_TEST = FLOAT_TEST + (pd.Timedelta,)
+TIME_TEST = FLOAT_TEST + (pd.Timedelta, type(pd.NaT))
 
 
 class MPStrategyAC(metaclass=ABCMeta):
@@ -79,7 +80,7 @@ class ProfileAC(metaclass=RequiredAttrMetaClass):
 
         """
         val = val.reset_index(inplace=False)
-        val.index.name = '_idx'
+        val.index.name = PRF_REF_INDEX_NAME
         return val[sorted(cls.DF_COLS_ATTR.keys())]
 
     @classmethod
@@ -291,9 +292,8 @@ class Profile(ProfileAC):
         if data is not None:
             self.data = data
         else:
-            self.data = pd.DataFrame(
-                {key: np.array([], dtype=val['type']) for key, val in self.DF_COLS_ATTR.items()}
-            )
+            self.data = pd.concat([pd.Series(name=key, dtype=val['type'])
+                                   for key, val in self.DF_COLS_ATTR.items()], axis=1)
 
         self._info = info
         self._flags_name = {arg[self.FLAG_NAME_NM]: arg for arg in db_mngr.get_flags()}
@@ -435,10 +435,10 @@ class GDPProfile(RSProfile):
     Requires some measured values, together with their corresponding measurement times since launch,
     altitudes, flags, as well as 4 distinct types uncertainties:
 
-      - 'uc_r' : Rig "uncorrelated" uncertainties.
-      - 'uc_s' : Spatial-correlated uncertainties.
-      - 'uc_t' : Temporal correlated uncertainties.
-      - 'uc_u' : True uncorrelated uncertainties.
+      - 'ucr' : Rig "uncorrelated" uncertainties.
+      - 'ucs' : Spatial-correlated uncertainties.
+      - 'uct' : Temporal correlated uncertainties.
+      - 'ucu' : True uncorrelated uncertainties.
 
     The property "uc_tot" returns the total uncertainty, and is prodvided for convenience.
 

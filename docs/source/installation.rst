@@ -48,7 +48,7 @@ terminal, type:
 
 .. code-block:: none
 
-   dvas -h
+   dvas_init -h
 
 This should return the following information:
 

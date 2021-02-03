@@ -135,6 +135,7 @@ For the sake of clarity, and to facilitate the maintenance, we list here (succin
     logger.debug('Some info useful only for debug purposes.')
     logger.info('Some generic info.')
     logger.warning('Some important info that should not be missed by the user.')
+    logger.warning('This is the way to include the value of items in the msg: %s', some_item)
     ```
 
     In addition, note also the function ``dvas_logger.log_func_call(logger)``, which is meant to be
