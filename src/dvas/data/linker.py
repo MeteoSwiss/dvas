@@ -442,7 +442,7 @@ class CSVHandler(FileHandler):
             key.replace('csv_', ''): val for key, val in origdata_cfg_prm.items()
             if key in PD_CSV_READ_ARGS}
 
-        # Add usecols
+        # Add usecols, squeeze and engine arguments
         try:
             # Set read_csv arguments
             raw_csv_read_args.update(
