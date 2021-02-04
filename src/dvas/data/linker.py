@@ -20,7 +20,8 @@ import pandas as pd
 # Import from current package
 from ..environ import path_var as env_path_var
 from ..database.model import InstrType as TableInstrType
-from ..database.model import Info, DataSource
+from ..database.model import Info as TableInfo
+from ..database.model import DataSource
 from ..database.model import Parameter as TableParameter
 from ..database.database import DatabaseManager
 from ..config.config import OrigData, CSVOrigMeta
@@ -227,13 +228,13 @@ class FileHandler(AbstractHandler):
 
         # Search exclude file names source
         exclude_file_name = self._db_mngr.get_or_none(
-            Info,
+            TableInfo,
             search={
                 'where': (
                     TableParameter.prm_name == prm_name
                 ),
                 'join_order': [TableParameter, DataSource]},
-            attr=[[Info.data_src.name, DataSource.source.name]],
+            attr=[[TableInfo.data_src.name, DataSource.source.name]],
             get_first=False
         )
 
@@ -441,7 +442,7 @@ class CSVHandler(FileHandler):
             key.replace('csv_', ''): val for key, val in origdata_cfg_prm.items()
             if key in PD_CSV_READ_ARGS}
 
-        # Add usecols
+        # Add usecols, squeeze and engine arguments
         try:
             # Set read_csv arguments
             raw_csv_read_args.update(
@@ -452,6 +453,7 @@ class CSVHandler(FileHandler):
                         ),
                     ],
                     'squeeze': True,
+                    'engine': 'python',
                 }
             )
 
@@ -670,7 +672,7 @@ class LocalDBLinker(DataLinker):
 
         Args:
             data_list (list of dict): dict mandatory items are 'index' (np.array),
-                'value' (np.array), 'info' (InfoManager|dic), 'prm_name' (str).
+                'value' (np.array), 'info' (InfoManager|dict), 'prm_name' (str).
                 dict optional key are 'source_info' (str), force_write (bool)
 
         """

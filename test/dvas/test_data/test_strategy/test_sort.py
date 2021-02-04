@@ -25,30 +25,30 @@ class TestSortProfileStrategy:
         Profile(
             InfoManager.from_dict(
                 {
-                    'dt_field': '20200110T0000Z',
-                    'srn_field': sn, 'pdt_field': '0',
-                    'tag_field': '',
-                    'meta_field': {}
+                    'evt_dt': '20200110T0000Z',
+                    'srn': sn, 'pid': '0',
+                    'tags': '',
+                    'metadata': {}
                 }
             )
         ),
         Profile(
             InfoManager.from_dict(
                 {
-                    'dt_field': '20200101T0000Z',
-                    'srn_field': sn, 'pdt_field': '0',
-                    'tag_field': '',
-                    'meta_field': {}
+                    'evt_dt': '20200101T0000Z',
+                    'srn': sn, 'pid': '0',
+                    'tags': '',
+                    'metadata': {}
                 }
             )
         ),
         Profile(
             InfoManager.from_dict(
                 {
-                    'dt_field': '20200105T0000Z',
-                    'srn_field': sn, 'pdt_field': '0',
-                    'tag_field': '',
-                    'meta_field': {}
+                    'evt_dt': '20200105T0000Z',
+                    'srn': sn, 'pid': '0',
+                    'tags': '',
+                    'metadata': {}
                 }
             )
         ),

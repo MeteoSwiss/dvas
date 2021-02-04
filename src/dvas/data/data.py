@@ -141,18 +141,18 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
         return [arg.info for arg in self.profiles]
 
     @deepcopy
-    def rm_info_tag(self, val):
-        """Remove some tag(s) from all info tag lists.
+    def rm_info_tags(self, val):
+        """Remove some tags from all info tag lists.
 
         Args:
             val (str|list of str): Tag value(s) to remove
 
         """
         for i in range(len(self)):
-            self.profiles[i].info.rm_tag(val)
+            self.profiles[i].info.rm_tags(val)
 
     @deepcopy
-    def add_info_tag(self, val):
+    def add_info_tags(self, val):
         """Add tag from all info tags
 
         Args:
@@ -160,7 +160,7 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
 
         """
         for i in range(len(self)):
-            self.profiles[i].info.add_tag(val)
+            self.profiles[i].info.add_tags(val)
 
     def __len__(self):
         return len(self.profiles)
@@ -229,13 +229,13 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
         add_tags = [TAG_DERIVED_VAL] if add_tags is None else add_tags + [TAG_DERIVED_VAL]
 
         # Add tags
-        obj.add_info_tag(add_tags)
+        obj.add_info_tags(add_tags)
 
         # Remove tag RAW
         rm_tags = [TAG_RAW_VAL] if rm_tags is None else rm_tags + [TAG_RAW_VAL]
 
         # Remove tags
-        obj.rm_info_tag(rm_tags)
+        obj.rm_info_tags(rm_tags)
 
         # Restructure the parameters into a dict, to be consistent with the rest of the class.
         if prms is None:

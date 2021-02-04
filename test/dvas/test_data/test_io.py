@@ -25,7 +25,7 @@ def test_update_db():
     # Load
     prf_stgy = LoadRSProfileStrategy()
     data = prf_stgy.execute(
-        "tag('raw')", 'trepros1', 'tdtpros1',
+        "tags('raw')", 'trepros1', 'tdtpros1',
         alt_abbr='altpros1'
     )
 

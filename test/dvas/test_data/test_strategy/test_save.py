@@ -43,17 +43,17 @@ class TestSave:
 
         # Now try to load it, and save it back (with different tags)
         prf_v1 = MultiProfile()
-        prf_v1.load_from_db("tag('vof1')", 'trepros1', alt_abbr='altpros1', inplace=True)
+        prf_v1.load_from_db("tags('vof1')", 'trepros1', alt_abbr='altpros1', inplace=True)
         prf_v1.save_to_db(add_tags=['vof2'], rm_tags=['vof1'], prms=['val', 'alt'])
 
         # Now try to fetch that second profile. Do I find it ?
         prf_v2 = MultiProfile()
-        prf_v2.load_from_db("tag('vof2')", 'trepros1', alt_abbr='altpros1', inplace=True)
+        prf_v2.load_from_db("tags('vof2')", 'trepros1', alt_abbr='altpros1', inplace=True)
 
         # Run some simple checks ... but if I got here, I am pretty much ok.
         assert len(prf_v2) == len(prf_v0)
         assert prf_v2.info[0].evt_dt == prf_v0.info[0].evt_dt
-        assert np.all(prf_v2.info[0].uid == prf_v0.info[0].uid)
-        assert np.all(prf_v2.info[0].uid == prf_v0.info[0].uid)
+        assert np.all(prf_v2.info[0].oid == prf_v0.info[0].oid)
+        assert np.all(prf_v2.info[0].oid == prf_v0.info[0].oid)
         assert 'derived' in prf_v2.info[0].tags
         assert 'vof1' not in prf_v2.info[0].tags

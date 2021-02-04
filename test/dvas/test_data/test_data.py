@@ -86,18 +86,18 @@ class TestMutliProfile:
         with pytest.raises(dvasError):
             self.mlt_prf.get_prms(prm_list='alt')
 
-    def test_rm_info_tag(self):
-        """Test rm_info_tag method"""
+    def test_rm_info_tags(self):
+        """Test rm_info_tags method"""
 
         # Init
         tag_nm = 'test_rm'
         for prf in self.mlt_prf.profiles:
-            prf.info.add_tag(tag_nm)
+            prf.info.add_tags(tag_nm)
         mlt_prf_1 = self.mlt_prf.copy()
 
         # Remove
-        res = mlt_prf_1.rm_info_tag(tag_nm)
-        mlt_prf_2 = self.mlt_prf.rm_info_tag(tag_nm, inplace=False)
+        res = mlt_prf_1.rm_info_tags(tag_nm)
+        mlt_prf_2 = self.mlt_prf.rm_info_tags(tag_nm, inplace=False)
 
         # Test inplace = True
         assert res is None
@@ -112,18 +112,18 @@ class TestMutliProfile:
             for prf in mlt_prf_2.profiles
         ])
 
-    def test_add_info_tag(self):
-        """Test add_info_tag method"""
+    def test_add_info_tags(self):
+        """Test add_info_tags method"""
 
         # Init
         tag_nm = 'test_rm'
         for prf in self.mlt_prf.profiles:
-            prf.info.rm_tag(tag_nm)
+            prf.info.rm_tags(tag_nm)
         mlt_prf_1 = self.mlt_prf.copy()
 
         # Add
-        res = mlt_prf_1.add_info_tag(tag_nm)
-        mlt_prf_2 = self.mlt_prf.add_info_tag(tag_nm, inplace=False)
+        res = mlt_prf_1.add_info_tags(tag_nm)
+        mlt_prf_2 = self.mlt_prf.add_info_tags(tag_nm, inplace=False)
 
         # Test inplace = True
         assert res is None
@@ -196,11 +196,11 @@ class TestMutliProfile:
         self.mlt_prf.save_to_db(add_tags=[tag_nm])
 
         # Load from db
-        mlt_prf_1.load_from_db(f"tag('{tag_nm}')", 'trepros1', 'tdtpros1', alt_abbr='altpros1')
+        mlt_prf_1.load_from_db(f"tags('{tag_nm}')", 'trepros1', 'tdtpros1', alt_abbr='altpros1')
 
         # Add tag
-        self.mlt_prf.add_info_tag([tag_nm, TAG_DERIVED_VAL])
-        self.mlt_prf.rm_info_tag([TAG_RAW_VAL])
+        self.mlt_prf.add_info_tags([tag_nm, TAG_DERIVED_VAL])
+        self.mlt_prf.rm_info_tags([TAG_RAW_VAL])
 
         # Compare
         self.mlt_prf_eq(mlt_prf_1, self.mlt_prf)

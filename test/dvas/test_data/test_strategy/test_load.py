@@ -33,18 +33,18 @@ class TestLoadProfileStrategy:
     infos = [
         InfoManager.from_dict(
             {
-                'dt_field': '20200101T0000Z',
-                'srn_field': sn, 'pdt_field': '0',
-                'tag_field': 'load_profile',
-                'meta_field': {}
+                'evt_dt': '20200101T0000Z',
+                'srn': sn, 'pid': '0',
+                'tags': 'load_profile',
+                'metadata': {}
             }
         ),
         InfoManager.from_dict(
             {
-                'dt_field': '20200202T0000Z',
-                'srn_field': sn, 'pdt_field': '0',
-                'tag_field': 'load_profile',
-                'meta_field': {}
+                'evt_dt': '20200202T0000Z',
+                'srn': sn, 'pid': '0',
+                'tags': 'load_profile',
+                'metadata': {}
             }
         ),
     ]
@@ -76,7 +76,7 @@ class TestLoadProfileStrategy:
         )
 
         # Load entry
-        filt = f"tag('load_profile')"
+        filt = f"tags('load_profile')"
         res = self.loader_stgy.execute(
             filt, 'trepros1', 'altpros1', flg_abbr='flgpros1'
         )
@@ -102,18 +102,18 @@ class TestLoadRSProfileStrategy:
     infos = [
         InfoManager.from_dict(
             {
-                'dt_field': '20200101T0000Z',
-                'srn_field': sn, 'pdt_field': '0',
-                'tag_field': 'load_rsprofile',
-                'meta_field': {},
+                'evt_dt': '20200101T0000Z',
+                'srn': sn, 'pid': '0',
+                'tags': 'load_rsprofile',
+                'metadata': {},
             }
         ),
         InfoManager.from_dict(
             {
-                'dt_field': '20200202T0000Z',
-                'srn_field': sn, 'pdt_field': '0',
-                'tag_field': 'load_rsprofile',
-                'meta_field': {},
+                'evt_dt': '20200202T0000Z',
+                'srn': sn, 'pid': '0',
+                'tags': 'load_rsprofile',
+                'metadata': {},
             }
         ),
     ]
@@ -145,7 +145,7 @@ class TestLoadRSProfileStrategy:
         )
 
         # Load entry
-        filt = f"tag('load_rsprofile')"
+        filt = f"tags('load_rsprofile')"
         res = self.loader_stgy.execute(
             filt, 'trepros1', 'tdtpros1', alt_abbr='altpros1'
         )
@@ -171,18 +171,18 @@ class TestLoadGPDProfileStrategy:
     infos = [
         InfoManager.from_dict(
             {
-                'dt_field': '20200101T0000Z',
-                'srn_field': sn, 'pdt_field': '0',
-                'tag_field': 'load_gdpprofile',
-                'meta_field': {},
+                'evt_dt': '20200101T0000Z',
+                'srn': sn, 'pid': '0',
+                'tags': 'load_gdpprofile',
+                'metadata': {},
             }
         ),
         InfoManager.from_dict(
             {
-                'dt_field': '20200202T0000Z',
-                'srn_field': sn, 'pdt_field': '0',
-                'tag_field': 'load_gdpprofile',
-                'meta_field': {},
+                'evt_dt': '20200202T0000Z',
+                'srn': sn, 'pid': '0',
+                'tags': 'load_gdpprofile',
+                'metadata': {},
             }
         ),
     ]
@@ -214,7 +214,7 @@ class TestLoadGPDProfileStrategy:
         )
 
         # Load entry
-        filt = f"tag('load_gdpprofile')"
+        filt = f"tags('load_gdpprofile')"
         res = self.loader_stgy.execute(
             filt, 'trepros1', 'tdtpros1', alt_abbr='altpros1'
         )

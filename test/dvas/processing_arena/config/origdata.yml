@@ -5,10 +5,10 @@
 _RS92:
 
     # -- META DATA ----------------------------------
-    dt_field: "get('event_dt')"
-    srn_field: "get('sn')"
-    pdt_field: "get('product_id')"
-    tag_field:
+    evt_dt: "get('event_dt')"
+    srn: "get('sn')"
+    pid: "get('product_id')"
+    tags:
         - "cat('e:', get('event_id'))"
         - "cat('r:', get('rig'))"
         - "get('day_night')"
@@ -36,10 +36,10 @@ _RS92:
 _YT:
 
     # -- META DATA ----------------------------------
-    dt_field: "cat(get('event_dt'), 'Z')"
-    srn_field: "get('sn')"
-    pdt_field: "get('product_id')"
-    tag_field:
+    evt_dt: "cat(get('event_dt'), 'Z')"
+    srn: "get('sn')"
+    pid: "get('product_id')"
+    tags:
         - "cat('e:', get('event_id'))"
         - "cat('r:', get('rig'))"
         - "get('day_night')"
@@ -67,10 +67,10 @@ _YT:
 _ZT:
 
     # -- META DATA ----------------------------------
-    dt_field: "get('event_dt')"
-    srn_field: "get('sn')"
-    pdt_field: "get('product_id')"
-    tag_field:
+    evt_dt: "get('event_dt')"
+    srn: "get('sn')"
+    pid: "get('product_id')"
+    tags:
         - "cat('e:', get('event_id'))"
         - "cat('r:', get('rig'))"
         - "get('day_night')"
