@@ -21,7 +21,7 @@ from .helper import SingleInstanceMetaClass
 from .helper import TypedProperty as TProp
 from .helper import check_path
 from .helper import get_class_public_attr
-from .errors import dvasError
+from .errors import DvasError
 from . import __name__ as pkg_name
 from . import expl_path, pkg_path
 
@@ -45,7 +45,7 @@ class VariableManager(ABC, metaclass=ABCSingleInstanceMeta):
             ])
 
         except AssertionError as first_error:
-            raise dvasError("Error in matching '_attr_def' pattern") from first_error
+            raise DvasError("Error in matching '_attr_def' pattern") from first_error
 
         # Set attributes
         self.set_attr()

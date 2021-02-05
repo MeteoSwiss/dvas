@@ -15,7 +15,7 @@ import pandas as pd
 
 # Import from current package
 from .data import MPStrategyAC
-from ...errors import dvasError
+from ...errors import DvasError
 from ...hardcoded import PRF_REF_INDEX_NAME
 
 
@@ -45,22 +45,22 @@ class RebaseStrategy(MPStrategyAC):
 
         # Make sure I get fed a list of profiles.
         if not isinstance(prfs, list):
-            raise dvasError("Ouch ! prfs should be of type list, and not: {}".format(type(prfs)))
+            raise DvasError("Ouch ! prfs should be of type list, and not: {}".format(type(prfs)))
 
         # Deal with the length(s). Try to be as courteous as possible.
         if isinstance(new_lengths, numbers.Integral):
             new_lengths = [new_lengths] * len(prfs)
         elif isinstance(new_lengths, list):
             if not all([isinstance(item, numbers.Integral) for item in new_lengths]):
-                raise dvasError("Ouch ! new_lengths should be a list of int.")
+                raise DvasError("Ouch ! new_lengths should be a list of int.")
             if len(new_lengths) != len(prfs):
                 if len(set(new_lengths)) == 1:
                     new_lengths = [new_lengths[0]] * len(prfs)
                 else:
-                    raise dvasError("Ouch ! new_lengths should have length of %i, not %i" %
+                    raise DvasError("Ouch ! new_lengths should have length of %i, not %i" %
                                     (len(prfs), len(new_lengths)))
         else:
-            raise dvasError("Type %s unspported for new_length. I need int|list of int." %
+            raise DvasError("Type %s unspported for new_length. I need int|list of int." %
                             type(new_lengths))
 
         # Deal with the shift(s). Still try to be as courteous as possible.
@@ -70,15 +70,15 @@ class RebaseStrategy(MPStrategyAC):
             shifts = [shifts] * len(prfs)
         elif isinstance(shifts, list):
             if not all([isinstance(item, numbers.Integral) for item in shifts]):
-                raise dvasError("Ouch ! shift should be a list of int.")
+                raise DvasError("Ouch ! shift should be a list of int.")
             if len(shifts) != len(prfs):
                 if len(set(shifts)) == 1:
                     shifts = [shifts[0]] * len(prfs)
                 else:
-                    raise dvasError("Ouch ! shifts should have length of %i, not %i" %
+                    raise DvasError("Ouch ! shifts should have length of %i, not %i" %
                                     (len(prfs), len(shifts)))
         else:
-            raise dvasError("Type %s unspported for shifts. I need int|list of int." % type(shifts))
+            raise DvasError("Type %s unspported for shifts. I need int|list of int." % type(shifts))
 
         # We are good to go: let's loop through the different Profiles.
         for (prf_ind, prf) in enumerate(prfs):

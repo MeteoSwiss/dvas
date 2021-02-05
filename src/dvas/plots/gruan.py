@@ -22,7 +22,7 @@ from matplotlib import cm
 import netCDF4 as nc
 
 # Import from this package
-from ..errors import  dvasError
+from ..errors import  DvasError
 from ..logger import log_func_call
 from ..logger import plots_logger as logger
 from ..environ import path_var
@@ -69,7 +69,7 @@ def gdps_vs_cws(gdp_prfs, cws_prf, index_name='alt', **kwargs):
         # Let us make sure that all the profiles are synchronized
         gdp_x = gdp.index.get_level_values(index_name)
         if np.any(gdp_x != x):
-            raise dvasError('Ouch! GDPS and CWS are not synchronized. I cannot plot this.')
+            raise DvasError('Ouch! GDPS and CWS are not synchronized. I cannot plot this.')
 
         delta = gdp['val'].values-cws['val'].values
         ax0.plot(x, delta, drawstyle='steps-mid', lw=1, ls='-')

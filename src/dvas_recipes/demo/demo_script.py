@@ -23,7 +23,6 @@ from dvas.dvas import start_log
 from dvas.data.data import MultiProfile, MultiRSProfile, MultiGDPProfile
 from dvas.data.io import update_db
 from dvas.database.database import DatabaseManager
-from dvas.errors import dvasError
 
 if __name__ == '__main__':
 

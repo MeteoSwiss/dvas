@@ -18,7 +18,7 @@ import numpy as np
 # Import from this package
 from ..logger import log_func_call
 from ..logger import tools_logger as logger
-from ..errors import dvasError
+from ..errors import DvasError
 from .gruan import combine_gdps
 from ..plots import gruan as dpg
 
@@ -51,7 +51,7 @@ def chi_square(gdp_prfs, cws_prf):
     # Make sure no binning was employed.
     for vals in prfs:
         if len(vals) != len(cws):
-            raise dvasError('Ouch ! GDP and CWS profiles should have the same length.')
+            raise DvasError('Ouch ! GDP and CWS profiles should have the same length.')
 
     # Compute the chi square
     chi_sq = np.array([(prf.values - cws)**2/cws_uc**2 for prf in prfs])

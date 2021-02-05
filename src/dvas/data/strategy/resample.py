@@ -14,8 +14,6 @@ from abc import ABCMeta, abstractmethod
 from pandas.core.resample import TimedeltaIndexResampler
 
 # Import from current package
-from ...errors import dvasError
-
 
 # TODO
 #  Adapt this strategy to MultiIndex
