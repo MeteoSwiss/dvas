@@ -16,7 +16,9 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [fpavogt, 2020-12-21] Fix #60
  - [fpavogt, 2020-12-15] Signature-changing "deepcopy" decorator now leads to correct decorated signatures (see #70).
 ### Changed:
- - [modolol, 2020-01.29] Standardize table field names
+ - [fpavogt, 2021-02-05] Additional restructuring of dvas_recipes, to give users propers packages.
+ - [fpavogt, 2021-02-05] Renamed dvasError to DvasError.
+ - [modolol, 2020-01-29] Standardize table field names.
  - [modolol, 2021-01-14] Removes instrument from the mandatory configuration (and all dependencies) + add product id to instrument
  - [modolol, 2020-12-18] Modify logger
  - [modolol, 2020-12-18] Add dvas.dvas facade

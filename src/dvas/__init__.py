@@ -15,4 +15,4 @@ from .version import VERSION
 __version__ = VERSION
 
 pkg_path = Path(__file__).resolve(strict=True).parent
-expl_path = recipe_path / 'demo'
+expl_path = recipe_path / 'demo' / 'proc_arena'

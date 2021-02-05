@@ -1,0 +1,327 @@
+00:12:56.492|INFO|general|This dvas log was started on 2021-02-05 at 17:04:37.912328.
+00:12:56.574|INFO|localdb|Update db for following parameters: ['tdtpros1']
+00:12:56.574|INFO|rawcsv|Start reading files for 'tdtpros1'
+00:12:56.611|INFO|rawcsv|Successful reading of 'tdtpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20171024T120000.txt'
+00:12:56.611|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20171024T120000.txt' was treated
+00:12:56.648|INFO|rawcsv|Successful reading of 'tdtpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20171024T120000.csv'
+00:12:56.648|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20171024T120000.csv' was treated
+00:12:56.673|INFO|rawcsv|Successful reading of 'tdtpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20171024T120000.txt'
+00:12:56.673|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20171024T120000.txt' was treated
+00:12:56.718|INFO|rawcsv|Successful reading of 'tdtpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20170712T000000.csv'
+00:12:56.719|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20170712T000000.csv' was treated
+00:12:56.747|INFO|rawcsv|Successful reading of 'tdtpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20170712T000000.txt'
+00:12:56.747|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20170712T000000.txt' was treated
+00:12:56.855|INFO|rawcsv|Successful reading of 'tdtpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20170712T000000.txt'
+00:12:56.855|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20170712T000000.txt' was treated
+00:12:56.910|INFO|rawcsv|Successful reading of 'tdtpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20170712T000000.csv'
+00:12:56.910|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20170712T000000.csv' was treated
+00:12:56.957|INFO|rawcsv|Successful reading of 'tdtpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20171024T120000.csv'
+00:12:56.957|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20171024T120000.csv' was treated
+00:12:57.178|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS41-GDP-BETA_001_20171024T120000_1-002-001.nc' was treated
+00:12:57.190|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS92-GDP_002_20171024T120000_1-000-001.nc' was treated
+00:12:57.201|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS92-GDP_002_20170712T000000_1-000-001.nc' was treated
+00:12:57.408|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS41-GDP-BETA_001_20170712T000000_1-002-001.nc' was treated
+00:12:57.408|INFO|rawcsv|Finish reading files for 'tdtpros1'
+00:12:57.408|INFO|rawcsv|Found 12 new data while reading files for 'tdtpros1'
+00:12:57.408|INFO|localdb|Start inserting in local DB new found data for 'tdtpros1'
+00:12:57.450|INFO|localdb|Finish inserting in local DB new found data for 'tdtpros1'
+00:12:57.508|INFO|localdb|Update db for following parameters: ['trepros1']
+00:12:57.509|INFO|rawcsv|Start reading files for 'trepros1'
+00:12:57.547|INFO|rawcsv|Successful reading of 'trepros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20171024T120000.txt'
+00:12:57.547|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20171024T120000.txt' was treated
+00:12:57.586|INFO|rawcsv|Successful reading of 'trepros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20171024T120000.csv'
+00:12:57.586|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20171024T120000.csv' was treated
+00:12:57.612|INFO|rawcsv|Successful reading of 'trepros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20171024T120000.txt'
+00:12:57.613|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20171024T120000.txt' was treated
+00:12:57.654|INFO|rawcsv|Successful reading of 'trepros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20170712T000000.csv'
+00:12:57.654|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20170712T000000.csv' was treated
+00:12:57.679|INFO|rawcsv|Successful reading of 'trepros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20170712T000000.txt'
+00:12:57.679|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20170712T000000.txt' was treated
+00:12:57.776|INFO|rawcsv|Successful reading of 'trepros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20170712T000000.txt'
+00:12:57.776|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20170712T000000.txt' was treated
+00:12:57.829|INFO|rawcsv|Successful reading of 'trepros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20170712T000000.csv'
+00:12:57.829|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20170712T000000.csv' was treated
+00:12:57.873|INFO|rawcsv|Successful reading of 'trepros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20171024T120000.csv'
+00:12:57.873|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20171024T120000.csv' was treated
+00:12:58.090|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS41-GDP-BETA_001_20171024T120000_1-002-001.nc' was treated
+00:12:58.103|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS92-GDP_002_20171024T120000_1-000-001.nc' was treated
+00:12:58.115|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS92-GDP_002_20170712T000000_1-000-001.nc' was treated
+00:12:58.330|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS41-GDP-BETA_001_20170712T000000_1-002-001.nc' was treated
+00:12:58.330|INFO|rawcsv|Finish reading files for 'trepros1'
+00:12:58.330|INFO|rawcsv|Found 12 new data while reading files for 'trepros1'
+00:12:58.330|INFO|localdb|Start inserting in local DB new found data for 'trepros1'
+00:12:58.373|INFO|localdb|Finish inserting in local DB new found data for 'trepros1'
+00:12:58.430|INFO|localdb|Update db for following parameters: ['treprosu_r']
+00:12:58.431|INFO|rawcsv|Start reading files for 'treprosu_r'
+00:12:58.434|WARNING|rawcsv|No data for 'treprosu_r' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20171024T120000.txt'
+00:12:58.434|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20171024T120000.txt' was treated
+00:12:58.438|WARNING|rawcsv|No data for 'treprosu_r' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20171024T120000.csv'
+00:12:58.438|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20171024T120000.csv' was treated
+00:12:58.441|WARNING|rawcsv|No data for 'treprosu_r' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20171024T120000.txt'
+00:12:58.441|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20171024T120000.txt' was treated
+00:12:58.444|WARNING|rawcsv|No data for 'treprosu_r' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20170712T000000.csv'
+00:12:58.444|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20170712T000000.csv' was treated
+00:12:58.447|WARNING|rawcsv|No data for 'treprosu_r' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20170712T000000.txt'
+00:12:58.447|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20170712T000000.txt' was treated
+00:12:58.450|WARNING|rawcsv|No data for 'treprosu_r' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20170712T000000.txt'
+00:12:58.450|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20170712T000000.txt' was treated
+00:12:58.453|WARNING|rawcsv|No data for 'treprosu_r' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20170712T000000.csv'
+00:12:58.454|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20170712T000000.csv' was treated
+00:12:58.457|WARNING|rawcsv|No data for 'treprosu_r' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20171024T120000.csv'
+00:12:58.457|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20171024T120000.csv' was treated
+00:12:58.661|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS41-GDP-BETA_001_20171024T120000_1-002-001.nc' was treated
+00:12:58.672|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS92-GDP_002_20171024T120000_1-000-001.nc' was treated
+00:12:58.683|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS92-GDP_002_20170712T000000_1-000-001.nc' was treated
+00:12:58.887|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS41-GDP-BETA_001_20170712T000000_1-002-001.nc' was treated
+00:12:58.887|INFO|rawcsv|Finish reading files for 'treprosu_r'
+00:12:58.887|INFO|rawcsv|Found 12 new data while reading files for 'treprosu_r'
+00:12:58.887|INFO|localdb|Start inserting in local DB new found data for 'treprosu_r'
+00:12:58.930|INFO|localdb|Finish inserting in local DB new found data for 'treprosu_r'
+00:12:58.988|INFO|localdb|Update db for following parameters: ['treprosu_s']
+00:12:58.988|INFO|rawcsv|Start reading files for 'treprosu_s'
+00:12:58.992|WARNING|rawcsv|No data for 'treprosu_s' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20171024T120000.txt'
+00:12:58.992|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20171024T120000.txt' was treated
+00:12:58.995|WARNING|rawcsv|No data for 'treprosu_s' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20171024T120000.csv'
+00:12:58.995|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20171024T120000.csv' was treated
+00:12:58.998|WARNING|rawcsv|No data for 'treprosu_s' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20171024T120000.txt'
+00:12:58.998|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20171024T120000.txt' was treated
+00:12:59.001|WARNING|rawcsv|No data for 'treprosu_s' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20170712T000000.csv'
+00:12:59.002|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20170712T000000.csv' was treated
+00:12:59.005|WARNING|rawcsv|No data for 'treprosu_s' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20170712T000000.txt'
+00:12:59.005|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20170712T000000.txt' was treated
+00:12:59.008|WARNING|rawcsv|No data for 'treprosu_s' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20170712T000000.txt'
+00:12:59.008|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20170712T000000.txt' was treated
+00:12:59.011|WARNING|rawcsv|No data for 'treprosu_s' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20170712T000000.csv'
+00:12:59.011|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20170712T000000.csv' was treated
+00:12:59.014|WARNING|rawcsv|No data for 'treprosu_s' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20171024T120000.csv'
+00:12:59.014|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20171024T120000.csv' was treated
+00:12:59.221|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS41-GDP-BETA_001_20171024T120000_1-002-001.nc' was treated
+00:12:59.224|WARNING|rawcsv|No data for 'treprosu_s' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS92-GDP_002_20171024T120000_1-000-001.nc'
+00:12:59.224|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS92-GDP_002_20171024T120000_1-000-001.nc' was treated
+00:12:59.226|WARNING|rawcsv|No data for 'treprosu_s' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS92-GDP_002_20170712T000000_1-000-001.nc'
+00:12:59.226|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS92-GDP_002_20170712T000000_1-000-001.nc' was treated
+00:12:59.433|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS41-GDP-BETA_001_20170712T000000_1-002-001.nc' was treated
+00:12:59.433|INFO|rawcsv|Finish reading files for 'treprosu_s'
+00:12:59.433|INFO|rawcsv|Found 12 new data while reading files for 'treprosu_s'
+00:12:59.433|INFO|localdb|Start inserting in local DB new found data for 'treprosu_s'
+00:12:59.477|INFO|localdb|Finish inserting in local DB new found data for 'treprosu_s'
+00:12:59.535|INFO|localdb|Update db for following parameters: ['treprosu_t']
+00:12:59.536|INFO|rawcsv|Start reading files for 'treprosu_t'
+00:12:59.539|WARNING|rawcsv|No data for 'treprosu_t' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20171024T120000.txt'
+00:12:59.539|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20171024T120000.txt' was treated
+00:12:59.542|WARNING|rawcsv|No data for 'treprosu_t' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20171024T120000.csv'
+00:12:59.542|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20171024T120000.csv' was treated
+00:12:59.546|WARNING|rawcsv|No data for 'treprosu_t' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20171024T120000.txt'
+00:12:59.546|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20171024T120000.txt' was treated
+00:12:59.549|WARNING|rawcsv|No data for 'treprosu_t' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20170712T000000.csv'
+00:12:59.549|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20170712T000000.csv' was treated
+00:12:59.553|WARNING|rawcsv|No data for 'treprosu_t' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20170712T000000.txt'
+00:12:59.553|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20170712T000000.txt' was treated
+00:12:59.556|WARNING|rawcsv|No data for 'treprosu_t' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20170712T000000.txt'
+00:12:59.556|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20170712T000000.txt' was treated
+00:12:59.560|WARNING|rawcsv|No data for 'treprosu_t' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20170712T000000.csv'
+00:12:59.560|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20170712T000000.csv' was treated
+00:12:59.563|WARNING|rawcsv|No data for 'treprosu_t' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20171024T120000.csv'
+00:12:59.563|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20171024T120000.csv' was treated
+00:12:59.768|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS41-GDP-BETA_001_20171024T120000_1-002-001.nc' was treated
+00:12:59.780|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS92-GDP_002_20171024T120000_1-000-001.nc' was treated
+00:12:59.791|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS92-GDP_002_20170712T000000_1-000-001.nc' was treated
+00:12:59.995|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS41-GDP-BETA_001_20170712T000000_1-002-001.nc' was treated
+00:12:59.996|INFO|rawcsv|Finish reading files for 'treprosu_t'
+00:12:59.996|INFO|rawcsv|Found 12 new data while reading files for 'treprosu_t'
+00:12:59.996|INFO|localdb|Start inserting in local DB new found data for 'treprosu_t'
+00:13:00.039|INFO|localdb|Finish inserting in local DB new found data for 'treprosu_t'
+00:13:00.096|INFO|localdb|Update db for following parameters: ['altpros1']
+00:13:00.097|INFO|rawcsv|Start reading files for 'altpros1'
+00:13:00.135|INFO|rawcsv|Successful reading of 'altpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20171024T120000.txt'
+00:13:00.135|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20171024T120000.txt' was treated
+00:13:00.174|INFO|rawcsv|Successful reading of 'altpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20171024T120000.csv'
+00:13:00.174|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20171024T120000.csv' was treated
+00:13:00.201|INFO|rawcsv|Successful reading of 'altpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20171024T120000.txt'
+00:13:00.201|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20171024T120000.txt' was treated
+00:13:00.242|INFO|rawcsv|Successful reading of 'altpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20170712T000000.csv'
+00:13:00.242|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20170712T000000.csv' was treated
+00:13:00.327|INFO|rawcsv|Successful reading of 'altpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20170712T000000.txt'
+00:13:00.327|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20170712T000000.txt' was treated
+00:13:00.382|INFO|rawcsv|Successful reading of 'altpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20170712T000000.txt'
+00:13:00.383|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20170712T000000.txt' was treated
+00:13:00.430|INFO|rawcsv|Successful reading of 'altpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20170712T000000.csv'
+00:13:00.430|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20170712T000000.csv' was treated
+00:13:00.473|INFO|rawcsv|Successful reading of 'altpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20171024T120000.csv'
+00:13:00.473|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20171024T120000.csv' was treated
+00:13:00.683|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS41-GDP-BETA_001_20171024T120000_1-002-001.nc' was treated
+00:13:00.694|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS92-GDP_002_20171024T120000_1-000-001.nc' was treated
+00:13:00.706|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS92-GDP_002_20170712T000000_1-000-001.nc' was treated
+00:13:00.912|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS41-GDP-BETA_001_20170712T000000_1-002-001.nc' was treated
+00:13:00.913|INFO|rawcsv|Finish reading files for 'altpros1'
+00:13:00.913|INFO|rawcsv|Found 12 new data while reading files for 'altpros1'
+00:13:00.913|INFO|localdb|Start inserting in local DB new found data for 'altpros1'
+00:13:00.956|INFO|localdb|Finish inserting in local DB new found data for 'altpros1'
+00:13:05.430|WARNING|localdb|Empty search 'and_(tag('e:80611'),tag('r:1'),tag('raw'))' for 'trepros1
+00:13:05.431|WARNING|localdb|Empty search 'and_(tag('e:80611'),tag('r:1'),tag('raw'))' for 'tdtpros1
+00:13:05.433|WARNING|localdb|Empty search 'and_(tag('e:80611'),tag('r:1'),tag('raw'))' for 'altpros1
+00:13:36.585|WARNING|localdb|Empty search 'and_(tag('raw'))' for 'trepros1
+00:13:36.586|WARNING|localdb|Empty search 'and_(tag('raw'))' for 'tdtpros1
+00:13:36.588|WARNING|localdb|Empty search 'and_(tag('raw'))' for 'altpros1
+00:36:12.663|INFO|general|This dvas log was started on 2021-02-05 at 17:27:54.084089.
+00:36:12.740|INFO|localdb|Update db for following parameters: ['tdtpros1']
+00:36:12.741|INFO|rawcsv|Start reading files for 'tdtpros1'
+00:36:12.839|INFO|rawcsv|Successful reading of 'tdtpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20171024T120000.txt'
+00:36:12.839|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20171024T120000.txt' was treated
+00:36:12.888|INFO|rawcsv|Successful reading of 'tdtpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20171024T120000.csv'
+00:36:12.888|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20171024T120000.csv' was treated
+00:36:12.914|INFO|rawcsv|Successful reading of 'tdtpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20171024T120000.txt'
+00:36:12.914|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20171024T120000.txt' was treated
+00:36:12.956|INFO|rawcsv|Successful reading of 'tdtpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20170712T000000.csv'
+00:36:12.957|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20170712T000000.csv' was treated
+00:36:12.982|INFO|rawcsv|Successful reading of 'tdtpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20170712T000000.txt'
+00:36:12.982|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20170712T000000.txt' was treated
+00:36:13.025|INFO|rawcsv|Successful reading of 'tdtpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20170712T000000.txt'
+00:36:13.026|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20170712T000000.txt' was treated
+00:36:13.070|INFO|rawcsv|Successful reading of 'tdtpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20170712T000000.csv'
+00:36:13.070|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20170712T000000.csv' was treated
+00:36:13.115|INFO|rawcsv|Successful reading of 'tdtpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20171024T120000.csv'
+00:36:13.115|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20171024T120000.csv' was treated
+00:36:13.332|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS41-GDP-BETA_001_20171024T120000_1-002-001.nc' was treated
+00:36:13.344|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS92-GDP_002_20171024T120000_1-000-001.nc' was treated
+00:36:13.355|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS92-GDP_002_20170712T000000_1-000-001.nc' was treated
+00:36:13.563|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS41-GDP-BETA_001_20170712T000000_1-002-001.nc' was treated
+00:36:13.563|INFO|rawcsv|Finish reading files for 'tdtpros1'
+00:36:13.563|INFO|rawcsv|Found 12 new data while reading files for 'tdtpros1'
+00:36:13.563|INFO|localdb|Start inserting in local DB new found data for 'tdtpros1'
+00:36:13.607|INFO|localdb|Finish inserting in local DB new found data for 'tdtpros1'
+00:36:13.664|INFO|localdb|Update db for following parameters: ['trepros1']
+00:36:13.665|INFO|rawcsv|Start reading files for 'trepros1'
+00:36:13.763|INFO|rawcsv|Successful reading of 'trepros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20171024T120000.txt'
+00:36:13.764|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20171024T120000.txt' was treated
+00:36:13.815|INFO|rawcsv|Successful reading of 'trepros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20171024T120000.csv'
+00:36:13.815|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20171024T120000.csv' was treated
+00:36:13.843|INFO|rawcsv|Successful reading of 'trepros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20171024T120000.txt'
+00:36:13.843|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20171024T120000.txt' was treated
+00:36:13.885|INFO|rawcsv|Successful reading of 'trepros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20170712T000000.csv'
+00:36:13.885|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20170712T000000.csv' was treated
+00:36:13.912|INFO|rawcsv|Successful reading of 'trepros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20170712T000000.txt'
+00:36:13.912|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20170712T000000.txt' was treated
+00:36:13.958|INFO|rawcsv|Successful reading of 'trepros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20170712T000000.txt'
+00:36:13.958|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20170712T000000.txt' was treated
+00:36:14.003|INFO|rawcsv|Successful reading of 'trepros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20170712T000000.csv'
+00:36:14.003|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20170712T000000.csv' was treated
+00:36:14.047|INFO|rawcsv|Successful reading of 'trepros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20171024T120000.csv'
+00:36:14.047|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20171024T120000.csv' was treated
+00:36:14.264|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS41-GDP-BETA_001_20171024T120000_1-002-001.nc' was treated
+00:36:14.276|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS92-GDP_002_20171024T120000_1-000-001.nc' was treated
+00:36:14.287|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS92-GDP_002_20170712T000000_1-000-001.nc' was treated
+00:36:14.499|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS41-GDP-BETA_001_20170712T000000_1-002-001.nc' was treated
+00:36:14.499|INFO|rawcsv|Finish reading files for 'trepros1'
+00:36:14.499|INFO|rawcsv|Found 12 new data while reading files for 'trepros1'
+00:36:14.499|INFO|localdb|Start inserting in local DB new found data for 'trepros1'
+00:36:14.546|INFO|localdb|Finish inserting in local DB new found data for 'trepros1'
+00:36:14.609|INFO|localdb|Update db for following parameters: ['treprosu_r']
+00:36:14.610|INFO|rawcsv|Start reading files for 'treprosu_r'
+00:36:14.613|WARNING|rawcsv|No data for 'treprosu_r' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20171024T120000.txt'
+00:36:14.613|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20171024T120000.txt' was treated
+00:36:14.617|WARNING|rawcsv|No data for 'treprosu_r' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20171024T120000.csv'
+00:36:14.617|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20171024T120000.csv' was treated
+00:36:14.620|WARNING|rawcsv|No data for 'treprosu_r' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20171024T120000.txt'
+00:36:14.621|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20171024T120000.txt' was treated
+00:36:14.624|WARNING|rawcsv|No data for 'treprosu_r' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20170712T000000.csv'
+00:36:14.624|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20170712T000000.csv' was treated
+00:36:14.627|WARNING|rawcsv|No data for 'treprosu_r' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20170712T000000.txt'
+00:36:14.627|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20170712T000000.txt' was treated
+00:36:14.630|WARNING|rawcsv|No data for 'treprosu_r' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20170712T000000.txt'
+00:36:14.630|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20170712T000000.txt' was treated
+00:36:14.634|WARNING|rawcsv|No data for 'treprosu_r' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20170712T000000.csv'
+00:36:14.634|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20170712T000000.csv' was treated
+00:36:14.637|WARNING|rawcsv|No data for 'treprosu_r' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20171024T120000.csv'
+00:36:14.637|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20171024T120000.csv' was treated
+00:36:14.843|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS41-GDP-BETA_001_20171024T120000_1-002-001.nc' was treated
+00:36:14.854|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS92-GDP_002_20171024T120000_1-000-001.nc' was treated
+00:36:14.865|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS92-GDP_002_20170712T000000_1-000-001.nc' was treated
+00:36:15.081|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS41-GDP-BETA_001_20170712T000000_1-002-001.nc' was treated
+00:36:15.081|INFO|rawcsv|Finish reading files for 'treprosu_r'
+00:36:15.081|INFO|rawcsv|Found 12 new data while reading files for 'treprosu_r'
+00:36:15.081|INFO|localdb|Start inserting in local DB new found data for 'treprosu_r'
+00:36:15.127|INFO|localdb|Finish inserting in local DB new found data for 'treprosu_r'
+00:36:15.187|INFO|localdb|Update db for following parameters: ['treprosu_s']
+00:36:15.187|INFO|rawcsv|Start reading files for 'treprosu_s'
+00:36:15.191|WARNING|rawcsv|No data for 'treprosu_s' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20171024T120000.txt'
+00:36:15.191|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20171024T120000.txt' was treated
+00:36:15.194|WARNING|rawcsv|No data for 'treprosu_s' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20171024T120000.csv'
+00:36:15.194|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20171024T120000.csv' was treated
+00:36:15.197|WARNING|rawcsv|No data for 'treprosu_s' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20171024T120000.txt'
+00:36:15.198|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20171024T120000.txt' was treated
+00:36:15.201|WARNING|rawcsv|No data for 'treprosu_s' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20170712T000000.csv'
+00:36:15.201|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20170712T000000.csv' was treated
+00:36:15.204|WARNING|rawcsv|No data for 'treprosu_s' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20170712T000000.txt'
+00:36:15.204|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20170712T000000.txt' was treated
+00:36:15.208|WARNING|rawcsv|No data for 'treprosu_s' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20170712T000000.txt'
+00:36:15.208|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20170712T000000.txt' was treated
+00:36:15.211|WARNING|rawcsv|No data for 'treprosu_s' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20170712T000000.csv'
+00:36:15.212|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20170712T000000.csv' was treated
+00:36:15.216|WARNING|rawcsv|No data for 'treprosu_s' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20171024T120000.csv'
+00:36:15.216|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20171024T120000.csv' was treated
+00:36:15.437|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS41-GDP-BETA_001_20171024T120000_1-002-001.nc' was treated
+00:36:15.439|WARNING|rawcsv|No data for 'treprosu_s' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS92-GDP_002_20171024T120000_1-000-001.nc'
+00:36:15.439|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS92-GDP_002_20171024T120000_1-000-001.nc' was treated
+00:36:15.442|WARNING|rawcsv|No data for 'treprosu_s' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS92-GDP_002_20170712T000000_1-000-001.nc'
+00:36:15.442|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS92-GDP_002_20170712T000000_1-000-001.nc' was treated
+00:36:15.652|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS41-GDP-BETA_001_20170712T000000_1-002-001.nc' was treated
+00:36:15.652|INFO|rawcsv|Finish reading files for 'treprosu_s'
+00:36:15.652|INFO|rawcsv|Found 12 new data while reading files for 'treprosu_s'
+00:36:15.652|INFO|localdb|Start inserting in local DB new found data for 'treprosu_s'
+00:36:15.699|INFO|localdb|Finish inserting in local DB new found data for 'treprosu_s'
+00:36:15.758|INFO|localdb|Update db for following parameters: ['treprosu_t']
+00:36:15.758|INFO|rawcsv|Start reading files for 'treprosu_t'
+00:36:15.762|WARNING|rawcsv|No data for 'treprosu_t' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20171024T120000.txt'
+00:36:15.762|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20171024T120000.txt' was treated
+00:36:15.765|WARNING|rawcsv|No data for 'treprosu_t' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20171024T120000.csv'
+00:36:15.766|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20171024T120000.csv' was treated
+00:36:15.769|WARNING|rawcsv|No data for 'treprosu_t' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20171024T120000.txt'
+00:36:15.769|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20171024T120000.txt' was treated
+00:36:15.773|WARNING|rawcsv|No data for 'treprosu_t' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20170712T000000.csv'
+00:36:15.773|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20170712T000000.csv' was treated
+00:36:15.776|WARNING|rawcsv|No data for 'treprosu_t' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20170712T000000.txt'
+00:36:15.776|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20170712T000000.txt' was treated
+00:36:15.780|WARNING|rawcsv|No data for 'treprosu_t' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20170712T000000.txt'
+00:36:15.780|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20170712T000000.txt' was treated
+00:36:15.783|WARNING|rawcsv|No data for 'treprosu_t' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20170712T000000.csv'
+00:36:15.784|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20170712T000000.csv' was treated
+00:36:15.787|WARNING|rawcsv|No data for 'treprosu_t' in file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20171024T120000.csv'
+00:36:15.787|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20171024T120000.csv' was treated
+00:36:16.061|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS41-GDP-BETA_001_20171024T120000_1-002-001.nc' was treated
+00:36:16.075|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS92-GDP_002_20171024T120000_1-000-001.nc' was treated
+00:36:16.086|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS92-GDP_002_20170712T000000_1-000-001.nc' was treated
+00:36:16.294|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS41-GDP-BETA_001_20170712T000000_1-002-001.nc' was treated
+00:36:16.295|INFO|rawcsv|Finish reading files for 'treprosu_t'
+00:36:16.295|INFO|rawcsv|Found 12 new data while reading files for 'treprosu_t'
+00:36:16.295|INFO|localdb|Start inserting in local DB new found data for 'treprosu_t'
+00:36:16.338|INFO|localdb|Finish inserting in local DB new found data for 'treprosu_t'
+00:36:16.395|INFO|localdb|Update db for following parameters: ['altpros1']
+00:36:16.396|INFO|rawcsv|Start reading files for 'altpros1'
+00:36:16.434|INFO|rawcsv|Successful reading of 'altpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20171024T120000.txt'
+00:36:16.434|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20171024T120000.txt' was treated
+00:36:16.476|INFO|rawcsv|Successful reading of 'altpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20171024T120000.csv'
+00:36:16.476|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20171024T120000.csv' was treated
+00:36:16.503|INFO|rawcsv|Successful reading of 'altpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20171024T120000.txt'
+00:36:16.503|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20171024T120000.txt' was treated
+00:36:16.544|INFO|rawcsv|Successful reading of 'altpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20170712T000000.csv'
+00:36:16.544|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C34.PAY_20170712T000000.csv' was treated
+00:36:16.571|INFO|rawcsv|Successful reading of 'altpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20170712T000000.txt'
+00:36:16.571|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS92.PAY_20170712T000000.txt' was treated
+00:36:16.609|INFO|rawcsv|Successful reading of 'altpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20170712T000000.txt'
+00:36:16.609|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/RS41.PAY_20170712T000000.txt' was treated
+00:36:16.648|INFO|rawcsv|Successful reading of 'altpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20170712T000000.csv'
+00:36:16.648|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20170712T000000.csv' was treated
+00:36:16.750|INFO|rawcsv|Successful reading of 'altpros1' in CSV file '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20171024T120000.csv'
+00:36:16.750|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/others/C50.PAY_20171024T120000.csv' was treated
+00:36:16.978|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS41-GDP-BETA_001_20171024T120000_1-002-001.nc' was treated
+00:36:16.990|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS92-GDP_002_20171024T120000_1-000-001.nc' was treated
+00:36:17.001|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS92-GDP_002_20170712T000000_1-000-001.nc' was treated
+00:36:17.210|INFO|rawcsv|Files '/Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/develop_vof/src/dvas_recipes/uaii22/proc_arena/data/rs/gdps/PAY-RS-01_2_RS41-GDP-BETA_001_20170712T000000_1-002-001.nc' was treated
+00:36:17.210|INFO|rawcsv|Finish reading files for 'altpros1'
+00:36:17.210|INFO|rawcsv|Found 12 new data while reading files for 'altpros1'
+00:36:17.210|INFO|localdb|Start inserting in local DB new found data for 'altpros1'
+00:36:17.254|INFO|localdb|Finish inserting in local DB new found data for 'altpros1'
+00:36:17.255|WARNING|localdb|Empty search 'and_(tag('e:80611'),tag('r:1'),tag('raw'))' for 'trepros1
+00:36:17.256|WARNING|localdb|Empty search 'and_(tag('e:80611'),tag('r:1'),tag('raw'))' for 'tdtpros1
+00:36:17.256|WARNING|localdb|Empty search 'and_(tag('e:80611'),tag('r:1'),tag('raw'))' for 'altpros1
