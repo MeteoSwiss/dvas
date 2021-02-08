@@ -251,8 +251,8 @@ this_file_of_result.txt
 *.DS_Store
 
 # Demo stuff
-src/dvas_recipes/demo/output
-src/dvas_recipes/uaii22/output
+src/dvas_recipes/demo/proc_arena/output
+src/dvas_recipes/uaii22/proc_arena/output
 .dev_utils/create_example_data/PAY-RS-01_2_RS41-GDP-BETA_001_20180110T000000_1-002-002.nc
 .dev_utils/create_example_data/PAY-RS-01_2_RS41-GDP-BETA_001_20180125T120000_1-002-002.nc
 .dev_utils/create_example_data/PAY-RS-01_2_RS92-GDP_002_20180110T000000_1-000-002.nc
