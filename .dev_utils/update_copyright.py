@@ -11,8 +11,6 @@ This module contains: automated tool to update the Copyright notice in the docst
 import argparse
 from pathlib import Path
 
-import numpy as np
-
 def copyright_notice(years):
     """ Return the copyright notice.
 
@@ -34,7 +32,6 @@ def main():
     This is designed to be used through the command line as::
 
         python update_copyright.py 2020-2021
-
 
     """
 
