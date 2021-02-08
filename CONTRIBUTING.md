@@ -67,8 +67,11 @@ For the sake of clarity, and to facilitate the maintenance, we list here (succin
    * On Windows, linter and tests can be run locally from terminal with `sh .\.dev_utils\linter_bash.bat`
      resp. `sh .\.dev_utils\test_bash.bat` commands.
    * A script to update the copyright years in all the `.py` files in the repository, that can be
-     run as follows: `python update_copyright.py 2020-2021`
-     :warning: This script comes with no safety net. Running it will auto-update all the `.py` files. Use with caution. 
+     run as follows:
+     ```
+     python update_copyright.py 2020-2021`
+     ```
+     :warning: This script comes with no safety net. Running it will auto-update all the `.py` files. Use with caution.
 
 ## Styles
 
