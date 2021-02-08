@@ -69,7 +69,7 @@ For the sake of clarity, and to facilitate the maintenance, we list here (succin
    * A script to update the copyright years in all the `.py` files in the repository, that can be
      run as follows:
      ```
-     python update_copyright.py 2020-2021`
+     python update_copyright.py 2020-2021
      ```
      :warning: This script comes with no safety net. Running it will auto-update all the `.py` files. Use with caution.
 
