@@ -8,15 +8,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 Module content: demo code
 """
 
-from pathlib import Path
-
-# Set the data path to look where we currently are
-from dvas.environ import path_var as dvas_path_var
-
-# WARNING: this must be done BEFORE importing anything else ... !
-dvas_path_var.orig_data_path = Path(__file__).parent / 'data'
-dvas_path_var.config_dir_path = Path(__file__).parent / 'config'
-
 # Import stuff from dvas
 import dvas.plots.utils as dpu
 from dvas.dvas import start_log

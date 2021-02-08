@@ -7,15 +7,6 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 """
 
-from pathlib import Path
-
-# Set the data path to look where we currently are
-from dvas.environ import path_var as dvas_path_var
-
-# WARNING: this must be done BEFORE importing anything else ... !
-dvas_path_var.orig_data_path = Path(__file__).parent / 'data'
-dvas_path_var.config_dir_path = Path(__file__).parent / 'config'
-
 # Import stuff from dvas
 import dvas.plots.utils as dpu
 from dvas.dvas import start_log
@@ -61,12 +52,12 @@ if __name__ == '__main__':
 
     # --- SYNCHRONIZE PROFILES ---
 
-    #drs.sync_flight(80611, 1)
+    drs.sync_flight(80611, 1)
 
     # Get all the profiles, to see how they look.
-    #filt = "all()"
-    #prfs = MultiRSProfile()
-    #prfs.load_from_db(filt, 'trepros1', 'tdtpros1', alt_abbr='altpros1')
+    filt = "all()"
+    prfs = MultiRSProfile()
+    prfs.load_from_db(filt, 'trepros1', 'tdtpros1', alt_abbr='altpros1')
 
     #prfs.get_info(prm='oid')
     #prfs.get_info('tags')
