@@ -28,3 +28,6 @@ src/dvas/data           @modolol
 
 # All database
 src/dvas/database       @modolol
+
+# All UAII22 high-level scripts
+src/dvas_recipes/uaii22 @fpavogt

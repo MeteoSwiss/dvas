@@ -16,7 +16,7 @@ from dvas.data.io import update_db
 from dvas.data.strategy.load import LoadRSProfileStrategy
 from dvas.data.data import MultiRSProfile
 from dvas.config.definitions.tag import TAG_DERIVED_VAL, TAG_RAW_VAL
-from dvas.errors import dvasError
+from dvas.errors import DvasError
 
 
 class TestMutliProfile:
@@ -83,7 +83,7 @@ class TestMutliProfile:
                     for (ind, item) in enumerate(out)])
 
         # Try to get an index out.
-        with pytest.raises(dvasError):
+        with pytest.raises(DvasError):
             self.mlt_prf.get_prms(prm_list='alt')
 
     def test_rm_info_tags(self):

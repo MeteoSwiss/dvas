@@ -14,8 +14,7 @@ from abc import ABCMeta, abstractmethod
 from pandas.core.resample import TimedeltaIndexResampler
 
 # Import from current package
-from ...errors import dvasError
-
+from ...errors import DvasError
 
 # TODO
 #  Adapt this strategy to MultiIndex
@@ -80,6 +79,6 @@ class ResampleRSDataStrategy(ResampleStrategyAbstract):
                     )
                 )
             except KeyError:
-                raise dvasError(f"Unknown resample method '{method}'")
+                raise DvasError(f"Unknown resample method '{method}'")
 
         return data_rspl

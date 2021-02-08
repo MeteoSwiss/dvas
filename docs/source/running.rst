@@ -1,13 +1,21 @@
 .. _running:
 
-Running dvas
-============
+
+Running dvas as a high-level user
+=================================
 
 1. Initialize a new dvas *processing arena*. In a terminal, in a location of your choice, type:
 
 .. code-block:: none
 
-    dvas --init
+    dvas_init uaii22
+
+You can see all the available recipes using the associated help (``dvas_init --help``):
+
+.. literalinclude:: dvas_help_msg.txt
+    :language: none
+
+2. ...
 
 Naming conventions
 ------------------

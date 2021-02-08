@@ -18,7 +18,7 @@ import pandas as pd
 # Import from current package
 from ..logger import log_func_call
 from ..logger import tools_logger as logger
-from ..errors import dvasError
+from ..errors import DvasError
 from .tools import weighted_mean, delta
 from ..data.data import MultiGDPProfile
 from ..data.strategy.data import GDPProfile
@@ -118,7 +118,7 @@ def corcoef_gdps(i, j, uc_type,
         corcoef = np.ones_like(corcoef)
 
     else:
-        raise dvasError("Ouch ! uc_type must be one of ['r', 's', 't', 'u'], not: %s" % (uc_type))
+        raise DvasError("Ouch ! uc_type must be one of ['r', 's', 't', 'u'], not: %s" % (uc_type))
 
     return corcoef
 
@@ -159,12 +159,12 @@ def combine_gdps(gdp_prfs, binning=1, method='weighted mean'):
 
     # For a delta, I can only have two profiles
     if method == 'delta' and n_prf != 2:
-        raise dvasError('Ouch! I can only make a delta between 2 GDPs, not %i !' % (n_prf))
+        raise DvasError('Ouch! I can only make a delta between 2 GDPs, not %i !' % (n_prf))
 
     # Check that all the profiles/errors have the same length
     for item in gdp_prfs.profiles:
         if len(item.data) != len_gdp:
-            raise dvasError('Ouch ! All GDP profiles must have the same length !')
+            raise DvasError('Ouch ! All GDP profiles must have the same length !')
 
     # TODO: check that all the profiles have the same alt and tdt indexes
     # TODO: request profiles to belong to the same event ?
@@ -225,7 +225,7 @@ def combine_gdps(gdp_prfs, binning=1, method='weighted mean'):
     # Let us make sure that a single srn is tied to each profile. I would not know how to deal with
     # the correlation matrix of a combined profile!
     if np.any([len(item) > 1 for item in srns_inds]):
-        raise dvasError('Ouch! I need a single srn per profile to be combined.')
+        raise DvasError('Ouch! I need a single srn per profile to be combined.')
     # Clean-up all the sublists.
     srns_inds = [item[0] for item in srns_inds]
     # Build the full array of indices

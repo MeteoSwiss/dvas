@@ -21,9 +21,9 @@ from .helper import SingleInstanceMetaClass
 from .helper import TypedProperty as TProp
 from .helper import check_path
 from .helper import get_class_public_attr
-from .errors import dvasError
+from .errors import DvasError
 from . import __name__ as pkg_name
-from . import expl_path, pkg_path
+from .hardcoded import PKG_PATH, PROC_PATH
 
 
 class ABCSingleInstanceMeta(ABCMeta, SingleInstanceMetaClass):
@@ -45,7 +45,7 @@ class VariableManager(ABC, metaclass=ABCSingleInstanceMeta):
             ])
 
         except AssertionError as first_error:
-            raise dvasError("Error in matching '_attr_def' pattern") from first_error
+            raise DvasError("Error in matching '_attr_def' pattern") from first_error
 
         # Set attributes
         self.set_attr()
@@ -100,11 +100,11 @@ class GlobalPathVariablesManager(VariableManager):
 
     #: pathlib.Path: Original data path
     orig_data_path = TProp(
-        Union[Path, str], check_path, kwargs={'exist_ok': True}
+        Union[Path, str], check_path, kwargs={'exist_ok': False}
     )
     #: pathlib.Path: Config dir path
     config_dir_path = TProp(
-        Union[Path, str], check_path, kwargs={'exist_ok': True}
+        Union[Path, str], check_path, kwargs={'exist_ok': False}
     )
     #: pathlib.Path: Local db dir path
     local_db_path = TProp(
@@ -127,18 +127,17 @@ class GlobalPathVariablesManager(VariableManager):
     def _attr_def(self):
         return [
             {'name': 'orig_data_path',
-             'default': expl_path / 'data'},
+             'default': PROC_PATH / 'data'},
             {'name': 'config_dir_path',
-             'default': expl_path / 'config'},
+             'default': PROC_PATH / 'config'},
             {'name': 'local_db_path',
-             'default': Path('.') / 'dvas_db'},
+             'default': PROC_PATH / 'dvas_db'},
             {'name': 'output_path',
-             'default': Path('.') / 'output'},
+             'default': PROC_PATH / 'output'},
             {'name': 'plot_output_path',
-             'default': Path('.') / 'output' / 'plots'},
+             'default': PROC_PATH / 'output' / 'plots'},
             {'name': 'plot_style_path',
-             'default': pkg_path / 'plots' / 'mpl_styles'}
-
+             'default': PKG_PATH / 'plots' / 'mpl_styles'}
         ]
 
 
