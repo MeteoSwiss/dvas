@@ -21,9 +21,9 @@ def copyright_notice(years):
         str : the copyright notice.
     """
 
-    cn = 'Copyright (c) {} MeteoSwiss, contributors listed in AUTHORS.\n'.format(years)
+    notice = 'Copyright (c) {} MeteoSwiss, contributors listed in AUTHORS.\n'.format(years)
 
-    return cn
+    return notice
 
 def main():
     """ The main function that updates the Copyright notices of all .py files in the dvas
@@ -73,28 +73,28 @@ def main():
     fn_list = Path('..').rglob('*.py')
 
     # Very well, loop through these, and update them as I see fit.
-    for fn in fn_list:
+    for f_name in fn_list:
 
-        f = open(fn, 'r')
-        content = f.readlines()
-        f.close()
+        f_object = open(f_name, 'r')
+        content = f_object.readlines()
+        f_object.close()
 
         copyright_line = [l for (l, line) in enumerate(content) if 'Copyright (c)' in line]
 
         if len(copyright_line) == 0:
-            print('Ignoring {}: no pre-existing copyright info ...'.format(fn))
+            print('Ignoring {}: no pre-existing copyright info ...'.format(f_name))
             continue
         if len(copyright_line) > 1:
-            print('Ignoring {}: too many copyright occurences ...'.format(fn))
+            print('Ignoring {}: too many copyright occurences ...'.format(f_name))
             continue
 
         # Replace the line
         content[copyright_line[0]] = new_cn
 
         # Write the update file
-        f = open(fn, 'w')
-        f.writelines(content)
-        f.close()
+        f_object = open(f_name, 'w')
+        f_object.writelines(content)
+        f_object.close()
 
     print('\nAll .py files updated.\n')
     print('Do not forget to update the following files manually:\n')
