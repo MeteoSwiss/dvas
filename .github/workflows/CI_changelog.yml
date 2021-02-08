@@ -4,7 +4,7 @@
 # https://github.community/t5/GitHub-Actions/Get-list-of-files-on-pull-request-merge/td-p/41570
 # https://developer.github.com/changes/2020-02-10-deprecating-auth-through-query-param/
 #
-# Created May 2020; F.P.A. Vogt; frederic.vogt@meteoswiss.ch
+# Copyright (c) 2020-2021 MeteoSwiss, created by F.P.A. Vogt; frederic.vogt@meteoswiss.ch
 
 name: CI_changelog
 
