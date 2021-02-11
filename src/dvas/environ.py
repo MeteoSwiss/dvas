@@ -127,6 +127,7 @@ class GlobalPathVariablesManager(VariableManager):
     def _attr_def(self):
         # TODO
         #  Replace by Path('.')
+        #  Remove local_db_path in order to be able to delete DB properly
         return [
             {'name': 'orig_data_path',
              'default': PROC_PATH / 'data'},
