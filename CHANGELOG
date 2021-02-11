@@ -11,6 +11,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [modolol, 2020-12-29] Add metadata management in config and DB.
  - [fpavogt, 2020-12-17] Add a rebase strategy and fix #83.
 ### Fixed:
+ - [modolol, 2020-02-11] Disconnect global db from each tests
  - [fpavogt, 2021-02-02] Fix #102 & #87. Lift cap on pandas version.
  - [modolol, 2020-01-29] Fix #94
  - [fpavogt, 2020-12-21] Fix #60
