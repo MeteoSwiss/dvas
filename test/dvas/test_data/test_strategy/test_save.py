@@ -10,7 +10,6 @@ Module contents: Testing classes and function for dvas.data.strategy.save module
 """
 
 # Import from python packages and modules
-import pytest
 import pandas as pd
 import numpy as np
 
