@@ -16,7 +16,6 @@ import pytest
 # Import from python packages and modules
 from dvas.data.strategy.load import LoadRSProfileStrategy
 from dvas.data.data import MultiRSProfile
-from dvas.config.definitions.tag import TAG_DERIVED_VAL, TAG_RAW_VAL
 from dvas.errors import DvasError
 
 # Import from current package
