@@ -16,43 +16,46 @@ import pytz
 import pytest
 import numpy as np
 
-# Import from current python packages and modules
+# Import from python packages and modules under test
 from dvas.database.model import Parameter as TableParameter
-from dvas.database.model import Object as TableObject
-from dvas.database.model import InstrType as TableInstrType
-from dvas.database.database import DatabaseManager
 from dvas.database.database import InfoManager, InfoManagerMetaData
 from dvas.database.database import SearchInfoExpr
 from dvas.database.database import DBInsertError
 from dvas.environ import glob_var
 
+# Import from current package
+from ..db_fixture import db_init  # noqa pylint: disable=W0611
 
-@pytest.fixture
-def db_mngr():
-    """Get DatabaseManager"""
-    return DatabaseManager()
+
+# Define db_data
+db_data = {
+    'sub_dir': 'test_database',
+    'data': [
+        {
+            'index': np.array([0, 1, 2]),
+            'value': np.array([500, 501, 502]),
+            'prm_name': 'trepros1',
+            'info': {
+                'evt_dt': '20200101T0000Z',
+                'type_name': 'YT',
+                'srn': 'YT-100', 'pid': '0',
+                'tags': ('data_test_db', 'e:1', 'r:1'),
+                'metadata': {'test_key_str': 'one', 'test_key_num': '1'}
+            },
+            'source_info': 'test_add_data'
+        }
+    ]
+}
 
 
 class TestDatabaseManager:
     """Test DatabaseManager class"""
 
-    # Define
-    n_data = 3
-    index = np.arange(n_data)
-    values = np.array([550, 551, 552])
-    prm = 'trepros1'
-    sn = 'YT-100'
-    info = InfoManager.from_dict(
-        {
-            'evt_dt': '20200101T0000Z',
-            'srn': sn, 'pid': '0',
-            'tags': 'data_test_db',
-            'metadata': {'test_key_str': 'one', 'test_key_num': '1'}
-        }
-    )
-
-    def test_get_or_none(self, db_mngr):
+    def test_get_or_none(self, db_init):
         """Test get_or_none method"""
+
+        # Define
+        db_mngr = db_init.db_mngr
 
         assert db_mngr.get_or_none(
             TableParameter,
@@ -65,16 +68,6 @@ class TestDatabaseManager:
         ) == ['dummytst_param1']
 
         assert db_mngr.get_or_none(
-            TableObject,
-            search={
-                'where': TableInstrType.type_name == 'YT',
-                'join_order': [TableInstrType],
-            },
-            attr=[[TableObject.srn.name]],
-            get_first=True
-        ) in [['YT-100'], ['YT-101']]
-
-        assert db_mngr.get_or_none(
             TableParameter,
             search={
                 'where': TableParameter.prm_name.in_(
@@ -85,76 +78,71 @@ class TestDatabaseManager:
             get_first=False
         ) == [['dummytst_param1'], ['dummytst_param2']]
 
-    def test_add_data(self, db_mngr):
+    def test_add_data(self, db_init):
         """Test add_data method"""
 
+        # Define
+        db_mngr = db_init.db_mngr
+        data = db_init.data
+
         # Test add data
-        db_mngr.add_data(
-            self.index,
-            self.values,
-            self.info,
-            self.prm, source_info='test_add_data'
-        )
+        db_mngr.add_data(**data[0], force_write=False)
 
         # Test add same data (overwrite)
-        db_mngr.add_data(
-            self.index,
-            self.values,
-            self.info,
-            self.prm, source_info='test_add_data',
-            force_write=True
-        )
-
-        # Test add same data (no overwrite)
-        db_mngr.add_data(
-            self.index,
-            self.values,
-            self.info,
-            self.prm, source_info='test_add_data',
-            force_write=False
-        )
+        db_mngr.add_data(**data[0], force_write=True)
 
         with pytest.raises(DBInsertError):
             db_mngr.add_data(
                 [],
-                self.values,
-                self.info,
-                self.prm, source_info='test_add_data'
+                data[0]['value'],
+                data[0]['info'],
+                data[0]['prm_name'],
+                source_info=data[0]['source_info']
             )
 
         with pytest.raises(DBInsertError):
             db_mngr.add_data(
-                self.index,
+                data[0]['index'],
                 [],
-                self.info,
-                self.prm, source_info='test_add_data'
+                data[0]['info'],
+                data[0]['prm_name'],
+                source_info=data[0]['source_info']
             )
 
         with pytest.raises(DBInsertError):
             db_mngr.add_data(
-                self.index,
-                self.values,
-                self.info,
-                'xxxxxxx', source_info='test_add_data'
+                data[0]['index'],
+                data[0]['value'],
+                data[0]['info'],
+                'xxxxxxx',
+                source_info=data[0]['source_info']
             )
 
-    def test_get_data(self, db_mngr):
+    def test_get_data(self, db_init):
         """Test get_data method"""
 
+        # Define
+        db_mngr = db_init.db_mngr
+        data = db_init.data
+
         res = db_mngr.get_data(
-            f"and_(dt('{self.info.evt_dt}'), srn('{self.sn}'), tags('data_test_db'))",
-            'trepros1', True
+            f"and_(dt('{data[0]['info']['evt_dt']}'), srn('{data[0]['info']['srn']}'), tags({data[0]['info']['tags']}))",
+            data[0]['prm_name'], True
         )
 
+        assert len(res) > 0
         assert isinstance(res, list)
         assert all([isinstance(arg, dict) for arg in res])
         assert all([arg.keys() == set(['info', 'index', 'value']) for arg in res])
         assert all([isinstance(arg['info'], InfoManager) for arg in res])
         assert all([len(arg['index']) == len(arg['value']) for arg in res])
-        assert all([len(arg['index']) == self.n_data for arg in res])
 
-    def test_get_flags(self, db_mngr):
+    def test_get_flags(self, db_init):
         """Test get_flags"""
+
+        # Define
+        db_mngr = db_init.db_mngr
+
         assert isinstance(db_mngr.get_flags(), list)
 
 
@@ -307,11 +295,12 @@ class TestInfoManager:
         assert self.info_mngr != info_mngr_gt
 
 
-def test_search_event_expr_eval():
+def test_search_event_expr_eval(db_init):
     """Test SearchInfoExpr.eval static function"""
 
     # Define
-    args = ('trepros1', True)
+    data = db_init.data
+    args = (data[0]['prm_name'], True)
 
     # Test all
     assert len(SearchInfoExpr.eval('all()', *args)) > 0
@@ -319,31 +308,37 @@ def test_search_event_expr_eval():
     # Test datetime
     assert (
         SearchInfoExpr.eval(
+            'datetime("20200101T0000Z", "==")', * args
+        ) ==
+        SearchInfoExpr.eval(
+            'datetime("20200101T0000Z")', *args
+        ) ==
+        SearchInfoExpr.eval(
+            'dt("2020-01-01 00:00:00+00:00")', *args
+        ) !=
+        SearchInfoExpr.eval(
             'datetime("20180110T0000Z", "==")', *args
-        ) ==
-        SearchInfoExpr.eval(
-            'datetime("20180110T0000Z")', *args
-        ) ==
-        SearchInfoExpr.eval(
-            'dt("2018-01-10 00:00:00+00:00")', *args
         )
     )
 
     # Test not_ and or_
     assert (
         SearchInfoExpr.eval(
-            'datetime("20180110T0000Z", "==")', *args
+            'datetime("20200101T0000Z", "==")', *args
         ) ==
         SearchInfoExpr.eval(
-            'not_(or_(datetime("20180110T0000Z", "<"), datetime("20180110T0000Z", ">")))',
+            'not_(or_(datetime("20200101T0000Z", "<"), datetime("20200101T0000Z", ">")))',
             *args
+        ) !=
+        SearchInfoExpr.eval(
+            'datetime("20180110T0000Z", "==")', *args
         )
     )
 
     # Test tag
     assert len(
         SearchInfoExpr.eval(
-            'tags(("e:1", "r:1"))', *args
+            f'tags(("e:1", "r:1"))', *args
         )
     ) > 0
     assert (
@@ -359,23 +354,14 @@ def test_search_event_expr_eval():
     # Test serial number
     assert len(
         SearchInfoExpr.eval(
-            'srn(("AR-000", "BR-000"))', *args
+            f'srn("{data[0]["info"]["srn"]}")', *args
         )
     ) > 0
-    assert (
-        SearchInfoExpr.eval(
-            'srn(("AR-000", "BR-000"))', *args
-        ) ==
-        SearchInfoExpr.eval(
-            'or_(srn("AR-000"), srn("BR-000"))',
-            *args
-        )
-    )
 
     # Test and_
     assert (
         SearchInfoExpr.eval(
-            'and_(tags("e1"), not_(tags("e1")))', *args
+            f'and_(tags("{data[0]["info"]["tags"][1]}"), not_(tags("{data[0]["info"]["tags"][1]}")))', *args
         ) ==
         SearchInfoExpr.eval(
             'not_(all())',

@@ -48,6 +48,7 @@ setup(
         "peewee",
         "pytest",
         "pytest-env",
+        "pytest-data",
         "pytest-datafiles",
         "ruamel-yaml",
         "scipy",

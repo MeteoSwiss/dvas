@@ -11,6 +11,7 @@ Module contents: Local database management tools
 
 # Import from python packages
 import pprint
+from pathlib import Path
 from hashlib import blake2b
 from abc import abstractmethod, ABCMeta
 import operator
@@ -87,6 +88,27 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         TableObject, Flag,
         TableTag
     ]
+
+    @staticmethod
+    def clear_db():
+        """Clear DB
+
+        Note:
+            !!!ONLY FOR ADVANCED USER!!! Use this method carefully.
+            Ensure that no more class instance are linked to this reference.
+
+        """
+
+        # Get db file path
+        db_mngr = DatabaseManager()
+        db_file_path = db_mngr.db.database
+
+        # Delete singleton instance
+        del db_mngr
+        SingleInstanceMetaClass.pop_instance(DatabaseManager)
+
+        # Delete file
+        Path(db_file_path).unlink()
 
     def __init__(self, reset_db=False):
         """
@@ -636,7 +658,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         """
 
         # Init
-        out = "Database content\n"
+        out = f"\nDatabase content in '{self.db.database}:'\n"
         out += f"{'*' * len(out)}\n"
 
         if not print_tables:
@@ -1115,8 +1137,8 @@ class InfoManager:
         """Convert dict of metadata to InfoManager
 
         Dict keys:
-            - dt_field (str): Datetime
-            - typ_field (str, `optional`): Instrument type (used to create
+            - evt_dt (str): Datetime
+            - typ_name (str, `optional`): Instrument type (used to create
                 instrument entry if missing in DB)
             - srn_field (str): Serial number
             - pid (str): Product identifier
@@ -1144,8 +1166,11 @@ class InfoManager:
 
             # Get instrument type
             if (
-                instr_type := TableInstrType.get_or_none(
-                    TableInstrType.type_name == metadata[TableInstrType.type_name.name]
+                instr_type := db_mngr.get_or_none(
+                    TableInstrType,
+                    search={
+                        'where': TableInstrType.type_name == metadata[TableInstrType.type_name.name]
+                    }
                 )
             ) is None:
                 # TODO
@@ -1153,11 +1178,12 @@ class InfoManager:
                 raise Exception(f"{metadata[TableInstrType.type_name.name]} is missing in DB/InstrumentType")
 
             # Create instrument entry
-            oid = TableObject.create(
-                srn=metadata[TableObject.srn.name],
-                pid=metadata[TableObject.pid.name],
-                instr_type=instr_type
-            ).oid
+            with DBAccess(db_mngr):
+                oid = TableObject.create(
+                    srn=metadata[TableObject.srn.name],
+                    pid=metadata[TableObject.pid.name],
+                    instr_type=instr_type
+                ).oid
 
         # Construct InfoManager
         try:

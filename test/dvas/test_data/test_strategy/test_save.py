@@ -10,35 +10,52 @@ Module contents: Testing classes and function for dvas.data.strategy.save module
 """
 
 # Import from python packages and modules
-import datetime
-import pytz
 import pandas as pd
 import numpy as np
 
+# Import from python packages and modules under test
 from dvas.data.data import MultiProfile
 from dvas.database.database import InfoManager
 from dvas.data.strategy.data import Profile
 
+# Import from current package
+from ...db_fixture import db_init  # noqa pylint: disable=W0611
+
+
+# Define db_data
+db_data = {
+    'sub_dir': 'test_strategy_save',
+    'data': [
+        {
+            'type_name': 'YT',
+            'srn': 'YT-100',
+            'pid': '0',
+        },
+    ]
+}
+
+
 class TestSave:
     """Test class for Save strategy classes"""
 
-    # Build some test data by hand
-    data = pd.DataFrame({'alt': [10., 15., 20.], 'val': [1., 2., 3.], 'flg':[0, 0, 0]})
-    data.set_index([data.index, 'alt'])
-    evt = InfoManager(datetime.datetime.now(tz=pytz.UTC), 1, tags='raw')
-    prf = Profile(evt, data=data)
-
-    prfs = [prf]
-    events = [evt]
-
-    df_to_db_keys = {'alt': 'altpros1', 'val': 'trepros1', 'flg': None}
-
-    def test_full_save(self):
+    def test_full_save(self, db_init):
         """ Test the full save strategy chain"""
+
+        data = db_init.data[0]
+
+        # Build some test data by hand
+        prf_data = pd.DataFrame({'alt': [10., 15., 20.], 'val': [1., 2., 3.], 'flg': [0, 0, 0]})
+        prf_data.set_index([prf_data.index, 'alt'], inplace=True)
+        info_mngr = InfoManager('20200303T0303Z', data['oid'], tags='raw')
+        prf = Profile(info_mngr, data=prf_data)
+
+        prfs = [prf]
+
+        df_to_db_keys = {'alt': 'altpros1', 'val': 'trepros1', 'flg': None}
 
         # Create a MultiProfile from scratch, then save it to the db.
         prf_v0 = MultiProfile()
-        prf_v0.update(self.df_to_db_keys, self.prfs)
+        prf_v0.update(df_to_db_keys, prfs)
         prf_v0.save_to_db(add_tags=['vof1'], rm_tags=['raw'], prms=['val', 'alt'])
 
         # Now try to load it, and save it back (with different tags)

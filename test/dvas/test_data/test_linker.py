@@ -11,54 +11,84 @@ Module contents: Testing classes and function for dvas.data.linker module.
 
 # Import external packages and modules
 import numpy as np
+from pytest_data import use_data
 
 # Import from python packages and modules
 from dvas.data.linker import LocalDBLinker
 from dvas.data.linker import CSVHandler, GDPHandler
 from dvas.environ import path_var
-from dvas.database.database import InfoManager
+
+# Import from current package
+from ..db_fixture import db_init  # noqa pylint: disable=W0611
+
+
+# Define db_data
+db_data = {
+    'sub_dir': 'test_linker',
+    'data': [
+        {
+            'index': np.array([0, 1, 2]),
+            'value': val,
+            'prm_name': 'trepros1',
+            'info': {
+                'evt_dt': dt,
+                'type_name': 'YT',
+                'srn': 'YT-100', 'pid': '0',
+                'tags': 'load_profile_from_linker',
+                'metadata': {}
+            },
+            'source_info': 'test_add_data'
+        } for val, dt in [
+            (np.array([400, 401, 402]), '20200101T0000Z'),
+            (np.array([441, 441, 442]), '20200202T0000Z')
+        ]
+    ]
+}
 
 
 class TestFileHandle:
     """Test FileHandle class"""
 
-    csv_handler = CSVHandler()
-    gdp_handler = GDPHandler()
-
-    csv_file_path = list(path_var.orig_data_path.rglob('*.csv'))[0]
-    gdp_file_path = list(path_var.orig_data_path.rglob('*.nc'))[0]
-
-    res_fmt = {
-        'info': dict,
-        'prm_name': str,
-        'index': np.ndarray, 'value': np.ndarray,
-        'source_info': str
-    }
-
-    def test_handle(self):
+    @use_data(db_data={'sub_dir': 'test_filehandle'})
+    def test_handle(self, db_init):
         """Test handle method"""
 
+        # Define
+        csv_handler = CSVHandler()
+        gdp_handler = GDPHandler()
+
+        csv_file_path = list(path_var.orig_data_path.rglob('*.csv'))[0]
+        gdp_file_path = list(path_var.orig_data_path.rglob('*.nc'))[0]
+
+        res_fmt = {
+            'info': dict,
+            'prm_name': str,
+            'index': np.ndarray, 'value': np.ndarray,
+            'source_info': str
+        }
+
         # Read csv file
-        csv_res = self.csv_handler.handle(self.csv_file_path, 'trepros1')
+        csv_res = csv_handler.handle(csv_file_path, 'trepros1')
 
         # Test key
         assert isinstance(csv_res, dict)
-        assert self.res_fmt.keys() == csv_res.keys()
+        assert res_fmt.keys() == csv_res.keys()
         assert all(
-            [isinstance(csv_res[key], val)for key, val in self.res_fmt.items()]
+            [isinstance(csv_res[key], val)for key, val in res_fmt.items()]
         )
 
         # Read gdp file
-        gdp_res = self.gdp_handler.handle(self.gdp_file_path, 'trepros1')
+        gdp_res = gdp_handler.handle(gdp_file_path, 'trepros1')
 
         # Test key
         assert isinstance(gdp_res, dict)
-        assert self.res_fmt.keys() == gdp_res.keys()
+        assert res_fmt.keys() == gdp_res.keys()
         assert all(
-            [isinstance(gdp_res[key], val)for key, val in self.res_fmt.items()]
+            [isinstance(gdp_res[key], val)for key, val in res_fmt.items()]
         )
 
-    def test_set_next(self):
+    @use_data(db_data={'sub_dir': 'test_filehandle'})
+    def test_set_next(self, db_init):
         """Test set_next method"""
 
         # Define
@@ -74,38 +104,32 @@ class TestLoadDBLinker:
 
     # Define
     db_linker = LocalDBLinker()
-    index = np.arange(3)
-    values = np.array([440, 441, 442])
-    prm = 'trepros1'
-    sn = 'YT-100'
-    info = InfoManager.from_dict(
-        {
-            'evt_dt': '20200101T0000Z',
-            'srn': sn, 'pid': '0',
-            'tags': 'load_profile_from_linker',
-            'metadata': {},
-        }
-    )
 
-    def test_load(self):
+    def test_load(self, db_init):
         """Test load method"""
 
+        # Define
+        data = db_init.data
+
         # Init
-        res = self.db_linker.load("all()", self.prm)
+        res = self.db_linker.load("all()", data[0]['prm_name'])
 
         # Test
         assert isinstance(res, list)
 
-    def test_save(self):
+    def test_save(self, db_init):
         """Test save method"""
+
+        # Define
+        data = db_init.data
 
         # Save data
         self.db_linker.save(
             [{
-                'index': self.index,
-                'value': self.values,
-                'info': self.info,
-                'prm_name': self.prm,
+                'index': data[0]['index'],
+                'value': data[0]['value'],
+                'info': data[0]['info'],
+                'prm_name': data[0]['prm_name'],
                 'source_info': 'test_add_data'
             }]
         )
@@ -113,10 +137,10 @@ class TestLoadDBLinker:
         # Force to save same data
         self.db_linker.save(
             [{
-                'index': self.index,
-                'value': self.values,
-                'info': self.info,
-                'prm_name': self.prm,
+                'index': data[0]['index'],
+                'value': data[0]['value'],
+                'info': data[0]['info'],
+                'prm_name': data[0]['prm_name'],
                 'source_info': 'test_add_data',
                 'force_write': True
             }]

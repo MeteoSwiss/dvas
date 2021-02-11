@@ -125,6 +125,8 @@ class GlobalPathVariablesManager(VariableManager):
 
     @property
     def _attr_def(self):
+        # TODO
+        #  Replace by Path('.')
         return [
             {'name': 'orig_data_path',
              'default': expl_path / 'data'},

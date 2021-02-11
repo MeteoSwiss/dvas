@@ -18,6 +18,7 @@ from datetime import datetime
 from copy import deepcopy as dc
 from functools import wraps, reduce
 from abc import ABC, ABCMeta, abstractmethod
+from weakref import WeakValueDictionary
 from inspect import getmodule
 from operator import getitem
 import pytz
@@ -52,26 +53,35 @@ class SingleInstanceMetaClass(type):
 
     Note:
         `Source code
-        <https://www.pythonprogramming.in/singleton-class-using-metaclass-in-python.html>`__
+        <https://stackoverflow.com/questions/43619748/destroying-a-singleton-object-in-python>`__
 
     """
-
-    def __init__(cls, name, bases, dic):
-        """Constructor"""
-        cls.__single_instance = None
-        super().__init__(name, bases, dic)
+    _instances = WeakValueDictionary()
 
     def __call__(cls, *args, **kwargs):
-        """Class __call__ method"""
+        if cls not in cls._instances:
+            # This variable declaration is required to force a
+            # strong reference on the instance.
+            instance = super(SingleInstanceMetaClass, cls).__call__(*args, **kwargs)
+            cls._instances[cls] = instance
+        return cls._instances[cls]
 
-        # Will return 1st created instance if empty and if class name is not
-        # in 'DVAS_SKIP_SINGLETON' environment variable
-        if cls.__single_instance is not None:
-            return cls.__single_instance
-        single_obj = cls.__new__(cls)
-        single_obj.__init__(*args, **kwargs)
-        cls.__single_instance = single_obj
-        return single_obj
+    @classmethod
+    def pop_instance(mcs, key):
+        """Pop instance
+
+        Note:
+            !!!ONLY FOR ADVANCED USER!!! Use this method carefully.
+            Ensure that no more class instances are linked to this reference.
+
+        Args:
+            key (type): Instance type to clear
+
+        """
+        try:
+            return mcs._instances.pop(key)
+        except KeyError:
+            return None
 
 
 class RequiredAttrMetaClass(ABCMeta):
@@ -494,3 +504,17 @@ def get_class_public_attr(obj):
     }
 
     return out
+
+
+class AttrDict(dict):
+    """Dictionary keys like an attribute
+
+    Note:
+        `Source code
+        <https://stackoverflow.com/questions/4984647/accessing-dict-keys-like-an-attribute>`__
+
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(AttrDict, self).__init__(*args, **kwargs)
+        self.__dict__ = self
