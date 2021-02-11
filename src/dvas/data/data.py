@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -34,7 +34,7 @@ from ..helper import RequiredAttrMetaClass
 from ..helper import deepcopy
 from ..helper import get_class_public_attr
 
-from ..errors import dvasError, DBIOError
+from ..errors import DvasError, DBIOError
 
 from ..config.definitions.tag import TAG_RAW_VAL, TAG_DERIVED_VAL
 
@@ -299,7 +299,7 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
         """ Convenience getter to extract specific columns from the DataFrames and/or class
         properties of all the Profile instances.
 
-        Only column/property names are allowed. Specifying only index names will raise a dvasError.
+        Only column/property names are allowed. Specifying only index names will raise a DvasError.
 
         Args:
             prm_list (str|list of str, optional): names of the columns(s) to extract from all the
@@ -309,7 +309,7 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
             dict of list of DataFrame: idem to self.profiles, but with only the requested data.
 
         Raises:
-            dvasError: if prm_list only contains the names of Indices.
+            DvasError: if prm_list only contains the names of Indices.
 
         """
 
@@ -326,7 +326,7 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
 
         # Check that I still have something valid to extract !
         if len(prm_list) == 0:
-            raise dvasError("Ouch ! Invalid column name(s). Did you only specify index name(s) ?")
+            raise DvasError("Ouch ! Invalid column name(s). Did you only specify index name(s) ?")
 
         # Select data
         try:
@@ -338,7 +338,7 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
                 for arg in self.profiles
             ]
         except AttributeError:
-            raise dvasError(f"Unknown parameter/attribute name in {prm_list}")
+            raise DvasError(f"Unknown parameter/attribute name in {prm_list}")
 
         return out
 

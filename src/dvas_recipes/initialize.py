@@ -57,7 +57,7 @@ def init_arena(recipe, arena_path=None):
         arena_path = Path(arena_path)
 
     # Very well, setup the suitable directory
-    shutil.copytree(recipe_path / recipe, arena_path, ignore=None, dirs_exist_ok=False)
+    shutil.copytree(recipe_path / recipe / "proc_arena", arena_path, ignore=None, dirs_exist_ok=False)
 
     # Say goodbye ...
     print('All done in %i s.' % ((datetime.now()-start_time).total_seconds()))

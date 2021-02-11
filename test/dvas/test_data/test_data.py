@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -16,7 +16,8 @@ import pytest
 # Import from python packages and modules
 from dvas.data.strategy.load import LoadRSProfileStrategy
 from dvas.data.data import MultiRSProfile
-from dvas.errors import dvasError
+from dvas.config.definitions.tag import TAG_DERIVED_VAL, TAG_RAW_VAL
+from dvas.errors import DvasError
 
 # Import from current package
 from ..db_fixture import db_init  # noqa pylint: disable=W0611
@@ -87,7 +88,7 @@ class TestMutliProfile:
                     for (ind, item) in enumerate(out)])
 
         # Try to get an index out.
-        with pytest.raises(dvasError):
+        with pytest.raises(DvasError):
             mlt_prf.get_prms(prm_list='alt')
 
     def test_rm_info_tags(self, db_init, mlt_prf):

@@ -1,5 +1,11 @@
 # -*- coding: utf-8 -*-
 '''
+Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+
+Distributed under the terms of the GNU General Public License v3.0 or later.
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
 This script can be used together with a Github Action to run pylint on all the .py files in a
 repository. Command line arguments can be used to search for a specific subset of errors (if any are
 found, this script will raise an Exception), or to ignore some errors in a generic search (which

@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -32,6 +32,7 @@ LOGGER_NAME = [
     'plots', # Plots sub-module
     'tools', # Tools sub-module
     'general', # Intended for anything not inside a specific sub-module
+    'recipes', # For high-level dvas-recipes logging
 ]
 
 
@@ -244,3 +245,8 @@ tools_logger = LogManager.get_logger('tools')
 
 #: logging.logger: general logger
 general_logger = LogManager.get_logger('general')
+
+# TODO: I am here defining a logger for the recipes, which strictly speaking live outside
+# dvas. I think this is ok ... no ?
+#: logging.logger: high-level recipe logger
+recipes_logger = LogManager.get_logger('recipes')
