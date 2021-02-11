@@ -19,3 +19,83 @@ test_expl_path = Path(__file__).resolve(strict=True).parent / 'processing_arena'
 # Set config and data expl path
 path_var.config_dir_path = test_expl_path / 'config'
 path_var.orig_data_path = test_expl_path / 'data'
+
+
+# Import from python packages and modules
+import pytest
+from pytest_data import get_data
+
+# Import from tested package
+from dvas.database.database import DatabaseManager, DBAccess
+from dvas.database.model import InstrType as TableInstrType
+from dvas.database.model import Object as TableObject
+from dvas.environ import path_var
+from dvas.helper import AttrDict
+
+
+@pytest.fixture(scope='session', autouse=True)
+def db_init(request, tmp_path_factory):
+    """Database init fixture.
+
+    Note:
+        Use pytest_data package
+
+    """
+    db_data = get_data(
+        request,
+        'db_data',
+        {'sub_dir': 'db_fixture_default', 'reset_db': True}
+    )
+
+    # Set db path
+    path_var.local_db_path = tmp_path_factory.getbasetemp() / db_data['sub_dir']
+
+    # Register db_path
+    db_data.update({'db_path': path_var.local_db_path.as_posix()})
+
+    # Clear singleton ref
+    if db_data['reset_db']:
+        DatabaseManager.clear_db()
+
+    # Set db
+    db_mngr = DatabaseManager(reset_db=db_data['reset_db'])
+
+    # Register db manager
+    db_data.update({'db_mngr': db_mngr})
+
+    # Insert data in db
+    if 'data' in db_data.keys():
+
+        data_out = []
+        for i, arg in enumerate(db_data['data']):
+
+            # Insert data
+            try:
+                db_mngr.add_data(**arg)
+
+            # Create get object id only
+            except Exception:
+                # Get instr_type
+                instr_type = db_mngr.get_or_none(
+                    TableInstrType,
+                    search={
+                        'where': TableInstrType.type_name == arg[TableInstrType.type_name.name]
+                    }
+                )
+
+                # Create instrument entry
+                with DBAccess(db_mngr):
+                    oid = TableObject.create(
+                        srn=arg[TableObject.srn.name],
+                        pid=arg[TableObject.pid.name],
+                        instr_type=instr_type
+                    ).oid
+
+                db_data['data'][i].update({'oid': oid})
+
+            data_out.append(arg)
+
+        # Register data
+        db_data.update({'data': data_out})
+
+    return AttrDict(db_data)

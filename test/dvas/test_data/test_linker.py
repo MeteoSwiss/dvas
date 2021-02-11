@@ -18,9 +18,6 @@ from dvas.data.linker import LocalDBLinker
 from dvas.data.linker import CSVHandler, GDPHandler
 from dvas.environ import path_var
 
-# Import from current package
-from ..db_fixture import db_init  # noqa pylint: disable=W0611
-
 
 # Define db_data
 db_data = {

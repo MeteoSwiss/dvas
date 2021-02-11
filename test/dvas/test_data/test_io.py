@@ -13,9 +13,6 @@ Module contents: Testing classes and function for dvas.data.io module.
 from dvas.data.io import update_db
 from dvas.data.strategy.load import LoadRSProfileStrategy
 
-# Import from current package
-from ..db_fixture import db_init  # noqa pylint: disable=W0611
-
 
 # Define db_data
 db_data = {

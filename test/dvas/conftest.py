@@ -21,6 +21,9 @@ from dvas.environ import path_var
 from dvas.helper import AttrDict
 
 
+#TODO
+# Split into 2 fixtures. One for the DB reset and setup.
+# And one for the data insertion
 @pytest.fixture
 def db_init(request, tmp_path_factory):
     """Database init fixture.

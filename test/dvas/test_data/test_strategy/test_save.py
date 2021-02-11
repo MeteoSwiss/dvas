@@ -10,6 +10,7 @@ Module contents: Testing classes and function for dvas.data.strategy.save module
 """
 
 # Import from python packages and modules
+import pytest
 import pandas as pd
 import numpy as np
 
@@ -17,9 +18,6 @@ import numpy as np
 from dvas.data.data import MultiProfile
 from dvas.database.database import InfoManager
 from dvas.data.strategy.data import Profile
-
-# Import from current package
-from ...db_fixture import db_init  # noqa pylint: disable=W0611
 
 
 # Define db_data

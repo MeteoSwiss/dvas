@@ -18,9 +18,6 @@ from dvas.data.strategy.load import LoadRSProfileStrategy
 from dvas.data.data import MultiRSProfile
 from dvas.errors import DvasError
 
-# Import from current package
-from ..db_fixture import db_init  # noqa pylint: disable=W0611
-
 
 @pytest.fixture
 def mlt_prf():

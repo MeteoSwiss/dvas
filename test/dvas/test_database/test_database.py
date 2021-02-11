@@ -13,8 +13,8 @@ Module contents: Testing classes and function for dvas.database.database module.
 from copy import deepcopy
 from datetime import datetime, timedelta
 import pytz
-import pytest
 import numpy as np
+import pytest
 
 # Import from python packages and modules under test
 from dvas.database.model import Parameter as TableParameter
@@ -22,9 +22,6 @@ from dvas.database.database import InfoManager, InfoManagerMetaData
 from dvas.database.database import SearchInfoExpr
 from dvas.database.database import DBInsertError
 from dvas.environ import glob_var
-
-# Import from current package
-from ..db_fixture import db_init  # noqa pylint: disable=W0611
 
 
 # Define db_data

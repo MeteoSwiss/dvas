@@ -17,9 +17,6 @@ from dvas.data.strategy.data import Profile, RSProfile, GDPProfile
 from dvas.data.strategy.load import LoadProfileStrategy, LoadRSProfileStrategy
 from dvas.data.strategy.load import LoadGDPProfileStrategy
 
-# Import from current package
-from ...db_fixture import db_init  # noqa pylint: disable=W0611
-
 
 # Define db_data
 db_data = {

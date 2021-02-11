@@ -18,9 +18,6 @@ from dvas.data.strategy.data import RSProfile
 from dvas.data.data import MultiRSProfile
 from dvas.database.database import InfoManager
 
-# Import from current package
-from ...db_fixture import db_init  # noqa pylint: disable=W0611
-
 
 # Define db_data
 db_data = {
