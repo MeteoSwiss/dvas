@@ -9,6 +9,7 @@ Module contents: Testing classes and function for dvas.data.strategy.sort module
 
 """
 
+
 # Import from tested package
 from dvas.data.strategy.sort import SortProfileStrategy
 from dvas.data.strategy.data import Profile
@@ -20,38 +21,10 @@ class TestSortProfileStrategy:
 
     sorter = SortProfileStrategy()
     order = [2, 0, 1]
-    sn = 'YT-100'
     prf = [
-        Profile(
-            InfoManager.from_dict(
-                {
-                    'evt_dt': '20200110T0000Z',
-                    'srn': sn, 'pid': '0',
-                    'tags': '',
-                    'metadata': {}
-                }
-            )
-        ),
-        Profile(
-            InfoManager.from_dict(
-                {
-                    'evt_dt': '20200101T0000Z',
-                    'srn': sn, 'pid': '0',
-                    'tags': '',
-                    'metadata': {}
-                }
-            )
-        ),
-        Profile(
-            InfoManager.from_dict(
-                {
-                    'evt_dt': '20200105T0000Z',
-                    'srn': sn, 'pid': '0',
-                    'tags': '',
-                    'metadata': {}
-                }
-            )
-        ),
+        Profile(InfoManager('20200110T0000Z', [0])),
+        Profile(InfoManager('20200101T0000Z', [0])),
+        Profile(InfoManager('20200105T0000Z', [0]))
     ]
 
     def test_sort(self):

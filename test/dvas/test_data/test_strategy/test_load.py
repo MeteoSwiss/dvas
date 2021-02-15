@@ -13,71 +13,47 @@ Module contents: Testing classes and function for dvas.data.strategy.load module
 import numpy as np
 
 # Import from tested package
-from  dvas.data.strategy.data import Profile, RSProfile, GDPProfile
+from dvas.data.strategy.data import Profile, RSProfile, GDPProfile
 from dvas.data.strategy.load import LoadProfileStrategy, LoadRSProfileStrategy
 from dvas.data.strategy.load import LoadGDPProfileStrategy
-from dvas.data.linker import LocalDBLinker
-from dvas.database.database import InfoManager
+
+
+# Define db_data
+db_data = {
+    'sub_dir': 'test_strategy_load',
+    'data': [
+        {
+            'index': np.array([0, 1, 2]),
+            'value': val,
+            'prm_name': prm,
+            'info': {
+                'evt_dt': dt,
+                'type_name': 'YT',
+                'srn': 'YT-100', 'pid': '0',
+                'tags': 'load_profile',
+                'metadata': {}
+            },
+            'source_info': 'test_add_data'
+        } for val, dt in [
+            (np.array([100, 101, 102]), '20200101T0000Z'),
+            (np.array([200, 201, 202]), '20200202T0000Z')
+        ] for prm in ['trepros1', 'altpros1', 'flgpros1', 'tdtpros1']
+    ]
+}
 
 
 class TestLoadProfileStrategy:
     """Test for LoadProfileStrategy class"""
 
-    # Define
-    loader_stgy = LoadProfileStrategy()
-    n_data = 3
-    index = np.arange(n_data)
-    values = np.array([100, 101, 102])
-    flags_val = np.ones(n_data)
-    sn = 'YT-100'
-    infos = [
-        InfoManager.from_dict(
-            {
-                'evt_dt': '20200101T0000Z',
-                'srn': sn, 'pid': '0',
-                'tags': 'load_profile',
-                'metadata': {}
-            }
-        ),
-        InfoManager.from_dict(
-            {
-                'evt_dt': '20200202T0000Z',
-                'srn': sn, 'pid': '0',
-                'tags': 'load_profile',
-                'metadata': {}
-            }
-        ),
-    ]
-    db_linker = LocalDBLinker()
-
-    def test_load(self):
+    def test_load(self, db_init):
         """Test load method"""
 
-        # Create db entry
-        self.db_linker.save(
-            [
-                {
-                    'index': self.index.astype(int), 'value': self.values.astype(float),
-                    'info': info, 'prm_name': prm,
-                    'source_info': 'test_add_data', 'force_write': True
-                }
-                for prm in ['trepros1', 'altpros1'] for info in self.infos
-            ]
-        )
-        self.db_linker.save(
-            [
-                {
-                    'index': self.index.astype(int), 'value': self.flags_val.astype(float),
-                    'info': info, 'prm_name': 'flgpros1',
-                    'source_info': 'test_add_data', 'force_write': True
-                }
-                for info in self.infos
-            ]
-        )
+        # Define
+        loader_stgy = LoadProfileStrategy()
 
         # Load entry
         filt = f"tags('load_profile')"
-        res = self.loader_stgy.execute(
+        res = loader_stgy.execute(
             filt, 'trepros1', 'altpros1', flg_abbr='flgpros1'
         )
 
@@ -85,68 +61,22 @@ class TestLoadProfileStrategy:
         assert isinstance(res[0], list)
         assert len(res[0]) > 0
         assert all([(type(arg) == Profile) for arg in res[0]])
-        assert all([arg.flg.abs().max() == 1 for arg in res[0]])
+        assert all([~arg.flg.isna().all() for arg in res[0]])
         assert isinstance(res[1], dict)
 
 
 class TestLoadRSProfileStrategy:
     """Test for LoadProfileStrategy class"""
 
-    # Define
-    loader_stgy = LoadRSProfileStrategy()
-    n_data = 3
-    index = np.arange(n_data)
-    values = np.array([200, 201, 202])
-    time_val = np.arange(n_data)*1e9
-    sn = 'YT-100'
-    infos = [
-        InfoManager.from_dict(
-            {
-                'evt_dt': '20200101T0000Z',
-                'srn': sn, 'pid': '0',
-                'tags': 'load_rsprofile',
-                'metadata': {},
-            }
-        ),
-        InfoManager.from_dict(
-            {
-                'evt_dt': '20200202T0000Z',
-                'srn': sn, 'pid': '0',
-                'tags': 'load_rsprofile',
-                'metadata': {},
-            }
-        ),
-    ]
-    db_linker = LocalDBLinker()
-
-    def test_load(self):
+    def test_load(self, db_init):
         """Test load method"""
 
-        # Create db entry
-        self.db_linker.save(
-            [
-                {
-                    'index': self.index.astype(int), 'value': self.values.astype(float),
-                    'info': info, 'prm_name': prm,
-                    'source_info': 'test_add_data', 'force_write': True
-                }
-                for prm in ['trepros1', 'altpros1'] for info in self.infos
-            ]
-        )
-        self.db_linker.save(
-            [
-                {
-                    'index': self.index.astype(int), 'value': self.time_val.astype(float),
-                    'info': info, 'prm_name': 'tdtpros1',
-                    'source_info': 'test_add_data', 'force_write': True
-                }
-                for info in self.infos
-            ]
-        )
+        # Define
+        loader_stgy = LoadRSProfileStrategy()
 
         # Load entry
-        filt = f"tags('load_rsprofile')"
-        res = self.loader_stgy.execute(
+        filt = f"tags('load_profile')"
+        res = loader_stgy.execute(
             filt, 'trepros1', 'tdtpros1', alt_abbr='altpros1'
         )
 
@@ -158,64 +88,18 @@ class TestLoadRSProfileStrategy:
         assert isinstance(res[1], dict)
 
 
-class TestLoadGPDProfileStrategy:
+class TestLoadGDPProfileStrategy:
     """Test for LoadProfileStrategy class"""
 
-    # Define
-    loader_stgy = LoadGDPProfileStrategy()
-    n_data = 3
-    index = np.arange(n_data)
-    values = np.array([300, 301, 302])
-    time_val = np.arange(n_data) * 1e9
-    sn = 'YT-100'
-    infos = [
-        InfoManager.from_dict(
-            {
-                'evt_dt': '20200101T0000Z',
-                'srn': sn, 'pid': '0',
-                'tags': 'load_gdpprofile',
-                'metadata': {},
-            }
-        ),
-        InfoManager.from_dict(
-            {
-                'evt_dt': '20200202T0000Z',
-                'srn': sn, 'pid': '0',
-                'tags': 'load_gdpprofile',
-                'metadata': {},
-            }
-        ),
-    ]
-    db_linker = LocalDBLinker()
-
-    def test_load(self):
+    def test_load(self, db_init):
         """Test load method"""
 
-        # Create db entry
-        self.db_linker.save(
-            [
-                {
-                    'index': self.index.astype(int), 'value': self.values.astype(float),
-                    'info': info, 'prm_name': prm,
-                    'source_info': 'test_add_data', 'force_write': True
-                }
-                for prm in ['trepros1', 'altpros1'] for info in self.infos
-            ]
-        )
-        self.db_linker.save(
-            [
-                {
-                    'index': self.index.astype(int), 'value': self.time_val.astype(float),
-                    'info': info, 'prm_name': 'tdtpros1',
-                    'source_info': 'test_add_data', 'force_write': True
-                }
-                for info in self.infos
-            ]
-        )
+        # Define
+        loader_stgy = LoadGDPProfileStrategy()
 
         # Load entry
-        filt = f"tags('load_gdpprofile')"
-        res = self.loader_stgy.execute(
+        filt = f"tags('load_profile')"
+        res = loader_stgy.execute(
             filt, 'trepros1', 'tdtpros1', alt_abbr='altpros1'
         )
 

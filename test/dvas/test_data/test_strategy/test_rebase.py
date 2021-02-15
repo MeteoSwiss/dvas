@@ -9,6 +9,7 @@ Module contents: Testing classes and function for dvas.data.strategy.rebase subm
 
 """
 
+# Import from python packages and modules
 import numpy as np
 import pandas as pd
 
@@ -16,6 +17,19 @@ import pandas as pd
 from dvas.data.strategy.data import RSProfile
 from dvas.data.data import MultiRSProfile
 from dvas.database.database import InfoManager
+
+
+# Define db_data
+db_data = {
+    'sub_dir': 'test_strategy_rebase',
+    'data': [
+        {
+            'type_name': 'YT',
+            'srn': 'YT-100',
+            'pid': '0',
+        },
+    ]
+}
 
 
 class TestRebaseStrategy:
@@ -28,7 +42,7 @@ class TestRebaseStrategy:
     data_2 = pd.DataFrame({'alt': [1., 1., 2., 5.], 'val': [1., 2., 3., 4.], 'flg': [0, 0, 0, 0],
                            'tdt': [0, 1, 2, 3]})
 
-    def test_rebase(self):
+    def test_rebase(self, db_init):
         """Test rebase method"""
 
         # Let's build a multiprofile so I can test things out.

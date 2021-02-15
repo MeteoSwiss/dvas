@@ -14,7 +14,13 @@ from dvas.data.io import update_db
 from dvas.data.strategy.load import LoadRSProfileStrategy
 
 
-def test_update_db():
+# Define db_data
+db_data = {
+    'sub_dir': 'test_strategy_load',
+}
+
+
+def test_update_db(db_init):
     """Test update_db function"""
 
     # Update
@@ -32,4 +38,3 @@ def test_update_db():
     assert all([not arg.val.isna().all() for arg in data[0]])
     assert all([not arg.alt.isna().all() for arg in data[0]])
     assert all([not arg.tdt.isna().all() for arg in data[0]])
-
