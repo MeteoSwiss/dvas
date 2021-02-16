@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -10,27 +10,30 @@ Module contents: User configuration management.
 """
 
 # Import python packages and modules
+from abc import ABCMeta, abstractmethod
 import re
 import pprint
+from functools import reduce
+import operator
 from pathlib import Path
 import json
 from jsonschema import validate, exceptions
 from ruamel.yaml import YAML
 from ruamel.yaml.error import YAMLError
 from pampy.helpers import Union
+import sre_yield
 
 # Import current package modules
 from .definitions import origdata, csvorigmeta
-from .definitions import instrtype, instrument
+from .definitions import instrtype
 from .definitions import parameter, flag
 from .definitions import tag
-from ..environ import path_var as env_path_var
+from ..environ import path_var
 from ..environ import glob_var as env_glob_var
 from ..helper import get_by_path
 from ..helper import RequiredAttrMetaClass
 from ..helper import TypedProperty
 from ..helper import camel_to_snake
-
 
 # Define
 NODE_ESCAPE_CHAR = '_'
@@ -201,7 +204,7 @@ class OneLayerConfigManager(ConfigManager):
 
             # Filter (case insensitive)
             doc_in = [
-                arg for arg in env_path_var.config_dir_path.rglob("*.*")
+                arg for arg in path_var.config_dir_path.rglob("*.*")
                 if (
                     (pat.search(arg.stem) is not None) and
                     (arg.suffix in cfg_file_suffix)
@@ -371,19 +374,6 @@ class InstrType(OneDimArrayConfigManager):
     CLASS_KEY = instrtype.KEY
     CONST_NODES = instrtype.CONST_NODES
     NODE_GEN = instrtype.NODE_GEN
-
-    #: dict: Config document
-    document = TypedProperty(OneDimArrayConfigManager.DOC_TYPE)
-
-
-class Instrument(OneDimArrayConfigManager):
-    """Instrument config manager"""
-
-    PARAMETER_PATTERN_PROP = instrument.PARAMETER_PATTERN_PROP
-    NODE_PARAMS_DEF = instrument.NODE_PARAMS_DEF
-    CLASS_KEY = instrument.KEY
-    CONST_NODES = instrument.CONST_NODES
-    NODE_GEN = instrument.NODE_GEN
 
     #: dict: Config document
     document = TypedProperty(OneDimArrayConfigManager.DOC_TYPE)
@@ -649,6 +639,283 @@ class OrigData(MultiLayerConfigManager):
     document = TypedProperty(MultiLayerConfigManager.DOC_TYPE)
 
 
+class OneDimArrayConfigLinker:
+    """Link to OneDimArrayConfigManager
+    config managers."""
+
+    #: list: Default instantiated config managers
+    CFG_MNGRS_DFLT = [Parameter, InstrType, Flag, Tag]
+
+    def __init__(self, cfg_mngrs=None):
+        """
+        Args:
+            cfg_mngrs (list of OneDimArrayConfigManager): Config managers
+        """
+
+        if cfg_mngrs is None:
+            cfg_mngrs = self.CFG_MNGRS_DFLT
+
+        # Set attributes
+        self._cfg_mngr = instantiate_config_managers(*cfg_mngrs)
+
+    def get_document(self, key):
+        """Interpret the generator syntax if necessary and
+        return the config document.
+
+        The generator syntax is apply only in OneDimArrayConfig with
+        not empty NODE_GEN. Generator syntax is based on regexpr. Fields which
+        are not generator can contain expression to be evaluated. The syntax
+        used is the one described in ConfigExprInterpreter.eval
+
+        Args:
+            key (str): Config manager key
+
+        Returns:
+            dict
+
+        Raises:
+            - ConfigGenMaxLenError: Error for to much generated items.
+
+        """
+
+        # Define
+        array_old = self._cfg_mngr[key].document
+        node_gen = self._cfg_mngr[key].NODE_GEN
+        array_new = []
+
+        # Loop over te config array items
+        for doc in array_old:
+
+            # Test if node generator allowed
+            if node_gen:
+
+                # Init new sub dict
+                sub_dict_new = {}
+
+                # Generate from regexp generator
+                node_gen_val = sre_yield.AllMatches(doc[node_gen])
+
+                # Check length
+                if (n_val := len(node_gen_val)) > env_glob_var.config_gen_max:
+                    raise ConfigGenMaxLenError(
+                        f"{n_val} generated config field. " +
+                        f"Max allowed {env_glob_var.config_gen_max}"
+                    )
+
+                # Update sub dict
+                sub_dict_new.update({node_gen: list(node_gen_val)})
+
+                # Loop over other config item key
+                for key in filter(lambda x: x != node_gen, doc.keys()):
+
+                    # Update new sub dict for current key
+                    sub_dict_new.update(
+                        {
+                            key: [
+                                ConfigExprInterpreter.eval(
+                                    doc[key], node_gen_val[i].group
+                                )
+                                for i in range(len(node_gen_val))
+                            ]
+                        }
+                    )
+
+                # Rearange dict of list in list of dict
+                res = [
+                    dict(zip(sub_dict_new, arg))
+                    for arg in zip(*sub_dict_new.values())
+                ]
+
+            # Case without generator
+            else:
+                res = [doc]
+
+            # Append to new array
+            array_new += res
+
+        return array_new
+
+
+class ConfigExprInterpreter(metaclass=ABCMeta):
+    """Abstract config expression interpreter class
+
+        Notes:
+            This class and subclasses construction are based on the interpreter
+            design pattern.
+
+        """
+
+    _FCT = str
+
+    @classmethod
+    def set_callable(cls, fct):
+        """Set strategy
+        Args:
+            fct (callable): Function/Methode called by 'get' expression
+        """
+
+        # Test
+        assert callable(fct), "'fct' must be a callable"
+
+        cls._FCT = fct
+
+    @abstractmethod
+    def interpret(self):
+        """Interpreter method"""
+
+    @staticmethod
+    def eval(expr, get_fct):
+        """Evaluate str expression
+
+        Args:
+            expr (str): Expression to evaluate
+            get_fct (callable): Function use by 'get'
+
+        Examples:
+            >>> import re
+            >>> mymatch = re.match('^a(\d)', 'a1b')
+            >>> print(ConfigExprInterpreter.eval("cat('My test', ' ', get(1))", mymatch.group))
+            My test 1
+        """
+
+        # Define
+        str_expr_dict = {
+            'cat': CatExpr,
+            'rpl': ReplExpr, 'repl': ReplExpr,
+            'rpls': ReplStrictExpr, 'repl_strict': ReplStrictExpr,
+            'get': GetExpr,
+            'upper': UpperExpr, 'lower': LowerExpr,
+            'supper': SmallUpperExpr, 'small_upper': SmallUpperExpr,
+        }
+
+        # Set get_value
+        ConfigExprInterpreter.set_callable(get_fct)
+
+        # Treat expression
+        try:
+            # Eval
+            expr_out = eval(expr, str_expr_dict)
+
+            # Interpret
+            expr_out = expr_out.interpret()
+
+        # TODO
+        #  Detail exception
+        except Exception:
+            expr_out = expr
+
+        return expr_out
+
+
+class NonTerminalConfigExprInterpreter(ConfigExprInterpreter):
+    """Implement an interpreter operation for non terminal symbols in the
+    grammar.
+    """
+
+    def __init__(self, *args):
+        self._expression = args
+
+    def interpret(self):
+        """Non terminal interpreter method"""
+
+        # Apply interpreter
+        res_interp = [
+            (arg if isinstance(arg, ConfigExprInterpreter)
+             else NoneExpr(arg)).interpret()
+            for arg in self._expression
+        ]
+
+        if len(self._expression) > 1:
+            return reduce(self.fct, res_interp)
+        else:
+            return self.fct(res_interp[0])
+
+    @abstractmethod
+    def fct(self, *args):
+        """Function between expression args"""
+
+
+class CatExpr(NonTerminalConfigExprInterpreter):
+    """String concatenation"""
+
+    def fct(self, a, b):
+        """Implement fct method"""
+        return operator.add(a, b)
+
+
+class ReplExpr(NonTerminalConfigExprInterpreter):
+    """Replace dict key by its value. If key is missing, return key"""
+
+    def fct(self, a, b):
+        """Implement fct method"""
+        try:
+            out = operator.getitem(a, b)
+        except KeyError:
+            out = b
+        return out
+
+
+class ReplStrictExpr(NonTerminalConfigExprInterpreter):
+    """Replace dict key by its value. If key is missing, return ''"""
+
+    def fct(self, a, b):
+        """Implement fct method"""
+        try:
+            out = operator.getitem(a, b)
+        except KeyError:
+            out = ''
+        return out
+
+
+class LowerExpr(NonTerminalConfigExprInterpreter):
+    """Lower case"""
+
+    def fct(self, a):
+        """Implement fct method"""
+        return a.lower()
+
+
+class UpperExpr(NonTerminalConfigExprInterpreter):
+    """Upper case"""
+
+    def fct(self, a):
+        """Implement fct method"""
+        return a.upper()
+
+
+class SmallUpperExpr(NonTerminalConfigExprInterpreter):
+    """Upper case 1st character"""
+
+    def fct(self, a):
+        """Implement fct method"""
+        return a[0].upper() + a[1:].lower()
+
+
+class TerminalConfigExprInterpreter(ConfigExprInterpreter):
+    """Implement an interpreter operation for terminal symbols in the
+    grammar.
+    """
+
+    def __init__(self, arg):
+        self._expression = arg
+
+
+class GetExpr(TerminalConfigExprInterpreter):
+    """Get catch value"""
+
+    def interpret(self):
+        """Implement fct method"""
+        return self._FCT(self._expression)
+
+
+class NoneExpr(TerminalConfigExprInterpreter):
+    """Apply none interpreter"""
+
+    def interpret(self):
+        """Implement fct method"""
+        return self._expression
+
+
 class ConfigReadError(Exception):
     """Error while reading config"""
 
@@ -659,3 +926,7 @@ class ConfigNodeError(Exception):
 
 class ConfigItemKeyError(KeyError):
     """Error in config key item"""
+
+
+class ConfigGenMaxLenError(Exception):
+    """Exception class for max length config generator error"""

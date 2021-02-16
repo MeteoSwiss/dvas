@@ -1,4 +1,5 @@
-# Created October 2020; F.P.A. Vogt; frederic.vogt@alumni.anu.edu.au
+# Copyright (c) 2020-2021 MeteoSwiss, created by F.P.A. Vogt; frederic.vogt@meteoswiss.ch
+#
 # This will build the docs and push them to the gh-pages branch of the repo
 # Assumes a few things: 1) docs live in ./docs; 2) there is a doc_build.sh bash script that takes
 # the ./docs/source/ material and turn it into a compiled ./docs/build read docs; 3) the content of
@@ -12,9 +13,10 @@ name: CI_docs_publish
 on:
   push:
     branches: [ master ]
-    # Only run this if the docs were modified in any way
-    paths:
-      - 'docs/**'
+    # Run this if the docs were modified in any way
+    #paths:
+    #  - 'docs/**'
+    #  - 'VERSION'
   # For dev/debug purposes, doing it on PR helps a lot
   #pull_request:
   #  branches: [ master, develop, develop_vof ]

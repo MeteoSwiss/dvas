@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -14,8 +14,9 @@ import re
 from peewee import SqliteDatabase, Model, Check
 from peewee import AutoField
 from peewee import IntegerField, FloatField
-from peewee import DateTimeField, TextField, CharField
+from peewee import DateTimeField, TextField
 from peewee import ForeignKeyField
+
 
 # Import from current package
 from ..config.pattern import INSTR_TYPE_PAT
@@ -34,6 +35,16 @@ def re_fullmatch(pattern, string):
     )
 
 
+@db.func('str_len')
+def str_len(string, n_max):
+    """Database string length function. Used it in check constraints"""
+    if string is None:
+        out = True
+    else:
+        out = len(string) <= n_max
+    return out
+
+
 class MetadataModel(Model):
     """Metadata model class"""
     class Meta:
@@ -42,69 +53,143 @@ class MetadataModel(Model):
 
 
 class InstrType(MetadataModel):
-    """Instrument type model"""
-    id = AutoField(primary_key=True)
-    type_name = CharField(
+    """Instrument type table"""
+
+    # Table id
+    type_id = AutoField(primary_key=True)
+
+    # Instrument type name
+    type_name = TextField(
         null=False, unique=True,
         constraints=[
-            Check(f"re_fullmatch('({INSTR_TYPE_PAT})|()', type_name)")
+            Check(f"re_fullmatch('({INSTR_TYPE_PAT})|()', type_name)"),
+            Check(f"str_len(type_name, 64)")
         ]
     )
-    desc = TextField()
 
-
-class Instrument(MetadataModel):
-    """Instrument model """
-    id = AutoField(primary_key=True)
-
-    # Serial number
-    srn = CharField(null=False, unique=True)
-    instr_type = ForeignKeyField(
-        InstrType, backref='instruments', on_delete='CASCADE'
+    # Instrument type description
+    type_desc = TextField(
+        null=True, unique=False, default='',
+        constraints=[Check(f"str_len(type_desc, 256)")]
     )
-    remark = TextField()
+
+
+class Object(MetadataModel):
+    """Object table"""
+
+    # Object id
+    oid = AutoField(primary_key=True)
+
+    # Object serial number
+    srn = TextField(
+        null=False,
+        constraints=[Check(f"str_len(srn, 64)")]
+    )
+
+    # Object product identifier
+    pid = TextField(
+        null=False,
+        constraints=[Check(f"str_len(pid, 64)")]
+    )
+
+    # Link to instr_type
+    instr_type = ForeignKeyField(
+        InstrType, backref='objects', on_delete='CASCADE'
+    )
 
 
 class Parameter(MetadataModel):
     """Parameter model"""
-    id = AutoField(primary_key=True)
-    prm_abbr = CharField(
+
+    # Table id
+    prm_id = AutoField(primary_key=True)
+
+    # Parameter name
+    prm_name = TextField(
         null=False,
         unique=True,
         constraints=[
-            Check(f"re_fullmatch('{PARAM_PAT}', prm_abbr)"),
+            Check(f"re_fullmatch('{PARAM_PAT}', prm_name)"),
+            Check(f"str_len(prm_name, 64)")
         ]
     )
-    prm_desc = TextField(null=False, default='')
+
+    # Parameter description
+    prm_desc = TextField(
+        null=False, default='',
+        constraints=[Check(f"str_len(prm_desc, 256)")]
+    )
+
+    # Parameter units
+    prm_unit = TextField(
+        null=False, default='',
+        constraints=[Check(f"str_len(prm_unit, 64)")]
+)
 
 
 class Flag(MetadataModel):
     """Flag model"""
-    id = AutoField(primary_key=True)
-    bit_number = IntegerField(
+
+    # Table id
+    flag_id = AutoField(primary_key=True)
+
+    # Bit position
+    bit_pos = IntegerField(
         null=False,
         unique=True,
-        constraints=[Check("bit_number >= 0")])
-    flag_abbr = CharField(null=False, unique=True)
-    flag_desc = TextField(null=False, default='')
+        constraints=[Check("bit_pos >= 0")])
+
+    # Flag name
+    flag_name = TextField(
+        null=False, unique=True,
+        constraints=[Check(f"str_len(flag_name, 64)")]
+    )
+
+    # Flag description
+    flag_desc = TextField(
+        null=False, default='',
+        constraints=[Check(f"str_len(flag_desc, 256)")]
+    )
 
 
 class Tag(MetadataModel):
-    """Tag model"""
+    """Table containing the tags.
+
+    Note:
+        Tags should be used to search profiles in the DB.
+
+    """
+
+    # Table id
     id = AutoField(primary_key=True)
-    tag_txt = CharField(null=False, unique=True)
-    tag_desc = TextField()
+
+    # Tag name
+    tag_name = TextField(
+        null=False, unique=True,
+        constraints = [Check(f"str_len(tag_name, 64)")]
+    )
+
+    # Tag description
+    tag_desc = TextField(
+        null=True, unique=False, default='',
+        constraints=[Check(f"str_len(tag_desc, 256)")]
+    )
 
 
 class DataSource(MetadataModel):
     """Data source model"""
     id = AutoField(primary_key=True)
-    source = CharField(null=True)
+    source = TextField(
+        null=True,
+        constraints=[Check(f"str_len(source, 2048)")]
+    )
 
 
 class Info(MetadataModel):
-    """Info model"""
-    id = AutoField(primary_key=True)
+    """Info table"""
+
+    # Info id
+    info_id = AutoField(primary_key=True)
     evt_dt = DateTimeField(null=False)
     param = ForeignKeyField(
         Parameter, backref='info', on_delete='CASCADE'
@@ -112,7 +197,10 @@ class Info(MetadataModel):
     data_src = ForeignKeyField(
         DataSource, backref='info', on_delete='CASCADE'
     )
-    evt_hash = CharField()
+    evt_hash = TextField(
+        null=False,
+        constraints=[Check(f"str_len(evt_hash, 64)")]
+    )
     """str: Hash of the info attributes. Using a hash allows you to manage
     identical info with varying degrees of work steps."""
 
@@ -128,28 +216,50 @@ class InfosTags(MetadataModel):
     )
 
 
-class InfosInstruments(MetadataModel):
+class InfosObjects(MetadataModel):
     """Many-to-Many link between Info and Instrument tables"""
     id = AutoField(primary_key=True)
-    instr = ForeignKeyField(
-        Instrument, backref='instruments_infos', on_delete='CASCADE'
+    object = ForeignKeyField(
+        Object, backref='infos_objects', on_delete='CASCADE'
     )
     info = ForeignKeyField(
-        Info, backref='instruments_infos', on_delete='CASCADE'
+        Info, backref='infos_objects', on_delete='CASCADE'
     )
 
-# TODO
-#  Add the capability to link metadata to an info.
-#  Tag should be used to search data in the DB.
-#  Metadata should be used to save metadata of a result profile
-#  class MetaData
-#     prm
-#     value
-#     info
+
+class MetaData(MetadataModel):
+    """Table containing the profiles metadata.
+
+    Note:
+        Metadata table should be used only to save metadata associated
+        to a profile.
+
+    """
+    metadata_id = AutoField(primary_key=True)
+
+    #: str: Metadata key name
+    key_name = TextField(
+        null=False,
+        constraints=[Check(f"str_len(key_name, 64)")]
+    )
+
+    #: str: Metadata key string value
+    value_str = TextField(
+        null=True,
+        constraints=[Check(f"str_len(value_str, 256)")]
+    )
+
+    #: float: Metadata key float value
+    value_num = FloatField(null=True)
+
+    #: peewee.Model: Link to Info table
+    info = ForeignKeyField(
+        Info, backref='infos_objects', on_delete='CASCADE'
+    )
 
 
 class Data(MetadataModel):
-    """Data model"""
+    """Table containing the profiles data."""
     id = AutoField(primary_key=True)
     info = ForeignKeyField(
         Info,

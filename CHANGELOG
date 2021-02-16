@@ -12,12 +12,38 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Removed:
 ### Security:
 
+## [v0.2.0] (2021-02-16)
+### Added:
+ - [fpavogt, 2021-02-01] Add dvas_recipes package, to host the demo and high-level UAII routines
+ - [modolol, 2020-01-29] Add instrument, tag and parameter informations in MultiProfiles
+ - [modolol, 2020-12-29] Add metadata management in config and DB.
+ - [fpavogt, 2020-12-17] Add a rebase strategy and fix #83.
+### Fixed:
+ - [modolol, 2020-02-11] Disconnect global db from each tests
+ - [fpavogt, 2021-02-02] Fix #102 & #87. Lift cap on pandas version.
+ - [modolol, 2020-01-29] Fix #94
+ - [fpavogt, 2020-12-21] Fix #60
+ - [fpavogt, 2020-12-15] Signature-changing "deepcopy" decorator now leads to correct decorated signatures (see #70).
+### Changed:
+ - [fpavogt, 2021-02-05] Additional restructuring of dvas_recipes, to give users propers packages.
+ - [fpavogt, 2021-02-05] Renamed dvasError to DvasError.
+ - [modolol, 2020-01-29] Standardize table field names.
+ - [modolol, 2021-01-14] Removes instrument from the mandatory configuration (and all dependencies) + add product id to instrument
+ - [modolol, 2020-12-18] Modify logger
+ - [modolol, 2020-12-18] Add dvas.dvas facade
+ - [modolol, 2020-12-16] Move data.data.update_db to new module data.io
+ - [modolol, 2020-12-16] Modify config metadata interpreter syntax
+ - [modolol, 2020-12-15] Modify config generator interpreter syntax
+### Security:
+ - [fpavogt, 2020-12-21] Add suggestion for contributors to sign their commits with GPG keys inside CONTRIBUTING.md
+
 ## [v0.1.1] (2020-12-14)
 ### Fixed:
  - [fpavogt, 2020-12-14] Fix auto-publications of docs + minor code tweaks
 
 ## [v0.1.0] (2020-12-14)
 ### Added:
+ - [GonzagueRomanens, 2020-12-19] add SampleDatasetMultipayload
  - [fpavogt & modolol, 2020-12-07] Cleanup towards v0.1
  - [fpavogt & modolol, 2020-12-03] Winter cleanup towards v0.1
  - [fpavogt, 2020-11-05] Refactor ProfileManager class into Profile, grouping 'alt', 'val' , and 'flag' in a pandas DataFrame

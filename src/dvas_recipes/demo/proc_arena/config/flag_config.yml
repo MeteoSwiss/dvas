@@ -1,0 +1,4 @@
+
+- bit_pos: 10
+  flag_name: 'user_qc'
+  flag_desc: 'User QC flag'

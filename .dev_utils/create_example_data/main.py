@@ -1,3 +1,11 @@
+"""
+Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+
+Distributed under the terms of the GNU General Public License v3.0 or later.
+
+SPDX-License-Identifier: GPL-3.0-or-later
+
+"""
 
 # TODO
 #  Create a final "examples and tests" dataset from real data and delete this file.
@@ -12,11 +20,12 @@ import pandas as pd
 from dvas import expl_path
 import re
 
-expl_path = Path('.').resolve().parents[1] / 'test_examples'
-N = 1000
+expl_path = Path('.').resolve().parents[1] / 'test' / 'processing_arena'
+N = 200
 
 expl_path = Path('.').resolve().parents[1] / 'examples'
 N = 100000
+
 
 def sin_rand(n, scale=1):
     return np.sin(np.arange(n)*np.pi/(2*n) + np.random.rand()*2*np.pi) / scale
@@ -56,7 +65,9 @@ def from_rs92():
                     'g.Measurement.Id',
                     '1' if re.search(r'2018\-01\-10', new_fid.getncattr('g.Measurement.StandardTime')) else '2'
                 )
+                new_fid.setncattr('g.Product.Code', f"{new_gdp_type}-GDP_001")
                 new_fid.setncattr('g.MainSonde.SerialNumber', new_gdp_type + f'-00{i}')
+                new_fid.setncattr('g.Product.Version', '0')
                 new_fid.setncattr('g.Site.Key', meassite)
                 new_fid.sensor_temp_u_enlarged = 0.1
 
@@ -120,7 +131,9 @@ def from_rs92():
             }.items():
                 metadata.append(f"{key}: '{new_gdp_fid.getncattr(arg)}'")
 
+            metadata.append(f"instr_type: '{test_type}'")
             metadata.append(f"sn: '{test_type + f'-10{i}'}'")
+            metadata.append(f"product_id: '0'")
 
             if re.search('T12', new_gdp_fid.getncattr('g.Measurement.StandardTime')) is not None:
                 metadata.append(f"day_night: 'day'")
@@ -178,7 +191,9 @@ def from_rs41():
                     'g.Measurement.Id',
                     '1' if re.search(r'2018\-01\-10', new_fid.getncattr('g.Measurement.StandardTime')) else '2'
                 )
+                new_fid.setncattr('g.Product.Code', f"{new_gdp_type}-GDP_001")
                 new_fid.setncattr('g.MainSonde.SerialNumber', new_gdp_type + f'-00{i}')
+                new_fid.setncattr('g.Product.Version', '0')
                 new_fid.setncattr('g.Site.Key', meassite)
                 new_fid.sensor_temp_u_enlarged = 0.1
 
@@ -247,7 +262,9 @@ def from_rs41():
             }.items():
                 metadata.append(f"{key}: '{new_gdp_fid.getncattr(arg)}'")
 
+            metadata.append(f"instr_type: '{test_type}'")
             metadata.append(f"sn: '{test_type + f'-10{i}'}'")
+            metadata.append(f"product_id: '0'")
 
             if re.search('T12', new_gdp_fid.getncattr('g.Measurement.StandardTime')) is not None:
                 metadata.append(f"day_night: 'day'")
@@ -274,8 +291,3 @@ if __name__ == '__main__':
 
     from_rs41()
     from_rs92()
-
-
-
-
-

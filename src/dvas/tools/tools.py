@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 
-Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -16,7 +16,7 @@ import numpy as np
 import pandas as pd
 
 # Import from this package
-from ..errors import dvasError
+from ..errors import DvasError
 from ..logger import log_func_call
 from ..logger import tools_logger as logger
 
@@ -73,7 +73,7 @@ def fancy_nansum(vals, axis=None):
 
     # Check the data type to make sure it is what I expect
     if not isinstance(vals, pd.core.frame.DataFrame):
-        raise dvasError("vals should be pandas DataFrame, not: %s" % (type(vals)))
+        raise DvasError("vals should be pandas DataFrame, not: %s" % (type(vals)))
 
     # If no axis is specified, let us just sum every element
     if axis is None:
@@ -114,9 +114,9 @@ def weighted_mean(vals, weights, binning=1):
 
     # First, some sanity checks
     if np.shape(vals) != np.shape(weights):
-        raise dvasError("vals and weights must have the same shape.")
+        raise DvasError("vals and weights must have the same shape.")
     if vals.ndim != 2:
-        raise dvasError("vals and weights must be 2-D.")
+        raise DvasError("vals and weights must be 2-D.")
 
     # Force the weights to be NaNs if the data is a NaN. Else, the normalization will be off.
     weights[vals.isna()] = np.nan
@@ -221,9 +221,9 @@ def delta(vals, binning=1):
 
     # First, some sanity checks
     if vals.shape[1] != 2:
-        raise dvasError("vals should have 2 columns only.")
+        raise DvasError("vals should have 2 columns only.")
     if vals.ndim != 2:
-        raise dvasError("vals must be 2-D.")
+        raise DvasError("vals must be 2-D.")
 
     # Compute the difference between the two profiles (full resolution)
     delta_pqs = vals[0] - vals[1]

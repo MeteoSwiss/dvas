@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -10,24 +10,33 @@ Module contents: Data manager classes used in dvas.data.data.ProfileManager
 """
 
 # Import from external packages
-from abc import abstractmethod
+from abc import ABCMeta, abstractmethod
 from copy import deepcopy
 import numpy as np
 import pandas as pd
 
 # Import from current package
-from ...database.model import Flag
+from ...database.model import Flag as TableFlag
 from ...database.database import DatabaseManager, InfoManager
 from ...errors import ProfileError
 from ...helper import RequiredAttrMetaClass
+from ...hardcoded import PRF_REF_INDEX_NAME
 
 # Define
 INT_TEST = (np.int64, np.int, int, type(pd.NA))
 FLOAT_TEST = (np.float, float) + INT_TEST
-TIME_TEST = FLOAT_TEST + (pd.Timedelta,)
+TIME_TEST = FLOAT_TEST + (pd.Timedelta, type(pd.NaT))
 
 
-class ProfileAbstract(metaclass=RequiredAttrMetaClass):
+class MPStrategyAC(metaclass=ABCMeta):
+    """Abstract class (AC) for a multiprofile (MP) strategy"""
+
+    @abstractmethod
+    def execute(self, *args, **kwargs):
+        """Execute strategy method"""
+
+
+class ProfileAC(metaclass=RequiredAttrMetaClass):
     """Abstract Profile class"""
 
     # Specify required attributes
@@ -71,7 +80,7 @@ class ProfileAbstract(metaclass=RequiredAttrMetaClass):
 
         """
         val = val.reset_index(inplace=False)
-        val.index.name = '_idx'
+        val.index.name = PRF_REF_INDEX_NAME
         return val[sorted(cls.DF_COLS_ATTR.keys())]
 
     @classmethod
@@ -123,11 +132,13 @@ class ProfileAbstract(metaclass=RequiredAttrMetaClass):
             if item in self.get_col_attr():
                 return self.data[item]
 
-            elif item in self.get_index_attr():
+            if item in self.get_index_attr():
+                # fpavogt, 2020-12-18: what follows returns an Index. We may need to revise this
+                # at some point. Or not. But as it stands, it's not designed to be concatenated
+                # with anythinbg else.
                 return self.data.index.get_level_values(item)
 
-            else:
-                return super().__getattribute__(item)
+            return super().__getattribute__(item)
 
         except KeyError:
             raise ProfileError(f"Valid keys are: {self.columns}")
@@ -208,27 +219,32 @@ class ProfileAbstract(metaclass=RequiredAttrMetaClass):
         # Test val columns
         for key in filter(lambda x: x in cols_key, cls.DF_COLS_ATTR.keys()):
 
-            # Test column name
+            # If the key is an index, then get it back out as a normal column.
+            # This is a lot easier than having to handle the distinct cases of Index vs Column
+            # in what follows.
+            if key in val.index.names:
+                # Note: do not even think about using inplace=True in the next code line.
+                # Dark things will happen if you do. fpvogt - 2020-12-16
+                val = val.reset_index(key)
+
+            # Test column name. If it is missing, raise an error
             if key not in val.columns:
                 raise ProfileError('Required column not found: %s' % key)
 
-            # Test column type
+            # ... to test if they all have the proper type.
             if ~val[key].apply(type).apply(
-                    issubclass, args=(cls.DF_COLS_ATTR[key]['test']+(type(None),),)
-            ).all():
-                raise ProfileError(
-                    "Wrong data type for '%s': I need %s but you gave me %s" %
-                    (key, cls.DF_COLS_ATTR[key]['test'], val[key].dtype)
-                )
+                    issubclass, args=(cls.DF_COLS_ATTR[key]['test']+(type(None),),)).all():
+                raise ProfileError("Wrong data type for '%s': I need %s but you gave me %s" %
+                                   (key, cls.DF_COLS_ATTR[key]['test'], val[key].dtype))
 
             # Convert
-            if cls.DF_COLS_ATTR[key]['type']:
+            if key in val.columns and cls.DF_COLS_ATTR[key]['type']:
                 val[key] = val[key].astype(cls.DF_COLS_ATTR[key]['type'])
 
         return val
 
 
-class Profile(ProfileAbstract):
+class Profile(ProfileAC):
     """Base Profile class for atmospheric measurements. Requires only some measured values,
     together with their corresponding altitudes and flags.
 
@@ -241,9 +257,9 @@ class Profile(ProfileAbstract):
 
     """
 
-    FLAG_BIT_NM = Flag.bit_number.name
-    FLAG_ABBR_NM = Flag.flag_abbr.name
-    FLAG_DESC_NM = Flag.flag_desc.name
+    FLAG_BIT_POS_NM = TableFlag.bit_pos.name
+    FLAG_NAME_NM = TableFlag.flag_name.name
+    FLAG_DESC_NM = TableFlag.flag_desc.name
 
     # The column names for the pandas DataFrame
     DF_COLS_ATTR = {
@@ -276,12 +292,11 @@ class Profile(ProfileAbstract):
         if data is not None:
             self.data = data
         else:
-            self.data = pd.DataFrame(
-                {key: np.array([], dtype=val['type']) for key, val in self.DF_COLS_ATTR.items()}
-            )
+            self.data = pd.concat([pd.Series(name=key, dtype=val['type'])
+                                   for key, val in self.DF_COLS_ATTR.items()], axis=1)
 
         self._info = info
-        self._flags_abbr = {arg[self.FLAG_ABBR_NM]: arg for arg in db_mngr.get_flags()}
+        self._flags_name = {arg[self.FLAG_NAME_NM]: arg for arg in db_mngr.get_flags()}
 
     @property
     def info(self):
@@ -289,9 +304,9 @@ class Profile(ProfileAbstract):
         return self._info
 
     @property
-    def flags_abbr(self):
-        """dict: Flag abbr, description and bit position."""
-        return self._flags_abbr
+    def flags_name(self):
+        """dict: Flag name, description and bit position."""
+        return self._flags_name
 
     @property
     def alt(self):
@@ -324,15 +339,20 @@ class Profile(ProfileAbstract):
             deepcopy(self.info), self.reset_data_index(self.data.copy(deep=True))
         )
 
-    def _get_flg_bit_nbr(self, abbr):
-        """Get bit number corresponding to given flag abbr"""
-        return self.flags_abbr[abbr][self.FLAG_BIT_NM]
+    def _get_flg_bit_nbr(self, val):
+        """Get bit number corresponding to given flag name
 
-    def set_flg(self, abbr, set_val, index=None):
+        Args:
+            val (str): Flag name
+
+        """
+        return self.flags_name[val][self.FLAG_BIT_POS_NM]
+
+    def set_flg(self, val, set_val, index=None):
         """Set flag values to True/False.
 
         Args:
-            abbr (str): flag name
+            val (str): Flag name
             set_val (bool): Turn on/off the flag. Defaults to True.
             index (pd.Index, optional): Specific Profile elements to set. Default to None (=all).
 
@@ -342,9 +362,9 @@ class Profile(ProfileAbstract):
         def set_to_true(x):
             """Set bit to True"""
             if np.isnan(x):
-                out = (1 << self._get_flg_bit_nbr(abbr))
+                out = (1 << self._get_flg_bit_nbr(val))
             else:
-                out = int(x) | (1 << self._get_flg_bit_nbr(abbr))
+                out = int(x) | (1 << self._get_flg_bit_nbr(val))
 
             return out
 
@@ -353,7 +373,7 @@ class Profile(ProfileAbstract):
             if np.isnan(x):
                 out = 0
             else:
-                out = int(x) & ~(1 << self._get_flg_bit_nbr(abbr))
+                out = int(x) & ~(1 << self._get_flg_bit_nbr(val))
 
             return out
 
@@ -367,17 +387,17 @@ class Profile(ProfileAbstract):
         else:
             self.flg = self.flg.loc[index].apply(set_to_false)
 
-    def is_flagged(self, abbr):
-        """Check if a specific flag tag is set.
+    def is_flagged(self, val):
+        """Check if a specific flag name is set.
 
         Args:
-            abbr (str): flag name
+            val (str): Flag name
 
         Returns:
             pd.Series: Series of int, with 1's where the requested flag name is True.
 
         """
-        bit_nbr = self._get_flg_bit_nbr(abbr)
+        bit_nbr = self._get_flg_bit_nbr(val)
         return self.flg.apply(lambda x: (x >> bit_nbr) & 1)
 
 
@@ -415,10 +435,10 @@ class GDPProfile(RSProfile):
     Requires some measured values, together with their corresponding measurement times since launch,
     altitudes, flags, as well as 4 distinct types uncertainties:
 
-      - 'uc_r' : Rig "uncorrelated" uncertainties.
-      - 'uc_s' : Spatial-correlated uncertainties.
-      - 'uc_t' : Temporal correlated uncertainties.
-      - 'uc_u' : True uncorrelated uncertainties.
+      - 'ucr' : Rig "uncorrelated" uncertainties.
+      - 'ucs' : Spatial-correlated uncertainties.
+      - 'uct' : Temporal correlated uncertainties.
+      - 'ucu' : True uncorrelated uncertainties.
 
     The property "uc_tot" returns the total uncertainty, and is prodvided for convenience.
 

@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -17,7 +17,7 @@ from matplotlib import colors
 from matplotlib import cm
 
 # Import from this package
-from .. import pkg_path
+from ..hardcoded import PKG_PATH
 from ..environ import path_var as env_path_var
 from ..logger import log_func_call
 from ..logger import plots_logger as logger
@@ -84,11 +84,11 @@ def set_mplstyle(style='base'):
                         % (style, ', '.join(PLOT_STYLES.keys())))
 
     # Always apply the base style first.
-    plt.style.use(str(Path(pkg_path, 'plots', 'mpl_styles', PLOT_STYLES['base'])))
+    plt.style.use(str(Path(PKG_PATH, 'plots', 'mpl_styles', PLOT_STYLES['base'])))
 
     # Then apply which ever alternative style was requested, if we haven't already.
     if style != 'base':
-        plt.style.use(str(Path(pkg_path, 'plots', 'mpl_styles', PLOT_STYLES[style])))
+        plt.style.use(str(Path(PKG_PATH, 'plots', 'mpl_styles', PLOT_STYLES[style])))
 
 
 def cmap_discretize(cmap, n_cols):
@@ -165,6 +165,12 @@ def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show_
             logger.warning('%s format not supported by the OS. Ignoring it.', fmt)
 
         # Save the file.
+        # Let us first make sure the destination folder exists
+        if not env_path_var.output_path.exists():
+            env_path_var.output_path.mkdir(parents=True)
+            # Set user read/write permission
+            env_path_var.output_path.chmod(env_path_var.output_path.stat().st_mode | 0o600)
+
         # Note: never use a tight box fix here. If the plot looks weird, the gridspec
         # params should be altered. This is essential for the consistency of the DVAS plots.
         fig.savefig(Path(env_path_var.output_path, '.'.join([fn_out, fmt])))

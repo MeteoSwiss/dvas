@@ -1,0 +1,110 @@
+
+# ----------------------------------------------------
+# AR GDP, version 1
+# ----------------------------------------------------
+_AR-GDP_001:
+
+    # -- META DATA ----------------------------------
+    evt_dt: "get('g.Measurement.StandardTime')"
+    srn: "get('g.MainSonde.SerialNumber')"
+    pid: "get('g.Product.Version')"
+    tags:
+        - "cat('e:', get('g.Measurement.Id'))"
+        - "cat('r:', get('g.Measurement.BalloonNumber'))"
+
+    # -- ORIG DATA ----------------------------------
+    _tdtpros1:
+        value_col: 'time'
+        lambda: 'lambda x: x * 1E9'
+
+    _trepros1:
+        value_col: 'temp'
+        lambda: 'lambda x: x - 273.15'
+
+    _treprosu_e:
+        value_col: 'temp_uec'
+
+    _treprosu_s:
+        value_col: 'temp_usc'
+
+    _treprosu_t:
+        value_col: 'temp_utc'
+
+    _altpros1:
+        value_col: 'alt'
+
+    _prepros1:
+        value_col: 'press'
+
+# ----------------------------------------------------
+# BR GDP, version 1
+# ----------------------------------------------------
+_BR-GDP_001:
+
+    # -- META DATA ----------------------------------
+    evt_dt: "cat(get('g.Measurement.StandardTime'), 'Z')"
+    srn: "get('g.MainSonde.SerialNumber')"
+    pid: "get('g.Product.Version')"
+    tags:
+        - "cat('e:', get('g.Measurement.Id'))"
+        - "cat('r:', get('g.Measurement.BalloonNumber'))"
+
+    # -- ORIG DATA ----------------------------------
+    _tdtpros1:
+        value_col: 'time'
+        lambda: 'lambda x: x * 1E9'
+
+    _trepros1:
+        value_col: 'temp'
+        lambda: 'lambda x: x - 273.15'
+
+    _treprosu_e:
+        value_col: 'temp_uec'
+
+    _treprosu_t:
+        value_col: 'temp_utc'
+
+    _altpros1:
+        value_col: 'alt'
+
+    _prepros1:
+        value_col: 'press'
+
+# ----------------------------------------------------
+# RS-41 GDP, version beta-1
+# ----------------------------------------------------
+_RS41-GDP-BETA_001:
+
+    # -- META DATA ----------------------------------
+    evt_dt: "get('g.Measurement.StandardTime')"
+    srn: "get('g.MainSonde.SerialNumber')"
+    pid: "get('g.Product.Version')"
+    tags:
+        - "cat('e:', get('g.Measurement.Id'))"
+        - "cat('r:', get('g.Measurement.BalloonNumber'))"
+
+    # -- ORIG DATA ----------------------------------
+    _tdtpros1:
+        value_col: 'time'
+        lambda: 'lambda x: x * 1E9'
+
+    _trepros1:
+        value_col: 'temp'
+
+    _treprosu_r:
+        value_col: 'temp_uc_ncor'
+
+    _treprosu_s:
+        value_col: 'temp_uc_scor'
+
+    _treprosu_t:
+        value_col: 'temp_uc_tcor'
+
+    _altpros1:
+        value_col: 'alt'
+
+    _prepros1:
+        value_col: 'press'
+
+    _preprosu_u:
+        value_col: 'press_uc'

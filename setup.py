@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -44,18 +44,19 @@ setup(
         "netCDF4",
         'numpy',
         "pampy",
-        "pandas<=1.1.4",
+        "pandas",
         "peewee",
         "pytest",
         "pytest-env",
+        "pytest-data",
         "pytest-datafiles",
         "ruamel-yaml",
         "scipy",
         "sre_yield",
     ],
 
-    # Setup entry points to use DVAS from a terminal
-    entry_points={'console_scripts': ['dvas=dvas.__main__:main']},
+    # Setup entry points to use dvas from a terminal
+    entry_points={'console_scripts': ['dvas_init=dvas_recipes.__main__:dvas_init']},
 
     classifiers=[
 

@@ -32,10 +32,10 @@ This project and everyone participating in it is governed by the [dvas Code of C
 If you find something odd with dvas, first check if it is a [known issue](https://github.com/MeteoSwiss-MDA/dvas/issues?q=is%3Aissue+). If not, please create a new [Github Issue](https://github.com/MeteoSwiss-MDA/dvas/issues). This is the best way for everyone to keep track of new problems and past solutions.
 
 ## Essential things to know about dvas
-dvas is a Python module. But dvas also includes a series of parameter and
+dvas is a Python package composed of two sub-packages: `dvas` lies at its core, with `dvas_recipes` wrapped around it. In practice, dvas also includes a series of parameter and
 utilitarian files related to its Github repository, and a dedicated documentation hosted using Github pages.
 
-For the sake of clarity, and to facilitate the maintenance, we list here (succinctly) a series of key facts about the dvas code and its repository:
+For the sake of clarity, and to facilitate the code maintenance, we list here (succinctly) a series of key facts about the dvas code and its repository:
 
 1. **Source code:**
    * dvas is distributed under the terms of the GNU General Public License v3.0 or later. The dvas
@@ -66,6 +66,12 @@ For the sake of clarity, and to facilitate the maintenance, we list here (succin
      `./.dev_utils/dev_requirements.txt`.
    * On Windows, linter and tests can be run locally from terminal with `sh .\.dev_utils\linter_bash.bat`
      resp. `sh .\.dev_utils\test_bash.bat` commands.
+   * There is a script to update the copyright years in all the `.py` files in the repository, that
+     can be run as follows:
+     ```
+     python update_copyright.py 2020-2021
+     ```
+     :warning: This script comes with no safety net. Running it will auto-update all the `.py` files. Use with caution.
 
 ## Styles
 
@@ -97,6 +103,9 @@ For the sake of clarity, and to facilitate the maintenance, we list here (succin
 
     Returns:
         bool: some grand Truth about the World.
+
+    Raises:
+        dvasError: if blah and blah occurs.
 
     Example:
         If needed, you can specify chunks of code using code blocks::
@@ -132,6 +141,7 @@ For the sake of clarity, and to facilitate the maintenance, we list here (succin
     logger.debug('Some info useful only for debug purposes.')
     logger.info('Some generic info.')
     logger.warning('Some important info that should not be missed by the user.')
+    logger.warning('This is the way to include the value of items in the msg: %s', some_item)
     ```
 
     In addition, note also the function ``dvas_logger.log_func_call(logger)``, which is meant to be
@@ -156,14 +166,21 @@ Until its release, the dvas repository will remain private: branching will thus 
 
        git config --list
 
-   If `user.name` and `user.email` are missing or do not match those of your Github account account, change them:
+   If `user.name` and `user.email` are missing or do not match those of your Github account, [change them](https://docs.github.com/en/free-pro-team@latest/github/setting-up-and-managing-your-github-user-account/setting-your-commit-email-address):
 
-       git config --local user.name "your_github_id"
-       git config --local user.email "your_github_id@users.noreply.github.com"
+       git config --local user.name "ID+username"
+       git config --local user.email "ID+username@users.noreply.github.com"
 
-1. Clone the develop branch locally:
+   **:closed_lock_with_key: Optional but recommended:** use a GPG key to sign your commits. Quoting from [the instructions](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/about-commit-signature-verification): "*Github will verify these signatures so other people will know that your commits come from a trusted source.*" See also [this SO post](https://superuser.com/questions/1512137/which-email-to-sign-commits-with-for-github-and-retain-privacy) and the reply by *Toby* if you use the *@users.noreply...* email for your commits. Do not forget
+   to then actually enable git to auto-sign all commits:
 
-       git clone -b develop https://github.com/MeteoSwiss-MDA/dvas.git your_branch_name
+       git config --global commit.gpgsign true
+
+1. Clone the `develop` branch locally:
+
+       git clone -b develop git@github.com:MeteoSwiss-MDA/dvas.git your_branch_name
+
+   :warning: `develop` is the default branch for dvas that contains all the latest *approved* changes. **Unless you have a good reason to do otherwise**, this is the branch you want to clone and branch-off from.
 
 2. Actually create your new branch locally:
 
@@ -176,9 +193,10 @@ Until its release, the dvas repository will remain private: branching will thus 
        git config --list
        git status
 
-4. Install the packages that are required for doing dev work with dvas:
+4. Install dvas from this local repo, and also the packages that are required for doing dev work :
 
-       pip install -r dev_requirements.txt
+       pip install -e ./
+       pip install -r ./dev_utils/dev_requirements.txt
 
 5. Modify the code locally. This could be the source code, or the docs `.rst` source files.
 
@@ -207,22 +225,30 @@ Until its release, the dvas repository will remain private: branching will thus 
        cd docs
        sh build_docs.sh
 
-9. Once ready with all your modifications, we'll ask that you do a rebase of your branch to
-           incorporate any modification that may have occurred on the original `develop` branch in the meantime:
+9. Run pytest to check that all is fine with your changes. From the core dvas folder, type:
 
-              git fetch origin develop
-              git pull --rebase origin develop
+       pytest
 
-10. You can now push your branch to the dvas repository. If warranted (it most likely will be!),
-    remember to update the `CHANGELOG` and add your name to the `AUTHORS` before doing so.
+   :warning: Needless to say, your code tweaks will *evidently* come with dedicated tests. Right ?
 
-       git push -f origin your_branch_name
+10. Once ready with all your modifications, we'll ask that you do a rebase of your branch to
+    incorporate any modification that may have occurred on the original `develop` branch in the meantime:
+
+        git fetch origin develop
+        git pull --rebase origin develop
+
+    If this leads to conflicts that you are unsure about, get in touch with @dvas-devs.
+
+11. You can now push your branch to the dvas repository. If warranted (it most likely will be!),
+    remember to update the `CHANGELOG` and add your name to the `AUTHORS` before doing so:
+
+        git push -f origin your_branch_name
 
     Note the `-f` flag, required because of the `--rebase` to update the commit history of the
     branch stored on Github.
 
-11. Next, go to `your_branch_name` on the dvas Github repository, and draft a new pull request. By
+12. Next, go to `your_branch_name` on the dvas Github repository, and draft a new pull request. By
     default, the pull request should go from `your_branch_name` to the `develop` branch. Do not forget to link the pull request to a specific issue if warranted. Once the pull request is issued, automated checks will be run (pytest, pylint, changelog, ...). These must all succeed before the changes can be merged (if they do not, there might be something wrong with your changes).
 
-    The code devs will then come to formally review the pull request (some reviewers might also be
+    The @dvas-devs will then come to formally review the pull request (some reviewers might also be
     set automatically based on the `.github/CODEOWNERS` info).

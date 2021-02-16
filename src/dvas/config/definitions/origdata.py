@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -12,12 +12,17 @@ Module contents: Required attributes definition for
 
 # Import from current packages modules
 from ..pattern import INSTR_TYPE_PAT, PARAM_PAT
+from ...database.model import Info as TableInfo
 from ...database.model import Data
+from ...database.model import MetaData as TableMetaData
+from ...database.model import Tag as TableTag
+from ...database.model import Object as TableObject
+
 
 # Define global field name
-EVT_DT_FLD_NM = 'dt_field'  # Datetime field name
-SRN_FLD_NM = 'srn_field'  # Serial number field name
-TAG_FLD_NM = 'tag_field'  # Tag field name
+EVT_DT_FLD_NM = TableInfo.evt_dt.name  # Datetime field name
+TAG_FLD_NM = TableTag.__name__.lower() + 's'  # Tag field name
+META_FLD_NM = TableMetaData.__name__.lower()  # Metadata field name
 
 INDEX_FLD_NM = 'index_col'  # Index column field name
 PARAM_FLD_NM = 'value_col'  # Value column field name
@@ -37,12 +42,16 @@ CSV_SKIP_BLANK_LINES_FLD_NM = 'csv_skip_blank_lines'
 CSV_DELIM_WHITESPACE_FLD_NM = 'csv_delim_whitespace'
 CSV_COMMENT_FLD_NM = 'csv_comment'
 CSV_NA_VALUES_FLD_NM = 'csv_na_values'
+CSV_SKIPFOOTER_FLD_NM = 'csv_skipfooter'
 
 INDEX_NM = Data.index.name
 VALUE_NM = Data.value.name
 
-#: list: Metadata fields keys
-META_FIELD_KEYS = [EVT_DT_FLD_NM, SRN_FLD_NM, TAG_FLD_NM]
+#: list: Fields keys passed to expression interpreter
+EXPR_FIELD_KEYS = [
+    EVT_DT_FLD_NM, TableObject.srn.name,
+    TableObject.pid.name, TAG_FLD_NM, META_FLD_NM
+]
 
 #: list: Node pattern
 NODE_PATTERN = [INSTR_TYPE_PAT, PARAM_PAT]
@@ -50,16 +59,17 @@ NODE_PATTERN = [INSTR_TYPE_PAT, PARAM_PAT]
 #: dict: Node parameters default value
 NODE_PARAMS_DEF = {
     TAG_FLD_NM: [],
+    META_FLD_NM: {},
     UNIT_FLD_NM: '1',
     LAMBDA_FLD_NM: 'lambda x: x',
     CSV_DELIMITER_FLD_NM: ';',
-    CSV_HEADER_FLD_NM: 'infer',
     CSV_SKIPINITSPACE_FLD_NM: False,
     CSV_SKIPROWS_FLD_NM: 0,
     CSV_SKIP_BLANK_LINES_FLD_NM: True,
     CSV_DELIM_WHITESPACE_FLD_NM: False,
     CSV_COMMENT_FLD_NM: '#',
-    CSV_NA_VALUES_FLD_NM: ['/']
+    CSV_NA_VALUES_FLD_NM: ['/'],
+    CSV_SKIPFOOTER_FLD_NM: 0
 }
 
 #: dict: Constant nodes
@@ -73,7 +83,10 @@ PARAMETER_PATTERN_PROP = {
     rf"^{EVT_DT_FLD_NM}$": {
         "type": "string",
     },
-    rf"^{SRN_FLD_NM}$": {
+    rf"^{TableObject.srn.name}$": {
+        "type": "string",
+    },
+    rf"^{TableObject.pid.name}$": {
         "type": "string",
     },
     rf"^{TAG_FLD_NM}$": {
@@ -84,8 +97,25 @@ PARAMETER_PATTERN_PROP = {
         "minItems": 1,
         "uniqueItems": True
     },
+    rf"^{META_FLD_NM}$": {
+        "oneOf": [
+            {"type": 'null'},
+            {
+                "type": 'object',
+                "patternProperties": {
+                    r"^[\w\.]+$": {
+                        'oneOf': [
+                            {"type": 'string'},
+                            {"type": 'number'},
+                        ]
+                    }
+                },
+                "additionalProperties": False,
+            },
+        ]
+    },
     rf"^{PARAM_FLD_NM}$": {
-        "anyOf": [
+        "oneOf": [
             {
                 "type": "integer",
                 "minimum": 0
@@ -112,6 +142,10 @@ PARAMETER_PATTERN_PROP = {
         "type": "boolean"
     },
     rf"^{CSV_SKIPROWS_FLD_NM}$": {
+        "type": "integer",
+        'minimum': 0,
+    },
+    rf"^{CSV_SKIPFOOTER_FLD_NM}$": {
         "type": "integer",
         'minimum': 0,
     },

@@ -1,0 +1,94 @@
+
+# ----------------------------------------------------
+# RS-92 type for pseudo data (NOT THE GDP!)
+# ----------------------------------------------------
+_RS92:
+
+    # -- META DATA ----------------------------------
+    evt_dt: "get('event_dt')"
+    srn: "get('sn')"
+    pid: "get('product_id')"
+    tags:
+        - "cat('e:', get('event_id'))"
+        - "cat('r:', get('rig'))"
+        - "get('day_night')"
+
+    # -- ORIG DATA ----------------------------------
+    csv_delimiter: ','
+    csv_skipinitialspace: True
+
+    _tdtpros1:
+        value_col: 0
+        lambda: 'lambda x: x * 1E9'
+
+    _trepros1:
+        value_col: 2
+
+    _altpros1:
+        value_col: 9
+
+    _prepros1:
+        value_col: 1
+
+# ----------------------------------------------------
+# YT type
+# ----------------------------------------------------
+_YT:
+
+    # -- META DATA ----------------------------------
+    evt_dt: "cat(get('event_dt'), 'Z')"
+    srn: "get('sn')"
+    pid: "get('product_id')"
+    tags:
+        - "cat('e:', get('event_id'))"
+        - "cat('r:', get('rig'))"
+        - "get('day_night')"
+
+    # -- ORIG DATA ----------------------------------
+    csv_delimiter: ','
+    csv_skipinitialspace: True
+
+    _tdtpros1:
+        value_col: 0
+        lambda: 'lambda x: x * 1E9'
+
+    _trepros1:
+        value_col: 1
+
+    _altpros1:
+        value_col: 2
+
+    _prepros1:
+        value_col: 3
+
+# ----------------------------------------------------
+# ZT type
+# ----------------------------------------------------
+_ZT:
+
+    # -- META DATA ----------------------------------
+    evt_dt: "get('event_dt')"
+    srn: "get('sn')"
+    pid: "get('product_id')"
+    tags:
+        - "cat('e:', get('event_id'))"
+        - "cat('r:', get('rig'))"
+        - "get('day_night')"
+
+    # -- ORIG DATA ----------------------------------
+    csv_delimiter: ';'
+    csv_skip_blank_lines: True
+
+    _tdtpros1:
+        value_col: 0
+        lambda: 'lambda x: x * 1E9'
+
+    _trepros1:
+        value_col: 1
+
+    _altpros1:
+        value_col: 2
+
+    _prepros1:
+        value_col: 3
+

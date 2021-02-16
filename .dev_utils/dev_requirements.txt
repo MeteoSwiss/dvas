@@ -10,3 +10,6 @@ plantweb
 # The following packages are required for running manual code testing
 pylint
 pytest-cov
+
+# The following packages are recommended for code development
+ipython

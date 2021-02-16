@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -9,18 +9,17 @@ Module contents: Plotting strategies
 
 """
 
-# Import from external packages
-from abc import ABCMeta#, abstractmethod
-
 # Import from current package
+from .data import MPStrategyAC
 from ...plots import plots as dpp
 
-class PlotStrategy(metaclass=ABCMeta):
+
+class PlotStrategy(MPStrategyAC):
     """ Base class to manage the data plotting strategy for the MultiProfile class. """
 
     #TODO: interesting pylint suggestion here. It is suggesting to create a simple function
     # rather than a full class. Any merit to this suggestion ?
-    def plot(self, prfs, **kwargs):
+    def execute(self, prfs, **kwargs):
         """ Call the proper plotting method for this strategy.
 
         Args:
@@ -31,10 +30,11 @@ class PlotStrategy(metaclass=ABCMeta):
 
         dpp.multiprf(prfs, **kwargs)
 
-class RSPlotStrategy(PlotStrategy):
+
+class RSPlotStrategy(MPStrategyAC):
     """ Child class to manage the plotting strategy for the MultiRSProfile class. """
 
-    def plot(self, prfs, **kwargs):
+    def execute(self, prfs, **kwargs):
         """ Call the proper plotting method for this strategy.
 
         Args:
@@ -45,10 +45,11 @@ class RSPlotStrategy(PlotStrategy):
 
         dpp.multiprf(prfs, **kwargs)
 
-class GDPPlotStrategy(PlotStrategy):
+
+class GDPPlotStrategy(MPStrategyAC):
     """ Child class to manage the plotting strategy for the MultiGDPProfile class. """
 
-    def plot(self, prfs, **kwargs):
+    def execute(self, prfs, **kwargs):
         """ Call the proper plotting method for this strategy.
 
         Args:
