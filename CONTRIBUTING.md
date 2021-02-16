@@ -225,11 +225,11 @@ Until its release, the dvas repository will remain private: branching will thus 
        cd docs
        sh build_docs.sh
 
-9. Run the automated tests to check that all runs fine. From the core dvas folder, type:
+9. Run pytest to check that all is fine with your changes. From the core dvas folder, type:
 
        pytest
 
-   :warning: needless to say, your code tweaks will *evidently* come with dedicated tests. Right ?
+   :warning: Needless to say, your code tweaks will *evidently* come with dedicated tests. Right ?
 
 10. Once ready with all your modifications, we'll ask that you do a rebase of your branch to
     incorporate any modification that may have occurred on the original `develop` branch in the meantime:
