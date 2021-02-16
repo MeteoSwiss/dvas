@@ -32,10 +32,10 @@ This project and everyone participating in it is governed by the [dvas Code of C
 If you find something odd with dvas, first check if it is a [known issue](https://github.com/MeteoSwiss-MDA/dvas/issues?q=is%3Aissue+). If not, please create a new [Github Issue](https://github.com/MeteoSwiss-MDA/dvas/issues). This is the best way for everyone to keep track of new problems and past solutions.
 
 ## Essential things to know about dvas
-dvas is a Python module. But dvas also includes a series of parameter and
+dvas is a Python package composed of two sub-packages: `dvas` lies at its core, with `dvas_recipes` wrapped around it. In practice, dvas also includes a series of parameter and
 utilitarian files related to its Github repository, and a dedicated documentation hosted using Github pages.
 
-For the sake of clarity, and to facilitate the maintenance, we list here (succinctly) a series of key facts about the dvas code and its repository:
+For the sake of clarity, and to facilitate the code maintenance, we list here (succinctly) a series of key facts about the dvas code and its repository:
 
 1. **Source code:**
    * dvas is distributed under the terms of the GNU General Public License v3.0 or later. The dvas
@@ -66,8 +66,8 @@ For the sake of clarity, and to facilitate the maintenance, we list here (succin
      `./.dev_utils/dev_requirements.txt`.
    * On Windows, linter and tests can be run locally from terminal with `sh .\.dev_utils\linter_bash.bat`
      resp. `sh .\.dev_utils\test_bash.bat` commands.
-   * A script to update the copyright years in all the `.py` files in the repository, that can be
-     run as follows:
+   * There is a script to update the copyright years in all the `.py` files in the repository, that
+     can be run as follows:
      ```
      python update_copyright.py 2020-2021
      ```
@@ -225,13 +225,21 @@ Until its release, the dvas repository will remain private: branching will thus 
        cd docs
        sh build_docs.sh
 
-9. Once ready with all your modifications, we'll ask that you do a rebase of your branch to
-   incorporate any modification that may have occurred on the original `develop` branch in the meantime:
+9. Run the automated tests to check that all runs fine. From the core dvas folder, type:
+
+       pytest
+
+   :warning: needless to say, your code tweaks will *evidently* come with dedicated tests. Right ?
+
+10. Once ready with all your modifications, we'll ask that you do a rebase of your branch to
+    incorporate any modification that may have occurred on the original `develop` branch in the meantime:
 
         git fetch origin develop
         git pull --rebase origin develop
 
-10. You can now push your branch to the dvas repository. If warranted (it most likely will be!),
+    If this leads to conflicts that you are unsure about, get in touch with @dvas-devs.
+
+11. You can now push your branch to the dvas repository. If warranted (it most likely will be!),
     remember to update the `CHANGELOG` and add your name to the `AUTHORS` before doing so:
 
         git push -f origin your_branch_name
@@ -239,8 +247,8 @@ Until its release, the dvas repository will remain private: branching will thus 
     Note the `-f` flag, required because of the `--rebase` to update the commit history of the
     branch stored on Github.
 
-11. Next, go to `your_branch_name` on the dvas Github repository, and draft a new pull request. By
+12. Next, go to `your_branch_name` on the dvas Github repository, and draft a new pull request. By
     default, the pull request should go from `your_branch_name` to the `develop` branch. Do not forget to link the pull request to a specific issue if warranted. Once the pull request is issued, automated checks will be run (pytest, pylint, changelog, ...). These must all succeed before the changes can be merged (if they do not, there might be something wrong with your changes).
 
-    The code devs will then come to formally review the pull request (some reviewers might also be
+    The @dvas-devs will then come to formally review the pull request (some reviewers might also be
     set automatically based on the `.github/CODEOWNERS` info).
