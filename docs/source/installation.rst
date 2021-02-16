@@ -1,5 +1,7 @@
 .. include:: ./substitutions.rst
 
+.. _install:
+
 Installation
 ============
 
@@ -20,11 +22,6 @@ The latest stable version is |version|.
 The most recent release of dvas is also available for download from its
 `Github repository <https://github.com/MeteoSwiss-MDA/dvas/releases/latest/>`_.
 
-.. Caution::
-    The dvas Github repository will remain private until the code is being released. If you want to
-    know more about the current status of the code, feel free to
-    `get in touch <frederic.vogt@meteoswiss.ch>`_.
-
 Requirements
 ------------
 dvas is compatible with the following python versions:
@@ -38,7 +35,7 @@ if required:
 
 .. literalinclude:: ../../setup.py
     :language: python
-    :lines: 41-55
+    :lines: 41-56
 
 Testing the installation
 ------------------------

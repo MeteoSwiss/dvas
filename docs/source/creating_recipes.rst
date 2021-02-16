@@ -1,21 +1,19 @@
-.. _running:
+.. _creating:
+
+Creating dvas recipes
+=====================
+
+This page contains information for advanced dvas users that would like to alter existing
+processing recipes, or create their own.
+
+.. hint::
+
+    If you plan on coding with dvas, we strongly suggest that you begin by taking a look at the
+    `contributing guidelines <https://github.com/MeteoSwiss-MDA/dvas/blob/develop/CONTRIBUTING.md>`_
+    on Github. Even if you do not want to share your modifications (which is totally fine!), these
+    guidelines contain critical information regarding the structure and spirit of the code.
 
 
-Running dvas as a high-level user
-=================================
-
-1. Initialize a new dvas *processing arena*. In a terminal, in a location of your choice, type:
-
-.. code-block:: none
-
-    dvas_init uaii22
-
-You can see all the available recipes using the associated help (``dvas_init --help``):
-
-.. literalinclude:: dvas_help_msg.txt
-    :language: none
-
-2. ...
 
 Naming conventions
 ------------------
