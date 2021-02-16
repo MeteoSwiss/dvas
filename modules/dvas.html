@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>dvas package &mdash; dvas  documentation</title>
   
@@ -16,7 +16,10 @@
 
   
   
+
   
+  
+
   
 
   
@@ -29,7 +32,6 @@
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -51,7 +53,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> dvas
+            <a href="../index.html" class="icon icon-home"> dvas
           
 
           
@@ -61,7 +63,7 @@
             
             
               <div class="version">
-                0.1.1
+                0.2.0
               </div>
             
           
@@ -86,10 +88,12 @@
               
             
             
-              <ul class="current">
+              <p class="caption"><span class="caption-text">Table of contents</span></p>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Home</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../running.html">Running dvas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running_recipes.html">Running dvas recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../creating_recipes.html">Creating dvas recipes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../acknowledge.html">Acknowledging dvas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../license.html">License &amp; Copyright</a></li>
@@ -107,13 +111,16 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dvas.dvas">dvas.dvas module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-dvas.environ">dvas.environ module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-dvas.errors">dvas.errors module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dvas.hardcoded">dvas.hardcoded module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-dvas.helper">dvas.helper module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-dvas.logger">dvas.logger module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-dvas.version">dvas.version module</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="dvas_recipes.html">dvas_recipes package</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../doc_todo.html">Documentation todos</a></li>
@@ -157,6 +164,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -170,7 +179,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../_sources/modules/dvas.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -186,7 +195,7 @@
             
   <div class="section" id="module-dvas">
 <span id="dvas-package"></span><h1>dvas package<a class="headerlink" href="#module-dvas" title="Permalink to this headline">¶</a></h1>
-<p>Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <div class="section" id="subpackages">
@@ -200,7 +209,6 @@
 <li class="toctree-l4"><a class="reference internal" href="dvas.config.definitions.html#module-dvas.config.definitions.csvorigmeta">dvas.config.definitions.csvorigmeta module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dvas.config.definitions.html#module-dvas.config.definitions.flag">dvas.config.definitions.flag module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dvas.config.definitions.html#module-dvas.config.definitions.instrtype">dvas.config.definitions.instrtype module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dvas.config.definitions.html#module-dvas.config.definitions.instrument">dvas.config.definitions.instrument module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dvas.config.definitions.html#module-dvas.config.definitions.origdata">dvas.config.definitions.origdata module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dvas.config.definitions.html#module-dvas.config.definitions.parameter">dvas.config.definitions.parameter module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dvas.config.definitions.html#module-dvas.config.definitions.tag">dvas.config.definitions.tag module</a></li>
@@ -221,18 +229,18 @@
 <li class="toctree-l4"><a class="reference internal" href="dvas.data.strategy.html#module-dvas.data.strategy.interpolate">dvas.data.strategy.interpolate module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dvas.data.strategy.html#module-dvas.data.strategy.load">dvas.data.strategy.load module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dvas.data.strategy.html#module-dvas.data.strategy.plot">dvas.data.strategy.plot module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.strategy.html#module-dvas.data.strategy.rebase">dvas.data.strategy.rebase module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dvas.data.strategy.html#module-dvas.data.strategy.resample">dvas.data.strategy.resample module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dvas.data.strategy.html#module-dvas.data.strategy.save">dvas.data.strategy.save module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dvas.data.strategy.html#module-dvas.data.strategy.sort">dvas.data.strategy.sort module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dvas.data.strategy.html#module-dvas.data.strategy.sync">dvas.data.strategy.sync module</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="dvas.data.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dvas.data.html#module-dvas.data.data">dvas.data.data module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.data.html#module-dvas.data.io">dvas.data.io module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dvas.data.html#module-dvas.data.linker">dvas.data.linker module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dvas.data.html#module-dvas.data.math">dvas.data.math module</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="dvas.database.html">dvas.database package</a><ul>
@@ -251,7 +259,9 @@
 <li class="toctree-l1"><a class="reference internal" href="dvas.tools.html">dvas.tools package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="dvas.tools.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dvas.tools.html#module-dvas.tools.gruan">dvas.tools.gruan module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.tools.html#module-dvas.tools.math">dvas.tools.math module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dvas.tools.html#module-dvas.tools.stats">dvas.tools.stats module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.tools.html#module-dvas.tools.sync">dvas.tools.sync module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dvas.tools.html#module-dvas.tools.tools">dvas.tools.tools module</a></li>
 </ul>
 </li>
@@ -261,69 +271,141 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
+<div class="section" id="module-dvas.dvas">
+<span id="dvas-dvas-module"></span><h2>dvas.dvas module<a class="headerlink" href="#module-dvas.dvas" title="Permalink to this headline">¶</a></h2>
+<p>Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<p>Module contents: Package facade</p>
+<dl class="py function">
+<dt id="dvas.dvas.start_log">
+<code class="sig-prename descclassname"><span class="pre">dvas.dvas.</span></code><code class="sig-name descname"><span class="pre">start_log</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'INFO'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.dvas.start_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts the dvas logging.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mode</strong> (<em>int</em>) – Log output mode. 0 (No log) | 1 (Log to file only) | 2 (Log to file + console) |
+3 (Log to console only). Defaults to 1.</p></li>
+<li><p><strong>level</strong> (<em>str</em>) – Log level. Allowed: ‘DEBUG’|’D’|’INFO’|’I’|’WARNING’|’WARN’|’W’|’ERROR’|’E’.
+Defaults to ‘INFO’</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dvas.dvas.stop_log">
+<code class="sig-prename descclassname"><span class="pre">dvas.dvas.</span></code><code class="sig-name descname"><span class="pre">stop_log</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dvas.dvas.stop_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop logging</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="dvas.dvas.Database">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.dvas.</span></code><code class="sig-name descname"><span class="pre">Database</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.dvas.Database" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Facade class for user interactions for database.</p>
+<dl class="py method">
+<dt id="dvas.dvas.Database.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.dvas.Database.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>reset</strong> (<em>bool, optional</em>) – Reset DB, Defaults to False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.dvas.Database.fetch_raw_data">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">fetch_raw_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search_prm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.dvas.Database.fetch_raw_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetch new raw data and save to DB</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>search_prm</strong> (<em>str</em>) – Search parameter value.</p></li>
+<li><p><strong>strict</strong> (<em>bool, optional</em>) – Search strict. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="dvas.dvas.MultiProfile">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.dvas.</span></code><code class="sig-name descname"><span class="pre">MultiProfile</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.dvas.MultiProfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="dvas.data.html#dvas.data.data.MultiProfile" title="dvas.data.data.MultiProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.data.MultiProfile</span></code></a></p>
+<p>Facade class for user interactions with MultiProfile</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="dvas.dvas.MultiRSProfile">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.dvas.</span></code><code class="sig-name descname"><span class="pre">MultiRSProfile</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.dvas.MultiRSProfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="dvas.data.html#dvas.data.data.MultiRSProfile" title="dvas.data.data.MultiRSProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.data.MultiRSProfile</span></code></a></p>
+<p>Facade class for user interactions with MultiRSProfile</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="dvas.dvas.MultiGDPProfile">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.dvas.</span></code><code class="sig-name descname"><span class="pre">MultiGDPProfile</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.dvas.MultiGDPProfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="dvas.data.html#dvas.data.data.MultiGDPProfile" title="dvas.data.data.MultiGDPProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.data.MultiGDPProfile</span></code></a></p>
+<p>Facade class for user interactions with MultiGDPProfile</p>
+</dd></dl>
+
+</div>
 <div class="section" id="module-dvas.environ">
 <span id="dvas-environ-module"></span><h2>dvas.environ module<a class="headerlink" href="#module-dvas.environ" title="Permalink to this headline">¶</a></h2>
-<p>Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <dl class="py class">
 <dt id="dvas.environ.ABCSingleInstanceMeta">
-<em class="property">class </em><code class="sig-prename descclassname">dvas.environ.</code><code class="sig-name descname">ABCSingleInstanceMeta</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">bases</span></em>, <em class="sig-param"><span class="n">namespace</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.environ.ABCSingleInstanceMeta" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.environ.</span></code><code class="sig-name descname"><span class="pre">ABCSingleInstanceMeta</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.environ.ABCSingleInstanceMeta" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABCMeta</span></code>, <a class="reference internal" href="#dvas.helper.SingleInstanceMetaClass" title="dvas.helper.SingleInstanceMetaClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.helper.SingleInstanceMetaClass</span></code></a></p>
 <p>Child Meteclass from ABCMeta and SingleInstanceMetaClass</p>
 </dd></dl>
 
 <dl class="py class">
 <dt id="dvas.environ.VariableManager">
-<em class="property">class </em><code class="sig-prename descclassname">dvas.environ.</code><code class="sig-name descname">VariableManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.environ.VariableManager" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.environ.</span></code><code class="sig-name descname"><span class="pre">VariableManager</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.environ.VariableManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <p>Class to manage variables</p>
 <dl class="py method">
 <dt id="dvas.environ.VariableManager.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dvas.environ.VariableManager.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dvas.environ.VariableManager.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructor</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="dvas.environ.VariableManager.attr_def">
-<em class="property">abstract property </em><code class="sig-name descname">attr_def</code><a class="headerlink" href="#dvas.environ.VariableManager.attr_def" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class attributes definition</p>
+<dt id="dvas.environ.VariableManager.get_attr">
+<code class="sig-name descname"><span class="pre">get_attr</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dvas.environ.VariableManager.get_attr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return current attributes</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="dvas.environ.VariableManager.set_attr">
-<code class="sig-name descname">set_attr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dvas.environ.VariableManager.set_attr" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set attribute from attr_def. Try first to get attribute value from
+<code class="sig-name descname"><span class="pre">set_attr</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dvas.environ.VariableManager.set_attr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set attribute from _attr_def. Try first to get attribute value from
 environment. All attributes can be defined in environment variables
 using &lt;package name&gt;_&lt;attribute name&gt; in upper case.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="dvas.environ.VariableManager.set_many_attr">
-<code class="sig-name descname">set_many_attr</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">items</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.environ.VariableManager.set_many_attr" title="Permalink to this definition">¶</a></dt>
-<dd><p>Context manager to set temporarily many global variables.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>items</strong> (<em>dict</em>) – Temporarily global variables.
-keys: instance attribute name. values: temporarily set values.</p>
-</dd>
-</dl>
-<p>except AssertionError as ass:
-.. rubric:: Examples</p>
-<p>&gt;&gt;&gt;from dvas.dvas_environ import path_var
-&gt;&gt;&gt;with path_var.set_many_attr({})</p>
+<dt id="dvas.environ.VariableManager.protect">
+<code class="sig-name descname"><span class="pre">protect</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dvas.environ.VariableManager.protect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Context manager to protect temporarily global variables.
+When existing the context manager, old values are restored.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="dvas.environ.GlobalPathVariablesManager">
-<em class="property">class </em><code class="sig-prename descclassname">dvas.environ.</code><code class="sig-name descname">GlobalPathVariablesManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.environ.GlobalPathVariablesManager" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.environ.</span></code><code class="sig-name descname"><span class="pre">GlobalPathVariablesManager</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.environ.GlobalPathVariablesManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#dvas.environ.VariableManager" title="dvas.environ.VariableManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.environ.VariableManager</span></code></a></p>
 <p>Class to manage package’s global directory path variables</p>
 <dl class="py attribute">
 <dt id="dvas.environ.GlobalPathVariablesManager.orig_data_path">
-<code class="sig-name descname">orig_data_path</code><a class="headerlink" href="#dvas.environ.GlobalPathVariablesManager.orig_data_path" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">orig_data_path</span></code><a class="headerlink" href="#dvas.environ.GlobalPathVariablesManager.orig_data_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Original data path</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -334,7 +416,7 @@ keys: instance attribute name. values: temporarily set values.</p>
 
 <dl class="py attribute">
 <dt id="dvas.environ.GlobalPathVariablesManager.config_dir_path">
-<code class="sig-name descname">config_dir_path</code><a class="headerlink" href="#dvas.environ.GlobalPathVariablesManager.config_dir_path" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">config_dir_path</span></code><a class="headerlink" href="#dvas.environ.GlobalPathVariablesManager.config_dir_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Config dir path</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -345,7 +427,7 @@ keys: instance attribute name. values: temporarily set values.</p>
 
 <dl class="py attribute">
 <dt id="dvas.environ.GlobalPathVariablesManager.local_db_path">
-<code class="sig-name descname">local_db_path</code><a class="headerlink" href="#dvas.environ.GlobalPathVariablesManager.local_db_path" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">local_db_path</span></code><a class="headerlink" href="#dvas.environ.GlobalPathVariablesManager.local_db_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Local db dir path</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -356,7 +438,7 @@ keys: instance attribute name. values: temporarily set values.</p>
 
 <dl class="py attribute">
 <dt id="dvas.environ.GlobalPathVariablesManager.output_path">
-<code class="sig-name descname">output_path</code><a class="headerlink" href="#dvas.environ.GlobalPathVariablesManager.output_path" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">output_path</span></code><a class="headerlink" href="#dvas.environ.GlobalPathVariablesManager.output_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>DVAS output dir path</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -367,7 +449,7 @@ keys: instance attribute name. values: temporarily set values.</p>
 
 <dl class="py attribute">
 <dt id="dvas.environ.GlobalPathVariablesManager.plot_output_path">
-<code class="sig-name descname">plot_output_path</code><a class="headerlink" href="#dvas.environ.GlobalPathVariablesManager.plot_output_path" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">plot_output_path</span></code><a class="headerlink" href="#dvas.environ.GlobalPathVariablesManager.plot_output_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>DVAS output dir path for plots</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -378,7 +460,7 @@ keys: instance attribute name. values: temporarily set values.</p>
 
 <dl class="py attribute">
 <dt id="dvas.environ.GlobalPathVariablesManager.plot_style_path">
-<code class="sig-name descname">plot_style_path</code><a class="headerlink" href="#dvas.environ.GlobalPathVariablesManager.plot_style_path" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">plot_style_path</span></code><a class="headerlink" href="#dvas.environ.GlobalPathVariablesManager.plot_style_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>plot styles dir path</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -387,79 +469,16 @@ keys: instance attribute name. values: temporarily set values.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="dvas.environ.GlobalPathVariablesManager.attr_def">
-<em class="property">property </em><code class="sig-name descname">attr_def</code><a class="headerlink" href="#dvas.environ.GlobalPathVariablesManager.attr_def" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class attributes definition</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="dvas.environ.GlobalLoggingVariableManager">
-<em class="property">class </em><code class="sig-prename descclassname">dvas.environ.</code><code class="sig-name descname">GlobalLoggingVariableManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.environ.GlobalLoggingVariableManager" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.environ.VariableManager" title="dvas.environ.VariableManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.environ.VariableManager</span></code></a></p>
-<p>Class used to manage package logging variables</p>
-<dl class="py attribute">
-<dt id="dvas.environ.GlobalLoggingVariableManager.MODES">
-<code class="sig-name descname">MODES</code><em class="property"> = ('FILE', 'CONSOLE')</em><a class="headerlink" href="#dvas.environ.GlobalLoggingVariableManager.MODES" title="Permalink to this definition">¶</a></dt>
-<dd><p>Allowed logging modes</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>tuple</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="dvas.environ.GlobalLoggingVariableManager.log_mode">
-<code class="sig-name descname">log_mode</code><a class="headerlink" href="#dvas.environ.GlobalLoggingVariableManager.log_mode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Log output mode, Default to ‘CONSOLE’</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="dvas.environ.GlobalLoggingVariableManager.log_file_name">
-<code class="sig-name descname">log_file_name</code><a class="headerlink" href="#dvas.environ.GlobalLoggingVariableManager.log_file_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Log output file name. Default to ‘dvas’</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="dvas.environ.GlobalLoggingVariableManager.log_level">
-<code class="sig-name descname">log_level</code><a class="headerlink" href="#dvas.environ.GlobalLoggingVariableManager.log_level" title="Permalink to this definition">¶</a></dt>
-<dd><p>Log level. Default to ‘INFO’</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="dvas.environ.GlobalLoggingVariableManager.attr_def">
-<em class="property">property </em><code class="sig-name descname">attr_def</code><a class="headerlink" href="#dvas.environ.GlobalLoggingVariableManager.attr_def" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class attributes definition</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
 <dt id="dvas.environ.GlobalPackageVariableManager">
-<em class="property">class </em><code class="sig-prename descclassname">dvas.environ.</code><code class="sig-name descname">GlobalPackageVariableManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.environ.GlobalPackageVariableManager" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.environ.</span></code><code class="sig-name descname"><span class="pre">GlobalPackageVariableManager</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.environ.GlobalPackageVariableManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#dvas.environ.VariableManager" title="dvas.environ.VariableManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.environ.VariableManager</span></code></a></p>
 <p>Class used to manage package global variables</p>
 <dl class="py attribute">
 <dt id="dvas.environ.GlobalPackageVariableManager.config_gen_max">
-<code class="sig-name descname">config_gen_max</code><a class="headerlink" href="#dvas.environ.GlobalPackageVariableManager.config_gen_max" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">config_gen_max</span></code><a class="headerlink" href="#dvas.environ.GlobalPackageVariableManager.config_gen_max" title="Permalink to this definition">¶</a></dt>
 <dd><p>Config regexp generator limit. Default to 10000.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -469,19 +488,8 @@ keys: instance attribute name. values: temporarily set values.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="dvas.environ.GlobalPackageVariableManager.config_gen_grp_sep">
-<code class="sig-name descname">config_gen_grp_sep</code><a class="headerlink" href="#dvas.environ.GlobalPackageVariableManager.config_gen_grp_sep" title="Permalink to this definition">¶</a></dt>
-<dd><p>Config regex generator group function separator. Default to ‘$’.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
 <dt id="dvas.environ.GlobalPackageVariableManager.config_file_ext">
-<code class="sig-name descname">config_file_ext</code><a class="headerlink" href="#dvas.environ.GlobalPackageVariableManager.config_file_ext" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">config_file_ext</span></code><a class="headerlink" href="#dvas.environ.GlobalPackageVariableManager.config_file_ext" title="Permalink to this definition">¶</a></dt>
 <dd><p>Config file allowed extensions. Default to [‘yml’, ‘yaml’]</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -492,7 +500,7 @@ keys: instance attribute name. values: temporarily set values.</p>
 
 <dl class="py attribute">
 <dt id="dvas.environ.GlobalPackageVariableManager.evt_id_pat">
-<code class="sig-name descname">evt_id_pat</code><a class="headerlink" href="#dvas.environ.GlobalPackageVariableManager.evt_id_pat" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">evt_id_pat</span></code><a class="headerlink" href="#dvas.environ.GlobalPackageVariableManager.evt_id_pat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Event ID pattern use in InfoManager to extract event tag.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -503,8 +511,19 @@ keys: instance attribute name. values: temporarily set values.</p>
 
 <dl class="py attribute">
 <dt id="dvas.environ.GlobalPackageVariableManager.rig_id_pat">
-<code class="sig-name descname">rig_id_pat</code><a class="headerlink" href="#dvas.environ.GlobalPackageVariableManager.rig_id_pat" title="Permalink to this definition">¶</a></dt>
-<dd><p>Rig ID pattern use in InfoManager to extract event tag.</p>
+<code class="sig-name descname"><span class="pre">rig_id_pat</span></code><a class="headerlink" href="#dvas.environ.GlobalPackageVariableManager.rig_id_pat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rig ID pattern use in InfoManager to extract rig tag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="dvas.environ.GlobalPackageVariableManager.prd_id_pat">
+<code class="sig-name descname"><span class="pre">prd_id_pat</span></code><a class="headerlink" href="#dvas.environ.GlobalPackageVariableManager.prd_id_pat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Product ID pattern use in InfoManager to extract product tag.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
@@ -514,8 +533,8 @@ keys: instance attribute name. values: temporarily set values.</p>
 
 <dl class="py attribute">
 <dt id="dvas.environ.GlobalPackageVariableManager.mdl_id_pat">
-<code class="sig-name descname">mdl_id_pat</code><a class="headerlink" href="#dvas.environ.GlobalPackageVariableManager.mdl_id_pat" title="Permalink to this definition">¶</a></dt>
-<dd><p>GDP model ID pattern use in InfoManager to extract event tag.</p>
+<code class="sig-name descname"><span class="pre">mdl_id_pat</span></code><a class="headerlink" href="#dvas.environ.GlobalPackageVariableManager.mdl_id_pat" title="Permalink to this definition">¶</a></dt>
+<dd><p>GDP model ID pattern use in InfoManager to extract model tag.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
@@ -523,17 +542,11 @@ keys: instance attribute name. values: temporarily set values.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="dvas.environ.GlobalPackageVariableManager.attr_def">
-<em class="property">property </em><code class="sig-name descname">attr_def</code><a class="headerlink" href="#dvas.environ.GlobalPackageVariableManager.attr_def" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class attributes definition</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="py data">
 <dt id="dvas.environ.path_var">
-<code class="sig-prename descclassname">dvas.environ.</code><code class="sig-name descname">path_var</code><em class="property"> = &lt;dvas.environ.GlobalPathVariablesManager object&gt;</em><a class="headerlink" href="#dvas.environ.path_var" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">dvas.environ.</span></code><code class="sig-name descname"><span class="pre">path_var</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;dvas.environ.GlobalPathVariablesManager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#dvas.environ.path_var" title="Permalink to this definition">¶</a></dt>
 <dd><p>Global variable containing directory path values</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -543,19 +556,8 @@ keys: instance attribute name. values: temporarily set values.</p>
 </dd></dl>
 
 <dl class="py data">
-<dt id="dvas.environ.log_var">
-<code class="sig-prename descclassname">dvas.environ.</code><code class="sig-name descname">log_var</code><em class="property"> = &lt;dvas.environ.GlobalLoggingVariableManager object&gt;</em><a class="headerlink" href="#dvas.environ.log_var" title="Permalink to this definition">¶</a></dt>
-<dd><p>Global variable containing log package variables</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#dvas.environ.GlobalLoggingVariableManager" title="dvas.environ.GlobalLoggingVariableManager">GlobalLoggingVariableManager</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py data">
 <dt id="dvas.environ.glob_var">
-<code class="sig-prename descclassname">dvas.environ.</code><code class="sig-name descname">glob_var</code><em class="property"> = &lt;dvas.environ.GlobalPackageVariableManager object&gt;</em><a class="headerlink" href="#dvas.environ.glob_var" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">dvas.environ.</span></code><code class="sig-name descname"><span class="pre">glob_var</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;dvas.environ.GlobalPackageVariableManager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#dvas.environ.glob_var" title="Permalink to this definition">¶</a></dt>
 <dd><p>Global variable containing global package variables</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -567,60 +569,100 @@ keys: instance attribute name. values: temporarily set values.</p>
 </div>
 <div class="section" id="module-dvas.errors">
 <span id="dvas-errors-module"></span><h2>dvas.errors module<a class="headerlink" href="#module-dvas.errors" title="Permalink to this headline">¶</a></h2>
-<p>Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>Module contents: Error management</p>
 <dl class="py exception">
-<dt id="dvas.errors.dvasError">
-<em class="property">exception </em><code class="sig-prename descclassname">dvas.errors.</code><code class="sig-name descname">dvasError</code><a class="headerlink" href="#dvas.errors.dvasError" title="Permalink to this definition">¶</a></dt>
+<dt id="dvas.errors.DvasError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.errors.</span></code><code class="sig-name descname"><span class="pre">DvasError</span></code><a class="headerlink" href="#dvas.errors.DvasError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 <p>General error class for dvas.</p>
 <dl class="py attribute">
-<dt id="dvas.errors.dvasError.ERR_MSG">
-<code class="sig-name descname">ERR_MSG</code><em class="property"> = 'dvas Error'</em><a class="headerlink" href="#dvas.errors.dvasError.ERR_MSG" title="Permalink to this definition">¶</a></dt>
+<dt id="dvas.errors.DvasError.ERR_MSG">
+<code class="sig-name descname"><span class="pre">ERR_MSG</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'dvas</span> <span class="pre">Error'</span></em><a class="headerlink" href="#dvas.errors.DvasError.ERR_MSG" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py exception">
 <dt id="dvas.errors.LogDirError">
-<em class="property">exception </em><code class="sig-prename descclassname">dvas.errors.</code><code class="sig-name descname">LogDirError</code><a class="headerlink" href="#dvas.errors.LogDirError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.errors.dvasError" title="dvas.errors.dvasError"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.errors.dvasError</span></code></a></p>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.errors.</span></code><code class="sig-name descname"><span class="pre">LogDirError</span></code><a class="headerlink" href="#dvas.errors.LogDirError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dvas.errors.DvasError" title="dvas.errors.DvasError"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.errors.DvasError</span></code></a></p>
 <p>Exception for error in creating log directory</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt id="dvas.errors.DBIOError">
-<em class="property">exception </em><code class="sig-prename descclassname">dvas.errors.</code><code class="sig-name descname">DBIOError</code><a class="headerlink" href="#dvas.errors.DBIOError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.errors.dvasError" title="dvas.errors.dvasError"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.errors.dvasError</span></code></a></p>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.errors.</span></code><code class="sig-name descname"><span class="pre">DBIOError</span></code><a class="headerlink" href="#dvas.errors.DBIOError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dvas.errors.DvasError" title="dvas.errors.DvasError"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.errors.DvasError</span></code></a></p>
 <p>Exception for dvas database IOError</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt id="dvas.errors.ProfileError">
-<em class="property">exception </em><code class="sig-prename descclassname">dvas.errors.</code><code class="sig-name descname">ProfileError</code><a class="headerlink" href="#dvas.errors.ProfileError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.errors.dvasError" title="dvas.errors.dvasError"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.errors.dvasError</span></code></a></p>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.errors.</span></code><code class="sig-name descname"><span class="pre">ProfileError</span></code><a class="headerlink" href="#dvas.errors.ProfileError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dvas.errors.DvasError" title="dvas.errors.DvasError"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.errors.DvasError</span></code></a></p>
 <p>Exception for dvas profile error</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt id="dvas.errors.LoadError">
-<em class="property">exception </em><code class="sig-prename descclassname">dvas.errors.</code><code class="sig-name descname">LoadError</code><a class="headerlink" href="#dvas.errors.LoadError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.errors.dvasError" title="dvas.errors.dvasError"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.errors.dvasError</span></code></a></p>
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.errors.</span></code><code class="sig-name descname"><span class="pre">LoadError</span></code><a class="headerlink" href="#dvas.errors.LoadError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dvas.errors.DvasError" title="dvas.errors.DvasError"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.errors.DvasError</span></code></a></p>
 <p>Exception for dvas load error</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-dvas.hardcoded">
+<span id="dvas-hardcoded-module"></span><h2>dvas.hardcoded module<a class="headerlink" href="#module-dvas.hardcoded" title="Permalink to this headline">¶</a></h2>
+<p>Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<p>Module contents: hardcoded parameters and variables for dvas.</p>
+<dl class="py data">
+<dt id="dvas.hardcoded.PKG_PATH">
+<code class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></code><code class="sig-name descname"><span class="pre">PKG_PATH</span></code><em class="property"> <span class="pre">=</span> <span class="pre">PosixPath('/home/runner/work/dvas/dvas/src/dvas')</span></em><a class="headerlink" href="#dvas.hardcoded.PKG_PATH" title="Permalink to this definition">¶</a></dt>
+<dd><p>package path</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>pathlib.Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt id="dvas.hardcoded.PROC_PATH">
+<code class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></code><code class="sig-name descname"><span class="pre">PROC_PATH</span></code><em class="property"> <span class="pre">=</span> <span class="pre">PosixPath('.')</span></em><a class="headerlink" href="#dvas.hardcoded.PROC_PATH" title="Permalink to this definition">¶</a></dt>
+<dd><p>processing arena path</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>pathlib.Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt id="dvas.hardcoded.PRF_REF_INDEX_NAME">
+<code class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></code><code class="sig-name descname"><span class="pre">PRF_REF_INDEX_NAME</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'_idx'</span></em><a class="headerlink" href="#dvas.hardcoded.PRF_REF_INDEX_NAME" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the integer index for the pandas DataFrame of Profiles, RSProfile, GDPProfiles</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
 <div class="section" id="module-dvas.helper">
 <span id="dvas-helper-module"></span><h2>dvas.helper module<a class="headerlink" href="#module-dvas.helper" title="Permalink to this headline">¶</a></h2>
-<p>Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>Module contents: Package helper classes and functions.</p>
 <dl class="py function">
 <dt id="dvas.helper.camel_to_snake">
-<code class="sig-prename descclassname">dvas.helper.</code><code class="sig-name descname">camel_to_snake</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.camel_to_snake" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">dvas.helper.</span></code><code class="sig-name descname"><span class="pre">camel_to_snake</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.camel_to_snake" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert camel case to snake case</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -634,31 +676,41 @@ keys: instance attribute name. values: temporarily set values.</p>
 
 <dl class="py class">
 <dt id="dvas.helper.SingleInstanceMetaClass">
-<em class="property">class </em><code class="sig-prename descclassname">dvas.helper.</code><code class="sig-name descname">SingleInstanceMetaClass</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">bases</span></em>, <em class="sig-param"><span class="n">dic</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.SingleInstanceMetaClass" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.helper.</span></code><code class="sig-name descname"><span class="pre">SingleInstanceMetaClass</span></code><a class="headerlink" href="#dvas.helper.SingleInstanceMetaClass" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></p>
 <p>Metaclass to create single instance of class</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><a class="reference external" href="https://www.pythonprogramming.in/singleton-class-using-metaclass-in-python.html">Source code</a></p>
+<p><a class="reference external" href="https://stackoverflow.com/questions/43619748/destroying-a-singleton-object-in-python">Source code</a></p>
 </div>
 <dl class="py method">
-<dt id="dvas.helper.SingleInstanceMetaClass.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">bases</span></em>, <em class="sig-param"><span class="n">dic</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.SingleInstanceMetaClass.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructor</p>
+<dt id="dvas.helper.SingleInstanceMetaClass.pop_instance">
+<em class="property"><span class="pre">classmethod</span> </em><code class="sig-name descname"><span class="pre">pop_instance</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.SingleInstanceMetaClass.pop_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pop instance</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>!!!ONLY FOR ADVANCED USER!!! Use this method carefully.
+Ensure that no more class instances are linked to this reference.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>type</em>) – Instance type to clear</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="dvas.helper.RequiredAttrMetaClass">
-<em class="property">class </em><code class="sig-prename descclassname">dvas.helper.</code><code class="sig-name descname">RequiredAttrMetaClass</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">bases</span></em>, <em class="sig-param"><span class="n">namespace</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.RequiredAttrMetaClass" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.helper.</span></code><code class="sig-name descname"><span class="pre">RequiredAttrMetaClass</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.RequiredAttrMetaClass" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABCMeta</span></code></p>
 <p>Meta class for requiring specific attribute to abstract parent class</p>
 <p>Use this meta abstract class to construct a parent abstract class to
 require special attributes into children.</p>
 <dl class="py attribute">
 <dt id="dvas.helper.RequiredAttrMetaClass.REQUIRED_ATTRIBUTES">
-<code class="sig-name descname">REQUIRED_ATTRIBUTES</code><em class="property"> = {}</em><a class="headerlink" href="#dvas.helper.RequiredAttrMetaClass.REQUIRED_ATTRIBUTES" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">REQUIRED_ATTRIBUTES</span></code><em class="property"> <span class="pre">=</span> <span class="pre">{}</span></em><a class="headerlink" href="#dvas.helper.RequiredAttrMetaClass.REQUIRED_ATTRIBUTES" title="Permalink to this definition">¶</a></dt>
 <dd><p>Required class attributes.
 key: attribute name, value: required attribute type</p>
 <dl class="field-list simple">
@@ -672,7 +724,7 @@ key: attribute name, value: required attribute type</p>
 
 <dl class="py class">
 <dt id="dvas.helper.ContextDecorator">
-<em class="property">class </em><code class="sig-prename descclassname">dvas.helper.</code><code class="sig-name descname">ContextDecorator</code><a class="headerlink" href="#dvas.helper.ContextDecorator" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.helper.</span></code><code class="sig-name descname"><span class="pre">ContextDecorator</span></code><a class="headerlink" href="#dvas.helper.ContextDecorator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <p>Use this class as superclass of a context manager to convert it into a decorator.</p>
 <div class="admonition note">
@@ -681,13 +733,13 @@ key: attribute name, value: required attribute type</p>
 </div>
 <dl class="py method">
 <dt id="dvas.helper.ContextDecorator.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.ContextDecorator.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.ContextDecorator.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Abstract constructor</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="dvas.helper.ContextDecorator.func">
-<em class="property">property </em><code class="sig-name descname">func</code><a class="headerlink" href="#dvas.helper.ContextDecorator.func" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">func</span></code><a class="headerlink" href="#dvas.helper.ContextDecorator.func" title="Permalink to this definition">¶</a></dt>
 <dd><p>Contain the decorated function. Set automatically only
 when class is used as decorated. Default to None.</p>
 <dl class="field-list simple">
@@ -701,12 +753,12 @@ when class is used as decorated. Default to None.</p>
 
 <dl class="py class">
 <dt id="dvas.helper.TimeIt">
-<em class="property">class </em><code class="sig-prename descclassname">dvas.helper.</code><code class="sig-name descname">TimeIt</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">header_msg</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.TimeIt" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.helper.</span></code><code class="sig-name descname"><span class="pre">TimeIt</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">header_msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.TimeIt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#dvas.helper.ContextDecorator" title="dvas.helper.ContextDecorator"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.helper.ContextDecorator</span></code></a></p>
 <p>Code elapsed time calculator context manager/decorator.</p>
 <dl class="py method">
 <dt id="dvas.helper.TimeIt.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">header_msg</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.TimeIt.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">header_msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.TimeIt.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -719,14 +771,27 @@ when class is used as decorated. Default to None.</p>
 
 <dl class="py function">
 <dt id="dvas.helper.deepcopy">
-<code class="sig-prename descclassname">dvas.helper.</code><code class="sig-name descname">deepcopy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.deepcopy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use a deepcopy of the class when calling the method.
-The method keywords must contain the ‘inplace’ argument.</p>
+<code class="sig-prename descclassname"><span class="pre">dvas.helper.</span></code><code class="sig-name descname"><span class="pre">deepcopy</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.deepcopy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use a deepcopy of the class when calling a given “func” function.</p>
+<p>Intended to be used as a decorator, that will “correctly” handle the decorated function
+signature AND its docstring.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This implementation was inspired by the following sources:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The reply from <cite>metaperture</cite> to <a class="reference external" href="https://stackoverflow.com/questions/1409295/set-function-signature-in-python">this SO post</a></p></li>
+<li><p><a class="reference external" href="https://utilipy.readthedocs.io/en/latest/examples/making-decorators.html">This excellent article</a> by
+N. Starkman.</p></li>
+<li><p>The <a class="reference external" href="https://wrapt.readthedocs.io/en/latest/decorators.html#signature-changing-decorators">wrapt docs</a></p></li>
+</ul>
+</div></blockquote>
+</div>
 </dd></dl>
 
 <dl class="py class">
 <dt id="dvas.helper.TypedProperty">
-<em class="property">class </em><code class="sig-prename descclassname">dvas.helper.</code><code class="sig-name descname">TypedProperty</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pampy_match</span></em>, <em class="sig-param"><span class="n">setter_fct</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">getter_fct</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.TypedProperty" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.helper.</span></code><code class="sig-name descname"><span class="pre">TypedProperty</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pampy_match</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setter_fct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">getter_fct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.TypedProperty" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Typed property class</p>
 <div class="admonition note">
@@ -735,7 +800,7 @@ The method keywords must contain the ‘inplace’ argument.</p>
 </div>
 <dl class="py method">
 <dt id="dvas.helper.TypedProperty.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pampy_match</span></em>, <em class="sig-param"><span class="n">setter_fct</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">args</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kwargs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">getter_fct</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.TypedProperty.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pampy_match</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setter_fct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">getter_fct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.TypedProperty.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -746,6 +811,7 @@ The function can include special check and raises -
 use TypeError to raise appropriate exception.</p></li>
 <li><p><strong>args</strong> (<em>tuple</em>) – setter function args</p></li>
 <li><p><strong>kwargs</strong> (<em>dict</em>) – setter function kwargs</p></li>
+<li><p><strong>getter_fct</strong> – Function applied before returning attributes in getter method.</p></li>
 </ul>
 </dd>
 </dl>
@@ -753,8 +819,12 @@ use TypeError to raise appropriate exception.</p></li>
 
 <dl class="py method">
 <dt id="dvas.helper.TypedProperty.re_str_choice">
-<em class="property">static </em><code class="sig-name descname">re_str_choice</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">choices</span></em>, <em class="sig-param"><span class="n">ignore_case</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.TypedProperty.re_str_choice" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">re_str_choice</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">choices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_case</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.TypedProperty.re_str_choice" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to create re.compile for a list of str</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Use <cite>lambda x: x[0]</cite> as setter_fct to catch the matched string.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -772,7 +842,7 @@ use TypeError to raise appropriate exception.</p></li>
 
 <dl class="py function">
 <dt id="dvas.helper.get_by_path">
-<code class="sig-prename descclassname">dvas.helper.</code><code class="sig-name descname">get_by_path</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">items</span></em>, <em class="sig-param"><span class="n">sep</span><span class="o">=</span><span class="default_value">'.'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.get_by_path" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">dvas.helper.</span></code><code class="sig-name descname"><span class="pre">get_by_path</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">items</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.get_by_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Access a nested object in root by item sequence.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -803,7 +873,7 @@ by sep value.</p></li>
 
 <dl class="py function">
 <dt id="dvas.helper.check_path">
-<code class="sig-prename descclassname">dvas.helper.</code><code class="sig-name descname">check_path</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">exist_ok</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.check_path" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">dvas.helper.</span></code><code class="sig-name descname"><span class="pre">check_path</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exist_ok</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.check_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test and set input argument into pathlib.Path object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -823,7 +893,7 @@ by sep value.</p></li>
 
 <dl class="py function">
 <dt id="dvas.helper.check_datetime">
-<code class="sig-prename descclassname">dvas.helper.</code><code class="sig-name descname">check_datetime</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">val</span></em>, <em class="sig-param"><span class="n">utc</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.check_datetime" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">dvas.helper.</span></code><code class="sig-name descname"><span class="pre">check_datetime</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">utc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.check_datetime" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test and set input argument into datetime.datetime.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -840,7 +910,7 @@ by sep value.</p></li>
 
 <dl class="py function">
 <dt id="dvas.helper.unzip">
-<code class="sig-prename descclassname">dvas.helper.</code><code class="sig-name descname">unzip</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">val</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.unzip" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">dvas.helper.</span></code><code class="sig-name descname"><span class="pre">unzip</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.unzip" title="Permalink to this definition">¶</a></dt>
 <dd><p>Unzip list of tuple</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -854,7 +924,7 @@ by sep value.</p></li>
 
 <dl class="py function">
 <dt id="dvas.helper.get_dict_len">
-<code class="sig-prename descclassname">dvas.helper.</code><code class="sig-name descname">get_dict_len</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">val</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.get_dict_len" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">dvas.helper.</span></code><code class="sig-name descname"><span class="pre">get_dict_len</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.get_dict_len" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the length of a dict (recursively)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -866,22 +936,135 @@ by sep value.</p></li>
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt id="dvas.helper.get_class_public_attr">
+<code class="sig-prename descclassname"><span class="pre">dvas.helper.</span></code><code class="sig-name descname"><span class="pre">get_class_public_attr</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.get_class_public_attr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get public attributes from an object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="dvas.helper.AttrDict">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.helper.</span></code><code class="sig-name descname"><span class="pre">AttrDict</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.AttrDict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
+<p>Dictionary keys like an attribute</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference external" href="https://stackoverflow.com/questions/4984647/accessing-dict-keys-like-an-attribute">Source code</a></p>
+</div>
+</dd></dl>
+
 </div>
 <div class="section" id="module-dvas.logger">
 <span id="dvas-logger-module"></span><h2>dvas.logger module<a class="headerlink" href="#module-dvas.logger" title="Permalink to this headline">¶</a></h2>
-<p>Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>Module contents: Logging management</p>
-<dl class="py function">
-<dt id="dvas.logger.get_logger">
-<code class="sig-prename descclassname">dvas.logger.</code><code class="sig-name descname">get_logger</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.logger.get_logger" title="Permalink to this definition">¶</a></dt>
+<dl class="py class">
+<dt id="dvas.logger.DeltaTimeFormatter">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.logger.</span></code><code class="sig-name descname"><span class="pre">DeltaTimeFormatter</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datefmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.logger.DeltaTimeFormatter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Formatter</span></code></p>
+<p>Delta time formatter</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Adapted from <a class="reference external" href="https://stackoverflow.com/questions/25194864/python-logging-time-since-start-of-program">StackOverflow.</a>
+Author: Keith</p>
+</div>
+<dl class="py method">
+<dt id="dvas.logger.DeltaTimeFormatter.format">
+<code class="sig-name descname"><span class="pre">format</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">record</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.logger.DeltaTimeFormatter.format" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format the specified record as text.</p>
+<p>The record’s attribute dictionary is used as the operand to a
+string formatting operation which yields the returned string.
+Before formatting the dictionary, a couple of preparatory steps
+are carried out. The message attribute of the record is computed
+using LogRecord.getMessage(). If the formatting string uses the
+time (as determined by a call to usesTime(), formatTime() is
+called to format the event time. If there is exception information,
+it is formatted using formatException() and appended to the message.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="dvas.logger.LogManager">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.logger.</span></code><code class="sig-name descname"><span class="pre">LogManager</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.logger.LogManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for log management</p>
+<dl class="py method">
+<dt id="dvas.logger.LogManager.__init__">
+<code class="sig-name descname"><span class="pre">__init__</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.logger.LogManager.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Args:
+mode (int): Log output mode.
+level (str): Log level.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="dvas.logger.LogManager.log_mode">
+<code class="sig-name descname"><span class="pre">log_mode</span></code><a class="headerlink" href="#dvas.logger.LogManager.log_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log output mode. Defaults to 1.
+No log: False|0
+Log to file only: True|1
+Log to file + console: 2
+Log to console only: 3</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="dvas.logger.LogManager.log_level">
+<code class="sig-name descname"><span class="pre">log_level</span></code><a class="headerlink" href="#dvas.logger.LogManager.log_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Log level. Default to ‘INFO’</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.logger.LogManager.init_log">
+<code class="sig-name descname"><span class="pre">init_log</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dvas.logger.LogManager.init_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function used to initialize logger</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.logger.LogManager.get_console_handler">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">get_console_handler</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dvas.logger.LogManager.get_console_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the console handler</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.logger.LogManager.get_file_handler">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">get_file_handler</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dvas.logger.LogManager.get_file_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the log file handler</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.logger.LogManager.get_logger">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">get_logger</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.logger.LogManager.get_logger" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get logger</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.logger.LogManager.clear_log">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">clear_log</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dvas.logger.LogManager.clear_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function used to clear log</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py function">
 <dt id="dvas.logger.log_func_call">
-<code class="sig-prename descclassname">dvas.logger.</code><code class="sig-name descname">log_func_call</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">logger</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.logger.log_func_call" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">dvas.logger.</span></code><code class="sig-name descname"><span class="pre">log_func_call</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.logger.log_func_call" title="Permalink to this definition">¶</a></dt>
 <dd><p>Intended as a decorator that logs a function call the the log. The message is at the
 ‘DEBUG’ level.</p>
 <dl class="field-list simple">
@@ -898,54 +1081,9 @@ See also <a class="reference external" href="https://docs.python.org/3/library/i
 </div>
 </dd></dl>
 
-<dl class="py class">
-<dt id="dvas.logger.DeltaTimeFormatter">
-<em class="property">class </em><code class="sig-prename descclassname">dvas.logger.</code><code class="sig-name descname">DeltaTimeFormatter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fmt</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">datefmt</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">style</span><span class="o">=</span><span class="default_value">'%'</span></em>, <em class="sig-param"><span class="n">validate</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.logger.DeltaTimeFormatter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Formatter</span></code></p>
-<p>Delta time formatter</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Adapted from <a class="reference external" href="https://stackoverflow.com/questions/25194864/python-logging-time-since-start-of-program">StackOverflow.</a>
-Author: Keith</p>
-</div>
-<dl class="py method">
-<dt id="dvas.logger.DeltaTimeFormatter.format">
-<code class="sig-name descname">format</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">record</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.logger.DeltaTimeFormatter.format" title="Permalink to this definition">¶</a></dt>
-<dd><p>Format the specified record as text.</p>
-<p>The record’s attribute dictionary is used as the operand to a
-string formatting operation which yields the returned string.
-Before formatting the dictionary, a couple of preparatory steps
-are carried out. The message attribute of the record is computed
-using LogRecord.getMessage(). If the formatting string uses the
-time (as determined by a call to usesTime(), formatTime() is
-called to format the event time. If there is exception information,
-it is formatted using formatException() and appended to the message.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt id="dvas.logger.init_log">
-<code class="sig-prename descclassname">dvas.logger.</code><code class="sig-name descname">init_log</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dvas.logger.init_log" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function used to initialize logger</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="dvas.logger.clear_log">
-<code class="sig-prename descclassname">dvas.logger.</code><code class="sig-name descname">clear_log</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dvas.logger.clear_log" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function used to clear log</p>
-</dd></dl>
-
-<dl class="py class">
-<dt id="dvas.logger.LogManager">
-<em class="property">class </em><code class="sig-prename descclassname">dvas.logger.</code><code class="sig-name descname">LogManager</code><a class="headerlink" href="#dvas.logger.LogManager" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.helper.ContextDecorator" title="dvas.helper.ContextDecorator"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.helper.ContextDecorator</span></code></a></p>
-<p>Logging context manager</p>
-</dd></dl>
-
 <dl class="py data">
 <dt id="dvas.logger.localdb">
-<code class="sig-prename descclassname">dvas.logger.</code><code class="sig-name descname">localdb</code><em class="property"> = &lt;Logger localdb (WARNING)&gt;</em><a class="headerlink" href="#dvas.logger.localdb" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">dvas.logger.</span></code><code class="sig-name descname"><span class="pre">localdb</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;Logger</span> <span class="pre">localdb</span> <span class="pre">(WARNING)&gt;</span></em><a class="headerlink" href="#dvas.logger.localdb" title="Permalink to this definition">¶</a></dt>
 <dd><p>Local DB logger</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -956,7 +1094,7 @@ it is formatted using formatException() and appended to the message.</p>
 
 <dl class="py data">
 <dt id="dvas.logger.rawcsv">
-<code class="sig-prename descclassname">dvas.logger.</code><code class="sig-name descname">rawcsv</code><em class="property"> = &lt;Logger rawcsv (WARNING)&gt;</em><a class="headerlink" href="#dvas.logger.rawcsv" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">dvas.logger.</span></code><code class="sig-name descname"><span class="pre">rawcsv</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;Logger</span> <span class="pre">rawcsv</span> <span class="pre">(WARNING)&gt;</span></em><a class="headerlink" href="#dvas.logger.rawcsv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Raw CSV data logger</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -967,7 +1105,7 @@ it is formatted using formatException() and appended to the message.</p>
 
 <dl class="py data">
 <dt id="dvas.logger.data">
-<code class="sig-prename descclassname">dvas.logger.</code><code class="sig-name descname">data</code><em class="property"> = &lt;Logger data (WARNING)&gt;</em><a class="headerlink" href="#dvas.logger.data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">dvas.logger.</span></code><code class="sig-name descname"><span class="pre">data</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;Logger</span> <span class="pre">data</span> <span class="pre">(WARNING)&gt;</span></em><a class="headerlink" href="#dvas.logger.data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Data logger</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -978,7 +1116,7 @@ it is formatted using formatException() and appended to the message.</p>
 
 <dl class="py data">
 <dt id="dvas.logger.plots_logger">
-<code class="sig-prename descclassname">dvas.logger.</code><code class="sig-name descname">plots_logger</code><em class="property"> = &lt;Logger plots (WARNING)&gt;</em><a class="headerlink" href="#dvas.logger.plots_logger" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">dvas.logger.</span></code><code class="sig-name descname"><span class="pre">plots_logger</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;Logger</span> <span class="pre">plots</span> <span class="pre">(WARNING)&gt;</span></em><a class="headerlink" href="#dvas.logger.plots_logger" title="Permalink to this definition">¶</a></dt>
 <dd><p>plots logger</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -989,7 +1127,7 @@ it is formatted using formatException() and appended to the message.</p>
 
 <dl class="py data">
 <dt id="dvas.logger.tools_logger">
-<code class="sig-prename descclassname">dvas.logger.</code><code class="sig-name descname">tools_logger</code><em class="property"> = &lt;Logger tools (WARNING)&gt;</em><a class="headerlink" href="#dvas.logger.tools_logger" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">dvas.logger.</span></code><code class="sig-name descname"><span class="pre">tools_logger</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;Logger</span> <span class="pre">tools</span> <span class="pre">(WARNING)&gt;</span></em><a class="headerlink" href="#dvas.logger.tools_logger" title="Permalink to this definition">¶</a></dt>
 <dd><p>tools logger</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1000,8 +1138,19 @@ it is formatted using formatException() and appended to the message.</p>
 
 <dl class="py data">
 <dt id="dvas.logger.general_logger">
-<code class="sig-prename descclassname">dvas.logger.</code><code class="sig-name descname">general_logger</code><em class="property"> = &lt;Logger general (WARNING)&gt;</em><a class="headerlink" href="#dvas.logger.general_logger" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">dvas.logger.</span></code><code class="sig-name descname"><span class="pre">general_logger</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;Logger</span> <span class="pre">general</span> <span class="pre">(WARNING)&gt;</span></em><a class="headerlink" href="#dvas.logger.general_logger" title="Permalink to this definition">¶</a></dt>
 <dd><p>general logger</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>logging.logger</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt id="dvas.logger.recipes_logger">
+<code class="sig-prename descclassname"><span class="pre">dvas.logger.</span></code><code class="sig-name descname"><span class="pre">recipes_logger</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;Logger</span> <span class="pre">recipes</span> <span class="pre">(WARNING)&gt;</span></em><a class="headerlink" href="#dvas.logger.recipes_logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>high-level recipe logger</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>logging.logger</p>
@@ -1012,7 +1161,7 @@ it is formatted using formatException() and appended to the message.</p>
 </div>
 <div class="section" id="module-dvas.version">
 <span id="dvas-version-module"></span><h2>dvas.version module<a class="headerlink" href="#module-dvas.version" title="Permalink to this headline">¶</a></h2>
-<p>Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>Module contents: Version of the package.</p>
@@ -1024,37 +1173,29 @@ it is formatted using formatException() and appended to the message.</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="dvas.config.html" class="btn btn-neutral float-right" title="dvas.config package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="../modules.html" class="btn btn-neutral float-left" title="Modules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="dvas.config.html" class="btn btn-neutral float-right" title="dvas.config package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../modules.html" class="btn btn-neutral float-left" title="Modules" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2020, MeteoSwiss
+        &#169; Copyright 2020-2021, MeteoSwiss.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 

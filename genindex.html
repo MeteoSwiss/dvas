@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>Index &mdash; dvas  documentation</title>
   
@@ -16,7 +16,10 @@
 
   
   
+
   
+  
+
   
 
   
@@ -29,7 +32,6 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -49,7 +51,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> dvas
+            <a href="index.html" class="icon icon-home"> dvas
           
 
           
@@ -59,7 +61,7 @@
             
             
               <div class="version">
-                0.1.1
+                0.2.0
               </div>
             
           
@@ -84,10 +86,12 @@
               
             
             
-              <ul>
+              <p class="caption"><span class="caption-text">Table of contents</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="running.html">Running dvas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="running_recipes.html">Running dvas recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="creating_recipes.html">Creating dvas recipes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="acknowledge.html">Acknowledging dvas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">License &amp; Copyright</a></li>
@@ -136,6 +140,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -147,7 +153,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
         
       </li>
     
@@ -195,6 +201,8 @@
       <li><a href="modules/dvas.config.html#dvas.config.config.ConfigManager.__init__">__init__() (dvas.config.config.ConfigManager method)</a>
 
       <ul>
+        <li><a href="modules/dvas.config.html#dvas.config.config.OneDimArrayConfigLinker.__init__">(dvas.config.config.OneDimArrayConfigLinker method)</a>
+</li>
         <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.Profile.__init__">(dvas.data.strategy.data.Profile method)</a>
 </li>
         <li><a href="modules/dvas.database.html#dvas.database.database.DatabaseManager.__init__">(dvas.database.database.DatabaseManager method)</a>
@@ -205,17 +213,19 @@
 </li>
         <li><a href="modules/dvas.database.html#dvas.database.database.InfoManager.__init__">(dvas.database.database.InfoManager method)</a>
 </li>
-        <li><a href="modules/dvas.database.html#dvas.database.database.OneDimArrayConfigLinker.__init__">(dvas.database.database.OneDimArrayConfigLinker method)</a>
+        <li><a href="modules/dvas.database.html#dvas.database.database.InfoManagerMetaData.__init__">(dvas.database.database.InfoManagerMetaData method)</a>
+</li>
+        <li><a href="modules/dvas.html#dvas.dvas.Database.__init__">(dvas.dvas.Database method)</a>
 </li>
         <li><a href="modules/dvas.html#dvas.environ.VariableManager.__init__">(dvas.environ.VariableManager method)</a>
 </li>
         <li><a href="modules/dvas.html#dvas.helper.ContextDecorator.__init__">(dvas.helper.ContextDecorator method)</a>
 </li>
-        <li><a href="modules/dvas.html#dvas.helper.SingleInstanceMetaClass.__init__">(dvas.helper.SingleInstanceMetaClass method)</a>
-</li>
         <li><a href="modules/dvas.html#dvas.helper.TimeIt.__init__">(dvas.helper.TimeIt method)</a>
 </li>
         <li><a href="modules/dvas.html#dvas.helper.TypedProperty.__init__">(dvas.helper.TypedProperty method)</a>
+</li>
+        <li><a href="modules/dvas.html#dvas.logger.LogManager.__init__">(dvas.logger.LogManager method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -230,41 +240,37 @@
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.database.DatabaseManager.add_data">add_data() (dvas.database.database.DatabaseManager method)</a>
 </li>
-      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAbstract.add_info_tag">add_info_tag() (dvas.data.data.MutliProfileAbstract method)</a>
+      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAC.add_info_tags">add_info_tags() (dvas.data.data.MutliProfileAC method)</a>
 </li>
-      <li><a href="modules/dvas.database.html#dvas.database.database.InfoManager.add_tag">add_tag() (dvas.database.database.InfoManager method)</a>
+      <li><a href="modules/dvas.database.html#dvas.database.database.InfoManager.add_metadata">add_metadata() (dvas.database.database.InfoManager method)</a>
 </li>
+      <li><a href="modules/dvas.database.html#dvas.database.database.InfoManager.add_tags">add_tags() (dvas.database.database.InfoManager method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/dvas.database.html#dvas.database.database.AllExpr">AllExpr (class in dvas.database.database)</a>
 </li>
       <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.Profile.alt">alt() (dvas.data.strategy.data.Profile property)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/dvas.database.html#dvas.database.database.AndExpr">AndExpr (class in dvas.database.database)</a>
 </li>
       <li><a href="modules/dvas.config.html#dvas.config.config.ConfigManager.append">append() (dvas.config.config.ConfigManager method)</a>
 
       <ul>
-        <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAbstract.append">(dvas.data.data.MutliProfileAbstract method)</a>
+        <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAC.append">(dvas.data.data.MutliProfileAC method)</a>
 </li>
       </ul></li>
-      <li><a href="modules/dvas.html#dvas.environ.GlobalLoggingVariableManager.attr_def">attr_def() (dvas.environ.GlobalLoggingVariableManager property)</a>
-
-      <ul>
-        <li><a href="modules/dvas.html#dvas.environ.GlobalPackageVariableManager.attr_def">(dvas.environ.GlobalPackageVariableManager property)</a>
+      <li><a href="modules/dvas_recipes.uaii22.src.html#dvas_recipes.uaii22.src.sync.apply_sync_shifts">apply_sync_shifts() (in module dvas_recipes.uaii22.src.sync)</a>
 </li>
-        <li><a href="modules/dvas.html#dvas.environ.GlobalPathVariablesManager.attr_def">(dvas.environ.GlobalPathVariablesManager property)</a>
+      <li><a href="modules/dvas.html#dvas.helper.AttrDict">AttrDict (class in dvas.helper)</a>
 </li>
-        <li><a href="modules/dvas.html#dvas.environ.VariableManager.attr_def">(dvas.environ.VariableManager property)</a>
-</li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/dvas.database.html#dvas.database.model.Flag.bit_number">bit_number (dvas.database.model.Flag attribute)</a>
+      <li><a href="modules/dvas.database.html#dvas.database.model.Flag.bit_pos">bit_pos (dvas.database.model.Flag attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -272,21 +278,21 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/dvas.data.html#dvas.data.math.calc_tropopause">calc_tropopause() (in module dvas.data.math)</a>
+      <li><a href="modules/dvas.tools.html#dvas.tools.math.calc_tropopause">calc_tropopause() (in module dvas.tools.math)</a>
 </li>
-      <li><a href="modules/dvas.data.html#dvas.data.math.calc_tropopause_old">calc_tropopause_old() (in module dvas.data.math)</a>
+      <li><a href="modules/dvas.tools.html#dvas.tools.math.calc_tropopause_old">calc_tropopause_old() (in module dvas.tools.math)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.helper.camel_to_snake">camel_to_snake() (in module dvas.helper)</a>
 </li>
-      <li><a href="modules/dvas.database.html#dvas.database.database.OneDimArrayConfigLinker.CFG_MNGRS">CFG_MNGRS (dvas.database.database.OneDimArrayConfigLinker attribute)</a>
+      <li><a href="modules/dvas.config.html#dvas.config.config.CatExpr">CatExpr (class in dvas.config.config)</a>
+</li>
+      <li><a href="modules/dvas.config.html#dvas.config.config.OneDimArrayConfigLinker.CFG_MNGRS_DFLT">CFG_MNGRS_DFLT (dvas.config.config.OneDimArrayConfigLinker attribute)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.helper.check_datetime">check_datetime() (in module dvas.helper)</a>
 </li>
       <li><a href="modules/dvas.tools.html#dvas.tools.stats.check_gdp_compatibility">check_gdp_compatibility() (in module dvas.tools.stats)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.helper.check_path">check_path() (in module dvas.helper)</a>
-</li>
-      <li><a href="modules/dvas.data.html#dvas.data.linker.FileHandler.check_sn">check_sn() (dvas.data.linker.FileHandler method)</a>
 </li>
       <li><a href="modules/dvas.tools.html#dvas.tools.stats.chi_square">chi_square() (in module dvas.tools.stats)</a>
 </li>
@@ -297,8 +303,6 @@
 </li>
         <li><a href="modules/dvas.config.html#dvas.config.config.InstrType.CLASS_KEY">(dvas.config.config.InstrType attribute)</a>
 </li>
-        <li><a href="modules/dvas.config.html#dvas.config.config.Instrument.CLASS_KEY">(dvas.config.config.Instrument attribute)</a>
-</li>
         <li><a href="modules/dvas.config.html#dvas.config.config.OneLayerConfigManager.CLASS_KEY">(dvas.config.config.OneLayerConfigManager attribute)</a>
 </li>
         <li><a href="modules/dvas.config.html#dvas.config.config.OrigData.CLASS_KEY">(dvas.config.config.OrigData attribute)</a>
@@ -308,11 +312,13 @@
         <li><a href="modules/dvas.config.html#dvas.config.config.Tag.CLASS_KEY">(dvas.config.config.Tag attribute)</a>
 </li>
       </ul></li>
-      <li><a href="modules/dvas.html#dvas.logger.clear_log">clear_log() (in module dvas.logger)</a>
+      <li><a href="modules/dvas.database.html#dvas.database.database.DatabaseManager.clear_db">clear_db() (dvas.database.database.DatabaseManager static method)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.logger.LogManager.clear_log">clear_log() (dvas.logger.LogManager static method)</a>
 </li>
       <li><a href="modules/dvas.plots.html#dvas.plots.utils.cmap_discretize">cmap_discretize() (in module dvas.plots.utils)</a>
 </li>
-      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.ProfileAbstract.columns">columns() (dvas.data.strategy.data.ProfileAbstract property)</a>
+      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.ProfileAC.columns">columns() (dvas.data.strategy.data.ProfileAC property)</a>
 </li>
       <li><a href="modules/dvas.tools.html#dvas.tools.gruan.combine_gdps">combine_gdps() (in module dvas.tools.gruan)</a>
 </li>
@@ -320,11 +326,11 @@
 </li>
       <li><a href="modules/dvas.html#dvas.environ.GlobalPackageVariableManager.config_file_ext">config_file_ext (dvas.environ.GlobalPackageVariableManager attribute)</a>
 </li>
-      <li><a href="modules/dvas.html#dvas.environ.GlobalPackageVariableManager.config_gen_grp_sep">config_gen_grp_sep (dvas.environ.GlobalPackageVariableManager attribute)</a>
-</li>
       <li><a href="modules/dvas.html#dvas.environ.GlobalPackageVariableManager.config_gen_max">config_gen_max (dvas.environ.GlobalPackageVariableManager attribute)</a>
 </li>
-      <li><a href="modules/dvas.database.html#dvas.database.database.ConfigGenMaxLenError">ConfigGenMaxLenError</a>
+      <li><a href="modules/dvas.config.html#dvas.config.config.ConfigExprInterpreter">ConfigExprInterpreter (class in dvas.config.config)</a>
+</li>
+      <li><a href="modules/dvas.config.html#dvas.config.config.ConfigGenMaxLenError">ConfigGenMaxLenError</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -343,8 +349,6 @@
       <ul>
         <li><a href="modules/dvas.config.html#dvas.config.config.InstrType.CONST_NODES">(dvas.config.config.InstrType attribute)</a>
 </li>
-        <li><a href="modules/dvas.config.html#dvas.config.config.Instrument.CONST_NODES">(dvas.config.config.Instrument attribute)</a>
-</li>
         <li><a href="modules/dvas.config.html#dvas.config.config.MultiLayerConfigManager.CONST_NODES">(dvas.config.config.MultiLayerConfigManager attribute)</a>
 </li>
         <li><a href="modules/dvas.config.html#dvas.config.config.OneDimArrayConfigManager.CONST_NODES">(dvas.config.config.OneDimArrayConfigManager attribute)</a>
@@ -359,8 +363,6 @@
 </li>
         <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.instrtype.CONST_NODES">(in module dvas.config.definitions.instrtype)</a>
 </li>
-        <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.instrument.CONST_NODES">(in module dvas.config.definitions.instrument)</a>
-</li>
         <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.origdata.CONST_NODES">(in module dvas.config.definitions.origdata)</a>
 </li>
         <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.tag.CONST_NODES">(in module dvas.config.definitions.tag)</a>
@@ -368,17 +370,19 @@
       </ul></li>
       <li><a href="modules/dvas.html#dvas.helper.ContextDecorator">ContextDecorator (class in dvas.helper)</a>
 </li>
-      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAbstract.copy">copy() (dvas.data.data.MutliProfileAbstract method)</a>
+      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAC.copy">copy() (dvas.data.data.MutliProfileAC method)</a>
 
       <ul>
         <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.Profile.copy">(dvas.data.strategy.data.Profile method)</a>
 </li>
-        <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.ProfileAbstract.copy">(dvas.data.strategy.data.ProfileAbstract method)</a>
+        <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.ProfileAC.copy">(dvas.data.strategy.data.ProfileAC method)</a>
+</li>
+        <li><a href="modules/dvas.database.html#dvas.database.database.InfoManagerMetaData.copy">(dvas.database.database.InfoManagerMetaData method)</a>
 </li>
       </ul></li>
       <li><a href="modules/dvas.tools.html#dvas.tools.gruan.corcoef_gdps">corcoef_gdps() (in module dvas.tools.gruan)</a>
 </li>
-      <li><a href="modules/dvas.data.html#dvas.data.math.crosscorr">crosscorr() (in module dvas.data.math)</a>
+      <li><a href="modules/dvas.tools.html#dvas.tools.math.crosscorr">crosscorr() (in module dvas.tools.math)</a>
 </li>
       <li><a href="modules/dvas.data.html#dvas.data.linker.CSVHandler">CSVHandler (class in dvas.data.linker)</a>
 </li>
@@ -396,11 +400,13 @@
 </li>
       <li><a href="modules/dvas.html#dvas.logger.data">data (in module dvas.logger)</a>
 </li>
-      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.ProfileAbstract.data">data() (dvas.data.strategy.data.ProfileAbstract property)</a>
+      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.ProfileAC.data">data() (dvas.data.strategy.data.ProfileAC property)</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.model.Info.data_src">data_src (dvas.database.model.Info attribute)</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.model.Info.data_src_id">data_src_id (dvas.database.model.Info attribute)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.dvas.Database">Database (class in dvas.dvas)</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.database.DatabaseManager">DatabaseManager (class in dvas.database.database)</a>
 </li>
@@ -422,7 +428,7 @@
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.database.DatabaseManager.DB_TABLES_PRINT">DB_TABLES_PRINT (dvas.database.database.DatabaseManager attribute)</a>
 </li>
-      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAbstract.db_variables">db_variables() (dvas.data.data.MutliProfileAbstract property)</a>
+      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAC.db_variables">db_variables() (dvas.data.data.MutliProfileAC property)</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.database.DBAccess">DBAccess (class in dvas.database.database)</a>
 </li>
@@ -438,18 +444,18 @@
 </li>
       <li><a href="modules/dvas.html#dvas.helper.deepcopy">deepcopy() (in module dvas.helper)</a>
 </li>
+      <li><a href="modules/dvas_recipes.html#dvas_recipes.initialize.default_arena_path">default_arena_path() (in module dvas_recipes.initialize)</a>
+</li>
       <li><a href="modules/dvas.tools.html#dvas.tools.tools.delta">delta() (in module dvas.tools.tools)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.logger.DeltaTimeFormatter">DeltaTimeFormatter (class in dvas.logger)</a>
-</li>
-      <li><a href="modules/dvas.database.html#dvas.database.model.InstrType.desc">desc (dvas.database.model.InstrType attribute)</a>
 </li>
       <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.GDPProfile.DF_COLS_ATTR">DF_COLS_ATTR (dvas.data.strategy.data.GDPProfile attribute)</a>
 
       <ul>
         <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.Profile.DF_COLS_ATTR">(dvas.data.strategy.data.Profile attribute)</a>
 </li>
-        <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.ProfileAbstract.DF_COLS_ATTR">(dvas.data.strategy.data.ProfileAbstract attribute)</a>
+        <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.ProfileAC.DF_COLS_ATTR">(dvas.data.strategy.data.ProfileAC attribute)</a>
 </li>
         <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.RSProfile.DF_COLS_ATTR">(dvas.data.strategy.data.RSProfile attribute)</a>
 </li>
@@ -473,8 +479,6 @@
 </li>
         <li><a href="modules/dvas.config.html#dvas.config.config.InstrType.document">(dvas.config.config.InstrType attribute)</a>
 </li>
-        <li><a href="modules/dvas.config.html#dvas.config.config.Instrument.document">(dvas.config.config.Instrument attribute)</a>
-</li>
         <li><a href="modules/dvas.config.html#dvas.config.config.OrigData.document">(dvas.config.config.OrigData attribute)</a>
 </li>
         <li><a href="modules/dvas.config.html#dvas.config.config.Parameter.document">(dvas.config.config.Parameter attribute)</a>
@@ -491,15 +495,17 @@
 </li>
         <li><a href="modules/dvas.database.html#dvas.database.model.Info.DoesNotExist">(dvas.database.model.Info attribute)</a>
 </li>
-        <li><a href="modules/dvas.database.html#dvas.database.model.InfosInstruments.DoesNotExist">(dvas.database.model.InfosInstruments attribute)</a>
+        <li><a href="modules/dvas.database.html#dvas.database.model.InfosObjects.DoesNotExist">(dvas.database.model.InfosObjects attribute)</a>
 </li>
         <li><a href="modules/dvas.database.html#dvas.database.model.InfosTags.DoesNotExist">(dvas.database.model.InfosTags attribute)</a>
 </li>
         <li><a href="modules/dvas.database.html#dvas.database.model.InstrType.DoesNotExist">(dvas.database.model.InstrType attribute)</a>
 </li>
-        <li><a href="modules/dvas.database.html#dvas.database.model.Instrument.DoesNotExist">(dvas.database.model.Instrument attribute)</a>
+        <li><a href="modules/dvas.database.html#dvas.database.model.MetaData.DoesNotExist">(dvas.database.model.MetaData attribute)</a>
 </li>
         <li><a href="modules/dvas.database.html#dvas.database.model.MetadataModel.DoesNotExist">(dvas.database.model.MetadataModel attribute)</a>
+</li>
+        <li><a href="modules/dvas.database.html#dvas.database.model.Object.DoesNotExist">(dvas.database.model.Object attribute)</a>
 </li>
         <li><a href="modules/dvas.database.html#dvas.database.model.Parameter.DoesNotExist">(dvas.database.model.Parameter attribute)</a>
 </li>
@@ -556,15 +562,6 @@
 </li>
       </ul></li>
       <li>
-    dvas.config.definitions.instrument
-
-      <ul>
-        <li><a href="modules/dvas.config.definitions.html#module-dvas.config.definitions.instrument">module</a>
-</li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li>
     dvas.config.definitions.origdata
 
       <ul>
@@ -606,18 +603,20 @@
         <li><a href="modules/dvas.data.html#module-dvas.data.data">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    dvas.data.io
+
+      <ul>
+        <li><a href="modules/dvas.data.html#module-dvas.data.io">module</a>
+</li>
+      </ul></li>
       <li>
     dvas.data.linker
 
       <ul>
         <li><a href="modules/dvas.data.html#module-dvas.data.linker">module</a>
-</li>
-      </ul></li>
-      <li>
-    dvas.data.math
-
-      <ul>
-        <li><a href="modules/dvas.data.html#module-dvas.data.math">module</a>
 </li>
       </ul></li>
       <li>
@@ -656,6 +655,13 @@
 </li>
       </ul></li>
       <li>
+    dvas.data.strategy.rebase
+
+      <ul>
+        <li><a href="modules/dvas.data.strategy.html#module-dvas.data.strategy.rebase">module</a>
+</li>
+      </ul></li>
+      <li>
     dvas.data.strategy.resample
 
       <ul>
@@ -674,13 +680,6 @@
 
       <ul>
         <li><a href="modules/dvas.data.strategy.html#module-dvas.data.strategy.sort">module</a>
-</li>
-      </ul></li>
-      <li>
-    dvas.data.strategy.sync
-
-      <ul>
-        <li><a href="modules/dvas.data.strategy.html#module-dvas.data.strategy.sync">module</a>
 </li>
       </ul></li>
       <li>
@@ -705,6 +704,13 @@
 </li>
       </ul></li>
       <li>
+    dvas.dvas
+
+      <ul>
+        <li><a href="modules/dvas.html#module-dvas.dvas">module</a>
+</li>
+      </ul></li>
+      <li>
     dvas.environ
 
       <ul>
@@ -716,6 +722,13 @@
 
       <ul>
         <li><a href="modules/dvas.html#module-dvas.errors">module</a>
+</li>
+      </ul></li>
+      <li>
+    dvas.hardcoded
+
+      <ul>
+        <li><a href="modules/dvas.html#module-dvas.hardcoded">module</a>
 </li>
       </ul></li>
       <li>
@@ -775,10 +788,24 @@
 </li>
       </ul></li>
       <li>
+    dvas.tools.math
+
+      <ul>
+        <li><a href="modules/dvas.tools.html#module-dvas.tools.math">module</a>
+</li>
+      </ul></li>
+      <li>
     dvas.tools.stats
 
       <ul>
         <li><a href="modules/dvas.tools.html#module-dvas.tools.stats">module</a>
+</li>
+      </ul></li>
+      <li>
+    dvas.tools.sync
+
+      <ul>
+        <li><a href="modules/dvas.tools.html#module-dvas.tools.sync">module</a>
 </li>
       </ul></li>
       <li>
@@ -795,7 +822,58 @@
         <li><a href="modules/dvas.html#module-dvas.version">module</a>
 </li>
       </ul></li>
-      <li><a href="modules/dvas.html#dvas.errors.dvasError">dvasError</a>
+      <li>
+    dvas_recipes
+
+      <ul>
+        <li><a href="modules/dvas_recipes.html#module-dvas_recipes">module</a>
+</li>
+      </ul></li>
+      <li>
+    dvas_recipes.errors
+
+      <ul>
+        <li><a href="modules/dvas_recipes.html#module-dvas_recipes.errors">module</a>
+</li>
+      </ul></li>
+      <li>
+    dvas_recipes.hardcoded
+
+      <ul>
+        <li><a href="modules/dvas_recipes.html#module-dvas_recipes.hardcoded">module</a>
+</li>
+      </ul></li>
+      <li>
+    dvas_recipes.initialize
+
+      <ul>
+        <li><a href="modules/dvas_recipes.html#module-dvas_recipes.initialize">module</a>
+</li>
+      </ul></li>
+      <li>
+    dvas_recipes.uaii22
+
+      <ul>
+        <li><a href="modules/dvas_recipes.uaii22.html#module-dvas_recipes.uaii22">module</a>
+</li>
+      </ul></li>
+      <li>
+    dvas_recipes.uaii22.src
+
+      <ul>
+        <li><a href="modules/dvas_recipes.uaii22.src.html#module-dvas_recipes.uaii22.src">module</a>
+</li>
+      </ul></li>
+      <li>
+    dvas_recipes.uaii22.src.sync
+
+      <ul>
+        <li><a href="modules/dvas_recipes.uaii22.src.html#module-dvas_recipes.uaii22.src.sync">module</a>
+</li>
+      </ul></li>
+      <li><a href="modules/dvas.html#dvas.errors.DvasError">DvasError</a>
+</li>
+      <li><a href="modules/dvas_recipes.html#dvas_recipes.errors.DvasRecipesError">DvasRecipesError</a>
 </li>
   </ul></td>
 </tr></table>
@@ -803,10 +881,18 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/dvas.html#dvas.errors.dvasError.ERR_MSG">ERR_MSG (dvas.errors.dvasError attribute)</a>
+      <li><a href="modules/dvas.html#dvas.errors.DvasError.ERR_MSG">ERR_MSG (dvas.errors.DvasError attribute)</a>
+
+      <ul>
+        <li><a href="modules/dvas_recipes.html#dvas_recipes.errors.DvasRecipesError.ERR_MSG">(dvas_recipes.errors.DvasRecipesError attribute)</a>
 </li>
-      <li><a href="modules/dvas.database.html#dvas.database.database.SearchInfoExpr.eval">eval() (dvas.database.database.SearchInfoExpr static method)</a>
+      </ul></li>
+      <li><a href="modules/dvas.config.html#dvas.config.config.ConfigExprInterpreter.eval">eval() (dvas.config.config.ConfigExprInterpreter static method)</a>
+
+      <ul>
+        <li><a href="modules/dvas.database.html#dvas.database.database.SearchInfoExpr.eval">(dvas.database.database.SearchInfoExpr static method)</a>
 </li>
+      </ul></li>
       <li><a href="modules/dvas.database.html#dvas.database.database.InfoManager.evt_dt">evt_dt (dvas.database.database.InfoManager attribute)</a>
 
       <ul>
@@ -817,18 +903,44 @@
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.database.InfoManager.evt_id">evt_id() (dvas.database.database.InfoManager property)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/dvas.html#dvas.environ.GlobalPackageVariableManager.evt_id_pat">evt_id_pat (dvas.environ.GlobalPackageVariableManager attribute)</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.database.Queryer.exc">exc (dvas.database.database.Queryer attribute)</a>
 </li>
       <li><a href="modules/dvas.data.html#dvas.data.linker.FileHandler.exclude_file">exclude_file() (dvas.data.linker.FileHandler method)</a>
 </li>
+      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.MPStrategyAC.execute">execute() (dvas.data.strategy.data.MPStrategyAC method)</a>
+
+      <ul>
+        <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.load.LoadGDPProfileStrategy.execute">(dvas.data.strategy.load.LoadGDPProfileStrategy method)</a>
+</li>
+        <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.load.LoadProfileStrategy.execute">(dvas.data.strategy.load.LoadProfileStrategy method)</a>
+</li>
+        <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.load.LoadRSProfileStrategy.execute">(dvas.data.strategy.load.LoadRSProfileStrategy method)</a>
+</li>
+        <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.plot.GDPPlotStrategy.execute">(dvas.data.strategy.plot.GDPPlotStrategy method)</a>
+</li>
+        <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.plot.PlotStrategy.execute">(dvas.data.strategy.plot.PlotStrategy method)</a>
+</li>
+        <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.plot.RSPlotStrategy.execute">(dvas.data.strategy.plot.RSPlotStrategy method)</a>
+</li>
+        <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.rebase.RebaseStrategy.execute">(dvas.data.strategy.rebase.RebaseStrategy method)</a>
+</li>
+        <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.save.SaveDataStrategy.execute">(dvas.data.strategy.save.SaveDataStrategy method)</a>
+</li>
+        <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.sort.SortProfileStrategy.execute">(dvas.data.strategy.sort.SortProfileStrategy method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.origdata.EXPR_FIELD_KEYS">EXPR_FIELD_KEYS (in module dvas.config.definitions.origdata)</a>
+</li>
       <li><a href="modules/dvas.database.html#dvas.database.database.DatetimeExpr.expression">expression (dvas.database.database.DatetimeExpr attribute)</a>
 
       <ul>
         <li><a href="modules/dvas.database.html#dvas.database.database.ParameterExpr.expression">(dvas.database.database.ParameterExpr attribute)</a>
+</li>
+        <li><a href="modules/dvas.database.html#dvas.database.database.ProductExpr.expression">(dvas.database.database.ProductExpr attribute)</a>
 </li>
         <li><a href="modules/dvas.database.html#dvas.database.database.SerialNumberExpr.expression">(dvas.database.database.SerialNumberExpr attribute)</a>
 </li>
@@ -845,9 +957,23 @@
 </li>
       <li><a href="modules/dvas.plots.html#dvas.plots.utils.fancy_savefig">fancy_savefig() (in module dvas.plots.utils)</a>
 </li>
-      <li><a href="modules/dvas.database.html#dvas.database.database.AndExpr.fct">fct() (dvas.database.database.AndExpr method)</a>
+      <li><a href="modules/dvas.config.html#dvas.config.config.CatExpr.fct">fct() (dvas.config.config.CatExpr method)</a>
 
       <ul>
+        <li><a href="modules/dvas.config.html#dvas.config.config.LowerExpr.fct">(dvas.config.config.LowerExpr method)</a>
+</li>
+        <li><a href="modules/dvas.config.html#dvas.config.config.NonTerminalConfigExprInterpreter.fct">(dvas.config.config.NonTerminalConfigExprInterpreter method)</a>
+</li>
+        <li><a href="modules/dvas.config.html#dvas.config.config.ReplExpr.fct">(dvas.config.config.ReplExpr method)</a>
+</li>
+        <li><a href="modules/dvas.config.html#dvas.config.config.ReplStrictExpr.fct">(dvas.config.config.ReplStrictExpr method)</a>
+</li>
+        <li><a href="modules/dvas.config.html#dvas.config.config.SmallUpperExpr.fct">(dvas.config.config.SmallUpperExpr method)</a>
+</li>
+        <li><a href="modules/dvas.config.html#dvas.config.config.UpperExpr.fct">(dvas.config.config.UpperExpr method)</a>
+</li>
+        <li><a href="modules/dvas.database.html#dvas.database.database.AndExpr.fct">(dvas.database.database.AndExpr method)</a>
+</li>
         <li><a href="modules/dvas.database.html#dvas.database.database.LogicalSearchInfoExpr.fct">(dvas.database.database.LogicalSearchInfoExpr method)</a>
 </li>
         <li><a href="modules/dvas.database.html#dvas.database.database.NotExpr.fct">(dvas.database.database.NotExpr method)</a>
@@ -855,6 +981,10 @@
         <li><a href="modules/dvas.database.html#dvas.database.database.OrExpr.fct">(dvas.database.database.OrExpr method)</a>
 </li>
       </ul></li>
+      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.load.LoadStrategyAC.fetch">fetch() (dvas.data.strategy.load.LoadStrategyAC static method)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.dvas.Database.fetch_raw_data">fetch_raw_data() (dvas.dvas.Database static method)</a>
+</li>
       <li><a href="modules/dvas.data.html#dvas.data.linker.CSVHandler.file_instr_type_pat">file_instr_type_pat() (dvas.data.linker.CSVHandler property)</a>
 
       <ul>
@@ -863,6 +993,8 @@
         <li><a href="modules/dvas.data.html#dvas.data.linker.GDPHandler.file_instr_type_pat">(dvas.data.linker.GDPHandler property)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/dvas.data.html#dvas.data.linker.CSVHandler.file_suffix">file_suffix() (dvas.data.linker.CSVHandler property)</a>
 
       <ul>
@@ -871,8 +1003,6 @@
         <li><a href="modules/dvas.data.html#dvas.data.linker.GDPHandler.file_suffix">(dvas.data.linker.GDPHandler property)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/dvas.data.html#dvas.data.linker.FileHandler">FileHandler (class in dvas.data.linker)</a>
 </li>
       <li><a href="modules/dvas.config.html#dvas.config.config.Flag">Flag (class in dvas.config.config)</a>
@@ -881,21 +1011,25 @@
         <li><a href="modules/dvas.database.html#dvas.database.model.Flag">(class in dvas.database.model)</a>
 </li>
       </ul></li>
-      <li><a href="modules/dvas.database.html#dvas.database.model.Flag.flag_abbr">flag_abbr (dvas.database.model.Flag attribute)</a>
-</li>
-      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.Profile.FLAG_ABBR_NM">FLAG_ABBR_NM (dvas.data.strategy.data.Profile attribute)</a>
-</li>
-      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.Profile.FLAG_BIT_NM">FLAG_BIT_NM (dvas.data.strategy.data.Profile attribute)</a>
+      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.Profile.FLAG_BIT_POS_NM">FLAG_BIT_POS_NM (dvas.data.strategy.data.Profile attribute)</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.model.Flag.flag_desc">flag_desc (dvas.database.model.Flag attribute)</a>
 </li>
       <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.Profile.FLAG_DESC_NM">FLAG_DESC_NM (dvas.data.strategy.data.Profile attribute)</a>
 </li>
-      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.Profile.flags_abbr">flags_abbr() (dvas.data.strategy.data.Profile property)</a>
+      <li><a href="modules/dvas.database.html#dvas.database.model.Flag.flag_id">flag_id (dvas.database.model.Flag attribute)</a>
+</li>
+      <li><a href="modules/dvas.database.html#dvas.database.model.Flag.flag_name">flag_name (dvas.database.model.Flag attribute)</a>
+</li>
+      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.Profile.FLAG_NAME_NM">FLAG_NAME_NM (dvas.data.strategy.data.Profile attribute)</a>
+</li>
+      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.Profile.flags_name">flags_name() (dvas.data.strategy.data.Profile property)</a>
 </li>
       <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.Profile.flg">flg() (dvas.data.strategy.data.Profile property)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.logger.DeltaTimeFormatter.format">format() (dvas.logger.DeltaTimeFormatter method)</a>
+</li>
+      <li><a href="modules/dvas.database.html#dvas.database.database.InfoManager.from_dict">from_dict() (dvas.database.database.InfoManager static method)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.helper.ContextDecorator.func">func() (dvas.helper.ContextDecorator property)</a>
 </li>
@@ -917,15 +1051,23 @@
 </li>
       <li><a href="modules/dvas.config.html#dvas.config.config.MultiLayerConfigManager.get_all_default">get_all_default() (dvas.config.config.MultiLayerConfigManager method)</a>
 </li>
+      <li><a href="modules/dvas.html#dvas.environ.VariableManager.get_attr">get_attr() (dvas.environ.VariableManager method)</a>
+</li>
       <li><a href="modules/dvas.html#dvas.helper.get_by_path">get_by_path() (in module dvas.helper)</a>
 </li>
-      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.ProfileAbstract.get_col_attr">get_col_attr() (dvas.data.strategy.data.ProfileAbstract class method)</a>
+      <li><a href="modules/dvas.html#dvas.helper.get_class_public_attr">get_class_public_attr() (in module dvas.helper)</a>
+</li>
+      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.ProfileAC.get_col_attr">get_col_attr() (dvas.data.strategy.data.ProfileAC class method)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.logger.LogManager.get_console_handler">get_console_handler() (dvas.logger.LogManager static method)</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.database.DatabaseManager.get_data">get_data() (dvas.database.database.DatabaseManager method)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.helper.get_dict_len">get_dict_len() (in module dvas.helper)</a>
 </li>
-      <li><a href="modules/dvas.database.html#dvas.database.database.OneDimArrayConfigLinker.get_document">get_document() (dvas.database.database.OneDimArrayConfigLinker method)</a>
+      <li><a href="modules/dvas.config.html#dvas.config.config.OneDimArrayConfigLinker.get_document">get_document() (dvas.config.config.OneDimArrayConfigLinker method)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.logger.LogManager.get_file_handler">get_file_handler() (dvas.logger.LogManager static method)</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.database.AllExpr.get_filter">get_filter() (dvas.database.database.AllExpr method)</a>
 
@@ -933,6 +1075,8 @@
         <li><a href="modules/dvas.database.html#dvas.database.database.DatetimeExpr.get_filter">(dvas.database.database.DatetimeExpr method)</a>
 </li>
         <li><a href="modules/dvas.database.html#dvas.database.database.ParameterExpr.get_filter">(dvas.database.database.ParameterExpr method)</a>
+</li>
+        <li><a href="modules/dvas.database.html#dvas.database.database.ProductExpr.get_filter">(dvas.database.database.ProductExpr method)</a>
 </li>
         <li><a href="modules/dvas.database.html#dvas.database.database.SerialNumberExpr.get_filter">(dvas.database.database.SerialNumberExpr method)</a>
 </li>
@@ -947,13 +1091,13 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.ProfileAbstract.get_index_attr">get_index_attr() (dvas.data.strategy.data.ProfileAbstract class method)</a>
+      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.ProfileAC.get_index_attr">get_index_attr() (dvas.data.strategy.data.ProfileAC class method)</a>
 </li>
-      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAbstract.get_info">get_info() (dvas.data.data.MutliProfileAbstract method)</a>
+      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAC.get_info">get_info() (dvas.data.data.MutliProfileAC method)</a>
 </li>
       <li><a href="modules/dvas.data.html#dvas.data.linker.FileHandler.get_instr_type">get_instr_type() (dvas.data.linker.FileHandler method)</a>
 </li>
-      <li><a href="modules/dvas.html#dvas.logger.get_logger">get_logger() (in module dvas.logger)</a>
+      <li><a href="modules/dvas.html#dvas.logger.LogManager.get_logger">get_logger() (dvas.logger.LogManager static method)</a>
 </li>
       <li><a href="modules/dvas.data.html#dvas.data.linker.CSVHandler.get_main">get_main() (dvas.data.linker.CSVHandler method)</a>
 
@@ -966,6 +1110,8 @@
       <li><a href="modules/dvas.data.html#dvas.data.linker.CSVHandler.get_metadata">get_metadata() (dvas.data.linker.CSVHandler method)</a>
 
       <ul>
+        <li><a href="modules/dvas.data.html#dvas.data.linker.FileHandler.get_metadata">(dvas.data.linker.FileHandler method)</a>
+</li>
         <li><a href="modules/dvas.data.html#dvas.data.linker.GDPHandler.get_metadata">(dvas.data.linker.GDPHandler method)</a>
 </li>
       </ul></li>
@@ -979,15 +1125,21 @@
       </ul></li>
       <li><a href="modules/dvas.database.html#dvas.database.database.DatabaseManager.get_or_none">get_or_none() (dvas.database.database.DatabaseManager method)</a>
 </li>
-      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAbstract.get_prms">get_prms() (dvas.data.data.MutliProfileAbstract method)</a>
+      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAC.get_prms">get_prms() (dvas.data.data.MutliProfileAC method)</a>
 </li>
       <li><a href="modules/dvas.data.html#dvas.data.linker.FileHandler.get_source_unique_id">get_source_unique_id() (dvas.data.linker.FileHandler static method)</a>
 </li>
+      <li><a href="modules/dvas.tools.html#dvas.tools.sync.get_sync_shifts_from_alt">get_sync_shifts_from_alt() (in module dvas.tools.sync)</a>
+</li>
+      <li><a href="modules/dvas.tools.html#dvas.tools.sync.get_sync_shifts_from_crosscor">get_sync_shifts_from_crosscor() (in module dvas.tools.sync)</a>
+</li>
+      <li><a href="modules/dvas.database.html#dvas.database.database.DatabaseManager.get_table">get_table() (dvas.database.database.DatabaseManager method)</a>
+</li>
       <li><a href="modules/dvas.config.html#dvas.config.config.MultiLayerConfigManager.get_val">get_val() (dvas.config.config.MultiLayerConfigManager method)</a>
 </li>
-      <li><a href="modules/dvas.html#dvas.environ.glob_var">glob_var (in module dvas.environ)</a>
+      <li><a href="modules/dvas.config.html#dvas.config.config.GetExpr">GetExpr (class in dvas.config.config)</a>
 </li>
-      <li><a href="modules/dvas.html#dvas.environ.GlobalLoggingVariableManager">GlobalLoggingVariableManager (class in dvas.environ)</a>
+      <li><a href="modules/dvas.html#dvas.environ.glob_var">glob_var (in module dvas.environ)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.environ.GlobalPackageVariableManager">GlobalPackageVariableManager (class in dvas.environ)</a>
 </li>
@@ -1022,21 +1174,11 @@
       <ul>
         <li><a href="modules/dvas.database.html#dvas.database.model.DataSource.id">(dvas.database.model.DataSource attribute)</a>
 </li>
-        <li><a href="modules/dvas.database.html#dvas.database.model.Flag.id">(dvas.database.model.Flag attribute)</a>
-</li>
-        <li><a href="modules/dvas.database.html#dvas.database.model.Info.id">(dvas.database.model.Info attribute)</a>
-</li>
-        <li><a href="modules/dvas.database.html#dvas.database.model.InfosInstruments.id">(dvas.database.model.InfosInstruments attribute)</a>
+        <li><a href="modules/dvas.database.html#dvas.database.model.InfosObjects.id">(dvas.database.model.InfosObjects attribute)</a>
 </li>
         <li><a href="modules/dvas.database.html#dvas.database.model.InfosTags.id">(dvas.database.model.InfosTags attribute)</a>
 </li>
-        <li><a href="modules/dvas.database.html#dvas.database.model.InstrType.id">(dvas.database.model.InstrType attribute)</a>
-</li>
-        <li><a href="modules/dvas.database.html#dvas.database.model.Instrument.id">(dvas.database.model.Instrument attribute)</a>
-</li>
         <li><a href="modules/dvas.database.html#dvas.database.model.MetadataModel.id">(dvas.database.model.MetadataModel attribute)</a>
-</li>
-        <li><a href="modules/dvas.database.html#dvas.database.model.Parameter.id">(dvas.database.model.Parameter attribute)</a>
 </li>
         <li><a href="modules/dvas.database.html#dvas.database.model.Tag.id">(dvas.database.model.Tag attribute)</a>
 </li>
@@ -1054,14 +1196,16 @@
       <ul>
         <li><a href="modules/dvas.database.html#dvas.database.model.DataSource.info">(dvas.database.model.DataSource attribute)</a>
 </li>
-        <li><a href="modules/dvas.database.html#dvas.database.model.InfosInstruments.info">(dvas.database.model.InfosInstruments attribute)</a>
+        <li><a href="modules/dvas.database.html#dvas.database.model.InfosObjects.info">(dvas.database.model.InfosObjects attribute)</a>
 </li>
         <li><a href="modules/dvas.database.html#dvas.database.model.InfosTags.info">(dvas.database.model.InfosTags attribute)</a>
+</li>
+        <li><a href="modules/dvas.database.html#dvas.database.model.MetaData.info">(dvas.database.model.MetaData attribute)</a>
 </li>
         <li><a href="modules/dvas.database.html#dvas.database.model.Parameter.info">(dvas.database.model.Parameter attribute)</a>
 </li>
       </ul></li>
-      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAbstract.info">info() (dvas.data.data.MutliProfileAbstract property)</a>
+      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAC.info">info() (dvas.data.data.MutliProfileAC property)</a>
 
       <ul>
         <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.Profile.info">(dvas.data.strategy.data.Profile property)</a>
@@ -1070,38 +1214,48 @@
       <li><a href="modules/dvas.database.html#dvas.database.model.Data.info_id">info_id (dvas.database.model.Data attribute)</a>
 
       <ul>
-        <li><a href="modules/dvas.database.html#dvas.database.model.InfosInstruments.info_id">(dvas.database.model.InfosInstruments attribute)</a>
+        <li><a href="modules/dvas.database.html#dvas.database.model.Info.info_id">(dvas.database.model.Info attribute)</a>
+</li>
+        <li><a href="modules/dvas.database.html#dvas.database.model.InfosObjects.info_id">(dvas.database.model.InfosObjects attribute)</a>
 </li>
         <li><a href="modules/dvas.database.html#dvas.database.model.InfosTags.info_id">(dvas.database.model.InfosTags attribute)</a>
+</li>
+        <li><a href="modules/dvas.database.html#dvas.database.model.MetaData.info_id">(dvas.database.model.MetaData attribute)</a>
 </li>
       </ul></li>
       <li><a href="modules/dvas.database.html#dvas.database.database.InfoManager">InfoManager (class in dvas.database.database)</a>
 </li>
+      <li><a href="modules/dvas.database.html#dvas.database.database.InfoManagerMetaData">InfoManagerMetaData (class in dvas.database.database)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/dvas.database.html#dvas.database.model.Info.infos_objects">infos_objects (dvas.database.model.Info attribute)</a>
+
+      <ul>
+        <li><a href="modules/dvas.database.html#dvas.database.model.Object.infos_objects">(dvas.database.model.Object attribute)</a>
+</li>
+      </ul></li>
       <li><a href="modules/dvas.database.html#dvas.database.model.Info.infos_tags">infos_tags (dvas.database.model.Info attribute)</a>
 
       <ul>
         <li><a href="modules/dvas.database.html#dvas.database.model.Tag.infos_tags">(dvas.database.model.Tag attribute)</a>
 </li>
       </ul></li>
-      <li><a href="modules/dvas.database.html#dvas.database.model.InfosInstruments">InfosInstruments (class in dvas.database.model)</a>
+      <li><a href="modules/dvas.database.html#dvas.database.model.InfosObjects">InfosObjects (class in dvas.database.model)</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.model.InfosTags">InfosTags (class in dvas.database.model)</a>
 </li>
+      <li><a href="modules/dvas_recipes.html#dvas_recipes.initialize.init_arena">init_arena() (in module dvas_recipes.initialize)</a>
+</li>
       <li><a href="modules/dvas.config.html#dvas.config.config.ConfigManager.init_document">init_document() (dvas.config.config.ConfigManager method)</a>
 </li>
-      <li><a href="modules/dvas.html#dvas.logger.init_log">init_log() (in module dvas.logger)</a>
+      <li><a href="modules/dvas.html#dvas.logger.LogManager.init_log">init_log() (dvas.logger.LogManager method)</a>
 </li>
       <li><a href="modules/dvas.config.html#dvas.config.config.instantiate_config_managers">instantiate_config_managers() (in module dvas.config.config)</a>
 </li>
-      <li><a href="modules/dvas.database.html#dvas.database.model.InfosInstruments.instr">instr (dvas.database.model.InfosInstruments attribute)</a>
+      <li><a href="modules/dvas.database.html#dvas.database.model.Object.instr_type">instr_type (dvas.database.model.Object attribute)</a>
 </li>
-      <li><a href="modules/dvas.database.html#dvas.database.model.InfosInstruments.instr_id">instr_id (dvas.database.model.InfosInstruments attribute)</a>
-</li>
-      <li><a href="modules/dvas.database.html#dvas.database.model.Instrument.instr_type">instr_type (dvas.database.model.Instrument attribute)</a>
-</li>
-      <li><a href="modules/dvas.database.html#dvas.database.model.Instrument.instr_type_id">instr_type_id (dvas.database.model.Instrument attribute)</a>
+      <li><a href="modules/dvas.database.html#dvas.database.model.Object.instr_type_id">instr_type_id (dvas.database.model.Object attribute)</a>
 </li>
       <li><a href="modules/dvas.config.html#dvas.config.pattern.INSTR_TYPE_PAT">INSTR_TYPE_PAT (in module dvas.config.pattern)</a>
 </li>
@@ -1111,27 +1265,21 @@
         <li><a href="modules/dvas.database.html#dvas.database.model.InstrType">(class in dvas.database.model)</a>
 </li>
       </ul></li>
-      <li><a href="modules/dvas.config.html#dvas.config.config.Instrument">Instrument (class in dvas.config.config)</a>
-
-      <ul>
-        <li><a href="modules/dvas.database.html#dvas.database.model.Instrument">(class in dvas.database.model)</a>
-</li>
-      </ul></li>
-      <li><a href="modules/dvas.database.html#dvas.database.model.InstrType.instruments">instruments (dvas.database.model.InstrType attribute)</a>
-</li>
-      <li><a href="modules/dvas.database.html#dvas.database.model.Info.instruments_infos">instruments_infos (dvas.database.model.Info attribute)</a>
-
-      <ul>
-        <li><a href="modules/dvas.database.html#dvas.database.model.Instrument.instruments_infos">(dvas.database.model.Instrument attribute)</a>
-</li>
-      </ul></li>
       <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.interpolate.InterpolateStrategy.interpolate">interpolate() (dvas.data.strategy.interpolate.InterpolateStrategy method)</a>
 </li>
       <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.interpolate.InterpolateStrategy">InterpolateStrategy (class in dvas.data.strategy.interpolate)</a>
 </li>
-      <li><a href="modules/dvas.database.html#dvas.database.database.LogicalSearchInfoExpr.interpret">interpret() (dvas.database.database.LogicalSearchInfoExpr method)</a>
+      <li><a href="modules/dvas.config.html#dvas.config.config.ConfigExprInterpreter.interpret">interpret() (dvas.config.config.ConfigExprInterpreter method)</a>
 
       <ul>
+        <li><a href="modules/dvas.config.html#dvas.config.config.GetExpr.interpret">(dvas.config.config.GetExpr method)</a>
+</li>
+        <li><a href="modules/dvas.config.html#dvas.config.config.NoneExpr.interpret">(dvas.config.config.NoneExpr method)</a>
+</li>
+        <li><a href="modules/dvas.config.html#dvas.config.config.NonTerminalConfigExprInterpreter.interpret">(dvas.config.config.NonTerminalConfigExprInterpreter method)</a>
+</li>
+        <li><a href="modules/dvas.database.html#dvas.database.database.LogicalSearchInfoExpr.interpret">(dvas.database.database.LogicalSearchInfoExpr method)</a>
+</li>
         <li><a href="modules/dvas.database.html#dvas.database.database.SearchInfoExpr.interpret">(dvas.database.database.SearchInfoExpr method)</a>
 </li>
         <li><a href="modules/dvas.database.html#dvas.database.database.TerminalSearchInfoExpr.interpret">(dvas.database.database.TerminalSearchInfoExpr method)</a>
@@ -1168,8 +1316,6 @@
 </li>
         <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.instrtype.KEY">(in module dvas.config.definitions.instrtype)</a>
 </li>
-        <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.instrument.KEY">(in module dvas.config.definitions.instrument)</a>
-</li>
         <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.origdata.KEY">(in module dvas.config.definitions.origdata)</a>
 </li>
         <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.parameter.KEY">(in module dvas.config.definitions.parameter)</a>
@@ -1179,6 +1325,8 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/dvas.database.html#dvas.database.model.MetaData.key_name">key_name (dvas.database.model.MetaData attribute)</a>
+</li>
       <li><a href="modules/dvas.tools.html#dvas.tools.stats.ks_test">ks_test() (in module dvas.tools.stats)</a>
 </li>
   </ul></td>
@@ -1194,16 +1342,8 @@
 </li>
         <li><a href="modules/dvas.data.html#dvas.data.linker.LocalDBLinker.load">(dvas.data.linker.LocalDBLinker method)</a>
 </li>
-        <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.load.LoadGDPProfileStrategy.load">(dvas.data.strategy.load.LoadGDPProfileStrategy method)</a>
-</li>
-        <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.load.LoadProfileStrategy.load">(dvas.data.strategy.load.LoadProfileStrategy method)</a>
-</li>
-        <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.load.LoadRSProfileStrategy.load">(dvas.data.strategy.load.LoadRSProfileStrategy method)</a>
-</li>
-        <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.load.LoadStrategyAbstract.load">(dvas.data.strategy.load.LoadStrategyAbstract method)</a>
-</li>
       </ul></li>
-      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAbstract.load_from_db">load_from_db() (dvas.data.data.MutliProfileAbstract method)</a>
+      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAC.load_from_db">load_from_db() (dvas.data.data.MutliProfileAC method)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.errors.LoadError">LoadError</a>
 </li>
@@ -1213,31 +1353,29 @@
 </li>
       <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.load.LoadRSProfileStrategy">LoadRSProfileStrategy (class in dvas.data.strategy.load)</a>
 </li>
+      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.load.LoadStrategyAC">LoadStrategyAC (class in dvas.data.strategy.load)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.load.LoadStrategyAbstract">LoadStrategyAbstract (class in dvas.data.strategy.load)</a>
-</li>
       <li><a href="modules/dvas.html#dvas.environ.GlobalPathVariablesManager.local_db_path">local_db_path (dvas.environ.GlobalPathVariablesManager attribute)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.logger.localdb">localdb (in module dvas.logger)</a>
 </li>
       <li><a href="modules/dvas.data.html#dvas.data.linker.LocalDBLinker">LocalDBLinker (class in dvas.data.linker)</a>
 </li>
-      <li><a href="modules/dvas.html#dvas.environ.GlobalLoggingVariableManager.log_file_name">log_file_name (dvas.environ.GlobalLoggingVariableManager attribute)</a>
-</li>
       <li><a href="modules/dvas.html#dvas.logger.log_func_call">log_func_call() (in module dvas.logger)</a>
 </li>
-      <li><a href="modules/dvas.html#dvas.environ.GlobalLoggingVariableManager.log_level">log_level (dvas.environ.GlobalLoggingVariableManager attribute)</a>
+      <li><a href="modules/dvas.html#dvas.logger.LogManager.log_level">log_level (dvas.logger.LogManager attribute)</a>
 </li>
-      <li><a href="modules/dvas.html#dvas.environ.GlobalLoggingVariableManager.log_mode">log_mode (dvas.environ.GlobalLoggingVariableManager attribute)</a>
-</li>
-      <li><a href="modules/dvas.html#dvas.environ.log_var">log_var (in module dvas.environ)</a>
+      <li><a href="modules/dvas.html#dvas.logger.LogManager.log_mode">log_mode (dvas.logger.LogManager attribute)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.errors.LogDirError">LogDirError</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.database.LogicalSearchInfoExpr">LogicalSearchInfoExpr (class in dvas.database.database)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.logger.LogManager">LogManager (class in dvas.logger)</a>
+</li>
+      <li><a href="modules/dvas.config.html#dvas.config.config.LowerExpr">LowerExpr (class in dvas.config.config)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1249,11 +1387,15 @@
 </li>
       <li><a href="modules/dvas.html#dvas.environ.GlobalPackageVariableManager.mdl_id_pat">mdl_id_pat (dvas.environ.GlobalPackageVariableManager attribute)</a>
 </li>
-      <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.origdata.META_FIELD_KEYS">META_FIELD_KEYS (in module dvas.config.definitions.origdata)</a>
+      <li><a href="modules/dvas.database.html#dvas.database.model.MetaData">MetaData (class in dvas.database.model)</a>
+</li>
+      <li><a href="modules/dvas.database.html#dvas.database.database.InfoManager.metadata">metadata (dvas.database.database.InfoManager attribute)</a>
+</li>
+      <li><a href="modules/dvas.database.html#dvas.database.model.MetaData.metadata_id">metadata_id (dvas.database.model.MetaData attribute)</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.model.MetadataModel">MetadataModel (class in dvas.database.model)</a>
 </li>
-      <li><a href="modules/dvas.html#dvas.environ.GlobalLoggingVariableManager.MODES">MODES (dvas.environ.GlobalLoggingVariableManager attribute)</a>
+      <li><a href="modules/dvas.database.html#dvas.database.database.DatabaseManager.model_to_dict">model_to_dict() (dvas.database.database.DatabaseManager static method)</a>
 </li>
       <li>
     module
@@ -1273,8 +1415,6 @@
 </li>
         <li><a href="modules/dvas.config.definitions.html#module-dvas.config.definitions.instrtype">dvas.config.definitions.instrtype</a>
 </li>
-        <li><a href="modules/dvas.config.definitions.html#module-dvas.config.definitions.instrument">dvas.config.definitions.instrument</a>
-</li>
         <li><a href="modules/dvas.config.definitions.html#module-dvas.config.definitions.origdata">dvas.config.definitions.origdata</a>
 </li>
         <li><a href="modules/dvas.config.definitions.html#module-dvas.config.definitions.parameter">dvas.config.definitions.parameter</a>
@@ -1287,9 +1427,9 @@
 </li>
         <li><a href="modules/dvas.data.html#module-dvas.data.data">dvas.data.data</a>
 </li>
-        <li><a href="modules/dvas.data.html#module-dvas.data.linker">dvas.data.linker</a>
+        <li><a href="modules/dvas.data.html#module-dvas.data.io">dvas.data.io</a>
 </li>
-        <li><a href="modules/dvas.data.html#module-dvas.data.math">dvas.data.math</a>
+        <li><a href="modules/dvas.data.html#module-dvas.data.linker">dvas.data.linker</a>
 </li>
         <li><a href="modules/dvas.data.strategy.html#module-dvas.data.strategy">dvas.data.strategy</a>
 </li>
@@ -1301,13 +1441,13 @@
 </li>
         <li><a href="modules/dvas.data.strategy.html#module-dvas.data.strategy.plot">dvas.data.strategy.plot</a>
 </li>
+        <li><a href="modules/dvas.data.strategy.html#module-dvas.data.strategy.rebase">dvas.data.strategy.rebase</a>
+</li>
         <li><a href="modules/dvas.data.strategy.html#module-dvas.data.strategy.resample">dvas.data.strategy.resample</a>
 </li>
         <li><a href="modules/dvas.data.strategy.html#module-dvas.data.strategy.save">dvas.data.strategy.save</a>
 </li>
         <li><a href="modules/dvas.data.strategy.html#module-dvas.data.strategy.sort">dvas.data.strategy.sort</a>
-</li>
-        <li><a href="modules/dvas.data.strategy.html#module-dvas.data.strategy.sync">dvas.data.strategy.sync</a>
 </li>
         <li><a href="modules/dvas.database.html#module-dvas.database">dvas.database</a>
 </li>
@@ -1315,9 +1455,13 @@
 </li>
         <li><a href="modules/dvas.database.html#module-dvas.database.model">dvas.database.model</a>
 </li>
+        <li><a href="modules/dvas.html#module-dvas.dvas">dvas.dvas</a>
+</li>
         <li><a href="modules/dvas.html#module-dvas.environ">dvas.environ</a>
 </li>
         <li><a href="modules/dvas.html#module-dvas.errors">dvas.errors</a>
+</li>
+        <li><a href="modules/dvas.html#module-dvas.hardcoded">dvas.hardcoded</a>
 </li>
         <li><a href="modules/dvas.html#module-dvas.helper">dvas.helper</a>
 </li>
@@ -1335,28 +1479,60 @@
 </li>
         <li><a href="modules/dvas.tools.html#module-dvas.tools.gruan">dvas.tools.gruan</a>
 </li>
+        <li><a href="modules/dvas.tools.html#module-dvas.tools.math">dvas.tools.math</a>
+</li>
         <li><a href="modules/dvas.tools.html#module-dvas.tools.stats">dvas.tools.stats</a>
+</li>
+        <li><a href="modules/dvas.tools.html#module-dvas.tools.sync">dvas.tools.sync</a>
 </li>
         <li><a href="modules/dvas.tools.html#module-dvas.tools.tools">dvas.tools.tools</a>
 </li>
         <li><a href="modules/dvas.html#module-dvas.version">dvas.version</a>
 </li>
+        <li><a href="modules/dvas_recipes.html#module-dvas_recipes">dvas_recipes</a>
+</li>
+        <li><a href="modules/dvas_recipes.html#module-dvas_recipes.errors">dvas_recipes.errors</a>
+</li>
+        <li><a href="modules/dvas_recipes.html#module-dvas_recipes.hardcoded">dvas_recipes.hardcoded</a>
+</li>
+        <li><a href="modules/dvas_recipes.html#module-dvas_recipes.initialize">dvas_recipes.initialize</a>
+</li>
+        <li><a href="modules/dvas_recipes.uaii22.html#module-dvas_recipes.uaii22">dvas_recipes.uaii22</a>
+</li>
+        <li><a href="modules/dvas_recipes.uaii22.src.html#module-dvas_recipes.uaii22.src">dvas_recipes.uaii22.src</a>
+</li>
+        <li><a href="modules/dvas_recipes.uaii22.src.html#module-dvas_recipes.uaii22.src.sync">dvas_recipes.uaii22.src.sync</a>
+</li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/dvas.data.html#dvas.data.data.MultiGDPProfile">MultiGDPProfile (class in dvas.data.data)</a>
+      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.MPStrategyAC">MPStrategyAC (class in dvas.data.strategy.data)</a>
 </li>
+      <li><a href="modules/dvas.data.html#dvas.data.data.MultiGDPProfile">MultiGDPProfile (class in dvas.data.data)</a>
+
+      <ul>
+        <li><a href="modules/dvas.html#dvas.dvas.MultiGDPProfile">(class in dvas.dvas)</a>
+</li>
+      </ul></li>
       <li><a href="modules/dvas.config.html#dvas.config.config.MultiLayerConfigManager">MultiLayerConfigManager (class in dvas.config.config)</a>
 </li>
       <li><a href="modules/dvas.plots.html#dvas.plots.plots.multiprf">multiprf() (in module dvas.plots.plots)</a>
 </li>
       <li><a href="modules/dvas.data.html#dvas.data.data.MultiProfile">MultiProfile (class in dvas.data.data)</a>
+
+      <ul>
+        <li><a href="modules/dvas.html#dvas.dvas.MultiProfile">(class in dvas.dvas)</a>
 </li>
+      </ul></li>
       <li><a href="modules/dvas.data.html#dvas.data.data.MultiRSProfile">MultiRSProfile (class in dvas.data.data)</a>
+
+      <ul>
+        <li><a href="modules/dvas.html#dvas.dvas.MultiRSProfile">(class in dvas.dvas)</a>
 </li>
-      <li><a href="modules/dvas.data.html#dvas.data.data.MultiRSProfileAbstract">MultiRSProfileAbstract (class in dvas.data.data)</a>
+      </ul></li>
+      <li><a href="modules/dvas.data.html#dvas.data.data.MultiRSProfileAC">MultiRSProfileAC (class in dvas.data.data)</a>
 </li>
-      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAbstract">MutliProfileAbstract (class in dvas.data.data)</a>
+      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAC">MutliProfileAC (class in dvas.data.data)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1369,8 +1545,6 @@
       <ul>
         <li><a href="modules/dvas.config.html#dvas.config.config.InstrType.NODE_GEN">(dvas.config.config.InstrType attribute)</a>
 </li>
-        <li><a href="modules/dvas.config.html#dvas.config.config.Instrument.NODE_GEN">(dvas.config.config.Instrument attribute)</a>
-</li>
         <li><a href="modules/dvas.config.html#dvas.config.config.OneDimArrayConfigManager.NODE_GEN">(dvas.config.config.OneDimArrayConfigManager attribute)</a>
 </li>
         <li><a href="modules/dvas.config.html#dvas.config.config.Parameter.NODE_GEN">(dvas.config.config.Parameter attribute)</a>
@@ -1380,8 +1554,6 @@
         <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.flag.NODE_GEN">(in module dvas.config.definitions.flag)</a>
 </li>
         <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.instrtype.NODE_GEN">(in module dvas.config.definitions.instrtype)</a>
-</li>
-        <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.instrument.NODE_GEN">(in module dvas.config.definitions.instrument)</a>
 </li>
         <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.parameter.NODE_GEN">(in module dvas.config.definitions.parameter)</a>
 </li>
@@ -1395,8 +1567,6 @@
 </li>
         <li><a href="modules/dvas.config.html#dvas.config.config.InstrType.NODE_PARAMS_DEF">(dvas.config.config.InstrType attribute)</a>
 </li>
-        <li><a href="modules/dvas.config.html#dvas.config.config.Instrument.NODE_PARAMS_DEF">(dvas.config.config.Instrument attribute)</a>
-</li>
         <li><a href="modules/dvas.config.html#dvas.config.config.OneLayerConfigManager.NODE_PARAMS_DEF">(dvas.config.config.OneLayerConfigManager attribute)</a>
 </li>
         <li><a href="modules/dvas.config.html#dvas.config.config.OrigData.NODE_PARAMS_DEF">(dvas.config.config.OrigData attribute)</a>
@@ -1404,8 +1574,6 @@
         <li><a href="modules/dvas.config.html#dvas.config.config.Parameter.NODE_PARAMS_DEF">(dvas.config.config.Parameter attribute)</a>
 </li>
         <li><a href="modules/dvas.config.html#dvas.config.config.Tag.NODE_PARAMS_DEF">(dvas.config.config.Tag attribute)</a>
-</li>
-        <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.instrument.NODE_PARAMS_DEF">(in module dvas.config.definitions.instrument)</a>
 </li>
         <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.origdata.NODE_PARAMS_DEF">(in module dvas.config.definitions.origdata)</a>
 </li>
@@ -1420,6 +1588,10 @@
         <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.origdata.NODE_PATTERN">(in module dvas.config.definitions.origdata)</a>
 </li>
       </ul></li>
+      <li><a href="modules/dvas.config.html#dvas.config.config.NoneExpr">NoneExpr (class in dvas.config.config)</a>
+</li>
+      <li><a href="modules/dvas.config.html#dvas.config.config.NonTerminalConfigExprInterpreter">NonTerminalConfigExprInterpreter (class in dvas.config.config)</a>
+</li>
       <li><a href="modules/dvas.database.html#dvas.database.database.NotExpr">NotExpr (class in dvas.database.database)</a>
 </li>
   </ul></td>
@@ -1428,18 +1600,34 @@
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/dvas.database.html#dvas.database.database.OneDimArrayConfigLinker">OneDimArrayConfigLinker (class in dvas.database.database)</a>
+      <li><a href="modules/dvas.database.html#dvas.database.model.Object">Object (class in dvas.database.model)</a>
+</li>
+      <li><a href="modules/dvas.database.html#dvas.database.model.InfosObjects.object">object (dvas.database.model.InfosObjects attribute)</a>
+</li>
+      <li><a href="modules/dvas.database.html#dvas.database.database.InfoManager.object">object() (dvas.database.database.InfoManager property)</a>
+</li>
+      <li><a href="modules/dvas.database.html#dvas.database.model.InfosObjects.object_id">object_id (dvas.database.model.InfosObjects attribute)</a>
+</li>
+      <li><a href="modules/dvas.database.html#dvas.database.model.InstrType.objects">objects (dvas.database.model.InstrType attribute)</a>
+</li>
+      <li><a href="modules/dvas.database.html#dvas.database.database.InfoManager.oid">oid (dvas.database.database.InfoManager attribute)</a>
+
+      <ul>
+        <li><a href="modules/dvas.database.html#dvas.database.model.Object.oid">(dvas.database.model.Object attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="modules/dvas.config.html#dvas.config.config.OneDimArrayConfigLinker">OneDimArrayConfigLinker (class in dvas.config.config)</a>
 </li>
       <li><a href="modules/dvas.config.html#dvas.config.config.OneDimArrayConfigManager">OneDimArrayConfigManager (class in dvas.config.config)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/dvas.config.html#dvas.config.config.OneLayerConfigManager">OneLayerConfigManager (class in dvas.config.config)</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.database.OrExpr">OrExpr (class in dvas.database.database)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.environ.GlobalPathVariablesManager.orig_data_path">orig_data_path (dvas.environ.GlobalPathVariablesManager attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/dvas.data.html#dvas.data.linker.OrigConfigError">OrigConfigError</a>
 </li>
       <li><a href="modules/dvas.config.html#dvas.config.config.OrigData">OrigData (class in dvas.config.config)</a>
@@ -1477,8 +1665,6 @@
 </li>
         <li><a href="modules/dvas.config.html#dvas.config.config.InstrType.PARAMETER_PATTERN_PROP">(dvas.config.config.InstrType attribute)</a>
 </li>
-        <li><a href="modules/dvas.config.html#dvas.config.config.Instrument.PARAMETER_PATTERN_PROP">(dvas.config.config.Instrument attribute)</a>
-</li>
         <li><a href="modules/dvas.config.html#dvas.config.config.OneLayerConfigManager.PARAMETER_PATTERN_PROP">(dvas.config.config.OneLayerConfigManager attribute)</a>
 </li>
         <li><a href="modules/dvas.config.html#dvas.config.config.OrigData.PARAMETER_PATTERN_PROP">(dvas.config.config.OrigData attribute)</a>
@@ -1493,8 +1679,6 @@
 </li>
         <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.instrtype.PARAMETER_PATTERN_PROP">(in module dvas.config.definitions.instrtype)</a>
 </li>
-        <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.instrument.PARAMETER_PATTERN_PROP">(in module dvas.config.definitions.instrument)</a>
-</li>
         <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.origdata.PARAMETER_PATTERN_PROP">(in module dvas.config.definitions.origdata)</a>
 </li>
         <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.parameter.PARAMETER_PATTERN_PROP">(in module dvas.config.definitions.parameter)</a>
@@ -1504,22 +1688,18 @@
       </ul></li>
       <li><a href="modules/dvas.database.html#dvas.database.database.ParameterExpr">ParameterExpr (class in dvas.database.database)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/dvas.html#dvas.environ.path_var">path_var (in module dvas.environ)</a>
+</li>
+      <li><a href="modules/dvas.database.html#dvas.database.model.Object.pid">pid (dvas.database.model.Object attribute)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.hardcoded.PKG_PATH">PKG_PATH (in module dvas.hardcoded)</a>
 </li>
       <li><a href="modules/dvas.plots.html#dvas.plots.gruan.pks_cmap">pks_cmap() (in module dvas.plots.gruan)</a>
 </li>
-      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAbstract.plot">plot() (dvas.data.data.MutliProfileAbstract method)</a>
-
-      <ul>
-        <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.plot.GDPPlotStrategy.plot">(dvas.data.strategy.plot.GDPPlotStrategy method)</a>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAC.plot">plot() (dvas.data.data.MutliProfileAC method)</a>
 </li>
-        <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.plot.PlotStrategy.plot">(dvas.data.strategy.plot.PlotStrategy method)</a>
-</li>
-        <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.plot.RSPlotStrategy.plot">(dvas.data.strategy.plot.RSPlotStrategy method)</a>
-</li>
-      </ul></li>
       <li><a href="modules/dvas.plots.html#dvas.plots.utils.PLOT_FMTS">PLOT_FMTS (in module dvas.plots.utils)</a>
 </li>
       <li><a href="modules/dvas.plots.html#dvas.plots.gruan.plot_gdps">plot_gdps() (in module dvas.plots.gruan)</a>
@@ -1538,17 +1718,33 @@
 </li>
       <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.plot.PlotStrategy">PlotStrategy (class in dvas.data.strategy.plot)</a>
 </li>
-      <li><a href="modules/dvas.database.html#dvas.database.model.Parameter.prm_abbr">prm_abbr (dvas.database.model.Parameter attribute)</a>
+      <li><a href="modules/dvas.html#dvas.helper.SingleInstanceMetaClass.pop_instance">pop_instance() (dvas.helper.SingleInstanceMetaClass class method)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.environ.GlobalPackageVariableManager.prd_id_pat">prd_id_pat (dvas.environ.GlobalPackageVariableManager attribute)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.hardcoded.PRF_REF_INDEX_NAME">PRF_REF_INDEX_NAME (in module dvas.hardcoded)</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.model.Parameter.prm_desc">prm_desc (dvas.database.model.Parameter attribute)</a>
 </li>
+      <li><a href="modules/dvas.database.html#dvas.database.model.Parameter.prm_id">prm_id (dvas.database.model.Parameter attribute)</a>
+</li>
+      <li><a href="modules/dvas.database.html#dvas.database.model.Parameter.prm_name">prm_name (dvas.database.model.Parameter attribute)</a>
+</li>
+      <li><a href="modules/dvas.database.html#dvas.database.model.Parameter.prm_unit">prm_unit (dvas.database.model.Parameter attribute)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.hardcoded.PROC_PATH">PROC_PATH (in module dvas.hardcoded)</a>
+</li>
+      <li><a href="modules/dvas.database.html#dvas.database.database.ProductExpr">ProductExpr (class in dvas.database.database)</a>
+</li>
       <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.Profile">Profile (class in dvas.data.strategy.data)</a>
 </li>
-      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.ProfileAbstract">ProfileAbstract (class in dvas.data.strategy.data)</a>
+      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.ProfileAC">ProfileAC (class in dvas.data.strategy.data)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.errors.ProfileError">ProfileError</a>
 </li>
-      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAbstract.profiles">profiles() (dvas.data.data.MutliProfileAbstract property)</a>
+      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAC.profiles">profiles() (dvas.data.data.MutliProfileAC property)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.environ.VariableManager.protect">protect() (dvas.environ.VariableManager method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1586,7 +1782,15 @@
 </li>
       <li><a href="modules/dvas.config.html#dvas.config.config.OneLayerConfigManager.read_yaml">read_yaml() (dvas.config.config.OneLayerConfigManager static method)</a>
 </li>
-      <li><a href="modules/dvas.database.html#dvas.database.model.Instrument.remark">remark (dvas.database.model.Instrument attribute)</a>
+      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAC.rebase">rebase() (dvas.data.data.MutliProfileAC method)</a>
+</li>
+      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.rebase.RebaseStrategy">RebaseStrategy (class in dvas.data.strategy.rebase)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.logger.recipes_logger">recipes_logger (in module dvas.logger)</a>
+</li>
+      <li><a href="modules/dvas.config.html#dvas.config.config.ReplExpr">ReplExpr (class in dvas.config.config)</a>
+</li>
+      <li><a href="modules/dvas.config.html#dvas.config.config.ReplStrictExpr">ReplStrictExpr (class in dvas.config.config)</a>
 </li>
       <li><a href="modules/dvas.config.html#dvas.config.config.ConfigManager.REQUIRED_ATTRIBUTES">REQUIRED_ATTRIBUTES (dvas.config.config.ConfigManager attribute)</a>
 
@@ -1597,9 +1801,9 @@
 </li>
         <li><a href="modules/dvas.config.html#dvas.config.config.OneLayerConfigManager.REQUIRED_ATTRIBUTES">(dvas.config.config.OneLayerConfigManager attribute)</a>
 </li>
-        <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAbstract.REQUIRED_ATTRIBUTES">(dvas.data.data.MutliProfileAbstract attribute)</a>
+        <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAC.REQUIRED_ATTRIBUTES">(dvas.data.data.MutliProfileAC attribute)</a>
 </li>
-        <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.ProfileAbstract.REQUIRED_ATTRIBUTES">(dvas.data.strategy.data.ProfileAbstract attribute)</a>
+        <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.ProfileAC.REQUIRED_ATTRIBUTES">(dvas.data.strategy.data.ProfileAC attribute)</a>
 </li>
         <li><a href="modules/dvas.html#dvas.helper.RequiredAttrMetaClass.REQUIRED_ATTRIBUTES">(dvas.helper.RequiredAttrMetaClass attribute)</a>
 </li>
@@ -1618,15 +1822,17 @@
 </li>
       <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.resample.ResampleStrategyAbstract">ResampleStrategyAbstract (class in dvas.data.strategy.resample)</a>
 </li>
-      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.ProfileAbstract.reset_data_index">reset_data_index() (dvas.data.strategy.data.ProfileAbstract class method)</a>
+      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.ProfileAC.reset_data_index">reset_data_index() (dvas.data.strategy.data.ProfileAC class method)</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.database.InfoManager.rig_id">rig_id() (dvas.database.database.InfoManager property)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.environ.GlobalPackageVariableManager.rig_id_pat">rig_id_pat (dvas.environ.GlobalPackageVariableManager attribute)</a>
 </li>
-      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAbstract.rm_info_tag">rm_info_tag() (dvas.data.data.MutliProfileAbstract method)</a>
+      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAC.rm_info_tags">rm_info_tags() (dvas.data.data.MutliProfileAC method)</a>
 </li>
-      <li><a href="modules/dvas.database.html#dvas.database.database.InfoManager.rm_tag">rm_tag() (dvas.database.database.InfoManager method)</a>
+      <li><a href="modules/dvas.database.html#dvas.database.database.InfoManager.rm_metadata">rm_metadata() (dvas.database.database.InfoManager method)</a>
+</li>
+      <li><a href="modules/dvas.database.html#dvas.database.database.InfoManager.rm_tags">rm_tags() (dvas.database.database.InfoManager method)</a>
 </li>
       <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.plot.RSPlotStrategy">RSPlotStrategy (class in dvas.data.strategy.plot)</a>
 </li>
@@ -1647,16 +1853,10 @@
 </li>
         <li><a href="modules/dvas.data.html#dvas.data.linker.LocalDBLinker.save">(dvas.data.linker.LocalDBLinker method)</a>
 </li>
-        <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.save.SaveDataStrategy.save">(dvas.data.strategy.save.SaveDataStrategy method)</a>
-</li>
-        <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.save.SaveDataStrategyAbstract.save">(dvas.data.strategy.save.SaveDataStrategyAbstract method)</a>
-</li>
       </ul></li>
-      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAbstract.save_to_db">save_to_db() (dvas.data.data.MutliProfileAbstract method)</a>
+      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAC.save_to_db">save_to_db() (dvas.data.data.MutliProfileAC method)</a>
 </li>
       <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.save.SaveDataStrategy">SaveDataStrategy (class in dvas.data.strategy.save)</a>
-</li>
-      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.save.SaveDataStrategyAbstract">SaveDataStrategyAbstract (class in dvas.data.strategy.save)</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.database.SearchInfoExpr">SearchInfoExpr (class in dvas.database.database)</a>
 </li>
@@ -1664,11 +1864,11 @@
 </li>
       <li><a href="modules/dvas.html#dvas.environ.VariableManager.set_attr">set_attr() (dvas.environ.VariableManager method)</a>
 </li>
-      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.ProfileAbstract.set_data_index">set_data_index() (dvas.data.strategy.data.ProfileAbstract class method)</a>
+      <li><a href="modules/dvas.config.html#dvas.config.config.ConfigExprInterpreter.set_callable">set_callable() (dvas.config.config.ConfigExprInterpreter class method)</a>
+</li>
+      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.ProfileAC.set_data_index">set_data_index() (dvas.data.strategy.data.ProfileAC class method)</a>
 </li>
       <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.Profile.set_flg">set_flg() (dvas.data.strategy.data.Profile method)</a>
-</li>
-      <li><a href="modules/dvas.html#dvas.environ.VariableManager.set_many_attr">set_many_attr() (dvas.environ.VariableManager method)</a>
 </li>
       <li><a href="modules/dvas.plots.html#dvas.plots.utils.set_mplstyle">set_mplstyle() (in module dvas.plots.utils)</a>
 </li>
@@ -1682,37 +1882,27 @@
       </ul></li>
       <li><a href="modules/dvas.html#dvas.helper.SingleInstanceMetaClass">SingleInstanceMetaClass (class in dvas.helper)</a>
 </li>
-      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAbstract.sort">sort() (dvas.data.data.MutliProfileAbstract method)</a>
+      <li><a href="modules/dvas.config.html#dvas.config.config.SmallUpperExpr">SmallUpperExpr (class in dvas.config.config)</a>
+</li>
+      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAC.sort">sort() (dvas.data.data.MutliProfileAC method)</a>
 
       <ul>
-        <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.sort.SortProfileStrategy.sort">(dvas.data.strategy.sort.SortProfileStrategy method)</a>
-</li>
-        <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.sort.SortStrategyAbstract.sort">(dvas.data.strategy.sort.SortStrategyAbstract method)</a>
-</li>
         <li><a href="modules/dvas.database.html#dvas.database.database.InfoManager.sort">(dvas.database.database.InfoManager static method)</a>
 </li>
       </ul></li>
-      <li><a href="modules/dvas.database.html#dvas.database.database.InfoManager.sort_attr">sort_attr() (dvas.database.database.InfoManager property)</a>
-</li>
       <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.sort.SortProfileStrategy">SortProfileStrategy (class in dvas.data.strategy.sort)</a>
-</li>
-      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.sort.SortStrategyAbstract">SortStrategyAbstract (class in dvas.data.strategy.sort)</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.model.DataSource.source">source (dvas.database.model.DataSource attribute)</a>
 </li>
-      <li><a href="modules/dvas.database.html#dvas.database.database.InfoManager.srn">srn (dvas.database.database.InfoManager attribute)</a>
-
-      <ul>
-        <li><a href="modules/dvas.database.html#dvas.database.model.Instrument.srn">(dvas.database.model.Instrument attribute)</a>
+      <li><a href="modules/dvas.database.html#dvas.database.model.Object.srn">srn (dvas.database.model.Object attribute)</a>
 </li>
-      </ul></li>
-      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.sync.SynchronizeStrategy.synchronize">synchronize() (dvas.data.strategy.sync.SynchronizeStrategy method)</a>
-
-      <ul>
-        <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.sync.TimeSynchronizeStrategy.synchronize">(dvas.data.strategy.sync.TimeSynchronizeStrategy method)</a>
+      <li><a href="modules/dvas.html#dvas.dvas.start_log">start_log() (in module dvas.dvas)</a>
 </li>
-      </ul></li>
-      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.sync.SynchronizeStrategy">SynchronizeStrategy (class in dvas.data.strategy.sync)</a>
+      <li><a href="modules/dvas.html#dvas.dvas.stop_log">stop_log() (in module dvas.dvas)</a>
+</li>
+      <li><a href="modules/dvas.database.html#dvas.database.model.str_len">str_len() (in module dvas.database.model)</a>
+</li>
+      <li><a href="modules/dvas_recipes.uaii22.src.html#dvas_recipes.uaii22.src.sync.sync_flight">sync_flight() (in module dvas_recipes.uaii22.src.sync)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1732,25 +1922,31 @@
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.model.InfosTags.tag_id">tag_id (dvas.database.model.InfosTags attribute)</a>
 </li>
-      <li><a href="modules/dvas.database.html#dvas.database.model.Tag.tag_txt">tag_txt (dvas.database.model.Tag attribute)</a>
+      <li><a href="modules/dvas.database.html#dvas.database.model.Tag.tag_name">tag_name (dvas.database.model.Tag attribute)</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.database.TagExpr">TagExpr (class in dvas.database.database)</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.database.InfoManager.tags">tags (dvas.database.database.InfoManager attribute)</a>
 </li>
+      <li><a href="modules/dvas.database.html#dvas.database.database.InfoManager.tags_desc">tags_desc() (dvas.database.database.InfoManager property)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.RSProfile.tdt">tdt() (dvas.data.strategy.data.RSProfile property)</a>
+</li>
+      <li><a href="modules/dvas.config.html#dvas.config.config.TerminalConfigExprInterpreter">TerminalConfigExprInterpreter (class in dvas.config.config)</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.database.TerminalSearchInfoExpr">TerminalSearchInfoExpr (class in dvas.database.database)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.helper.TimeIt">TimeIt (class in dvas.helper)</a>
 </li>
-      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.sync.TimeSynchronizeStrategy">TimeSynchronizeStrategy (class in dvas.data.strategy.sync)</a>
-</li>
       <li><a href="modules/dvas.html#dvas.logger.tools_logger">tools_logger (in module dvas.logger)</a>
 </li>
-      <li><a href="modules/dvas.data.html#dvas.data.math.TropopauseError">TropopauseError</a>
+      <li><a href="modules/dvas.tools.html#dvas.tools.math.TropopauseError">TropopauseError</a>
+</li>
+      <li><a href="modules/dvas.database.html#dvas.database.model.InstrType.type_desc">type_desc (dvas.database.model.InstrType attribute)</a>
+</li>
+      <li><a href="modules/dvas.database.html#dvas.database.model.InstrType.type_id">type_id (dvas.database.model.InstrType attribute)</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.model.InstrType.type_name">type_name (dvas.database.model.InstrType attribute)</a>
 </li>
@@ -1774,17 +1970,23 @@
 </li>
       <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.GDPProfile.uct">uct() (dvas.data.strategy.data.GDPProfile property)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.GDPProfile.ucu">ucu() (dvas.data.strategy.data.GDPProfile property)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/dvas.plots.html#dvas.plots.utils.UNIT_LABELS">UNIT_LABELS (in module dvas.plots.utils)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.helper.unzip">unzip() (in module dvas.helper)</a>
 </li>
-      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAbstract.update">update() (dvas.data.data.MutliProfileAbstract method)</a>
+      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAC.update">update() (dvas.data.data.MutliProfileAC method)</a>
+
+      <ul>
+        <li><a href="modules/dvas.database.html#dvas.database.database.InfoManagerMetaData.update">(dvas.database.database.InfoManagerMetaData method)</a>
 </li>
-      <li><a href="modules/dvas.data.html#dvas.data.data.update_db">update_db() (in module dvas.data.data)</a>
+      </ul></li>
+      <li><a href="modules/dvas.data.html#dvas.data.io.update_db">update_db() (in module dvas.data.io)</a>
+</li>
+      <li><a href="modules/dvas.config.html#dvas.config.config.UpperExpr">UpperExpr (class in dvas.config.config)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1802,6 +2004,12 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/dvas.database.html#dvas.database.model.MetaData.value_num">value_num (dvas.database.model.MetaData attribute)</a>
+</li>
+      <li><a href="modules/dvas.database.html#dvas.database.model.MetaData.value_str">value_str (dvas.database.model.MetaData attribute)</a>
+</li>
+      <li><a href="modules/dvas.data.html#dvas.data.data.MutliProfileAC.var_info">var_info() (dvas.data.data.MutliProfileAC property)</a>
+</li>
       <li><a href="modules/dvas.html#dvas.environ.VariableManager">VariableManager (class in dvas.environ)</a>
 </li>
   </ul></td>
@@ -1827,28 +2035,25 @@
            
           </div>
           <footer>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2020, MeteoSwiss
+        &#169; Copyright 2020-2021, MeteoSwiss.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 

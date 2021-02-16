@@ -1,0 +1,15 @@
+dvas\_recipes.uaii22 package
+============================
+
+.. automodule:: dvas_recipes.uaii22
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   dvas_recipes.uaii22.src

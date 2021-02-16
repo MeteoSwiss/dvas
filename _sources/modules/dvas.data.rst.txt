@@ -25,18 +25,18 @@ dvas.data.data module
    :undoc-members:
    :show-inheritance:
 
-dvas.data.linker module
------------------------
+dvas.data.io module
+-------------------
 
-.. automodule:: dvas.data.linker
+.. automodule:: dvas.data.io
    :members:
    :undoc-members:
    :show-inheritance:
 
-dvas.data.math module
----------------------
+dvas.data.linker module
+-----------------------
 
-.. automodule:: dvas.data.math
+.. automodule:: dvas.data.linker
    :members:
    :undoc-members:
    :show-inheritance:

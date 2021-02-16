@@ -33,14 +33,6 @@ dvas.config.definitions.instrtype module
    :undoc-members:
    :show-inheritance:
 
-dvas.config.definitions.instrument module
------------------------------------------
-
-.. automodule:: dvas.config.definitions.instrument
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 dvas.config.definitions.origdata module
 ---------------------------------------
 

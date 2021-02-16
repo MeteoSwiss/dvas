@@ -1,0 +1,42 @@
+dvas\_recipes package
+=====================
+
+.. automodule:: dvas_recipes
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   dvas_recipes.uaii22
+
+Submodules
+----------
+
+dvas\_recipes.errors module
+---------------------------
+
+.. automodule:: dvas_recipes.errors
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas\_recipes.hardcoded module
+------------------------------
+
+.. automodule:: dvas_recipes.hardcoded
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas\_recipes.initialize module
+-------------------------------
+
+.. automodule:: dvas_recipes.initialize
+   :members:
+   :undoc-members:
+   :show-inheritance:

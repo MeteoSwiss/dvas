@@ -1,0 +1,18 @@
+dvas\_recipes.uaii22.src package
+================================
+
+.. automodule:: dvas_recipes.uaii22.src
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+dvas\_recipes.uaii22.src.sync module
+------------------------------------
+
+.. automodule:: dvas_recipes.uaii22.src.sync
+   :members:
+   :undoc-members:
+   :show-inheritance:

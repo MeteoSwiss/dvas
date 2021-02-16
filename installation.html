@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>Installation &mdash; dvas  documentation</title>
   
@@ -16,7 +16,10 @@
 
   
   
+
   
+  
+
   
 
   
@@ -29,15 +32,14 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Running dvas" href="running.html" />
-    <link rel="prev" title="dvas 0.1.1" href="index.html" /> 
+    <link rel="next" title="Running dvas recipes" href="running_recipes.html" />
+    <link rel="prev" title="dvas 0.2.0" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -51,7 +53,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> dvas
+            <a href="index.html" class="icon icon-home"> dvas
           
 
           
@@ -61,7 +63,7 @@
             
             
               <div class="version">
-                0.1.1
+                0.2.0
               </div>
             
           
@@ -86,14 +88,16 @@
               
             
             
-              <ul class="current">
+              <p class="caption"><span class="caption-text">Table of contents</span></p>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#testing-the-installation">Testing the installation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="running.html">Running dvas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="running_recipes.html">Running dvas recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="creating_recipes.html">Creating dvas recipes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="acknowledge.html">Acknowledging dvas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">License &amp; Copyright</a></li>
@@ -142,6 +146,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -153,7 +159,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="_sources/installation.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -168,7 +174,7 @@
            <div itemprop="articleBody">
             
   <div class="section" id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<span id="install"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <div class="admonition-todo admonition" id="id1">
 <p class="admonition-title">Todo</p>
 <p>Include a link to the pypi page in the very next sentence.</p>
@@ -179,15 +185,9 @@ In a terminal, type:</p>
 </pre></div>
 </div>
 <p>And that will take care of things. dvas uses <a class="reference external" href="https://semver.org/">semantic versioning</a>.
-The latest stable version is 0.1.1.</p>
+The latest stable version is 0.2.0.</p>
 <p>The most recent release of dvas is also available for download from its
 <a class="reference external" href="https://github.com/MeteoSwiss-MDA/dvas/releases/latest/">Github repository</a>.</p>
-<div class="admonition caution">
-<p class="admonition-title">Caution</p>
-<p>The dvas Github repository will remain private until the code is being released. If you want to
-know more about the current status of the code, feel free to
-<a class="reference external" href="mailto:frederic&#46;vogt&#37;&#52;&#48;meteoswiss&#46;ch">get in touch</a>.</p>
-</div>
 <div class="section" id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
 <p>dvas is compatible with the following python versions:</p>
@@ -202,10 +202,11 @@ if required:</p>
         <span class="s2">&quot;netCDF4&quot;</span><span class="p">,</span>
         <span class="s1">&#39;numpy&#39;</span><span class="p">,</span>
         <span class="s2">&quot;pampy&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;pandas&lt;=1.1.4&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pandas&quot;</span><span class="p">,</span>
         <span class="s2">&quot;peewee&quot;</span><span class="p">,</span>
         <span class="s2">&quot;pytest&quot;</span><span class="p">,</span>
         <span class="s2">&quot;pytest-env&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pytest-data&quot;</span><span class="p">,</span>
         <span class="s2">&quot;pytest-datafiles&quot;</span><span class="p">,</span>
         <span class="s2">&quot;ruamel-yaml&quot;</span><span class="p">,</span>
         <span class="s2">&quot;scipy&quot;</span><span class="p">,</span>
@@ -218,17 +219,21 @@ if required:</p>
 <h2>Testing the installation<a class="headerlink" href="#testing-the-installation" title="Permalink to this headline">¶</a></h2>
 <p>To ensure that dvas was installed properly, try to call the help of its high-level entry point. In a
 terminal, type:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>dvas -h
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>dvas_init -h
 </pre></div>
 </div>
 <p>This should return the following information:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>usage: dvas [-h] [--init]
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>usage: dvas_init [-h] [-ap ./a/new/folder/] {demo,uaii22}
 
-DVAS 0.1.1 - Data Visualization and Analysis Software
+DVAS 0.2.0 - Data Visualization and Analysis Software: Initialization function.
+
+positional arguments:
+  {demo,uaii22}         The processing recipe to initialize.
 
 optional arguments:
-  -h, --help  show this help message and exit
-  --init      Initialize a new DVAS processing arena.
+  -h, --help            show this help message and exit
+  -ap ./a/new/folder/, --arena_path ./a/new/folder/
+                        Relative path &amp; name for the new processing arena.
 
 For more info: https://MeteoSwiss.github.io/dvas
  
@@ -242,37 +247,29 @@ For more info: https://MeteoSwiss.github.io/dvas
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="running.html" class="btn btn-neutral float-right" title="Running dvas" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="index.html" class="btn btn-neutral float-left" title="dvas 0.1.1" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="running_recipes.html" class="btn btn-neutral float-right" title="Running dvas recipes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="dvas 0.2.0" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2020, MeteoSwiss
+        &#169; Copyright 2020-2021, MeteoSwiss.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 

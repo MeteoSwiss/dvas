@@ -17,10 +17,26 @@ dvas.tools.gruan module
    :undoc-members:
    :show-inheritance:
 
+dvas.tools.math module
+----------------------
+
+.. automodule:: dvas.tools.math
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dvas.tools.stats module
 -----------------------
 
 .. automodule:: dvas.tools.stats
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas.tools.sync module
+----------------------
+
+.. automodule:: dvas.tools.sync
    :members:
    :undoc-members:
    :show-inheritance:

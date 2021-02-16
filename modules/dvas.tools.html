@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>dvas.tools package &mdash; dvas  documentation</title>
   
@@ -16,7 +16,10 @@
 
   
   
+
   
+  
+
   
 
   
@@ -29,14 +32,13 @@
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Documentation todos" href="../doc_todo.html" />
+    <link rel="next" title="dvas_recipes package" href="dvas_recipes.html" />
     <link rel="prev" title="dvas.plots package" href="dvas.plots.html" /> 
 </head>
 
@@ -51,7 +53,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> dvas
+            <a href="../index.html" class="icon icon-home"> dvas
           
 
           
@@ -61,7 +63,7 @@
             
             
               <div class="version">
-                0.1.1
+                0.2.0
               </div>
             
           
@@ -86,10 +88,12 @@
               
             
             
-              <ul class="current">
+              <p class="caption"><span class="caption-text">Table of contents</span></p>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Home</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../running.html">Running dvas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running_recipes.html">Running dvas recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../creating_recipes.html">Creating dvas recipes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../acknowledge.html">Acknowledging dvas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../license.html">License &amp; Copyright</a></li>
@@ -107,13 +111,16 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="dvas.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.dvas">dvas.dvas module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.environ">dvas.environ module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.errors">dvas.errors module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.hardcoded">dvas.hardcoded module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.helper">dvas.helper module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.logger">dvas.logger module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.version">dvas.version module</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="dvas_recipes.html">dvas_recipes package</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../doc_todo.html">Documentation todos</a></li>
@@ -157,6 +164,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -172,7 +181,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../_sources/modules/dvas.tools.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -188,7 +197,7 @@
             
   <div class="section" id="module-dvas.tools">
 <span id="dvas-tools-package"></span><h1>dvas.tools package<a class="headerlink" href="#module-dvas.tools" title="Permalink to this headline">¶</a></h1>
-<p>Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>This sub-package includes all the tools required for the dvas data processing.</p>
@@ -197,13 +206,13 @@
 </div>
 <div class="section" id="module-dvas.tools.gruan">
 <span id="dvas-tools-gruan-module"></span><h2>dvas.tools.gruan module<a class="headerlink" href="#module-dvas.tools.gruan" title="Permalink to this headline">¶</a></h2>
-<p>Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>This module contains GRUAN-related routines, including correlation rules for GDP uncertainties.</p>
 <dl class="py function">
 <dt id="dvas.tools.gruan.corcoef_gdps">
-<code class="sig-prename descclassname">dvas.tools.gruan.</code><code class="sig-name descname">corcoef_gdps</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">i</span></em>, <em class="sig-param"><span class="n">j</span></em>, <em class="sig-param"><span class="n">uc_type</span></em>, <em class="sig-param"><span class="n">srn_i</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">srn_j</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mdl_i</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mdl_j</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rig_i</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rig_j</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">evt_i</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">evt_j</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gruan.corcoef_gdps" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">dvas.tools.gruan.</span></code><code class="sig-name descname"><span class="pre">corcoef_gdps</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uc_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">srn_i</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">srn_j</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mdl_i</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mdl_j</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rig_i</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rig_j</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evt_i</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evt_j</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gruan.corcoef_gdps" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the correlation coefficient(s), for the different uncertainty types of GRUAN Data
 Products (GDPs), between measurements.</p>
 <dl class="field-list simple">
@@ -276,7 +285,7 @@ with distinct radiosondes models and serial numbers.</p>
 
 <dl class="py function">
 <dt id="dvas.tools.gruan.combine_gdps">
-<code class="sig-prename descclassname">dvas.tools.gruan.</code><code class="sig-name descname">combine_gdps</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gdp_prfs</span></em>, <em class="sig-param"><span class="n">binning</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'weighted mean'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gruan.combine_gdps" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">dvas.tools.gruan.</span></code><code class="sig-name descname"><span class="pre">combine_gdps</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdp_prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'weighted</span> <span class="pre">mean'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gruan.combine_gdps" title="Permalink to this definition">¶</a></dt>
 <dd><p>Combines and (possibly) rebins GDP profiles, with full error propagation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -304,15 +313,112 @@ for all.</p></li>
 </dd></dl>
 
 </div>
+<div class="section" id="module-dvas.tools.math">
+<span id="dvas-tools-math-module"></span><h2>dvas.tools.math module<a class="headerlink" href="#module-dvas.tools.math" title="Permalink to this headline">¶</a></h2>
+<p>Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<p>Module contents: Specialized mathematical operation on data</p>
+<dl class="py function">
+<dt id="dvas.tools.math.crosscorr">
+<code class="sig-prename descclassname"><span class="pre">dvas.tools.math.</span></code><code class="sig-name descname"><span class="pre">crosscorr</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datay</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wrap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'kendall'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.math.crosscorr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lag-N cross correlation.
+If wrap is False, shifted data are filled with NaNs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datax, datay</strong> (<em>pandas.Series</em>) – Must be of equal length</p></li>
+<li><p><strong>lag(`obj`</strong> – int, optional):  Default is 0</p></li>
+<li><p><strong>wrap (`obj`</strong> – bool, optional:  (Default value = False)</p></li>
+<li><p><strong>method (`obj`</strong> – str, optional): kendall, pearson, spearman.
+Default is ‘kendall’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dvas.tools.math.calc_tropopause">
+<code class="sig-prename descclassname"><span class="pre">dvas.tools.math.</span></code><code class="sig-name descname"><span class="pre">calc_tropopause</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_alt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grad_cond</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.math.calc_tropopause" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate tropopause altitude</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>From the WMO definition, the tropopause is defined as the lowest
+altitude where the vertical thermal gradient becomes less than -2 K per
+km in a layer at least 2 km thick.</p>
+</div>
+<dl class="simple">
+<dt>Source:</dt><dd><ol class="upperalpha simple" start="7">
+<li><p>Romanens, MeteoSwiss</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>temp</strong> (<em>pd.Series</em>) – Temperature profile (°C).</p></li>
+<li><p><strong>alt</strong> (<em>pd.Series</em>) – Altitude profile in (m).</p></li>
+<li><p><strong>start_alt</strong> (<em>float</em>) – Starting search altitude (m). Default to 5000.</p></li>
+<li><p><strong>layer</strong> (<em>flaot</em>) – Layer in which the thermal gradient is checked (m).
+Default to 2000.</p></li>
+<li><p><strong>grad_cond</strong> (<em>float</em>) – Minimal allowed thermal gradient (°C). Default to -2.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>pd.index</em> – Tropopause index</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="dvas.tools.math.TropopauseError">
+<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.tools.math.</span></code><code class="sig-name descname"><span class="pre">TropopauseError</span></code><a class="headerlink" href="#dvas.tools.math.TropopauseError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Exception if no tropopause where found</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dvas.tools.math.calc_tropopause_old">
+<code class="sig-prename descclassname"><span class="pre">dvas.tools.math.</span></code><code class="sig-name descname"><span class="pre">calc_tropopause_old</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alti</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">press</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.math.calc_tropopause_old" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate tropopause altitude</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>From the WMO definition, the tropopause is defined as the lowest
+altitude where the vertical thermal gradient becomes less than -2 K per
+km in a layer at least 2 km thick.</p>
+</div>
+<dl class="simple">
+<dt>Source:</dt><dd><ol class="upperalpha simple" start="7">
+<li><p>Romanens, MeteoSwiss</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mydate</strong></p></li>
+<li><p><strong>alti</strong></p></li>
+<li><p><strong>press</strong></p></li>
+<li><p><strong>temp</strong></p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+</div>
 <div class="section" id="module-dvas.tools.stats">
 <span id="dvas-tools-stats-module"></span><h2>dvas.tools.stats module<a class="headerlink" href="#module-dvas.tools.stats" title="Permalink to this headline">¶</a></h2>
-<p>Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>This module contains statistical routines and tools.</p>
 <dl class="py function">
 <dt id="dvas.tools.stats.chi_square">
-<code class="sig-prename descclassname">dvas.tools.stats.</code><code class="sig-name descname">chi_square</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gdp_prfs</span></em>, <em class="sig-param"><span class="n">cws_prf</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.stats.chi_square" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">dvas.tools.stats.</span></code><code class="sig-name descname"><span class="pre">chi_square</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdp_prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cws_prf</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.stats.chi_square" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes a chi-square given a series of individual profiles, and a merged one.</p>
 <p>This function does not work with resampled profiles: a chi-square is meaningless when computed
 over numerous altitudes at once.</p>
@@ -335,7 +441,7 @@ over numerous altitudes at once.</p>
 
 <dl class="py function">
 <dt id="dvas.tools.stats.ks_test">
-<code class="sig-prename descclassname">dvas.tools.stats.</code><code class="sig-name descname">ks_test</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gdp_pair</span></em>, <em class="sig-param"><span class="n">alpha</span><span class="o">=</span><span class="default_value">0.0027</span></em>, <em class="sig-param"><span class="n">binning_list</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">do_plot</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.stats.ks_test" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">dvas.tools.stats.</span></code><code class="sig-name descname"><span class="pre">ks_test</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdp_pair</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0027</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binning_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.stats.ks_test" title="Permalink to this definition">¶</a></dt>
 <dd><p>Runs a “rolling” KS test between two columns of a pandas.DataFrame.</p>
 <p>The rolling refers to the KS test being executed on a series of binned versions of the column
 deltas.</p>
@@ -372,7 +478,7 @@ binning_list.</p>
 
 <dl class="py function">
 <dt id="dvas.tools.stats.check_gdp_compatibility">
-<code class="sig-prename descclassname">dvas.tools.stats.</code><code class="sig-name descname">check_gdp_compatibility</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gdp_prfs</span></em>, <em class="sig-param"><span class="n">alpha</span><span class="o">=</span><span class="default_value">0.0027</span></em>, <em class="sig-param"><span class="n">binning_list</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">do_plot</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.stats.check_gdp_compatibility" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">dvas.tools.stats.</span></code><code class="sig-name descname"><span class="pre">check_gdp_compatibility</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdp_prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0027</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binning_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.stats.check_gdp_compatibility" title="Permalink to this definition">¶</a></dt>
 <dd><p>Runs a series of KS test to assess the consistency of several GDP profiles.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -403,15 +509,46 @@ binning_list.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-dvas.tools.sync">
+<span id="dvas-tools-sync-module"></span><h2>dvas.tools.sync module<a class="headerlink" href="#module-dvas.tools.sync" title="Permalink to this headline">¶</a></h2>
+<p>Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<p>This module contains tools to synchronize profiles.</p>
+<dl class="py function">
+<dt id="dvas.tools.sync.get_sync_shifts_from_alt">
+<code class="sig-prename descclassname"><span class="pre">dvas.tools.sync.</span></code><code class="sig-name descname"><span class="pre">get_sync_shifts_from_alt</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_alt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.sync.get_sync_shifts_from_alt" title="Permalink to this definition">¶</a></dt>
+<dd><p>A routine that estimates the shifts required to synchronize profiles, based on the
+different altitude index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prfs</strong> (<em>dvas.data.data.MultiRSProfiles</em>) – list of Profiles to compare</p></li>
+<li><p><strong>ref_alt</strong> (<em>float</em>) – which reference altitude to look for in the index</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>list of int</em> – list of shifts required to synchronize profiles in order to match ref_alt</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="dvas.tools.sync.get_sync_shifts_from_crosscor">
+<code class="sig-prename descclassname"><span class="pre">dvas.tools.sync.</span></code><code class="sig-name descname"><span class="pre">get_sync_shifts_from_crosscor</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.sync.get_sync_shifts_from_crosscor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimates the shifts required to synchronize profiles, based on their cross correlation.</p>
+</dd></dl>
+
+</div>
 <div class="section" id="module-dvas.tools.tools">
 <span id="dvas-tools-tools-module"></span><h2>dvas.tools.tools module<a class="headerlink" href="#module-dvas.tools.tools" title="Permalink to this headline">¶</a></h2>
-<p>Copyright (c) 2020 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>This module contains low-level, stand-alone, dvas tools.</p>
 <dl class="py function">
 <dt id="dvas.tools.tools.fancy_nansum">
-<code class="sig-prename descclassname">dvas.tools.tools.</code><code class="sig-name descname">fancy_nansum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">vals</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.tools.fancy_nansum" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">dvas.tools.tools.</span></code><code class="sig-name descname"><span class="pre">fancy_nansum</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.tools.fancy_nansum" title="Permalink to this definition">¶</a></dt>
 <dd><p>A custom nansum routine that treats NaNs as zeros, unless the data contains <em>only</em> NaNs,
 if which case it returns a NaN.</p>
 <dl class="field-list simple">
@@ -461,7 +598,7 @@ if which case it returns a NaN.</p>
 
 <dl class="py function">
 <dt id="dvas.tools.tools.weighted_mean">
-<code class="sig-prename descclassname">dvas.tools.tools.</code><code class="sig-name descname">weighted_mean</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">vals</span></em>, <em class="sig-param"><span class="n">weights</span></em>, <em class="sig-param"><span class="n">binning</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.tools.weighted_mean" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">dvas.tools.tools.</span></code><code class="sig-name descname"><span class="pre">weighted_mean</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.tools.weighted_mean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the weighted mean of the columns of a pd.DataFrame, given weights specified in a
 separate DataFrame.</p>
 <dl class="field-list simple">
@@ -494,7 +631,7 @@ function call.</p></li>
 
 <dl class="py function">
 <dt id="dvas.tools.tools.delta">
-<code class="sig-prename descclassname">dvas.tools.tools.</code><code class="sig-name descname">delta</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">vals</span></em>, <em class="sig-param"><span class="n">binning</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.tools.delta" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">dvas.tools.tools.</span></code><code class="sig-name descname"><span class="pre">delta</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.tools.delta" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the delta of a 2-columns pd.DataFrame (i.e. col1 - col2).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -525,37 +662,29 @@ See fancy_nansum() for details.</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="../doc_todo.html" class="btn btn-neutral float-right" title="Documentation todos" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="dvas.plots.html" class="btn btn-neutral float-left" title="dvas.plots package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="dvas_recipes.html" class="btn btn-neutral float-right" title="dvas_recipes package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="dvas.plots.html" class="btn btn-neutral float-left" title="dvas.plots package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2020, MeteoSwiss
+        &#169; Copyright 2020-2021, MeteoSwiss.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 

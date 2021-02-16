@@ -41,6 +41,14 @@ dvas.data.strategy.plot module
    :undoc-members:
    :show-inheritance:
 
+dvas.data.strategy.rebase module
+--------------------------------
+
+.. automodule:: dvas.data.strategy.rebase
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dvas.data.strategy.resample module
 ----------------------------------
 
@@ -61,14 +69,6 @@ dvas.data.strategy.sort module
 ------------------------------
 
 .. automodule:: dvas.data.strategy.sort
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-dvas.data.strategy.sync module
-------------------------------
-
-.. automodule:: dvas.data.strategy.sync
    :members:
    :undoc-members:
    :show-inheritance:
