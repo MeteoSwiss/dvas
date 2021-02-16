@@ -52,6 +52,7 @@ from ..helper import unzip, get_dict_len
 from ..logger import localdb
 from ..environ import glob_var
 from ..environ import path_var as env_path_var
+from ..errors import DBError
 
 # Define
 SQLITE_MAX_VARIABLE_NUMBER = 999
@@ -88,27 +89,6 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         TableObject, Flag,
         TableTag
     ]
-
-    @staticmethod
-    def clear_db():
-        """Clear DB
-
-        Note:
-            !!!ONLY FOR ADVANCED USER!!! Use this method carefully.
-            Ensure that no more class instance are linked to this reference.
-
-        """
-
-        # Get db file path
-        db_mngr = DatabaseManager()
-        db_file_path = db_mngr.db.database
-
-        # Delete singleton instance
-        del db_mngr
-        SingleInstanceMetaClass.pop_instance(DatabaseManager)
-
-        # Delete file
-        Path(db_file_path).unlink()
 
     def __init__(self, reset_db=False):
         """
@@ -680,6 +660,28 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         """
         return self.get_table(Flag)
+
+    @staticmethod
+    def clear_db():
+        """Clear DB
+
+        Note:
+            !!!ONLY FOR ADVANCED USER!!! Use this method carefully.
+            Ensure that no more class instance are linked to this reference.
+
+        """
+
+        # Get current db file path
+        db_mngr = DatabaseManager()
+        db_file_path = db_mngr.db.database
+
+        # Delete singleton instance
+        del db_mngr
+        if SingleInstanceMetaClass.has_instance(DatabaseManager):
+            raise DBError(f"Can't delete {db_file_path} because an instance of DatabaseManager is still in memory.")
+
+        # Delete file
+        Path(db_file_path).unlink()
 
 
 class DBAccess(ContextDecorator):

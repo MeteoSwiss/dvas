@@ -142,6 +142,7 @@ class FileHandler(AbstractHandler):
 
         # Set attributes
         self._origdata_config_mngr = OrigData()
+        self._db_mngr = DatabaseManager()
 
         # Init origdata config manager
         self._origdata_config_mngr.read()
@@ -197,9 +198,6 @@ class FileHandler(AbstractHandler):
 
         """
 
-        # Init
-        db_mngr = DatabaseManager()
-
         # Test
         if (grp := re.search(self.file_instr_type_pat, file_path.name)) is None:
             # TODO Detail exception
@@ -211,7 +209,7 @@ class FileHandler(AbstractHandler):
         instr_type_name = grp.group(1)
 
         # Check instr_type name existence in DB
-        if db_mngr.get_or_none(
+        if self._db_mngr.get_or_none(
                 TableInstrType,
                 search={
                     'where': TableInstrType.type_name == instr_type_name
@@ -229,11 +227,8 @@ class FileHandler(AbstractHandler):
     def exclude_file(self, path_scan, prm_name):
         """Exclude file method"""
 
-        # Init
-        db_mngr = DatabaseManager()
-
         # Search exclude file names source
-        exclude_file_name = db_mngr.get_or_none(
+        exclude_file_name = self._db_mngr.get_or_none(
             TableInfo,
             search={
                 'where': (
@@ -639,6 +634,9 @@ class LocalDBLinker(DataLinker):
         # Call super constructor
         super().__init__()
 
+        # Init
+        self._db_mngr = DatabaseManager()
+
     def load(self, search, prm_name, filter_empty=True):
         """Load parameter method
 
@@ -663,11 +661,8 @@ class LocalDBLinker(DataLinker):
 
         """
 
-        # Init
-        db_mngr = DatabaseManager()
-
         # Retrieve data from DB
-        data = db_mngr.get_data(
+        data = self._db_mngr.get_data(
             search_expr=search, prm_name=prm_name, filter_empty=filter_empty
         )
 
@@ -683,12 +678,9 @@ class LocalDBLinker(DataLinker):
 
         """
 
-        # Init
-        db_mngr = DatabaseManager()
-
         # Add data to DB
         for kwargs in data_list:
-            db_mngr.add_data(**kwargs)
+            self._db_mngr.add_data(**kwargs)
 
 
 class CSVOutputLinker(DataLinker):

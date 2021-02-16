@@ -19,22 +19,22 @@ from dvas.database.database import InfoManager
 class TestSortProfileStrategy:
     """Test SortProfileStrategy class"""
 
-    sorter = SortProfileStrategy()
-    order = [2, 0, 1]
-    prf = [
-        Profile(InfoManager('20200110T0000Z', [0])),
-        Profile(InfoManager('20200101T0000Z', [0])),
-        Profile(InfoManager('20200105T0000Z', [0]))
-    ]
-
     def test_sort(self):
         """Test sort method"""
 
+        sorter = SortProfileStrategy()
+        order = [2, 0, 1]
+        prf = [
+            Profile(InfoManager('20200110T0000Z', [0])),
+            Profile(InfoManager('20200101T0000Z', [0])),
+            Profile(InfoManager('20200105T0000Z', [0]))
+        ]
+
         # Sort
-        prf_sorted = self.sorter.execute(self.prf)
+        prf_sorted = sorter.execute(prf)
 
         # Test sort result
         assert all(
-            prf_sorted[self.order[i]].info == self.prf[i].info
+            prf_sorted[order[i]].info == prf[i].info
             for i in range(len(prf_sorted))
         )

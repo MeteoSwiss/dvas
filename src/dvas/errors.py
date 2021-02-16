@@ -25,7 +25,11 @@ class LogDirError(DvasError):
     """Exception for error in creating log directory"""
 
 
-class DBIOError(DvasError):
+class DBError(DvasError):
+    """Exception for dvas database error"""
+
+
+class DBIOError(DBError):
     """Exception for dvas database IOError"""
 
 

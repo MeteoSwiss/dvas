@@ -75,7 +75,7 @@ class TestMutliProfile:
             for i in range(n_data)
         ])
 
-    def test_get_prms(self, db_init, mlt_prf):
+    def test_get_prms(self, mlt_prf):
         """ Test convenience getter function """
 
         # Try to get everything out
@@ -87,7 +87,7 @@ class TestMutliProfile:
         with pytest.raises(DvasError):
             mlt_prf.get_prms(prm_list='alt')
 
-    def test_rm_info_tags(self, db_init, mlt_prf):
+    def test_rm_info_tags(self, mlt_prf):
         """Test rm_info_tags method"""
 
         # Init
@@ -113,7 +113,7 @@ class TestMutliProfile:
             for prf in mlt_prf_2.profiles
         ])
 
-    def test_add_info_tags(self, db_init, mlt_prf):
+    def test_add_info_tags(self, mlt_prf):
         """Test add_info_tags method"""
 
         # Init
@@ -139,7 +139,7 @@ class TestMutliProfile:
             for prf in mlt_prf_2.profiles
         ])
 
-    def test_copy(self, db_init, mlt_prf):
+    def test_copy(self, mlt_prf):
         """Test copy method"""
 
         # Copy
@@ -148,7 +148,7 @@ class TestMutliProfile:
         # Test
         self.mlt_prf_eq(mlt_prf_copy, mlt_prf)
 
-    def test_load_from_db(self, db_init, mlt_prf):
+    def test_load_from_db(self, mlt_prf):
         """Test load_from_db method"""
 
         # Define
@@ -166,7 +166,7 @@ class TestMutliProfile:
         self.mlt_prf_eq(mlt_prf_1, mlt_prf)
         self.mlt_prf_eq(mlt_prf_1, mlt_prf_2)
 
-    def test_sort(self, db_init, mlt_prf):
+    def test_sort(self, mlt_prf):
         """Test sort method"""
 
         # Define
@@ -186,7 +186,7 @@ class TestMutliProfile:
             for i, prf in enumerate(mlt_prf_1.profiles) for prf_2 in mlt_prf_1.profiles[i:]
         ])
 
-    def test_save_to_db(self, db_init, mlt_prf):
+    def test_save_to_db(self, mlt_prf):
         """Test save_to_db method"""
 
         # Define
@@ -195,7 +195,7 @@ class TestMutliProfile:
         # save from db
         mlt_prf.save_to_db(add_tags=[tag_nm])
 
-    def test_append(self, db_init, mlt_prf):
+    def test_append(self, mlt_prf):
         """Test append method"""
 
         # Define

@@ -20,7 +20,7 @@ db_data = {
 }
 
 
-def test_update_db(db_init):
+def test_update_db():
     """Test update_db function"""
 
     # Update

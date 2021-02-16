@@ -109,6 +109,7 @@ class TestTypedProperty:
             TypedProperty.re_str_choice(['A', 'B'], ignore_case=True),
             lambda x: x[0]
         )
+        my_allow_none = TypedProperty(str, allow_none=True)
 
     # Create instance
     inst = CheckClass()
@@ -139,6 +140,14 @@ class TestTypedProperty:
 
         self.inst.my_matched_str = 'A'
         assert self.inst.my_matched_str == 'A'
+
+    def test_allow_none(self):
+        """Method used to test allow None"""
+        self.inst.my_allow_none = 'a'
+        assert self.inst.my_allow_none == 'a'
+
+        self.inst.my_allow_none = None
+        assert self.inst.my_allow_none is None
 
 
 def test_get_by_path():

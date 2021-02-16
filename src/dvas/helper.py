@@ -67,21 +67,14 @@ class SingleInstanceMetaClass(type):
         return cls._instances[cls]
 
     @classmethod
-    def pop_instance(mcs, key):
-        """Pop instance
-
-        Note:
-            !!!ONLY FOR ADVANCED USER!!! Use this method carefully.
-            Ensure that no more class instances are linked to this reference.
+    def has_instance(mcs, inst):
+        """Check if instance
 
         Args:
-            key (type): Instance type to clear
+            inst (type): Instance type to check
 
         """
-        try:
-            return mcs._instances.pop(key)
-        except KeyError:
-            return None
+        return inst in mcs._instances.keys()
 
 
 class RequiredAttrMetaClass(ABCMeta):
@@ -280,17 +273,18 @@ class TypedProperty:
         understanding-a-python-descriptors-example-typedproperty>`__
 
     """
-    def __init__(self, pampy_match, setter_fct=None, args=None, kwargs=None, getter_fct=None):
+    def __init__(self, pampy_match, setter_fct=None, args=None, kwargs=None, getter_fct=None, allow_none=False):
         """Constructor
 
         Args:
             pampy_match (type or tuple of type): Data type
-            setter_fct: Function applied before assign value in setter method.
+            setter_fct (callable, `optional`): Function applied before assign value in setter method.
                 The function can include special check and raises -
-                use TypeError to raise appropriate exception.
-            args (tuple): setter function args
-            kwargs (dict): setter function kwargs
-            getter_fct: Function applied before returning attributes in getter method.
+                use TypeError to raise appropriate exception. Default to lambda x: x
+            args (tuple, `optional`): setter function args. Default to None.
+            kwargs (dict, `optional`): setter function kwargs. Default to None.
+            getter_fct (callable, `optional`): Function applied before returning attributes in getter method. Default to lambda x: x
+            allow_none (bool, `optional`): Allow none value (bypass pampy match and setter fct). Default to False.
         """
         # Set attributes
         self._pampy_match = pampy_match
@@ -298,6 +292,7 @@ class TypedProperty:
         self._setter_fct = (lambda x: x) if setter_fct is None else setter_fct
         self._setter_fct_args = tuple() if args is None else args
         self._setter_fct_kwargs = dict() if kwargs is None else kwargs
+        self._allow_none = allow_none
 
     def __get__(self, instance, owner):
         if instance is None:
@@ -305,24 +300,30 @@ class TypedProperty:
         return self._getter_fct(instance.__dict__[self._name])
 
     def __set__(self, instance, val):
+
+        # Bypass None value if it's the case
+        if self._allow_none and val is None:
+            instance.__dict__[self._name] = val
+
         # Test match
-        try:
-            match_tuple = pmatch(val, self._pampy_match, lambda *x: x)
+        else:
+            try:
+                match_tuple = pmatch(val, self._pampy_match, lambda *x: x)
 
-        except (MatchError, TypeError) as first_error:
-            raise TypeError(f'Bad type while assignment of {self._name} <- {val}') from first_error
+            except (MatchError, TypeError) as first_error:
+                raise TypeError(f'Bad type while assignment of {self._name} <- {val}') from first_error
 
-        # Untuple
-        if len(match_tuple) == 1:
-            match_tuple = match_tuple[0]
+            # Untuple
+            if len(match_tuple) == 1:
+                match_tuple = match_tuple[0]
 
-        # Apply setter function
-        try:
-            instance.__dict__[self._name] = self._setter_fct(
-                    match_tuple, *self._setter_fct_args, **self._setter_fct_kwargs
-            )
-        except (KeyError, AttributeError) as second_error:
-            raise TypeError(f'Error while apply setter function') from second_error
+            # Apply setter function
+            try:
+                instance.__dict__[self._name] = self._setter_fct(
+                        match_tuple, *self._setter_fct_args, **self._setter_fct_kwargs
+                )
+            except (KeyError, AttributeError) as second_error:
+                raise TypeError(f'Error while apply setter function') from second_error
 
     def __set_name__(self, instance, name):
         """Attribute name setter"""

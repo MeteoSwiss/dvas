@@ -47,7 +47,7 @@ class TestFileHandle:
     """Test FileHandle class"""
 
     @use_data(db_data={'sub_dir': 'test_filehandle'})
-    def test_handle(self, db_init):
+    def test_handle(self):
         """Test handle method"""
 
         # Define
@@ -85,7 +85,7 @@ class TestFileHandle:
         )
 
     @use_data(db_data={'sub_dir': 'test_filehandle'})
-    def test_set_next(self, db_init):
+    def test_set_next(self):
         """Test set_next method"""
 
         # Define
@@ -99,17 +99,15 @@ class TestFileHandle:
 class TestLoadDBLinker:
     """Test LoadDBLinker class"""
 
-    # Define
-    db_linker = LocalDBLinker()
-
     def test_load(self, db_init):
         """Test load method"""
 
         # Define
+        db_linker = LocalDBLinker()
         data = db_init.data
 
         # Init
-        res = self.db_linker.load("all()", data[0]['prm_name'])
+        res = db_linker.load("all()", data[0]['prm_name'])
 
         # Test
         assert isinstance(res, list)
@@ -118,10 +116,11 @@ class TestLoadDBLinker:
         """Test save method"""
 
         # Define
+        db_linker = LocalDBLinker()
         data = db_init.data
 
         # Save data
-        self.db_linker.save(
+        db_linker.save(
             [{
                 'index': data[0]['index'],
                 'value': data[0]['value'],
@@ -132,7 +131,7 @@ class TestLoadDBLinker:
         )
 
         # Force to save same data
-        self.db_linker.save(
+        db_linker.save(
             [{
                 'index': data[0]['index'],
                 'value': data[0]['value'],
