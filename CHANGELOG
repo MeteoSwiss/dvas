@@ -6,6 +6,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 ### Added:
+### Fixed:
+### Changed:
+### Deprecated:
+### Removed:
+### Security:
+
+## [v0.2.0] (2021-02-16)
+### Added:
  - [fpavogt, 2021-02-01] Add dvas_recipes package, to host the demo and high-level UAII routines
  - [modolol, 2020-01-29] Add instrument, tag and parameter informations in MultiProfiles
  - [modolol, 2020-12-29] Add metadata management in config and DB.
@@ -26,8 +34,6 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [modolol, 2020-12-16] Move data.data.update_db to new module data.io
  - [modolol, 2020-12-16] Modify config metadata interpreter syntax
  - [modolol, 2020-12-15] Modify config generator interpreter syntax
-### Deprecated:
-### Removed:
 ### Security:
  - [fpavogt, 2020-12-21] Add suggestion for contributors to sign their commits with GPG keys inside CONTRIBUTING.md
 
