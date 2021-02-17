@@ -36,7 +36,7 @@ from ..helper import get_class_public_attr
 
 from ..errors import DvasError, DBIOError
 
-from ..config.definitions.tag import TAG_RAW_VAL, TAG_DERIVED_VAL
+from ..hardcoded import TAG_RAW_NAME
 
 # Define
 FLAG = 'flag'
@@ -225,14 +225,11 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
         # Init
         obj = self.copy()
 
-        # Add tag DERIVED
-        add_tags = [TAG_DERIVED_VAL] if add_tags is None else add_tags + [TAG_DERIVED_VAL]
-
         # Add tags
         obj.add_info_tags(add_tags)
 
         # Remove tag RAW
-        rm_tags = [TAG_RAW_VAL] if rm_tags is None else rm_tags + [TAG_RAW_VAL]
+        rm_tags = [TAG_RAW_NAME] if rm_tags is None else rm_tags + [TAG_RAW_NAME]
 
         # Remove tags
         obj.rm_info_tags(rm_tags)

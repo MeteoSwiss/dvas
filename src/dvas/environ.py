@@ -130,7 +130,7 @@ class GlobalPathVariablesManager(VariableManager):
     )
     #: pathlib.Path: Plot styles dir path. Default to ./plot/mpl_styles.
     plot_style_path = TProp(
-        Union[Path, str], check_path, kwargs={'exist_ok': True}
+        Union[Path, str], check_path, kwargs={'exist_ok': True}, allow_none=False
     )
 
     def __init__(self):

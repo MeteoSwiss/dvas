@@ -145,6 +145,12 @@ class LogManager:
     def get_file_handler():
         """Return the log file handler"""
 
+        # Test
+        if path_var.output_path is None:
+            # TODO
+            #  Detail exception
+            raise Exception()
+
         # Set log path
         log_path = path_var.output_path / 'logs'
         try:

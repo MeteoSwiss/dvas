@@ -166,6 +166,11 @@ def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show_
 
         # Save the file.
         # Let us first make sure the destination folder exists
+        if env_path_var.output_path is None:
+            # TODO
+            #  Detail exception
+            raise Exception()
+
         if not env_path_var.output_path.exists():
             env_path_var.output_path.mkdir(parents=True)
             # Set user read/write permission

@@ -33,7 +33,7 @@ from ..config.definitions.origdata import PARAM_FLD_NM
 from ..logger import rawcsv
 from ..environ import glob_var
 from ..config.pattern import INSTR_TYPE_PAT
-from ..config.definitions.tag import TAG_RAW_VAL, TAG_GDP_VAL, TAG_EMPTY_VAL
+from ..hardcoded import TAG_RAW_NAME, TAG_GDP_NAME, TAG_EMPTY_NAME
 
 
 # Pandas csv_read method arguments
@@ -431,7 +431,7 @@ class CSVHandler(FileHandler):
             return
 
         # Create info with 'raw' tag
-        metadata[TAG_FLD_NM] += [TAG_RAW_VAL]
+        metadata[TAG_FLD_NM] += [TAG_RAW_NAME]
 
         # Get config params for (instr_type, prm_name) couple
         origdata_cfg_prm = self.origdata_config_mngr.get_all_default(
@@ -478,7 +478,7 @@ class CSVHandler(FileHandler):
             data = pd.Series([])
 
             # Add empty tag
-            metadata[TAG_FLD_NM] += [TAG_EMPTY_VAL]
+            metadata[TAG_FLD_NM] += [TAG_EMPTY_NAME]
 
             # Log
             rawcsv.warn(
@@ -564,7 +564,7 @@ class GDPHandler(FileHandler):
         )
 
         # Create event with 'raw' and 'gdp' tag
-        metadata[TAG_FLD_NM] += [TAG_RAW_VAL, TAG_GDP_VAL]
+        metadata[TAG_FLD_NM] += [TAG_RAW_NAME, TAG_GDP_NAME]
 
         try:
 
@@ -587,7 +587,7 @@ class GDPHandler(FileHandler):
             data = pd.Series([])
 
             # Add empty tag
-            metadata[TAG_FLD_NM] += [TAG_EMPTY_VAL]
+            metadata[TAG_FLD_NM] += [TAG_EMPTY_NAME]
 
             # Log
             rawcsv.warn(
@@ -703,6 +703,12 @@ class CSVOutputLinker(DataLinker):
 
 
         """
+
+        # Test
+        if env_path_var.output_path is None:
+            # TODO
+            #  Detail exception
+            raise Exception()
 
         # Create path
         try:

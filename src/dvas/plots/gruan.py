@@ -122,7 +122,10 @@ def plot_gdps(fn_list, ref_var='time', tag=None, save_loc=None):
         tag = '_' + tag
 
     if save_loc is None:
-        save_loc = path_var.plot_output_path
+        if (save_loc := path_var.plot_output_path) is None:
+            # TODO
+            #  Detail exception
+            raise Exception()
     elif isinstance(save_loc, str): # The user fed a string ... be nice and assume this is a path.
         save_loc = Path(save_loc)
     elif not isinstance(save_loc, PurePath):
@@ -295,7 +298,10 @@ def plot_ks_test(k_pqi, f_pqi, p_ksi, binning_list, alpha, tag=None, save_loc=No
         tag = ''
 
     if save_loc is None:
-        save_loc = path_var.plot_output_path
+        if (save_loc := path_var.plot_output_path) is None:
+            # TODO
+            #  Detail exception
+            raise Exception()
     elif isinstance(save_loc, str): # The user fed a string ... be nice and assume this is a path.
         save_loc = Path(save_loc)
     else:

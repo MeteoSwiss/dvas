@@ -202,6 +202,12 @@ class OneLayerConfigManager(ConfigManager):
                 flags=re.IGNORECASE
             )
 
+            # Test
+            if path_var.config_dir_path is None:
+                # TODO
+                #  Detail exception
+                raise Exception()
+
             # Filter (case insensitive)
             doc_in = [
                 arg for arg in path_var.config_dir_path.rglob("*.*")

@@ -69,5 +69,5 @@ class TestSave:
         assert prf_v2.info[0].evt_dt == prf_v0.info[0].evt_dt
         assert np.all(prf_v2.info[0].oid == prf_v0.info[0].oid)
         assert np.all(prf_v2.info[0].oid == prf_v0.info[0].oid)
-        assert 'derived' in prf_v2.info[0].tags
+        assert 'raw' not in prf_v2.info[0].tags
         assert 'vof1' not in prf_v2.info[0].tags

@@ -79,6 +79,12 @@ def update_db(search, strict=False):
     # Log
     localdb.info("Update db for following parameters: %s", prm_name_list)
 
+    # Test
+    if path_var.orig_data_path is None:
+        # TODO
+        #  Detail exception
+        raise Exception()
+
     # Scan path
     origdata_path_scan = list(path_var.orig_data_path.rglob("*.*"))
 

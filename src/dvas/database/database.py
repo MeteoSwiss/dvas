@@ -42,7 +42,8 @@ from .model import InfosTags
 from ..config.config import OneDimArrayConfigLinker
 from ..config.definitions.origdata import EVT_DT_FLD_NM
 from ..config.definitions.origdata import TAG_FLD_NM, META_FLD_NM
-from ..config.definitions.tag import TAG_NONE, TAG_EMPTY_VAL
+from ..hardcoded import TAG_NONE_NAME, TAG_EMPTY_NAME
+from ..hardcoded import TAG_RAW_NAME, TAG_GDP_NAME
 from ..helper import ContextDecorator
 from ..helper import SingleInstanceMetaClass
 from ..helper import TypedProperty as TProp
@@ -126,6 +127,12 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             bool: True if the DB is newly created
 
         """
+
+        # Test
+        if env_path_var.local_db_path is None:
+            # TODO
+            #  Detail exception
+            raise Exception()
 
         # Define
         file_path = env_path_var.local_db_path / DB_FILE_NM
@@ -899,7 +906,7 @@ class InfoManager:
     #: dict: Metadata
     metadata = TProp(InfoManagerMetaData, getter_fct= lambda x: x.copy())
 
-    def __init__(self, evt_dt, oid, tags=TAG_NONE, metadata={}):
+    def __init__(self, evt_dt, oid, tags=TAG_NONE_NAME, metadata={}):
         """Constructor
 
         Args:
@@ -1261,6 +1268,11 @@ class SearchInfoExpr(metaclass=ABCMeta):
             - and_(<expr 1>, ..., <expr n>): Intersection
             - or_(<expr 1>, ..., <expr n>): Union
             - not_(<expr>): Negation, correspond to all() without <expr>
+
+        Shortcut expressions:
+            - raw(): Same as tags('raw')
+            - gdp(): Same as tags('gdp')
+
         """
 
         # Define
@@ -1272,7 +1284,9 @@ class SearchInfoExpr(metaclass=ABCMeta):
             'tags': TagExpr,
             'and_': AndExpr,
             'or_': OrExpr,
-            'not_': NotExpr
+            'not_': NotExpr,
+            'raw': RawExpr,
+            'gdp': GDPExpr,
         }
         db_mngr = DatabaseManager()
 
@@ -1283,7 +1297,7 @@ class SearchInfoExpr(metaclass=ABCMeta):
 
             # Add empty tag if False
             if filter_empty is True:
-                expr = AndExpr(NotExpr(TagExpr(TAG_EMPTY_VAL)), expr)
+                expr = AndExpr(NotExpr(TagExpr(TAG_EMPTY_NAME)), expr)
 
             # Filter parameter
             expr = AndExpr(ParameterExpr(prm_name), expr)
@@ -1456,6 +1470,28 @@ class ParameterExpr(TerminalSearchInfoExpr):
     def get_filter(self):
         """Implement get_filter method"""
         return TableParameter.prm_name == self.expression
+
+
+class RawExpr(TerminalSearchInfoExpr):
+    """Raw filter"""
+
+    def __init__(self):
+        pass
+
+    def get_filter(self):
+        """Implement get_filter method"""
+        return TableTag.tag_name.in_([TAG_RAW_NAME])
+
+
+class GDPExpr(TerminalSearchInfoExpr):
+    """GDP filter"""
+
+    def __init__(self):
+        pass
+
+    def get_filter(self):
+        """Implement get_filter method"""
+        return TableTag.tag_name.in_([TAG_GDP_NAME])
 
 
 class DBCreateError(Exception):
