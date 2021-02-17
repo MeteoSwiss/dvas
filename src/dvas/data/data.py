@@ -41,7 +41,6 @@ from ..hardcoded import TAG_RAW_NAME
 # Define
 FLAG = 'flag'
 VALUE = 'value'
-cfg_linker = OneDimArrayConfigLinker()
 
 # Loading strategies
 load_prf_stgy = LoadProfileStrategy()
