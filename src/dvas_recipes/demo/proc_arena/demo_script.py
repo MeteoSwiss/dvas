@@ -8,14 +8,27 @@ SPDX-License-Identifier: GPL-3.0-or-later
 Module content: demo code
 """
 
+# Import python package
+from pathlib import Path
+
 # Import stuff from dvas
 import dvas.plots.utils as dpu
 from dvas.dvas import start_log
 from dvas.data.data import MultiProfile, MultiRSProfile, MultiGDPProfile
 from dvas.data.io import update_db
 from dvas.database.database import DatabaseManager
+from dvas.environ import path_var
+
+# Define
+demo_file_path = Path(__file__).resolve()
 
 if __name__ == '__main__':
+
+    # Init path
+    path_var.config_dir_path = demo_file_path.parent / 'config'
+    path_var.orig_data_path = demo_file_path.parent / 'data'
+    path_var.local_db_path = demo_file_path.parent / 'db'
+    path_var.output_path = demo_file_path.parent / 'output'
 
     # Start the logging
     start_log(3) # 3 = log to screen only.

@@ -225,7 +225,8 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
         obj = self.copy()
 
         # Add tags
-        obj.add_info_tags(add_tags)
+        if add_tags is not None:
+            obj.add_info_tags(add_tags)
 
         # Remove tag RAW
         rm_tags = [TAG_RAW_NAME] if rm_tags is None else rm_tags + [TAG_RAW_NAME]
