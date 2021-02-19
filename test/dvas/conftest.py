@@ -24,9 +24,9 @@ from dvas.helper import AttrDict
 #TODO
 # Split into 2 fixtures. One for the DB reset and setup.
 # And one for the data insertion
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def db_init(request, tmp_path_factory):
-    """Database init fixture.
+    """Database init auto used fixture.
 
     Note:
         Use pytest_data package
@@ -43,10 +43,6 @@ def db_init(request, tmp_path_factory):
 
     # Register db_path
     db_data.update({'db_path': path_var.local_db_path.as_posix()})
-
-    # Clear singleton ref
-    if db_data['reset_db']:
-        DatabaseManager.clear_db()
 
     # Set db
     db_mngr = DatabaseManager(reset_db=db_data['reset_db'])

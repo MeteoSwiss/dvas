@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 ### Added:
 ### Fixed:
+ - [modolol, 2020-02-17] Fix issue #96 (enhancement toward v0.3)
 ### Changed:
 ### Deprecated:
 ### Removed:

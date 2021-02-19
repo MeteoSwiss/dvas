@@ -22,6 +22,7 @@ from dvas.database.database import InfoManager, InfoManagerMetaData
 from dvas.database.database import SearchInfoExpr
 from dvas.database.database import DBInsertError
 from dvas.environ import glob_var
+from dvas.hardcoded import TAG_RAW_NAME, TAG_GDP_NAME
 
 
 # Define db_data
@@ -36,11 +37,11 @@ db_data = {
                 'evt_dt': '20200101T0000Z',
                 'type_name': 'YT',
                 'srn': 'YT-100', 'pid': '0',
-                'tags': ('data_test_db', 'e:1', 'r:1'),
+                'tags': ('data_test_db', 'e:1', 'r:1', arg_tag),
                 'metadata': {'test_key_str': 'one', 'test_key_num': '1'}
             },
             'source_info': 'test_add_data'
-        }
+        } for arg_tag in [TAG_RAW_NAME, TAG_GDP_NAME]
     ]
 }
 
@@ -365,3 +366,9 @@ def test_search_event_expr_eval(db_init):
             *args
         )
     )
+
+    # Test raw()
+    assert SearchInfoExpr.eval(f"tags('raw')", *args) == SearchInfoExpr.eval(f"raw()", *args)
+
+    # Test gdp()
+    assert SearchInfoExpr.eval(f"tags('gdp')", *args) == SearchInfoExpr.eval(f"gdp()", *args)

@@ -45,7 +45,7 @@ db_data = {
 class TestLoadProfileStrategy:
     """Test for LoadProfileStrategy class"""
 
-    def test_load(self, db_init):
+    def test_load(self):
         """Test load method"""
 
         # Define
@@ -68,7 +68,7 @@ class TestLoadProfileStrategy:
 class TestLoadRSProfileStrategy:
     """Test for LoadProfileStrategy class"""
 
-    def test_load(self, db_init):
+    def test_load(self):
         """Test load method"""
 
         # Define
@@ -91,7 +91,7 @@ class TestLoadRSProfileStrategy:
 class TestLoadGDPProfileStrategy:
     """Test for LoadProfileStrategy class"""
 
-    def test_load(self, db_init):
+    def test_load(self):
         """Test load method"""
 
         # Define
