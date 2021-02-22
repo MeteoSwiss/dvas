@@ -132,7 +132,7 @@ def cmap_discretize(cmap, n_cols):
     return colors.LinearSegmentedColormap(cmap.name + "_%d" % (n_cols), cdict, 1024)
 
 @log_func_call(logger)
-def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show_plt=None):
+def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show=None):
     """ A custom savefig function that provides finer handling of the filename.
 
     Args:
@@ -143,7 +143,7 @@ def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show_
         fn_suffix (str, optional): a suffix, that will be appended to fn_core with a '_'.
         fmts (str | list of str, optional): which formats to export the plot to, e.g.: 'png'.
             Defaults to None (= as specified by dvas.plots.utils.PLOT_FMTS)
-        show_plt (bool, optional): whether to display the plot after saving it, or not. Defaults to
+        show (bool, optional): whether to display the plot after saving it, or not. Defaults to
             None (= as specified by dvas.plots.utils.PLOT_SHOW)
     """
 
@@ -181,7 +181,7 @@ def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show_
         fig.savefig(Path(env_path_var.output_path, '.'.join([fn_out, fmt])))
 
     # Show the plot, or just close it and move on
-    if show_plt:
+    if show:
         fig.show()
     else:
         plt.close(fig.number)

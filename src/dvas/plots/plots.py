@@ -19,27 +19,32 @@ from . import utils as pu
 
 
 @log_func_call(logger)
-def multiprf(prfs, index_name='alt', uc=None, **kwargs):
+def multiprf(prfs, index='alt', label='oid', uc=None, **kwargs):
     """ Plots the content of a MultiProfile instance.
 
     Args:
         prfs (MultiProfile | MultiRSProfile | MultiGDPprofile): MultiProfile instance to plot
         keys (list of str | int): list of prfs dictionnary keys to extract
-        index_name (str, optional): reference variables for the plots, either 'tdt' or 'alt'.
+        index (str, optional): reference variables for the plots, either '_idx', 'tdt' or 'alt'.
             Defaults to 'alt'.
+        label (str, optional): name of the label for each curve, that will be fed to
+            `prfs.get_info(label)`. Defaults to 'oid'.
         uc (str, optional): which uncertainty to plot, if any. Can be one of  ['r', 's', 't', 'u',
             'tot']. Defaults to None.
         **kwargs: these get fed to the dvas.plots.utils.fancy_savefig() routine.
+
+    Returns:
+        matplotlib.pyplot.figure: the Figure instance
 
     """
 
     # Create the figure, with a suitable width.
     plt.close(10)
-    fig = plt.figure(10, figsize=(pu.WIDTH_ONECOL, 5.0))
+    fig = plt.figure(10, figsize=(pu.WIDTH_TWOCOL, 4.0))
 
     # Use gridspec for a fine control of the figure area.
     fig_gs = gridspec.GridSpec(1, 1, height_ratios=[1], width_ratios=[1],
-                               left=0.15, right=0.95, bottom=0.13, top=0.95,
+                               left=0.08, right=0.9, bottom=0.15, top=0.9,
                                wspace=0.05, hspace=0.05)
 
     # Instantiate the axes
@@ -54,16 +59,16 @@ def multiprf(prfs, index_name='alt', uc=None, **kwargs):
     else:
         prms = ['val', 'uc%s' % (uc)]
 
-    for prf in prfs.get_prms(prms):
+    for (p_ind, prf) in enumerate(prfs.get_prms(prms)):
 
         # TODO: implement the option to scale the axis with different units. E.g. 'sec' for
         # time deltas, etc ...
 
         # Let's extract the abscissa
-        x = prf.index.get_level_values(index_name)
+        x = prf.index.get_level_values(index)
 
         # For time deltas, I need to get a float out for the limits.
-        if index_name == 'tdt':
+        if index == 'tdt':
             xmin = np.nanmax([xmin, x.min(skipna=True).value])
             xmax = np.nanmin([xmax, x.max(skipna=True).value])
         else:
@@ -75,14 +80,22 @@ def multiprf(prfs, index_name='alt', uc=None, **kwargs):
             ax1.fill_between(x, prf[prms[0]]-prf[prms[1]], prf[prms[0]]+prf[prms[1]],
                              alpha=0.3)
         # Plot the values
-        ax1.plot(x, prf['val'].values, linestyle='-', drawstyle='steps-mid', lw=1)
+        ax1.plot(x, prf['val'].values, linestyle='-', drawstyle='steps-mid', lw=1,
+                 label=prfs.get_info(label)[p_ind])
 
     # Deal with the axes
-    ax1.set_xlabel(index_name)
-    ax1.set_ylabel(prfs.db_variables['val'])
-
-    # Here, let's make sure I only ever feed floats
+    ax1.set_xlabel(index)
+    ax1.set_ylabel(prfs.db_variables['val'], labelpad=10)
     ax1.set_xlim(xmin, xmax)
+
+    # Add the legend
+    ax1.legend(loc='best', bbox_to_anchor=(1.01, 0, 0.1, 1), mode='expand', title=label, ncol=1,
+               fontsize='small', title_fontsize='small', borderaxespad=0)
+
+    ax1.set_title('{} -- {}'.format(np.unique(prfs.get_info('evt_id')),
+                                    np.unique(prfs.get_info('rig_id'))))
 
     # Save the plot.
     pu.fancy_savefig(fig, 'multiprf', **kwargs)
+
+    return fig

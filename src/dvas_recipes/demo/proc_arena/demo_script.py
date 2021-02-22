@@ -71,11 +71,6 @@ if __name__ == '__main__':
         update_db('treprosu_t', strict=True)
         update_db('altpros1', strict=True)
 
-<<<<<<< HEAD
-    # Load a basic profile, with a variable, and altitude.
-    prf = MultiProfile()
-    prf.load_from_db(filt_raw, 'trepros1', 'altpros1')
-=======
     # --- BASIC DATA EXTRACTION ---
 
     # Define some basic search queries
@@ -88,7 +83,6 @@ if __name__ == '__main__':
     # Define some more complex queries
     filt_raw_dt = "and_({}, {})".format(filt_raw, filt_dt)
     filt_raw_gdp_dt = "and_({}, {}, {})".format(filt_raw, filt_gdp, filt_dt)
->>>>>>> Add new sync tool
 
     # Add a flag
     prf.profiles[0].set_flg('raw_na', True)
@@ -99,18 +93,10 @@ if __name__ == '__main__':
     rs_prf.sort()
     rs_prf.save_to_db()
 
-<<<<<<< HEAD
-    # Acccess some useful info about the data
-    print(rs_prf.get_info('evt_id'))
-    print(rs_prf.get_info('rig_id'))
-    print(rs_prf.get_info('mdl_id'))
-    #print(rs_prf.get_info())
-=======
     # Idem for a series of radiosonde profiles, consisting of a variable and an associated timestep
     # and altitude.
     rs_prfs = MultiRSProfile()
     rs_prfs.load_from_db(filt_raw_dt, 'trepros1', 'tdtpros1', alt_abbr='altpros1')
->>>>>>> Add new sync tool
 
     # Load GDPs for temperature, including all the errors
     gdp_prfs = MultiGDPProfile()
@@ -118,11 +104,6 @@ if __name__ == '__main__':
                           ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t',
                           inplace=True)
 
-<<<<<<< HEAD
-    # Let us inspect the profiles with dedicated plots.
-    gdp_prfs.plot(fn_prefix='01') # Defaults behavior, just adding a prefix to the filename.
-    gdp_prfs.plot(uc='tot', show_plt=True, fmts=[]) # Now with errors. Show it but don't save it.
-=======
     # --- BASIC DATA EXPLORATION ---
 
     # How many profiles were loaded ?
@@ -216,4 +197,3 @@ if __name__ == '__main__':
     gdp_prfs.load_from_db(filt_cws_gdp_dt_sync, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1',
                           ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t',
                           inplace=True)
->>>>>>> Add new sync tool
