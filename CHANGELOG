@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Fixed:
  - [modolol, 2020-02-17] Fix issue #96 (enhancement toward v0.3)
 ### Changed:
+ - [modolol, 2020-02-22] Change InstrType -> Model. Change mdl_id in tag -> mid from Model table
  - [modolol, 2020-02-22] Add data source to InfoManager
 ### Deprecated:
 ### Removed:
