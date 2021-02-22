@@ -209,7 +209,7 @@ def combine_gdps(gdp_prfs, binning=1, method='weighted mean'):
     # Let's get started with the computation of the errors.
     # For now, let's do them one layer k at a time.
     # Note: this is much (!) faster than implementing a full matrix approach, because these get
-    # very large but are mostly filled with 0's.
+    # very large but are mostly filled with 0's (because the correlation ).
 
     comb_ucrs = np.zeros_like(x_ms)
     comb_ucss = np.zeros_like(x_ms)
@@ -218,18 +218,21 @@ def combine_gdps(gdp_prfs, binning=1, method='weighted mean'):
 
     # For each layer k, we will arrange all the measurement points in a row, so we can use matrix
     # multiplication with the @ operator. To keep track and handle the correlations, let's create
-    # 1-D array that identify the profiles' serial numbers, rigs, and events for each points.
+    # 1-D array that identify the profiles' oids, rigs, and events for each points.
 
-    # First, the SRN
-    srns_inds = gdp_prfs.get_info('srn')
+    # First, the oids
+    oids = gdp_prfs.get_info('oid')
     # Let us make sure that a single srn is tied to each profile. I would not know how to deal with
     # the correlation matrix of a combined profile!
-    if np.any([len(item) > 1 for item in srns_inds]):
-        raise DvasError('Ouch! I need a single srn per profile to be combined.')
-    # Clean-up all the sublists.
-    srns_inds = [item[0] for item in srns_inds]
+    if np.any([len(item) > 1 for item in oids]):
+        raise DvasError('Ouch! I need a single oid per profile to be combined.')
+
+    # Clean-up all the sublists now that I know they have a length of 1.
+    oids = [item[0] for item in oids]
+
     # Build the full array of indices
-    srns_inds = np.array([[item] * len_gdp for item in srns_inds]).flatten()
+    oid_inds = np.array([[item] * len_gdp for item in oids]).flatten()
+
     # idem for the GDP model ids
     mdls_inds = gdp_prfs.get_info('mid')
     mdls_inds = np.array([[item] * len_gdp for item in mdls_inds]).flatten()
@@ -281,8 +284,8 @@ def combine_gdps(gdp_prfs, binning=1, method='weighted mean'):
             u_mat = corcoef_gdps(np.tile(i_inds[in_layer], (n_in_layer, 1)), # i
                                  np.tile(i_inds[in_layer], (n_in_layer, 1)).T, # j
                                  sigma_name,
-                                 srn_i=np.tile(srns_inds[in_layer], (n_in_layer, 1)),
-                                 srn_j=np.tile(srns_inds[in_layer], (n_in_layer, 1)).T,
+                                 srn_i=np.tile(oid_inds[in_layer], (n_in_layer, 1)),
+                                 srn_j=np.tile(oid_inds[in_layer], (n_in_layer, 1)).T,
                                  mdl_i=np.tile(mdls_inds[in_layer], (n_in_layer, 1)),
                                  mdl_j=np.tile(mdls_inds[in_layer], (n_in_layer, 1)).T,
                                  rig_i=np.tile(rigs_inds[in_layer], (n_in_layer, 1)),
@@ -362,7 +365,7 @@ def combine_gdps(gdp_prfs, binning=1, method='weighted mean'):
     new_rig_tag = 'r:'+':'.join([item.split(':')[1] for item in np.unique(rigs_inds).tolist()])
     new_evt_tag = 'e:'+':'.join([item.split(':')[1] for item in np.unique(evts_inds).tolist()])
     cws_info = InfoManager(gdp_prfs.info[0].edt, # dt
-                           np.unique(srns_inds).tolist(),  # srns
+                           np.unique(oid_inds).tolist(),  # srns
                            tags=['cws', new_rig_tag, new_evt_tag])
 
     # Let's create a dedicated Profile for the combined profile.
