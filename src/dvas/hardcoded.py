@@ -84,6 +84,27 @@ FLAG_PRM_PAT = rf"{RE_LOWER_W}+(({RE_LOWER_W})|([\_]))*(?:(?<={FLAG_PRM_NAME_SUF
 #: str: Parameter and flag parameter pattern (e.g. tre200s0, tre200s0_flag, uorpros1, uorpros1_flag)
 PRM_AND_FLAG_PRM_PAT = rf"(?:(({PRM_PAT})|({FLAG_PRM_PAT})))"
 
+#: str: Name of the time delta index for the pandas DataFrame of RSProfile, GDPProfiles
+PRF_REF_TDT_NAME = 'tdt'
+
+#: str: Name of the altitude index for the pandas DataFrame of Profiles, RSProfile, GDPProfiles
+PRF_REF_ALT_NAME = 'alt'
+
+#: str: Name of the variable column for the pandas DataFrame of Profiles, RSProfile, GDPProfiles
+PRF_REF_VAL_NAME = 'val'
+
+#: str: Name of the Rig-correlated uncertainty column for the pandas DataFrame of GDPProfiles
+PRF_REF_UCR_NAME = 'ucr'
+
+#: str: Name of the Spatial-correlated uncertainty column for the pandas DataFrame of GDPProfiles
+PRF_REF_UCS_NAME = 'ucs'
+
+#: str: Name of the Temporal-correlated uncertainty column for the pandas DataFrame of GDPProfiles
+PRF_REF_UCT_NAME = 'uct'
+
+#: str: Name of the uncorrelated uncertainty column for the pandas DataFrame of GDPProfiles
+PRF_REF_UCU_NAME = 'ucu'
+
 
 # Tags
 # ----
