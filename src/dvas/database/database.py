@@ -321,8 +321,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         return out
 
     def add_data(
-            self, index, value, info, prm_name,
-            source_info=None, force_write=False
+            self, index, value, info, prm_name, force_write=False
     ):
         """Add profile data to the DB.
 
@@ -332,7 +331,6 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             info (InfoManager|dict): Data information. If dict, must fulfill
                 InfoManager.from_dict input args requirements.
             prm_name (str):
-            source_info (str, optional): Data source
             force_write (bool, optional): force rewrite of already save data
 
         Raises:
@@ -376,10 +374,10 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     raise DBInsertError(err_msg % info.oid)
 
                 # Get/Check parameter
-                param = TableParameter.get_or_none(
-                    TableParameter.prm_name == prm_name
-                )
-                if not param:
+
+                if not (param := TableParameter.get_or_none(
+                    TableParameter.prm_name == prm_name)
+                ):
                     err_msg = "prm_name '%s' is missing in DB"
                     localdb.error(err_msg, prm_name)
                     raise DBInsertError(err_msg % prm_name)
@@ -403,7 +401,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     raise DBInsertError(err_msg % info.tags)
 
                 # Create original data information
-                data_src, _ = DataSource.get_or_create(source=source_info)
+                data_src, _ = DataSource.get_or_create(src=info.src)
 
                 # Create info
                 info_id, created = TableInfo.get_or_create(
@@ -617,6 +615,18 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     iterator()
                 }
 
+                # Get source
+                if not (data_src := [arg.src for arg in
+                        DataSource.select().distinct().
+                        join(TableInfo).
+                        where(TableInfo.data_src == DataSource.id).
+                        iterator()
+                    ]
+                ):
+                    # TODO
+                    #  Detail exception
+                    raise Exception(f'Data source is empty')
+
                 # Append
                 out.append(
                     {
@@ -625,6 +635,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                             oid=oid_list,
                             tags=tag_name_list,
                             metadata=metadata_dict,
+                            src=data_src[0]
                         ),
                         'index': qry.index,
                         'value': qry.value,
@@ -906,7 +917,10 @@ class InfoManager:
     #: dict: Metadata
     metadata = TProp(InfoManagerMetaData, getter_fct= lambda x: x.copy())
 
-    def __init__(self, evt_dt, oid, tags=TAG_NONE_NAME, metadata={}):
+    #: str: Data source
+    src = TProp(str)
+
+    def __init__(self, evt_dt, oid, tags=TAG_NONE_NAME, metadata={}, src=''):
         """Constructor
 
         Args:
@@ -914,6 +928,7 @@ class InfoManager:
             oid (int|iterable of int): Object identifier (snr, pid)
             tags (str|iterable of str, `optional`): Tags. Defaults to ''
             metadata (dict|InfoManagerMetaData, `optional`): Default to {}
+            src (str): Default to ''
 
         """
 
@@ -926,6 +941,7 @@ class InfoManager:
         self.oid = oid
         self.tags = tags
         self.metadata = metadata
+        self.src = src
 
     def __copy__(self):
         return self.__class__(self.evt_dt, self.oid.copy(), self.tags.copy())
@@ -1025,7 +1041,8 @@ class InfoManager:
         p_printer = pprint.PrettyPrinter()
         return p_printer.pformat(
             (f'evt_dt: {self.evt_dt}', f'oid: {self.oid}',
-             f'tags: {self.tags}', f'metadata: {self.metadata}')
+             f'tags: {self.tags}', f'metadata: {self.metadata}',
+             f'src: {self.src}')
         )
 
     def get_hash(self):
@@ -1121,7 +1138,7 @@ class InfoManager:
             tuple
 
         """
-        return self.evt_dt, *[str(arg) for arg in self.oid], *self.tags
+        return self.evt_dt, *[str(arg) for arg in self.oid], *self.tags, self.src
 
     def __eq__(self, other):
         return self._get_attr_sort_order() == other._get_attr_sort_order()
@@ -1153,6 +1170,7 @@ class InfoManager:
             - pid (str): Product identifier
             - tags (list of str): Tags
             - meta_field (dict): Metadata as dict
+            - src (str): Data source
 
         """
 
@@ -1200,7 +1218,8 @@ class InfoManager:
                 evt_dt=metadata[EVT_DT_FLD_NM],
                 oid=oid,
                 tags=metadata[TAG_FLD_NM],
-                metadata=metadata[META_FLD_NM]
+                metadata=metadata[META_FLD_NM],
+                src=metadata[DataSource.src.name]
             )
         except Exception as exc:
             # TODO

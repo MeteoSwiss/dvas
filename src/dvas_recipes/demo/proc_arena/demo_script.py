@@ -43,7 +43,7 @@ if __name__ == '__main__':
     dpu.PLOT_SHOW = False
 
     # Reset the DB to "start fresh" ?
-    RESET_DB = True
+    RESET_DB = False
 
     # Define some basic search queries
     filt_gdp = "tags('gdp')"
@@ -71,24 +71,33 @@ if __name__ == '__main__':
     prf = MultiProfile()
     prf.load_from_db(filt_raw, 'trepros1', 'altpros1')
 
-    # Load a basic time profile, with a variable and altitude
-    rs_prf = MultiRSProfile()
-    rs_prf.load_from_db(filt_dt, 'trepros1', 'tdtpros1', alt_abbr='altpros1')
-    rs_prf.sort()
-    rs_prf.save_to_db()
+    prf.profiles[0]
 
-    # Acccess some useful info about the data
-    print(rs_prf.get_info('evt_id'))
-    print(rs_prf.get_info('rig_id'))
-    print(rs_prf.get_info('mdl_id'))
-    print(rs_prf.get_info())
+    prf.save_to_db(add_tags='vof')
 
-    # Load GDPs for temperature, including all the errors
-    gdp_prfs = MultiGDPProfile()
-    gdp_prfs.load_from_db(filt_gdp_dt, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1',
-                          ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t',
-                          inplace=True)
+    prf1 = MultiProfile()
+    prf1.load_from_db("tags('vof')", 'trepros1', 'altpros1')
 
-    # Let us inspect the profiles with dedicated plots.
-    gdp_prfs.plot(fn_prefix='01') # Defaults behavior, just adding a prefix to the filename.
-    gdp_prfs.plot(uc='tot', show_plt=True, fmts=[]) # Now with errors. Show it but don't save it.
+    # # Load a basic time profile, with a variable and altitude
+    # rs_prf = MultiRSProfile()
+    # rs_prf.load_from_db(filt_dt, 'trepros1', 'tdtpros1', alt_abbr='altpros1')
+    # rs_prf.sort()
+    # rs_prf.save_to_db()
+    #
+    #
+    #
+    # # Acccess some useful info about the data
+    # print(rs_prf.get_info('evt_id'))
+    # print(rs_prf.get_info('rig_id'))
+    # print(rs_prf.get_info('mdl_id'))
+    # print(rs_prf.get_info())
+    #
+    # # Load GDPs for temperature, including all the errors
+    # gdp_prfs = MultiGDPProfile()
+    # gdp_prfs.load_from_db(filt_gdp_dt, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1',
+    #                       ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t',
+    #                       inplace=True)
+    #
+    # # Let us inspect the profiles with dedicated plots.
+    # gdp_prfs.plot(fn_prefix='01') # Defaults behavior, just adding a prefix to the filename.
+    # gdp_prfs.plot(uc='tot', show_plt=True, fmts=[]) # Now with errors. Show it but don't save it.

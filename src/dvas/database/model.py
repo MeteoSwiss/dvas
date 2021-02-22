@@ -35,9 +35,9 @@ def re_fullmatch(pattern, string):
     )
 
 
-@db.func('str_len')
-def str_len(string, n_max):
-    """Database string length function. Used it in check constraints"""
+@db.func('str_len_max')
+def str_len_max(string, n_max):
+    """Database string length max function. Used it in check constraints"""
     if string is None:
         out = True
     else:
@@ -52,27 +52,33 @@ class MetadataModel(Model):
         database = db
 
 
+# TODO InstrType --> Model
 class InstrType(MetadataModel):
     """Instrument type table"""
+    # TODO """Model table"""
 
     # Table id
+    # TODO mdl_id
     type_id = AutoField(primary_key=True)
 
     # Instrument type name
+    # TODO mdl_name
     type_name = TextField(
         null=False, unique=True,
         constraints=[
             Check(f"re_fullmatch('({INSTR_TYPE_PAT})|()', type_name)"),
-            Check(f"str_len(type_name, 64)")
+            Check(f"str_len_max(type_name, 64)")
         ]
     )
 
     # Instrument type description
+    # TODO mdl_desc
     type_desc = TextField(
         null=True, unique=False, default='',
-        constraints=[Check(f"str_len(type_desc, 256)")]
+        constraints=[Check(f"str_len_max(type_desc, 256)")]
     )
 
+    # TODO mid
 
 class Object(MetadataModel):
     """Object table"""
@@ -83,13 +89,13 @@ class Object(MetadataModel):
     # Object serial number
     srn = TextField(
         null=False,
-        constraints=[Check(f"str_len(srn, 64)")]
+        constraints=[Check(f"str_len_max(srn, 64)")]
     )
 
     # Object product identifier
     pid = TextField(
         null=False,
-        constraints=[Check(f"str_len(pid, 64)")]
+        constraints=[Check(f"str_len_max(pid, 64)")]
     )
 
     # Link to instr_type
@@ -110,20 +116,20 @@ class Parameter(MetadataModel):
         unique=True,
         constraints=[
             Check(f"re_fullmatch('{PARAM_PAT}', prm_name)"),
-            Check(f"str_len(prm_name, 64)")
+            Check(f"str_len_max(prm_name, 64)")
         ]
     )
 
     # Parameter description
     prm_desc = TextField(
         null=False, default='',
-        constraints=[Check(f"str_len(prm_desc, 256)")]
+        constraints=[Check(f"str_len_max(prm_desc, 256)")]
     )
 
     # Parameter units
     prm_unit = TextField(
         null=False, default='',
-        constraints=[Check(f"str_len(prm_unit, 64)")]
+        constraints=[Check(f"str_len_max(prm_unit, 64)")]
 )
 
 
@@ -142,13 +148,13 @@ class Flag(MetadataModel):
     # Flag name
     flag_name = TextField(
         null=False, unique=True,
-        constraints=[Check(f"str_len(flag_name, 64)")]
+        constraints=[Check(f"str_len_max(flag_name, 64)")]
     )
 
     # Flag description
     flag_desc = TextField(
         null=False, default='',
-        constraints=[Check(f"str_len(flag_desc, 256)")]
+        constraints=[Check(f"str_len_max(flag_desc, 256)")]
     )
 
 
@@ -166,22 +172,22 @@ class Tag(MetadataModel):
     # Tag name
     tag_name = TextField(
         null=False, unique=True,
-        constraints = [Check(f"str_len(tag_name, 64)")]
+        constraints = [Check(f"str_len_max(tag_name, 64)")]
     )
 
     # Tag description
     tag_desc = TextField(
         null=True, unique=False, default='',
-        constraints=[Check(f"str_len(tag_desc, 256)")]
+        constraints=[Check(f"str_len_max(tag_desc, 256)")]
     )
 
 
 class DataSource(MetadataModel):
     """Data source model"""
     id = AutoField(primary_key=True)
-    source = TextField(
-        null=True,
-        constraints=[Check(f"str_len(source, 2048)")]
+    src = TextField(
+        null=False,
+        constraints=[Check(f"str_len_max(src, 2048)")]
     )
 
 
@@ -199,7 +205,7 @@ class Info(MetadataModel):
     )
     evt_hash = TextField(
         null=False,
-        constraints=[Check(f"str_len(evt_hash, 64)")]
+        constraints=[Check(f"str_len_max(evt_hash, 64)")]
     )
     """str: Hash of the info attributes. Using a hash allows you to manage
     identical info with varying degrees of work steps."""
@@ -240,13 +246,13 @@ class MetaData(MetadataModel):
     #: str: Metadata key name
     key_name = TextField(
         null=False,
-        constraints=[Check(f"str_len(key_name, 64)")]
+        constraints=[Check(f"str_len_max(key_name, 64)")]
     )
 
     #: str: Metadata key string value
     value_str = TextField(
         null=True,
-        constraints=[Check(f"str_len(value_str, 256)")]
+        constraints=[Check(f"str_len_max(value_str, 256)")]
     )
 
     #: float: Metadata key float value

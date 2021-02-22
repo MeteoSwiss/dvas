@@ -235,7 +235,7 @@ class FileHandler(AbstractHandler):
                     TableParameter.prm_name == prm_name
                 ),
                 'join_order': [TableParameter, DataSource]},
-            attr=[[TableInfo.data_src.name, DataSource.source.name]],
+            attr=[[TableInfo.data_src.name, DataSource.src.name]],
             get_first=False
         )
 
@@ -492,13 +492,15 @@ class CSVHandler(FileHandler):
                 f"({type(exc).__name__}: {exc})"
             )
 
+        # Add source
+        metadata[DataSource.src.name] = self.get_source_unique_id(file_path)
+
         # Append data
         out = {
             'info': metadata,
             'prm_name': prm_name,
             'index': data.index.values,
             'value': data.values,
-            'source_info': self.get_source_unique_id(file_path)
         }
 
         return out
@@ -602,13 +604,15 @@ class GDPHandler(FileHandler):
                 f"({type(exc).__name__}: {exc})"
             )
 
+        # Add source
+        metadata[DataSource.src.name] = self.get_source_unique_id(file_path)
+
         # Append data
         out = {
             'info': metadata,
             'index': data.index.values,
             'value': data.values,
             'prm_name': prm_name,
-            'source_info': self.get_source_unique_id(file_path)
         }
 
         return out

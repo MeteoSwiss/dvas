@@ -38,9 +38,9 @@ db_data = {
                 'type_name': 'YT',
                 'srn': 'YT-100', 'pid': '0',
                 'tags': ('data_test_db', 'e:1', 'r:1', arg_tag),
-                'metadata': {'test_key_str': 'one', 'test_key_num': '1'}
+                'metadata': {'test_key_str': 'one', 'test_key_num': '1'},
+                'src': ''
             },
-            'source_info': 'test_add_data'
         } for arg_tag in [TAG_RAW_NAME, TAG_GDP_NAME]
     ]
 }
@@ -95,7 +95,6 @@ class TestDatabaseManager:
                 data[0]['value'],
                 data[0]['info'],
                 data[0]['prm_name'],
-                source_info=data[0]['source_info']
             )
 
         with pytest.raises(DBInsertError):
@@ -104,7 +103,6 @@ class TestDatabaseManager:
                 [],
                 data[0]['info'],
                 data[0]['prm_name'],
-                source_info=data[0]['source_info']
             )
 
         with pytest.raises(DBInsertError):
@@ -113,7 +111,6 @@ class TestDatabaseManager:
                 data[0]['value'],
                 data[0]['info'],
                 'xxxxxxx',
-                source_info=data[0]['source_info']
             )
 
     def test_get_data(self, db_init):
@@ -184,8 +181,10 @@ class TestInfoManager:
     glob_var.mdl_id_pat = r'mdl\:\d'
     mdl_tag = 'mdl:1'
     metadata = {'key_str': 'one', 'key_num': 1.}
+    src = 'test_src'
     info_mngr = InfoManager(
-        dt_test, oid_test, tags=[evt_tag, rig_tag, mdl_tag], metadata=metadata
+        dt_test, oid_test, tags=[evt_tag, rig_tag, mdl_tag],
+        metadata=metadata, src=src
     )
 
     def test_oid(self):
