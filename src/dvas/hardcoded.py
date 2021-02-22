@@ -105,6 +105,12 @@ PRF_REF_UCT_NAME = 'uct'
 #: str: Name of the uncorrelated uncertainty column for the pandas DataFrame of GDPProfiles
 PRF_REF_UCU_NAME = 'ucu'
 
+<<<<<<< HEAD
+=======
+#: str: Name of the flag column for the pandas DataFrame of Profiles, RSProfile, GDPProfiles
+PRF_REF_FLG_NAME = 'flg'
+
+>>>>>>> Implement new hardcoded names
 
 # Tags
 # ----
