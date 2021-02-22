@@ -16,7 +16,7 @@ import pytest
 # Import from current python packages and modules
 from dvas.config.config import instantiate_config_managers
 from dvas.config.config import CSVOrigMeta
-from dvas.config.config import OrigData, InstrType
+from dvas.config.config import OrigData, Model
 from dvas.config.config import Parameter, Flag, Tag
 from dvas.config.config import ConfigReadError
 from dvas.config.config import OneDimArrayConfigLinker
@@ -35,7 +35,7 @@ def test_instantiate_config_managers():
     """
 
     # Define
-    cfg_mngrs_class = [OrigData, InstrType, Parameter, Flag, Tag]
+    cfg_mngrs_class = [OrigData, Model, Parameter, Flag, Tag]
 
     # Instantiate all managers
     cfg_mngrs = instantiate_config_managers(*cfg_mngrs_class, read=False)
@@ -52,11 +52,11 @@ def test_instantiate_config_managers():
         # Test read
         assert cfg_mngr.document is not None
 
-    # Test content for InstrType. Must contain exactly tst_list items (one time each one
+    # Test content for Model. Must contain exactly tst_list items (one time each one
     # This list will need to be udpated the if the test database changes.
     tst_list = ['AR-GDP_001', 'BR-GDP_001', 'RS41-GDP-BETA_001', 'YT', 'ZT', 'RS92']
     assert (sum(
-        [(arg['type_name'] in tst_list) for arg in cfg_mngrs['InstrType']]
+        [(arg['type_name'] in tst_list) for arg in cfg_mngrs['Model']]
     ) == len(tst_list))
 
 
@@ -93,7 +93,7 @@ class TestOneDimArrayConfigManager():
 
     """
 
-    cfg = InstrType()
+    cfg = Model()
 
     def test_read(self):
         """Test read method"""

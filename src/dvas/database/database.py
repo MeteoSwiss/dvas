@@ -30,7 +30,7 @@ from pampy.helpers import Iterable, Union
 
 # Import from current package
 from .model import db
-from .model import InstrType as TableInstrType
+from .model import Model as TableModel
 from .model import Object as TableObject
 from .model import Info as TableInfo
 from .model import Parameter as TableParameter
@@ -77,7 +77,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
     DB_TABLES = [
         TableInfo,
-        TableInfosObjects, TableObject, TableInstrType,
+        TableInfosObjects, TableObject, TableModel,
         InfosTags, TableTag,
         DataSource,
         Data,
@@ -86,7 +86,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         Flag,
     ]
     DB_TABLES_PRINT = [
-        TableParameter, TableInstrType,
+        TableParameter, TableModel,
         TableObject, Flag,
         TableTag
     ]
@@ -250,7 +250,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             try:
 
                 # Fill simple tables
-                for tbl in [TableParameter, TableInstrType, Flag, TableTag]:
+                for tbl in [TableParameter, TableModel, Flag, TableTag]:
                     self._fill_table(tbl)
 
             except IntegrityError as exc:
@@ -1014,7 +1014,7 @@ class InfoManager:
         qry_res = db_mngr.get_table(
             TableObject,
             search={
-                'join_order': [TableInstrType],
+                'join_order': [TableModel],
                 'where': TableObject.oid.in_(self.oid)
             },
             recurse=True
@@ -1026,8 +1026,8 @@ class InfoManager:
                 TableObject.oid.name: res[TableObject.oid.name],
                 TableObject.srn.name: res[TableObject.srn.name],
                 TableObject.pid.name: res[TableObject.pid.name],
-                TableInstrType.type_name.name: res[TableObject.instr_type.name][TableInstrType.type_name.name],
-                TableInstrType.type_desc.name: res[TableObject.instr_type.name][TableInstrType.type_desc.name]
+                TableModel.type_name.name: res[TableObject.instr_type.name][TableModel.type_name.name],
+                TableModel.type_desc.name: res[TableObject.instr_type.name][TableModel.type_desc.name]
             }
             for res in qry_res
         ]
@@ -1194,15 +1194,15 @@ class InfoManager:
             # Get instrument type
             if (
                 instr_type := db_mngr.get_or_none(
-                    TableInstrType,
+                    TableModel,
                     search={
-                        'where': TableInstrType.type_name == metadata[TableInstrType.type_name.name]
+                        'where': TableModel.type_name == metadata[TableModel.type_name.name]
                     }
                 )
             ) is None:
                 # TODO
                 #  Detail exception
-                raise Exception(f"{metadata[TableInstrType.type_name.name]} is missing in DB/InstrumentType")
+                raise Exception(f"{metadata[TableModel.type_name.name]} is missing in DB/InstrumentType")
 
             # Create instrument entry
             with DBAccess(db_mngr):

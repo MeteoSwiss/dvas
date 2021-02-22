@@ -19,7 +19,7 @@ import pandas as pd
 
 # Import from current package
 from ..environ import path_var as env_path_var
-from ..database.model import InstrType as TableInstrType
+from ..database.model import Model as TableModel
 from ..database.model import Info as TableInfo
 from ..database.model import DataSource
 from ..database.model import Parameter as TableParameter
@@ -180,7 +180,7 @@ class FileHandler(AbstractHandler):
         """Method to get metadata"""
 
         # Add automatic fields to metadata
-        out = {TableInstrType.type_name.name: instr_type_name}
+        out = {TableModel.type_name.name: instr_type_name}
 
         return out
 
@@ -210,11 +210,11 @@ class FileHandler(AbstractHandler):
 
         # Check instr_type name existence in DB
         if self._db_mngr.get_or_none(
-                TableInstrType,
+                TableModel,
                 search={
-                    'where': TableInstrType.type_name == instr_type_name
+                    'where': TableModel.type_name == instr_type_name
                 },
-                attr=[[TableInstrType.type_name.name]]
+                attr=[[TableModel.type_name.name]]
         ) is None:
             # TODO Detail exception
             raise Exception(

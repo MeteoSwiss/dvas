@@ -52,10 +52,8 @@ class MetadataModel(Model):
         database = db
 
 
-# TODO InstrType --> Model
-class InstrType(MetadataModel):
-    """Instrument type table"""
-    # TODO """Model table"""
+class Model(MetadataModel):
+    """Model table"""
 
     # Table id
     # TODO mdl_id
@@ -100,7 +98,7 @@ class Object(MetadataModel):
 
     # Link to instr_type
     instr_type = ForeignKeyField(
-        InstrType, backref='objects', on_delete='CASCADE'
+        Model, backref='objects', on_delete='CASCADE'
     )
 
 
