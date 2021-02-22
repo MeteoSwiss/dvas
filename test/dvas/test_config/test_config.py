@@ -56,7 +56,7 @@ def test_instantiate_config_managers():
     # This list will need to be udpated the if the test database changes.
     tst_list = ['AR-GDP_001', 'BR-GDP_001', 'RS41-GDP-BETA_001', 'YT', 'ZT', 'RS92']
     assert (sum(
-        [(arg['type_name'] in tst_list) for arg in cfg_mngrs['Model']]
+        [(arg['mdl_name'] in tst_list) for arg in cfg_mngrs['Model']]
     ) == len(tst_list))
 
 
@@ -98,16 +98,16 @@ class TestOneDimArrayConfigManager():
     def test_read(self):
         """Test read method"""
 
-        assert self.cfg.read("- type_name: 'TEST'\n  'type_desc': 'Test'") is None
+        assert self.cfg.read("- mdl_name: 'TEST'\n  'mdl_desc': 'Test'") is None
         assert isinstance(self.cfg.document, list)
 
-        # Test for bad field name (replace type_name by type)
+        # Test for bad field name (replace mdl_name by type)
         with pytest.raises(ConfigReadError):
-            self.cfg.read("- type: 'TEST'\n  'type_desc': 'Test'")
+            self.cfg.read("- type: 'TEST'\n  'mdl_desc': 'Test'")
 
         # Test for bad field type
         with pytest.raises(ConfigReadError):
-            self.cfg.read("type_name: 'TEST'\ntype_desc': 'Test'")
+            self.cfg.read("mdl_name: 'TEST'\nmdl_desc': 'Test'")
 
 
 class TestOneDimArrayConfigLinker:

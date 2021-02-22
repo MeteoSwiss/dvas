@@ -1,12 +1,14 @@
 
-- type_name: 'YT'
-  type_desc: 'YT test instrument'
+- mdl_name: 'YT'
+  mdl_desc: 'YT test instrument'
+  mid: 'MDL_YT'
 
-- type_name: 'ZT'
-  type_desc: 'ZT test instrument'
+- mdl_name: 'ZT'
+  mdl_desc: 'ZT test instrument'
+  mid: 'MDL_ZT'
 
-- type_name: 'RS92'
-  type_desc: 'Vaisala RS-92'
+- mdl_name: 'RS92'
+  mdl_desc: 'Vaisala RS-92'
 
-- type_name: 'TEST_03'
-  type_desc: 'Test type name for hybrid file name "-"'
+- mdl_name: 'TEST_03'
+  mdl_desc: 'Test type name for hybrid file name "-"'

@@ -62,11 +62,11 @@ def db_init(request, tmp_path_factory):
 
             # Create get object id only
             except Exception:
-                # Get instr_type
-                instr_type = db_mngr.get_or_none(
+                # Get model
+                model = db_mngr.get_or_none(
                     TableModel,
                     search={
-                        'where': TableModel.type_name == arg[TableModel.type_name.name]
+                        'where': TableModel.mdl_name == arg[TableModel.mdl_name.name]
                     }
                 )
 
@@ -75,7 +75,7 @@ def db_init(request, tmp_path_factory):
                     oid = TableObject.create(
                         srn=arg[TableObject.srn.name],
                         pid=arg[TableObject.pid.name],
-                        instr_type=instr_type
+                        model=model
                     ).oid
 
                 db_data['data'][i].update({'oid': oid})

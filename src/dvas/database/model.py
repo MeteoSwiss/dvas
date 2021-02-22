@@ -11,7 +11,8 @@ Module contents: Database model (ORM uses PeeWee package)
 
 # Import from python packages
 import re
-from peewee import SqliteDatabase, Model, Check
+from peewee import SqliteDatabase, Check
+from peewee import Model as PeeweeModel
 from peewee import AutoField
 from peewee import IntegerField, FloatField
 from peewee import DateTimeField, TextField
@@ -19,7 +20,7 @@ from peewee import ForeignKeyField
 
 
 # Import from current package
-from ..config.pattern import INSTR_TYPE_PAT
+from ..config.pattern import MODEL_PAT
 from ..config.pattern import PARAM_PAT
 
 
@@ -45,7 +46,7 @@ def str_len_max(string, n_max):
     return out
 
 
-class MetadataModel(Model):
+class MetadataModel(PeeweeModel):
     """Metadata model class"""
     class Meta:
         """Meta class"""
@@ -53,30 +54,32 @@ class MetadataModel(Model):
 
 
 class Model(MetadataModel):
-    """Model table"""
+    """Model table, intended as object model"""
 
     # Table id
-    # TODO mdl_id
-    type_id = AutoField(primary_key=True)
+    mdl_id = AutoField(primary_key=True)
 
-    # Instrument type name
-    # TODO mdl_name
-    type_name = TextField(
+    # Model name
+    mdl_name = TextField(
         null=False, unique=True,
         constraints=[
-            Check(f"re_fullmatch('({INSTR_TYPE_PAT})|()', type_name)"),
-            Check(f"str_len_max(type_name, 64)")
+            Check(f"re_fullmatch('({MODEL_PAT})|()', mdl_name)"),
+            Check(f"str_len_max(mdl_name, 64)")
         ]
     )
 
-    # Instrument type description
-    # TODO mdl_desc
-    type_desc = TextField(
+    # Model description
+    mdl_desc = TextField(
         null=True, unique=False, default='',
-        constraints=[Check(f"str_len_max(type_desc, 256)")]
+        constraints=[Check(f"str_len_max(mdl_desc, 256)")]
     )
 
-    # TODO mid
+    # Model identifier
+    mid = TextField(
+        null=False, unique=False, default='',
+        constraints=[Check(f"str_len_max(mdl_desc, 64)")]
+    )
+
 
 class Object(MetadataModel):
     """Object table"""
@@ -96,8 +99,8 @@ class Object(MetadataModel):
         constraints=[Check(f"str_len_max(pid, 64)")]
     )
 
-    # Link to instr_type
-    instr_type = ForeignKeyField(
+    # Link to model
+    model = ForeignKeyField(
         Model, backref='objects', on_delete='CASCADE'
     )
 

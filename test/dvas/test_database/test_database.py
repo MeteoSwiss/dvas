@@ -35,7 +35,7 @@ db_data = {
             'prm_name': 'trepros1',
             'info': {
                 'evt_dt': '20200101T0000Z',
-                'type_name': 'YT',
+                'mdl_name': 'YT',
                 'srn': 'YT-100', 'pid': '0',
                 'tags': ('data_test_db', 'e:1', 'r:1', arg_tag),
                 'metadata': {'test_key_str': 'one', 'test_key_num': '1'},
@@ -178,12 +178,10 @@ class TestInfoManager:
     evt_tag = 'e:1'
     glob_var.rig_id_pat = r'r\:\d'
     rig_tag = 'r:1'
-    glob_var.mdl_id_pat = r'mdl\:\d'
-    mdl_tag = 'mdl:1'
     metadata = {'key_str': 'one', 'key_num': 1.}
     src = 'test_src'
     info_mngr = InfoManager(
-        dt_test, oid_test, tags=[evt_tag, rig_tag, mdl_tag],
+        dt_test, oid_test, tags=[evt_tag, rig_tag],
         metadata=metadata, src=src
     )
 
@@ -205,9 +203,9 @@ class TestInfoManager:
         """Test getting 'rig_id' attribute"""
         assert self.info_mngr.rig_id == self.rig_tag
 
-    def test_mdl_id(self):
-        """Test getting 'mdl_id' attribute"""
-        assert self.info_mngr.mdl_id == self.mdl_tag
+    def test_mid(self):
+        """Test getting 'mid' attribute"""
+        assert self.info_mngr.mid == [arg['mid'] for arg in self.info_mngr.object]
 
     def test_add_tags(self):
         """Test add_tags method"""

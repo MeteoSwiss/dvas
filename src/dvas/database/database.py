@@ -971,16 +971,9 @@ class InfoManager:
         return out
 
     @property
-    def mdl_id(self):
-        """str: GDP model ID which match 1st corresponding pattern in tags. Defaults to None."""
-        try:
-            # TODO: the following line triggers a *very* weird pylint Error 1101.
-            # I disable it for now ... but someone should really confirm whether this ok or not!
-            # fpavogt - 2020.12.09
-            out = next(filter(glob_var.mdl_id_pat.match, self.tags)) # pylint: disable=E1101
-        except StopIteration:
-            out = None
-        return out
+    def mid(self):
+        """str: Model identifier"""
+        return [arg[TableModel.mid.name] for arg in self.object]
 
     @property
     def tags_desc(self):
@@ -1021,16 +1014,20 @@ class InfoManager:
         )
 
         # Set output
-        out = [
-            {
-                TableObject.oid.name: res[TableObject.oid.name],
-                TableObject.srn.name: res[TableObject.srn.name],
-                TableObject.pid.name: res[TableObject.pid.name],
-                TableModel.type_name.name: res[TableObject.instr_type.name][TableModel.type_name.name],
-                TableModel.type_desc.name: res[TableObject.instr_type.name][TableModel.type_desc.name]
-            }
+        out = list(zip(*sorted([
+            (
+                res[TableObject.oid.name],
+                {
+                    TableObject.oid.name: res[TableObject.oid.name],
+                    TableObject.srn.name: res[TableObject.srn.name],
+                    TableObject.pid.name: res[TableObject.pid.name],
+                    TableModel.mdl_name.name: res[TableObject.model.name][TableModel.mdl_name.name],
+                    TableModel.mdl_desc.name: res[TableObject.model.name][TableModel.mdl_desc.name],
+                    TableModel.mid.name: res[TableObject.model.name][TableModel.mid.name]
+                }
+            )
             for res in qry_res
-        ]
+        ])))[1]
 
         return out
 
@@ -1193,23 +1190,23 @@ class InfoManager:
 
             # Get instrument type
             if (
-                instr_type := db_mngr.get_or_none(
+                model := db_mngr.get_or_none(
                     TableModel,
                     search={
-                        'where': TableModel.type_name == metadata[TableModel.type_name.name]
+                        'where': TableModel.mdl_name == metadata[TableModel.mdl_name.name]
                     }
                 )
             ) is None:
                 # TODO
                 #  Detail exception
-                raise Exception(f"{metadata[TableModel.type_name.name]} is missing in DB/InstrumentType")
+                raise Exception(f"{metadata[TableModel.mdl_name.name]} is missing in DB/InstrumentType")
 
             # Create instrument entry
             with DBAccess(db_mngr):
                 oid = TableObject.create(
                     srn=metadata[TableObject.srn.name],
                     pid=metadata[TableObject.pid.name],
-                    instr_type=instr_type
+                    model=model
                 ).oid
 
         # Construct InfoManager

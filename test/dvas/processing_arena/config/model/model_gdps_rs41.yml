@@ -1,6 +1,6 @@
 
-- type_name: 'RS41-GDP-BETA_001'
-  type_desc: 'RS41 GDP, BETA version 1'
+- mdl_name: 'RS41-GDP-BETA_001'
+  mdl_desc: 'RS41 GDP, BETA version 1'
 
-- type_name: 'TEST_02'
-  type_desc: "Test type name for file name without '-'"
+- mdl_name: 'TEST_02'
+  mdl_desc: "Test type name for file name without '-'"

@@ -11,24 +11,32 @@ Module contents: Required attributes definition for
 """
 
 # Import current packages modules
-from ..pattern import INSTR_TYPE_PAT
+from ..pattern import MODEL_PAT
 from ...database.model import Model as TableModel
+
+#: dict: Default node params
+NODE_PARAMS_DEF = {
+    TableModel.mid.name: '',
+}
 
 #: list: Constant node values
 CONST_NODES = [
     {
-        TableModel.type_name.name: '',
-        TableModel.type_desc.name: 'Null instrument type',
+        TableModel.mdl_name.name: '',
+        TableModel.mdl_desc.name: 'Null instrument type',
     }
 ]
 
 #: dict: Parameter pattern properties (JSON_SCHEMA)
 PARAMETER_PATTERN_PROP = {
-    rf"^{TableModel.type_name.name}$": {
+    rf"^{TableModel.mdl_name.name}$": {
         "type": "string",
-        "pattern": INSTR_TYPE_PAT,
+        "pattern": MODEL_PAT,
     },
-    rf"^{TableModel.type_desc.name}$": {
+    rf"^{TableModel.mdl_desc.name}$": {
+        "type": "string"
+    },
+    rf"^{TableModel.mid.name}$": {
         "type": "string"
     }
 }

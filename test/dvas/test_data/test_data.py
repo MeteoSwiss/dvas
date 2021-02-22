@@ -39,7 +39,7 @@ db_data = {
             'prm_name': prm,
             'info': {
                 'evt_dt': dt,
-                'type_name': 'YT',
+                'mdl_name': 'YT',
                 'srn': 'YT-100', 'pid': '0',
                 'tags': 'load_multiprofile',
                 'metadata': {},

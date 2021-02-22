@@ -11,7 +11,7 @@ Module contents: Required attributes definition for
 """
 
 # Import from current packages modules
-from ..pattern import INSTR_TYPE_PAT, PARAM_PAT
+from ..pattern import MODEL_PAT, PARAM_PAT
 from ...database.model import Info as TableInfo
 from ...database.model import Data
 from ...database.model import MetaData as TableMetaData
@@ -54,7 +54,7 @@ EXPR_FIELD_KEYS = [
 ]
 
 #: list: Node pattern
-NODE_PATTERN = [INSTR_TYPE_PAT, PARAM_PAT]
+NODE_PATTERN = [MODEL_PAT, PARAM_PAT]
 
 #: dict: Node parameters default value
 NODE_PARAMS_DEF = {

@@ -1,9 +1,9 @@
 
-- type_name: 'AR-GDP_001'
-  type_desc: 'AR dummy GDP, version 1'
+- mdl_name: 'AR-GDP_001'
+  mdl_desc: 'AR dummy GDP, version 1'
 
-- type_name: 'BR-GDP_001'
-  type_desc: 'BR dummy GDP, version 1'
+- mdl_name: 'BR-GDP_001'
+  mdl_desc: 'BR dummy GDP, version 1'
 
-- type_name: 'TEST_01'
-  type_desc: "Test type name for file name with '-'"
+- mdl_name: 'TEST_01'
+  mdl_desc: "Test type name for file name with '-'"

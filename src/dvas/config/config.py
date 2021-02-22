@@ -376,7 +376,7 @@ class Model(OneDimArrayConfigManager):
     """Instrument type config manager"""
 
     PARAMETER_PATTERN_PROP = model.PARAMETER_PATTERN_PROP
-    NODE_PARAMS_DEF = {}
+    NODE_PARAMS_DEF = model.NODE_PARAMS_DEF
     CLASS_KEY = model.KEY
     CONST_NODES = model.CONST_NODES
     NODE_GEN = model.NODE_GEN
