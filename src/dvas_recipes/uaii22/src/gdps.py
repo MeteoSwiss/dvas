@@ -9,10 +9,6 @@ Module content: high-level GDP recipes for the UAII22 campaign
 """
 
 
-
-
-
-
 def build_cws(evt_id, rig_id, **kwargs):
     """ Highest-level function responsible for assembling the cokbined working standards for a
     specific RS flight.
@@ -25,6 +21,3 @@ def build_cws(evt_id, rig_id, **kwargs):
         **kwargs: keyword arguments to be fed to the underlying cws-building routines.
 
     """
-
-
-    
