@@ -14,7 +14,7 @@ from pathlib import Path
 # Import stuff from dvas
 import dvas.plots.utils as dpu
 from dvas.dvas import start_log
-from dvas.data.data import MultiProfile, MultiRSProfile, MultiGDPProfile
+from dvas.data.data import MultiProfile
 from dvas.data.io import update_db
 from dvas.database.database import DatabaseManager
 from dvas.environ import path_var
