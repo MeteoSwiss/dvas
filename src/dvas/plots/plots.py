@@ -89,8 +89,7 @@ def multiprf(prfs, index='alt', label='oid', uc=None, **kwargs):
     ax1.set_xlim(xmin, xmax)
 
     # Add the legend
-    ax1.legend(loc='best', bbox_to_anchor=(1.01, 0, 0.1, 1), mode='expand', title=label, ncol=1,
-               fontsize='small', title_fontsize='small', borderaxespad=0)
+    pu.fancy_legend(ax1, label)
 
     ax1.set_title('{} -- {}'.format(np.unique(prfs.get_info('evt_id')),
                                     np.unique(prfs.get_info('rig_id'))))

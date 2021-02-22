@@ -37,7 +37,7 @@ if __name__ == '__main__':
     start_log(3, level='DEBUG')  # 3 = log to screen only.
 
     # Fine-tune the plotting behavior of dvas
-    dpu.set_mplstyle('nolatex') # The safe option. Use 'latex' fo prettier plots.
+    dpu.set_mplstyle('latex') # The safe option. Use 'latex' fo prettier plots.
 
     # The generic formats to save the plots in
     dpu.PLOT_FMTS = ['png', 'pdf']
