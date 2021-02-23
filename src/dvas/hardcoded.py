@@ -30,16 +30,10 @@ CONFIG_GEN_LIM = 10000
 CONFIG_FILE_EXT = ['yml', 'yaml']
 
 #: str: Event id regexp pattern
-EVT_ID_PAT = r'^e:\w+$'
+EID_PAT = r'^e:\w+$'
 
 #: str: Rig id regexp pattern
-RIG_ID_PAT = r'^r:\w+$'
-
-#: str: Product id regexp pattern
-PRD_ID_PAT = r'^p:\w+$'
-
-#: str: Model id regexp pattern
-MDL_ID_PAT = r'^m:\w+$'
+RID_PAT = r'^r:\w+$'
 
 #: str: Name of the integer index for the pandas DataFrame of Profiles, RSProfile, GDPProfiles
 PRF_REF_INDEX_NAME = '_idx'

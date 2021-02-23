@@ -24,8 +24,7 @@ from .errors import DvasError
 from . import __name__ as pkg_name
 from .hardcoded import PKG_PATH, MPL_STYLES_PATH
 from .hardcoded import CONFIG_GEN_LIM, CONFIG_FILE_EXT
-from .hardcoded import EVT_ID_PAT, RIG_ID_PAT
-from .hardcoded import PRD_ID_PAT, MDL_ID_PAT
+from .hardcoded import EID_PAT, RID_PAT
 
 
 class ABCSingleInstanceMeta(ABCMeta, SingleInstanceMetaClass):
@@ -165,22 +164,16 @@ class GlobalPackageVariableManager(VariableManager):
     #: list of str: Config file allowed extensions. Default to ['yml', 'yaml']
     config_file_ext = TProp(Iterable[str], lambda x: tuple(x))
     #: str: Event ID pattern use in InfoManager to extract event tag.
-    evt_id_pat = TProp(Union[str, re.Pattern], lambda x: re.compile(x))
+    eid_pat = TProp(Union[str, re.Pattern], lambda x: re.compile(x))
     #: str: Rig ID pattern use in InfoManager to extract rig tag.
-    rig_id_pat = TProp(Union[str, re.Pattern], lambda x: re.compile(x))
-    #: str: Product ID pattern use in InfoManager to extract product tag.
-    prd_id_pat = TProp(Union[str, re.Pattern], lambda x: re.compile(x))
-    #: str: GDP model ID pattern use in InfoManager to extract model tag.
-    mdl_id_pat = TProp(Union[str, re.Pattern], lambda x: re.compile(x))
+    rid_pat = TProp(Union[str, re.Pattern], lambda x: re.compile(x))
 
     def __init__(self):
         # Init attributes
         self.config_gen_max = 0
         self.config_file_ext = ['']
-        self.evt_id_pat = ''
-        self.rig_id_pat = ''
-        self.prd_id_pat = ''
-        self.mdl_id_pat = ''
+        self.eid_pat = ''
+        self.rid_pat = ''
 
         # Call super constructor
         super().__init__()
@@ -190,10 +183,8 @@ class GlobalPackageVariableManager(VariableManager):
         return {
             'config_gen_max': 2000,
             'config_file_ext': CONFIG_FILE_EXT,
-            'evt_id_pat': EVT_ID_PAT,
-            'rig_id_pat': RIG_ID_PAT,
-            'prd_id_pat': PRD_ID_PAT,
-            'mdl_id_pat': MDL_ID_PAT
+            'eid_pat': EID_PAT,
+            'rid_pat': RID_PAT,
         }
 
 

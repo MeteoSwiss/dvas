@@ -30,7 +30,7 @@ from pampy.helpers import Iterable, Union
 
 # Import from current package
 from .model import db
-from .model import InstrType as TableInstrType
+from .model import Model as TableModel
 from .model import Object as TableObject
 from .model import Info as TableInfo
 from .model import Parameter as TableParameter
@@ -40,7 +40,7 @@ from .model import Flag, DataSource, Data
 from .model import InfosObjects as TableInfosObjects
 from .model import InfosTags
 from ..config.config import OneDimArrayConfigLinker
-from ..config.definitions.origdata import EVT_DT_FLD_NM
+from ..config.definitions.origdata import EDT_FLD_NM
 from ..config.definitions.origdata import TAG_FLD_NM, META_FLD_NM
 from ..hardcoded import TAG_NONE_NAME, TAG_EMPTY_NAME
 from ..hardcoded import TAG_RAW_NAME, TAG_GDP_NAME
@@ -77,7 +77,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
     DB_TABLES = [
         TableInfo,
-        TableInfosObjects, TableObject, TableInstrType,
+        TableInfosObjects, TableObject, TableModel,
         InfosTags, TableTag,
         DataSource,
         Data,
@@ -86,7 +86,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         Flag,
     ]
     DB_TABLES_PRINT = [
-        TableParameter, TableInstrType,
+        TableParameter, TableModel,
         TableObject, Flag,
         TableTag
     ]
@@ -250,7 +250,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             try:
 
                 # Fill simple tables
-                for tbl in [TableParameter, TableInstrType, Flag, TableTag]:
+                for tbl in [TableParameter, TableModel, Flag, TableTag]:
                     self._fill_table(tbl)
 
             except IntegrityError as exc:
@@ -321,8 +321,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         return out
 
     def add_data(
-            self, index, value, info, prm_name,
-            source_info=None, force_write=False
+            self, index, value, info, prm_name, force_write=False
     ):
         """Add profile data to the DB.
 
@@ -332,7 +331,6 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             info (InfoManager|dict): Data information. If dict, must fulfill
                 InfoManager.from_dict input args requirements.
             prm_name (str):
-            source_info (str, optional): Data source
             force_write (bool, optional): force rewrite of already save data
 
         Raises:
@@ -376,10 +374,10 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     raise DBInsertError(err_msg % info.oid)
 
                 # Get/Check parameter
-                param = TableParameter.get_or_none(
-                    TableParameter.prm_name == prm_name
-                )
-                if not param:
+
+                if not (param := TableParameter.get_or_none(
+                    TableParameter.prm_name == prm_name)
+                ):
                     err_msg = "prm_name '%s' is missing in DB"
                     localdb.error(err_msg, prm_name)
                     raise DBInsertError(err_msg % prm_name)
@@ -403,11 +401,11 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     raise DBInsertError(err_msg % info.tags)
 
                 # Create original data information
-                data_src, _ = DataSource.get_or_create(source=source_info)
+                data_src, _ = DataSource.get_or_create(src=info.src)
 
                 # Create info
                 info_id, created = TableInfo.get_or_create(
-                    evt_dt=info.evt_dt, param=param,
+                    edt=info.edt, param=param,
                     data_src=data_src, evt_hash=info.get_hash()
                 )
 
@@ -617,14 +615,27 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     iterator()
                 }
 
+                # Get source
+                if not (data_src := [arg.src for arg in
+                        DataSource.select().distinct().
+                        join(TableInfo).
+                        where(TableInfo.data_src == DataSource.id).
+                        iterator()
+                    ]
+                ):
+                    # TODO
+                    #  Detail exception
+                    raise Exception(f'Data source is empty')
+
                 # Append
                 out.append(
                     {
                         'info': InfoManager(
-                            evt_dt=info_id_list[i].evt_dt,
+                            edt=info_id_list[i].edt,
                             oid=oid_list,
                             tags=tag_name_list,
                             metadata=metadata_dict,
+                            src=data_src[0]
                         ),
                         'index': qry.index,
                         'value': qry.value,
@@ -887,7 +898,7 @@ class InfoManager:
     """Data info manager"""
 
     #: datetime.datetime: UTC datetime
-    evt_dt = TProp(Union[str, Timestamp, datetime], check_datetime)
+    edt = TProp(Union[str, Timestamp, datetime], check_datetime)
 
     #: int|iterable of int: Object id
     oid = TProp(
@@ -906,14 +917,18 @@ class InfoManager:
     #: dict: Metadata
     metadata = TProp(InfoManagerMetaData, getter_fct= lambda x: x.copy())
 
-    def __init__(self, evt_dt, oid, tags=TAG_NONE_NAME, metadata={}):
+    #: str: Data source
+    src = TProp(str)
+
+    def __init__(self, edt, oid, tags=TAG_NONE_NAME, metadata={}, src=''):
         """Constructor
 
         Args:
-            evt_dt (str | datetime | pd.Timestamp): UTC datetime
+            edt (str | datetime | pd.Timestamp): Event datetime (UTC)
             oid (int|iterable of int): Object identifier (snr, pid)
             tags (str|iterable of str, `optional`): Tags. Defaults to ''
             metadata (dict|InfoManagerMetaData, `optional`): Default to {}
+            src (str): Default to ''
 
         """
 
@@ -922,49 +937,43 @@ class InfoManager:
             metadata = InfoManagerMetaData(metadata)
 
         # Set attributes
-        self.evt_dt = evt_dt
+        self.edt = edt
         self.oid = oid
         self.tags = tags
         self.metadata = metadata
+        self.src = src
 
     def __copy__(self):
-        return self.__class__(self.evt_dt, self.oid.copy(), self.tags.copy())
+        return self.__class__(self.edt, self.oid.copy(), self.tags.copy())
 
     @property
-    def evt_id(self):
+    def eid(self):
         """str: Event ID which match 1st corresponding pattern in tags. Defaults to None."""
         try:
             # TODO: the following line triggers a *very* weird pylint Error 1101.
             # I disable it for now ... but someone should really confirm whether this ok or not!
             # fpavogt - 2020.12.09
-            out = next(filter(glob_var.evt_id_pat.match, self.tags)) # pylint: disable=E1101
+            out = next(filter(glob_var.eid_pat.match, self.tags))  # pylint: disable=E1101
         except StopIteration:
             out = None
         return out
 
     @property
-    def rig_id(self):
+    def rid(self):
         """str: Rig ID which match 1st corresponding pattern in tags. Defaults to None."""
         try:
             # TODO: the following line triggers a *very* weird pylint Error 1101.
             # I disable it for now ... but someone should really confirm whether this ok or not!
             # fpavogt - 2020.12.09
-            out = next(filter(glob_var.rig_id_pat.match, self.tags))  # pylint: disable=E1101
+            out = next(filter(glob_var.rid_pat.match, self.tags))  # pylint: disable=E1101
         except StopIteration:
             out = None
         return out
 
     @property
-    def mdl_id(self):
-        """str: GDP model ID which match 1st corresponding pattern in tags. Defaults to None."""
-        try:
-            # TODO: the following line triggers a *very* weird pylint Error 1101.
-            # I disable it for now ... but someone should really confirm whether this ok or not!
-            # fpavogt - 2020.12.09
-            out = next(filter(glob_var.mdl_id_pat.match, self.tags)) # pylint: disable=E1101
-        except StopIteration:
-            out = None
-        return out
+    def mid(self):
+        """str: Model identifier"""
+        return [arg[TableModel.mid.name] for arg in self.object]
 
     @property
     def tags_desc(self):
@@ -998,23 +1007,27 @@ class InfoManager:
         qry_res = db_mngr.get_table(
             TableObject,
             search={
-                'join_order': [TableInstrType],
+                'join_order': [TableModel],
                 'where': TableObject.oid.in_(self.oid)
             },
             recurse=True
         )
 
         # Set output
-        out = [
-            {
-                TableObject.oid.name: res[TableObject.oid.name],
-                TableObject.srn.name: res[TableObject.srn.name],
-                TableObject.pid.name: res[TableObject.pid.name],
-                TableInstrType.type_name.name: res[TableObject.instr_type.name][TableInstrType.type_name.name],
-                TableInstrType.type_desc.name: res[TableObject.instr_type.name][TableInstrType.type_desc.name]
-            }
+        out = list(zip(*sorted([
+            (
+                res[TableObject.oid.name],
+                {
+                    TableObject.oid.name: res[TableObject.oid.name],
+                    TableObject.srn.name: res[TableObject.srn.name],
+                    TableObject.pid.name: res[TableObject.pid.name],
+                    TableModel.mdl_name.name: res[TableObject.model.name][TableModel.mdl_name.name],
+                    TableModel.mdl_desc.name: res[TableObject.model.name][TableModel.mdl_desc.name],
+                    TableModel.mid.name: res[TableObject.model.name][TableModel.mid.name]
+                }
+            )
             for res in qry_res
-        ]
+        ])))[1]
 
         return out
 
@@ -1024,8 +1037,9 @@ class InfoManager:
     def __str__(self):
         p_printer = pprint.PrettyPrinter()
         return p_printer.pformat(
-            (f'evt_dt: {self.evt_dt}', f'oid: {self.oid}',
-             f'tags: {self.tags}', f'metadata: {self.metadata}')
+            (f'edt: {self.edt}', f'oid: {self.oid}',
+             f'tags: {self.tags}', f'metadata: {self.metadata}',
+             f'src: {self.src}')
         )
 
     def get_hash(self):
@@ -1093,7 +1107,7 @@ class InfoManager:
 
     @staticmethod
     def sort(info_list):
-        """Sort list of InfoManager. Sorting order [evt_dt, srn, tags]
+        """Sort list of InfoManager. Sorting order [edt, srn, tags]
 
         Args:
             info_list (iterable of InfoManager): List to sort
@@ -1121,7 +1135,7 @@ class InfoManager:
             tuple
 
         """
-        return self.evt_dt, *[str(arg) for arg in self.oid], *self.tags
+        return self.edt, *[str(arg) for arg in self.oid], *self.tags, self.src
 
     def __eq__(self, other):
         return self._get_attr_sort_order() == other._get_attr_sort_order()
@@ -1146,13 +1160,14 @@ class InfoManager:
         """Convert dict of metadata to InfoManager
 
         Dict keys:
-            - evt_dt (str): Datetime
+            - edt (str): Datetime
             - typ_name (str, `optional`): Instrument type (used to create
                 instrument entry if missing in DB)
             - srn_field (str): Serial number
             - pid (str): Product identifier
             - tags (list of str): Tags
             - meta_field (dict): Metadata as dict
+            - src (str): Data source
 
         """
 
@@ -1175,32 +1190,33 @@ class InfoManager:
 
             # Get instrument type
             if (
-                instr_type := db_mngr.get_or_none(
-                    TableInstrType,
+                model := db_mngr.get_or_none(
+                    TableModel,
                     search={
-                        'where': TableInstrType.type_name == metadata[TableInstrType.type_name.name]
+                        'where': TableModel.mdl_name == metadata[TableModel.mdl_name.name]
                     }
                 )
             ) is None:
                 # TODO
                 #  Detail exception
-                raise Exception(f"{metadata[TableInstrType.type_name.name]} is missing in DB/InstrumentType")
+                raise Exception(f"{metadata[TableModel.mdl_name.name]} is missing in DB/InstrumentType")
 
             # Create instrument entry
             with DBAccess(db_mngr):
                 oid = TableObject.create(
                     srn=metadata[TableObject.srn.name],
                     pid=metadata[TableObject.pid.name],
-                    instr_type=instr_type
+                    model=model
                 ).oid
 
         # Construct InfoManager
         try:
             info = InfoManager(
-                evt_dt=metadata[EVT_DT_FLD_NM],
+                edt=metadata[EDT_FLD_NM],
                 oid=oid,
                 tags=metadata[TAG_FLD_NM],
-                metadata=metadata[META_FLD_NM]
+                metadata=metadata[META_FLD_NM],
+                src=metadata[DataSource.src.name]
             )
         except Exception as exc:
             # TODO
@@ -1421,7 +1437,7 @@ class DatetimeExpr(TerminalSearchInfoExpr):
 
     def get_filter(self):
         """Implement get_filter method"""
-        return self._op(TableInfo.evt_dt, self.expression)
+        return self._op(TableInfo.edt, self.expression)
 
 
 class SerialNumberExpr(TerminalSearchInfoExpr):

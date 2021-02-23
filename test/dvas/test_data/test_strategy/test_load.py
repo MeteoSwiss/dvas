@@ -27,13 +27,13 @@ db_data = {
             'value': val,
             'prm_name': prm,
             'info': {
-                'evt_dt': dt,
-                'type_name': 'YT',
+                'edt': dt,
+                'mdl_name': 'YT',
                 'srn': 'YT-100', 'pid': '0',
                 'tags': 'load_profile',
-                'metadata': {}
+                'metadata': {},
+                'src': ''
             },
-            'source_info': 'test_add_data'
         } for val, dt in [
             (np.array([100, 101, 102]), '20200101T0000Z'),
             (np.array([200, 201, 202]), '20200202T0000Z')

@@ -4,7 +4,7 @@
 _C50:
 
     # -- META DATA ----------------------------------
-    evt_dt: "get('event_dt')"
+    edt: "get('event_dt')"
     srn: "get('srn')"
     pid: "get('product_id')"
     tags:
@@ -38,7 +38,7 @@ _C34:
 
     # -- META DATA ----------------------------------
 
-    evt_dt: "get('event_dt')"
+    edt: "get('event_dt')"
     srn: "get('srn')"
     pid: "get('product_id')"
     tags:
@@ -71,7 +71,7 @@ _C34:
 _RS41:
 
     # -- META DATA ----------------------------------
-    evt_dt: "get('event_dt')"
+    edt: "get('event_dt')"
     srn: "get('srn')"
     pid: "get('product_id')"
     tags:
@@ -104,7 +104,7 @@ _RS41:
 _RS92:
 
     # -- META DATA ----------------------------------
-    evt_dt: "get('event_dt')"
+    edt: "get('event_dt')"
     srn: "get('srn')"
     pid: "get('product_id')"
     tags:
@@ -141,7 +141,7 @@ _RS41-GDP-BETA_001:
 
     # -- META DATA ----------------------------------
 
-    evt_dt: "get('g.Measurement.StandardTime')"
+    edt: "get('g.Measurement.StandardTime')"
     srn: "get('g.MainSonde.SerialNumber')"
     pid: "get('g.Product.ID')"
     tags:
@@ -181,7 +181,7 @@ _RS41-GDP-BETA_001:
 _RS92-GDP_002:
 
     # -- META DATA ----------------------------------
-    evt_dt: "cat(get('g.Ascent.StandardTime'),'Z')"
+    edt: "cat(get('g.Ascent.StandardTime'),'Z')"
     srn: "get('g.Instrument.SerialNumber')"
     pid: "get('g.Product.ID')"
     tags:

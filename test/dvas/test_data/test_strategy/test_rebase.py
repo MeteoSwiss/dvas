@@ -24,7 +24,7 @@ db_data = {
     'sub_dir': 'test_strategy_rebase',
     'data': [
         {
-            'type_name': 'YT',
+            'mdl_name': 'YT',
             'srn': 'YT-100',
             'pid': '0',
         },

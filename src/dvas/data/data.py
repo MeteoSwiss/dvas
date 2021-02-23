@@ -28,7 +28,7 @@ from .strategy.rebase import RebaseStrategy
 
 from .strategy.save import SaveDataStrategy
 
-from ..database.database import OneDimArrayConfigLinker, DatabaseManager
+from ..database.database import DatabaseManager
 from ..database.model import Parameter as TableParameter
 from ..helper import RequiredAttrMetaClass
 from ..helper import deepcopy

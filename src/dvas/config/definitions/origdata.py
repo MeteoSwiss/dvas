@@ -11,7 +11,7 @@ Module contents: Required attributes definition for
 """
 
 # Import from current packages modules
-from ..pattern import INSTR_TYPE_PAT, PARAM_PAT
+from ..pattern import MODEL_PAT, PARAM_PAT
 from ...database.model import Info as TableInfo
 from ...database.model import Data
 from ...database.model import MetaData as TableMetaData
@@ -20,7 +20,7 @@ from ...database.model import Object as TableObject
 
 
 # Define global field name
-EVT_DT_FLD_NM = TableInfo.evt_dt.name  # Datetime field name
+EDT_FLD_NM = TableInfo.edt.name  # Datetime field name
 TAG_FLD_NM = TableTag.__name__.lower() + 's'  # Tag field name
 META_FLD_NM = TableMetaData.__name__.lower()  # Metadata field name
 
@@ -49,12 +49,12 @@ VALUE_NM = Data.value.name
 
 #: list: Fields keys passed to expression interpreter
 EXPR_FIELD_KEYS = [
-    EVT_DT_FLD_NM, TableObject.srn.name,
+    EDT_FLD_NM, TableObject.srn.name,
     TableObject.pid.name, TAG_FLD_NM, META_FLD_NM
 ]
 
 #: list: Node pattern
-NODE_PATTERN = [INSTR_TYPE_PAT, PARAM_PAT]
+NODE_PATTERN = [MODEL_PAT, PARAM_PAT]
 
 #: dict: Node parameters default value
 NODE_PARAMS_DEF = {
@@ -80,7 +80,7 @@ CONST_NODES = {
 
 #: dict: Parameter pattern properties (JSON_SCHEMA)
 PARAMETER_PATTERN_PROP = {
-    rf"^{EVT_DT_FLD_NM}$": {
+    rf"^{EDT_FLD_NM}$": {
         "type": "string",
     },
     rf"^{TableObject.srn.name}$": {

@@ -28,13 +28,13 @@ db_data = {
             'value': val,
             'prm_name': 'trepros1',
             'info': {
-                'evt_dt': dt,
-                'type_name': 'YT',
+                'edt': dt,
+                'mdl_name': 'YT',
                 'srn': 'YT-100', 'pid': '0',
                 'tags': 'load_profile_from_linker',
-                'metadata': {}
+                'metadata': {},
+                'src': ''
             },
-            'source_info': 'test_add_data'
         } for val, dt in [
             (np.array([400, 401, 402]), '20200101T0000Z'),
             (np.array([441, 441, 442]), '20200202T0000Z')
@@ -61,7 +61,6 @@ class TestFileHandle:
             'info': dict,
             'prm_name': str,
             'index': np.ndarray, 'value': np.ndarray,
-            'source_info': str
         }
 
         # Read csv file
@@ -126,7 +125,6 @@ class TestLoadDBLinker:
                 'value': data[0]['value'],
                 'info': data[0]['info'],
                 'prm_name': data[0]['prm_name'],
-                'source_info': 'test_add_data'
             }]
         )
 
@@ -137,7 +135,6 @@ class TestLoadDBLinker:
                 'value': data[0]['value'],
                 'info': data[0]['info'],
                 'prm_name': data[0]['prm_name'],
-                'source_info': 'test_add_data',
                 'force_write': True
             }]
         )

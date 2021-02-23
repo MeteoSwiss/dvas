@@ -19,7 +19,7 @@ import pandas as pd
 
 # Import from current package
 from ..environ import path_var as env_path_var
-from ..database.model import InstrType as TableInstrType
+from ..database.model import Model as TableModel
 from ..database.model import Info as TableInfo
 from ..database.model import DataSource
 from ..database.model import Parameter as TableParameter
@@ -32,7 +32,7 @@ from ..config.definitions.origdata import TAG_FLD_NM
 from ..config.definitions.origdata import PARAM_FLD_NM
 from ..logger import rawcsv
 from ..environ import glob_var
-from ..config.pattern import INSTR_TYPE_PAT
+from ..config.pattern import MODEL_PAT
 from ..hardcoded import TAG_RAW_NAME, TAG_GDP_NAME, TAG_EMPTY_NAME
 
 
@@ -159,10 +159,10 @@ class FileHandler(AbstractHandler):
 
     @property
     @abstractmethod
-    def file_instr_type_pat(self):
-        """re.compile : File instr_type pattern
+    def file_model_pat(self):
+        """re.compile : File model pattern
         (re.search within pathlib.Path.name). Group #1 must correspond to
-        instr_type name."""
+        model name."""
 
     def handle(self, file_path, prm_name):
         """Handle method"""
@@ -176,11 +176,11 @@ class FileHandler(AbstractHandler):
         """Method to get metadata item"""
 
     @abstractmethod
-    def get_metadata(self, file_path, instr_type_name, prm_name):
+    def get_metadata(self, file_path, mdl_name, prm_name):
         """Method to get metadata"""
 
         # Add automatic fields to metadata
-        out = {TableInstrType.type_name.name: instr_type_name}
+        out = {TableModel.mdl_name.name: mdl_name}
 
         return out
 
@@ -188,7 +188,7 @@ class FileHandler(AbstractHandler):
     def get_main(self, *args, **kwargs):
         """Main get method called from handle method"""
 
-    def get_instr_type(self, file_path):
+    def get_model(self, file_path):
         """Get instrument type from file path
 
         Args:
@@ -199,30 +199,30 @@ class FileHandler(AbstractHandler):
         """
 
         # Test
-        if (grp := re.search(self.file_instr_type_pat, file_path.name)) is None:
+        if (grp := re.search(self.file_model_pat, file_path.name)) is None:
             # TODO Detail exception
             raise Exception(
-                f"Bad instr_type syntax in data file '{file_path}'"
+                f"Bad model syntax in data file '{file_path}'"
             )
 
         # Get from group
-        instr_type_name = grp.group(1)
+        mdl_name = grp.group(1)
 
-        # Check instr_type name existence in DB
+        # Check model name existence in DB
         if self._db_mngr.get_or_none(
-                TableInstrType,
+                TableModel,
                 search={
-                    'where': TableInstrType.type_name == instr_type_name
+                    'where': TableModel.mdl_name == mdl_name
                 },
-                attr=[[TableInstrType.type_name.name]]
+                attr=[[TableModel.mdl_name.name]]
         ) is None:
             # TODO Detail exception
             raise Exception(
-                f"Missing instr_type '{instr_type_name}' in DB while reading " +
+                f"Missing model '{mdl_name}' in DB while reading " +
                 f"data file '{file_path}'"
             )
 
-        return instr_type_name
+        return mdl_name
 
     def exclude_file(self, path_scan, prm_name):
         """Exclude file method"""
@@ -235,7 +235,7 @@ class FileHandler(AbstractHandler):
                     TableParameter.prm_name == prm_name
                 ),
                 'join_order': [TableParameter, DataSource]},
-            attr=[[TableInfo.data_src.name, DataSource.source.name]],
+            attr=[[TableInfo.data_src.name, DataSource.src.name]],
             get_first=False
         )
 
@@ -246,7 +246,7 @@ class FileHandler(AbstractHandler):
 
         return origdata_path_new
 
-    def read_metaconfig_fields(self, instr_type_name, prm_name):
+    def read_metaconfig_fields(self, mdl_name, prm_name):
         """Read field from metaconfig"""
 
         # Create metadata output
@@ -257,7 +257,7 @@ class FileHandler(AbstractHandler):
                 # TODO
                 #  Consider if prm_name is mandatory at this point
                 field_val = self.origdata_config_mngr.get_val(
-                    [instr_type_name, prm_name], key
+                    [mdl_name, prm_name], key
                 )
 
                 if isinstance(field_val, str):
@@ -314,8 +314,8 @@ class CSVHandler(FileHandler):
     """CSV Hanlder class"""
 
     _FILE_SUFFIX = re.compile(r'\.(csv|txt)', re.IGNORECASE)
-    _FILE_INSTR_TYPE_PAT = re.compile(
-        r"^(" + INSTR_TYPE_PAT + r")\.\w+"
+    _FILE_MODEL_PAT = re.compile(
+        r"^(" + MODEL_PAT + r")\.\w+"
     )
 
     def __init__(self):
@@ -339,18 +339,18 @@ class CSVHandler(FileHandler):
         return self._FILE_SUFFIX
 
     @property
-    def file_instr_type_pat(self):
-        return self._FILE_INSTR_TYPE_PAT
+    def file_model_pat(self):
+        return self._FILE_MODEL_PAT
 
     def get_metadata_item(self, item):
         """Implementation of abstract method"""
         return self.origmeta_mngr[item]
 
-    def get_metadata(self, file_path, instr_type_name, prm_name):
+    def get_metadata(self, file_path, mdl_name, prm_name):
         """Method to get metadata"""
 
         # Get default output from parent method
-        out = super().get_metadata(file_path, instr_type_name, prm_name)
+        out = super().get_metadata(file_path, mdl_name, prm_name)
 
         # Init
         self.origmeta_mngr.init_document()
@@ -407,7 +407,7 @@ class CSVHandler(FileHandler):
         # Read metadata fields
         try:
             out.update(
-                self.read_metaconfig_fields(instr_type_name, prm_name)
+                self.read_metaconfig_fields(mdl_name, prm_name)
             )
 
         except Exception as exc:
@@ -418,14 +418,14 @@ class CSVHandler(FileHandler):
     def get_main(self, file_path, prm_name):
         """Implementation of abstract method"""
 
-        # Get instr_type
-        instr_type_name = self.get_instr_type(file_path)
+        # Get model
+        mdl_name = self.get_model(file_path)
 
         # Get metadata
-        # (need instr_type_name
+        # (need mdl_name)
         if (
                 metadata := self.get_metadata(
-                    file_path, instr_type_name, prm_name
+                    file_path, mdl_name, prm_name
                 )
         ) is None:
             return
@@ -433,9 +433,9 @@ class CSVHandler(FileHandler):
         # Create info with 'raw' tag
         metadata[TAG_FLD_NM] += [TAG_RAW_NAME]
 
-        # Get config params for (instr_type, prm_name) couple
+        # Get config params for (model, prm_name) couple
         origdata_cfg_prm = self.origdata_config_mngr.get_all_default(
-            [instr_type_name, prm_name]
+            [mdl_name, prm_name]
         )
 
         # Get raw data config param
@@ -450,7 +450,7 @@ class CSVHandler(FileHandler):
                 {
                     'usecols': [
                         self.origdata_config_mngr.get_val(
-                            [instr_type_name, prm_name], PARAM_FLD_NM
+                            [mdl_name, prm_name], PARAM_FLD_NM
                         ),
                     ],
                     'squeeze': True,
@@ -462,7 +462,7 @@ class CSVHandler(FileHandler):
             data = pd.read_csv(file_path, **raw_csv_read_args)
             data = data.map(
                 eval(self.origdata_config_mngr.get_val(
-                    [instr_type_name, prm_name], 'lambda')
+                    [mdl_name, prm_name], 'lambda')
                 )
             )
 
@@ -492,13 +492,15 @@ class CSVHandler(FileHandler):
                 f"({type(exc).__name__}: {exc})"
             )
 
+        # Add source
+        metadata[DataSource.src.name] = self.get_source_unique_id(file_path)
+
         # Append data
         out = {
             'info': metadata,
             'prm_name': prm_name,
             'index': data.index.values,
             'value': data.values,
-            'source_info': self.get_source_unique_id(file_path)
         }
 
         return out
@@ -508,7 +510,7 @@ class GDPHandler(FileHandler):
     """GDP Handler class"""
 
     _FILE_SUFFIX = re.compile(r'\.nc', re.IGNORECASE)
-    _FILE_INSTR_TYPE_PAT = re.compile(
+    _FILE_MODEL_PAT = re.compile(
         r"^[A-Z]{3}\-[A-Z]{2}\-\d{2}\_\d\_([\w\-]+\_\d{3})\_\d{8}T"
     )
 
@@ -525,42 +527,42 @@ class GDPHandler(FileHandler):
         return self._FILE_SUFFIX
 
     @property
-    def file_instr_type_pat(self):
-        return self._FILE_INSTR_TYPE_PAT
+    def file_model_pat(self):
+        return self._FILE_MODEL_PAT
 
     def get_metadata_item(self, item):
         """Implementation of abstract method"""
         return self._fid.getncattr(item)
 
-    def get_metadata(self, file_path, instr_type_name, prm_name):
+    def get_metadata(self, file_path, mdl_name, prm_name):
         """Method to get file metadata"""
 
         # Get default output from parent method
-        out = super().get_metadata(file_path, instr_type_name, prm_name)
+        out = super().get_metadata(file_path, mdl_name, prm_name)
 
         with nc.Dataset(file_path, 'r') as self._fid:
 
             # Read metadata fields
             try:
                 out.update(
-                    self.read_metaconfig_fields(instr_type_name, prm_name)
+                    self.read_metaconfig_fields(mdl_name, prm_name)
                 )
 
             #TODO Detail exception
             except Exception as exc:
-                raise Exception(f"{exc} / {instr_type_name} / {prm_name}")
+                raise Exception(f"{exc} / {mdl_name} / {prm_name}")
 
         return out
 
     def get_main(self, file_path, prm_name):
         """Implementation of abstract method"""
 
-        # Get instr_type
-        instr_type_name = self.get_instr_type(file_path)
+        # Get model
+        mdl_name = self.get_model(file_path)
 
         # Get metadata
         metadata = self.get_metadata(
-            file_path, instr_type_name, prm_name
+            file_path, mdl_name, prm_name
         )
 
         # Create event with 'raw' and 'gdp' tag
@@ -571,13 +573,13 @@ class GDPHandler(FileHandler):
             # Read data
             with nc.Dataset(file_path, 'r') as self._fid:
                 data_col_nm = self.origdata_config_mngr.get_val(
-                    [instr_type_name, prm_name], PARAM_FLD_NM
+                    [mdl_name, prm_name], PARAM_FLD_NM
                 )
 
                 data = pd.Series(self._fid[data_col_nm][:])
                 data = data.map(
                     eval(self.origdata_config_mngr.get_val(
-                        [instr_type_name, prm_name], 'lambda')
+                        [mdl_name, prm_name], 'lambda')
                     )
                 )
 
@@ -602,13 +604,15 @@ class GDPHandler(FileHandler):
                 f"({type(exc).__name__}: {exc})"
             )
 
+        # Add source
+        metadata[DataSource.src.name] = self.get_source_unique_id(file_path)
+
         # Append data
         out = {
             'info': metadata,
             'index': data.index.values,
             'value': data.values,
             'prm_name': prm_name,
-            'source_info': self.get_source_unique_id(file_path)
         }
 
         return out

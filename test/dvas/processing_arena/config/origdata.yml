@@ -5,7 +5,7 @@
 _RS92:
 
     # -- META DATA ----------------------------------
-    evt_dt: "get('event_dt')"
+    edt: "get('event_dt')"
     srn: "get('sn')"
     pid: "get('product_id')"
     tags:
@@ -36,7 +36,7 @@ _RS92:
 _YT:
 
     # -- META DATA ----------------------------------
-    evt_dt: "cat(get('event_dt'), 'Z')"
+    edt: "cat(get('event_dt'), 'Z')"
     srn: "get('sn')"
     pid: "get('product_id')"
     tags:
@@ -67,7 +67,7 @@ _YT:
 _ZT:
 
     # -- META DATA ----------------------------------
-    evt_dt: "get('event_dt')"
+    edt: "get('event_dt')"
     srn: "get('sn')"
     pid: "get('product_id')"
     tags:

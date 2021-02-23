@@ -38,13 +38,13 @@ db_data = {
             'value': np.array([1000, 1001, 1002]),
             'prm_name': prm,
             'info': {
-                'evt_dt': dt,
-                'type_name': 'YT',
+                'edt': dt,
+                'mdl_name': 'YT',
                 'srn': 'YT-100', 'pid': '0',
                 'tags': 'load_multiprofile',
-                'metadata': {}
+                'metadata': {},
+                'src': ''
             },
-            'source_info': 'test_add_data'
         } for dt in ['20200101T0000Z', '20200202T0000Z']
         for prm in ['trepros1', 'altpros1', 'flgpros1', 'tdtpros1']
     ]
@@ -186,13 +186,16 @@ class TestMutliProfile:
             for i, prf in enumerate(mlt_prf_1.profiles) for prf_2 in mlt_prf_1.profiles[i:]
         ])
 
-    def test_save_to_db(self, mlt_prf):
+    def test_save_to_db(self, mlt_prf, db_init):
         """Test save_to_db method"""
 
         # Define
         tag_nm = 'save_multiprofile'
 
-        # save from db
+        # save from db with no specific
+        mlt_prf.save_to_db()
+
+        # save from db with specific tag
         mlt_prf.save_to_db(add_tags=[tag_nm])
 
     def test_append(self, mlt_prf):

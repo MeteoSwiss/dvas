@@ -231,13 +231,13 @@ def combine_gdps(gdp_prfs, binning=1, method='weighted mean'):
     # Build the full array of indices
     srns_inds = np.array([[item] * len_gdp for item in srns_inds]).flatten()
     # idem for the GDP model ids
-    mdls_inds = gdp_prfs.get_info('mdl_id')
+    mdls_inds = gdp_prfs.get_info('mid')
     mdls_inds = np.array([[item] * len_gdp for item in mdls_inds]).flatten()
     # Idem for the rig ids
-    rigs_inds = gdp_prfs.get_info('rig_id')
+    rigs_inds = gdp_prfs.get_info('rid')
     rigs_inds = np.array([[item] * len_gdp for item in rigs_inds]).flatten()
     # Idem for the event ids
-    evts_inds = gdp_prfs.get_info('evt_id')
+    evts_inds = gdp_prfs.get_info('eid')
     evts_inds = np.array([[item] * len_gdp for item in evts_inds]).flatten()
 
     # Let's also keep track of the original indices of the data
@@ -361,7 +361,7 @@ def combine_gdps(gdp_prfs, binning=1, method='weighted mean'):
     # TODO: this needs to be imporved (tags handling, many datetime, etc ... ?)
     new_rig_tag = 'r:'+':'.join([item.split(':')[1] for item in np.unique(rigs_inds).tolist()])
     new_evt_tag = 'e:'+':'.join([item.split(':')[1] for item in np.unique(evts_inds).tolist()])
-    cws_info = InfoManager(gdp_prfs.info[0].evt_dt, # dt
+    cws_info = InfoManager(gdp_prfs.info[0].edt, # dt
                            np.unique(srns_inds).tolist(),  # srns
                            tags=['cws', new_rig_tag, new_evt_tag])
 

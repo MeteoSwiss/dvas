@@ -17,8 +17,8 @@ RE_UPPER_W = r'[A-Z0-9]'
 RE_LOWER_W = r'[a-z0-9]'
 
 #: str: Instrument type pattern (e.g. VAI-RS92, MET_LAB-C50, RS92-GDP_002)
-INSTR_TYPE_PAT = rf"{RE_UPPER_W}+(({RE_UPPER_W})|([\-\_]))*{RE_UPPER_W}"
-INSTR_TYPE_RE = re.compile(INSTR_TYPE_PAT)
+MODEL_PAT = rf"{RE_UPPER_W}+(({RE_UPPER_W})|([\-\_]))*{RE_UPPER_W}"
+MODEL_RE = re.compile(MODEL_PAT)
 
 #: str: Parameter pattern (e.g. tre200s0, uorpros1, uorprosu_r)
 PARAM_PAT = rf"{RE_LOWER_W}+(({RE_LOWER_W})|([\_]))*{RE_LOWER_W}"

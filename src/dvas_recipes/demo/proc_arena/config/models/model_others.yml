@@ -1,0 +1,12 @@
+
+- mdl_name: 'RS92'
+  mdl_desc: 'Vaisala RS-92'
+
+- mdl_name: 'RS41'
+  mdl_desc: 'Vaisala RS-41 SG'
+
+- mdl_name: 'C34'
+  mdl_desc: 'Meteolabor SRS-C34'
+
+- mdl_name: 'C50'
+  mdl_desc: 'Meteolabor SRS-C50'
