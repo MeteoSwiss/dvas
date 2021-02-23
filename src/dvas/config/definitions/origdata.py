@@ -20,7 +20,7 @@ from ...database.model import Object as TableObject
 
 
 # Define global field name
-EVT_DT_FLD_NM = TableInfo.evt_dt.name  # Datetime field name
+EDT_FLD_NM = TableInfo.edt.name  # Datetime field name
 TAG_FLD_NM = TableTag.__name__.lower() + 's'  # Tag field name
 META_FLD_NM = TableMetaData.__name__.lower()  # Metadata field name
 
@@ -49,7 +49,7 @@ VALUE_NM = Data.value.name
 
 #: list: Fields keys passed to expression interpreter
 EXPR_FIELD_KEYS = [
-    EVT_DT_FLD_NM, TableObject.srn.name,
+    EDT_FLD_NM, TableObject.srn.name,
     TableObject.pid.name, TAG_FLD_NM, META_FLD_NM
 ]
 
@@ -80,7 +80,7 @@ CONST_NODES = {
 
 #: dict: Parameter pattern properties (JSON_SCHEMA)
 PARAMETER_PATTERN_PROP = {
-    rf"^{EVT_DT_FLD_NM}$": {
+    rf"^{EDT_FLD_NM}$": {
         "type": "string",
     },
     rf"^{TableObject.srn.name}$": {

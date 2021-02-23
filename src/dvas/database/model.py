@@ -197,7 +197,7 @@ class Info(MetadataModel):
 
     # Info id
     info_id = AutoField(primary_key=True)
-    evt_dt = DateTimeField(null=False)
+    edt = DateTimeField(null=False)
     param = ForeignKeyField(
         Parameter, backref='info', on_delete='CASCADE'
     )

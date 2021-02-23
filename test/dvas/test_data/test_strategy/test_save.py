@@ -66,7 +66,7 @@ class TestSave:
 
         # Run some simple checks ... but if I got here, I am pretty much ok.
         assert len(prf_v2) == len(prf_v0)
-        assert prf_v2.info[0].evt_dt == prf_v0.info[0].evt_dt
+        assert prf_v2.info[0].edt == prf_v0.info[0].edt
         assert np.all(prf_v2.info[0].oid == prf_v0.info[0].oid)
         assert np.all(prf_v2.info[0].oid == prf_v0.info[0].oid)
         assert 'raw' not in prf_v2.info[0].tags

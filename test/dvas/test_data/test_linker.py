@@ -28,7 +28,7 @@ db_data = {
             'value': val,
             'prm_name': 'trepros1',
             'info': {
-                'evt_dt': dt,
+                'edt': dt,
                 'mdl_name': 'YT',
                 'srn': 'YT-100', 'pid': '0',
                 'tags': 'load_profile_from_linker',

@@ -34,7 +34,7 @@ db_data = {
             'value': np.array([500, 501, 502]),
             'prm_name': 'trepros1',
             'info': {
-                'evt_dt': '20200101T0000Z',
+                'edt': '20200101T0000Z',
                 'mdl_name': 'YT',
                 'srn': 'YT-100', 'pid': '0',
                 'tags': ('data_test_db', 'e:1', 'r:1', arg_tag),
@@ -121,7 +121,7 @@ class TestDatabaseManager:
         data = db_init.data
 
         res = db_mngr.get_data(
-            f"and_(dt('{data[0]['info']['evt_dt']}'), srn('{data[0]['info']['srn']}'), tags({data[0]['info']['tags']}))",
+            f"and_(dt('{data[0]['info']['edt']}'), srn('{data[0]['info']['srn']}'), tags({data[0]['info']['tags']}))",
             data[0]['prm_name'], True
         )
 
@@ -190,10 +190,10 @@ class TestInfoManager:
         self.info_mngr.oid = self.oid_test
         assert self.info_mngr.oid == sorted(self.oid_test)
 
-    def test_evt_dt(self):
-        """Test setting/getting 'evt_dt' attribute"""
-        self.info_mngr.evt_dt = self.dt_test
-        assert self.info_mngr.evt_dt == datetime(2020, 1, 1, tzinfo=pytz.UTC)
+    def test_edt(self):
+        """Test setting/getting 'edt' attribute"""
+        self.info_mngr.edt = self.dt_test
+        assert self.info_mngr.edt == datetime(2020, 1, 1, tzinfo=pytz.UTC)
 
     def test_eid(self):
         """Test getting 'eid' attribute"""
@@ -260,7 +260,7 @@ class TestInfoManager:
         # Init
         info_mngr_1 = deepcopy(self.info_mngr)
         info_mngr_2 = deepcopy(self.info_mngr)
-        info_mngr_2.evt_dt += timedelta(1)
+        info_mngr_2.edt += timedelta(1)
         info_mngr_3 = deepcopy(info_mngr_2)
         info_mngr_3.oid = [3] + info_mngr_3.oid
 
@@ -282,7 +282,7 @@ class TestInfoManager:
 
         info_mngr_eq = deepcopy(self.info_mngr)
         info_mngr_gt = deepcopy(self.info_mngr)
-        info_mngr_gt.evt_dt += timedelta(1)
+        info_mngr_gt.edt += timedelta(1)
 
         assert info_mngr_eq == self.info_mngr
         assert info_mngr_gt > self.info_mngr

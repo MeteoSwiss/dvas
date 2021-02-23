@@ -40,7 +40,7 @@ from .model import Flag, DataSource, Data
 from .model import InfosObjects as TableInfosObjects
 from .model import InfosTags
 from ..config.config import OneDimArrayConfigLinker
-from ..config.definitions.origdata import EVT_DT_FLD_NM
+from ..config.definitions.origdata import EDT_FLD_NM
 from ..config.definitions.origdata import TAG_FLD_NM, META_FLD_NM
 from ..hardcoded import TAG_NONE_NAME, TAG_EMPTY_NAME
 from ..hardcoded import TAG_RAW_NAME, TAG_GDP_NAME
@@ -405,7 +405,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
                 # Create info
                 info_id, created = TableInfo.get_or_create(
-                    evt_dt=info.evt_dt, param=param,
+                    edt=info.edt, param=param,
                     data_src=data_src, evt_hash=info.get_hash()
                 )
 
@@ -631,7 +631,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                 out.append(
                     {
                         'info': InfoManager(
-                            evt_dt=info_id_list[i].evt_dt,
+                            edt=info_id_list[i].edt,
                             oid=oid_list,
                             tags=tag_name_list,
                             metadata=metadata_dict,
@@ -898,7 +898,7 @@ class InfoManager:
     """Data info manager"""
 
     #: datetime.datetime: UTC datetime
-    evt_dt = TProp(Union[str, Timestamp, datetime], check_datetime)
+    edt = TProp(Union[str, Timestamp, datetime], check_datetime)
 
     #: int|iterable of int: Object id
     oid = TProp(
@@ -920,11 +920,11 @@ class InfoManager:
     #: str: Data source
     src = TProp(str)
 
-    def __init__(self, evt_dt, oid, tags=TAG_NONE_NAME, metadata={}, src=''):
+    def __init__(self, edt, oid, tags=TAG_NONE_NAME, metadata={}, src=''):
         """Constructor
 
         Args:
-            evt_dt (str | datetime | pd.Timestamp): UTC datetime
+            edt (str | datetime | pd.Timestamp): Event datetime (UTC)
             oid (int|iterable of int): Object identifier (snr, pid)
             tags (str|iterable of str, `optional`): Tags. Defaults to ''
             metadata (dict|InfoManagerMetaData, `optional`): Default to {}
@@ -937,14 +937,14 @@ class InfoManager:
             metadata = InfoManagerMetaData(metadata)
 
         # Set attributes
-        self.evt_dt = evt_dt
+        self.edt = edt
         self.oid = oid
         self.tags = tags
         self.metadata = metadata
         self.src = src
 
     def __copy__(self):
-        return self.__class__(self.evt_dt, self.oid.copy(), self.tags.copy())
+        return self.__class__(self.edt, self.oid.copy(), self.tags.copy())
 
     @property
     def eid(self):
@@ -1037,7 +1037,7 @@ class InfoManager:
     def __str__(self):
         p_printer = pprint.PrettyPrinter()
         return p_printer.pformat(
-            (f'evt_dt: {self.evt_dt}', f'oid: {self.oid}',
+            (f'edt: {self.edt}', f'oid: {self.oid}',
              f'tags: {self.tags}', f'metadata: {self.metadata}',
              f'src: {self.src}')
         )
@@ -1107,7 +1107,7 @@ class InfoManager:
 
     @staticmethod
     def sort(info_list):
-        """Sort list of InfoManager. Sorting order [evt_dt, srn, tags]
+        """Sort list of InfoManager. Sorting order [edt, srn, tags]
 
         Args:
             info_list (iterable of InfoManager): List to sort
@@ -1135,7 +1135,7 @@ class InfoManager:
             tuple
 
         """
-        return self.evt_dt, *[str(arg) for arg in self.oid], *self.tags, self.src
+        return self.edt, *[str(arg) for arg in self.oid], *self.tags, self.src
 
     def __eq__(self, other):
         return self._get_attr_sort_order() == other._get_attr_sort_order()
@@ -1160,7 +1160,7 @@ class InfoManager:
         """Convert dict of metadata to InfoManager
 
         Dict keys:
-            - evt_dt (str): Datetime
+            - edt (str): Datetime
             - typ_name (str, `optional`): Instrument type (used to create
                 instrument entry if missing in DB)
             - srn_field (str): Serial number
@@ -1212,7 +1212,7 @@ class InfoManager:
         # Construct InfoManager
         try:
             info = InfoManager(
-                evt_dt=metadata[EVT_DT_FLD_NM],
+                edt=metadata[EDT_FLD_NM],
                 oid=oid,
                 tags=metadata[TAG_FLD_NM],
                 metadata=metadata[META_FLD_NM],
@@ -1437,7 +1437,7 @@ class DatetimeExpr(TerminalSearchInfoExpr):
 
     def get_filter(self):
         """Implement get_filter method"""
-        return self._op(TableInfo.evt_dt, self.expression)
+        return self._op(TableInfo.edt, self.expression)
 
 
 class SerialNumberExpr(TerminalSearchInfoExpr):

@@ -74,7 +74,7 @@ def sync_flight(eid, rid, **kwargs):
 
     # Verify that that event datetime is actually the same for all the profiles. I should only
     # synchronize profiles that have flown together.
-    dt_offsets = np.array([item.total_seconds() for item in np.diff(prfs.get_info('evt_dt'))])
+    dt_offsets = np.array([item.total_seconds() for item in np.diff(prfs.get_info('edt'))])
     if any(dt_offsets > 0):
         logger.warning('Not all profiles to be synchronized have the same event_dt.')
         logger.warning('Offsets (w.r.t. first profile) in [s]: %s', dt_offsets)

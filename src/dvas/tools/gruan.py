@@ -361,7 +361,7 @@ def combine_gdps(gdp_prfs, binning=1, method='weighted mean'):
     # TODO: this needs to be imporved (tags handling, many datetime, etc ... ?)
     new_rig_tag = 'r:'+':'.join([item.split(':')[1] for item in np.unique(rigs_inds).tolist()])
     new_evt_tag = 'e:'+':'.join([item.split(':')[1] for item in np.unique(evts_inds).tolist()])
-    cws_info = InfoManager(gdp_prfs.info[0].evt_dt, # dt
+    cws_info = InfoManager(gdp_prfs.info[0].edt, # dt
                            np.unique(srns_inds).tolist(),  # srns
                            tags=['cws', new_rig_tag, new_evt_tag])
 

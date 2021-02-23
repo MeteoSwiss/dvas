@@ -27,7 +27,7 @@ db_data = {
             'value': val,
             'prm_name': prm,
             'info': {
-                'evt_dt': dt,
+                'edt': dt,
                 'mdl_name': 'YT',
                 'srn': 'YT-100', 'pid': '0',
                 'tags': 'load_profile',
