@@ -947,25 +947,25 @@ class InfoManager:
         return self.__class__(self.evt_dt, self.oid.copy(), self.tags.copy())
 
     @property
-    def evt_id(self):
+    def eid(self):
         """str: Event ID which match 1st corresponding pattern in tags. Defaults to None."""
         try:
             # TODO: the following line triggers a *very* weird pylint Error 1101.
             # I disable it for now ... but someone should really confirm whether this ok or not!
             # fpavogt - 2020.12.09
-            out = next(filter(glob_var.evt_id_pat.match, self.tags)) # pylint: disable=E1101
+            out = next(filter(glob_var.eid_pat.match, self.tags))  # pylint: disable=E1101
         except StopIteration:
             out = None
         return out
 
     @property
-    def rig_id(self):
+    def rid(self):
         """str: Rig ID which match 1st corresponding pattern in tags. Defaults to None."""
         try:
             # TODO: the following line triggers a *very* weird pylint Error 1101.
             # I disable it for now ... but someone should really confirm whether this ok or not!
             # fpavogt - 2020.12.09
-            out = next(filter(glob_var.rig_id_pat.match, self.tags))  # pylint: disable=E1101
+            out = next(filter(glob_var.rid_pat.match, self.tags))  # pylint: disable=E1101
         except StopIteration:
             out = None
         return out

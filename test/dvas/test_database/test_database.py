@@ -174,9 +174,9 @@ class TestInfoManager:
 
     dt_test = '20200101T0000Z'
     oid_test = [1, 2]
-    glob_var.evt_id_pat = r'e\:\d'
+    glob_var.eid_pat = r'e\:\d'
     evt_tag = 'e:1'
-    glob_var.rig_id_pat = r'r\:\d'
+    glob_var.rid_pat = r'r\:\d'
     rig_tag = 'r:1'
     metadata = {'key_str': 'one', 'key_num': 1.}
     src = 'test_src'
@@ -195,13 +195,13 @@ class TestInfoManager:
         self.info_mngr.evt_dt = self.dt_test
         assert self.info_mngr.evt_dt == datetime(2020, 1, 1, tzinfo=pytz.UTC)
 
-    def test_evt_id(self):
-        """Test getting 'evt_id' attribute"""
-        assert self.info_mngr.evt_id == self.evt_tag
+    def test_eid(self):
+        """Test getting 'eid' attribute"""
+        assert self.info_mngr.eid == self.evt_tag
 
-    def test_rig_id(self):
-        """Test getting 'rig_id' attribute"""
-        assert self.info_mngr.rig_id == self.rig_tag
+    def test_rid(self):
+        """Test getting 'rid' attribute"""
+        assert self.info_mngr.rid == self.rig_tag
 
     def test_mid(self):
         """Test getting 'mid' attribute"""

@@ -87,9 +87,9 @@ if __name__ == '__main__':
     #
     #
     # # Acccess some useful info about the data
-    # print(rs_prf.get_info('evt_id'))
-    # print(rs_prf.get_info('rig_id'))
-    # print(rs_prf.get_info('mdl_id'))
+    # print(rs_prf.get_info('eid'))
+    # print(rs_prf.get_info('rid'))
+    # print(rs_prf.get_info('mid'))
     # print(rs_prf.get_info())
     #
     # # Load GDPs for temperature, including all the errors

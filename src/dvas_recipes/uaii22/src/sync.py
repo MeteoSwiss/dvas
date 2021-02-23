@@ -48,21 +48,21 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
 
 
 @log_func_call(logger)
-def sync_flight(evt_id, rig_id, **kwargs):
+def sync_flight(eid, rid, **kwargs):
     """ Highest-level function responsible for synchronizing all the profile from a specific RS
     flight.
 
     This function directly synchronizes the profiles and upload them to the db with the 'sync' tag.
 
     Args:
-        evt_id (str|int): event id to be synchronized, e.g. 80611
-        rig_id (str|int): rig id to be synchronized, e.g. 1
+        eid (str|int): event id to be synchronized, e.g. 80611
+        rid (str|int): rig id to be synchronized, e.g. 1
         **kwargs: keyword arguments to be fed to the underlying shift-identification routines.
 
     """
 
     # What search query will let me access the data I need ?
-    filt = "and_(tags('e:{}'), tags('r:{}'), tags('raw'))".format(evt_id, rig_id)
+    filt = "and_(tags('e:{}'), tags('r:{}'), tags('raw'))".format(eid, rid)
 
     # First, extract the temperature data from the db
     prfs = MultiRSProfile()
