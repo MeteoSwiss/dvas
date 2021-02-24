@@ -163,16 +163,18 @@ class TimeIt(ContextDecorator):
 
     """
 
-    def __init__(self, header_msg=''):
+    def __init__(self, header_msg='', logger=None):
         """Constructor.
 
         Args:
             header_msg (str): User defined elapsed time header. Default to ''.
+            logger (logging.Logger, `optional`): Print output to log (debug level only). Default to None.
 
         """
         super().__init__()
         self._start = None
         self._head_msg = header_msg
+        self._logger = logger
 
     def __enter__(self):
         """Class __enter__ method"""
@@ -200,7 +202,11 @@ class TimeIt(ContextDecorator):
         delta = datetime.now() - self._start
 
         # Print
-        print(f'{self._head_msg}: {delta}', flush=True)
+        msg = f'{self._head_msg}: {delta}'
+        if self._logger is None:
+            print(msg, flush=True)
+        else:
+            self._logger.debug(msg)
 
 
 def deepcopy(func):

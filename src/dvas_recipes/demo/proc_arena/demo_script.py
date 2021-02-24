@@ -31,7 +31,7 @@ if __name__ == '__main__':
     path_var.output_path = demo_file_path.parent / 'output'
 
     # Start the logging
-    start_log(3) # 3 = log to screen only.
+    start_log(3, level='DEBUG')  # 3 = log to screen only.
 
     # Let us fine-tune the plotting behavior of dvas
     dpu.set_mplstyle('nolatex') # The safe option. Use 'latex' fo prettier plots.

@@ -24,7 +24,7 @@ from ..data.data import MultiGDPProfile
 from ..data.strategy.data import GDPProfile
 from ..database.database import InfoManager
 
-@log_func_call(logger)
+@log_func_call(logger, time_it=True)
 def corcoef_gdps(i, j, uc_type,
                  srn_i=None, srn_j=None,
                  mdl_i=None, mdl_j=None,
@@ -122,7 +122,7 @@ def corcoef_gdps(i, j, uc_type,
 
     return corcoef
 
-@log_func_call(logger)
+@log_func_call(logger, time_it=True)
 def combine_gdps(gdp_prfs, binning=1, method='weighted mean'):
     ''' Combines and (possibly) rebins GDP profiles, with full error propagation.
 

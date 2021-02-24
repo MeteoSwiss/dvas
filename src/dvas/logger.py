@@ -19,6 +19,7 @@ from pampy.helpers import Union
 
 # Current package import
 from .helper import TypedProperty as TProp
+from .helper import TimeIt
 from .environ import path_var
 from .errors import LogDirError
 from . import __name__ as pkg_name
@@ -26,13 +27,13 @@ from . import __name__ as pkg_name
 
 # Define logger names
 LOGGER_NAME = [
-    'localdb', # DB stuff
-    'rawcsv', # I/O stuff
-    'data', # Data sub-module
-    'plots', # Plots sub-module
-    'tools', # Tools sub-module
-    'general', # Intended for anything not inside a specific sub-module
-    'recipes', # For high-level dvas-recipes logging
+    'localdb',  # DB stuff
+    'rawcsv',  # I/O stuff
+    'data',  # Data sub-module
+    'plots',  # Plots sub-module
+    'tools',  # Tools sub-module
+    'general',  # Intended for anything not inside a specific sub-module
+    'recipes',  # For high-level dvas-recipes logging
 ]
 
 
@@ -194,12 +195,13 @@ class LogManager:
             logger.disabled = True
 
 
-def log_func_call(logger):
+def log_func_call(logger, time_it=False):
     """ Intended as a decorator that logs a function call the the log. The message is at the
     'DEBUG' level.
 
     Args:
         logger (str): one of the loggers defined in dvas_logger.py, e.g.: gruan_logger
+        time_it (bool, `optional`): Evaluate decorated function execution time and log it. Default to False.
 
     Note:
         Adapted from
@@ -228,7 +230,12 @@ def log_func_call(logger):
             logger.debug(log_msg)
 
             # Launch the actual function
-            return func(*args, **kwargs)
+            if time_it:
+                with TimeIt(logger=logger):
+                    out = func(*args, **kwargs)
+            else:
+                out = func(*args, **kwargs)
+            return out
         return inner_deco
     return deco
 

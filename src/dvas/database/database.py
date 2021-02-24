@@ -47,10 +47,10 @@ from ..hardcoded import TAG_RAW_NAME, TAG_GDP_NAME
 from ..helper import ContextDecorator
 from ..helper import SingleInstanceMetaClass
 from ..helper import TypedProperty as TProp
-from ..helper import TimeIt
 from ..helper import get_by_path, check_datetime
 from ..helper import unzip, get_dict_len
-from ..logger import localdb
+from ..logger import localdb as localdb_logger
+from ..logger import log_func_call
 from ..environ import glob_var
 from ..environ import path_var as env_path_var
 from ..errors import DBError
@@ -370,7 +370,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     ])
                 ) != info.oid:
                     err_msg = f"Many instrument id in %s are missing in DB"
-                    localdb.error(err_msg, info.oid)
+                    localdb_logger.error(err_msg, info.oid)
                     raise DBInsertError(err_msg % info.oid)
 
                 # Get/Check parameter
@@ -379,7 +379,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     TableParameter.prm_name == prm_name)
                 ):
                     err_msg = "prm_name '%s' is missing in DB"
-                    localdb.error(err_msg, prm_name)
+                    localdb_logger.error(err_msg, prm_name)
                     raise DBInsertError(err_msg % prm_name)
 
                 # Check tag_name existence
@@ -397,7 +397,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     ]
                 ) != len(info.tags):
                     err_msg = "Many tags in %s are missing in DB"
-                    localdb.error(err_msg, info.tags)
+                    localdb_logger.error(err_msg, info.tags)
                     raise DBInsertError(err_msg % info.tags)
 
                 # Create original data information
@@ -551,7 +551,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         return out
 
-    @TimeIt()
+    @log_func_call(localdb_logger, time_it=True)
     def get_data(self, search_expr, prm_name, filter_empty):
         """Get data from DB
 
@@ -568,7 +568,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         info_id_list = self._get_info_id(search_expr, prm_name, filter_empty)
 
         if not info_id_list:
-            localdb.warning(
+            localdb_logger.warning(
                 "Empty search '%s' for '%s", search_expr, prm_name
             )
 
