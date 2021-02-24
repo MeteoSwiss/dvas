@@ -18,6 +18,7 @@ from datetime import datetime
 from copy import deepcopy as dc
 from functools import wraps, reduce
 from abc import ABC, ABCMeta, abstractmethod
+from contextlib import AbstractContextManager
 from weakref import WeakValueDictionary
 from inspect import getmodule
 from operator import getitem
@@ -158,8 +159,8 @@ class ContextDecorator(ABC):
         """Abstract __exit__ method"""
 
 
-class TimeIt(ContextDecorator):
-    """Code elapsed time calculator context manager/decorator.
+class TimeIt(AbstractContextManager):
+    """Code elapsed time calculator context manager.
 
     """
 
@@ -183,15 +184,8 @@ class TimeIt(ContextDecorator):
         self._start = datetime.now()
 
         # Set msg header
-        if (self.func is None) and (self._head_msg == ''):
+        if self._head_msg == '':
             self._head_msg = 'Execution time'
-        elif self.func is not None:
-            self._head_msg = (
-                '{}.{} execution time'
-            ).format(
-                getmodule(self.func).__name__,
-                self.func.__qualname__
-            )
         else:
             self._head_msg += 'execution time'
 
