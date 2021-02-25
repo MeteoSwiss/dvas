@@ -14,7 +14,7 @@ import pytest
 from pytest_data import get_data
 
 # Import from tested package
-from dvas.database.database import DatabaseManager, DBAccess
+from dvas.database.database import DatabaseManager
 from dvas.database.model import Model as TableModel
 from dvas.database.model import Object as TableObject
 from dvas.environ import path_var
@@ -71,7 +71,7 @@ def db_init(request, tmp_path_factory):
                 )
 
                 # Create instrument entry
-                with DBAccess(db_mngr):
+                with db_mngr.db_access() as _:
                     oid = TableObject.create(
                         srn=arg[TableObject.srn.name],
                         pid=arg[TableObject.pid.name],

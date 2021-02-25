@@ -20,7 +20,6 @@ from functools import wraps, reduce
 from abc import ABC, ABCMeta, abstractmethod
 from contextlib import AbstractContextManager
 from weakref import WeakValueDictionary
-from inspect import getmodule
 from operator import getitem
 import pytz
 from pampy import match as pmatch
@@ -160,9 +159,7 @@ class ContextDecorator(ABC):
 
 
 class TimeIt(AbstractContextManager):
-    """Code elapsed time calculator context manager.
-
-    """
+    """Code elapsed time calculator context manager."""
 
     def __init__(self, header_msg='', logger=None):
         """Constructor.
