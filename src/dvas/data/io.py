@@ -130,3 +130,6 @@ def update_db(search, strict=False):
         localdb.info(
             "Finish inserting in local DB new found data for '%s'", prm_name
         )
+
+    # Delete
+    del db_mngr, db_linker, handler

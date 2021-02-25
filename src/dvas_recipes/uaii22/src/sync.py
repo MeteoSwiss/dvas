@@ -18,7 +18,7 @@ from dvas.data.data import MultiRSProfile, MultiGDPProfile
 
 from dvas.tools import sync as dts
 
-@log_func_call(logger)
+@log_func_call(logger, time_it=True)
 def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
     """ Apply shifts to GDP and non-GDP profiles from a given flight, and upload them to the db.
 
@@ -47,7 +47,7 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
     non_gdps.save_to_db(add_tags=['sync'])
 
 
-@log_func_call(logger)
+@log_func_call(logger, time_it=True)
 def sync_flight(eid, rid, **kwargs):
     """ Highest-level function responsible for synchronizing all the profile from a specific RS
     flight.

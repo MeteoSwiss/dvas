@@ -18,8 +18,8 @@ from datetime import datetime
 from copy import deepcopy as dc
 from functools import wraps, reduce
 from abc import ABC, ABCMeta, abstractmethod
+from contextlib import AbstractContextManager
 from weakref import WeakValueDictionary
-from inspect import getmodule
 from operator import getitem
 import pytz
 from pampy import match as pmatch
@@ -158,21 +158,21 @@ class ContextDecorator(ABC):
         """Abstract __exit__ method"""
 
 
-class TimeIt(ContextDecorator):
-    """Code elapsed time calculator context manager/decorator.
+class TimeIt(AbstractContextManager):
+    """Code elapsed time calculator context manager."""
 
-    """
-
-    def __init__(self, header_msg=''):
+    def __init__(self, header_msg='', logger=None):
         """Constructor.
 
         Args:
             header_msg (str): User defined elapsed time header. Default to ''.
+            logger (logging.Logger, `optional`): Print output to log (debug level only). Default to None.
 
         """
         super().__init__()
         self._start = None
         self._head_msg = header_msg
+        self._logger = logger
 
     def __enter__(self):
         """Class __enter__ method"""
@@ -181,15 +181,8 @@ class TimeIt(ContextDecorator):
         self._start = datetime.now()
 
         # Set msg header
-        if (self.func is None) and (self._head_msg == ''):
+        if self._head_msg == '':
             self._head_msg = 'Execution time'
-        elif self.func is not None:
-            self._head_msg = (
-                '{}.{} execution time'
-            ).format(
-                getmodule(self.func).__name__,
-                self.func.__qualname__
-            )
         else:
             self._head_msg += 'execution time'
 
@@ -200,7 +193,11 @@ class TimeIt(ContextDecorator):
         delta = datetime.now() - self._start
 
         # Print
-        print(f'{self._head_msg}: {delta}', flush=True)
+        msg = f'{self._head_msg}: {delta}'
+        if self._logger is None:
+            print(msg, flush=True)
+        else:
+            self._logger.debug(msg)
 
 
 def deepcopy(func):
