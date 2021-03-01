@@ -11,6 +11,7 @@ Module content: demo code that illustres the core dvas functionalities
 # Import python package
 from pathlib import Path
 import numpy as np
+from datetime import datetime
 
 # Import stuff from dvas
 import dvas.plots.utils as dpu
@@ -20,7 +21,8 @@ from dvas.data.io import update_db
 from dvas.database.database import DatabaseManager
 from dvas.environ import path_var
 from dvas.tools import sync as dts
-from dvas.tools import gruan as dtg
+from dvas.tools import gdps as dtg
+import dvas.plots.gruan as dpg
 
 # Define
 demo_file_path = Path(__file__).resolve()
@@ -37,7 +39,7 @@ if __name__ == '__main__':
     start_log(3, level='DEBUG')  # 3 = log to screen only.
 
     # Fine-tune the plotting behavior of dvas
-    dpu.set_mplstyle('latex') # The safe option. Use 'latex' fo prettier plots.
+    dpu.set_mplstyle('nolatex') # The safe option. Use 'latex' fo prettier plots.
 
     # The generic formats to save the plots in
     dpu.PLOT_FMTS = ['png', 'pdf']
@@ -84,19 +86,17 @@ if __name__ == '__main__':
     filt_raw_dt = "and_({}, {})".format(filt_raw, filt_dt)
     filt_raw_gdp_dt = "and_({}, {}, {})".format(filt_raw, filt_gdp, filt_dt)
 
+    # Load a series of basic profiles associated to a specific set of search criteria.
+    # Each profile consists of a variable and an associated altitude.
+    #prfs = MultiProfile()
+    #prfs.load_from_db(filt_raw, 'trepros1', 'altpros1')
     # Add a flag
-    prf.profiles[0].set_flg('raw_na', True)
-
-    # Load a basic time profile, with a variable and altitude
-    rs_prf = MultiRSProfile()
-    rs_prf.load_from_db(filt_dt, 'trepros1', 'tdtpros1', alt_abbr='altpros1')
-    rs_prf.sort()
-    rs_prf.save_to_db()
+    #prf.profiles[0].set_flg('raw_na', True)
 
     # Idem for a series of radiosonde profiles, consisting of a variable and an associated timestep
     # and altitude.
-    rs_prfs = MultiRSProfile()
-    rs_prfs.load_from_db(filt_raw_dt, 'trepros1', 'tdtpros1', alt_abbr='altpros1')
+    #rs_prfs = MultiRSProfile()
+    #rs_prfs.load_from_db(filt_raw_dt, 'trepros1', 'tdtpros1', alt_abbr='altpros1')
 
     # Load GDPs for temperature, including all the errors
     gdp_prfs = MultiGDPProfile()
@@ -107,39 +107,47 @@ if __name__ == '__main__':
     # --- BASIC DATA EXPLORATION ---
 
     # How many profiles were loaded ?
-    n_prfs = len(prfs)
+    #n_prfs = len(prfs)
 
     # Each Profile carries an InfoManager entity with it, which contains useful data:
-    print('\nContent of a profile InfoManager:')
-    print(prfs.info[0])
+    #print('\nContent of a profile InfoManager:')
+    #print(prfs.info[0])
 
     # How many distinct events are present in prfs ?
-    prfs_evts = set(prfs.get_info('evt_id'))
+    #prfs_evts = set(prfs.get_info('evt_id'))
 
     # The data is stored inside Pandas dataframes. Each type of profile contains a different set of
     # columns and indexes.
-    prf_df = prfs.profiles[0].data
-    print('\nBasic profile dataframe:\n  index.names={}, columns={}'.format(prf_df.index.names,
-                                                                            prf_df.columns))
-    rs_prf_df = rs_prfs.profiles[0].data
-    print('RS profile dataframe:\n  index.names={}, columns={}'.format(rs_prf_df.index.names,
-                                                                       rs_prf_df.columns))
-    gdp_prf_df = gdp_prfs.profiles[0].data
-    print('GDP profile dataframe:\n  index.names={}, columns={}'.format(gdp_prf_df.index.names,
-                                                                        gdp_prf_df.columns))
+    #prf_df = prfs.profiles[0].data
+    #print('\nBasic profile dataframe:\n  index.names={}, columns={}'.format(prf_df.index.names,
+    #                                                                            prf_df.columns))
+    #rs_prf_df = rs_prfs.profiles[0].data
+    #print('RS profile dataframe:\n  index.names={}, columns={}'.format(rs_prf_df.index.names,
+    #                                                                   rs_prf_df.columns))
+    #gdp_prf_df = gdp_prfs.profiles[0].data
+    #print('GDP profile dataframe:\n  index.names={}, columns={}'.format(gdp_prf_df.index.names,
+    #                                                                    gdp_prf_df.columns))
 
     # Each profile is attributed a unique "Object Identification" (oid) number, which allows to keep
     # track of them throughout the dvas analysis.
     # If two profiles have the same oid, it implies that they have been acquired with the same
     # sonde, and pre-processed by the same software/recipe/etc ...
     # Note: dvas processing steps DO NOT modify the oid values.
-    gdp_prf_oids = prfs.get_info('oid')
+    #gdp_prf_oids = prfs.get_info('oid')
 
     # --- BASIC PLOTTING ---
 
     # Let us inspect the (raw) GDP profiles with dedicated plots.
-    gdp_prfs.plot(fn_prefix='01') # Defaults behavior, just adding a prefix to the filename.
-    gdp_prfs.plot(uc='tot', show_plt=True, fmts=[]) # Now with errors. Show it but don't save it.
+    #gdp_prfs.plot(fn_prefix='01') # Defaults behavior, just adding a prefix to the filename.
+    # Now with errors. Show the plot but don't save it.
+    #gdp_prfs.plot(label='oid', uc='tot', show=True, fmts=[])
+
+    # --- PROFILE RESAMPLING ---
+
+    #rs_prfs_ok = rs_prfs.resample(freq='1s', inplace=False)
+
+    #import pdb
+    #pdb.set_trace()
 
     # --- PROFILE SYNCHRONIZATION ---
 
@@ -173,7 +181,7 @@ if __name__ == '__main__':
     # tools located inside dvas.tools.gruan
 
     # Let us begin by extracting the synchronized GDPs for a specific flight
-    filt_gdp_dt_sync = "and_(tags('sync'),{}, {})".format(filt_gdp, filt_dt)
+    filt_gdp_dt_sync = "and_(tags('sync'), {}, {})".format(filt_gdp, filt_dt)
 
     gdp_prfs = MultiGDPProfile()
     gdp_prfs.load_from_db(filt_gdp_dt_sync, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1',
@@ -186,14 +194,24 @@ if __name__ == '__main__':
     print("\nGDP lengths post-synchronization: ", [len(item) for item in gdp_prfs.get_prms()])
 
     # Let us now create a high-resolution CWS for these synchronized GDPs
-    cws = dtg.combine_gdps(gdp_prfs, binning=1, method='weighted mean')
-    cws.save_to_db()
+    #start_time = datetime.now()
+    #cws_v1 = dtg.combine_gdps_v1(gdp_prfs, binning=1, method='weighted mean')
+    #print('CWS assembled in: {}s'.format((datetime.now()-start_time).total_seconds()))
+
+    start_time = datetime.now()
+    cws = dtg.combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=4)
+    print('CWS assembled in: {}s'.format((datetime.now()-start_time).total_seconds()))
+
+    # We can now inspect the result visually
+    dpg.gdps_vs_cws(gdp_prfs, cws, index_name='_idx', show=True, fn_prefix='02')
+
+    #cws.save_to_db()
 
     # Let's compare this CWS with the original data
     # Let us begin by extracting the synchronized GDPs for a specific flight
-    filt_cws_gdp_dt_sync = "or_({},tags('cws'))".format(filt_gdp_dt_sync)
+    #filt_cws_gdp_dt_sync = "or_({},tags('cws'))".format(filt_gdp_dt_sync)
 
-    gdp_prfs = MultiGDPProfile()
-    gdp_prfs.load_from_db(filt_cws_gdp_dt_sync, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1',
-                          ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t',
-                          inplace=True)
+    #gdp_cws_prfs = MultiGDPProfile()
+    #gdp_cws_prfs.load_from_db(filt_cws_gdp_dt_sync, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1',
+    #                      ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t',
+    #                      inplace=True)

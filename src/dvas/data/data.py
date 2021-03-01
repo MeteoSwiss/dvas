@@ -18,14 +18,12 @@ from .strategy.data import Profile, RSProfile, GDPProfile
 
 from .strategy.load import LoadProfileStrategy, LoadRSProfileStrategy, LoadGDPProfileStrategy
 
-from .strategy.resample import ResampleRSDataStrategy
-
 from .strategy.sort import SortProfileStrategy
 
 from .strategy.plot import PlotStrategy, RSPlotStrategy, GDPPlotStrategy
 
 from .strategy.rebase import RebaseStrategy
-
+from .strategy.resample import ResampleRSStrategy, ResampleGDPStrategy
 from .strategy.save import SaveDataStrategy
 
 from ..database.database import DatabaseManager
@@ -52,9 +50,12 @@ plt_gdpprf_stgy = GDPPlotStrategy()
 # Rebasing strategies
 rebase_prf_stgy = RebaseStrategy()
 
-sort_prf_stgy = SortProfileStrategy()
-rspl_rs_stgy = ResampleRSDataStrategy()
+# Resampling strategies
+resample_rsprf_stgy = ResampleRSStrategy()
+resample_gdpprf_stgy = ResampleRSStrategy() # TODO
 
+# Other strategies
+sort_prf_stgy = SortProfileStrategy()
 save_prf_stgy = SaveDataStrategy()
 
 
@@ -406,42 +407,25 @@ class MultiRSProfileAC(MutliProfileAC):
     """Abstract MultiRSProfile class"""
 
     @abstractmethod
-    def __init__(
-            self, load_stgy=None, sort_stgy=None,
-            save_stgy=None, plot_stgy=None, rebase_stgy=None,
-    ):
-        super().__init__(
-            load_stgy=load_stgy, sort_stgy=sort_stgy,
-            save_stgy=save_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_prf_stgy,
-        )
+    def __init__(self, load_stgy=None, sort_stgy=None,
+                 save_stgy=None, plot_stgy=None, rebase_stgy=None, resample_stgy=None,
+                 ):
+        super().__init__(load_stgy=load_stgy, sort_stgy=sort_stgy, save_stgy=save_stgy,
+                         plot_stgy=plt_prf_stgy, rebase_stgy=rebase_prf_stgy)
 
-        # Set attributes
-        #self._rspl_stgy = rspl_stgy
+        self._resample_stgy = resample_rsprf_stgy
 
-    # TODO
-    #  Adapt for MultiIndex
-    # def resample(self, *args, inplace=True, **kwargs):
-    #     """Resample method
-    #
-    #     Args:
-    #         *args: Variable length argument list.
-    #         inplace (bool, `optional`): If True, perform operation in-place.
-    #             Default to False.
-    #         **kwargs: Arbitrary keyword arguments.
-    #
-    #     Returns:
-    #         MultiProfileManager if inplace is True, otherwise None
-    #
-    #     """
-    #
-    #     # Resample
-    #     out = self._rspl_stgy.resample(self.copy().profiles, *args, **kwargs)
-    #
-    #     # Load
-    #     res = self.update(self.db_variables, out, inplace=inplace)
-    #
-    #     return res
+    @deepcopy
+    def resample(self, freq='1s'):
+        """Resample the profiles (one-by-one) onto regular timesteps using linear interpolation.
 
+        Args:
+            freq (str): see pandas.timedelta_range(). Defaults to '1s'.
+
+        """
+
+        data = self._resample_stgy.execute(self.profiles, freq=freq)
+        self.update(self.db_variables, data)
 
 class MultiRSProfile(MultiRSProfileAC):
     """Multi RS profile manager, designed to handle multiple RSProfile instances."""
@@ -454,6 +438,8 @@ class MultiRSProfile(MultiRSProfileAC):
             save_stgy=save_prf_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_prf_stgy,
         )
 
+        self._resample_stgy = resample_rsprf_stgy
+
 
 class MultiGDPProfile(MultiRSProfileAC):
     """Multi GDP profile manager, designed to handle multiple GDPProfile instances."""
@@ -465,6 +451,8 @@ class MultiGDPProfile(MultiRSProfileAC):
             load_stgy=load_gdpprf_stgy, sort_stgy=sort_prf_stgy,
             save_stgy=save_prf_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_prf_stgy,
         )
+
+        self._resample_stgy = resample_gdpprf_stgy
 
     @property
     def uc_tot(self):
