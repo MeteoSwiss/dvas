@@ -13,6 +13,7 @@ This module contains GRUAN-related routines, including correlation rules for GDP
 
 # Import from Python packages
 import functools
+from pathlib import Path
 import multiprocessing as mp
 import numpy as np
 import pandas as pd
@@ -66,20 +67,20 @@ def combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=
         raise DvasError('Ouch! chunk_size should be an int, not {}'.format(type(chunk_size)))
 
     if not isinstance(n_cpus, int):
-        if n_cpus =='max':
+        if n_cpus == 'max':
             n_cpus = mp.cpu_count()
         else:
             raise DvasError('Ouch! n_cpus should be an int, not {}'.format(type(n_cpus)))
 
     # Make sure I am not asking for more cpus than available
     if n_cpus > mp.cpu_count():
-        logger.warning('% cpus were requested, but I only found %i.', n_cpus, mp.cpu_counts())
-        n_cpus = mp.cpu_counts()
+        logger.warning('% cpus were requested, but I only found %i.', n_cpus, mp.cpu_count())
+        n_cpus = mp.cpu_count()
 
     # Check that all the profiles belong to the same event and the same rig. Anything else
     # doesn't make sense.
-    if len(set(gdp_prfs.get_info('evt_id'))) > 1 or \
-       len(set(gdp_prfs.get_info('rig_id'))) > 1:
+    if len(set(gdp_prfs.get_info('eid'))) > 1 or \
+       len(set(gdp_prfs.get_info('rid'))) > 1:
         raise DvasError('Ouch ! I will only combine GDPs that are from the same event+rig combo.')
 
     # Have all the profiles been synchronized ? Just trigger a warning for now. Maybe users simply
@@ -111,8 +112,6 @@ def combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=
         chunk_size += chunk_size % binning
         logger.info("Adjusting the chunk size to %i, given the binning of %i.", chunk_size, binning)
 
-    # TODO: deal with flags once I have them.
-
     # Let's get started for real
     # First, let's extract all the information I (may) need, i.e. the values, errors, and total
     # errors.
@@ -138,7 +137,7 @@ def combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=
 
     # I also need to extract some of the metadata required for computing cross-correlations.
     # Let's add it to the common DataFrame so I can carry it all in one go.
-    for metadata in ['oid', 'evt_id', 'rig_id', 'mdl_id']:
+    for metadata in ['oid', 'mid', 'eid', 'rid']:
         vals = gdp_prfs.get_info(metadata)
 
         #Loop through it and assign the values where appropriate
@@ -147,9 +146,10 @@ def combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=
             # If I am being given a list, make sure it has only 1 element. Else complain about it.
             if isinstance(val, list):
                 if len(val) > 1:
-                    raise DvasError("Ouch! {} for profile id {} contains more than 1 value ({})" +
-                                    " I am too dumb to handle this. So I give up here.",
-                                    metadata, prf_id, val)
+                    raise DvasError("Ouch! {} ". format(metadata) +
+                                    "for profile #{} ".format(prf_id) +
+                                    " contains more than one value ( {} ).".format(val) +
+                                    " I am too dumb to handle this. So I give up here.")
 
                 val = val[0]
 
@@ -178,7 +178,7 @@ def combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=
         import sys
         try:
             sys.modules['__main__'].__spec__ is None
-        except:
+        except AttributeError:
             logger.warning('BUG: __spec__ is not set. Fixing it by hand ...')
             sys.modules['__main__'].__spec__ = None
 
@@ -191,19 +191,19 @@ def combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=
     proc_chunk = pd.concat(proc_chunks, axis=0)
 
     # TODO: fix this once the flags are operational
-    proc_chunk.loc[:, 'flg'] = 99
+    proc_chunk.loc[:, 'flg'] = 64
 
     # Almost there. Now we just need to package this into a clean MultiGDPProfile
     # Let's first prepare the info dict
     new_rig_tag = 'r:'+','.join([item.split(':')[1]
-                                 for item in np.unique(gdp_prfs.get_info('rig_id')).tolist()])
+                                 for item in np.unique(gdp_prfs.get_info('rid')).tolist()])
     new_evt_tag = 'e:'+','.join([item.split(':')[1]
-                                 for item in np.unique(gdp_prfs.get_info('evt_id')).tolist()])
+                                 for item in np.unique(gdp_prfs.get_info('eid')).tolist()])
 
-    # TODO: check new "src" parameter and add ref to this function
-    cws_info = InfoManager(np.unique(gdp_prfs.get_info('evt_dt'))[0], # dt
+    cws_info = InfoManager(np.unique(gdp_prfs.get_info('edt'))[0], # dt
                            np.unique(gdp_prfs.get_info('oid')).tolist(),  # oids
-                           tags=['cws', new_rig_tag, new_evt_tag])
+                           tags=['cws', new_rig_tag, new_evt_tag],
+                           src='dvas combine() [{}]'.format(Path(__file__).name))
 
     # Let's create a dedicated Profile for the combined profile.
     # It's no different from a GDP, from the perspective of the errors.

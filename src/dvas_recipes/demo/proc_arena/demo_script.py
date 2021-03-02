@@ -5,18 +5,18 @@ Distributed under the terms of the GNU General Public License v3.0 or later.
 
 SPDX-License-Identifier: GPL-3.0-or-later
 
-Module content: demo code that illustres the core dvas functionalities
+Module content: demo code that illustrates the core dvas functionalities
 """
 
 # Import python package
 from pathlib import Path
-import numpy as np
 from datetime import datetime
+import numpy as np
 
 # Import stuff from dvas
 import dvas.plots.utils as dpu
 from dvas.dvas import start_log
-from dvas.data.data import MultiProfile
+from dvas.data.data import MultiProfile, MultiRSProfile, MultiGDPProfile
 from dvas.data.io import update_db
 from dvas.database.database import DatabaseManager
 from dvas.environ import path_var
@@ -24,19 +24,24 @@ from dvas.tools import sync as dts
 from dvas.tools import gdps as dtg
 import dvas.plots.gruan as dpg
 
-# Define
+# Extract our current location
 demo_file_path = Path(__file__).resolve()
 
 if __name__ == '__main__':
 
-    # Init path
+    print('\nStarting the dvas demonstration recipe ...\n')
+    print('To understand what happens next, look at: {}'.format(Path(__file__).name))
+
+    # --- GENERAL SETUP ---
+
+    # Init paths
     path_var.config_dir_path = demo_file_path.parent / 'config'
     path_var.orig_data_path = demo_file_path.parent / 'data'
     path_var.local_db_path = demo_file_path.parent / 'db'
     path_var.output_path = demo_file_path.parent / 'output'
 
     # Start the logging
-    start_log(3, level='DEBUG')  # 3 = log to screen only.
+    start_log(1)  # 0 = no logs, 1 = log to file only, 2 = file + screen, 3 = screen only.
 
     # Fine-tune the plotting behavior of dvas
     dpu.set_mplstyle('nolatex') # The safe option. Use 'latex' fo prettier plots.
@@ -47,23 +52,20 @@ if __name__ == '__main__':
     # Show the plots on-screen ?
     dpu.PLOT_SHOW = False
 
+<<<<<<< HEAD
     # Reset the DB to "start fresh" ?
     RESET_DB = True
+=======
+    # --- DATABASE SETUP ---
+>>>>>>> Apply new metadata names (evt_id-> eid, ...)
 
-    # Define some basic search queries
-    filt_gdp = "tags('gdp')"
-    filt_raw = "tags('raw')"
-    filt_raw_not = "not_(tags('raw'))"
-    filt_all = "all()"
-    filt_dt = "dt('20171024T120000Z', '==')"
-
-    # Define some more complex queries
-    filt_gdp_dt = "and_(%s, %s)" % (filt_gdp, filt_dt)
+    # Reset the DB to "start fresh" ?
+    RESET_DB = True
 
     # Create the dvas database
     db_mngr = DatabaseManager(reset_db=RESET_DB)
 
-    # Update the database
+    # Update the database (i.e. load in the data)
     if RESET_DB:
         update_db('tdtpros1', strict=True)
         update_db('trepros1', strict=True)
@@ -93,12 +95,12 @@ if __name__ == '__main__':
     # Add a flag
     #prf.profiles[0].set_flg('raw_na', True)
 
-    # Idem for a series of radiosonde profiles, consisting of a variable and an associated timestep
-    # and altitude.
+    # Idem for a series of radiosonde profiles, consisting of a variable, an associated timestep,
+    # and an altitude.
     #rs_prfs = MultiRSProfile()
     #rs_prfs.load_from_db(filt_raw_dt, 'trepros1', 'tdtpros1', alt_abbr='altpros1')
 
-    # Load GDPs for temperature, including all the errors
+    # Load GDPs for temperature, including all the errors at hand
     gdp_prfs = MultiGDPProfile()
     gdp_prfs.load_from_db(filt_raw_gdp_dt, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1',
                           ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t',
@@ -114,7 +116,7 @@ if __name__ == '__main__':
     #print(prfs.info[0])
 
     # How many distinct events are present in prfs ?
-    #prfs_evts = set(prfs.get_info('evt_id'))
+    #prfs_evts = set(prfs.get_info('eid'))
 
     # The data is stored inside Pandas dataframes. Each type of profile contains a different set of
     # columns and indexes.
@@ -129,9 +131,9 @@ if __name__ == '__main__':
     #                                                                    gdp_prf_df.columns))
 
     # Each profile is attributed a unique "Object Identification" (oid) number, which allows to keep
-    # track of them throughout the dvas analysis.
+    # track of profiles throughout the dvas analysis.
     # If two profiles have the same oid, it implies that they have been acquired with the same
-    # sonde, and pre-processed by the same software/recipe/etc ...
+    # sonde AND pre-processed by the same software/recipe/etc ...
     # Note: dvas processing steps DO NOT modify the oid values.
     #gdp_prf_oids = prfs.get_info('oid')
 
@@ -146,23 +148,17 @@ if __name__ == '__main__':
 
     #rs_prfs_ok = rs_prfs.resample(freq='1s', inplace=False)
 
-    #import pdb
-    #pdb.set_trace()
-
     # --- PROFILE SYNCHRONIZATION ---
 
     # Synchronizing profiles is a 2-step process. First, the shifts must be identified.
     # dvas contains several routines to do that under dvas.tools.sync
     # For example, the most basic one is to compare the raw altitude arrays
-    gdp_prfs.sort() # <- This helps keep the order straight.
+    gdp_prfs.sort() # <- This helps keep the order of Profiles consistent between runs.
     sync_shifts = dts.get_sync_shifts_from_alt(gdp_prfs)
-
-    import pdb
-    pdb.set_trace()
 
     # A fancier option is to look at the profile values, and minimize the mean of their absolute
     # difference
-    sync_shifts = dts.get_sync_shifts_from_val(gdp_prfs, max_shift=50, first_guess=sync_shifts)
+    #sync_shifts = dts.get_sync_shifts_from_val(gdp_prfs, max_shift=50, first_guess=sync_shifts)
 
     # Given these shifts, let's compute the new length of the synchronized Profiles.
     # Do it such that no data is actually cropped out, i.e. add NaN/NaT wherever needed.
@@ -178,7 +174,7 @@ if __name__ == '__main__':
     # --- ASSEMBLY OF COMBINED WORKING STANDARD ---
 
     # If GDPs are synchronized, they can be combined into a Combined Working Standard (CWS) using
-    # tools located inside dvas.tools.gruan
+    # tools located inside dvas.tools.gdps
 
     # Let us begin by extracting the synchronized GDPs for a specific flight
     filt_gdp_dt_sync = "and_(tags('sync'), {}, {})".format(filt_gdp, filt_dt)
@@ -194,10 +190,6 @@ if __name__ == '__main__':
     print("\nGDP lengths post-synchronization: ", [len(item) for item in gdp_prfs.get_prms()])
 
     # Let us now create a high-resolution CWS for these synchronized GDPs
-    #start_time = datetime.now()
-    #cws_v1 = dtg.combine_gdps_v1(gdp_prfs, binning=1, method='weighted mean')
-    #print('CWS assembled in: {}s'.format((datetime.now()-start_time).total_seconds()))
-
     start_time = datetime.now()
     cws = dtg.combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=4)
     print('CWS assembled in: {}s'.format((datetime.now()-start_time).total_seconds()))
