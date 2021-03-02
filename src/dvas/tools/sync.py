@@ -88,5 +88,5 @@ def get_sync_shifts_from_val(prfs, max_shift=100, first_guess=None):
     if np.any(np.abs(ind)-np.abs(max_shift) < 10):
         logger.warning('sync_shift_from_val values is close from the edge of the search zone')
 
-
-    return shifts[ind]
+    # Return a list of shifts
+    return list(shifts[ind])
