@@ -12,9 +12,8 @@ This module contains GRUAN-related utilities.
 """
 
 # WARNING: this package should NOT import anything from dvas.data.
-# The routines included must be designed in a generci manner, such that they can also be
+# The routines included must be designed in a general manner, such that they can also be
 # exploited by MultiProfile Strategies without any recursive import problems.
-
 # TODO: is there a better way to do this ?
 
 # Import from Python
@@ -343,16 +342,16 @@ def process_chunk(df_chunk, binning=1, method='weighted mean'):
 
     Note:
         The input format for `df_chunk` is a `pandas.DataFrame` with a very specific structure.
-        It requires a single index called `_idx`, with 10 columns per profiles with labels `tdt`,
-        `alt`, `val`, 'flg', `ucr`, `ucs`, `uct`, `ucu`, `uc_tot` and `w_ps`. All these must be
-        grouped together using pd.MultiIndex where the level 0 corresponds to the profile number
-        (e.g. 0,1,2...), and the level 1 is the original column name, i.e.::
+        It requires a single index called `_idx`, with 14 columns per profiles with labels `tdt`,
+        `alt`, `val`, 'flg', `ucr`, `ucs`, `uct`, `ucu`, `uc_tot`, `w_ps`, `oid`, `mid`, `eid`, and
+        `rid`. All these must be grouped together using pd.MultiIndex where the level 0 corresponds
+        to the profile number (e.g. 0,1,2...), and the level 1 is the original column name, i.e.::
 
-                            0                                             ...         1                        0          1
-                          alt              tdt         val       ucr ucs  ...       uct ucu    uc_tot       w_ps       w_ps
-            _idx                                                          ...
-            0      486.726685  0 days 00:00:00  284.784546       NaN NaN  ...  0.100106 NaN  0.211856  55.861518  22.280075
-            1      492.425507  0 days 00:00:01  284.695190  0.079443 NaN  ...  0.100106 NaN  0.194927  67.896245  26.318107
+                       0                                    ...     1                 0     1
+                     alt              tdt    val   ucr ucs  ...   uct ucu  uc_tot  w_ps  w_ps
+            _idx                                            ...
+            0      486.7  0 days 00:00:00  284.7   NaN NaN  ...  0.10 NaN    0.21  55.8  22.2
+            1      492.4  0 days 00:00:01  284.6  0.07 NaN  ...  0.10 NaN    0.19  67.8  26.3
             ...
 
     Args:
@@ -435,7 +434,8 @@ def process_chunk(df_chunk, binning=1, method='weighted mean'):
         # Let's compute the full covariance matrix for the merged profile (for the specific
         # error type).
         # This is a square matrix, with the off-axis elements containing the covarience terms
-        # for the merged profile.
+        # for the merged profile. For now ignore all NaNs. This is to allow bins with only
+        # partial datza to still return a number.
         V_mat = np.where(np.isnan(G_mat), 0, G_mat) @ \
                 np.where(np.isnan(U_mat), 0, U_mat) @ \
                 np.where(np.isnan(G_mat.T), 0, G_mat.T)
@@ -448,26 +448,16 @@ def process_chunk(df_chunk, binning=1, method='weighted mean'):
             logger.warning("Non-0 off-diagonal elements of CWS correlation matrix [%s].",
                            sigma_name)
 
-        # TODO: Deal with NaN's properly
+        # I "ignored" NaN when computing V, to ensure that if a bin contains partial NaNs,
+        # it still returns a good value. But what if the bin contains NO valid data ? I.e.:
+        # 1) if all the weights are bad in a given bin ...
+        check_1 = np.all(np.isnan(G_mat), axis=1)
+        # 2) if all the covariance terms are NaN's for a given bin ..
+        check_2 = [np.all(np.isnan(U_mat[ind][(G_mat[ind] != 0) * (~np.isnan(G_mat[ind]))]))
+                   for ind in range(len(G_mat))]
 
-        # I can finally use matrix multiplication (using @) to save me a lot of convoluted sums ...
-        # If I only have nan's then that's my result. If I only have partial nan's, then make sure I
-        # still get a number out.
-        #if np.all(np.isnan(jac_elmts)):
-        #    comb_ucrs[k_ind] = np.nan
-        #    comb_ucss[k_ind] = np.nan
-        #    comb_ucts[k_ind] = np.nan
-        #    comb_ucus[k_ind] = np.nan
-
-        #else:
-        # Replace all the nan's with zeros so they do not intervene in the sums
-        #if np.all(np.isnan(u_mats[0])):
-        #    comb_ucrs[k_ind] = np.nan
-        #else:
-        #    comb_ucrs[k_ind] = np.where(np.isnan(jac_elmts[k_ind]), 0, jac_elmts[k_ind]) @ \
-        #                          np.where(np.isnan(u_mats[0]), 0, u_mats[0]) @ \
-        #                          np.where(np.isnan(jac_elmts[k_ind].T), 0, jac_elmts[k_ind].T)
-        #    comb_ucrs[k_ind] = np.sqrt(comb_ucrs[k_ind])
+        # Then mask the final variance accordingly
+        V_mat[check_1 | check_2] = np.nan
 
         # Assign the values to the combined df_chunk
         x_ms.loc[:, sigma_name] = np.sqrt(V_mat.diagonal())

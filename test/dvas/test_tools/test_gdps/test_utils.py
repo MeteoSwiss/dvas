@@ -147,6 +147,9 @@ def chunk():
     test_chunk.loc[:, (slice(None), PRF_REF_UCU_NAME)] = 1.
     test_chunk.loc[:, (slice(None), 'uc_tot')] = 2.
 
+    # Errors are NaNs, but values are not.
+    test_chunk.loc[9, (slice(None), PRF_REF_UCR_NAME)] = np.nan
+
     # THe other stuff
     test_chunk.loc[:, (slice(None), 'eid')] = 'e:1'
     test_chunk.loc[:, (slice(None), 'rid')] = 'r:1'
@@ -241,3 +244,5 @@ def test_process_chunk(chunk):
     assert out.loc[0, PRF_REF_UCS_NAME] == 1
     assert out.loc[0, PRF_REF_UCT_NAME] == 1
     assert out.loc[0, PRF_REF_UCU_NAME] == np.sqrt(1/3)
+    assert np.isnan(out.loc[1, PRF_REF_UCR_NAME]) # Values are all NaNs
+    assert np.isnan(out.loc[9, PRF_REF_UCR_NAME]) # Error are all NaNs
