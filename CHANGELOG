@@ -7,10 +7,13 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 ### Added:
  - [modolol, 2021-03-11] Import flags from CSV files
+ - [fpavogt, 2021-03-03] Add new gdps sub-module in dvas.tools
 ### Fixed:
+ - [fpavogt, 2021-03-05] Fix test_utils.py tests.
  - [modolol, 2020-02-25] Fix issue #113
  - [modolol, 2020-02-17] Fix issue #96 (enhancement toward v0.3)
 ### Changed:
+ - [fpavogt, 2021-03-03] Re-design GDP routine to use bigger Profile chunks to speed things up
  - [modolol, 2020-02-25] DB access methods
  - [modolol, 2020-02-23] Change evt_dt -> edt
  - [modolol, 2020-02-23] Change evt_id -> eid, rig_id -> rid
