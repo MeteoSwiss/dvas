@@ -38,7 +38,13 @@ def test_fancy_nansum():
     assert np.isnan(tools.fancy_nansum(vals, axis=1).values[0])
     assert np.all(tools.fancy_nansum(vals, axis=1).values[1:] == [1, 2, 3, 3])
 
-    #Now something more specific, to make sure I can use these function also for a groupby() entity.
+    # Now something more specific, to make sure I can use these function also for a groupby()
+    # entity.
     assert np.isnan(vals[0].groupby(vals.index//2).aggregate(tools.fancy_nansum, axis=0)[0])
     assert np.all(vals[0].groupby(vals.index//2).aggregate(tools.fancy_nansum, axis=0)[1:] ==
                   [1, 1])
+
+    # Also make sure it works well with timedelta64[ns] types. See dvas issue #122.
+    vals = pd.DataFrame(index=range(10), columns=['tdt'], dtype='timedelta64[ns]')
+    assert np.isnan(tools.fancy_nansum(vals))
+    assert np.isnan(tools.fancy_nansum(vals, axis=1)).all()
