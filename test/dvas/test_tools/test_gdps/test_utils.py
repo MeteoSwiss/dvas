@@ -238,8 +238,8 @@ def test_process_chunk(chunk):
     propagation of errors.
     """
 
+    # First test the mean
     out = process_chunk(chunk, binning=1, method='mean')
-
     assert out.loc[0, PRF_REF_UCR_NAME] == np.sqrt(1/3)
     assert out.loc[0, PRF_REF_UCS_NAME] == 1
     assert out.loc[0, PRF_REF_UCT_NAME] == 1
