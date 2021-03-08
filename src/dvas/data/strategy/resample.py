@@ -10,12 +10,13 @@ Module contents: Resample strategies
 """
 
 # Import from external packages
+from scipy.interpolate import interp1d
 import pandas as pd
 
 # Import from current package
 from ...errors import DvasError
 from .data import MPStrategyAC
-from ...hardcoded import PRF_REF_INDEX_NAME, PRF_REF_TDT_NAME
+from ...hardcoded import PRF_REF_INDEX_NAME, PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_FLG_NAME
 
 class ResampleRSStrategy(MPStrategyAC):
     """Class to manage the (time) resampling of Profiles"""
@@ -44,19 +45,22 @@ class ResampleRSStrategy(MPStrategyAC):
         for (prf_ind, prf) in enumerate(prfs):
 
             # Let's identify the min and max integer values, rounded to the nearest second.
-            t0 = min(prf.data.index.get_level_values(PRF_REF_TDT_NAME)).ceil('1s')
-            t1 = max(prf.data.index.get_level_values(PRF_REF_TDT_NAME)).ceil('1s')
+            t_0 = min(prf.data.index.get_level_values(PRF_REF_TDT_NAME)).ceil('1s')
+            t_1 = max(prf.data.index.get_level_values(PRF_REF_TDT_NAME)).floor('1s')
+
             # Turn this into a regular grid
-            new_tdt = pd.timedelta_range(t0, t1, freq=freq, name=PRF_REF_TDT_NAME)
+            new_tdt = pd.timedelta_range(t_0, t_1, freq=freq, name=PRF_REF_TDT_NAME)
+            # Get the existing time steps
+            old_tdt = prf.data.index.get_level_values(PRF_REF_TDT_NAME)
 
             # Check if the new index is the same as the old. And if so, continue to the next
             # next profile without changing anything
-            if len(new_tdt)==len(prf.data):
+            if len(new_tdt) == len(prf.data):
                 if all(new_tdt == prf.data.index.get_level_values(PRF_REF_TDT_NAME)):
                     continue
 
             # Get ready to interpolate.
-            # First, get the original data out, reseting all the indices.
+            # First, get the original data out, reseting all the indices to columns.
             this_data = prf.data.reset_index()
 
             # Let's drop the original integer index, to avoid type conversion issues
@@ -65,27 +69,17 @@ class ResampleRSStrategy(MPStrategyAC):
             # Create a new dataframe to keep the interpolated stuff
             new_data = pd.DataFrame(new_tdt, columns=this_data.columns)
 
-            # Now, start looping through each layer. This may seem dumb (and probably is), but it
-            # remains faster than propagating all the errors in one go with a massive matrix.
-            for ind in range(len(new_data)):
+            # Loop through the different columns
+            for name in this_data.columns:
 
-                # Where do I want to interpolate stuff onto ?
-                xi_prime = new_tdt[ind]
+                if name == PRF_REF_FLG_NAME:
+                    # TODO: deal with the flags
+                    continue
 
-                # Identify the nearest surrounding points
-                o_ind = this_data[PRF_REF_TDT_NAME].searchsorted(xi_prime)
-                xi = this_data[PRF_REF_TDT_NAME][o_ind-1]
-                xi_p1 = this_data[PRF_REF_TDT_NAME][o_ind]
+                func = interp1d(old_tdt.values.astype('int64'),
+                                this_data.loc[:, name].values, kind='linear')
 
-                fact = (xi_prime-xi)/(xi_p1-xi)
-
-                # Perform the interolation
-                for name in this_data.columns:
-                    if name == PRF_REF_TDT_NAME:
-                        continue
-
-                    new_data[name][ind] = fac*this_data[name][o_ind] + \
-                                          (1-fac) * this_data[name][o_ind-1]
+                new_data.loc[:, name] = func(new_tdt.values.astype('int64'))
 
             # And finally let's assign the new DataFrame to the Profile. The underlying setter
             # will take care of reformatting all the indices as needed.
@@ -98,5 +92,23 @@ class ResampleGDPStrategy(MPStrategyAC):
 
     """
 
-    
+
     #TODO
+
+    # Now, start looping through each layer. This may seem dumb (and probably is), but it
+    # remains faster than propagating all the errors in one go with a massive matrix.
+    #for ind in range(len(new_data)):
+    #    # Where do I want to interpolate stuff onto ?
+    #    xi_prime = new_tdt[ind]
+    #    # Identify the nearest surrounding points
+    #    o_ind = this_data[PRF_REF_TDT_NAME].searchsorted(xi_prime)
+    #    xi = this_data[PRF_REF_TDT_NAME][o_ind-1]
+    #    xi_p1 = this_data[PRF_REF_TDT_NAME][o_ind]
+    #    fact = (xi_prime-xi)/(xi_p1-xi)
+    #    # Perform the interolation
+    #    for name in this_data.columns:
+    #        if name == PRF_REF_TDT_NAME:
+    #            continue
+    #        # Deal with error
+    #        new_data[name][ind] = fac*this_data[name][o_ind] + \
+    #                              (1-fac) * this_data[name][o_ind-1]
