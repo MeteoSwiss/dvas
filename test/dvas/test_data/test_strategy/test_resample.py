@@ -36,7 +36,7 @@ class TestResampleStrategy:
     """Test SortProfileStrategy class"""
 
     def test_resample_rs(self):
-        """Test rebase method"""
+        """Test resample  method"""
 
         # Prepare some datasets to play with
         info_1 = InfoManager('20201217T0000Z', 1)
@@ -49,8 +49,7 @@ class TestResampleStrategy:
         multiprf.update({'val': None, 'tdt': None, 'alt': None, 'flg': None},
                         [RSProfile(info_1, data_1)])
 
-        # Cropping, no shift
-        # Let's set all the Profiles on the same length as the first
+        # Let's luanch the resampling
         out = multiprf.resample(freq='1s', inplace=False)
 
         # Can I interpolate properly ?
@@ -64,21 +63,32 @@ class TestResampleStrategy:
         assert len(np.unique(np.diff(tdts))) == 1
         assert np.unique(np.diff(tdts))[0] == 1
 
+    def test_resample_gdp(self):
+        """Test rebase method"""
 
+        # Prepare some datasets to play with
+        info_1 = InfoManager('20201217T0000Z', 1)
+        data_1 = pd.DataFrame({'alt': [10., 15., 20., 35], 'val': [11., 12., 13., 14],
+                               'flg': [1, 1, 1, 1], 'ucr': [1, 1, 1, 1], 'ucs': [1, 1, 1, 1],
+                               'uct': [1, 1, 1, 1], 'ucu': [1, 1, 1, 1],
+                               'tdt': [0e9, 1e9, 1.5e9, 2.1e9]})
+        # Let's build a multiprofile so I can test things out.
+        multiprf = MultiGDPProfile()
+        multiprf.update({'val': None, 'tdt': None, 'alt': None, 'flg': None, 'ucr': None,
+                         'ucs': None, 'uct': None, 'ucu': None},
+                        [GDPProfile(info_1, data_1)])
 
+        # Let's launch the resampling
+        out = multiprf.resample(freq='1s', inplace=False)
 
-    #def test_resample_gdp(self):
-    #    """Test rebase method"""
-#
-    #    # Prepare some datasets to play with
-    #    info_1 = InfoManager('20201217T0000Z', 1)
-    #    data_1 = pd.DataFrame({'alt': [10., 15., 20., 35], 'val': [11., 12., 13., 14],
-    #                           'flg': [1, 1, 1, 1],
-    #                           'tdt': [0e9, 1e9, 1.5e9, 2.1e9]})
-    #    # Let's build a multiprofile so I can test things out.
-    #    multiprf = MultiRSProfile()
-    #    multiprf.update({'val': None, 'tdt': None, 'alt': None, 'flg': None},
-    #                    [GDPProfile(info_1, data_1)])
-    #    # Cropping, no shift
-    #    # Let's set all the Profiles on the same length as the first
-    #    out_a = multiprf.resample(3, shifts=0, inplace=False)
+        # The weight factor for the last item. To save me typing it everywhere
+        w = 0.5/0.6
+        # Proper interpolation
+        assert all(out.profiles[0].data.loc[2, 'val'] ==
+                   data_1.loc[2,'val']*(1-w) + data_1.loc[3, 'val']*w)
+        assert out.profiles[0].data.index.get_level_values('alt')[2] == \
+                   data_1.loc[2,'alt']*(1-w) + data_1.loc[3, 'alt']*w
+        # Proper error propagation
+        assert all(out.profiles[0].data.loc[2, 'ucu'] == np.sqrt((1-w)**2 + w**2))
+        assert all(out.profiles[0].data.loc[2, 'ucs'] == 1)
+        assert all(out.profiles[0].data.loc[2, 'uct'] == 1)

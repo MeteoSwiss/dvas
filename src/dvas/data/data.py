@@ -52,7 +52,7 @@ rebase_prf_stgy = RebaseStrategy()
 
 # Resampling strategies
 resample_rsprf_stgy = ResampleRSStrategy()
-resample_gdpprf_stgy = ResampleRSStrategy() # TODO
+resample_gdpprf_stgy = ResampleGDPStrategy()
 
 # Other strategies
 sort_prf_stgy = SortProfileStrategy()
