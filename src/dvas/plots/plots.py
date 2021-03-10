@@ -69,11 +69,10 @@ def multiprf(prfs, index='alt', label='oid', uc=None, **kwargs):
 
         # For time deltas, I need to get a float out for the limits.
         if index == 'tdt':
-            xmin = np.nanmax([xmin, x.min(skipna=True).value])
-            xmax = np.nanmin([xmax, x.max(skipna=True).value])
-        else:
-            xmin = np.nanmax([xmin, x.min(skipna=True)])
-            xmax = np.nanmin([xmax, x.max(skipna=True)])
+            x = x.total_seconds()
+
+        xmin = np.nanmax([xmin, x.min(skipna=True)])
+        xmax = np.nanmin([xmax, x.max(skipna=True)])
 
         # Plot the uncertainties
         if len(prms) > 1:
