@@ -50,9 +50,9 @@ def corcoefs(i, j, sigma_name, oid_i=None, oid_j=None, mid_i=None, mid_j=None,
 
     Warning:
         - If no oids are specified, the function will assume that the data originates
-        **from the exact same radiosonde.** Idem for the GDP models, rig id and event id.
+          **from the exact same radiosonde.** Idem for the GDP models, rig id and event id.
         - The profiles are assumed to be synchronized, i.e. if specifying i and j as steps,
-        i=j implies that they both have the same altitude.
+          i=j implies that they both have the same altitude.
 
     Returns:
         numpy.ndarray of float(s): the correlation coefficient(s), in the range [0, 1].
