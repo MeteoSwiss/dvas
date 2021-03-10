@@ -52,12 +52,12 @@ class LoadStrategyAC(MPStrategyAC):
             list of InfoManager: Data related info
             list of pd.DataFrame: Data
 
-        Example:
-            ```
+        Example::
+
             import dvas.data.strategy.load as ld
             t = ld.LoadProfileStrategy()
             t.fetch("dt('20160715T120000Z', '==')", {'alt':'altpros1', 'val':'trepros1'})
-            ```
+            
 
         """
 
