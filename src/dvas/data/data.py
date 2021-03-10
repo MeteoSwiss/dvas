@@ -17,13 +17,11 @@ import pandas as pd
 from .strategy.data import Profile, RSProfile, GDPProfile
 
 from .strategy.load import LoadProfileStrategy, LoadRSProfileStrategy, LoadGDPProfileStrategy
-
 from .strategy.sort import SortProfileStrategy
-
 from .strategy.plot import PlotStrategy, RSPlotStrategy, GDPPlotStrategy
 
 from .strategy.rebase import RebaseStrategy
-from .strategy.resample import ResampleRSStrategy, ResampleGDPStrategy
+from .strategy.resample import ResampleStrategy
 from .strategy.save import SaveDataStrategy
 
 from ..database.database import DatabaseManager
@@ -48,15 +46,14 @@ plt_rsprf_stgy = RSPlotStrategy()
 plt_gdpprf_stgy = GDPPlotStrategy()
 
 # Rebasing strategies
-rebase_prf_stgy = RebaseStrategy()
+rebase_stgy = RebaseStrategy()
 
 # Resampling strategies
-resample_rsprf_stgy = ResampleRSStrategy()
-resample_gdpprf_stgy = ResampleGDPStrategy()
+resample_stgy = ResampleStrategy()
 
 # Other strategies
-sort_prf_stgy = SortProfileStrategy()
-save_prf_stgy = SaveDataStrategy()
+sort_stgy = SortProfileStrategy()
+save_stgy = SaveDataStrategy()
 
 
 # TODO
@@ -398,8 +395,8 @@ class MultiProfile(MutliProfileAC):
 
     def __init__(self):
         super().__init__(
-            load_stgy=load_prf_stgy, sort_stgy=sort_prf_stgy,
-            save_stgy=save_prf_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_prf_stgy,
+            load_stgy=load_prf_stgy, sort_stgy=sort_stgy,
+            save_stgy=save_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_stgy,
         )
 
 
@@ -411,9 +408,9 @@ class MultiRSProfileAC(MutliProfileAC):
                  save_stgy=None, plot_stgy=None, rebase_stgy=None, resample_stgy=None,
                  ):
         super().__init__(load_stgy=load_stgy, sort_stgy=sort_stgy, save_stgy=save_stgy,
-                         plot_stgy=plt_prf_stgy, rebase_stgy=rebase_prf_stgy)
+                         plot_stgy=plt_prf_stgy, rebase_stgy=rebase_stgy)
 
-        self._resample_stgy = resample_rsprf_stgy
+        self._resample_stgy = resample_stgy
 
     @deepcopy
     def resample(self, freq='1s'):
@@ -434,11 +431,11 @@ class MultiRSProfile(MultiRSProfileAC):
 
     def __init__(self):
         super().__init__(
-            load_stgy=load_rsprf_stgy, sort_stgy=sort_prf_stgy,
-            save_stgy=save_prf_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_prf_stgy,
+            load_stgy=load_rsprf_stgy, sort_stgy=sort_stgy,
+            save_stgy=save_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_stgy,
         )
 
-        self._resample_stgy = resample_rsprf_stgy
+        self._resample_stgy = resample_stgy
 
 
 class MultiGDPProfile(MultiRSProfileAC):
@@ -448,11 +445,11 @@ class MultiGDPProfile(MultiRSProfileAC):
 
     def __init__(self):
         super().__init__(
-            load_stgy=load_gdpprf_stgy, sort_stgy=sort_prf_stgy,
-            save_stgy=save_prf_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_prf_stgy,
+            load_stgy=load_gdpprf_stgy, sort_stgy=sort_stgy,
+            save_stgy=save_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_stgy,
         )
 
-        self._resample_stgy = resample_gdpprf_stgy
+        self._resample_stgy = resample_stgy
 
     @property
     def uc_tot(self):
@@ -464,17 +461,3 @@ class MultiGDPProfile(MultiRSProfileAC):
         """
 
         return [arg.uc_tot for arg in self.profiles]
-
-    # def plot(self, x='alt', **kwargs):
-    #     """ Plot method
-    #
-    #     Args:
-    #         x (str): parameter name for the x axis. Defaults to 'alt'.
-    #         **kwargs: Arbitrary keyword arguments, to be passed down to the plotting function.
-    #
-    #     Returns:
-    #         None
-    #
-    #     """
-    #
-    #     self._plot_stgy.plot(self.profiles, self.keys, x=x, **kwargs)
