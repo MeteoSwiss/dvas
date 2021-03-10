@@ -34,8 +34,10 @@ There is therefore two distinct ways to use dvas:
      default analysis recipes, or even to write their own recipe from scratch, must use the core
      ``dvas`` package to do so.
 
-dvas is being developed on Github, where you can submit all your questions and bug reports.
-Contributions via pull requests are also welcome. See :ref:`troubleshooting:Troubleshooting` for more details.
+dvas is being developed on Github, where you can submit all your
+`questions <https://github.com/MeteoSwiss/dvas/discussions>`_ and
+`bug reports <https://github.com/MeteoSwiss/dvas/issues>`_. Contributions via pull requests are also
+welcome. See :ref:`troubleshooting:Troubleshooting` for more details.
 
 
 .. toctree::
