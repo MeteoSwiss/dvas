@@ -52,12 +52,7 @@ if __name__ == '__main__':
     # Show the plots on-screen ?
     dpu.PLOT_SHOW = False
 
-<<<<<<< HEAD
-    # Reset the DB to "start fresh" ?
-    RESET_DB = True
-=======
     # --- DATABASE SETUP ---
->>>>>>> Apply new metadata names (evt_id-> eid, ...)
 
     # Reset the DB to "start fresh" ?
     RESET_DB = True
