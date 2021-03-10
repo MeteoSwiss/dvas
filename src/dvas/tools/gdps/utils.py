@@ -310,7 +310,7 @@ def delta(df_chunk, binning=1):
 
 
     # Compute the difference between the two profiles (full resolution)
-    delta_pqs = vals[0] - vals[1]
+    delta_pqs = None #vals[0] - vals[1]
 
     if binning > 1:
         # If required, bin the array as required.

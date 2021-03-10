@@ -57,7 +57,6 @@ class LoadStrategyAC(MPStrategyAC):
             import dvas.data.strategy.load as ld
             t = ld.LoadProfileStrategy()
             t.fetch("dt('20160715T120000Z', '==')", {'alt':'altpros1', 'val':'trepros1'})
-            
 
         """
 

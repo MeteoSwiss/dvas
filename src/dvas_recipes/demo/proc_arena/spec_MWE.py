@@ -1,3 +1,4 @@
+""" This is here only for a short time, until issue #121 gets dealt with. """
 
 import sys
 
