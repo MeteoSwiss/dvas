@@ -143,6 +143,8 @@ class ResampleStrategy(MPStrategyAC):
                     # terms for the merged profile.
                     V_mat = G_mat @ U_mat @ G_mat.T
 
+                    # TODO: use a chunk approach to speed things up.
+
                     # Most likely, I will have some non-diagonal elements to this matrix,
                     # indicative of correlations between the interpolated points (this will happen
                     # if a bin edge is used for two interpolated points, which is not that rare).
