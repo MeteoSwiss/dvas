@@ -19,7 +19,7 @@ import numpy as np
 from ..logger import log_func_call
 from ..logger import tools_logger as logger
 from ..errors import DvasError
-from .gruan import combine_gdps
+from .gdps.gdps import combine
 from ..plots import gruan as dpg
 
 # Run a chi-square analysis between a merged profile and its components
@@ -123,7 +123,7 @@ def ks_test(gdp_pair, alpha=0.0027, binning_list=None, do_plot=False, **kwargs):
     for (_, binning) in enumerate(binning_list):
 
         # Compute the profile delta with the specified sampling
-        gdp_delta = combine_gdps(gdp_pair, binning=binning, method='delta')
+        gdp_delta = combine(gdp_pair, binning=binning, method='delta')
 
         # Compute k_pqi (the normalized profile delta)
         k_pqi = gdp_delta.profiles[0].values/gdp_delta.get_prms('uc_tot')[0].values

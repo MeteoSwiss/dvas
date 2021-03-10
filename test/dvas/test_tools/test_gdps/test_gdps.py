@@ -20,7 +20,7 @@ from dvas.data.data import MultiGDPProfile
 from dvas.database.database import InfoManager
 
 # Functions to test
-from dvas.tools.gdps import combine
+from dvas.tools.gdps.gdps import combine
 
 # Define db_data. This is some black magic that is directly related to conftest.py
 # This is a temporary db, that is required for get_info() to work properly with mdl_id.
