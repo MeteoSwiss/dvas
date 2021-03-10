@@ -20,6 +20,3 @@
   tag_desc: "cat(supper(get(1)), ' ', 'event')"
   # Use lambda function to set 1st character to upper case and append the rest
   # of the group in lower case.
-
-- tag_name: 'vof'
-  tag_desc: 'demo tag'
