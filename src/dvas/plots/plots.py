@@ -91,8 +91,8 @@ def multiprf(prfs, index='alt', label='oid', uc=None, **kwargs):
     # Add the legend
     pu.fancy_legend(ax1, label)
 
-    ax1.set_title('{} -- {}'.format(np.unique(prfs.get_info('evt_id')),
-                                    np.unique(prfs.get_info('rig_id'))))
+    ax1.set_title('{} -- {}'.format(np.unique(prfs.get_info('eid')),
+                                    np.unique(prfs.get_info('rid'))))
 
     # Save the plot.
     pu.fancy_savefig(fig, 'multiprf', **kwargs)
