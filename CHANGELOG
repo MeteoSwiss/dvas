@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 ### Added:
+ - [modolol, 2021-03-11] Import flags from CSV files
 ### Fixed:
  - [modolol, 2020-02-25] Fix issue #113
  - [modolol, 2020-02-17] Fix issue #96 (enhancement toward v0.3)
