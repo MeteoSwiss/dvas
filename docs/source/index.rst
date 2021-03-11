@@ -24,7 +24,7 @@ The code is composed of two sub-package:
   - ``dvas_recipes``: the high-level package that contains all the *analysis recipes* specific to a
     given scenario: for example, the UAII 2022 campaign.
 
-There is therefore two distinct ways to use dvas:
+There are therefore two distinct ways to use dvas:
 
   1. :ref:`running_recipes:Running dvas recipes`: users interested to reproduce the UAII 2022
      analysis (either for the original dataset, or for a different-but-similar one) need only to use

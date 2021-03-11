@@ -18,4 +18,4 @@ Troubleshooting
 * If you have a **question** about the code, its usage, or its results:
 
    1. Take a look at the `dvas Github Discussions <https://github.com/MeteoSwiss/dvas/discussions>`_.
-      If your question hasn't yet been answered yet, go right ahead and open a new Thread.
+      If your question hasn't yet been answered, go right ahead and open a new Thread.
