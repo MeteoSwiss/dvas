@@ -10,7 +10,7 @@ processing recipes, or create their own.
 
     If you plan on coding with dvas, we strongly suggest that you begin by taking a look at the
     `contributing guidelines <https://github.com/MeteoSwiss-MDA/dvas/blob/develop/CONTRIBUTING.md>`_
-    on Github. Even if you do not want to share your modifications (which is totally fine!), these
+    on Github. Even if you do not want to share your modifications (which is totally fine !), these
     guidelines contain critical information regarding the structure and spirit of the code.
 
 
@@ -29,6 +29,7 @@ The following tag names are used by dvas, and thus protected. They are defined i
     * ``derived``:
     * ``empty``:
     * ``sync``:
+    *  ``1s``:
     * ``resampled``:
 
 Default database variable names
@@ -60,10 +61,10 @@ names are applicable:
 
 The following parameters are applicable to their event metadata:
 
- * ``srn``: radiosonde Serial Number
- * ``evt``: measurement event ID
- * ``rig``: rig ID (in case of multiple flights)
- * ``mdl``: the GDP model and version
+ * ``oid``: object ID, unique for profiles with the same radiosonde serial number and product ID
+ * ``eid``: measurement event ID
+ * ``rid``: rig ID (in case of multiple flights)
+ * ``mid``: the GDP model ID
 
 All radiosonde profiles must be associated to a specific ``event`` and ``rig``,
 which (respectively) encode the spatial+temporal and payload configurations of the launch.
