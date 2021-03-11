@@ -23,6 +23,7 @@ from dvas.config.config import OneDimArrayConfigLinker
 from dvas.config.config import ConfigExprInterpreter
 from dvas.config.config import ConfigGenMaxLenError
 from dvas.environ import glob_var
+from dvas.hardcoded import FLAG_PRM_NAME_SUFFIX
 
 
 def test_instantiate_config_managers():
@@ -119,11 +120,15 @@ class TestOneDimArrayConfigLinker:
 
     """
 
+    # Dummy param number
+    n_dummy = 10
+
     # String generator patern
-    prm_pat = re.compile(r'^dummytst_(param\d+)$')
+    prm_pat = re.compile(r'dummytst_(param\d)')
+    flg_pat = re.compile(rf'{prm_pat.pattern}{FLAG_PRM_NAME_SUFFIX}')
 
     # Catched string patern
-    desc_pat = re.compile(r'^param\d+$')
+    desc_pat = re.compile(r'param\d+')
 
     # Config linker
     cfg_lkr = OneDimArrayConfigLinker([Parameter])
@@ -134,6 +139,7 @@ class TestOneDimArrayConfigLinker:
         Test:
             Returned type
             Item generator
+            Automatic generation of '_flag' parameter
             Raises ConfigGenMaxLenError
 
         """
@@ -142,11 +148,15 @@ class TestOneDimArrayConfigLinker:
 
         assert isinstance(doc, list)
         assert sum(
-            [self.prm_pat.match(arg['prm_name']) is not None for arg in doc]
-        ) == 10
+            [self.prm_pat.fullmatch(arg['prm_name']) is not None for arg in doc]
+        ) == self.n_dummy
         assert sum(
-            [self.desc_pat.match(arg['prm_desc']) is not None for arg in doc]
-        ) == 10
+            [self.flg_pat.fullmatch(arg['prm_name']) is not None for arg in doc]
+        ) == self.n_dummy
+        assert sum(
+            [self.desc_pat.fullmatch(arg['prm_desc']) is not None for arg in doc]
+        ) == self.n_dummy
+
         with glob_var.protect():
             glob_var.config_gen_max = 2
             with pytest.raises(ConfigGenMaxLenError):

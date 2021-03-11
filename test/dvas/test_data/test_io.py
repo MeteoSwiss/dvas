@@ -25,6 +25,7 @@ def test_update_db():
 
     # Update
     update_db('trepros1', strict=True)
+    update_db('trepros1_flag', strict=True)
     update_db('tdtpros1', strict=True)
     update_db('altpros1', strict=True)
 
@@ -38,3 +39,4 @@ def test_update_db():
     assert all([not arg.val.isna().all() for arg in data[0]])
     assert all([not arg.alt.isna().all() for arg in data[0]])
     assert all([not arg.tdt.isna().all() for arg in data[0]])
+    assert sum([not arg.flg.isna().all() for arg in data[0]]) == 2

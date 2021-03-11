@@ -361,7 +361,7 @@ class Profile(ProfileAC):
         # Define
         def set_to_true(x):
             """Set bit to True"""
-            if np.isnan(x):
+            if pd.isna(x):
                 out = (1 << self._get_flg_bit_nbr(val))
             else:
                 out = int(x) | (1 << self._get_flg_bit_nbr(val))
@@ -370,7 +370,7 @@ class Profile(ProfileAC):
 
         def set_to_false(x):
             """Set bit to False"""
-            if np.isnan(x):
+            if pd.isna(x):
                 out = 0
             else:
                 out = int(x) & ~(1 << self._get_flg_bit_nbr(val))

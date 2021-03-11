@@ -19,6 +19,7 @@ from ..linker import LocalDBLinker
 from ...database.database import InfoManager
 from ...database.model import Data
 from ...errors import LoadError
+from ...hardcoded import FLAG_PRM_NAME_SUFFIX
 
 
 # Define
@@ -28,6 +29,16 @@ VALUE_NM = Data.value.name
 
 class LoadStrategyAC(MPStrategyAC):
     """Abstract load strategy class"""
+
+    @staticmethod
+    def add_flag_prm(db_vs_df_keys):
+        """Add flag parameter to DB vs Dataframe keys
+
+        db_vs_df_key (dict): DB vs Dataframe key
+
+        """
+        db_vs_df_keys.update({'flg': f"{db_vs_df_keys['val']}{FLAG_PRM_NAME_SUFFIX}"})
+        return db_vs_df_keys
 
     @staticmethod
     def fetch(search, **kwargs):
@@ -65,11 +76,15 @@ class LoadStrategyAC(MPStrategyAC):
         )
 
         # Create DataFrame by concatenation and append
+        # TODO
+        #  Evaluate if it's necessary to check the index before concatenating
+        #  and raise an exception for incompatible indexes (e.g not same length).
+        #  Maybe important for flag integration which are in a separated file.
         data = [
             pd.concat(
                 [pd.Series(arg['value'], index=arg['index'], name=key)
                  for key, val in res.items() for arg in val if arg['info'] == info_arg],
-                axis=1, ignore_index=False
+                axis=1, join='inner', ignore_index=False
             ) for info_arg in info
         ]
 
@@ -96,7 +111,7 @@ class LoadStrategyAC(MPStrategyAC):
 class LoadProfileStrategy(LoadStrategyAC):
     """Class to manage the data loading strategy of Profile instances."""
 
-    def execute(self, search, val_abbr, alt_abbr, flg_abbr=None):
+    def execute(self, search, val_abbr, alt_abbr):
         """Execute strategy method to fetch data from the databse.
 
         Args:
@@ -107,8 +122,10 @@ class LoadProfileStrategy(LoadStrategyAC):
 
         """
 
-        # Fetch the data from the database
-        db_vs_df_keys = {'val': val_abbr, 'alt': alt_abbr, 'flg': flg_abbr}
+        # Define
+        db_vs_df_keys = self.add_flag_prm(
+            {'val': val_abbr, 'alt': alt_abbr}
+        )
 
         # Fetch data
         info, data = self.fetch(search, **db_vs_df_keys)
@@ -122,20 +139,21 @@ class LoadProfileStrategy(LoadStrategyAC):
 class LoadRSProfileStrategy(LoadProfileStrategy):
     """Child class to manage the data loading strategy of RSProfile instances."""
 
-    def execute(self, search, val_abbr, tdt_abbr, alt_abbr=None, flg_abbr=None):
-        """Execute strategy method to fetch data from the databse.
+    def execute(self, search, val_abbr, tdt_abbr, alt_abbr=None):
+        """Execute strategy method to fetch data from the database.
 
         Args:
             search (str): selection criteria
             val_abbr (str): name of the parameter values to extract.
             tdt_abbr (str): name of the time delta parameter to extract.
-            alt_abbr (str, optional): name of the altitude parameter to extract. Dafaults to None.
-            flg_abbr (str, optional): name of the flag parameter to extract. Defaults to None.
+            alt_abbr (str, optional): name of the altitude parameter to extract. Defaults to None.
 
         """
 
-        # Fetch the data from the database
-        db_vs_df_keys = {'val': val_abbr, 'tdt': tdt_abbr, 'alt': alt_abbr, 'flg': flg_abbr}
+        # Define
+        db_vs_df_keys = self.add_flag_prm(
+            {'val': val_abbr, 'tdt': tdt_abbr, 'alt': alt_abbr}
+        )
 
         # Fetch data
         info, data = self.fetch(search, **db_vs_df_keys)
@@ -151,8 +169,7 @@ class LoadGDPProfileStrategy(LoadProfileStrategy):
 
     def execute(
         self, search, val_abbr, tdt_abbr, alt_abbr=None,
-        ucr_abbr=None, ucs_abbr=None, uct_abbr=None, ucu_abbr=None,
-        flg_abbr=None
+        ucr_abbr=None, ucs_abbr=None, uct_abbr=None, ucu_abbr=None
     ):
         """Execute strategy method to fetch data from the database.
 
@@ -169,16 +186,16 @@ class LoadGDPProfileStrategy(LoadProfileStrategy):
                extract. Defaults to None.
             ucu_abbr (str, optional): name of the true un-correlated uncertainty parameter to
                extract. Defaults to None.
-            flg_abbr (str, optional): name of the flag parameter to extract. Default to None.
 
         """
 
-        # Fetch the data from the database
-        db_vs_df_keys = {
-            'val': val_abbr, 'tdt': tdt_abbr, 'alt': alt_abbr,
-            'ucr': ucr_abbr, 'ucs': ucs_abbr, 'uct': uct_abbr, 'ucu': ucu_abbr,
-            'flg': flg_abbr
-        }
+        # Define
+        db_vs_df_keys = self.add_flag_prm(
+            {
+                'val': val_abbr, 'tdt': tdt_abbr, 'alt': alt_abbr,
+                'ucr': ucr_abbr, 'ucs': ucs_abbr, 'uct': uct_abbr, 'ucu': ucu_abbr,
+            }
+        )
 
         # Fetch data
         info, data = self.fetch(search, **db_vs_df_keys)

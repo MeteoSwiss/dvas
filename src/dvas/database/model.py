@@ -20,8 +20,7 @@ from peewee import ForeignKeyField
 
 
 # Import from current package
-from ..config.pattern import MODEL_PAT
-from ..config.pattern import PARAM_PAT
+from ..hardcoded import MODEL_PAT, PRM_AND_FLAG_PRM_PAT
 
 
 # Create db instance
@@ -116,7 +115,7 @@ class Parameter(MetadataModel):
         null=False,
         unique=True,
         constraints=[
-            Check(f"re_fullmatch('{PARAM_PAT}', prm_name)"),
+            Check(f"re_fullmatch('{PRM_AND_FLAG_PRM_PAT}', prm_name)"),
             Check(f"str_len_max(prm_name, 64)")
         ]
     )

@@ -31,6 +31,7 @@ _C50:
     _prepros1:
         value_col: 4
 
+
 # ----------------------------------------------------
 # SRS-C34 type (NOT THE GDP!)
 # ----------------------------------------------------
@@ -134,6 +135,11 @@ _RS92:
     _prepros1:
         value_col: 2
 
+    _trepros1_flag:
+        value_col: 0
+        csv_use_default: True
+
+
 # ----------------------------------------------------
 # RS-41 GDP, version beta-1
 # ----------------------------------------------------
@@ -173,6 +179,10 @@ _RS41-GDP-BETA_001:
 
     _preprosu_u:
         value_col: 'press_uc'
+
+    _trepros1_flag:
+        value_col: 0
+        csv_use_default: True
 
 
 # ----------------------------------------------------

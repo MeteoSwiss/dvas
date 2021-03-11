@@ -11,7 +11,7 @@ Module contents: Required attributes definition for
 """
 
 # Import current packages modules
-from ..pattern import MODEL_PAT
+from ...hardcoded import MODEL_PAT
 from ...database.model import Model as TableModel
 
 #: dict: Default node params

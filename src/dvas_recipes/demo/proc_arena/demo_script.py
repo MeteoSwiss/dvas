@@ -43,7 +43,7 @@ if __name__ == '__main__':
     dpu.PLOT_SHOW = False
 
     # Reset the DB to "start fresh" ?
-    RESET_DB = False
+    RESET_DB = True
 
     # Define some basic search queries
     filt_gdp = "tags('gdp')"
@@ -59,24 +59,25 @@ if __name__ == '__main__':
     db_mngr = DatabaseManager(reset_db=RESET_DB)
 
     # Update the database + log
-    if RESET_DB:
-        update_db('tdtpros1', strict=True)
-        update_db('trepros1', strict=True)
-        update_db('treprosu_r', strict=True)
-        update_db('treprosu_s', strict=True)
-        update_db('treprosu_t', strict=True)
-        update_db('altpros1', strict=True)
+    update_db('tdtpros1', strict=True)
+    update_db('trepros1', strict=True)
+    update_db('trepros1_flag', strict=True)
+    update_db('treprosu_r', strict=True)
+    update_db('treprosu_s', strict=True)
+    update_db('treprosu_t', strict=True)
+    update_db('altpros1', strict=True)
 
     # Load a basic profile, with a variable, and altitude.
     prf = MultiProfile()
     prf.load_from_db(filt_raw, 'trepros1', 'altpros1')
 
-    prf.profiles[0]
-
     prf.save_to_db(add_tags='vof')
 
     prf1 = MultiProfile()
     prf1.load_from_db("tags('vof')", 'trepros1', 'altpros1')
+
+    prf1.profiles[0].set_flg('raw_na', True)
+
 
     # # Load a basic time profile, with a variable and altitude
     # rs_prf = MultiRSProfile()

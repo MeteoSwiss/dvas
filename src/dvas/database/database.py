@@ -644,6 +644,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                         DataSource.select().distinct().
                         join(TableInfo).
                         where(TableInfo.data_src == DataSource.id).
+                        where(TableInfo.info_id == info_id_list[i].info_id).
                         iterator()
                     ]
                 ):
