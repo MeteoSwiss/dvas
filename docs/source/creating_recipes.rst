@@ -73,7 +73,7 @@ This information must be provided to dvas via `tags` in the metadata associated 
 .. hint::
     If two radiosondes are launched from the same location and at the same time, but with two
     distinct balloons, they have an identical **event** value, but distinct **rig** and
-    **serial number** values.
+    **object ID** values.
 
 Event filtering syntax
 ----------------------
