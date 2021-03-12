@@ -18,7 +18,7 @@ Instrument Intercomparison (UAII) campaign, organized under the auspice of World
 Organization (WMO). The following pages (should) contain all that you need to know to install and
 run dvas.
 
-The code is composed of two sub-package:
+The code is composed of two sub-packages:
 
   - ``dvas``: the core package that contains all the low-level modules and routines, and
   - ``dvas_recipes``: the high-level package that contains all the *analysis recipes* specific to a
