@@ -342,7 +342,7 @@ class Profile(ProfileAC):
         )
 
     def _get_flg_bit_nbr(self, val):
-        """Get bit number corresponding to given flag name
+        """ Get bit number corresponding to given flag name
 
         Args:
             val (str): Flag name
@@ -351,7 +351,7 @@ class Profile(ProfileAC):
         return self.flags_name[val][self.FLAG_BIT_POS_NM]
 
     def set_flg(self, val, set_val, index=None):
-        """Set flag values to True/False.
+        """ Set flag values to True/False.
 
         Args:
             val (str): Flag name
@@ -400,7 +400,8 @@ class Profile(ProfileAC):
 
         """
         bit_nbr = self._get_flg_bit_nbr(val)
-        return self.flg.apply(lambda x: (x >> bit_nbr) & 1)
+        # Return 1 if the flag is set, 0 if it isn't, and <NA> if the flag was not set.
+        return self.flg.apply(lambda x: (x >> bit_nbr) & 1 if not pd.isna(x) else x)
 
 
 class RSProfile(Profile):
