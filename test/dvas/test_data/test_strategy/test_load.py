@@ -37,7 +37,7 @@ db_data = {
         } for val, dt in [
             (np.array([100, 101, 102]), '20200101T0000Z'),
             (np.array([200, 201, 202]), '20200202T0000Z')
-        ] for prm in ['trepros1', 'altpros1', 'flgpros1', 'tdtpros1']
+        ] for prm in ['trepros1', 'altpros1', 'trepros1_flag', 'tdtpros1']
     ]
 }
 
@@ -53,9 +53,7 @@ class TestLoadProfileStrategy:
 
         # Load entry
         filt = f"tags('load_profile')"
-        res = loader_stgy.execute(
-            filt, 'trepros1', 'altpros1', flg_abbr='flgpros1'
-        )
+        res = loader_stgy.execute(filt, 'trepros1', 'altpros1')
 
         # Compare
         assert isinstance(res[0], list)
@@ -84,7 +82,7 @@ class TestLoadRSProfileStrategy:
         assert isinstance(res[0], list)
         assert len(res[0]) > 0
         assert all([(type(arg) == RSProfile) for arg in res[0]])
-        assert all([arg.flg.isna().all() for arg in res[0]])
+        assert all([~arg.flg.isna().all() for arg in res[0]])
         assert isinstance(res[1], dict)
 
 
@@ -107,6 +105,6 @@ class TestLoadGDPProfileStrategy:
         assert isinstance(res[0], list)
         assert len(res[0]) > 0
         assert all([(type(arg) == GDPProfile) for arg in res[0]])
-        assert all([arg.flg.isna().all() for arg in res[0]])
+        assert all([~arg.flg.isna().all() for arg in res[0]])
         assert all([arg.ucr.isna().all() for arg in res[0]])
         assert isinstance(res[1], dict)

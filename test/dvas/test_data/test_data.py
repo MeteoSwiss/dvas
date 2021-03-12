@@ -31,6 +31,8 @@ def mlt_prf():
 
 # Define db_data
 db_data = {
+    # TODO
+    #  Change dir name
     'sub_dir': 'test_data_tata',
     'data': [
         {
@@ -46,7 +48,7 @@ db_data = {
                 'src': ''
             },
         } for dt in ['20200101T0000Z', '20200202T0000Z']
-        for prm in ['trepros1', 'altpros1', 'flgpros1', 'tdtpros1']
+        for prm in ['trepros1', 'altpros1', 'trepros1_flag', 'tdtpros1']
     ]
 }
 

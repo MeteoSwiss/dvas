@@ -34,6 +34,8 @@ from ..helper import get_by_path
 from ..helper import RequiredAttrMetaClass
 from ..helper import TypedProperty
 from ..helper import camel_to_snake
+from ..database.model import Parameter as TableParameter
+from ..hardcoded import FLAG_PRM_NAME_SUFFIX, FLAG_PRM_DESC_PREFIX
 
 # Define
 NODE_ESCAPE_CHAR = '_'
@@ -359,7 +361,10 @@ class OneDimArrayConfigManager(OneLayerConfigManager):
 
         """
 
+        # Init
         self.init_document()
+
+        # Get
         self._get_document(doc_in)
 
         # Append constant node
@@ -389,7 +394,7 @@ class Parameter(OneDimArrayConfigManager):
     """Parameter config manager """
 
     PARAMETER_PATTERN_PROP = parameter.PARAMETER_PATTERN_PROP
-    NODE_PARAMS_DEF = {}
+    NODE_PARAMS_DEF = parameter.NODE_PARAMS_DEF
     CLASS_KEY = parameter.KEY
     CONST_NODES = []
     NODE_GEN = parameter.NODE_GEN
@@ -511,8 +516,8 @@ class MultiLayerConfigManager(OneLayerConfigManager):
 
         return out
 
-    def get_all_default(self, node_keys):
-        """Return all default values
+    def get_all(self, node_keys):
+        """Return all values
 
         Args:
             node_keys (list of str): Node keys
@@ -528,6 +533,10 @@ class MultiLayerConfigManager(OneLayerConfigManager):
         }
 
         return out
+
+    def get_default(self):
+        """Return all default values"""
+        return self.get_all([])
 
     @property
     def json_schema(self):
@@ -617,7 +626,7 @@ class MultiLayerConfigManager(OneLayerConfigManager):
                         err_msg = f"Bad node. No key to match in {doc}"
                         raise ConfigNodeError(err_msg)
 
-                    if re.fullmatch(rf"_{pat[0]}", key) is None:
+                    if re.fullmatch(rf"{NODE_ESCAPE_CHAR}{pat[0]}", key) is None:
                         err_msg = (
                             f"Bad node. '{pat[0]}' didn't match key in {doc}"
                         )
@@ -712,14 +721,14 @@ class OneDimArrayConfigLinker:
                 sub_dict_new.update({node_gen: list(node_gen_val)})
 
                 # Loop over other config item key
-                for key in filter(lambda x: x != node_gen, doc.keys()):
+                for doc_key in filter(lambda x: x != node_gen, doc.keys()):
 
                     # Update new sub dict for current key
                     sub_dict_new.update(
                         {
-                            key: [
+                            doc_key: [
                                 ConfigExprInterpreter.eval(
-                                    doc[key], node_gen_val[i].group
+                                    doc[doc_key], node_gen_val[i].group
                                 )
                                 for i in range(len(node_gen_val))
                             ]
@@ -738,6 +747,29 @@ class OneDimArrayConfigLinker:
 
             # Append to new array
             array_new += res
+
+        # Duplicate duplicate parameters into there flag item
+        # (Remark: It's not necessarily the most elegant way to duplicate
+        # parameters to get the flag side... but it's the only one I could easily implement.)
+        if key == Parameter.CLASS_KEY:
+
+            # Define mapping
+            arg_key_to_dict = {
+                TableParameter.prm_name.name: lambda x: f"{x}{FLAG_PRM_NAME_SUFFIX}",
+                TableParameter.prm_desc.name: lambda x: f"{FLAG_PRM_DESC_PREFIX}{x[0].lower()}{x[1:]}",
+                TableParameter.prm_unit.name: lambda _: '',
+            }
+
+            # Create duplicate array of flags
+            array_prm_flg = [
+                {
+                    arg_key: arg_key_to_dict[arg_key](arg_val) for arg_key, arg_val in arg.items()
+                }
+                for arg in array_new
+            ]
+
+            # Append
+            array_new += array_prm_flg
 
         return array_new
 
@@ -774,7 +806,7 @@ class ConfigExprInterpreter(metaclass=ABCMeta):
         """Evaluate str expression
 
         Args:
-            expr (str): Expression to evaluate
+            expr (str|ConfigExprInterpreter): Expression to evaluate
             get_fct (callable): Function use by 'get'
 
         Examples:
@@ -800,7 +832,10 @@ class ConfigExprInterpreter(metaclass=ABCMeta):
         # Treat expression
         try:
             # Eval
-            expr_out = eval(expr, str_expr_dict)
+            if isinstance(expr, str):
+                expr_out = eval(expr, str_expr_dict)
+            else:
+                expr_out = expr
 
             # Interpret
             expr_out = expr_out.interpret()

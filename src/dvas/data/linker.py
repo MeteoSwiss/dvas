@@ -30,11 +30,13 @@ from ..config.config import ConfigExprInterpreter
 from ..config.definitions.origdata import EXPR_FIELD_KEYS
 from ..config.definitions.origdata import TAG_FLD_NM
 from ..config.definitions.origdata import PARAM_FLD_NM
+from ..config.definitions.origdata import CSV_USE_DEFAULT_FLD_NM
 from ..logger import rawcsv
 from ..environ import glob_var
-from ..config.pattern import MODEL_PAT
+from ..hardcoded import GDP_FILE_EXT
+from ..hardcoded import PRM_PAT, FLAG_PRM_PAT
+from ..hardcoded import CSV_FILE_MDL_PAT, GDP_FILE_MDL_PAT
 from ..hardcoded import TAG_RAW_NAME, TAG_GDP_NAME, TAG_EMPTY_NAME
-
 
 # Pandas csv_read method arguments
 PD_CSV_READ_ARGS = [
@@ -146,33 +148,178 @@ class FileHandler(AbstractHandler):
         # Init origdata config manager
         self._origdata_config_mngr.read()
 
+        # Set default child defined attributes
+        self._file_suffix_re = re.compile('')
+        self._prm_re = re.compile('')
+        self._file_model_pat = re.compile('')
+        self._data_ok_tags = []
+
     @property
     def origdata_config_mngr(self):
         """config.config.OrigData: Yaml original metadata manager"""
         return self._origdata_config_mngr
 
     @property
-    @abstractmethod
-    def file_suffix(self):
-        """re.compile : Handled file suffix (re.fullmatch of pathlib.Path.suffix)"""
+    def file_suffix_re(self):
+        """re.compile : Handled data file suffix."""
+        return self._file_suffix_re
 
     @property
-    @abstractmethod
-    def file_model_pat(self):
-        """re.compile : File model pattern
-        (re.search within pathlib.Path.name). Group #1 must correspond to
-        model name."""
+    def prm_re(self):
+        """re.compile: Handled parameter name."""
+        return self._prm_re
 
-    def handle(self, file_path, prm_name):
-        """Handle method"""
-        if self.file_suffix.fullmatch(file_path.suffix) is not None:
-            return self.get_main(file_path, prm_name)
+    @property
+    def file_model_pat(self):
+        """re.compile: File model pattern. Group #1 must correspond to model name."""
+        return self._file_model_pat
+
+    def check_file(self, file):
+        """Check if file as the correct suffix pattern.
+
+        Args:
+            file (pathlib.Path): File path or file name
+
+        Returns:
+            bool: True if file name match
+
+        """
+        if self.file_suffix_re.fullmatch(file.suffix) is None:
+            return False
         else:
-            return super().handle(file_path, prm_name)
+            return True
+
+    def check_prm(self, prm_name):
+        """Check if parameter as correct parameter pattern
+
+        Args:
+            prm_name (str): Parameter name
+
+        Returns:
+            bool: True if file parameter name match
+
+        """
+        if self.prm_re.fullmatch(prm_name) is None:
+            return False
+        else:
+            return True
+
+    @property
+    def data_ok_tags(self):
+        """list of str: Tags list to add to metadata when data reading is successful"""
+        return self._data_ok_tags
+
+    def check_file_mdl(self, file):
+        """Check if file name as correct model pattern
+
+        Args:
+            file (pathlib.Path): File path or file name
+
+        Returns:
+            bool: True if file parameter name match
+
+        """
+        if self.file_model_pat.match(file.name) is None:
+            return False
+        else:
+            return True
+
+    def handle(self, data_file_path, prm_name):
+        """Handle method
+
+        Args:
+            data_file_path (pathlib.Path): Data file path
+            prm_name (str): Parameter name
+
+        Returns:
+            dict
+
+        """
+
+        if (
+                self.check_file(data_file_path) and
+                self.check_prm(prm_name) and
+                self.check_file_mdl(data_file_path)
+        ):
+            return self._get_main(data_file_path, prm_name)
+
+        else:
+            return super().handle(data_file_path, prm_name)
+
+    def _get_main(self, data_file_path, prm_name):
+        """Main get method called from handle method"""
+
+        # Get model
+        mdl_name = self.get_model(data_file_path)
+
+        # Get metadata
+        # (need mdl_name to read config file)
+        if (
+                metadata := self.get_metadata(
+                    data_file_path, mdl_name, prm_name
+                )
+        ) is None:
+            # TODO
+            #  Check this return
+            return
+
+        try:
+            data = self.get_data(data_file_path, mdl_name, prm_name)
+
+            # Add tags
+            metadata[TAG_FLD_NM] += self.data_ok_tags
+
+            # Log
+            rawcsv.info(
+                "Successful reading of '%s' in file '%s'",
+                prm_name, data_file_path,
+            )
+
+        except KeyError:
+
+            # Create empty data set
+            data = pd.Series([])
+
+            # Add empty tag
+            metadata[TAG_FLD_NM] += [TAG_EMPTY_NAME]
+
+            # Log
+            rawcsv.warn(
+                "No data for '%s' in file '%s'",
+                prm_name, data_file_path,
+            )
+
+        except ValueError as exc:
+            raise OrigConfigError(
+                f"Error while reading '{prm_name}' in file '{data_file_path}' " +
+                f"({type(exc).__name__}: {exc})"
+            )
+
+        # Add source
+        # (use stem to have same hash for data file and flag file)
+        metadata[DataSource.src.name] = self.get_source_unique_id(data_file_path)
+
+        # Append data
+        out = {
+            'info': metadata,
+            'prm_name': prm_name,
+            'index': data.index.values,
+            'value': data.values,
+        }
+
+        return out
+
+    @abstractmethod
+    def get_data(self, *args, **kwargs):
+        """Method used to get data"""
 
     @abstractmethod
     def get_metadata_item(self, *args, **kwargs):
         """Method to get metadata item"""
+
+    @abstractmethod
+    def get_metadata_filename(self, data_file_path):
+        """Method to get metadata file name"""
 
     @abstractmethod
     def get_metadata(self, file_path, mdl_name, prm_name):
@@ -182,10 +329,6 @@ class FileHandler(AbstractHandler):
         out = {TableModel.mdl_name.name: mdl_name}
 
         return out
-
-    @abstractmethod
-    def get_main(self, *args, **kwargs):
-        """Main get method called from handle method"""
 
     def get_model(self, file_path):
         """Get instrument type from file path
@@ -226,14 +369,23 @@ class FileHandler(AbstractHandler):
 
         return mdl_name
 
-    def exclude_file(self, path_scan, prm_name):
-        """Exclude file method"""
+    def filter_files(self, path_list, prm_name):
+        """Filter files already load.
+
+        Args:
+            path_list (pathlib.Path): List of file path to be load.
+            prm_name (str): Corresponding parameter name.
+
+        Returns:
+            list
+
+        """
 
         # Init
         db_mngr = DatabaseManager()
 
         # Search exclude file names source
-        exclude_file_name = db_mngr.get_or_none(
+        if (exclude_file_name := db_mngr.get_or_none(
             TableInfo,
             search={
                 'where': (
@@ -242,14 +394,20 @@ class FileHandler(AbstractHandler):
                 'join_order': [TableParameter, DataSource]},
             attr=[[TableInfo.data_src.name, DataSource.src.name]],
             get_first=False
-        )
+        )) is None:
+            out = path_list
+        else:
+            exclude_file_name = [arg[0] for arg in exclude_file_name]
 
-        origdata_path_new = [
-            arg for arg in path_scan
-            if self.get_source_unique_id(arg) not in exclude_file_name
-        ]
+            out = [
+                arg for arg in path_list
+                if not (
+                    (self.get_source_unique_id(arg) in exclude_file_name) or
+                    (arg.suffix in CSVHandler.CFG_FILE_SUFFIX)
+                )
+            ]
 
-        return origdata_path_new
+        return out
 
     def read_metaconfig_fields(self, mdl_name, prm_name):
         """Read field from metaconfig"""
@@ -301,6 +459,9 @@ class FileHandler(AbstractHandler):
     def get_source_unique_id(file_path):
         """Return string use to determine if a file have already be read.
 
+        Note:
+            Stem is used to have same hash for data file and flag file)
+
         Args:
             file_path (pathlib.Path): Original file path
 
@@ -310,18 +471,15 @@ class FileHandler(AbstractHandler):
         """
 
         # Get file name
-        out = file_path.name
+        out = file_path.stem
 
         return out
 
 
 class CSVHandler(FileHandler):
-    """CSV Hanlder class"""
+    """CSV Handler class"""
 
-    _FILE_SUFFIX = re.compile(r'\.(csv|txt)', re.IGNORECASE)
-    _FILE_MODEL_PAT = re.compile(
-        r"^(" + MODEL_PAT + r")\.\w+"
-    )
+    CFG_FILE_SUFFIX = ['.' + arg for arg in glob_var.config_file_ext]
 
     def __init__(self):
 
@@ -329,30 +487,42 @@ class CSVHandler(FileHandler):
         super().__init__()
 
         # Define attributes
-        self.cfg_file_suffix = [
-            '.' + arg for arg in glob_var.config_file_ext
-        ]
+        self._file_suffix_re = re.compile(
+            rf'\.(({")|(".join(glob_var.csv_file_ext)}))',
+            re.IGNORECASE
+        )
+        self._prm_re = re.compile(PRM_PAT)
+        self._file_model_pat = re.compile(CSV_FILE_MDL_PAT)
         self._origmeta_mngr = CSVOrigMeta()
+
+        self._data_ok_tags = [TAG_RAW_NAME]
 
     @property
     def origmeta_mngr(self):
         """config.config.CSVOrigMeta: Yaml original CSV file metadata manager"""
         return self._origmeta_mngr
 
-    @property
-    def file_suffix(self):
-        return self._FILE_SUFFIX
-
-    @property
-    def file_model_pat(self):
-        return self._FILE_MODEL_PAT
-
     def get_metadata_item(self, item):
         """Implementation of abstract method"""
         return self.origmeta_mngr[item]
 
+    def get_metadata_filename(self, data_file_path):
+        """Implementation of abstract method"""
+        # Check if data file with config suffix exist. If not, metadata
+        # should be in data file
+        try:
+            metadata_file_path = next(
+                arg for arg in data_file_path.parent.glob(
+                    '*' + data_file_path.stem + '*.*'
+                ) if arg.suffix in self.CFG_FILE_SUFFIX
+            )
+        except StopIteration:
+            metadata_file_path = data_file_path
+
+        return metadata_file_path
+
     def get_metadata(self, file_path, mdl_name, prm_name):
-        """Method to get metadata"""
+        """Implementation of abstract method"""
 
         # Get default output from parent method
         out = super().get_metadata(file_path, mdl_name, prm_name)
@@ -361,16 +531,7 @@ class CSVHandler(FileHandler):
         self.origmeta_mngr.init_document()
 
         # Define metadata file path
-        # Check if data file with config suffix exist. If not, metadata
-        # should be in data file
-        try:
-            metadata_file_path = next(
-                arg for arg in file_path.parent.glob(
-                    '*' + file_path.stem + '*.*'
-                ) if arg.suffix in self.cfg_file_suffix
-            )
-        except StopIteration:
-            metadata_file_path = file_path
+        metadata_file_path = self.get_metadata_filename(file_path)
 
         # Read metadata
         with metadata_file_path.open(mode='r') as fid:
@@ -420,104 +581,63 @@ class CSVHandler(FileHandler):
 
         return out
 
-    def get_main(self, file_path, prm_name):
+    def get_data(self, data_file_path, mdl_name, prm_name):
         """Implementation of abstract method"""
 
-        # Get model
-        mdl_name = self.get_model(file_path)
-
-        # Get metadata
-        # (need mdl_name)
-        if (
-                metadata := self.get_metadata(
-                    file_path, mdl_name, prm_name
-                )
-        ) is None:
-            return
-
-        # Create info with 'raw' tag
-        metadata[TAG_FLD_NM] += [TAG_RAW_NAME]
-
         # Get config params for (model, prm_name) couple
-        origdata_cfg_prm = self.origdata_config_mngr.get_all_default(
+        origdata_cfg_prm = self.origdata_config_mngr.get_all(
             [mdl_name, prm_name]
         )
 
         # Get raw data config param
         raw_csv_read_args = {
-            key.replace('csv_', ''): val for key, val in origdata_cfg_prm.items()
-            if key in PD_CSV_READ_ARGS}
-
-        # Add usecols, squeeze and engine arguments
-        try:
-            # Set read_csv arguments
-            raw_csv_read_args.update(
-                {
-                    'usecols': [
-                        self.origdata_config_mngr.get_val(
-                            [mdl_name, prm_name], PARAM_FLD_NM
-                        ),
-                    ],
-                    'squeeze': True,
-                    'engine': 'python',
-                }
-            )
-
-            # Read raw csv
-            data = pd.read_csv(file_path, **raw_csv_read_args)
-            data = data.map(
-                eval(self.origdata_config_mngr.get_val(
-                    [mdl_name, prm_name], 'lambda')
-                )
-            )
-
-            # Log
-            rawcsv.info(
-                "Successful reading of '%s' in CSV file '%s'",
-                prm_name, file_path,
-            )
-
-        except KeyError:
-
-            # Create empty data set
-            data = pd.Series([])
-
-            # Add empty tag
-            metadata[TAG_FLD_NM] += [TAG_EMPTY_NAME]
-
-            # Log
-            rawcsv.warn(
-                "No data for '%s' in file '%s'",
-                prm_name, file_path,
-            )
-
-        except ValueError as exc:
-            raise OrigConfigError(
-                f"Error while reading '{prm_name}' in file '{file_path}' " +
-                f"({type(exc).__name__}: {exc})"
-            )
-
-        # Add source
-        metadata[DataSource.src.name] = self.get_source_unique_id(file_path)
-
-        # Append data
-        out = {
-            'info': metadata,
-            'prm_name': prm_name,
-            'index': data.index.values,
-            'value': data.values,
+            key: val
+            for key, val in origdata_cfg_prm.items()
+            if key in PD_CSV_READ_ARGS
         }
 
-        return out
+        # Reset to default if dedicated config field is True
+        if origdata_cfg_prm[CSV_USE_DEFAULT_FLD_NM]:
+            raw_csv_read_args_def = {
+                key: val
+                for key, val in self.origdata_config_mngr.get_default().items()
+                if key in PD_CSV_READ_ARGS
+            }
+            raw_csv_read_args.update(raw_csv_read_args_def)
+
+        # Replace prefix
+        raw_csv_read_args = {
+            key.replace('csv_', ''): val
+            for key, val in raw_csv_read_args.items()
+        }
+
+        # Set read_csv arguments
+        # (Add usecols, squeeze and engine arguments)
+        raw_csv_read_args.update(
+            {
+                'usecols': [
+                    self.origdata_config_mngr.get_val(
+                        [mdl_name, prm_name], PARAM_FLD_NM
+                    ),
+                ],
+                'squeeze': True,
+                'engine': 'python',
+            }
+        )
+
+        # Read raw csv
+        data = pd.read_csv(data_file_path, **raw_csv_read_args)
+        data = data.map(
+            eval(self.origdata_config_mngr.get_val(
+                [mdl_name, prm_name], 'lambda')
+            )
+        )
+
+        return data
 
 
 class GDPHandler(FileHandler):
     """GDP Handler class"""
-
-    _FILE_SUFFIX = re.compile(r'\.nc', re.IGNORECASE)
-    _FILE_MODEL_PAT = re.compile(
-        r"^[A-Z]{3}\-[A-Z]{2}\-\d{2}\_\d\_([\w\-]+\_\d{3})\_\d{8}T"
-    )
 
     def __init__(self):
 
@@ -525,19 +645,20 @@ class GDPHandler(FileHandler):
         super().__init__()
 
         # Set file id attribute
+        self._file_suffix_re = re.compile(rf'\.{GDP_FILE_EXT}', re.IGNORECASE)
+        self._prm_re = re.compile(PRM_PAT)
+        self._file_model_pat = re.compile(GDP_FILE_MDL_PAT)
         self._fid = None
 
-    @property
-    def file_suffix(self):
-        return self._FILE_SUFFIX
-
-    @property
-    def file_model_pat(self):
-        return self._FILE_MODEL_PAT
+        self._data_ok_tags = [TAG_RAW_NAME, TAG_GDP_NAME]
 
     def get_metadata_item(self, item):
         """Implementation of abstract method"""
         return self._fid.getncattr(item)
+
+    def get_metadata_filename(self, data_file_path):
+        """Implementation of abstract method"""
+        return data_file_path
 
     def get_metadata(self, file_path, mdl_name, prm_name):
         """Method to get file metadata"""
@@ -545,7 +666,10 @@ class GDPHandler(FileHandler):
         # Get default output from parent method
         out = super().get_metadata(file_path, mdl_name, prm_name)
 
-        with nc.Dataset(file_path, 'r') as self._fid:
+        # Define metadata file path
+        metadata_file_path = self.get_metadata_filename(file_path)
+
+        with nc.Dataset(metadata_file_path, 'r') as self._fid:
 
             # Read metadata fields
             try:
@@ -559,68 +683,100 @@ class GDPHandler(FileHandler):
 
         return out
 
-    def get_main(self, file_path, prm_name):
+    def get_data(self, data_file_path, mdl_name, prm_name):
         """Implementation of abstract method"""
 
-        # Get model
-        mdl_name = self.get_model(file_path)
+        # Read data
+        with nc.Dataset(data_file_path, 'r') as self._fid:
+            data_col_nm = self.origdata_config_mngr.get_val(
+                [mdl_name, prm_name], PARAM_FLD_NM
+            )
 
-        # Get metadata
-        metadata = self.get_metadata(
-            file_path, mdl_name, prm_name
+            data = pd.Series(self._fid[data_col_nm][:])
+            data = data.map(
+                eval(self.origdata_config_mngr.get_val(
+                    [mdl_name, prm_name], 'lambda')
+                )
+            )
+
+        return data
+
+
+class FlagCSVHandler(CSVHandler):
+    """CSV flag file handler class"""
+
+    def __init__(self):
+
+        # Call super constructor
+        super().__init__()
+
+        # Define attributes
+        self._file_suffix_re = re.compile(
+            rf'\.(({")|(".join(glob_var.flag_file_ext)}))',
+            re.IGNORECASE
+        )
+        self._prm_re = re.compile(FLAG_PRM_PAT)
+
+
+class FlagGDPHandler(GDPHandler):
+    """GDP flag file handler class"""
+
+    def __init__(self):
+
+        # Call super constructor
+        super().__init__()
+
+        # Define attributes
+        self._file_suffix_re = re.compile(
+            rf'\.(({")|(".join(glob_var.flag_file_ext)}))',
+            re.IGNORECASE
+        )
+        self._prm_re = re.compile(FLAG_PRM_PAT)
+
+        self._data_ok_tags = [TAG_RAW_NAME, TAG_GDP_NAME]
+
+    def get_metadata_filename(self, data_file_path):
+        """Implementation of abstract method"""
+        return data_file_path.parent / (data_file_path.stem + f'.{GDP_FILE_EXT}')
+
+    def get_data(self, data_file_path, mdl_name, prm_name):
+        """Implementation of abstract method"""
+
+        # Get config params for (model, prm_name) couple
+        origdata_cfg_prm = self.origdata_config_mngr.get_all(
+            [mdl_name, prm_name]
         )
 
-        # Create event with 'raw' and 'gdp' tag
-        metadata[TAG_FLD_NM] += [TAG_RAW_NAME, TAG_GDP_NAME]
-
-        try:
-
-            # Read data
-            with nc.Dataset(file_path, 'r') as self._fid:
-                data_col_nm = self.origdata_config_mngr.get_val(
-                    [mdl_name, prm_name], PARAM_FLD_NM
-                )
-
-                data = pd.Series(self._fid[data_col_nm][:])
-                data = data.map(
-                    eval(self.origdata_config_mngr.get_val(
-                        [mdl_name, prm_name], 'lambda')
-                    )
-                )
-
-        except KeyError:
-
-            # Create empty data set
-            data = pd.Series([])
-
-            # Add empty tag
-            metadata[TAG_FLD_NM] += [TAG_EMPTY_NAME]
-
-            # Log
-            rawcsv.warn(
-                "No data for '%s' in file '%s'",
-                prm_name, file_path,
-            )
-
-        #TODO Detail exception
-        except Exception as exc:
-            raise OrigConfigError(
-                f"Error while reading '{prm_name}' in file '{file_path}' " +
-                f"({type(exc).__name__}: {exc})"
-            )
-
-        # Add source
-        metadata[DataSource.src.name] = self.get_source_unique_id(file_path)
-
-        # Append data
-        out = {
-            'info': metadata,
-            'index': data.index.values,
-            'value': data.values,
-            'prm_name': prm_name,
+        # Get raw data config param
+        raw_csv_read_args = {
+            key.replace('csv_', ''): val
+            for key, val in origdata_cfg_prm.items()
+            if key in PD_CSV_READ_ARGS
         }
 
-        return out
+        # Set read_csv arguments
+        # (Add usecols, squeeze and engine arguments)
+        raw_csv_read_args.update(
+            {
+                'usecols': [
+                    self.origdata_config_mngr.get_val(
+                        [mdl_name, prm_name], PARAM_FLD_NM
+                    ),
+                ],
+                'squeeze': True,
+                'engine': 'python',
+            }
+        )
+
+        # Read raw csv
+        data = pd.read_csv(data_file_path, **raw_csv_read_args)
+        data = data.map(
+            eval(self.origdata_config_mngr.get_val(
+                [mdl_name, prm_name], 'lambda')
+            )
+        )
+
+        return data
 
 
 class DataLinker(ABC):

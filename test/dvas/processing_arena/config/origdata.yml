@@ -61,6 +61,11 @@ _YT:
     _prepros1:
         value_col: 3
 
+    _trepros1_flag:
+        value_col: 0
+        csv_use_default: True
+
+
 # ----------------------------------------------------
 # ZT type
 # ----------------------------------------------------
@@ -92,3 +97,6 @@ _ZT:
     _prepros1:
         value_col: 3
 
+    _trepros1_flag:
+        value_col: 0
+        csv_use_default: True

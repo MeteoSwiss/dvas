@@ -38,9 +38,6 @@ from ..errors import DvasError, DBIOError
 
 from ..hardcoded import TAG_RAW_NAME
 
-# Define
-FLAG = 'flag'
-VALUE = 'value'
 
 # Loading strategies
 load_prf_stgy = LoadProfileStrategy()

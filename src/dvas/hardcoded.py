@@ -11,6 +11,11 @@ Module contents: hardcoded parameters and variables for dvas.
 
 from pathlib import Path
 
+# Define
+RE_UPPER_W = r'[A-Z0-9]'
+RE_LOWER_W = r'[a-z0-9]'
+
+
 # Paths
 # -----
 
@@ -20,11 +25,21 @@ PKG_PATH = Path(__file__).resolve(strict=True).parent
 #: pathlib.Path: Matplotlib plots styles
 MPL_STYLES_PATH = Path('plots/mpl_styles')
 
+
 # Global var
 # ----------
 
 #: int: Config generator limit
 CONFIG_GEN_LIM = 10000
+
+#: str: GDP file extension
+GDP_FILE_EXT = 'nc'
+
+#: list of str: Data file extension
+CSV_FILE_EXT = ['csv', 'txt']
+
+#: list of str: Flag data file extension
+FLAG_FILE_EXT = ['flg']
 
 #: list of str: Config file extension
 CONFIG_FILE_EXT = ['yml', 'yaml']
@@ -37,6 +52,38 @@ RID_PAT = r'^r:\w+$'
 
 #: str: Name of the integer index for the pandas DataFrame of Profiles, RSProfile, GDPProfiles
 PRF_REF_INDEX_NAME = '_idx'
+
+#: str: Suffix used for flag parameter's name or file's name
+FLAG_PRM_NAME_SUFFIX = '_flag'
+
+#: str: Suffix used for flag parameter's desc
+FLAG_PRM_DESC_PREFIX = 'Flag of '
+
+
+# Models
+# -------
+
+#: str: Instrument type pattern (e.g. VAI-RS92, MET_LAB-C50, RS92-GDP_002)
+MODEL_PAT = rf"{RE_UPPER_W}+(({RE_UPPER_W})|([\-\_]))*{RE_UPPER_W}"
+
+#: str: CSV file model catching group pattern (e.g RS41.PAY_20171024T120000)
+CSV_FILE_MDL_PAT = r"^(" + MODEL_PAT + r")\.[\w\-]+\."
+
+#: str: GDP file model catching group pattern (e.g PAY-RS-01_2_RS41-GDP-BETA_001_20170712T000000_1-002-001.nc)
+GDP_FILE_MDL_PAT = r"^[A-Z]{3}\-[A-Z]{2}\-\d{2}\_\d\_([\w\-]+\_\d{3})\_\d{8}T"
+
+# Parameters
+# ----------
+
+#: str: Parameter pattern (e.g. tre200s0, uorpros1, uorprosu_r)
+PRM_PAT = rf"{RE_LOWER_W}+(({RE_LOWER_W})|([\_]))*(?:(?<!{FLAG_PRM_NAME_SUFFIX}))"
+
+#: str: Flag parameter pattern (e.g. tre200s0, tre200s0_flag, uorpros1, uorpros1_flag)
+FLAG_PRM_PAT = rf"{RE_LOWER_W}+(({RE_LOWER_W})|([\_]))*(?:(?<={FLAG_PRM_NAME_SUFFIX}))"
+
+#: str: Parameter and flag parameter pattern (e.g. tre200s0, tre200s0_flag, uorpros1, uorpros1_flag)
+PRM_AND_FLAG_PRM_PAT = rf"(?:(({PRM_PAT})|({FLAG_PRM_PAT})))"
+
 
 # Tags
 # ----
@@ -76,3 +123,25 @@ TAG_EMPTY_NAME = 'empty'
 
 #: str: Tag's desc for empty values in raw data
 TAG_EMPTY_DESC = 'Empty data'
+
+
+# Flags
+# -----
+
+#: str: Flag's name for raw NA values
+TAG_EMPTY_NAME = 'raw_na'
+
+#: str: Flag's desc for raw NA values
+TAG_EMPTY_DESC = 'Raw NA values'
+
+#: str: Flag's name for resampled values
+TAG_INVALID_NAME = 'invalid'
+
+#: str: Flag's desc for resampled values
+TAG_INVALID_DESC = 'Invalid values'
+
+#: str: Flag's name for interpolated values
+TAG_INTERP_NAME = 'interp'
+
+#: str: Flag's desc for interpolated values
+TAG_INTERP_DESC = "Interpolated values"
