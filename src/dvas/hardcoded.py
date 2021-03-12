@@ -84,6 +84,10 @@ FLAG_PRM_PAT = rf"{RE_LOWER_W}+(({RE_LOWER_W})|([\_]))*(?:(?<={FLAG_PRM_NAME_SUF
 #: str: Parameter and flag parameter pattern (e.g. tre200s0, tre200s0_flag, uorpros1, uorpros1_flag)
 PRM_AND_FLAG_PRM_PAT = rf"(?:(({PRM_PAT})|({FLAG_PRM_PAT})))"
 
+
+# DataFrame columns
+# -----------------
+
 #: str: Name of the time delta index for the pandas DataFrame of RSProfile, GDPProfiles
 PRF_REF_TDT_NAME = 'tdt'
 
@@ -105,16 +109,11 @@ PRF_REF_UCT_NAME = 'uct'
 #: str: Name of the uncorrelated uncertainty column for the pandas DataFrame of GDPProfiles
 PRF_REF_UCU_NAME = 'ucu'
 
-<<<<<<< HEAD
-=======
 #: str: Name of the flag column for the pandas DataFrame of Profiles, RSProfile, GDPProfiles
 PRF_REF_FLG_NAME = 'flg'
 
->>>>>>> Implement new hardcoded names
-
 # Tags
 # ----
-# If you add a new TAG here, it should also be added in src/config/definitions/tag.py
 
 #: str: Tag's name for none tag in DB
 TAG_NONE_NAME = ''
@@ -136,15 +135,15 @@ TAG_1S_NAME = '1s'
 #: str: Tag  description for resampled profiles.
 TAG_1S_DESC = 'Profile was resampled onto a regular time-step grid'
 
-#: str: Tag's name for combined working standard profile
-TAG_CWS_NAME = 'cws'
-#: str: Tag's desc for combined working standard profile
-TAG_CWS_DESC = 'Combined working measurement standard'
-
 #: str: Tag's name for synchronized profile
 TAG_SYNC_NAME = 'sync'
 #: str: Tag's desc for synchronized profile
 TAG_SYNC_DESC = 'Synchronized profile'
+
+#: str: Tag's name for combined working standard profile
+TAG_CWS_NAME = 'cws'
+#: str: Tag's desc for combined working standard profile
+TAG_CWS_DESC = 'Combined working measurement standard'
 
 #: str: Tag's name for empty values in raw data
 TAG_EMPTY_NAME = 'empty'
