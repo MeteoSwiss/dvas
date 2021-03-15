@@ -41,27 +41,29 @@ class TestResampleStrategy:
         # Prepare some datasets to play with
         info_1 = InfoManager('20201217T0000Z', 1)
         data_1 = pd.DataFrame({'alt': [10., 15., 20., 35], 'val': [11., 12., 13., 14],
-                               'flg': [1, 1, 1, 1],
-                               'tdt': [0e9, 1e9, 1.5e9, 2.1e9]})
+                               'flg': [0]*4, 'tdt': [0e9, 1e9, 1.5e9, 2.1e9]})
 
         # Let's build a multiprofile so I can test things out.
         multiprf = MultiRSProfile()
         multiprf.update({'val': None, 'tdt': None, 'alt': None, 'flg': None},
                         [RSProfile(info_1, data_1)])
 
-        # Let's luanch the resampling
+        # Let's launch the resampling
         out = multiprf.resample(freq='1s', inplace=False)
 
         # Can I interpolate properly ?
         assert np.array_equal(out.profiles[0].data.index.get_level_values('alt').values,
                               np.array([10, 15, 32.5]))
-        assert np.array_equal(out.profiles[0].data.loc[:,'val'].values,
+        assert np.array_equal(out.profiles[0].data.loc[:, 'val'].values,
                               np.array([11, 12, 14*0.5/0.6+13*(1-0.5/0.6)]))
 
         # Do I really have 1sec time stamps ?
-        tdts =  out.profiles[0].data.index.get_level_values('tdt').values.astype('timedelta64[s]')
+        tdts = out.profiles[0].data.index.get_level_values('tdt').values.astype('timedelta64[s]')
         assert len(np.unique(np.diff(tdts))) == 1
         assert np.unique(np.diff(tdts))[0] == 1
+
+        # Was the flag applied correctly ?
+        assert all(out.profiles[0].is_flagged('interp') == [0, 0, 1])
 
     def test_resample_gdp(self):
         """Test rebase method"""
@@ -69,7 +71,7 @@ class TestResampleStrategy:
         # Prepare some datasets to play with
         info_1 = InfoManager('20201217T0000Z', 1)
         data_1 = pd.DataFrame({'alt': [10., 15., 20., 35], 'val': [11., 12., 13., 14],
-                               'flg': [1, 1, 1, 1], 'ucr': [1, 1, 1, 1], 'ucs': [1, 1, 1, 1],
+                               'flg': [0]*4, 'ucr': [1, 1, 1, 1], 'ucs': [1, 1, 1, 1],
                                'uct': [1, 1, 1, 1], 'ucu': [1, 1, 1, 1],
                                'tdt': [0e9, 1e9, 1.5e9, 2.1e9]})
         # Let's build a multiprofile so I can test things out.
@@ -92,3 +94,6 @@ class TestResampleStrategy:
         assert all(out.profiles[0].data.loc[2, 'ucu'] == np.sqrt((1-w)**2 + w**2))
         assert all(out.profiles[0].data.loc[2, 'ucs'] == 1)
         assert all(out.profiles[0].data.loc[2, 'uct'] == 1)
+
+        # Was the flag applied correctly ?
+        assert all(out.profiles[0].is_flagged('interp') == [0, 0, 1])
