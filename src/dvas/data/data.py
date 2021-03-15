@@ -404,9 +404,8 @@ class MultiRSProfileAC(MutliProfileAC):
     """Abstract MultiRSProfile class"""
 
     @abstractmethod
-    def __init__(self, load_stgy=None, sort_stgy=None,
-                 save_stgy=None, plot_stgy=None, rebase_stgy=None, resample_stgy=None,
-                 ):
+    def __init__(self, load_stgy=None, sort_stgy=None, save_stgy=None, plot_stgy=None,
+                 rebase_stgy=None, resample_stgy=None):
         super().__init__(load_stgy=load_stgy, sort_stgy=sort_stgy, save_stgy=save_stgy,
                          plot_stgy=plt_prf_stgy, rebase_stgy=rebase_stgy)
 
@@ -430,12 +429,9 @@ class MultiRSProfile(MultiRSProfileAC):
     _DATA_TYPES = RSProfile
 
     def __init__(self):
-        super().__init__(
-            load_stgy=load_rsprf_stgy, sort_stgy=sort_stgy,
-            save_stgy=save_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_stgy,
-        )
-
-        self._resample_stgy = resample_stgy
+        super().__init__(load_stgy=load_rsprf_stgy, sort_stgy=sort_stgy,
+                         save_stgy=save_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_stgy,
+                         resample_stgy=resample_stgy)
 
 
 class MultiGDPProfile(MultiRSProfileAC):
@@ -444,10 +440,9 @@ class MultiGDPProfile(MultiRSProfileAC):
     _DATA_TYPES = GDPProfile
 
     def __init__(self):
-        super().__init__(
-            load_stgy=load_gdpprf_stgy, sort_stgy=sort_stgy,
-            save_stgy=save_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_stgy,
-        )
+        super().__init__(load_stgy=load_gdpprf_stgy, sort_stgy=sort_stgy,
+                         save_stgy=save_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_stgy,
+                         resample_stgy=resample_stgy)
 
         self._resample_stgy = resample_stgy
 
