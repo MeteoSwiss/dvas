@@ -140,12 +140,12 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
 
     @property
     def info(self):
-        """list of ProfileManger info: Data info"""
+        """ List of ProfileManger info: Data info"""
         return [arg.info for arg in self.profiles]
 
     @deepcopy
     def rm_info_tags(self, val):
-        """Remove some tags from all info tag lists.
+        """ Remove some tags from all info tag lists.
 
         Args:
             val (str|list of str): Tag value(s) to remove
@@ -156,7 +156,7 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
 
     @deepcopy
     def add_info_tags(self, val):
-        """Add tag from all info tags
+        """ Add tag from all info tags
 
         Args:
             val (str|list of str): Tag values to add.
@@ -166,11 +166,30 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
             self.profiles[i].info.add_tags(val)
 
     def copy(self):
-        """Return a deep copy of the object"""
+        """ Return a deep copy of the object"""
         obj = self.__class__()
         obj._db_variables = self.db_variables.copy()
         obj._profiles = [arg.copy() for arg in self.profiles]
         return obj
+
+    def extract(self, inds):
+        """ Return a new MultiProfile instance with a subset of the Profiles.
+
+        Args:
+            inds (int || list of int): indices of the Profiles to extract.
+
+        Return:
+            dvas.data.data.MultiProfile: the new instance.
+        """
+
+        # Be extra nice and turn ints into lists
+        if isinstance(inds, int):
+            inds = list[inds]
+
+        new_prfs = self.__class__()
+        new_prfs.update(self.db_variables.copy(),
+                        [item.copy() for (ind, item) in enumerate(self) if ind in inds])
+        return new_prfs
 
     @deepcopy
     def load_from_db(self, *args, **kwargs):

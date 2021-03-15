@@ -82,6 +82,17 @@ class TestMutliProfile:
 
         assert [item for item in mlt_prf] == [mlt_prf.profiles[0], mlt_prf.profiles[1]]
 
+    def test_extract(self, mlt_prf):
+        """ Test the extraction method of MultiProfile """
+
+        sub_prf = mlt_prf.extract([1])
+
+        # Did I extract the correct amount of profiles, and of the correct type ?
+        assert len(sub_prf) == 1
+        assert isinstance(sub_prf, type(mlt_prf))
+        # Did I get the correct profile out ?
+        assert sub_prf[0].info.oid == mlt_prf[1].info.oid
+
     def test_get_prms(self, mlt_prf):
         """ Test convenience getter function """
 
