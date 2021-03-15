@@ -172,7 +172,7 @@ _RS41-GDP-BETA_001:
         value_col: 'temp_uc_tcor'
 
     _altpros1:
-        value_col: 'alt'
+        value_col: 'alt_gph'
 
     _prepros1:
         value_col: 'press'
@@ -215,7 +215,7 @@ _RS92-GDP_002:
         value_col: 'u_cor_temp'
 
     _altpros1:
-        value_col: 'alt'
+        value_col: 'geopot'
 
     _prepros1:
         value_col: 'press'

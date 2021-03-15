@@ -1,5 +1,6 @@
 # Contributing to dvas
 
+If you have a question  about dvas, [jump here](#asking-a-question).
 If you want to report a bug with dvas, [jump here](#reporting-a-bug).
 
 If you are still reading this, you may actually be considering contributing to the development of dvas. :heart_eyes: :tada:
@@ -27,9 +28,13 @@ All these contributions are welcome, and what follows should help you get starte
 
 This project and everyone participating in it is governed by the [dvas Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to [frederic.vogt@meteoswiss.ch](mailto:frederic.vogt@meteoswiss.ch).
 
+## Asking a question
+
+The [dvas Github Discussions page](https://github.com/MeteoSwiss-MDA/dvas/discussions) is the place to ask your questions about dvas, share your ideas for the code, show something cool you've done with dvas, and generally engage with other dvas users.
+
 ## Reporting a bug
 
-If you find something odd with dvas, first check if it is a [known issue](https://github.com/MeteoSwiss-MDA/dvas/issues?q=is%3Aissue+). If not, please create a new [Github Issue](https://github.com/MeteoSwiss-MDA/dvas/issues). This is the best way for everyone to keep track of new problems and past solutions.
+If you find something odd/wrong/broken with dvas, first check if it is a [known issue](https://github.com/MeteoSwiss-MDA/dvas/issues?q=is%3Aissue+). If not, please create a new [Github Issue](https://github.com/MeteoSwiss-MDA/dvas/issues). This is the best way for everyone to keep track of new problems and past solutions.
 
 ## Essential things to know about dvas
 dvas is a Python package composed of two sub-packages: `dvas` lies at its core, with `dvas_recipes` wrapped around it. In practice, dvas also includes a series of parameter and

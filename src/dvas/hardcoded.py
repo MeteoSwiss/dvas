@@ -85,42 +85,68 @@ FLAG_PRM_PAT = rf"{RE_LOWER_W}+(({RE_LOWER_W})|([\_]))*(?:(?<={FLAG_PRM_NAME_SUF
 PRM_AND_FLAG_PRM_PAT = rf"(?:(({PRM_PAT})|({FLAG_PRM_PAT})))"
 
 
+# DataFrame columns
+# -----------------
+
+#: str: Name of the time delta index for the pandas DataFrame of RSProfile, GDPProfiles
+PRF_REF_TDT_NAME = 'tdt'
+
+#: str: Name of the altitude index for the pandas DataFrame of Profiles, RSProfile, GDPProfiles
+PRF_REF_ALT_NAME = 'alt'
+
+#: str: Name of the variable column for the pandas DataFrame of Profiles, RSProfile, GDPProfiles
+PRF_REF_VAL_NAME = 'val'
+
+#: str: Name of the Rig-correlated uncertainty column for the pandas DataFrame of GDPProfiles
+PRF_REF_UCR_NAME = 'ucr'
+
+#: str: Name of the Spatial-correlated uncertainty column for the pandas DataFrame of GDPProfiles
+PRF_REF_UCS_NAME = 'ucs'
+
+#: str: Name of the Temporal-correlated uncertainty column for the pandas DataFrame of GDPProfiles
+PRF_REF_UCT_NAME = 'uct'
+
+#: str: Name of the uncorrelated uncertainty column for the pandas DataFrame of GDPProfiles
+PRF_REF_UCU_NAME = 'ucu'
+
+#: str: Name of the flag column for the pandas DataFrame of Profiles, RSProfile, GDPProfiles
+PRF_REF_FLG_NAME = 'flg'
+
 # Tags
 # ----
 
 #: str: Tag's name for none tag in DB
 TAG_NONE_NAME = ''
-
 #: str: Tag's desc for none tag in DB
 TAG_NONE_DESC = 'None'
 
 #: str: Tag's name for raw profiles
 TAG_RAW_NAME = 'raw'
-
 #: str: Tag's desc for raw profiles
 TAG_RAW_DESC = 'Raw profile'
 
 #: str: Tag's name for GDP profiles
 TAG_GDP_NAME = 'gdp'
-
 #: str: Tag's desc for GDP profiles
 TAG_GDP_DESC = 'GRUAN Data Product'
 
-#: str: Tag's name for combined working standard profile
-TAG_CWS_NAME = 'cws'
-
-#: str: Tag's desc for combined working standard profile
-TAG_CWS_DESC = 'Combined working measurement standard'
+#: str: Tag name for resampled profiles.
+TAG_1S_NAME = '1s'
+#: str: Tag  description for resampled profiles.
+TAG_1S_DESC = 'Profile was resampled onto a regular time-step grid'
 
 #: str: Tag's name for synchronized profile
 TAG_SYNC_NAME = 'sync'
-
 #: str: Tag's desc for synchronized profile
 TAG_SYNC_DESC = 'Synchronized profile'
 
+#: str: Tag's name for combined working standard profile
+TAG_CWS_NAME = 'cws'
+#: str: Tag's desc for combined working standard profile
+TAG_CWS_DESC = 'Combined working measurement standard'
+
 #: str: Tag's name for empty values in raw data
 TAG_EMPTY_NAME = 'empty'
-
 #: str: Tag's desc for empty values in raw data
 TAG_EMPTY_DESC = 'Empty data'
 

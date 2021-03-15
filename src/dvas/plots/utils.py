@@ -132,7 +132,31 @@ def cmap_discretize(cmap, n_cols):
     return colors.LinearSegmentedColormap(cmap.name + "_%d" % (n_cols), cdict, 1024)
 
 @log_func_call(logger)
-def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show_plt=None):
+def fancy_legend(ax, label=None):
+    """ A custom legend routine, to take care of all the repetitive aspects for this.
+
+    Args:
+        ax (matplotlib.pyplot.axes): the plot axes to add the legend to.
+        label (str, optional): the legend label
+
+    """
+
+    # If I amusing some fancy LaTeX, let's make sue that I escape all the nasty characters.
+    if plt.rcParams['text.usetex']:
+        label = label.replace('_', '\_')
+
+    # Add the legend.
+    leg = ax.legend(loc='best', bbox_to_anchor=(1.01, 0, 0.1, 1), mode='expand',
+                     title=label, ncol=1, handlelength=1,
+                     fontsize='small', title_fontsize='small', borderaxespad=0)
+
+    # Tweak the thickness of the legen lines as well.
+    for line in leg.get_lines():
+        line.set_linewidth(2.0)
+
+
+@log_func_call(logger)
+def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show=None):
     """ A custom savefig function that provides finer handling of the filename.
 
     Args:
@@ -143,7 +167,7 @@ def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show_
         fn_suffix (str, optional): a suffix, that will be appended to fn_core with a '_'.
         fmts (str | list of str, optional): which formats to export the plot to, e.g.: 'png'.
             Defaults to None (= as specified by dvas.plots.utils.PLOT_FMTS)
-        show_plt (bool, optional): whether to display the plot after saving it, or not. Defaults to
+        show (bool, optional): whether to display the plot after saving it, or not. Defaults to
             None (= as specified by dvas.plots.utils.PLOT_SHOW)
     """
 
@@ -153,8 +177,8 @@ def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show_
     if isinstance(fmts, str):
         fmts = [fmts]
 
-    if show_plt is None:
-        show_plt = PLOT_SHOW
+    if show is None:
+        show = PLOT_SHOW
 
     # Build the fileneame
     fn_out = '_'.join([item for item in [fn_prefix, fn_core, fn_suffix] if item is not None])
@@ -181,7 +205,7 @@ def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show_
         fig.savefig(Path(env_path_var.output_path, '.'.join([fn_out, fmt])))
 
     # Show the plot, or just close it and move on
-    if show_plt:
+    if show:
         fig.show()
     else:
         plt.close(fig.number)
