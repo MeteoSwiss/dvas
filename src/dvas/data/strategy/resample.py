@@ -84,17 +84,17 @@ class ResampleStrategy(MPStrategyAC):
 
             # ---- This is useful only for GDP Profiles ----
             # Compute the Jacobian matrix
-            w_vals = [(item-old_tdt.values[x_ip1_ind[ind]-1])/
-                      np.diff(old_tdt.values)[x_ip1_ind[ind]-1]
-                      for (ind, item) in enumerate(new_tdt.values)]
+            omega_vals = [(item-old_tdt.values[x_ip1_ind[ind]-1])/
+                          np.diff(old_tdt.values)[x_ip1_ind[ind]-1]
+                          for (ind, item) in enumerate(new_tdt.values)]
 
             # Create the G matrix to propagate errors
             G_mat = np.zeros((len(new_tdt), len(old_tdt)))
 
             # Fill it with the appropriate values.
             # This is not particularly smart, not fast. Could I do better ?
-            for (ind, w_val) in enumerate(w_vals):
-                G_mat[ind][x_ip1_ind[ind]-1:x_ip1_ind[ind]+1] = np.array([1-w_val, w_val])
+            for (ind, val) in enumerate(omega_vals):
+                G_mat[ind][x_ip1_ind[ind]-1:x_ip1_ind[ind]+1] = np.array([1-val, val])
             # ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
             # Create a new dataframe to keep the interpolated stuff
@@ -167,7 +167,7 @@ class ResampleStrategy(MPStrategyAC):
 
             # Here, remember to still deal with flags. I'll mark anything that was interpolated.
             prfs[prf_ind].set_flg('interp', True,
-                                  index=pd.Index([ind for (ind, val) in enumerate(w_vals)
+                                  index=pd.Index([ind for (ind, val) in enumerate(omega_vals)
                                                   if val not in [0, 1]]))
 
             return prfs
