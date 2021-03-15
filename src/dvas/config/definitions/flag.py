@@ -12,7 +12,7 @@ Module contents: Required attributes definition for `.config.ConfigManager.Flag 
 # Import current packages modules
 from ...database.model import Flag as TableFlag
 from ...hardcoded import FLG_EMPTY_NAME, FLG_EMPTY_DESC
-from ...hardcoded import FLG_INVALID_NAME, FLG_INVALID_DESC
+from ...hardcoded import FLG_INCOMPATIBLE_NAME, FLG_INCOMPATIBLE_DESC
 from ...hardcoded import FLG_INTERP_NAME, FLG_INTERP_DESC
 
 #: dict: Parameter pattern properties (JSON_SCHEMA)
@@ -39,8 +39,8 @@ CONST_NODES = [
     } for i, arg in enumerate(
         (
             (FLG_EMPTY_NAME, FLG_EMPTY_DESC),
-            (FLG_INVALID_NAME, FLG_INVALID_DESC),
             (FLG_INTERP_NAME, FLG_INTERP_DESC),
+            (FLG_INCOMPATIBLE_NAME, FLG_INCOMPATIBLE_DESC),
         )
     )
 ]

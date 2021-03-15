@@ -152,12 +152,12 @@ FLG_EMPTY_NAME = 'raw_na'
 #: str: Flag's desc for raw NA values
 FLG_EMPTY_DESC = 'Raw NA values'
 
-#: str: Flag's name for resampled values
-FLG_INVALID_NAME = 'invalid'
-#: str: Flag's desc for resampled values
-FLG_INVALID_DESC = 'Invalid values'
-
 #: str: Flag's name for interpolated values
 FLG_INTERP_NAME = 'interp'
 #: str: Flag's desc for interpolated values
 FLG_INTERP_DESC = "Interpolated values"
+
+#: str: Flag's name for resampled values
+FLG_INCOMPATIBLE_NAME = 'incomp'
+#: str: Flag's desc for resampled values
+FLG_INCOMPATIBLE_DESC = 'Incompatible GDP measurements'
