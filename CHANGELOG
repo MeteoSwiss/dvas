@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 ### Added:
+ - [fpavogt, 2021-03-15] Make MultiProfile iterable using __getitem__() (see #114)
  - [modolol, 2021-03-11] Import flags from CSV files
  - [fpavogt, 2021-03-10] Add resampling strategy for RS and GDP Profiles
  - [fpavogt, 2021-03-03] Add new gdps sub-module in dvas.tools
