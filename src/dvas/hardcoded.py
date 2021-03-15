@@ -18,7 +18,6 @@ RE_LOWER_W = r'[a-z0-9]'
 
 # Paths
 # -----
-
 #: pathlib.Path: Package path
 PKG_PATH = Path(__file__).resolve(strict=True).parent
 
@@ -28,7 +27,6 @@ MPL_STYLES_PATH = Path('plots/mpl_styles')
 
 # Global var
 # ----------
-
 #: int: Config generator limit
 CONFIG_GEN_LIM = 10000
 
@@ -62,7 +60,6 @@ FLAG_PRM_DESC_PREFIX = 'Flag of '
 
 # Models
 # -------
-
 #: str: Instrument type pattern (e.g. VAI-RS92, MET_LAB-C50, RS92-GDP_002)
 MODEL_PAT = rf"{RE_UPPER_W}+(({RE_UPPER_W})|([\-\_]))*{RE_UPPER_W}"
 
@@ -74,7 +71,6 @@ GDP_FILE_MDL_PAT = r"^[A-Z]{3}\-[A-Z]{2}\-\d{2}\_\d\_([\w\-]+\_\d{3})\_\d{8}T"
 
 # Parameters
 # ----------
-
 #: str: Parameter pattern (e.g. tre200s0, uorpros1, uorprosu_r)
 PRM_PAT = rf"{RE_LOWER_W}+(({RE_LOWER_W})|([\_]))*(?:(?<!{FLAG_PRM_NAME_SUFFIX}))"
 
@@ -87,7 +83,6 @@ PRM_AND_FLAG_PRM_PAT = rf"(?:(({PRM_PAT})|({FLAG_PRM_PAT})))"
 
 # DataFrame columns
 # -----------------
-
 #: str: Name of the time delta index for the pandas DataFrame of RSProfile, GDPProfiles
 PRF_REF_TDT_NAME = 'tdt'
 
@@ -114,7 +109,6 @@ PRF_REF_FLG_NAME = 'flg'
 
 # Tags
 # ----
-
 #: str: Tag's name for none tag in DB
 TAG_NONE_NAME = ''
 #: str: Tag's desc for none tag in DB
@@ -153,21 +147,17 @@ TAG_EMPTY_DESC = 'Empty data'
 
 # Flags
 # -----
-
 #: str: Flag's name for raw NA values
-TAG_EMPTY_NAME = 'raw_na'
-
+FLG_EMPTY_NAME = 'raw_na'
 #: str: Flag's desc for raw NA values
-TAG_EMPTY_DESC = 'Raw NA values'
-
-#: str: Flag's name for resampled values
-TAG_INVALID_NAME = 'invalid'
-
-#: str: Flag's desc for resampled values
-TAG_INVALID_DESC = 'Invalid values'
+FLG_EMPTY_DESC = 'Raw NA values'
 
 #: str: Flag's name for interpolated values
-TAG_INTERP_NAME = 'interp'
-
+FLG_INTERP_NAME = 'interp'
 #: str: Flag's desc for interpolated values
-TAG_INTERP_DESC = "Interpolated values"
+FLG_INTERP_DESC = "Interpolated values"
+
+#: str: Flag's name for resampled values
+FLG_INCOMPATIBLE_NAME = 'incomp'
+#: str: Flag's desc for resampled values
+FLG_INCOMPATIBLE_DESC = 'Incompatible GDP measurements'

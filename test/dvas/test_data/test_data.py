@@ -77,6 +77,11 @@ class TestMutliProfile:
             for i in range(n_data)
         ])
 
+    def test_iterable(self, mlt_prf):
+        """ Test that the MultiProfile is iterable """
+
+        assert [item for item in mlt_prf] == [mlt_prf.profiles[0], mlt_prf.profiles[1]]
+
     def test_get_prms(self, mlt_prf):
         """ Test convenience getter function """
 

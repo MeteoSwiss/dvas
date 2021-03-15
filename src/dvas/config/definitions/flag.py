@@ -11,9 +11,9 @@ Module contents: Required attributes definition for `.config.ConfigManager.Flag 
 
 # Import current packages modules
 from ...database.model import Flag as TableFlag
-from ...hardcoded import TAG_EMPTY_NAME, TAG_EMPTY_DESC
-from ...hardcoded import TAG_INVALID_NAME, TAG_INVALID_DESC
-from ...hardcoded import TAG_INTERP_NAME, TAG_INTERP_DESC
+from ...hardcoded import FLG_EMPTY_NAME, FLG_EMPTY_DESC
+from ...hardcoded import FLG_INCOMPATIBLE_NAME, FLG_INCOMPATIBLE_DESC
+from ...hardcoded import FLG_INTERP_NAME, FLG_INTERP_DESC
 
 #: dict: Parameter pattern properties (JSON_SCHEMA)
 PARAMETER_PATTERN_PROP = {
@@ -38,9 +38,9 @@ CONST_NODES = [
         TableFlag.flag_desc.name: arg[1]
     } for i, arg in enumerate(
         (
-            (TAG_EMPTY_NAME, TAG_EMPTY_DESC),
-            (TAG_INVALID_NAME, TAG_INVALID_DESC),
-            (TAG_INTERP_NAME, TAG_INTERP_DESC),
+            (FLG_EMPTY_NAME, FLG_EMPTY_DESC),
+            (FLG_INTERP_NAME, FLG_INTERP_DESC),
+            (FLG_INCOMPATIBLE_NAME, FLG_INCOMPATIBLE_DESC),
         )
     )
 ]

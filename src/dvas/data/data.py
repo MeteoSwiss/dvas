@@ -78,6 +78,9 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
     def __init__(self, load_stgy=None, sort_stgy=None, save_stgy=None, plot_stgy=None,
                  rebase_stgy=None):
 
+        # For the class iterator
+        self.ind = 0
+
         # Init attributes
         self._load_stgy = load_stgy
         self._sort_stgy = sort_stgy
@@ -87,6 +90,12 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
 
         self._profiles = self._DATA_EMPTY
         self._db_variables = self._DB_VAR_EMPTY
+
+    def __len__(self):
+        return len(self.profiles)
+
+    def __getitem__(self, i):
+        return self.profiles[i]
 
     @property
     def profiles(self):
@@ -155,9 +164,6 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
         """
         for i in range(len(self)):
             self.profiles[i].info.add_tags(val)
-
-    def __len__(self):
-        return len(self.profiles)
 
     def copy(self):
         """Return a deep copy of the object"""
