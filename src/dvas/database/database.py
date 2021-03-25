@@ -11,22 +11,14 @@ Module contents: Local database management tools
 
 # Import from python packages
 import pprint
-from pathlib import Path
 from hashlib import blake2b
-from abc import abstractmethod, ABCMeta
-from contextlib import contextmanager
-import operator
-from functools import reduce
 from math import floor
 from datetime import datetime
 from peewee import chunked, DoesNotExist
-from peewee import IntegrityError
-from peewee import PeeweeException
 from playhouse.shortcuts import model_to_dict
 import numpy as np
 from pandas import Timestamp
 from pampy.helpers import Iterable, Union
-
 
 # Import from current package
 from .model import db
@@ -39,11 +31,11 @@ from .model import MetaData as TableMetaData
 from .model import Flag, DataSource, Data
 from .model import InfosObjects as TableInfosObjects
 from .model import InfosTags
+from .search import SearchInfoExpr
 from ..config.config import OneDimArrayConfigLinker
 from ..config.definitions.origdata import EDT_FLD_NM
 from ..config.definitions.origdata import TAG_FLD_NM, META_FLD_NM
-from ..hardcoded import TAG_NONE_NAME, TAG_EMPTY_NAME
-from ..hardcoded import TAG_RAW_NAME, TAG_GDP_NAME
+from ..hardcoded import TAG_NONE_NAME
 from ..helper import SingleInstanceMetaClass
 from ..helper import TypedProperty as TProp
 from ..helper import get_by_path, check_datetime
@@ -52,7 +44,6 @@ from ..logger import localdb as localdb_logger
 from ..logger import log_func_call
 from ..environ import glob_var
 from ..environ import path_var as env_path_var
-from ..errors import DBError
 
 # Define
 SQLITE_MAX_VARIABLE_NUMBER = 999
@@ -525,8 +516,11 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         """
 
+        # Init
+        SearchInfoExpr.set_stgy('info')
+
         try:
-            out = list(SearchInfoExpr.eval(search_expr, prm_name, filter_empty))
+            out = list(SearchInfoExpr.eval(search_expr, prm_name=prm_name, filter_empty=filter_empty))
 
         # TODO Detail exception
         except Exception as exc:
@@ -1035,288 +1029,6 @@ class InfoManager:
             raise Exception(exc)
 
         return info
-
-
-class SearchInfoExpr(metaclass=ABCMeta):
-    """Abstract search info expression interpreter class.
-
-    .. uml::
-
-        @startuml
-        footer Interpreter design pattern
-
-        class SearchInfoExpr {
-            {abstract} interpret()
-            {static} eval()
-        }
-
-        class LogicalSearchInfoExpr {
-            _expression: List
-            interpret()
-            {abstract} fct(*arg)
-        }
-
-        SearchInfoExpr <|-- LogicalSearchInfoExpr : extends
-        LogicalSearchInfoExpr o--> SearchInfoExpr
-
-        class TerminalSearchInfoExpr {
-            interpret()
-            {abstract} get_filter()
-        }
-
-        SearchInfoExpr <|-- TerminalSearchInfoExpr : extends
-
-        @enduml
-
-    """
-
-    @abstractmethod
-    def interpret(self):
-        """Interpreter method"""
-
-    @staticmethod
-    def eval(str_expr, prm_name, filter_empty):
-        """Evaluate search expression
-
-        Args:
-            str_expr (str): Expression to evaluate
-            prm_name (str): Search parameter
-            filter_empty (bool): Filter for empty data
-
-        Returns:
-            List of Info.info_id
-
-        Search expression grammar:
-            - all(): Select all
-            - [datetime ; dt]('<ISO datetime>', ['=='(default) ; '>=' ; '>' ; '<=' ; '<' ; '!=']): Select by datetime
-            - [serialnumber ; srn]('<Serial number>'): Select by serial number
-            - [product_id ; pid](<Product>): Select by product
-            - tags(['<Tag>' ; ('<Tag 1>', ...,'<Tag n>')]): Select by tag
-            - and_(<expr 1>, ..., <expr n>): Intersection
-            - or_(<expr 1>, ..., <expr n>): Union
-            - not_(<expr>): Negation, correspond to all() without <expr>
-
-        Shortcut expressions:
-            - raw(): Same as tags('raw')
-            - gdp(): Same as tags('gdp')
-
-        """
-
-        # Define
-        str_expr_dict = {
-            'all': AllExpr,
-            'datetime': DatetimeExpr, 'dt': DatetimeExpr,
-            'serialnumber': SerialNumberExpr, 'srn': SerialNumberExpr,
-            'product_id': ProductExpr, 'pid': ProductExpr,
-            'tags': TagExpr,
-            'and_': AndExpr,
-            'or_': OrExpr,
-            'not_': NotExpr,
-            'raw': RawExpr,
-            'gdp': GDPExpr,
-        }
-        db_mngr = DatabaseManager()
-
-        # Eval expression
-        expr = eval(str_expr, str_expr_dict)
-
-        # Add empty tag if False
-        if filter_empty is True:
-            expr = AndExpr(NotExpr(TagExpr(TAG_EMPTY_NAME)), expr)
-
-        # Filter parameter
-        expr = AndExpr(ParameterExpr(prm_name), expr)
-
-        # Interpret expression
-        expr_res = expr.interpret()
-
-        # Convert id as table element
-        qry = TableInfo.select().where(TableInfo.info_id.in_(expr_res))
-        out = [arg for arg in qry.iterator()]
-
-        # TODO
-        #  Raise exception
-
-        return out
-
-
-class LogicalSearchInfoExpr(SearchInfoExpr):
-    """
-    Implement an interpret operation for nonterminal symbols in the grammar.
-    """
-
-    def __init__(self, *args):
-        self._expression = args
-
-    def interpret(self):
-        """Non terminal interpreter method"""
-        return reduce(
-            self.fct,
-            [arg.interpret() for arg in self._expression]
-        )
-
-    @abstractmethod
-    def fct(self, *args):
-        """Logical function between expression args"""
-
-
-class AndExpr(LogicalSearchInfoExpr):
-    """And operation"""
-
-    def fct(self, a, b):
-        """Implement fct method"""
-        return operator.and_(a, b)
-
-
-class OrExpr(LogicalSearchInfoExpr):
-    """Or operation"""
-
-    def fct(self, a, b):
-        """Implement fct method"""
-        return operator.or_(a, b)
-
-
-class NotExpr(LogicalSearchInfoExpr):
-    """Not operation"""
-
-    def __init__(self, arg):
-        self._expression = [AllExpr(), arg]
-
-    def fct(self, a, b):
-        """Implement fct method"""
-        return operator.sub(a, b)
-
-
-class TerminalSearchInfoExpr(SearchInfoExpr):
-    """
-    Implement an interpret operation associated with terminal symbols in
-    the grammar.
-    """
-
-    QRY_BASE = (
-        TableInfo
-        .select().distinct()
-        .join(TableInfosObjects).join(TableObject).switch(TableInfo)
-        .join(TableParameter).switch(TableInfo)
-        .join(InfosTags).join(TableTag).switch(TableInfo)
-    )
-
-    def __init__(self, arg):
-        self.expression = arg
-
-    def interpret(self):
-        """Terminal expression interpreter"""
-        return set(
-            arg.info_id for arg in
-            self.QRY_BASE.where(self.get_filter()).iterator()
-        )
-
-    @abstractmethod
-    def get_filter(self):
-        """Return query where method filter"""
-
-
-class AllExpr(TerminalSearchInfoExpr):
-    """All filter"""
-
-    def __init__(self):
-        pass
-
-    def get_filter(self):
-        """Implement get_filter method"""
-        return
-
-
-class DatetimeExpr(TerminalSearchInfoExpr):
-    """Datetime filter"""
-
-    _OPER_DICT = {
-        '==': operator.eq,
-        '!=': operator.ne,
-        '>': operator.gt,
-        '<': operator.lt,
-        '>=': operator.ge,
-        '>=': operator.le,
-    }
-    expression = TProp(Union[str, Timestamp, datetime], check_datetime)
-
-    def __init__(self, arg, op='=='):
-        self.expression = arg
-        self._op = self._OPER_DICT[op]
-
-    def get_filter(self):
-        """Implement get_filter method"""
-        return self._op(TableInfo.edt, self.expression)
-
-
-class SerialNumberExpr(TerminalSearchInfoExpr):
-    """Serial number filter"""
-
-    expression = TProp(
-        Union[str, Iterable[str]],
-        setter_fct=lambda x: [x] if isinstance(x, str) else list(x)
-    )
-
-    def get_filter(self):
-        """Implement get_filter method"""
-        return TableObject.srn.in_(self.expression)
-
-
-class ProductExpr(TerminalSearchInfoExpr):
-    """Product filter"""
-
-    expression = TProp(
-        Union[int, Iterable[int]],
-        setter_fct=lambda x: [x] if isinstance(x, int) else list(x)
-    )
-
-    def get_filter(self):
-        """Implement get_filter method"""
-        return TableObject.pid.in_(self.expression)
-
-
-class TagExpr(TerminalSearchInfoExpr):
-    """Tag filter"""
-
-    expression = TProp(
-        Union[str, Iterable[str]], lambda x: set((x,)) if isinstance(x, str) else set(x)
-    )
-
-    def get_filter(self):
-        """Implement get_filter method"""
-        return TableTag.tag_name.in_(self.expression)
-
-
-class ParameterExpr(TerminalSearchInfoExpr):
-    """Parameter filter"""
-
-    expression = TProp(str, lambda x: x)
-
-    def get_filter(self):
-        """Implement get_filter method"""
-        return TableParameter.prm_name == self.expression
-
-
-class RawExpr(TerminalSearchInfoExpr):
-    """Raw filter"""
-
-    def __init__(self):
-        pass
-
-    def get_filter(self):
-        """Implement get_filter method"""
-        return TableTag.tag_name.in_([TAG_RAW_NAME])
-
-
-class GDPExpr(TerminalSearchInfoExpr):
-    """GDP filter"""
-
-    def __init__(self):
-        pass
-
-    def get_filter(self):
-        """Implement get_filter method"""
-        return TableTag.tag_name.in_([TAG_GDP_NAME])
 
 
 class DBCreateError(Exception):

@@ -58,22 +58,22 @@ if __name__ == '__main__':
     # ----------------------------------------------------------------------------------------------
     print("\n --- DATABASE SETUP ---")
 
-    # Clear
-    DB.clear_db()
+    # # Clear
+    # DB.clear_db()
 
     # Init
     DB.init()
 
-    # Fetch
-    DB.fetch_raw_data(
-        [
-            'tdtpros1',
-            'trepros1', 'trepros1_flag',
-            'treprosu_r', 'treprosu_s', 'treprosu_t',
-            'altpros1'
-        ],
-        strict=True
-    )
+    # # Fetch
+    # DB.fetch_raw_data(
+    #     [
+    #         'tdtpros1',
+    #         'trepros1', 'trepros1_flag',
+    #         'treprosu_r', 'treprosu_s', 'treprosu_t',
+    #         'altpros1'
+    #     ],
+    #     strict=True
+    # )
 
     DB.explore()
 

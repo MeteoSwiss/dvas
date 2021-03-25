@@ -16,7 +16,7 @@ from .data.data import MultiProfile as DataMultiProfile
 from .data.data import MultiRSProfile as DataMultiRSProfile
 from .data.data import MultiGDPProfile as DataMultiGDPProfile
 from .logger import LogManager
-from .database.shell import DatabasePrompt
+from .database.explorer import DatabasePrompt
 
 
 class Log:
