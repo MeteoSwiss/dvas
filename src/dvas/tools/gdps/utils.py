@@ -128,21 +128,21 @@ def corcoefs(i, j, sigma_name, oid_i=None, oid_j=None, mid_i=None, mid_j=None,
 @log_func_call(logger)
 def weighted_mean(df_chunk, binning=1):
     """ Compute the (respective) weighted mean of the 'tdt', 'val', and 'alt' columns of a
-    pd.DataFrame, with weights definied in the 'w_ps' column. Also returns the Jacobian matrix for
+    pd.DataFrame, with weights defined in the 'w_ps' column. Also returns the Jacobian matrix for
     `val` to enable accurate error propagation.
 
     Note:
         The input format for `df_chunk` is a `pandas.DataFrame` with a very specific structure.
-        It requires a single index called `_idx`, with 10 columns per profiles with labels `tdt`,
-        `alt`, `val`, 'flg', `ucr`, `ucs`, `uct`, `ucu`, `uc_tot` and `w_ps`. All these must be
-        grouped together using pd.MultiIndex where the level 0 corresponds to the profile number
-        (e.g. 0,1,2...), and the level 1 is the original column name, i.e.::
+        It requires a single index called `_idx`, with 5 columns per profiles with labels `tdt`,
+        `alt`, `val`, 'flg', and `w_ps`. All these must be grouped together using pd.MultiIndex
+        where the level 0 corresponds to the profile number (e.g. 0, 1, 2...), and the level 1 is
+        the original column name, i.e.::
 
-                            0                                             ...         1                        0          1
-                          alt              tdt         val       ucr ucs  ...       uct ucu    uc_tot       w_ps       w_ps
-            _idx                                                          ...
-            0      486.726685  0 days 00:00:00  284.784546       NaN NaN  ...  0.100106 NaN  0.211856  55.861518  22.280075
-            1      492.425507  0 days 00:00:01  284.695190  0.079443 NaN  ...  0.100106 NaN  0.194927  67.896245  26.318107
+                       0                                        1
+                     alt              tdt    val  flg  w_ps   alt  ... w_ps
+            _idx
+            0      486.7  0 days 00:00:00  284.7    0  55.8  485.9 ... 22.4
+            1      492.4  0 days 00:00:01  284.6    1  67.5  493.4 ... 26.3
             ...
 
     Args:
@@ -161,9 +161,7 @@ def weighted_mean(df_chunk, binning=1):
     """
 
     # Begin with some important sanity checks to make sure the DataFrame has the correct format
-    for col in [PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME, PRF_REF_FLG_NAME,
-                PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME,
-                'uc_tot', 'w_ps']:
+    for col in [PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME, PRF_REF_FLG_NAME, 'w_ps']:
         if col not in df_chunk.columns.unique(level=1):
             raise DvasError('Ouch ! column "{}" is missing from the DataFrame'.format(col))
 
@@ -265,20 +263,20 @@ def delta(df_chunk, binning=1):
 
     Note:
         The input format for `df_chunk` is a `pandas.DataFrame` with a very specific structure.
-        It requires a single index called `_idx`, with 10 columns per profiles with labels `tdt`,
-        `alt`, `val`, 'flg', `ucr`, `ucs`, `uct`, `ucu`, `uc_tot` and `w_ps`. All these must be
-        grouped together using pd.MultiIndex where the level 0 corresponds to the profile number
-        (e.g. 0,1,2...), and the level 1 is the original column name, i.e.::
+        It requires a single index called `_idx`, with 4 columns per profiles with labels `tdt`,
+        `alt`, `val`, and 'flg'. All these must be grouped together using pd.MultiIndex where the
+        level 0 corresponds to the profile number (i.e. 0 or 1), and the level 1 is the original
+        column name, i.e.::
 
-                            0                                             ...         1                        0          1
-                          alt              tdt         val       ucr ucs  ...       uct ucu    uc_tot       w_ps       w_ps
-            _idx                                                          ...
-            0      486.726685  0 days 00:00:00  284.784546       NaN NaN  ...  0.100106 NaN  0.211856  55.861518  22.280075
-            1      492.425507  0 days 00:00:01  284.695190  0.079443 NaN  ...  0.100106 NaN  0.194927  67.896245  26.318107
+                       0                               1
+                     alt              tdt    val flg alt    ...  flg
+            _idx
+            0      486.7  0 days 00:00:00  284.7   0 486.5  ...    0
+            1      492.4  0 days 00:00:01  284.6   0 491.9  ...    1
             ...
 
     Args:
-        df_chunk (pandas.DataFrame): data conatining the Profiles to merge.
+        df_chunk (pandas.DataFrame): data containing the Profiles to merge.
         binning (int, optional): binning size. Defaults to 1 (=no binning).
 
     Returns:
@@ -293,9 +291,7 @@ def delta(df_chunk, binning=1):
     """
 
     # Begin with some important sanity checks to make sure the DataFrame has the correct format
-    for col in [PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME, PRF_REF_FLG_NAME,
-                PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME,
-                'uc_tot']:
+    for col in [PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME, PRF_REF_FLG_NAME]:
         if col not in df_chunk.columns.unique(level=1):
             raise DvasError('Ouch ! column "{}" is missing from the DataFrame'.format(col))
 
@@ -306,52 +302,78 @@ def delta(df_chunk, binning=1):
         raise DvasError("Ouch ! I can only make the difference between 2 profiles, " +
                         "but you gave me {}.".format(n_prf))
 
-    # TODO: everything after this needs fixing. Question: what do I do with the alt and tdt ?
+    # Create the structure that will store all the weighted means
+    chunk_out = pd.DataFrame()
 
+    # Let's loop through the variables and compute their deltas.
+    for col in [PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME]:
 
-    # Compute the difference between the two profiles (full resolution)
-    delta_pqs = None #vals[0] - vals[1]
+        # 1) Build the delta at high resolution
+        delta_pqs = df_chunk.xs(col, level=1, axis=1).diff(axis=1).loc[:, 1]
 
-    if binning > 1:
-        # If required, bin the array as required.
-        # Note the special treatment of NaNs: ignored, unless that is all I have in a given bin.
-        delta_pqm = delta_pqs.groupby(delta_pqs.index//binning).aggregate(fancy_nansum)
+        if binning > 1:
+            # If required, bin the array.
+            # Note the special treatment of NaNs: ignored, unless that is all I have in a given bin.
+            delta_pqm = delta_pqs.groupby(delta_pqs.index//binning).aggregate(fancy_nansum)
 
-        # Keep track of how many valid rows I am summing in each bin.
-        valid_rows = pd.Series(np.ones_like(delta_pqs)).mask(delta_pqs.isna(), 0)
-        valid_rows = valid_rows.groupby(delta_pqs.index//binning).sum()
+            # Keep track of how many valid rows I am summing in each bin.
+            # WARNING: here, i look at the number of valid rows **for that specific column**.
+            # This implies that, potentially, the delta action may combine different rows for
+            # different columns.
+            # TODO: fix this warning ... by using flags to select valid rows ?
+            valid_rows = pd.Series(np.ones_like(delta_pqs),
+                                   dtype='int').mask(delta_pqs.isna().values, 0)
+            valid_rows = valid_rows.groupby(delta_pqs.index//binning).sum()
 
-        # Build the mean by normalizing the sum by the number of time/altitude steps combined
-        x_ms = delta_pqm / valid_rows
+            # Build the mean by normalizing the sum by the number of time/altitude steps combined
+            x_ms = delta_pqm / valid_rows
 
-    else:
-        # If no binning is required, I can save *a lot* of time
-        x_ms = delta_pqs
+        else:
+            # If no binning is required, I can save *a lot* of time
+            x_ms = delta_pqs
+            valid_rows = pd.Series(np.ones(len(x_ms)))
 
-    # Let us now compute the non-zero Jacobian matrix elements.
-    # See the comments in the weighted_mean() function regardin the motivation for not computing or
-    # returning the full Jacobian matrix (which is pretty much filled with 0's.)
+        # Assign the delta
+        chunk_out[col] = x_ms
 
-    jac_elmts = [len(x_ms) * ([1/binning for i in range(binning)] +
-                              [-1/binning for i in range(binning)])]
+        # All done. Let us now compute the associated Jacobian matrix if we are dealing with 'val'.
+        if col != PRF_REF_VAL_NAME:
+            continue
 
-    return x_ms, jac_elmts
+        # How big is my Jacobian ?
+        jac_mat = np.ones((len(chunk_out), len(df_chunk)*n_prf))
+
+        # We're doing 0 - 1, so let's already set the second half of the matrix accordingly.
+        jac_mat[:, len(df_chunk):] = -1
+
+        # Next we need to know which elements are being combined in each level of the final
+        # (binned) profile (the matrix should be mostly filled with 0).
+
+        # This is the fastest way to do so I could come up with so far. Re-compute which layer
+        # goes where, given the binning.
+        rows, cols = np.indices((len(chunk_out), len(df_chunk)*n_prf))
+        jac_mat[(cols % len(df_chunk))//binning != rows] = 0
+
+        # Finally, let us not forget that we may have averaged the delta over the bin
+        jac_mat /= np.array([valid_rows.values]).T
+
+    return chunk_out, jac_mat
 
 def process_chunk(df_chunk, binning=1, method='weighted mean'):
     """ Process a DataFrame chunk and propagate the errors.
 
     Note:
         The input format for `df_chunk` is a `pandas.DataFrame` with a very specific structure.
-        It requires a single index called `_idx`, with 14 columns per profiles with labels `tdt`,
-        `alt`, `val`, 'flg', `ucr`, `ucs`, `uct`, `ucu`, `uc_tot`, `w_ps`, `oid`, `mid`, `eid`, and
-        `rid`. All these must be grouped together using pd.MultiIndex where the level 0 corresponds
+        It requires a single index called `_idx`, with 13 columns per profiles with labels `tdt`,
+        `alt`, `val`, 'flg', `ucr`, `ucs`, `uct`, `ucu`, `uc_tot`, `oid`, `mid`, `eid`, and `rid`.
+        All these must be grouped together using pd.MultiIndex where the level 0 corresponds
         to the profile number (e.g. 0,1,2...), and the level 1 is the original column name, i.e.::
 
-                       0                                    ...     1                 0     1
-                     alt              tdt    val   ucr ucs  ...   uct ucu  uc_tot  w_ps  w_ps
-            _idx                                            ...
-            0      486.7  0 days 00:00:00  284.7   NaN NaN  ...  0.10 NaN    0.21  55.8  22.2
-            1      492.4  0 days 00:00:01  284.6  0.07 NaN  ...  0.10 NaN    0.19  67.8  26.3
+                       0                                                1
+                     alt              tdt    val   ucr ucs  ...   rid alt ...
+            _idx
+            0      486.7  0 days 00:00:00  284.7   NaN NaN  ...     1 485.8
+            1      492.4  0 days 00:00:01  284.6  0.07 NaN  ...     1 493.4
             ...
 
     Args:
@@ -375,7 +397,7 @@ def process_chunk(df_chunk, binning=1, method='weighted mean'):
     # Check I have all the required columns
     for col in [PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME, PRF_REF_FLG_NAME,
                 PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME,
-                'uc_tot']:
+                'uc_tot', 'oid', 'mid', 'eid', 'rid']:
         if col not in df_chunk.columns.unique(level=1):
             raise DvasError('Ouch ! column "{}" is missing from the DataFrame'.format(col))
 

@@ -61,7 +61,7 @@ def gdp_1_prfs(db_init):
 
 @pytest.fixture
 def gdp_3_prfs(db_init):
-    """ Return a MultiGDPProfile with 2 GDPprofiles in it. """
+    """ Return a MultiGDPProfile with 3 GDPprofiles in it. """
 
     # Get the oids from the profiles
     oids = [item['oid'] for item in db_init.data]

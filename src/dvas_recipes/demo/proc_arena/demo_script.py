@@ -23,7 +23,8 @@ from dvas.database.database import DatabaseManager
 from dvas.environ import path_var
 from dvas.tools import sync as dts
 from dvas.tools.gdps import gdps as dtgg
-import dvas.plots.gruan as dpg
+from dvas.tools.gdps import stats as dtgs
+import dvas.plots.gdps as dpg
 
 # Extract our current location
 demo_file_path = Path(__file__).resolve()
@@ -85,13 +86,13 @@ if __name__ == '__main__':
 
     # Load a series of basic profiles associated to a specific set of search criteria.
     # Each profile consists of a variable and an associated altitude.
-    prfs = MultiProfile()
-    prfs.load_from_db(filt_raw, 'trepros1', 'altpros1')
+    #prfs = MultiProfile()
+    #prfs.load_from_db(filt_raw, 'trepros1', 'altpros1')
 
     # Idem for a series of radiosonde profiles, consisting of a variable, an associated timestep,
     # and an altitude.
-    rs_prfs = MultiRSProfile()
-    rs_prfs.load_from_db(filt_raw_dt, 'trepros1', 'tdtpros1', alt_abbr='altpros1')
+    #rs_prfs = MultiRSProfile()
+    #rs_prfs.load_from_db(filt_raw_dt, 'trepros1', 'tdtpros1', alt_abbr='altpros1')
 
     # Load GDPs for temperature, including all the errors at hand
     gdp_prfs = MultiGDPProfile()
@@ -103,53 +104,53 @@ if __name__ == '__main__':
     print("\n --- BASIC DATA EXPLORATION ---")
 
     # How many profiles were loaded ?
-    n_prfs = len(prfs)
+    #n_prfs = len(prfs)
 
     # Each Profile carries an InfoManager entity with it, which contains useful data:
-    print('\nContent of a profile InfoManager:\n')
-    print(prfs.info[0])
+    #print('\nContent of a profile InfoManager:\n')
+    #print(prfs.info[0])
 
     # How many distinct events are present in prfs ?
-    prfs_evts = set(prfs.get_info('eid'))
+    #prfs_evts = set(prfs.get_info('eid'))
 
     # The data is stored inside Pandas dataframes. Each type of profile contains a different set of
     # columns and indexes.
-    prf_df = prfs.profiles[0].data
-    print('\nBasic profile dataframe:\n  index.names={}, columns={}'.format(prf_df.index.names,
-                                                                            prf_df.columns.to_list()))
-    rs_prf_df = rs_prfs.profiles[0].data
-    print('\nRS profile dataframe:\n  index.names={}, columns={}'.format(rs_prf_df.index.names,
-                                                                       rs_prf_df.columns.to_list()))
-    gdp_prf_df = gdp_prfs.profiles[0].data
-    print('\nGDP profile dataframe:\n  index.names={}, columns={}'.format(gdp_prf_df.index.names,
-                                                                        gdp_prf_df.columns.to_list()))
+    #prf_df = prfs.profiles[0].data
+    #print('\nBasic profile dataframe:\n  index.names={}, columns={}'.format(prf_df.index.names,
+    #                                                                        prf_df.columns.to_list()))
+    #rs_prf_df = rs_prfs.profiles[0].data
+    #print('\nRS profile dataframe:\n  index.names={}, columns={}'.format(rs_prf_df.index.names,
+    #                                                                   rs_prf_df.columns.to_list()))
+    #gdp_prf_df = gdp_prfs.profiles[0].data
+    #print('\nGDP profile dataframe:\n  index.names={}, columns={}'.format(gdp_prf_df.index.names,
+    #                                                                    gdp_prf_df.columns.to_list()))
 
     # Each profile is attributed a unique "Object Identification" (oid) number, which allows to keep
     # track of profiles throughout the dvas analysis.
     # If two profiles have the same oid, it implies that they have been acquired with the same
     # sonde AND pre-processed by the same software/recipe/etc ...
     # Note: dvas processing steps DO NOT modify the oid values.
-    gdp_prf_oids = prfs.get_info('oid')
+    #gdp_prf_oids = prfs.get_info('oid')
 
     # Flags can be used to mark specific profile elements. The possible flags, for a given
     # Profile, are accessed as follows:
-    print('\nFlag ids and associated meaning:')
-    print(prfs.profiles[0].flags_name)
+    #print('\nFlag ids and associated meaning:')
+    #print(prfs.profiles[0].flags_name)
 
     # To flag specific elements of a given profiles, use the internal methods:
-    prfs.profiles[0].set_flg('user_qc', True, index=pd.Index([0, 1, 2]))
+    #prfs.profiles[0].set_flg('user_qc', True, index=pd.Index([0, 1, 2]))
 
     # Let's check to see that the data was actually flagged
-    print('\nDid I flag only the first three steps with "user_qc" ?')
-    print(prfs.profiles[0].is_flagged('user_qc'))
+    #print('\nDid I flag only the first three steps with "user_qc" ?')
+    #print(prfs.profiles[0].is_flagged('user_qc'))
 
     # ----------------------------------------------------------------------------------------------
-    print("\n --- BASIC PLOTTING ---")
+    #print("\n --- BASIC PLOTTING ---")
 
     # Let us inspect the (raw) GDP profiles with dedicated plots.
-    gdp_prfs.plot(fn_prefix='01') # Defaults behavior, just adding a prefix to the filename.
+    #gdp_prfs.plot(fn_prefix='01') # Defaults behavior, just adding a prefix to the filename.
     # Now with errors. Show the plot but don't save it.
-    gdp_prfs.plot(label='oid', uc='tot', show=True, fmts=[])
+    #gdp_prfs.plot(label='oid', uc='tot', show=True, fmts=[])
 
     # ----------------------------------------------------------------------------------------------
     print("\n --- PROFILE RESAMPLING ---")
@@ -158,7 +159,7 @@ if __name__ == '__main__':
     gdp_prfs_1s = gdp_prfs.resample(freq='1s', inplace=False)
 
     # We can now save the modified Profiles into the database, with a suitable tag to identify them.
-    gdp_prfs_1s.save_to_db(add_tags=['1s'])
+    #gdp_prfs_1s.save_to_db(add_tags=['1s'])
 
     # ----------------------------------------------------------------------------------------------
     print("\n --- PROFILE SYNCHRONIZATION ---")
@@ -203,14 +204,20 @@ if __name__ == '__main__':
     # synchronization, that step is not immediately visible in the plots.
     print("\nGDP lengths post-synchronization: ", [len(item) for item in gdp_prfs.get_prms()])
 
+    # Before combining the GDPs with each other, let us assess their consistency. The idea here is
+    # to flag any inconsistent measurement, so that they can be ignored during the combination
+    # process.
+    out = dtgs.get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=[1, 2, 4, 8], do_plot=True)
+
     # Let us now create a high-resolution CWS for these synchronized GDPs
-    start_time = datetime.now()
-    cws = dtgg.combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=4)
-    print('CWS assembled in: {}s'.format((datetime.now()-start_time).total_seconds()))
+    #start_time = datetime.now()
+    #cws = dtgg.combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=4)
+    #print('CWS assembled in: {}s'.format((datetime.now()-start_time).total_seconds()))
 
     # We can now inspect the result visually
-    dpg.gdps_vs_cws(gdp_prfs, cws, index_name='_idx', show=True, fn_prefix='03')
+    #dpg.gdps_vs_cws(gdp_prfs, cws, index_name='_idx', show=True, fn_prefix='03')
 
+    # --- TODO ---
     # Save the CWS to the database
     #cws.save_to_db()
 
