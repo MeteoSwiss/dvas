@@ -65,22 +65,30 @@ from ...hardcoded import PRF_REF_VAL_NAME
 
 @log_func_call(logger, time_it=True)
 def ks_test(gdp_pair, alpha=0.0027, binning=1, n_cpus=1):
-    ''' Runs a KS test between two GDPProfile instances.
+    ''' Runs a ``scipy.stats.kstest()`` two-sided test on the normalized-delta between two
+    GDPProfile instances, against a normal distribution.
+
+    The KS test is being run on a level-pre-level basis.
+
+    Note:
+
+        See the dvas documentation for more details about the scientific motivation for this
+        function.
 
     Args:
         gdp_pair (list of dvas.data.strategy.data.GDPProfile): GDP Profiles to compare.
         alpha (float, optional): The significance level for the KS test. Must be 0<alpha<1.
             Defaults to 0.27%.
         binning (int, optional): Whether to bin the Profile delta before running the KS test.
-            Defaults to 1.
+            Defaults to 1 (=no binning).
         n_cpus (int|str, optional): number of cpus to use. Can be a number, or 'max'. Set to 1 to
             disable multiprocessing. Defaults to 1.
 
     Returns:
         pandas DataFrame: a DataFrame containing k_pqi, p_ksi, and f_pqi values. k_pqi contains the
-           (binned) profile delta normalized by the total uncertainty. p_ksi contains the
-           corresponding p-value from the KS test. f_pqi contains 1 where the KS test failed, and
-           0 otherwise. That is: 1 <=> the p-value of the KS test is <= alpha.
+        (binned) profile delta normalized by the total uncertainty. p_ksi contains the
+        corresponding p-value from the KS test. f_pqi contains 1 where the KS test failed, and
+        0 otherwise. That is: 1 <=> the p-value of the KS test is <= alpha.
     '''
 
     if not isinstance(binning, int):

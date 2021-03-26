@@ -31,7 +31,7 @@ from ...data.strategy.data import GDPProfile
 from ...database.database import InfoManager
 
 @log_func_call(logger)
-def combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=1 ):
+def combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=1):
     ''' Combines and (possibly) rebins GDP profiles, with full error propagation.
 
     Note:
