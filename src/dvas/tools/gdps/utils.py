@@ -150,8 +150,8 @@ def weighted_mean(df_chunk, binning=1):
         binning (int, optional): binning size. Defaults to 1 (=no binning).
 
     Returns:
-        (pandas.DataFrame, np.array): weighted mean profile, and associated Jacobian matrix.
-        The matrix has a size of m * n, with m = len(df_chunk)/binning, and
+        (pandas.DataFrame, np.ma.masked_array): weighted mean profile, and associated Jacobian
+        matrix. The matrix has a size of m * n, with m = len(df_chunk)/binning, and
         n = len(df_chunk) * n_profile.
 
     Note:
@@ -245,13 +245,17 @@ def weighted_mean(df_chunk, binning=1):
     # This is the fastest way to do so I could come up with so far. Re-compute which layer goes
     # where, given the binning.
     rows, cols = np.indices((len(chunk_out), len(df_chunk)*n_prf))
-    w_mat[(cols % len(df_chunk))//binning != rows] = 0
+    # Anything not in a bin has a NaN weight. This is important to distinguish from an element with
+    # zero weight but that get included in the bin.
+    w_mat[(cols % len(df_chunk))//binning != rows] = np.nan
 
     # I also need to assemble a matrix of the total weights for each (final) row.
     wtot_mat = np.tile(w_ms.values, (len(df_chunk)*n_prf, 1)).T
 
-    # I can now assemble the Jacobian for the weighted mean
-    jac_mat = w_mat / wtot_mat
+    # I can now assemble the Jacobian for the weighted mean. Turn this into a masked array.
+    jac_mat = np.ma.masked_array(w_mat / wtot_mat,
+                                 mask=(np.isnan(wtot_mat) | np.isnan(w_mat)),
+                                 fill_value=np.nan)
 
     return chunk_out, jac_mat
 
@@ -280,8 +284,8 @@ def delta(df_chunk, binning=1):
         binning (int, optional): binning size. Defaults to 1 (=no binning).
 
     Returns:
-        (pandas.DataFrame, np.array): delta profile (0 - 1), and associated Jacobian matrix.
-        The matrix has a size of m * n, with m = len(df_chunk)/binning, and
+        (pandas.DataFrame, np.ma.masked_array): delta profile (0 - 1), and associated Jacobian
+        matrix. The matrix has a size of m * n, with m = len(df_chunk)/binning, and
         n = len(df_chunk) * 2.
 
     Note:
@@ -317,21 +321,24 @@ def delta(df_chunk, binning=1):
             delta_pqm = delta_pqs.groupby(delta_pqs.index//binning).aggregate(fancy_nansum)
 
             # Keep track of how many valid rows I am summing in each bin.
+            # It would seem logical to store these as int. However, I will soon divide by those
+            # numbers, and will need NaN's to avoid RunTime Warnings. 'int' does not support these,
+            # and 'Int64' cannot be used to divide TiemDeltas ... so float it is ... sigh.
             # WARNING: here, i look at the number of valid rows **for that specific column**.
             # This implies that, potentially, the delta action may combine different rows for
             # different columns.
-            # TODO: fix this warning ... by using flags to select valid rows ?
-            valid_rows = pd.Series(np.ones_like(delta_pqs),
-                                   dtype='int').mask(delta_pqs.isna().values, 0)
+            # TODO: fix this ... by using flags to select valid rows ?
+            valid_rows = pd.Series(np.ones(len(delta_pqs)),
+                                   dtype='float').mask(delta_pqs.isna().values, 0)
             valid_rows = valid_rows.groupby(delta_pqs.index//binning).sum()
 
             # Build the mean by normalizing the sum by the number of time/altitude steps combined
-            x_ms = delta_pqm / valid_rows
+            x_ms = delta_pqm / valid_rows.mask(valid_rows == 0, np.nan)
 
         else:
             # If no binning is required, I can save *a lot* of time
             x_ms = delta_pqs
-            valid_rows = pd.Series(np.ones(len(x_ms)))
+            valid_rows = pd.Series(np.ones(len(x_ms)), dtype='float')
 
         # Assign the delta
         chunk_out[col] = x_ms
@@ -340,8 +347,10 @@ def delta(df_chunk, binning=1):
         if col != PRF_REF_VAL_NAME:
             continue
 
-        # How big is my Jacobian ?
-        jac_mat = np.ones((len(chunk_out), len(df_chunk)*n_prf))
+        # How big is my Jacobian ? (Make it a masked_array)
+        jac_mat = np.ma.masked_array(np.ones((len(chunk_out), len(df_chunk)*n_prf)),
+                                     mask=False,
+                                     fill_value=np.nan)
 
         # We're doing 0 - 1, so let's already set the second half of the matrix accordingly.
         jac_mat[:, len(df_chunk):] = -1
@@ -352,10 +361,24 @@ def delta(df_chunk, binning=1):
         # This is the fastest way to do so I could come up with so far. Re-compute which layer
         # goes where, given the binning.
         rows, cols = np.indices((len(chunk_out), len(df_chunk)*n_prf))
-        jac_mat[(cols % len(df_chunk))//binning != rows] = 0
+        # Anything not in a bin has a NaN weight. This is important to distinguish from an element
+        # with zero weight but that gets included in the bin.
+        jac_mat[(cols % len(df_chunk))//binning != rows] = np.ma.masked
 
-        # Finally, let us not forget that we may have averaged the delta over the bin
-        jac_mat /= np.array([valid_rows.values]).T
+        # Next, I need to mask any level that is completely a NaN, because it does not get used in
+        # the computation. This is important, when binning, if e.g. 1/4 of the bin is Nan,
+        # To have a correct error propagation.
+        points_to_forget = delta_pqs.append(delta_pqs).isna().values
+        jac_mat[:, points_to_forget] = np.ma.masked
+
+        # Finally, let us not forget that we may have averaged the delta over the bin ...
+        # Normalize by the number of valid levels if warranted.
+        # Here, I need to go back from Int64 to float, because I need to turn <NA> into usual NaNs
+        # if I want to divide a float with them. ... sigh ...
+        jac_mat /= np.array([valid_rows.mask(valid_rows == 0, np.nan).values]).T
+
+        # Adjust the mask accordingly.
+        jac_mat[valid_rows == 0, :] = np.ma.masked
 
     return chunk_out, jac_mat
 
@@ -404,6 +427,21 @@ def process_chunk(df_chunk, binning=1, method='weighted mean'):
     # How many profiles do I want to combine ?
     n_prf = len(df_chunk.columns.unique(level=0))
 
+    # Data consistency check & cleanup: if val is NaN, all the errors should be NaNs
+    # (and vice-versa).
+    for prf_ind in range(n_prf):
+        if all(df_chunk.loc[:, (prf_ind, 'uc_tot')].isna() ==
+               df_chunk.loc[:, (prf_ind, 'val')].isna()):
+            continue
+
+        # If I reach this point, then the data is not making sense. Warn the user and clean it up.
+        logger.warning("GDP Profile %i: NaN mismatch for 'val' and 'uc_tot'", prf_ind)
+        df_chunk.loc[df_chunk.loc[:, (prf_ind, 'uc_tot')].isna().values, (prf_ind, 'val')] = np.nan
+        for col in [PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME,
+                    'uc_tot']:
+            df_chunk.loc[df_chunk.loc[:, (prf_ind, 'val')].isna().values,
+                         (prf_ind, col)] = np.nan
+
     # Compute the weights for each point, if applicable
     # First I need to add the new columns (one for each Profile).
     df_chunk = df_chunk.stack(level=0)
@@ -416,6 +454,11 @@ def process_chunk(df_chunk, binning=1, method='weighted mean'):
             1/df_chunk.loc[:, (slice(None), 'uc_tot')].values**2
     else:
         df_chunk.loc[:, (slice(None), 'w_ps')] = 1.
+        # Let us not forget to mask anything that has a NaN value or total error.
+        df_chunk.loc[:, (slice(None), 'w_ps')] = df_chunk.loc[:, (slice(None), 'w_ps')].mask(
+            df_chunk.loc[:, (slice(None), 'val')].isna().values, np.nan)
+        df_chunk.loc[:, (slice(None), 'w_ps')] = df_chunk.loc[:, (slice(None), 'w_ps')].mask(
+            df_chunk.loc[:, (slice(None), 'uc_tot')].isna().values, np.nan)
 
     # Combine the Profiles, and compute the Jacobian matrix as well
     if method in ['mean', 'weighted mean']:
@@ -448,41 +491,35 @@ def process_chunk(df_chunk, binning=1, method='weighted mean'):
                                        (n_prf*len(df_chunk), 1)).T,
                         )
 
-        # Implement the multiplication. Mind the structure of these arrays to get the correct
-        # mix of Hadamard and dot products where I need them !
+        # Implement the multiplication. First get the uncertainties ...
         raveled_sigmas = np.array([df_chunk.xs(sigma_name, level=1, axis=1).T.values.ravel()])
-        U_mat = np.multiply(U_mat, raveled_sigmas.T @ raveled_sigmas)
+        # ... turn them into a masked array ...
+        raveled_sigmas = np.ma.masked_invalid(raveled_sigmas)
+        # ... and combine them with the correlation coefficients. Mind the mix of Hadamard and dot
+        # products to get the correct mix !
+        U_mat = np.multiply(U_mat, np.ma.dot(raveled_sigmas.T, raveled_sigmas))
 
         # Let's compute the full covariance matrix for the merged profile (for the specific
         # error type).
         # This is a square matrix, with the off-axis elements containing the covarience terms
-        # for the merged profile. For now ignore all NaNs. This is to allow bins with only
-        # partial datza to still return a number.
-        V_mat = np.where(np.isnan(G_mat), 0, G_mat) @ \
-                np.where(np.isnan(U_mat), 0, U_mat) @ \
-                np.where(np.isnan(G_mat.T), 0, G_mat.T)
+        # for the merged profile. All these matrices are masked arrays, such that bad values will be
+        # correctly ignored .... unless that is all we have for a given bin.
+        V_mat = np.ma.dot(G_mat, np.ma.dot(U_mat, G_mat.T))
 
         # As a sanity check let's make sure all the off-diagonal terms are exactly 0.
         # This should be the case since a specific (original) layer can only be used once
         # in the combined profile.
-        if not np.array_equal(V_mat[(V_mat != 0)|(np.isnan(V_mat))],
-                              V_mat.diagonal(), equal_nan=True):
+        rows, cols = np.indices((len(x_ms), len(x_ms)))
+        off_diag_elmts = V_mat[rows != cols]
+        if any(off_diag_elmts[~off_diag_elmts.mask] != 0):
             logger.warning("Non-0 off-diagonal elements of CWS correlation matrix [%s].",
                            sigma_name)
 
-        # I "ignored" NaN when computing V, to ensure that if a bin contains partial NaNs,
-        # it still returns a good value. But what if the bin contains NO valid data ? I.e.:
-        # 1) if all the weights are bad in a given bin ...
-        check_1 = np.all(np.isnan(G_mat), axis=1)
-        # 2) if all the covariance terms are NaN's for a given bin ..
-        check_2 = [np.all(np.isnan(U_mat[ind][(G_mat[ind] != 0) * (~np.isnan(G_mat[ind]))]))
-                   for ind in range(len(G_mat))]
+        # TODO: what could we do with the off-diagonal elements of V_mat ? Nothing for now.
 
-        # Then mask the final variance accordingly
-        V_mat[check_1 | check_2] = np.nan
-
-        # Assign the values to the combined df_chunk
-        x_ms.loc[:, sigma_name] = np.sqrt(V_mat.diagonal())
+        # Assign the propagated uncertainty values to the combined df_chunk, taking care of
+        # replacing any masked element with NaNs.
+        x_ms.loc[:, sigma_name] = np.sqrt(V_mat.diagonal().filled(np.nan))
 
     # All done
     return x_ms

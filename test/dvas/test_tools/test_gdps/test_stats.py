@@ -78,7 +78,8 @@ def test_ks_test(gdp_2_prfs):
     # Now with some binning
     out_2 = ks_test(gdp_2_prfs, alpha=0.0027, binning=2, n_cpus=1)
     assert len(out_2) == len(gdp_2_prfs[0])//2 + len(gdp_2_prfs[0])%2 # Correct length ?
-    assert all(out_1.loc[2, 'k_pqi'].values == out_2.loc[1, 'k_pqi'].values) # Partial NaN's work ok
+    # Partial NaN's get ignored completely ?
+    assert all(out_1.loc[2, 'k_pqi'].values == out_2.loc[1, 'k_pqi'].values)
 
 
 def test_get_incompatibility(gdp_2_prfs):
