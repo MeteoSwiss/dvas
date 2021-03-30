@@ -112,7 +112,6 @@ def test_combine(gdp_1_prfs, gdp_3_prfs):
     # 1) Basic test: does it work with multiprocessing ? Also check proper tagging
     out = combine(gdp_1_prfs, binning=2, method='mean', chunk_size=200, n_cpus='max')
     assert np.all(out.profiles[0].data.loc[0, 'val'] == 15.)
-    assert 'cws' in out.get_info('tags')[0]
     assert out.get_info('eid')[0] == 'e:1'
     assert out.get_info('rid')[0] == 'r:1'
 
