@@ -68,18 +68,18 @@ def test_ks_test(gdp_2_prfs):
 
     out_1 = ks_test(gdp_2_prfs, alpha=0.0027, binning=1, n_cpus=1)
     assert len(out_1) == len(gdp_2_prfs[0]) # Correct length ?
-    assert round(100*(1-out_1.loc[0, 'p_ksi']), 1).values == 68.3 # 1-sigma
-    assert round(100*(1-out_1.loc[1, 'p_ksi']), 1).values == 95.4 # 2-sigma
-    assert round(100*(1-out_1.loc[2, 'p_ksi']), 1).values == 99.7 # 3-sigma
-    assert out_1.loc[3, 'p_ksi'].isna().values # Bad point
+    assert round(100*(1-out_1.loc[0, 'p_ksi']), 1) == 68.3 # 1-sigma
+    assert round(100*(1-out_1.loc[1, 'p_ksi']), 1) == 95.4 # 2-sigma
+    assert round(100*(1-out_1.loc[2, 'p_ksi']), 1) == 99.7 # 3-sigma
+    assert out_1.isna().loc[3, 'p_ksi'] # Bad point
     assert all(out_1.loc[:2, 'f_pqi'].values == [0, 0, 1])  # Correct flags
-    assert out_1.loc[3, 'f_pqi'].isna().values
+    assert out_1.isna().loc[3, 'f_pqi']
 
     # Now with some binning
     out_2 = ks_test(gdp_2_prfs, alpha=0.0027, binning=2, n_cpus=1)
     assert len(out_2) == len(gdp_2_prfs[0])//2 + len(gdp_2_prfs[0])%2 # Correct length ?
     # Partial NaN's get ignored completely ?
-    assert all(out_1.loc[2, 'k_pqi'].values == out_2.loc[1, 'k_pqi'].values)
+    assert out_1.loc[2, 'k_pqi'] == out_2.loc[1, 'k_pqi']
 
 
 def test_get_incompatibility(gdp_2_prfs):
