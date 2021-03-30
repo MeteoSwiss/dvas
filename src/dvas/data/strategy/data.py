@@ -165,9 +165,9 @@ class ProfileAC(metaclass=RequiredAttrMetaClass):
 
                 # Prepare value
                 assert isinstance(val, pd.Series)
-                if len(val) != len(self):
-                    raise DvasError('Ouch ! Value length is {}. Should be {}'.format(len(val),
-                                                                                     len(self)))
+                if any([ind not in self.data.index for ind in val.index]):
+                    raise DvasError('Ouch ! Bad index {}. Should be {}'.format(val.index,
+                                                                               self.data.index))
                 value = self._prepare_df(pd.DataFrame(val, columns=[item,]), cols_key=[item])
 
                 # Update value
