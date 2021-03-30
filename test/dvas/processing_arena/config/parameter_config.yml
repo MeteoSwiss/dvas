@@ -30,3 +30,19 @@
 - prm_name: 'dummytst_(param\d)'
   prm_desc: 'get(1)'
   prm_unit: ''
+
+- prm_name: 'ucr1'
+  prm_desc: 'Dummy error'
+  prm_unit: 'm'
+
+- prm_name: 'ucs1'
+  prm_desc: 'Dummy error'
+  prm_unit: 'm'
+
+- prm_name: 'uct1'
+  prm_desc: 'Dummy error'
+  prm_unit: 'm'
+
+- prm_name: 'ucu1'
+  prm_desc: 'Dummy error'
+  prm_unit: 'm'
