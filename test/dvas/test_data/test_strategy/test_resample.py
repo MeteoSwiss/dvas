@@ -60,7 +60,7 @@ class TestResampleStrategy:
         # Do I really have 1sec time stamps ?
         tdts = out.profiles[0].data.index.get_level_values('tdt').values.astype('timedelta64[s]')
         assert len(np.unique(np.diff(tdts))) == 1
-        assert np.unique(np.diff(tdts))[0] == 1
+        assert np.unique(np.diff(tdts))[0] == np.timedelta64(1, 's')
 
         # Was the flag applied correctly ?
         assert all(out.profiles[0].is_flagged('interp') == [0, 0, 1])
