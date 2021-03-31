@@ -18,7 +18,6 @@ import pandas as pd
 from dvas.data.strategy.data import GDPProfile
 from dvas.data.data import MultiGDPProfile
 from dvas.database.database import InfoManager
-from dvas.tools.gdps.gdps import combine
 
 # Functions to test
 from dvas.tools.gdps.stats import ks_test, get_incompatibility
@@ -78,6 +77,7 @@ def test_ks_test(gdp_2_prfs):
     # Now with some binning
     out_2 = ks_test(gdp_2_prfs, alpha=0.0027, binning=2, n_cpus=1)
     assert len(out_2) == len(gdp_2_prfs[0])//2 + len(gdp_2_prfs[0])%2 # Correct length ?
+
     # Partial NaN's get ignored completely ?
     assert out_1.loc[2, 'k_pqi'] == out_2.loc[1, 'k_pqi']
 
@@ -86,5 +86,4 @@ def test_get_incompatibility(gdp_2_prfs):
     """ Test the higher-level incompatibility checks """
 
     out = get_incompatibility(gdp_2_prfs, alpha=0.0027, bin_sizes=[1], do_plot=False)
-
     assert isinstance(out, dict)

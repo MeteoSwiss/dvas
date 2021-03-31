@@ -233,7 +233,7 @@ def get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=None, rolling_flags=Tr
             # If requested, flag the bad levels detected using this binning intensity
             if rolling_flags:
                 for gdp in gdp_pair:
-                    gdp.set_flg('incomp', True, index=out[out[(binning, 'f_pqi')]==1].index)
+                    gdp.set_flg('incomp', True, index=out[out[(binning, 'f_pqi')] == 1].index)
 
         # Assign this pair's outcome to the final storage dictionnary
         incompat[key] = out

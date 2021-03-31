@@ -17,8 +17,6 @@ import pytest
 # Import from python packages and modules
 from dvas.data.strategy.load import LoadRSProfileStrategy, LoadGDPProfileStrategy
 from dvas.data.data import MultiRSProfile, MultiGDPProfile
-from dvas.errors import DvasError
-
 
 @pytest.fixture
 def mlt_prf():

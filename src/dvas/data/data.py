@@ -30,7 +30,7 @@ from ..helper import RequiredAttrMetaClass
 from ..helper import deepcopy
 from ..helper import get_class_public_attr
 
-from ..errors import DvasError, DBIOError
+from ..errors import DBIOError
 
 from ..hardcoded import TAG_RAW_NAME, PRF_REF_INDEX_NAME
 
