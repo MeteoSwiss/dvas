@@ -58,12 +58,6 @@ def multiprf(prfs, index='alt', label='oid', uc=None, **kwargs):
     ax1 = fig.add_subplot(fig_gs[0, 0])
     xmin, xmax = -np.infty, np.infty
 
-    # Do I need to extract uncertainties ?
-    if uc is None:
-        prms = ['val']
-    else:
-        prms = ['val', uc]
-
     for (p_ind, prf) in enumerate(prfs):
 
         # TODO: implement the option to scale the axis with different units. E.g. 'sec' for

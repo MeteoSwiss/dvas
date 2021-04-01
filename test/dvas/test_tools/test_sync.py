@@ -65,6 +65,7 @@ def prfs(db_init):
     return multiprf
 
 def test_get_sync_shifts_from_alt(prfs):
+    """ Test get_sync_shifts_from_alt() """
 
     out = dts.get_sync_shifts_from_alt(prfs, ref_alt=5000.)
 
@@ -73,6 +74,7 @@ def test_get_sync_shifts_from_alt(prfs):
     assert out == [1, 0]
 
 def test_get_sync_shifts_from_val(prfs):
+    """ Test get_sync_shifts_from_val """
 
     out = dts.get_sync_shifts_from_val(prfs, max_shift=100, first_guess=None)
 
