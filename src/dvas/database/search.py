@@ -17,6 +17,7 @@ from datetime import datetime
 from pandas import Timestamp
 from pampy.helpers import Iterable, Union
 from playhouse.shortcuts import model_to_dict
+from peewee import JOIN
 
 # Import from current package
 from .model import Object as TableObject
@@ -383,6 +384,7 @@ class PrmStrategy(SearchStrategyAC):
             'qry': (
                 TableParameter
                 .select().distinct()
+                .join(TableInfo, JOIN.LEFT_OUTER)
             ),
             'id': 'prm_id'
         }
