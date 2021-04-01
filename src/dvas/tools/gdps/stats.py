@@ -134,7 +134,7 @@ def ks_test(gdp_pair, alpha=0.0027, binning=1, n_cpus=1):
 
 @log_func_call(logger, time_it=True)
 def get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=None, rolling_flags=True,
-                        do_plot=False, **kwargs):
+                        do_plot=False, n_cpus=1, **kwargs):
     ''' Runs a series of KS tests to assess the consistency of several GDP profiles.
 
     Args:
@@ -143,6 +143,8 @@ def get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=None, rolling_flags=Tr
         bin_sizes (ndarray of int, optional): The rolling binning sizes. Defaults to [1].
         rolling_flags (bool, optional):
         do_plot (bool, optional): Whether to create the diagnostic plot, or not. Defaults to False.
+        n_cpus (int|str, optional): number of cpus to use. Can be a number, or 'max'. Set to 1 to
+            disable multiprocessing. Defaults to 1.
 
     Returns:
         dict of ndarray of bool: list of pair-wise incompatible measurements between GDPs.
@@ -196,7 +198,7 @@ def get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=None, rolling_flags=Tr
         key = '__vs__'.join([str(item.info.oid) for item in gdp_pair])
 
         # First make a high-resolution delta ...
-        out = combine(gdp_pair, binning=1, method='delta', n_cpus=1)
+        out = combine(gdp_pair, binning=1, method='delta', n_cpus=n_cpus)
 
         # ... and extract the DataFrame Compute k_pqi (the normalized profile delta)
         out = out.get_prms([PRF_REF_VAL_NAME, 'uc_tot'])[0]
@@ -207,7 +209,8 @@ def get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=None, rolling_flags=Tr
         out = pd.DataFrame(out, columns=['k_pqi'])
         out = out.reset_index(drop=False)
         out = pd.DataFrame(out.values,
-                           columns=pd.MultiIndex.from_tuples([(0, item) for item in out.columns]))
+                           columns=pd.MultiIndex.from_tuples([(0, item) for item in out.columns],
+                                                             names=('m', None)))
 
         # Get started with the rolling KS test
         for binning in bin_sizes:
@@ -240,6 +243,6 @@ def get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=None, rolling_flags=Tr
 
         # Plot things if needed
         if do_plot:
-            dpg.plot_ks_test(out, alpha, tag=key)
+            dpg.plot_ks_test(out, alpha, title=key)
 
     return incompat

@@ -12,6 +12,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [fpavogt, 2021-03-10] Add resampling strategy for RS and GDP Profiles
  - [fpavogt, 2021-03-03] Add new gdps sub-module in dvas.tools
 ### Fixed:
+ - [fpavogt, 2021-04-01] Fixed sync routines following #129, now with dedicated tests
  - [fpavogt, 2021-03-31] Bring the ks_test() routine back from the dead
  - [fpavogt, 2021-03-31] Profile.__getattr__() now always returns a pd.Series, even for an index (#130)
  - [fpavogt, 2021-03-05] Fix test_utils.py tests
