@@ -18,7 +18,7 @@ from dvas.data.data import MultiRSProfile, MultiGDPProfile
 
 from dvas.tools import sync as dts
 
-@log_func_call(logger)
+@log_func_call(logger, time_it=True)
 def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
     """ Apply shifts to GDP and non-GDP profiles from a given flight, and upload them to the db.
 
@@ -47,22 +47,22 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
     non_gdps.save_to_db(add_tags=['sync'])
 
 
-@log_func_call(logger)
-def sync_flight(evt_id, rig_id, **kwargs):
+@log_func_call(logger, time_it=True)
+def sync_flight(eid, rid, **kwargs):
     """ Highest-level function responsible for synchronizing all the profile from a specific RS
     flight.
 
     This function directly synchronizes the profiles and upload them to the db with the 'sync' tag.
 
     Args:
-        evt_id (str|int): event id to be synchronized, e.g. 80611
-        rig_id (str|int): rig id to be synchronized, e.g. 1
+        eid (str|int): event id to be synchronized, e.g. 80611
+        rid (str|int): rig id to be synchronized, e.g. 1
         **kwargs: keyword arguments to be fed to the underlying shift-identification routines.
 
     """
 
     # What search query will let me access the data I need ?
-    filt = "and_(tags('e:{}'), tags('r:{}'), tags('raw'))".format(evt_id, rig_id)
+    filt = "and_(tags('e:{}'), tags('r:{}'), tags('raw'))".format(eid, rid)
 
     # First, extract the temperature data from the db
     prfs = MultiRSProfile()
@@ -74,7 +74,7 @@ def sync_flight(evt_id, rig_id, **kwargs):
 
     # Verify that that event datetime is actually the same for all the profiles. I should only
     # synchronize profiles that have flown together.
-    dt_offsets = np.array([item.total_seconds() for item in np.diff(prfs.get_info('evt_dt'))])
+    dt_offsets = np.array([item.total_seconds() for item in np.diff(prfs.get_info('edt'))])
     if any(dt_offsets > 0):
         logger.warning('Not all profiles to be synchronized have the same event_dt.')
         logger.warning('Offsets (w.r.t. first profile) in [s]: %s', dt_offsets)

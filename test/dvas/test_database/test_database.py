@@ -22,6 +22,7 @@ from dvas.database.database import InfoManager, InfoManagerMetaData
 from dvas.database.database import SearchInfoExpr
 from dvas.database.database import DBInsertError
 from dvas.environ import glob_var
+from dvas.hardcoded import TAG_RAW_NAME, TAG_GDP_NAME
 
 
 # Define db_data
@@ -33,14 +34,14 @@ db_data = {
             'value': np.array([500, 501, 502]),
             'prm_name': 'trepros1',
             'info': {
-                'evt_dt': '20200101T0000Z',
-                'type_name': 'YT',
+                'edt': '20200101T0000Z',
+                'mdl_name': 'YT',
                 'srn': 'YT-100', 'pid': '0',
-                'tags': ('data_test_db', 'e:1', 'r:1'),
-                'metadata': {'test_key_str': 'one', 'test_key_num': '1'}
+                'tags': ('data_test_db', 'e:1', 'r:1', arg_tag),
+                'metadata': {'test_key_str': 'one', 'test_key_num': '1'},
+                'src': ''
             },
-            'source_info': 'test_add_data'
-        }
+        } for arg_tag in [TAG_RAW_NAME, TAG_GDP_NAME]
     ]
 }
 
@@ -94,7 +95,6 @@ class TestDatabaseManager:
                 data[0]['value'],
                 data[0]['info'],
                 data[0]['prm_name'],
-                source_info=data[0]['source_info']
             )
 
         with pytest.raises(DBInsertError):
@@ -103,7 +103,6 @@ class TestDatabaseManager:
                 [],
                 data[0]['info'],
                 data[0]['prm_name'],
-                source_info=data[0]['source_info']
             )
 
         with pytest.raises(DBInsertError):
@@ -112,7 +111,6 @@ class TestDatabaseManager:
                 data[0]['value'],
                 data[0]['info'],
                 'xxxxxxx',
-                source_info=data[0]['source_info']
             )
 
     def test_get_data(self, db_init):
@@ -123,7 +121,7 @@ class TestDatabaseManager:
         data = db_init.data
 
         res = db_mngr.get_data(
-            f"and_(dt('{data[0]['info']['evt_dt']}'), srn('{data[0]['info']['srn']}'), tags({data[0]['info']['tags']}))",
+            f"and_(dt('{data[0]['info']['edt']}'), srn('{data[0]['info']['srn']}'), tags({data[0]['info']['tags']}))",
             data[0]['prm_name'], True
         )
 
@@ -176,15 +174,15 @@ class TestInfoManager:
 
     dt_test = '20200101T0000Z'
     oid_test = [1, 2]
-    glob_var.evt_id_pat = r'e\:\d'
+    glob_var.eid_pat = r'e\:\d'
     evt_tag = 'e:1'
-    glob_var.rig_id_pat = r'r\:\d'
+    glob_var.rid_pat = r'r\:\d'
     rig_tag = 'r:1'
-    glob_var.mdl_id_pat = r'mdl\:\d'
-    mdl_tag = 'mdl:1'
     metadata = {'key_str': 'one', 'key_num': 1.}
+    src = 'test_src'
     info_mngr = InfoManager(
-        dt_test, oid_test, tags=[evt_tag, rig_tag, mdl_tag], metadata=metadata
+        dt_test, oid_test, tags=[evt_tag, rig_tag],
+        metadata=metadata, src=src
     )
 
     def test_oid(self):
@@ -192,22 +190,22 @@ class TestInfoManager:
         self.info_mngr.oid = self.oid_test
         assert self.info_mngr.oid == sorted(self.oid_test)
 
-    def test_evt_dt(self):
-        """Test setting/getting 'evt_dt' attribute"""
-        self.info_mngr.evt_dt = self.dt_test
-        assert self.info_mngr.evt_dt == datetime(2020, 1, 1, tzinfo=pytz.UTC)
+    def test_edt(self):
+        """Test setting/getting 'edt' attribute"""
+        self.info_mngr.edt = self.dt_test
+        assert self.info_mngr.edt == datetime(2020, 1, 1, tzinfo=pytz.UTC)
 
-    def test_evt_id(self):
-        """Test getting 'evt_id' attribute"""
-        assert self.info_mngr.evt_id == self.evt_tag
+    def test_eid(self):
+        """Test getting 'eid' attribute"""
+        assert self.info_mngr.eid == self.evt_tag
 
-    def test_rig_id(self):
-        """Test getting 'rig_id' attribute"""
-        assert self.info_mngr.rig_id == self.rig_tag
+    def test_rid(self):
+        """Test getting 'rid' attribute"""
+        assert self.info_mngr.rid == self.rig_tag
 
-    def test_mdl_id(self):
-        """Test getting 'mdl_id' attribute"""
-        assert self.info_mngr.mdl_id == self.mdl_tag
+    def test_mid(self):
+        """Test getting 'mid' attribute"""
+        assert self.info_mngr.mid == [arg['mid'] for arg in self.info_mngr.object]
 
     def test_add_tags(self):
         """Test add_tags method"""
@@ -262,7 +260,7 @@ class TestInfoManager:
         # Init
         info_mngr_1 = deepcopy(self.info_mngr)
         info_mngr_2 = deepcopy(self.info_mngr)
-        info_mngr_2.evt_dt += timedelta(1)
+        info_mngr_2.edt += timedelta(1)
         info_mngr_3 = deepcopy(info_mngr_2)
         info_mngr_3.oid = [3] + info_mngr_3.oid
 
@@ -284,7 +282,7 @@ class TestInfoManager:
 
         info_mngr_eq = deepcopy(self.info_mngr)
         info_mngr_gt = deepcopy(self.info_mngr)
-        info_mngr_gt.evt_dt += timedelta(1)
+        info_mngr_gt.edt += timedelta(1)
 
         assert info_mngr_eq == self.info_mngr
         assert info_mngr_gt > self.info_mngr
@@ -365,3 +363,9 @@ def test_search_event_expr_eval(db_init):
             *args
         )
     )
+
+    # Test raw()
+    assert SearchInfoExpr.eval(f"tags('raw')", *args) == SearchInfoExpr.eval(f"raw()", *args)
+
+    # Test gdp()
+    assert SearchInfoExpr.eval(f"tags('gdp')", *args) == SearchInfoExpr.eval(f"gdp()", *args)

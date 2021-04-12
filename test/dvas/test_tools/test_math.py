@@ -5,19 +5,15 @@ Distributed under the terms of the GNU General Public License v3.0 or later.
 
 SPDX-License-Identifier: GPL-3.0-or-later
 
-Module contents: Testing classes and function for dvas.data.math module.
+Module contents: Testing classes and function for dvas.data.tools.math module.
 
 """
-
-# TODO
-#  Move math module to tools package
 
 # Import from python packages and modules
 import pytest
 import pandas as pd
 
 from dvas.tools.math import calc_tropopause, TropopauseError
-
 
 def test_calc_tropopause():
     """Test calc_tropopause function

@@ -28,13 +28,13 @@ db_data = {
             'value': val,
             'prm_name': 'trepros1',
             'info': {
-                'evt_dt': dt,
-                'type_name': 'YT',
+                'edt': dt,
+                'mdl_name': 'YT',
                 'srn': 'YT-100', 'pid': '0',
                 'tags': 'load_profile_from_linker',
-                'metadata': {}
+                'metadata': {},
+                'src': ''
             },
-            'source_info': 'test_add_data'
         } for val, dt in [
             (np.array([400, 401, 402]), '20200101T0000Z'),
             (np.array([441, 441, 442]), '20200202T0000Z')
@@ -47,7 +47,7 @@ class TestFileHandle:
     """Test FileHandle class"""
 
     @use_data(db_data={'sub_dir': 'test_filehandle'})
-    def test_handle(self, db_init):
+    def test_handle(self):
         """Test handle method"""
 
         # Define
@@ -61,7 +61,6 @@ class TestFileHandle:
             'info': dict,
             'prm_name': str,
             'index': np.ndarray, 'value': np.ndarray,
-            'source_info': str
         }
 
         # Read csv file
@@ -85,7 +84,7 @@ class TestFileHandle:
         )
 
     @use_data(db_data={'sub_dir': 'test_filehandle'})
-    def test_set_next(self, db_init):
+    def test_set_next(self):
         """Test set_next method"""
 
         # Define
@@ -99,17 +98,15 @@ class TestFileHandle:
 class TestLoadDBLinker:
     """Test LoadDBLinker class"""
 
-    # Define
-    db_linker = LocalDBLinker()
-
     def test_load(self, db_init):
         """Test load method"""
 
         # Define
+        db_linker = LocalDBLinker()
         data = db_init.data
 
         # Init
-        res = self.db_linker.load("all()", data[0]['prm_name'])
+        res = db_linker.load("all()", data[0]['prm_name'])
 
         # Test
         assert isinstance(res, list)
@@ -118,27 +115,26 @@ class TestLoadDBLinker:
         """Test save method"""
 
         # Define
+        db_linker = LocalDBLinker()
         data = db_init.data
 
         # Save data
-        self.db_linker.save(
+        db_linker.save(
             [{
                 'index': data[0]['index'],
                 'value': data[0]['value'],
                 'info': data[0]['info'],
                 'prm_name': data[0]['prm_name'],
-                'source_info': 'test_add_data'
             }]
         )
 
         # Force to save same data
-        self.db_linker.save(
+        db_linker.save(
             [{
                 'index': data[0]['index'],
                 'value': data[0]['value'],
                 'info': data[0]['info'],
                 'prm_name': data[0]['prm_name'],
-                'source_info': 'test_add_data',
                 'force_write': True
             }]
         )

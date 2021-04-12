@@ -17,5 +17,7 @@ from dvas.environ import path_var
 test_expl_path = Path(__file__).resolve(strict=True).parent / 'processing_arena'
 
 # Set config and data expl path
+# TODO
+#  Use a fixture for config and data
 path_var.config_dir_path = test_expl_path / 'config'
 path_var.orig_data_path = test_expl_path / 'data'

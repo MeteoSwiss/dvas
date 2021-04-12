@@ -24,9 +24,6 @@
 - tag_name: 'vof(\d{0,1})'
   tag_desc: 'Test/demo tag $\1$'
 
-- tag_name: 'cws'
-  tag_desc: 'Combined Working Measurement Standard'
-
 - tag_name: 'data_test_db'
   tag_desc: 'Data for DB tests'
 

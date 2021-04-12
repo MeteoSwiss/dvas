@@ -18,13 +18,13 @@ Instrument Intercomparison (UAII) campaign, organized under the auspice of World
 Organization (WMO). The following pages (should) contain all that you need to know to install and
 run dvas.
 
-The code is composed of two sub-package:
+The code is composed of two sub-packages:
 
   - ``dvas``: the core package that contains all the low-level modules and routines, and
   - ``dvas_recipes``: the high-level package that contains all the *analysis recipes* specific to a
     given scenario: for example, the UAII 2022 campaign.
 
-There is therefore two distinct ways to use dvas:
+There are therefore two distinct ways to use dvas:
 
   1. :ref:`running_recipes:Running dvas recipes`: users interested to reproduce the UAII 2022
      analysis (either for the original dataset, or for a different-but-similar one) need only to use
@@ -34,8 +34,10 @@ There is therefore two distinct ways to use dvas:
      default analysis recipes, or even to write their own recipe from scratch, must use the core
      ``dvas`` package to do so.
 
-dvas is being developed on Github, where you can submit all your questions and bug reports.
-Contributions via pull requests are also welcome. See :ref:`troubleshooting:Troubleshooting` for more details.
+dvas is being developed on Github, where you can submit all your
+`questions <https://github.com/MeteoSwiss/dvas/discussions>`_ and
+`bug reports <https://github.com/MeteoSwiss/dvas/issues>`_. Contributions via pull requests are also
+welcome. See :ref:`troubleshooting:Troubleshooting` for more details.
 
 
 .. toctree::

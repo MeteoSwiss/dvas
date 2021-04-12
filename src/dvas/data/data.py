@@ -17,31 +17,23 @@ import pandas as pd
 from .strategy.data import Profile, RSProfile, GDPProfile
 
 from .strategy.load import LoadProfileStrategy, LoadRSProfileStrategy, LoadGDPProfileStrategy
-
-from .strategy.resample import ResampleRSDataStrategy
-
 from .strategy.sort import SortProfileStrategy
-
 from .strategy.plot import PlotStrategy, RSPlotStrategy, GDPPlotStrategy
 
 from .strategy.rebase import RebaseStrategy
-
+from .strategy.resample import ResampleStrategy
 from .strategy.save import SaveDataStrategy
 
-from ..database.database import OneDimArrayConfigLinker, DatabaseManager
+from ..database.database import DatabaseManager
 from ..database.model import Parameter as TableParameter
 from ..helper import RequiredAttrMetaClass
 from ..helper import deepcopy
 from ..helper import get_class_public_attr
 
-from ..errors import DvasError, DBIOError
+from ..errors import DBIOError
 
-from ..config.definitions.tag import TAG_RAW_VAL, TAG_DERIVED_VAL
+from ..hardcoded import TAG_RAW_NAME, PRF_REF_INDEX_NAME
 
-# Define
-FLAG = 'flag'
-VALUE = 'value'
-cfg_linker = OneDimArrayConfigLinker()
 
 # Loading strategies
 load_prf_stgy = LoadProfileStrategy()
@@ -54,12 +46,14 @@ plt_rsprf_stgy = RSPlotStrategy()
 plt_gdpprf_stgy = GDPPlotStrategy()
 
 # Rebasing strategies
-rebase_prf_stgy = RebaseStrategy()
+rebase_stgy = RebaseStrategy()
 
-sort_prf_stgy = SortProfileStrategy()
-rspl_rs_stgy = ResampleRSDataStrategy()
+# Resampling strategies
+resample_stgy = ResampleStrategy()
 
-save_prf_stgy = SaveDataStrategy()
+# Other strategies
+sort_stgy = SortProfileStrategy()
+save_stgy = SaveDataStrategy()
 
 
 # TODO
@@ -84,6 +78,9 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
     def __init__(self, load_stgy=None, sort_stgy=None, save_stgy=None, plot_stgy=None,
                  rebase_stgy=None):
 
+        # For the class iterator
+        self.ind = 0
+
         # Init attributes
         self._load_stgy = load_stgy
         self._sort_stgy = sort_stgy
@@ -93,6 +90,12 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
 
         self._profiles = self._DATA_EMPTY
         self._db_variables = self._DB_VAR_EMPTY
+
+    def __len__(self):
+        return len(self.profiles)
+
+    def __getitem__(self, i):
+        return self.profiles[i]
 
     @property
     def profiles(self):
@@ -137,12 +140,12 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
 
     @property
     def info(self):
-        """list of ProfileManger info: Data info"""
+        """ List of ProfileManger info: Data info"""
         return [arg.info for arg in self.profiles]
 
     @deepcopy
     def rm_info_tags(self, val):
-        """Remove some tags from all info tag lists.
+        """ Remove some tags from all info tag lists.
 
         Args:
             val (str|list of str): Tag value(s) to remove
@@ -153,7 +156,7 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
 
     @deepcopy
     def add_info_tags(self, val):
-        """Add tag from all info tags
+        """ Add tag from all info tags
 
         Args:
             val (str|list of str): Tag values to add.
@@ -162,19 +165,35 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
         for i in range(len(self)):
             self.profiles[i].info.add_tags(val)
 
-    def __len__(self):
-        return len(self.profiles)
-
     def copy(self):
-        """Return a deep copy of the object"""
+        """ Return a deep copy of the object"""
         obj = self.__class__()
         obj._db_variables = self.db_variables.copy()
         obj._profiles = [arg.copy() for arg in self.profiles]
         return obj
 
+    def extract(self, inds):
+        """ Return a new MultiProfile instance with a subset of the Profiles.
+
+        Args:
+            inds (int|list of int): indices of the Profiles to extract.
+
+        Return:
+            dvas.data.data.MultiProfile: the new instance.
+        """
+
+        # Be extra nice and turn ints into lists
+        if isinstance(inds, int):
+            inds = list[inds]
+
+        new_prfs = self.__class__()
+        new_prfs.update(self.db_variables.copy(),
+                        [item.copy() for (ind, item) in enumerate(self) if ind in inds])
+        return new_prfs
+
     @deepcopy
     def load_from_db(self, *args, **kwargs):
-        """Load data from the database.
+        """ Load data from the database.
 
         Args:
             *args: positional arguments
@@ -194,7 +213,7 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
 
     @deepcopy
     def sort(self):
-        """Sort method
+        """ Sort method
 
         """
 
@@ -205,7 +224,7 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
         self.update(self.db_variables, data)
 
     def save_to_db(self, add_tags=None, rm_tags=None, prms=None):
-        """Save method to store the *entire* content of the Multiprofile
+        """ Save method to store the *entire* content of the Multiprofile
         instance back into the database with an updated set of tags.
 
         Args:
@@ -225,14 +244,12 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
         # Init
         obj = self.copy()
 
-        # Add tag DERIVED
-        add_tags = [TAG_DERIVED_VAL] if add_tags is None else add_tags + [TAG_DERIVED_VAL]
-
         # Add tags
-        obj.add_info_tags(add_tags)
+        if add_tags is not None:
+            obj.add_info_tags(add_tags)
 
         # Remove tag RAW
-        rm_tags = [TAG_RAW_VAL] if rm_tags is None else rm_tags + [TAG_RAW_VAL]
+        rm_tags = [TAG_RAW_NAME] if rm_tags is None else rm_tags + [TAG_RAW_NAME]
 
         # Remove tags
         obj.rm_info_tags(rm_tags)
@@ -250,7 +267,7 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
     # use the existing "save_to_db" method ?
 
     def update(self, db_df_keys, data):
-        """Update the whole Multiprofile list with new Profiles.
+        """ Update the whole Multiprofile list with new Profiles.
 
         Args:
             db_df_keys (dict): Relationship between database parameters and
@@ -284,7 +301,7 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
         self._profiles = data
 
     def append(self, db_df_keys, val):
-        """Append method
+        """ Append method
 
         Args:
             db_df_keys (dict): Relationship between database parameters and
@@ -314,31 +331,34 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
         """
 
         if prm_list is None:
-            prm_list = list(self.db_variables.keys())
+            prm_list = list(self.var_info.keys())
 
         if isinstance(prm_list, str):
-            # Assume the user forgot to put the key into a list.
+            # Be nice/foolish and assume the user forgot to put the key into a list.
             prm_list = [prm_list]
 
-        # Remove any prm that is an index name
-        prm_list = [prm for prm in prm_list
-                    if not any([prm in arg.get_index_attr() for arg in self.profiles])]
+        # Let's prepare the data. First, put all the DataFrames into a list
+        out = [pd.concat([getattr(prf, prm) for prm in prm_list], axis=1, ignore_index=False)
+               for prf in self.profiles]
 
-        # Check that I still have something valid to extract !
-        if len(prm_list) == 0:
-            raise DvasError("Ouch ! Invalid column name(s). Did you only specify index name(s) ?")
+        # Drop the superfluous index
+        out = [df.reset_index(level=[name for name in df.index.names
+                                     if name not in [PRF_REF_INDEX_NAME]],
+                              drop=True)
+               for df in out]
 
-        # Select data
-        try:
-            out = [
-                pd.concat(
-                    [getattr(arg, prm) for prm in prm_list],
-                    axis=1, ignore_index=False
-                )
-                for arg in self.profiles
-            ]
-        except AttributeError:
-            raise DvasError(f"Unknown parameter/attribute name in {prm_list}")
+        # Drop all the columns I do not want to keep
+        out = [df[prm_list] for df in out]
+
+        # Before I combine everything in one big DataFrame, I need to re-organize the columns
+        # to avoid collisions. Let's group all columns from one profile under its position in the
+        # list (0,1, ...) using pd.MultiIndex()
+        for (df_ind, df) in enumerate(out):
+            out[df_ind].columns = pd.MultiIndex.from_tuples([(df_ind, item) for item in df.columns],
+                                                            names=('#', 'prm'))
+
+        # Great, I can now bring everything into one large DataFrame
+        out = pd.concat(out, axis=1)
 
         return out
 
@@ -403,8 +423,8 @@ class MultiProfile(MutliProfileAC):
 
     def __init__(self):
         super().__init__(
-            load_stgy=load_prf_stgy, sort_stgy=sort_prf_stgy,
-            save_stgy=save_prf_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_prf_stgy,
+            load_stgy=load_prf_stgy, sort_stgy=sort_stgy,
+            save_stgy=save_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_stgy,
         )
 
 
@@ -412,42 +432,24 @@ class MultiRSProfileAC(MutliProfileAC):
     """Abstract MultiRSProfile class"""
 
     @abstractmethod
-    def __init__(
-            self, load_stgy=None, sort_stgy=None,
-            save_stgy=None, plot_stgy=None, rebase_stgy=None,
-    ):
-        super().__init__(
-            load_stgy=load_stgy, sort_stgy=sort_stgy,
-            save_stgy=save_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_prf_stgy,
-        )
+    def __init__(self, load_stgy=None, sort_stgy=None, save_stgy=None, plot_stgy=None,
+                 rebase_stgy=None, resample_stgy=None):
+        super().__init__(load_stgy=load_stgy, sort_stgy=sort_stgy, save_stgy=save_stgy,
+                         plot_stgy=plt_prf_stgy, rebase_stgy=rebase_stgy)
 
-        # Set attributes
-        #self._rspl_stgy = rspl_stgy
+        self._resample_stgy = resample_stgy
 
-    # TODO
-    #  Adapt for MultiIndex
-    # def resample(self, *args, inplace=True, **kwargs):
-    #     """Resample method
-    #
-    #     Args:
-    #         *args: Variable length argument list.
-    #         inplace (bool, `optional`): If True, perform operation in-place.
-    #             Default to False.
-    #         **kwargs: Arbitrary keyword arguments.
-    #
-    #     Returns:
-    #         MultiProfileManager if inplace is True, otherwise None
-    #
-    #     """
-    #
-    #     # Resample
-    #     out = self._rspl_stgy.resample(self.copy().profiles, *args, **kwargs)
-    #
-    #     # Load
-    #     res = self.update(self.db_variables, out, inplace=inplace)
-    #
-    #     return res
+    @deepcopy
+    def resample(self, freq='1s'):
+        """Resample the profiles (one-by-one) onto regular timesteps using linear interpolation.
 
+        Args:
+            freq (str): see pandas.timedelta_range(). Defaults to '1s'.
+
+        """
+
+        data = self._resample_stgy.execute(self.profiles, freq=freq)
+        self.update(self.db_variables, data)
 
 class MultiRSProfile(MultiRSProfileAC):
     """Multi RS profile manager, designed to handle multiple RSProfile instances."""
@@ -455,10 +457,9 @@ class MultiRSProfile(MultiRSProfileAC):
     _DATA_TYPES = RSProfile
 
     def __init__(self):
-        super().__init__(
-            load_stgy=load_rsprf_stgy, sort_stgy=sort_prf_stgy,
-            save_stgy=save_prf_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_prf_stgy,
-        )
+        super().__init__(load_stgy=load_rsprf_stgy, sort_stgy=sort_stgy,
+                         save_stgy=save_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_stgy,
+                         resample_stgy=resample_stgy)
 
 
 class MultiGDPProfile(MultiRSProfileAC):
@@ -467,10 +468,11 @@ class MultiGDPProfile(MultiRSProfileAC):
     _DATA_TYPES = GDPProfile
 
     def __init__(self):
-        super().__init__(
-            load_stgy=load_gdpprf_stgy, sort_stgy=sort_prf_stgy,
-            save_stgy=save_prf_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_prf_stgy,
-        )
+        super().__init__(load_stgy=load_gdpprf_stgy, sort_stgy=sort_stgy,
+                         save_stgy=save_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_stgy,
+                         resample_stgy=resample_stgy)
+
+        self._resample_stgy = resample_stgy
 
     @property
     def uc_tot(self):
@@ -482,17 +484,3 @@ class MultiGDPProfile(MultiRSProfileAC):
         """
 
         return [arg.uc_tot for arg in self.profiles]
-
-    # def plot(self, x='alt', **kwargs):
-    #     """ Plot method
-    #
-    #     Args:
-    #         x (str): parameter name for the x axis. Defaults to 'alt'.
-    #         **kwargs: Arbitrary keyword arguments, to be passed down to the plotting function.
-    #
-    #     Returns:
-    #         None
-    #
-    #     """
-    #
-    #     self._plot_stgy.plot(self.profiles, self.keys, x=x, **kwargs)

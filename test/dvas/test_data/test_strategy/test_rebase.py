@@ -24,7 +24,7 @@ db_data = {
     'sub_dir': 'test_strategy_rebase',
     'data': [
         {
-            'type_name': 'YT',
+            'mdl_name': 'YT',
             'srn': 'YT-100',
             'pid': '0',
         },
@@ -42,7 +42,7 @@ class TestRebaseStrategy:
     data_2 = pd.DataFrame({'alt': [1., 1., 2., 5.], 'val': [1., 2., 3., 4.], 'flg': [0, 0, 0, 0],
                            'tdt': [0, 1, 2, 3]})
 
-    def test_rebase(self, db_init):
+    def test_rebase(self):
         """Test rebase method"""
 
         # Let's build a multiprofile so I can test things out.

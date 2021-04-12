@@ -16,6 +16,12 @@ Module contents: Required attributes definition for
 # Import current packages modules
 from ...database.model import Parameter as TableParameter
 
+#: dict: Default node params
+NODE_PARAMS_DEF = {
+    TableParameter.prm_desc.name: '',
+    TableParameter.prm_unit.name: '',
+}
+
 #: dict: Parameter pattern properties (JSON_SCHEMA)
 PARAMETER_PATTERN_PROP = {
     rf"^{TableParameter.prm_name.name}$": {

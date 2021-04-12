@@ -1,0 +1,14 @@
+
+- mdl_name: 'YT'
+  mdl_desc: 'YT test instrument'
+  mid: 'MDL_YT'
+
+- mdl_name: 'ZT'
+  mdl_desc: 'ZT test instrument'
+  mid: 'MDL_ZT'
+
+- mdl_name: 'RS92'
+  mdl_desc: 'Vaisala RS-92'
+
+- mdl_name: 'TEST_03'
+  mdl_desc: 'Test type name for hybrid file name "-"'

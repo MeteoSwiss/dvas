@@ -11,7 +11,8 @@ Module contents: Database model (ORM uses PeeWee package)
 
 # Import from python packages
 import re
-from peewee import SqliteDatabase, Model, Check
+from peewee import SqliteDatabase, Check
+from peewee import Model as PeeweeModel
 from peewee import AutoField
 from peewee import IntegerField, FloatField
 from peewee import DateTimeField, TextField
@@ -19,8 +20,7 @@ from peewee import ForeignKeyField
 
 
 # Import from current package
-from ..config.pattern import INSTR_TYPE_PAT
-from ..config.pattern import PARAM_PAT
+from ..hardcoded import MODEL_PAT, PRM_AND_FLAG_PRM_PAT
 
 
 # Create db instance
@@ -35,9 +35,9 @@ def re_fullmatch(pattern, string):
     )
 
 
-@db.func('str_len')
-def str_len(string, n_max):
-    """Database string length function. Used it in check constraints"""
+@db.func('str_len_max')
+def str_len_max(string, n_max):
+    """Database string length max function. Used it in check constraints"""
     if string is None:
         out = True
     else:
@@ -45,32 +45,38 @@ def str_len(string, n_max):
     return out
 
 
-class MetadataModel(Model):
+class MetadataModel(PeeweeModel):
     """Metadata model class"""
     class Meta:
         """Meta class"""
         database = db
 
 
-class InstrType(MetadataModel):
-    """Instrument type table"""
+class Model(MetadataModel):
+    """Model table, intended as object model"""
 
     # Table id
-    type_id = AutoField(primary_key=True)
+    mdl_id = AutoField(primary_key=True)
 
-    # Instrument type name
-    type_name = TextField(
+    # Model name
+    mdl_name = TextField(
         null=False, unique=True,
         constraints=[
-            Check(f"re_fullmatch('({INSTR_TYPE_PAT})|()', type_name)"),
-            Check(f"str_len(type_name, 64)")
+            Check(f"re_fullmatch('({MODEL_PAT})|()', mdl_name)"),
+            Check(f"str_len_max(mdl_name, 64)")
         ]
     )
 
-    # Instrument type description
-    type_desc = TextField(
+    # Model description
+    mdl_desc = TextField(
         null=True, unique=False, default='',
-        constraints=[Check(f"str_len(type_desc, 256)")]
+        constraints=[Check(f"str_len_max(mdl_desc, 256)")]
+    )
+
+    # Model identifier
+    mid = TextField(
+        null=False, unique=False, default='',
+        constraints=[Check(f"str_len_max(mdl_desc, 64)")]
     )
 
 
@@ -83,18 +89,18 @@ class Object(MetadataModel):
     # Object serial number
     srn = TextField(
         null=False,
-        constraints=[Check(f"str_len(srn, 64)")]
+        constraints=[Check(f"str_len_max(srn, 64)")]
     )
 
     # Object product identifier
     pid = TextField(
         null=False,
-        constraints=[Check(f"str_len(pid, 64)")]
+        constraints=[Check(f"str_len_max(pid, 64)")]
     )
 
-    # Link to instr_type
-    instr_type = ForeignKeyField(
-        InstrType, backref='objects', on_delete='CASCADE'
+    # Link to model
+    model = ForeignKeyField(
+        Model, backref='objects', on_delete='CASCADE'
     )
 
 
@@ -109,21 +115,21 @@ class Parameter(MetadataModel):
         null=False,
         unique=True,
         constraints=[
-            Check(f"re_fullmatch('{PARAM_PAT}', prm_name)"),
-            Check(f"str_len(prm_name, 64)")
+            Check(f"re_fullmatch('{PRM_AND_FLAG_PRM_PAT}', prm_name)"),
+            Check(f"str_len_max(prm_name, 64)")
         ]
     )
 
     # Parameter description
     prm_desc = TextField(
         null=False, default='',
-        constraints=[Check(f"str_len(prm_desc, 256)")]
+        constraints=[Check(f"str_len_max(prm_desc, 256)")]
     )
 
     # Parameter units
     prm_unit = TextField(
         null=False, default='',
-        constraints=[Check(f"str_len(prm_unit, 64)")]
+        constraints=[Check(f"str_len_max(prm_unit, 64)")]
 )
 
 
@@ -142,13 +148,13 @@ class Flag(MetadataModel):
     # Flag name
     flag_name = TextField(
         null=False, unique=True,
-        constraints=[Check(f"str_len(flag_name, 64)")]
+        constraints=[Check(f"str_len_max(flag_name, 64)")]
     )
 
     # Flag description
     flag_desc = TextField(
         null=False, default='',
-        constraints=[Check(f"str_len(flag_desc, 256)")]
+        constraints=[Check(f"str_len_max(flag_desc, 256)")]
     )
 
 
@@ -166,22 +172,22 @@ class Tag(MetadataModel):
     # Tag name
     tag_name = TextField(
         null=False, unique=True,
-        constraints = [Check(f"str_len(tag_name, 64)")]
+        constraints = [Check(f"str_len_max(tag_name, 64)")]
     )
 
     # Tag description
     tag_desc = TextField(
         null=True, unique=False, default='',
-        constraints=[Check(f"str_len(tag_desc, 256)")]
+        constraints=[Check(f"str_len_max(tag_desc, 256)")]
     )
 
 
 class DataSource(MetadataModel):
     """Data source model"""
     id = AutoField(primary_key=True)
-    source = TextField(
-        null=True,
-        constraints=[Check(f"str_len(source, 2048)")]
+    src = TextField(
+        null=False,
+        constraints=[Check(f"str_len_max(src, 2048)")]
     )
 
 
@@ -190,7 +196,7 @@ class Info(MetadataModel):
 
     # Info id
     info_id = AutoField(primary_key=True)
-    evt_dt = DateTimeField(null=False)
+    edt = DateTimeField(null=False)
     param = ForeignKeyField(
         Parameter, backref='info', on_delete='CASCADE'
     )
@@ -199,7 +205,7 @@ class Info(MetadataModel):
     )
     evt_hash = TextField(
         null=False,
-        constraints=[Check(f"str_len(evt_hash, 64)")]
+        constraints=[Check(f"str_len_max(evt_hash, 64)")]
     )
     """str: Hash of the info attributes. Using a hash allows you to manage
     identical info with varying degrees of work steps."""
@@ -240,13 +246,13 @@ class MetaData(MetadataModel):
     #: str: Metadata key name
     key_name = TextField(
         null=False,
-        constraints=[Check(f"str_len(key_name, 64)")]
+        constraints=[Check(f"str_len_max(key_name, 64)")]
     )
 
     #: str: Metadata key string value
     value_str = TextField(
         null=True,
-        constraints=[Check(f"str_len(value_str, 256)")]
+        constraints=[Check(f"str_len_max(value_str, 256)")]
     )
 
     #: float: Metadata key float value

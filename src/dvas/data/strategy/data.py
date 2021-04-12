@@ -18,9 +18,11 @@ import pandas as pd
 # Import from current package
 from ...database.model import Flag as TableFlag
 from ...database.database import DatabaseManager, InfoManager
-from ...errors import ProfileError
+from ...errors import ProfileError, DvasError
 from ...helper import RequiredAttrMetaClass
-from ...hardcoded import PRF_REF_INDEX_NAME
+from ...hardcoded import PRF_REF_INDEX_NAME, PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME
+from ...hardcoded import PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME
+from ...hardcoded import PRF_REF_FLG_NAME
 
 # Define
 INT_TEST = (np.int64, np.int, int, type(pd.NA))
@@ -133,10 +135,13 @@ class ProfileAC(metaclass=RequiredAttrMetaClass):
                 return self.data[item]
 
             if item in self.get_index_attr():
-                # fpavogt, 2020-12-18: what follows returns an Index. We may need to revise this
-                # at some point. Or not. But as it stands, it's not designed to be concatenated
-                # with anythinbg else.
-                return self.data.index.get_level_values(item)
+                # For index, I cannot extract them directly.
+                # Instead, let's create a Series instead, and make sure it comes with the same index
+                # This is a bit of data duplication, but is critical to get coherent/consistent
+                # output.
+
+                return pd.Series(self.data.index.get_level_values(item),
+                                 index=self.data.index, name=item)
 
             return super().__getattribute__(item)
 
@@ -160,6 +165,9 @@ class ProfileAC(metaclass=RequiredAttrMetaClass):
 
                 # Prepare value
                 assert isinstance(val, pd.Series)
+                if any([ind not in self.data.index for ind in val.index]):
+                    raise DvasError('Ouch ! Bad index {}. Should be {}'.format(val.index,
+                                                                               self.data.index))
                 value = self._prepare_df(pd.DataFrame(val, columns=[item,]), cols_key=[item])
 
                 # Update value
@@ -263,9 +271,9 @@ class Profile(ProfileAC):
 
     # The column names for the pandas DataFrame
     DF_COLS_ATTR = {
-        'val': {'test': FLOAT_TEST, 'type': np.float, 'index': False},
-        'alt': {'test': FLOAT_TEST, 'type': np.float, 'index': True},
-        'flg': {'test': FLOAT_TEST, 'type': 'Int64', 'index': False}
+        PRF_REF_VAL_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+        PRF_REF_ALT_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': True},
+        PRF_REF_FLG_NAME: {'test': FLOAT_TEST, 'type': 'Int64', 'index': False}
     }
 
     def __init__(self, info, data=None):
@@ -340,7 +348,7 @@ class Profile(ProfileAC):
         )
 
     def _get_flg_bit_nbr(self, val):
-        """Get bit number corresponding to given flag name
+        """ Get bit number corresponding to given flag name
 
         Args:
             val (str): Flag name
@@ -349,7 +357,7 @@ class Profile(ProfileAC):
         return self.flags_name[val][self.FLAG_BIT_POS_NM]
 
     def set_flg(self, val, set_val, index=None):
-        """Set flag values to True/False.
+        """ Set flag values to True/False.
 
         Args:
             val (str): Flag name
@@ -361,7 +369,7 @@ class Profile(ProfileAC):
         # Define
         def set_to_true(x):
             """Set bit to True"""
-            if np.isnan(x):
+            if pd.isna(x):
                 out = (1 << self._get_flg_bit_nbr(val))
             else:
                 out = int(x) | (1 << self._get_flg_bit_nbr(val))
@@ -370,7 +378,7 @@ class Profile(ProfileAC):
 
         def set_to_false(x):
             """Set bit to False"""
-            if np.isnan(x):
+            if pd.isna(x):
                 out = 0
             else:
                 out = int(x) & ~(1 << self._get_flg_bit_nbr(val))
@@ -398,7 +406,8 @@ class Profile(ProfileAC):
 
         """
         bit_nbr = self._get_flg_bit_nbr(val)
-        return self.flg.apply(lambda x: (x >> bit_nbr) & 1)
+        # Return 1 if the flag is set, 0 if it isn't, and <NA> if the flag was not set.
+        return self.flg.apply(lambda x: (x >> bit_nbr) & 1 if not pd.isna(x) else x)
 
 
 class RSProfile(Profile):
@@ -418,10 +427,10 @@ class RSProfile(Profile):
 
     # The column names for the pandas DataFrame
     DF_COLS_ATTR = {
-        'alt': {'test': FLOAT_TEST, 'type': np.float, 'index': True},
-        'tdt': {'test': TIME_TEST, 'type': 'timedelta64[ns]', 'index': True},
-        'val': {'test': FLOAT_TEST, 'type': np.float, 'index': False},
-        'flg': {'test': FLOAT_TEST, 'type': 'Int64', 'index': False},
+        PRF_REF_ALT_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': True},
+        PRF_REF_TDT_NAME: {'test': TIME_TEST, 'type': 'timedelta64[ns]', 'index': True},
+        PRF_REF_VAL_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+        PRF_REF_FLG_NAME: {'test': FLOAT_TEST, 'type': 'Int64', 'index': False},
     }
 
     @property
@@ -460,10 +469,10 @@ class GDPProfile(RSProfile):
     DF_COLS_ATTR = dict(
         **RSProfile.DF_COLS_ATTR,
         **{
-            'ucr': {'test': FLOAT_TEST, 'type': np.float, 'index': False},
-            'ucs': {'test': FLOAT_TEST, 'type': np.float, 'index': False},
-            'uct': {'test': FLOAT_TEST, 'type': np.float, 'index': False},
-            'ucu': {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+            PRF_REF_UCR_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+            PRF_REF_UCS_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+            PRF_REF_UCT_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+            PRF_REF_UCU_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
           }
     )
 

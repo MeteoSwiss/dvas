@@ -14,10 +14,10 @@ import pprint
 from pathlib import Path
 from hashlib import blake2b
 from abc import abstractmethod, ABCMeta
+from contextlib import contextmanager
 import operator
-from functools import wraps, reduce
+from functools import reduce
 from math import floor
-from threading import Thread
 from datetime import datetime
 from peewee import chunked, DoesNotExist
 from peewee import IntegrityError
@@ -30,7 +30,7 @@ from pampy.helpers import Iterable, Union
 
 # Import from current package
 from .model import db
-from .model import InstrType as TableInstrType
+from .model import Model as TableModel
 from .model import Object as TableObject
 from .model import Info as TableInfo
 from .model import Parameter as TableParameter
@@ -40,18 +40,19 @@ from .model import Flag, DataSource, Data
 from .model import InfosObjects as TableInfosObjects
 from .model import InfosTags
 from ..config.config import OneDimArrayConfigLinker
-from ..config.definitions.origdata import EVT_DT_FLD_NM
+from ..config.definitions.origdata import EDT_FLD_NM
 from ..config.definitions.origdata import TAG_FLD_NM, META_FLD_NM
-from ..config.definitions.tag import TAG_NONE, TAG_EMPTY_VAL
-from ..helper import ContextDecorator
+from ..hardcoded import TAG_NONE_NAME, TAG_EMPTY_NAME
+from ..hardcoded import TAG_RAW_NAME, TAG_GDP_NAME
 from ..helper import SingleInstanceMetaClass
 from ..helper import TypedProperty as TProp
-from ..helper import TimeIt
 from ..helper import get_by_path, check_datetime
 from ..helper import unzip, get_dict_len
-from ..logger import localdb
+from ..logger import localdb as localdb_logger
+from ..logger import log_func_call
 from ..environ import glob_var
 from ..environ import path_var as env_path_var
+from ..errors import DBError
 
 # Define
 SQLITE_MAX_VARIABLE_NUMBER = 999
@@ -75,7 +76,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
     DB_TABLES = [
         TableInfo,
-        TableInfosObjects, TableObject, TableInstrType,
+        TableInfosObjects, TableObject, TableModel,
         InfosTags, TableTag,
         DataSource,
         Data,
@@ -84,31 +85,10 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         Flag,
     ]
     DB_TABLES_PRINT = [
-        TableParameter, TableInstrType,
+        TableParameter, TableModel,
         TableObject, Flag,
         TableTag
     ]
-
-    @staticmethod
-    def clear_db():
-        """Clear DB
-
-        Note:
-            !!!ONLY FOR ADVANCED USER!!! Use this method carefully.
-            Ensure that no more class instance are linked to this reference.
-
-        """
-
-        # Get db file path
-        db_mngr = DatabaseManager()
-        db_file_path = db_mngr.db.database
-
-        # Delete singleton instance
-        del db_mngr
-        SingleInstanceMetaClass.pop_instance(DatabaseManager)
-
-        # Delete file
-        Path(db_file_path).unlink()
 
     def __init__(self, reset_db=False):
         """
@@ -127,10 +107,13 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         # Init db
         db_new = self._init_db()
 
-        # Create table
-        self._create_tables()
+        # Create table if new
+        if db_new:
+            self._create_tables()
+            self._fill_metadata()
 
-        if reset_db or db_new:
+        # Reset db
+        if reset_db:
             self._delete_tables()
             self._fill_metadata()
 
@@ -147,12 +130,20 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         """
 
+        # Test
+        if env_path_var.local_db_path is None:
+            # TODO
+            #  Detail exception
+            raise Exception()
+
         # Define
         file_path = env_path_var.local_db_path / DB_FILE_NM
         pragmas = {
             'foreign_keys': True,
-            # Set cache to 10MB
-            'cache_size': -DB_CACHE_SIZE
+            'cache_size': -DB_CACHE_SIZE,  # Set cache to 10MB
+            'permanent': True,
+            'synchronous': False,
+            'journal_mode': 'MEMORY'
         }
 
         # Create local DB directory
@@ -171,7 +162,9 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                 raise DBDirError(f"Error in creating '{self._db.database.parent}' ({exc})") from exc
 
         # Init DB
-        self._db.init(file_path, pragmas=pragmas)
+        self._db.init(
+            file_path,
+            pragmas=pragmas)
 
         return db_new
 
@@ -205,7 +198,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             qry = qry.where(search['where'])
 
         try:
-            with DBAccess(self) as _:
+            with self.db_access() as _:
                 if get_first:
                     if attr:
                         out = [get_by_path(qry.get(), arg) for arg in attr]
@@ -244,13 +237,13 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
     def _create_tables(self):
         """Create table (safe mode)"""
-        with DBAccess(self) as _:
+        with self.db_access() as _:
             for table in self.DB_TABLES:
                 table.create_table(safe=True)
 
     def _delete_tables(self):
         """Delete table instances"""
-        with DBAccess(self) as _:
+        with self.db_access() as _:
             for table in self.DB_TABLES:
                 qry = table.delete()
                 qry.execute()  # noqa pylint: disable=E1120
@@ -258,12 +251,12 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
     def _fill_metadata(self):
         """Create db tables"""
 
-        with DBAccess(self) as _:
+        with self.db_access() as _:
 
             try:
 
                 # Fill simple tables
-                for tbl in [TableParameter, TableInstrType, Flag, TableTag]:
+                for tbl in [TableParameter, TableModel, Flag, TableTag]:
                     self._fill_table(tbl)
 
             except IntegrityError as exc:
@@ -318,7 +311,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         """
 
-        with DBAccess(self) as _:
+        with self.db_access() as _:
             qry = table.select()
             if search:
 
@@ -334,8 +327,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         return out
 
     def add_data(
-            self, index, value, info, prm_name,
-            source_info=None, force_write=False
+            self, index, value, info, prm_name, force_write=False
     ):
         """Add profile data to the DB.
 
@@ -345,7 +337,6 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             info (InfoManager|dict): Data information. If dict, must fulfill
                 InfoManager.from_dict input args requirements.
             prm_name (str):
-            source_info (str, optional): Data source
             force_write (bool, optional): force rewrite of already save data
 
         Raises:
@@ -368,63 +359,64 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         # Add data
         try:
-            with DBAccess(self) as _:
 
-                # Check instrument id existence
-                if (
-                    oid_list := sorted([
-                        arg[0] for arg in
-                        self.get_or_none(
-                            TableObject,
-                            search={
-                                'where': TableObject.oid.in_(info.oid)
-                            },
-                            attr=[[TableObject.oid.name]],
-                            get_first=False
-                        )
-                    ])
-                ) != info.oid:
-                    err_msg = f"Many instrument id in %s are missing in DB"
-                    localdb.error(err_msg, info.oid)
-                    raise DBInsertError(err_msg % info.oid)
+            # Check instrument id existence
+            if (
+                oid_list := sorted([
+                    arg[0] for arg in
+                    self.get_or_none(
+                        TableObject,
+                        search={
+                            'where': TableObject.oid.in_(info.oid)
+                        },
+                        attr=[[TableObject.oid.name]],
+                        get_first=False
+                    )
+                ])
+            ) != info.oid:
+                err_msg = f"Many instrument id in %s are missing in DB"
+                localdb_logger.error(err_msg, info.oid)
+                raise DBInsertError(err_msg % info.oid)
 
-                # Get/Check parameter
-                param = TableParameter.get_or_none(
-                    TableParameter.prm_name == prm_name
-                )
-                if not param:
-                    err_msg = "prm_name '%s' is missing in DB"
-                    localdb.error(err_msg, prm_name)
-                    raise DBInsertError(err_msg % prm_name)
+            # Get/Check parameter
+            if not (param := TableParameter.get_or_none(
+                TableParameter.prm_name == prm_name)
+            ):
+                err_msg = "prm_name '%s' is missing in DB"
+                localdb_logger.error(err_msg, prm_name)
+                raise DBInsertError(err_msg % prm_name)
 
-                # Check tag_name existence
-                if len(
-                    tags_id_list := [
-                        arg[0] for arg in
-                        self.get_or_none(
-                            TableTag,
-                            search={
-                                'where': TableTag.tag_name.in_(info.tags)
-                            },
-                            attr=[[TableTag.id.name]],
-                            get_first=False
-                        )
-                    ]
-                ) != len(info.tags):
-                    err_msg = "Many tags in %s are missing in DB"
-                    localdb.error(err_msg, info.tags)
-                    raise DBInsertError(err_msg % info.tags)
+            # Check tag_name existence
+            if len(
+                tags_id_list := [
+                    arg[0] for arg in
+                    self.get_or_none(
+                        TableTag,
+                        search={
+                            'where': TableTag.tag_name.in_(info.tags)
+                        },
+                        attr=[[TableTag.id.name]],
+                        get_first=False
+                    )
+                ]
+            ) != len(info.tags):
+                err_msg = "Many tags in %s are missing in DB"
+                localdb_logger.error(err_msg, info.tags)
+                raise DBInsertError(err_msg % info.tags)
 
-                # Create original data information
-                data_src, _ = DataSource.get_or_create(source=source_info)
+            # Create original data information
+            with self.db_access() as _:
+                data_src, _ = DataSource.get_or_create(src=info.src)
 
-                # Create info
+            # Create info
+            with self.db_access() as _:
                 info_id, created = TableInfo.get_or_create(
-                    evt_dt=info.evt_dt, param=param,
+                    edt=info.edt, param=param,
                     data_src=data_src, evt_hash=info.get_hash()
                 )
 
-                # Erase data (created == False indicate that data already exists)
+            # Erase data (created == False indicate that data already exists)
+            with self.db_access() as _:
                 if (created is False) and (force_write is True):
 
                     # Delete InfosTags entries
@@ -450,7 +442,8 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     # TODO
                     #  Add log
 
-                # Insert data (created == True indicate that data are new)
+            # Insert data (created == True indicate that data are new)
+            with self.db_access() as _:
                 if (created is True) or (force_write is True):
 
                     # Link info to tag
@@ -527,6 +520,8 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     n_max = floor(SQLITE_MAX_VARIABLE_NUMBER / len(fields))
 
                     # Insert to db
+                    # TODO
+                    #  Test multithreading in order to speed up data select
                     for batch in chunked(batch_data, n_max):
                         Data.insert_many(batch, fields=fields).execute()  # noqa pylint: disable=E1120
 
@@ -566,7 +561,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         return out
 
-    @TimeIt()
+    @log_func_call(localdb_logger, time_it=True)
     def get_data(self, search_expr, prm_name, filter_empty):
         """Get data from DB
 
@@ -583,24 +578,38 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         info_id_list = self._get_info_id(search_expr, prm_name, filter_empty)
 
         if not info_id_list:
-            localdb.warning(
+            localdb_logger.warning(
                 "Empty search '%s' for '%s", search_expr, prm_name
             )
 
         # Query data
-        qryer = []
-
+        res = []
         for info_id in info_id_list:
-            qryer.append(Queryer(self, info_id))
 
-        with DBAccess(self) as _:
-            for qry in qryer:
-                qry.start()
-                qry.join()
+            # TODO
+            #  Implement multithreading in order to speed up data select
+            with self.db_access() as _:
 
-            # Group data
-            out = []
-            for i, qry in enumerate(qryer):
+                try:
+                    qry = (
+                        Data.
+                        select(Data.index, Data.value).
+                        where(Data.info == info_id)
+                    )
+
+                    # 0: index, 1: value
+                    res.append(tuple(unzip(qry.tuples().iterator())))
+
+                # TODO
+                #  Detail exception
+                except Exception as ex:
+                    raise Exception(ex)
+
+        # Group data
+        out = []
+        with self.db_access() as _:
+
+            for i, arg in enumerate(res):
 
                 # Get related instrument id
                 oid_list = [
@@ -630,17 +639,31 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     iterator()
                 }
 
+                # Get source
+                if not (data_src := [arg.src for arg in
+                        DataSource.select().distinct().
+                        join(TableInfo).
+                        where(TableInfo.data_src == DataSource.id).
+                        where(TableInfo.info_id == info_id_list[i].info_id).
+                        iterator()
+                    ]
+                ):
+                    # TODO
+                    #  Detail exception
+                    raise Exception(f'Data source is empty')
+
                 # Append
                 out.append(
                     {
                         'info': InfoManager(
-                            evt_dt=info_id_list[i].evt_dt,
+                            edt=info_id_list[i].edt,
                             oid=oid_list,
                             tags=tag_name_list,
                             metadata=metadata_dict,
+                            src=data_src[0]
                         ),
-                        'index': qry.index,
-                        'value': qry.value,
+                        'index': arg[0],
+                        'value': arg[1],
                     }
                 )
 
@@ -681,142 +704,49 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         """
         return self.get_table(Flag)
 
+    @staticmethod
+    def clear_db():
+        """Clear DB
 
-class DBAccess(ContextDecorator):
-    """Local SQLite data base context decorator"""
-
-    def __init__(self, db_mngr, close_by_exit=True):
-        """Constructor
-
-        Args:
-            db_mngr (DatabaseManager): DB manager instance
-            close_by_exit (bool): Close DB by exiting context manager.
-                Default to True
+        Note:
+            !!!ONLY FOR ADVANCED USER!!! Use this method carefully.
+            Ensure that no more class instance are linked to this reference.
 
         """
-        super().__init__()
-        self._close_by_exit = close_by_exit
-        self._transaction = None
-        self._db_mngr = db_mngr
 
-    def __call__(self, func):
-        """Overwrite class __call__ method
+        # Get current db file path
+        db_mngr = DatabaseManager()
+        db_file_path = db_mngr.db.database
 
-        Args:
-            func (callable): Decorated function
+        # Close db
+        if not db_mngr.db.is_closed():
+            db_mngr.db.close()
 
-        """
-        @wraps(func)
-        def decorated(*args, **kwargs):
-            with self as transaction:
-                try:
-                    out = func(*args, **kwargs)
-                except PeeweeException:
-                    transaction.rollback()
-                    out = None
-                return out
-        return decorated
+        # Delete singleton instance
+        del db_mngr
+        if SingleInstanceMetaClass.has_instance(DatabaseManager):
+            raise DBError(f"Can't delete {db_file_path} because an instance of DatabaseManager is still in memory.")
 
-    def __enter__(self):
-        """Class __enter__ method"""
-        self._db_mngr.db.connect(reuse_if_open=True)
-        self._transaction = self._db_mngr.db.atomic()
-        return self._transaction
+        # Delete file
+        Path(db_file_path).unlink()
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        """Class __exit__ method"""
-        if self._close_by_exit:
-            self._db_mngr.db.close()
+    @contextmanager
+    def db_access(self):
+        """Local SQLite data base context decorator."""
 
+        # Connect
+        self.db.connect(reuse_if_open=True)
 
-#TODO
-# Test this db access context manager to possible speed up data select/insert
-class DBAccessQ(ContextDecorator):
-    """Data base context decorator"""
+        with self.db.atomic() as transaction:
+            try:
+                yield transaction
+            except PeeweeException:
+                transaction.rollout()
+            finally:
+                pass
 
-    def __init__(self, db):
-        """Constructor
-
-        Args:
-            db (peewee.SqliteDatabase): PeeWee Sqlite DB object
-
-        """
-        super().__init__()
-        self._db = db
-
-    def __call__(self, func):
-        """Overwrite class __call__ method"""
-        @wraps(func)
-        def decorated(*args, **kwargs):
-            with self:
-                try:
-                    return func(*args, **kwargs)
-                except PeeweeException as exc:
-                    print(exc)
-
-        return decorated
-
-    def __enter__(self):
-        """Class __enter__ method"""
-        self._db.start()
-        self._db.connect()
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        """Class __exit__ method"""
-        self._db.close()
-        self._db.stop()
-
-
-class Queryer(Thread):
-    """Data queryer
-
-    Attributes:
-        index (list): Data index
-        value (list): Data value
-        exc (Exception): Exception if occurs
-
-    """
-
-    def __init__(self, db_mngr, info_id):
-
-        # Call super constructor
-        super().__init__()
-
-        # Init attributes
-        self._info_id = info_id
-        self._db_mngr = db_mngr
-        self.index = None
-        self.value = None
-        self.exc = None
-
-    def run(self):
-        """Run method"""
-
-        try:
-            qry = (
-                Data.
-                select(Data.index, Data.value).
-                where(Data.info == self._info_id)
-            )
-
-            with DBAccess(self._db_mngr, close_by_exit=False):
-
-                data = list(unzip(qry.tuples().iterator()))
-
-            # Set result
-            self.index = data[0]
-            self.value = data[1]
-
-        except Exception as ex:
-            self.exc = Exception(ex)
-
-    def join(self, timeout=None):
-        """Overwrite join method"""
-        super().join(timeout=None)
-
-        # Test exception attribute
-        if self.exc:
-            raise self.exc
+        # Close
+        db.close()
 
 
 class InfoManagerMetaData(dict):
@@ -878,7 +808,7 @@ class InfoManager:
     """Data info manager"""
 
     #: datetime.datetime: UTC datetime
-    evt_dt = TProp(Union[str, Timestamp, datetime], check_datetime)
+    edt = TProp(Union[str, Timestamp, datetime], check_datetime)
 
     #: int|iterable of int: Object id
     oid = TProp(
@@ -897,14 +827,18 @@ class InfoManager:
     #: dict: Metadata
     metadata = TProp(InfoManagerMetaData, getter_fct= lambda x: x.copy())
 
-    def __init__(self, evt_dt, oid, tags=TAG_NONE, metadata={}):
+    #: str: Data source
+    src = TProp(str)
+
+    def __init__(self, edt, oid, tags=TAG_NONE_NAME, metadata={}, src=''):
         """Constructor
 
         Args:
-            evt_dt (str | datetime | pd.Timestamp): UTC datetime
+            edt (str | datetime | pd.Timestamp): Event datetime (UTC)
             oid (int|iterable of int): Object identifier (snr, pid)
             tags (str|iterable of str, `optional`): Tags. Defaults to ''
             metadata (dict|InfoManagerMetaData, `optional`): Default to {}
+            src (str): Default to ''
 
         """
 
@@ -913,49 +847,43 @@ class InfoManager:
             metadata = InfoManagerMetaData(metadata)
 
         # Set attributes
-        self.evt_dt = evt_dt
+        self.edt = edt
         self.oid = oid
         self.tags = tags
         self.metadata = metadata
+        self.src = src
 
     def __copy__(self):
-        return self.__class__(self.evt_dt, self.oid.copy(), self.tags.copy())
+        return self.__class__(self.edt, self.oid.copy(), self.tags.copy())
 
     @property
-    def evt_id(self):
+    def eid(self):
         """str: Event ID which match 1st corresponding pattern in tags. Defaults to None."""
         try:
             # TODO: the following line triggers a *very* weird pylint Error 1101.
             # I disable it for now ... but someone should really confirm whether this ok or not!
             # fpavogt - 2020.12.09
-            out = next(filter(glob_var.evt_id_pat.match, self.tags)) # pylint: disable=E1101
+            out = next(filter(glob_var.eid_pat.match, self.tags))  # pylint: disable=E1101
         except StopIteration:
             out = None
         return out
 
     @property
-    def rig_id(self):
+    def rid(self):
         """str: Rig ID which match 1st corresponding pattern in tags. Defaults to None."""
         try:
             # TODO: the following line triggers a *very* weird pylint Error 1101.
             # I disable it for now ... but someone should really confirm whether this ok or not!
             # fpavogt - 2020.12.09
-            out = next(filter(glob_var.rig_id_pat.match, self.tags))  # pylint: disable=E1101
+            out = next(filter(glob_var.rid_pat.match, self.tags))  # pylint: disable=E1101
         except StopIteration:
             out = None
         return out
 
     @property
-    def mdl_id(self):
-        """str: GDP model ID which match 1st corresponding pattern in tags. Defaults to None."""
-        try:
-            # TODO: the following line triggers a *very* weird pylint Error 1101.
-            # I disable it for now ... but someone should really confirm whether this ok or not!
-            # fpavogt - 2020.12.09
-            out = next(filter(glob_var.mdl_id_pat.match, self.tags)) # pylint: disable=E1101
-        except StopIteration:
-            out = None
-        return out
+    def mid(self):
+        """str: Model identifier"""
+        return [arg[TableModel.mid.name] for arg in self.object]
 
     @property
     def tags_desc(self):
@@ -989,23 +917,27 @@ class InfoManager:
         qry_res = db_mngr.get_table(
             TableObject,
             search={
-                'join_order': [TableInstrType],
+                'join_order': [TableModel],
                 'where': TableObject.oid.in_(self.oid)
             },
             recurse=True
         )
 
         # Set output
-        out = [
-            {
-                TableObject.oid.name: res[TableObject.oid.name],
-                TableObject.srn.name: res[TableObject.srn.name],
-                TableObject.pid.name: res[TableObject.pid.name],
-                TableInstrType.type_name.name: res[TableObject.instr_type.name][TableInstrType.type_name.name],
-                TableInstrType.type_desc.name: res[TableObject.instr_type.name][TableInstrType.type_desc.name]
-            }
+        out = list(zip(*sorted([
+            (
+                res[TableObject.oid.name],
+                {
+                    TableObject.oid.name: res[TableObject.oid.name],
+                    TableObject.srn.name: res[TableObject.srn.name],
+                    TableObject.pid.name: res[TableObject.pid.name],
+                    TableModel.mdl_name.name: res[TableObject.model.name][TableModel.mdl_name.name],
+                    TableModel.mdl_desc.name: res[TableObject.model.name][TableModel.mdl_desc.name],
+                    TableModel.mid.name: res[TableObject.model.name][TableModel.mid.name]
+                }
+            )
             for res in qry_res
-        ]
+        ])))[1]
 
         return out
 
@@ -1015,8 +947,9 @@ class InfoManager:
     def __str__(self):
         p_printer = pprint.PrettyPrinter()
         return p_printer.pformat(
-            (f'evt_dt: {self.evt_dt}', f'oid: {self.oid}',
-             f'tags: {self.tags}', f'metadata: {self.metadata}')
+            (f'edt: {self.edt}', f'oid: {self.oid}',
+             f'tags: {self.tags}', f'metadata: {self.metadata}',
+             f'src: {self.src}')
         )
 
     def get_hash(self):
@@ -1084,7 +1017,7 @@ class InfoManager:
 
     @staticmethod
     def sort(info_list):
-        """Sort list of InfoManager. Sorting order [evt_dt, srn, tags]
+        """Sort list of InfoManager. Sorting order [edt, srn, tags]
 
         Args:
             info_list (iterable of InfoManager): List to sort
@@ -1112,7 +1045,7 @@ class InfoManager:
             tuple
 
         """
-        return self.evt_dt, *[str(arg) for arg in self.oid], *self.tags
+        return self.edt, *[str(arg) for arg in self.oid], *self.tags, self.src
 
     def __eq__(self, other):
         return self._get_attr_sort_order() == other._get_attr_sort_order()
@@ -1137,13 +1070,14 @@ class InfoManager:
         """Convert dict of metadata to InfoManager
 
         Dict keys:
-            - evt_dt (str): Datetime
+            - edt (str): Datetime
             - typ_name (str, `optional`): Instrument type (used to create
                 instrument entry if missing in DB)
             - srn_field (str): Serial number
             - pid (str): Product identifier
             - tags (list of str): Tags
             - meta_field (dict): Metadata as dict
+            - src (str): Data source
 
         """
 
@@ -1166,32 +1100,33 @@ class InfoManager:
 
             # Get instrument type
             if (
-                instr_type := db_mngr.get_or_none(
-                    TableInstrType,
+                model := db_mngr.get_or_none(
+                    TableModel,
                     search={
-                        'where': TableInstrType.type_name == metadata[TableInstrType.type_name.name]
+                        'where': TableModel.mdl_name == metadata[TableModel.mdl_name.name]
                     }
                 )
             ) is None:
                 # TODO
                 #  Detail exception
-                raise Exception(f"{metadata[TableInstrType.type_name.name]} is missing in DB/InstrumentType")
+                raise Exception(f"{metadata[TableModel.mdl_name.name]} is missing in DB/InstrumentType")
 
             # Create instrument entry
-            with DBAccess(db_mngr):
+            with db_mngr.db_access() as _:
                 oid = TableObject.create(
                     srn=metadata[TableObject.srn.name],
                     pid=metadata[TableObject.pid.name],
-                    instr_type=instr_type
+                    model=model
                 ).oid
 
         # Construct InfoManager
         try:
             info = InfoManager(
-                evt_dt=metadata[EVT_DT_FLD_NM],
+                edt=metadata[EDT_FLD_NM],
                 oid=oid,
                 tags=metadata[TAG_FLD_NM],
-                metadata=metadata[META_FLD_NM]
+                metadata=metadata[META_FLD_NM],
+                src=metadata[DataSource.src.name]
             )
         except Exception as exc:
             # TODO
@@ -1259,6 +1194,11 @@ class SearchInfoExpr(metaclass=ABCMeta):
             - and_(<expr 1>, ..., <expr n>): Intersection
             - or_(<expr 1>, ..., <expr n>): Union
             - not_(<expr>): Negation, correspond to all() without <expr>
+
+        Shortcut expressions:
+            - raw(): Same as tags('raw')
+            - gdp(): Same as tags('gdp')
+
         """
 
         # Define
@@ -1270,18 +1210,20 @@ class SearchInfoExpr(metaclass=ABCMeta):
             'tags': TagExpr,
             'and_': AndExpr,
             'or_': OrExpr,
-            'not_': NotExpr
+            'not_': NotExpr,
+            'raw': RawExpr,
+            'gdp': GDPExpr,
         }
         db_mngr = DatabaseManager()
 
-        with DBAccess(db_mngr) as _:
+        with db_mngr.db_access() as _:
 
             # Eval expression
             expr = eval(str_expr, str_expr_dict)
 
             # Add empty tag if False
             if filter_empty is True:
-                expr = AndExpr(NotExpr(TagExpr(TAG_EMPTY_VAL)), expr)
+                expr = AndExpr(NotExpr(TagExpr(TAG_EMPTY_NAME)), expr)
 
             # Filter parameter
             expr = AndExpr(ParameterExpr(prm_name), expr)
@@ -1405,7 +1347,7 @@ class DatetimeExpr(TerminalSearchInfoExpr):
 
     def get_filter(self):
         """Implement get_filter method"""
-        return self._op(TableInfo.evt_dt, self.expression)
+        return self._op(TableInfo.edt, self.expression)
 
 
 class SerialNumberExpr(TerminalSearchInfoExpr):
@@ -1454,6 +1396,28 @@ class ParameterExpr(TerminalSearchInfoExpr):
     def get_filter(self):
         """Implement get_filter method"""
         return TableParameter.prm_name == self.expression
+
+
+class RawExpr(TerminalSearchInfoExpr):
+    """Raw filter"""
+
+    def __init__(self):
+        pass
+
+    def get_filter(self):
+        """Implement get_filter method"""
+        return TableTag.tag_name.in_([TAG_RAW_NAME])
+
+
+class GDPExpr(TerminalSearchInfoExpr):
+    """GDP filter"""
+
+    def __init__(self):
+        pass
+
+    def get_filter(self):
+        """Implement get_filter method"""
+        return TableTag.tag_name.in_([TAG_GDP_NAME])
 
 
 class DBCreateError(Exception):

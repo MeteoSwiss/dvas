@@ -11,13 +11,12 @@ Module contents: Testing classes and function for dvas.data.data module.
 
 # Import from python packages and modules
 import numpy as np
+import pandas as pd
 import pytest
 
 # Import from python packages and modules
-from dvas.data.strategy.load import LoadRSProfileStrategy
-from dvas.data.data import MultiRSProfile
-from dvas.errors import DvasError
-
+from dvas.data.strategy.load import LoadRSProfileStrategy, LoadGDPProfileStrategy
+from dvas.data.data import MultiRSProfile, MultiGDPProfile
 
 @pytest.fixture
 def mlt_prf():
@@ -28,26 +27,34 @@ def mlt_prf():
     mlt_prf.update(data[1], data[0])
     return mlt_prf
 
+@pytest.fixture
+def mlt_gdpprf():
+    """# Load multiprofile"""
+    mlt_gdpprf = MultiGDPProfile()
+    prf_stgy = LoadGDPProfileStrategy()
+    data = prf_stgy.execute("all()", 'trepros1', 'tdtpros1', alt_abbr='altpros1',
+                            ucr_abbr='ucr1', ucs_abbr='ucs1', uct_abbr='uct1', ucu_abbr='ucu1')
+    mlt_gdpprf.update(data[1], data[0])
+    return mlt_gdpprf
 
 # Define db_data
 db_data = {
+    # TODO
+    #  Change dir name
     'sub_dir': 'test_data_tata',
-    'data': [
-        {
-            'index': np.array([0, 1, 2]),
-            'value': np.array([1000, 1001, 1002]),
-            'prm_name': prm,
-            'info': {
-                'evt_dt': dt,
-                'type_name': 'YT',
-                'srn': 'YT-100', 'pid': '0',
-                'tags': 'load_multiprofile',
-                'metadata': {}
-            },
-            'source_info': 'test_add_data'
-        } for dt in ['20200101T0000Z', '20200202T0000Z']
-        for prm in ['trepros1', 'altpros1', 'flgpros1', 'tdtpros1']
-    ]
+    'data': [{'index': np.array(range(3*(ind+1))),
+              'value': np.array([1000, 1001, 1002] * (ind+1)),
+              'prm_name': prm,
+              'info': {'edt': dt,
+                       'mdl_name': 'YT',
+                       'srn': 'YT-100', 'pid': '0',
+                       'tags': 'load_multiprofile',
+                       'metadata': {},
+                       'src': ''},
+             } for (ind, dt) in enumerate(['20200101T0000Z', '20200202T0000Z'])
+             for prm in ['trepros1', 'altpros1', 'trepros1_flag', 'tdtpros1', 'ucr1', 'ucs1',
+                         'uct1', 'ucu1']
+            ]
 }
 
 
@@ -75,19 +82,43 @@ class TestMutliProfile:
             for i in range(n_data)
         ])
 
-    def test_get_prms(self, db_init, mlt_prf):
+    def test_iterable(self, mlt_prf):
+        """ Test that the MultiProfile is iterable """
+
+        assert [item for item in mlt_prf] == [mlt_prf.profiles[0], mlt_prf.profiles[1]]
+
+    def test_extract(self, mlt_prf):
+        """ Test the extraction method of MultiProfile """
+
+        sub_prf = mlt_prf.extract([1])
+
+        # Did I extract the correct amount of profiles, and of the correct type ?
+        assert len(sub_prf) == 1
+        assert isinstance(sub_prf, type(mlt_prf))
+        # Did I get the correct profile out ?
+        assert sub_prf[0].info.oid == mlt_prf[1].info.oid
+
+    def test_get_prms(self, mlt_gdpprf):
         """ Test convenience getter function """
 
         # Try to get everything out
-        out = mlt_prf.get_prms(prm_list=None)
-        assert all([set(item.columns) == set(mlt_prf.profiles[ind].data.columns)
-                    for (ind, item) in enumerate(out)])
+        out = mlt_gdpprf.get_prms(prm_list=None)
+        # Correct format ?
+        assert isinstance(out, pd.DataFrame)
+        # Correct number of profiles ?
+        assert len(mlt_gdpprf) == len(np.unique(out.columns.get_level_values('#')))
+        # Correct length
+        assert len(out) == max([len(prf.data) for prf in mlt_gdpprf])
+        # Correct keys for all profiles
+        assert all([set(out[ind].columns) | set(out[ind].index.names) ==
+                    set(prf.data.columns) | set(prf.data.index.names)
+                    for (ind, prf) in enumerate(mlt_gdpprf)])
 
         # Try to get an index out.
-        with pytest.raises(DvasError):
-            mlt_prf.get_prms(prm_list='alt')
+        out = mlt_gdpprf.get_prms(prm_list='alt')
+        assert np.unique(out.columns.get_level_values('prm')) == 'alt'
 
-    def test_rm_info_tags(self, db_init, mlt_prf):
+    def test_rm_info_tags(self, mlt_prf):
         """Test rm_info_tags method"""
 
         # Init
@@ -113,7 +144,7 @@ class TestMutliProfile:
             for prf in mlt_prf_2.profiles
         ])
 
-    def test_add_info_tags(self, db_init, mlt_prf):
+    def test_add_info_tags(self, mlt_prf):
         """Test add_info_tags method"""
 
         # Init
@@ -139,7 +170,7 @@ class TestMutliProfile:
             for prf in mlt_prf_2.profiles
         ])
 
-    def test_copy(self, db_init, mlt_prf):
+    def test_copy(self, mlt_prf):
         """Test copy method"""
 
         # Copy
@@ -148,7 +179,7 @@ class TestMutliProfile:
         # Test
         self.mlt_prf_eq(mlt_prf_copy, mlt_prf)
 
-    def test_load_from_db(self, db_init, mlt_prf):
+    def test_load_from_db(self, mlt_prf):
         """Test load_from_db method"""
 
         # Define
@@ -166,7 +197,7 @@ class TestMutliProfile:
         self.mlt_prf_eq(mlt_prf_1, mlt_prf)
         self.mlt_prf_eq(mlt_prf_1, mlt_prf_2)
 
-    def test_sort(self, db_init, mlt_prf):
+    def test_sort(self, mlt_prf):
         """Test sort method"""
 
         # Define
@@ -186,16 +217,19 @@ class TestMutliProfile:
             for i, prf in enumerate(mlt_prf_1.profiles) for prf_2 in mlt_prf_1.profiles[i:]
         ])
 
-    def test_save_to_db(self, db_init, mlt_prf):
+    def test_save_to_db(self, mlt_prf, db_init):
         """Test save_to_db method"""
 
         # Define
         tag_nm = 'save_multiprofile'
 
-        # save from db
+        # save from db with no specific
+        mlt_prf.save_to_db()
+
+        # save from db with specific tag
         mlt_prf.save_to_db(add_tags=[tag_nm])
 
-    def test_append(self, db_init, mlt_prf):
+    def test_append(self, mlt_prf):
         """Test append method"""
 
         # Define

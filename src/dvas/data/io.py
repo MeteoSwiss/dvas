@@ -12,7 +12,9 @@ Module contents: IO management
 # Import from external packages
 
 # Import from current package
-from .linker import LocalDBLinker, CSVHandler, GDPHandler
+from .linker import LocalDBLinker
+from .linker import CSVHandler, GDPHandler
+from .linker import FlagCSVHandler, FlagGDPHandler
 from ..database.database import DatabaseManager
 from ..database.model import Parameter as TableParameter
 from ..logger import localdb, rawcsv
@@ -52,9 +54,12 @@ def update_db(search, strict=False):
     db_mngr = DatabaseManager()
     db_linker = LocalDBLinker()
 
-    # Define chain of responsibility for loadgin from raw
+    # Define chain of responsibility for loading from raw
     handler = CSVHandler()
-    handler.set_next(GDPHandler())
+    handler.\
+        set_next(GDPHandler()).\
+        set_next(FlagCSVHandler()).\
+        set_next(FlagGDPHandler())
 
     # Search prm_name
     if strict is True:
@@ -79,7 +84,13 @@ def update_db(search, strict=False):
     # Log
     localdb.info("Update db for following parameters: %s", prm_name_list)
 
-    # Scan path
+    # Test
+    if path_var.orig_data_path is None:
+        # TODO
+        #  Detail exception
+        raise Exception()
+
+    # Scan data path (entirly)
     origdata_path_scan = list(path_var.orig_data_path.rglob("*.*"))
 
     # Loop loading
@@ -90,7 +101,8 @@ def update_db(search, strict=False):
 
         # Scan files
         new_orig_data = []
-        for file_path in origdata_path_scan:
+
+        for file_path in handler.filter_files(origdata_path_scan, prm_name):
             result = handler.handle(file_path, prm_name)
             if result:
                 new_orig_data.append(result)
@@ -124,3 +136,6 @@ def update_db(search, strict=False):
         localdb.info(
             "Finish inserting in local DB new found data for '%s'", prm_name
         )
+
+    # Delete
+    del db_mngr, db_linker, handler

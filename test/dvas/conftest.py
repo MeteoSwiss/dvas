@@ -14,8 +14,8 @@ import pytest
 from pytest_data import get_data
 
 # Import from tested package
-from dvas.database.database import DatabaseManager, DBAccess
-from dvas.database.model import InstrType as TableInstrType
+from dvas.database.database import DatabaseManager
+from dvas.database.model import Model as TableModel
 from dvas.database.model import Object as TableObject
 from dvas.environ import path_var
 from dvas.helper import AttrDict
@@ -24,9 +24,9 @@ from dvas.helper import AttrDict
 #TODO
 # Split into 2 fixtures. One for the DB reset and setup.
 # And one for the data insertion
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def db_init(request, tmp_path_factory):
-    """Database init fixture.
+    """Database init auto used fixture.
 
     Note:
         Use pytest_data package
@@ -43,10 +43,6 @@ def db_init(request, tmp_path_factory):
 
     # Register db_path
     db_data.update({'db_path': path_var.local_db_path.as_posix()})
-
-    # Clear singleton ref
-    if db_data['reset_db']:
-        DatabaseManager.clear_db()
 
     # Set db
     db_mngr = DatabaseManager(reset_db=db_data['reset_db'])
@@ -66,20 +62,20 @@ def db_init(request, tmp_path_factory):
 
             # Create get object id only
             except Exception:
-                # Get instr_type
-                instr_type = db_mngr.get_or_none(
-                    TableInstrType,
+                # Get model
+                model = db_mngr.get_or_none(
+                    TableModel,
                     search={
-                        'where': TableInstrType.type_name == arg[TableInstrType.type_name.name]
+                        'where': TableModel.mdl_name == arg[TableModel.mdl_name.name]
                     }
                 )
 
                 # Create instrument entry
-                with DBAccess(db_mngr):
+                with db_mngr.db_access() as _:
                     oid = TableObject.create(
                         srn=arg[TableObject.srn.name],
                         pid=arg[TableObject.pid.name],
-                        instr_type=instr_type
+                        model=model
                     ).oid
 
                 db_data['data'][i].update({'oid': oid})

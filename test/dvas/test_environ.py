@@ -71,8 +71,8 @@ class TestGlobalPathVariablesManager:
         # Test
         with path_var.protect():
 
-            # Reload path var environ
-            path_var.set_attr()
+            # Reload attr from environ
+            path_var.set_default_attr()
 
             # Test load from OS environ
             assert getattr(path_var, self.attr_test) == test_value

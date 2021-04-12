@@ -16,6 +16,8 @@ from dvas.database.database import DatabaseManager
 
 # Import high-level stuff
 from dvas_recipes.uaii22 import sync as drs
+from dvas_recipes.uaii22 import gdps as drg
+
 
 if __name__ == '__main__':
 
@@ -53,6 +55,11 @@ if __name__ == '__main__':
     # --- SYNCHRONIZE PROFILES ---
 
     drs.sync_flight(80611, 1)
+
+    # --- ASSEMBLE GDPS ---
+
+    drg.build_cws(80611, 1)
+
 
     # Get all the profiles, to see how they look.
     filt = "all()"

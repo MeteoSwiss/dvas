@@ -11,12 +11,16 @@ Module contents: Required attributes definition for `.config.ConfigManager.Flag 
 
 # Import current packages modules
 from ...database.model import Flag as TableFlag
+from ...hardcoded import FLG_EMPTY_NAME, FLG_EMPTY_DESC
+from ...hardcoded import FLG_INCOMPATIBLE_NAME, FLG_INCOMPATIBLE_DESC
+from ...hardcoded import FLG_INTERP_NAME, FLG_INTERP_DESC
 
 #: dict: Parameter pattern properties (JSON_SCHEMA)
 PARAMETER_PATTERN_PROP = {
     rf"^{TableFlag.bit_pos.name}$": {
         "type": "integer",
         "minimum": 10,
+        "maximum": 63,
     },
     rf"^{TableFlag.flag_name.name}$": {
         "type": "string"
@@ -29,30 +33,16 @@ PARAMETER_PATTERN_PROP = {
 #: list: Constant node values
 CONST_NODES = [
     {
-        TableFlag.bit_pos.name: 0,
-        TableFlag.flag_name.name: 'raw_na',
-        TableFlag.flag_desc.name: "Raw NA data"
-    },
-    {
-        TableFlag.bit_pos.name: 1,
-        TableFlag.flag_name.name: 'resampled',
-        TableFlag.flag_desc.name: "Resampled data"
-    },
-    {
-        TableFlag.bit_pos.name: 2,
-        TableFlag.flag_name.name: 'interp',
-        TableFlag.flag_desc.name: "Interpolated data"
-    },
-    {
-        TableFlag.bit_pos.name: 3,
-        TableFlag.flag_name.name: 'day',
-        TableFlag.flag_desc.name: "Day measurement point"
-    },
-    {
-        TableFlag.bit_pos.name: 4,
-        TableFlag.flag_name.name: 'night',
-        TableFlag.flag_desc.name: "Night measurement point"
-    },
+        TableFlag.bit_pos.name: i,
+        TableFlag.flag_name.name: arg[0],
+        TableFlag.flag_desc.name: arg[1]
+    } for i, arg in enumerate(
+        (
+            (FLG_EMPTY_NAME, FLG_EMPTY_DESC),
+            (FLG_INTERP_NAME, FLG_INTERP_DESC),
+            (FLG_INCOMPATIBLE_NAME, FLG_INCOMPATIBLE_DESC),
+        )
+    )
 ]
 
 #: str: Config manager key name

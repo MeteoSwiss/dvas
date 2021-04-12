@@ -11,7 +11,7 @@ Module contents: Required attributes definition for
 """
 
 # Import from current packages modules
-from ..pattern import INSTR_TYPE_PAT, PARAM_PAT
+from ...hardcoded import MODEL_PAT, PRM_AND_FLAG_PRM_PAT
 from ...database.model import Info as TableInfo
 from ...database.model import Data
 from ...database.model import MetaData as TableMetaData
@@ -20,7 +20,7 @@ from ...database.model import Object as TableObject
 
 
 # Define global field name
-EVT_DT_FLD_NM = TableInfo.evt_dt.name  # Datetime field name
+EDT_FLD_NM = TableInfo.edt.name  # Datetime field name
 TAG_FLD_NM = TableTag.__name__.lower() + 's'  # Tag field name
 META_FLD_NM = TableMetaData.__name__.lower()  # Metadata field name
 
@@ -32,6 +32,7 @@ UNIT_FLD_NM = 'unit'  # Index unit field name
 LAMBDA_FLD_NM = 'lambda'  # Lambda field name
 
 # Define csv field name
+CSV_USE_DEFAULT_FLD_NM = 'csv_use_default'
 CSV_DELIMITER_FLD_NM = 'csv_delimiter'
 CSV_HEADER_FLD_NM = 'csv_header'
 CSV_INDEX_COL_FLD_NM = 'csv_index_col'
@@ -49,12 +50,12 @@ VALUE_NM = Data.value.name
 
 #: list: Fields keys passed to expression interpreter
 EXPR_FIELD_KEYS = [
-    EVT_DT_FLD_NM, TableObject.srn.name,
+    EDT_FLD_NM, TableObject.srn.name,
     TableObject.pid.name, TAG_FLD_NM, META_FLD_NM
 ]
 
 #: list: Node pattern
-NODE_PATTERN = [INSTR_TYPE_PAT, PARAM_PAT]
+NODE_PATTERN = [MODEL_PAT, PRM_AND_FLAG_PRM_PAT]
 
 #: dict: Node parameters default value
 NODE_PARAMS_DEF = {
@@ -62,6 +63,7 @@ NODE_PARAMS_DEF = {
     META_FLD_NM: {},
     UNIT_FLD_NM: '1',
     LAMBDA_FLD_NM: 'lambda x: x',
+    CSV_USE_DEFAULT_FLD_NM: False,
     CSV_DELIMITER_FLD_NM: ';',
     CSV_SKIPINITSPACE_FLD_NM: False,
     CSV_SKIPROWS_FLD_NM: 0,
@@ -80,7 +82,7 @@ CONST_NODES = {
 
 #: dict: Parameter pattern properties (JSON_SCHEMA)
 PARAMETER_PATTERN_PROP = {
-    rf"^{EVT_DT_FLD_NM}$": {
+    rf"^{EDT_FLD_NM}$": {
         "type": "string",
     },
     rf"^{TableObject.srn.name}$": {
@@ -131,6 +133,9 @@ PARAMETER_PATTERN_PROP = {
     rf"^{LAMBDA_FLD_NM}$": {
         "type": 'string',
         "pattern": r"^\s*lambda\s*\w+\s*\:.+"
+    },
+    rf"^{CSV_USE_DEFAULT_FLD_NM}$": {
+        "type": "boolean"
     },
     rf"^{CSV_DELIMITER_FLD_NM}$": {
         'anyOf': [

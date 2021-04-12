@@ -5,7 +5,7 @@
 _RS92:
 
     # -- META DATA ----------------------------------
-    evt_dt: "get('event_dt')"
+    edt: "get('event_dt')"
     srn: "get('sn')"
     pid: "get('product_id')"
     tags:
@@ -36,7 +36,7 @@ _RS92:
 _YT:
 
     # -- META DATA ----------------------------------
-    evt_dt: "cat(get('event_dt'), 'Z')"
+    edt: "cat(get('event_dt'), 'Z')"
     srn: "get('sn')"
     pid: "get('product_id')"
     tags:
@@ -61,13 +61,18 @@ _YT:
     _prepros1:
         value_col: 3
 
+    _trepros1_flag:
+        value_col: 0
+        csv_use_default: True
+
+
 # ----------------------------------------------------
 # ZT type
 # ----------------------------------------------------
 _ZT:
 
     # -- META DATA ----------------------------------
-    evt_dt: "get('event_dt')"
+    edt: "get('event_dt')"
     srn: "get('sn')"
     pid: "get('product_id')"
     tags:
@@ -92,3 +97,6 @@ _ZT:
     _prepros1:
         value_col: 3
 
+    _trepros1_flag:
+        value_col: 0
+        csv_use_default: True

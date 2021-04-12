@@ -16,13 +16,14 @@ import pytest
 # Import from current python packages and modules
 from dvas.config.config import instantiate_config_managers
 from dvas.config.config import CSVOrigMeta
-from dvas.config.config import OrigData, InstrType
+from dvas.config.config import OrigData, Model
 from dvas.config.config import Parameter, Flag, Tag
 from dvas.config.config import ConfigReadError
 from dvas.config.config import OneDimArrayConfigLinker
 from dvas.config.config import ConfigExprInterpreter
 from dvas.config.config import ConfigGenMaxLenError
 from dvas.environ import glob_var
+from dvas.hardcoded import FLAG_PRM_NAME_SUFFIX
 
 
 def test_instantiate_config_managers():
@@ -35,7 +36,7 @@ def test_instantiate_config_managers():
     """
 
     # Define
-    cfg_mngrs_class = [OrigData, InstrType, Parameter, Flag, Tag]
+    cfg_mngrs_class = [OrigData, Model, Parameter, Flag, Tag]
 
     # Instantiate all managers
     cfg_mngrs = instantiate_config_managers(*cfg_mngrs_class, read=False)
@@ -52,11 +53,11 @@ def test_instantiate_config_managers():
         # Test read
         assert cfg_mngr.document is not None
 
-    # Test content for InstrType. Must contain exactly tst_list items (one time each one
+    # Test content for Model. Must contain exactly tst_list items (one time each one
     # This list will need to be udpated the if the test database changes.
     tst_list = ['AR-GDP_001', 'BR-GDP_001', 'RS41-GDP-BETA_001', 'YT', 'ZT', 'RS92']
     assert (sum(
-        [(arg['type_name'] in tst_list) for arg in cfg_mngrs['InstrType']]
+        [(arg['mdl_name'] in tst_list) for arg in cfg_mngrs['Model']]
     ) == len(tst_list))
 
 
@@ -93,21 +94,21 @@ class TestOneDimArrayConfigManager():
 
     """
 
-    cfg = InstrType()
+    cfg = Model()
 
     def test_read(self):
         """Test read method"""
 
-        assert self.cfg.read("- type_name: 'TEST'\n  'type_desc': 'Test'") is None
+        assert self.cfg.read("- mdl_name: 'TEST'\n  'mdl_desc': 'Test'") is None
         assert isinstance(self.cfg.document, list)
 
-        # Test for bad field name (replace type_name by type)
+        # Test for bad field name (replace mdl_name by type)
         with pytest.raises(ConfigReadError):
-            self.cfg.read("- type: 'TEST'\n  'type_desc': 'Test'")
+            self.cfg.read("- type: 'TEST'\n  'mdl_desc': 'Test'")
 
         # Test for bad field type
         with pytest.raises(ConfigReadError):
-            self.cfg.read("type_name: 'TEST'\ntype_desc': 'Test'")
+            self.cfg.read("mdl_name: 'TEST'\nmdl_desc': 'Test'")
 
 
 class TestOneDimArrayConfigLinker:
@@ -119,11 +120,15 @@ class TestOneDimArrayConfigLinker:
 
     """
 
+    # Dummy param number
+    n_dummy = 10
+
     # String generator patern
-    prm_pat = re.compile(r'^dummytst_(param\d+)$')
+    prm_pat = re.compile(r'dummytst_(param\d)')
+    flg_pat = re.compile(rf'{prm_pat.pattern}{FLAG_PRM_NAME_SUFFIX}')
 
     # Catched string patern
-    desc_pat = re.compile(r'^param\d+$')
+    desc_pat = re.compile(r'param\d+')
 
     # Config linker
     cfg_lkr = OneDimArrayConfigLinker([Parameter])
@@ -134,6 +139,7 @@ class TestOneDimArrayConfigLinker:
         Test:
             Returned type
             Item generator
+            Automatic generation of '_flag' parameter
             Raises ConfigGenMaxLenError
 
         """
@@ -142,11 +148,15 @@ class TestOneDimArrayConfigLinker:
 
         assert isinstance(doc, list)
         assert sum(
-            [self.prm_pat.match(arg['prm_name']) is not None for arg in doc]
-        ) == 10
+            [self.prm_pat.fullmatch(arg['prm_name']) is not None for arg in doc]
+        ) == self.n_dummy
         assert sum(
-            [self.desc_pat.match(arg['prm_desc']) is not None for arg in doc]
-        ) == 10
+            [self.flg_pat.fullmatch(arg['prm_name']) is not None for arg in doc]
+        ) == self.n_dummy
+        assert sum(
+            [self.desc_pat.fullmatch(arg['prm_desc']) is not None for arg in doc]
+        ) == self.n_dummy
+
         with glob_var.protect():
             glob_var.config_gen_max = 2
             with pytest.raises(ConfigGenMaxLenError):
