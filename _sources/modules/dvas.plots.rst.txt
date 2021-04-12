@@ -9,10 +9,10 @@ dvas.plots package
 Submodules
 ----------
 
-dvas.plots.gruan module
------------------------
+dvas.plots.gdps module
+----------------------
 
-.. automodule:: dvas.plots.gruan
+.. automodule:: dvas.plots.gdps
    :members:
    :undoc-members:
    :show-inheritance:

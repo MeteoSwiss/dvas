@@ -1,0 +1,34 @@
+dvas.tools.gdps package
+=======================
+
+.. automodule:: dvas.tools.gdps
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+dvas.tools.gdps.gdps module
+---------------------------
+
+.. automodule:: dvas.tools.gdps.gdps
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas.tools.gdps.stats module
+----------------------------
+
+.. automodule:: dvas.tools.gdps.stats
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas.tools.gdps.utils module
+----------------------------
+
+.. automodule:: dvas.tools.gdps.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:

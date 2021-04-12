@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.3.0
               </div>
             
           
@@ -203,15 +203,15 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-dvas.plots.gruan">
-<span id="dvas-plots-gruan-module"></span><h2>dvas.plots.gruan module<a class="headerlink" href="#module-dvas.plots.gruan" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-dvas.plots.gdps">
+<span id="dvas-plots-gdps-module"></span><h2>dvas.plots.gdps module<a class="headerlink" href="#module-dvas.plots.gdps" title="Permalink to this headline">¶</a></h2>
 <p>Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>Module contents: Plotting functions related to the gruan submodule.</p>
 <dl class="py function">
-<dt id="dvas.plots.gruan.gdps_vs_cws">
-<code class="sig-prename descclassname"><span class="pre">dvas.plots.gruan.</span></code><code class="sig-name descname"><span class="pre">gdps_vs_cws</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdp_prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cws_prf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'alt'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.plots.gruan.gdps_vs_cws" title="Permalink to this definition">¶</a></dt>
+<dt id="dvas.plots.gdps.gdps_vs_cws">
+<code class="sig-prename descclassname"><span class="pre">dvas.plots.gdps.</span></code><code class="sig-name descname"><span class="pre">gdps_vs_cws</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdp_prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cws_prf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'alt'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.plots.gdps.gdps_vs_cws" title="Permalink to this definition">¶</a></dt>
 <dd><p>Makes a plot comparing different GDPs with their associated combined working measurement
 standard.</p>
 <p>All profiles must imperatively be fully synchronized.</p>
@@ -226,12 +226,15 @@ Defaults to ‘alt’.</p></li>
 <li><p><strong>**kwargs</strong> – these get fed to the dvas.plots.utils.fancy_savefig() routine.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>matplotlib.pyplot.figure</em> – the figure instance</p>
+</dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt id="dvas.plots.gruan.plot_gdps">
-<code class="sig-prename descclassname"><span class="pre">dvas.plots.gruan.</span></code><code class="sig-name descname"><span class="pre">plot_gdps</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_var</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'time'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.plots.gruan.plot_gdps" title="Permalink to this definition">¶</a></dt>
+<dt id="dvas.plots.gdps.plot_gdps">
+<code class="sig-prename descclassname"><span class="pre">dvas.plots.gdps.</span></code><code class="sig-name descname"><span class="pre">plot_gdps</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_var</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'time'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.plots.gdps.plot_gdps" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make a basic plot to compare all GDP variables at a glance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -258,48 +261,24 @@ its heavy requirements).</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="dvas.plots.gruan.pks_cmap">
-<code class="sig-prename descclassname"><span class="pre">dvas.plots.gruan.</span></code><code class="sig-name descname"><span class="pre">pks_cmap</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0027</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.008100000000000001</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.plots.gruan.pks_cmap" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines a custom colormap for the p-value plot of the KS test function.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>alpha</strong> (<em>float</em>) – the significance level of the KS test.</p></li>
-<li><p><strong>vmin</strong> (<em>float</em>) – vmin of the desired colorbar, for proper scaling of the transition level.</p></li>
-<li><p><strong>vmax</strong> (<em>float</em>) – vmax of the desired colorbar, for proper scaling of the transition level.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>matplotlib.colors.LinearSegmentedColormap</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="dvas.plots.gruan.plot_ks_test">
-<code class="sig-prename descclassname"><span class="pre">dvas.plots.gruan.</span></code><code class="sig-name descname"><span class="pre">plot_ks_test</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k_pqi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_pqi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_ksi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binning_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.plots.gruan.plot_ks_test" title="Permalink to this definition">¶</a></dt>
+<dt id="dvas.plots.gdps.plot_ks_test">
+<code class="sig-prename descclassname"><span class="pre">dvas.plots.gdps.</span></code><code class="sig-name descname"><span class="pre">plot_ks_test</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.plots.gdps.plot_ks_test" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a diagnostic plot for the KS test.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>k_pqi</strong> (<em>ndarray</em>) – the <strong>unbinned</strong> normalized profile delta.</p></li>
-<li><p><strong>f_pqi</strong> (<em>ndarray</em>) – flags resulting from the rolling KS test.</p></li>
-<li><p><strong>p_ksi</strong> (<em>ndarray</em>) – p-values computed from the rolling KS test.</p></li>
-<li><p><strong>binning_list</strong> (<em>list of int</em>) – list of binning values used for the rolling KS test</p></li>
+<li><p><strong>df</strong> (<em>pd.DataFrame</em>) – a very special DataFrame, generated by
+dvas.tools.gdps.stats.get_incomptibility().</p></li>
 <li><p><strong>alpha</strong> (<em>float</em>) – significance level used for the flags. Must be 0 &lt;= alpha &lt;= 1.
 Required for setting up the colorbar properly.</p></li>
-<li><p><strong>tag</strong> (<em>str, optional</em>) – str to add to the filename for tagging.</p></li>
-<li><p><strong>save_loc</strong> (<em>pathlib.Path, optional</em>) – if specified, overrides the default dvas location to
-save the plot.</p></li>
+<li><p><strong>tag</strong> (<em>str, optional</em>) – the plot title. Defaults to None.</p></li>
+<li><p><strong>**kwargs</strong> – these get fed to the dvas.plots.utils.fancy_savefig() routine.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>matplotlib.pyplot.figure</em> – the figure instance</p>
+</dd>
 </dl>
-<div class="admonition-todo admonition" id="id2">
-<p class="admonition-title">Todo</p>
-<ul class="simple">
-<li><p>fix the problem of thin lines becoming invisible (in case of long profiles)</p></li>
-</ul>
-</div>
 </dd></dl>
 
 </div>
@@ -311,19 +290,23 @@ save the plot.</p></li>
 <p>Module contents: Primary plotting functions of dvas.</p>
 <dl class="py function">
 <dt id="dvas.plots.plots.multiprf">
-<code class="sig-prename descclassname"><span class="pre">dvas.plots.plots.</span></code><code class="sig-name descname"><span class="pre">multiprf</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'alt'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.plots.plots.multiprf" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">dvas.plots.plots.</span></code><code class="sig-name descname"><span class="pre">multiprf</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'alt'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'oid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.plots.plots.multiprf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plots the content of a MultiProfile instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>prfs</strong> (<em>MultiProfile | MultiRSProfile | MultiGDPprofile</em>) – MultiProfile instance to plot</p></li>
-<li><p><strong>keys</strong> (<em>list of str | int</em>) – list of prfs dictionnary keys to extract</p></li>
-<li><p><strong>index_name</strong> (<em>str, optional</em>) – reference variables for the plots, either ‘tdt’ or ‘alt’.
+<li><p><strong>prfs</strong> (<em>MultiProfile|MultiRSProfile|MultiGDPprofile</em>) – MultiProfile instance to plot</p></li>
+<li><p><strong>index</strong> (<em>str, optional</em>) – reference variables for the plots, either ‘_idx’, ‘tdt’ or ‘alt’.
 Defaults to ‘alt’.</p></li>
-<li><p><strong>uc</strong> (<em>str, optional</em>) – which uncertainty to plot, if any. Can be one of  [‘r’, ‘s’, ‘t’, ‘u’,
-‘tot’]. Defaults to None.</p></li>
+<li><p><strong>label</strong> (<em>str, optional</em>) – name of the label for each curve, that will be fed to
+<cite>prfs.get_info(label)</cite>. Defaults to ‘oid’.</p></li>
+<li><p><strong>uc</strong> (<em>str, optional</em>) – which uncertainty to plot, if any. Can be one of  [‘ucr’, ‘ucs’, ‘uct’,
+‘ucu’, ‘uc_tot’]. Defaults to None.</p></li>
 <li><p><strong>**kwargs</strong> – these get fed to the dvas.plots.utils.fancy_savefig() routine.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>matplotlib.pyplot.figure</em> – the figure instance</p>
 </dd>
 </dl>
 </dd></dl>
@@ -452,8 +435,22 @@ valid rcParams codes to this function.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="dvas.plots.utils.fancy_legend">
+<code class="sig-prename descclassname"><span class="pre">dvas.plots.utils.</span></code><code class="sig-name descname"><span class="pre">fancy_legend</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.plots.utils.fancy_legend" title="Permalink to this definition">¶</a></dt>
+<dd><p>A custom legend routine, to take care of all the repetitive aspects for this.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> (<em>matplotlib.pyplot.axes</em>) – the plot axes to add the legend to.</p></li>
+<li><p><strong>label</strong> (<em>str, optional</em>) – the legend label</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="dvas.plots.utils.fancy_savefig">
-<code class="sig-prename descclassname"><span class="pre">dvas.plots.utils.</span></code><code class="sig-name descname"><span class="pre">fancy_savefig</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn_core</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn_suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_plt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.plots.utils.fancy_savefig" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">dvas.plots.utils.</span></code><code class="sig-name descname"><span class="pre">fancy_savefig</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn_core</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn_suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fmts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.plots.utils.fancy_savefig" title="Permalink to this definition">¶</a></dt>
 <dd><p>A custom savefig function that provides finer handling of the filename.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -463,9 +460,9 @@ valid rcParams codes to this function.</p>
 <li><p><strong>fn_prefix</strong> (<em>str, optional</em>) – a prefix, to which fn_core will be appended with a ‘_’.
 Defauts to None.</p></li>
 <li><p><strong>fn_suffix</strong> (<em>str, optional</em>) – a suffix, that will be appended to fn_core with a ‘_’.</p></li>
-<li><p><strong>fmts</strong> (<em>str | list of str, optional</em>) – which formats to export the plot to, e.g.: ‘png’.
+<li><p><strong>fmts</strong> (<em>str|list of str, optional</em>) – which formats to export the plot to, e.g.: ‘png’.
 Defaults to None (= as specified by dvas.plots.utils.PLOT_FMTS)</p></li>
-<li><p><strong>show_plt</strong> (<em>bool, optional</em>) – whether to display the plot after saving it, or not. Defaults to
+<li><p><strong>show</strong> (<em>bool, optional</em>) – whether to display the plot after saving it, or not. Defaults to
 None (= as specified by dvas.plots.utils.PLOT_SHOW)</p></li>
 </ul>
 </dd>

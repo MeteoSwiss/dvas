@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.3.0
               </div>
             
           
@@ -581,26 +581,6 @@ altitudes, flags, as well as 4 distinct types uncertainties:</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-dvas.data.strategy.interpolate">
-<span id="dvas-data-strategy-interpolate-module"></span><h2>dvas.data.strategy.interpolate module<a class="headerlink" href="#module-dvas.data.strategy.interpolate" title="Permalink to this headline">¶</a></h2>
-<p>Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.</p>
-<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
-<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
-<p>Module contents: Interpolate strategies</p>
-<dl class="py class">
-<dt id="dvas.data.strategy.interpolate.InterpolateStrategy">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.data.strategy.interpolate.</span></code><code class="sig-name descname"><span class="pre">InterpolateStrategy</span></code><a class="headerlink" href="#dvas.data.strategy.interpolate.InterpolateStrategy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Abstract class to manage data interpolation strategy</p>
-<dl class="py method">
-<dt id="dvas.data.strategy.interpolate.InterpolateStrategy.interpolate">
-<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">interpolate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.interpolate.InterpolateStrategy.interpolate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Strategy required method</p>
-</dd></dl>
-
-</dd></dl>
-
-</div>
 <div class="section" id="module-dvas.data.strategy.load">
 <span id="dvas-data-strategy-load-module"></span><h2>dvas.data.strategy.load module<a class="headerlink" href="#module-dvas.data.strategy.load" title="Permalink to this headline">¶</a></h2>
 <p>Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.</p>
@@ -612,6 +592,13 @@ altitudes, flags, as well as 4 distinct types uncertainties:</p>
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.data.strategy.load.</span></code><code class="sig-name descname"><span class="pre">LoadStrategyAC</span></code><a class="headerlink" href="#dvas.data.strategy.load.LoadStrategyAC" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.data.MPStrategyAC" title="dvas.data.strategy.data.MPStrategyAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.strategy.data.MPStrategyAC</span></code></a></p>
 <p>Abstract load strategy class</p>
+<dl class="py method">
+<dt id="dvas.data.strategy.load.LoadStrategyAC.add_flag_prm">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">add_flag_prm</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">db_vs_df_keys</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.load.LoadStrategyAC.add_flag_prm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add flag parameter to DB vs Dataframe keys</p>
+<p>db_vs_df_key (dict): DB vs Dataframe key</p>
+</dd></dl>
+
 <dl class="py method">
 <dt id="dvas.data.strategy.load.LoadStrategyAC.fetch">
 <em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">fetch</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.load.LoadStrategyAC.fetch" title="Permalink to this definition">¶</a></dt>
@@ -628,12 +615,12 @@ altitudes, flags, as well as 4 distinct types uncertainties:</p>
 list of pd.DataFrame: Data</p>
 </dd>
 </dl>
-<p class="rubric">Example</p>
-<p><code class="docutils literal notranslate"><span class="pre">`</span>
-<span class="pre">import</span> <span class="pre">dvas.data.strategy.load</span> <span class="pre">as</span> <span class="pre">ld</span>
-<span class="pre">t</span> <span class="pre">=</span> <span class="pre">ld.LoadProfileStrategy()</span>
-<span class="pre">t.fetch(&quot;dt('20160715T120000Z',</span> <span class="pre">'==')&quot;,</span> <span class="pre">{'alt':'altpros1',</span> <span class="pre">'val':'trepros1'})</span>
-<span class="pre">`</span></code></p>
+<p>Example:</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dvas.data.strategy.load</span> <span class="k">as</span> <span class="nn">ld</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">ld</span><span class="o">.</span><span class="n">LoadProfileStrategy</span><span class="p">()</span>
+<span class="n">t</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="s2">&quot;dt(&#39;20160715T120000Z&#39;, &#39;==&#39;)&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;alt&#39;</span><span class="p">:</span><span class="s1">&#39;altpros1&#39;</span><span class="p">,</span> <span class="s1">&#39;val&#39;</span><span class="p">:</span><span class="s1">&#39;trepros1&#39;</span><span class="p">})</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -645,7 +632,7 @@ list of pd.DataFrame: Data</p>
 <p>Class to manage the data loading strategy of Profile instances.</p>
 <dl class="py method">
 <dt id="dvas.data.strategy.load.LoadProfileStrategy.execute">
-<code class="sig-name descname"><span class="pre">execute</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_abbr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt_abbr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flg_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.load.LoadProfileStrategy.execute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">execute</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_abbr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt_abbr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.load.LoadProfileStrategy.execute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Execute strategy method to fetch data from the databse.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -668,16 +655,15 @@ list of pd.DataFrame: Data</p>
 <p>Child class to manage the data loading strategy of RSProfile instances.</p>
 <dl class="py method">
 <dt id="dvas.data.strategy.load.LoadRSProfileStrategy.execute">
-<code class="sig-name descname"><span class="pre">execute</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_abbr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tdt_abbr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flg_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.load.LoadRSProfileStrategy.execute" title="Permalink to this definition">¶</a></dt>
-<dd><p>Execute strategy method to fetch data from the databse.</p>
+<code class="sig-name descname"><span class="pre">execute</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_abbr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tdt_abbr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.load.LoadRSProfileStrategy.execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute strategy method to fetch data from the database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>search</strong> (<em>str</em>) – selection criteria</p></li>
 <li><p><strong>val_abbr</strong> (<em>str</em>) – name of the parameter values to extract.</p></li>
 <li><p><strong>tdt_abbr</strong> (<em>str</em>) – name of the time delta parameter to extract.</p></li>
-<li><p><strong>alt_abbr</strong> (<em>str, optional</em>) – name of the altitude parameter to extract. Dafaults to None.</p></li>
-<li><p><strong>flg_abbr</strong> (<em>str, optional</em>) – name of the flag parameter to extract. Defaults to None.</p></li>
+<li><p><strong>alt_abbr</strong> (<em>str, optional</em>) – name of the altitude parameter to extract. Defaults to None.</p></li>
 </ul>
 </dd>
 </dl>
@@ -692,7 +678,7 @@ list of pd.DataFrame: Data</p>
 <p>Child class to manage the data loading strategy of GDPProfile instances.</p>
 <dl class="py method">
 <dt id="dvas.data.strategy.load.LoadGDPProfileStrategy.execute">
-<code class="sig-name descname"><span class="pre">execute</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_abbr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tdt_abbr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucr_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucs_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uct_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucu_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flg_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.load.LoadGDPProfileStrategy.execute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">execute</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_abbr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tdt_abbr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucr_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucs_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uct_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucu_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.load.LoadGDPProfileStrategy.execute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Execute strategy method to fetch data from the database.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -709,7 +695,6 @@ extract. Defaults to None.</p></li>
 extract. Defaults to None.</p></li>
 <li><p><strong>ucu_abbr</strong> (<em>str, optional</em>) – name of the true un-correlated uncertainty parameter to
 extract. Defaults to None.</p></li>
-<li><p><strong>flg_abbr</strong> (<em>str, optional</em>) – name of the flag parameter to extract. Default to None.</p></li>
 </ul>
 </dd>
 </dl>
@@ -834,47 +819,31 @@ list should specify a shift for each Profile. Defaults to None.</p></li>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>Module contents: Resample strategies</p>
 <dl class="py class">
-<dt id="dvas.data.strategy.resample.ResampleStrategyAbstract">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.data.strategy.resample.</span></code><code class="sig-name descname"><span class="pre">ResampleStrategyAbstract</span></code><a class="headerlink" href="#dvas.data.strategy.resample.ResampleStrategyAbstract" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Abstract class to manage data resample strategy.</p>
-<p>Resample strategy goal’s is to obtain an homogeneous
-index, i.e constant interval and same for all profiles.</p>
-<p>Resampling can only applied to radiosonde profile, i.e. with a
-datetime delta index.</p>
+<dt id="dvas.data.strategy.resample.ResampleStrategy">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.data.strategy.resample.</span></code><code class="sig-name descname"><span class="pre">ResampleStrategy</span></code><a class="headerlink" href="#dvas.data.strategy.resample.ResampleStrategy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.data.MPStrategyAC" title="dvas.data.strategy.data.MPStrategyAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.strategy.data.MPStrategyAC</span></code></a></p>
+<p>Class to handle the resample strategy for RS and GDPs Profiles.</p>
 <dl class="py method">
-<dt id="dvas.data.strategy.resample.ResampleStrategyAbstract.resample">
-<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">resample</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.resample.ResampleStrategyAbstract.resample" title="Permalink to this definition">¶</a></dt>
-<dd><p>Strategy required method</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="dvas.data.strategy.resample.ResampleRSDataStrategy">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.data.strategy.resample.</span></code><code class="sig-name descname"><span class="pre">ResampleRSDataStrategy</span></code><a class="headerlink" href="#dvas.data.strategy.resample.ResampleRSDataStrategy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.resample.ResampleStrategyAbstract" title="dvas.data.strategy.resample.ResampleStrategyAbstract"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.strategy.resample.ResampleStrategyAbstract</span></code></a></p>
-<p>Class to manage resample of time data parameter</p>
-<dl class="py method">
-<dt id="dvas.data.strategy.resample.ResampleRSDataStrategy.resample">
-<code class="sig-name descname"><span class="pre">resample</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rule</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'1s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">closed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'right'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'right'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.resample.ResampleRSDataStrategy.resample" title="Permalink to this definition">¶</a></dt>
-<dd><p>Implementation of resample method</p>
+<dt id="dvas.data.strategy.resample.ResampleStrategy.execute">
+<code class="sig-name descname"><span class="pre">execute</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'1s'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.resample.ResampleStrategy.execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of time resampling method for RS and GDP Profiles.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This strategy does NOT treat NaN’s in a special way. This implies that if a NaN is one
+of the two closest original data points from a new location to be interpolated, that
+location will result in a NaN as well.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<em>list of Profile</em>) – Data to resample</p></li>
-<li><p><strong>method</strong> (<em>str, optional</em>) – Resample method, ‘mean’ (default) | ‘sum’ | ‘max’ | ‘min’</p></li>
-<li><p><strong>rule</strong> (<em>str, optional</em>) – See pandas doc</p></li>
-<li><p><strong>closed</strong> (<em>str, optional</em>) – See pandas doc</p></li>
-<li><p><strong>label</strong> (<em>str, optional</em>) – See pandas doc</p></li>
-<li><p><strong>**kwargs</strong> – Arbitrary keyword arguments</p></li>
+<li><p><strong>prfs</strong> (<em>list of RSProfiles|GDPProfiles</em>) – GDP Profiles to resample.</p></li>
+<li><p><strong>freq</strong> (<em>str, optional</em>) – see pandas.timedelta_range(). Defaults to ‘1s’.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>dvas.data.MultiRSProfile|MultiGDPProfile</em> – the resampled MultiProfile.</p>
+</dd>
 </dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Resampling uses <cite>pandas.DataFrame.resample https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.resample.html</cite> method arguments</p>
-</div>
 </dd></dl>
 
 </dd></dl>

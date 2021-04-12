@@ -25,10 +25,10 @@ dvas.config.definitions.flag module
    :undoc-members:
    :show-inheritance:
 
-dvas.config.definitions.instrtype module
-----------------------------------------
+dvas.config.definitions.model module
+------------------------------------
 
-.. automodule:: dvas.config.definitions.instrtype
+.. automodule:: dvas.config.definitions.model
    :members:
    :undoc-members:
    :show-inheritance:

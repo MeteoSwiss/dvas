@@ -24,11 +24,3 @@ dvas.config.config module
    :members:
    :undoc-members:
    :show-inheritance:
-
-dvas.config.pattern module
---------------------------
-
-.. automodule:: dvas.config.pattern
-   :members:
-   :undoc-members:
-   :show-inheritance:

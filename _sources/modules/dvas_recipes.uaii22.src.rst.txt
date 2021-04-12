@@ -9,6 +9,14 @@ dvas\_recipes.uaii22.src package
 Submodules
 ----------
 
+dvas\_recipes.uaii22.src.gdps module
+------------------------------------
+
+.. automodule:: dvas_recipes.uaii22.src.gdps
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dvas\_recipes.uaii22.src.sync module
 ------------------------------------
 

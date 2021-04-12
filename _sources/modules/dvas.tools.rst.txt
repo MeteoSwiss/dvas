@@ -6,29 +6,21 @@ dvas.tools package
    :undoc-members:
    :show-inheritance:
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   dvas.tools.gdps
+
 Submodules
 ----------
-
-dvas.tools.gruan module
------------------------
-
-.. automodule:: dvas.tools.gruan
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 dvas.tools.math module
 ----------------------
 
 .. automodule:: dvas.tools.math
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-dvas.tools.stats module
------------------------
-
-.. automodule:: dvas.tools.stats
    :members:
    :undoc-members:
    :show-inheritance:

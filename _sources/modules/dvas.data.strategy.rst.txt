@@ -17,14 +17,6 @@ dvas.data.strategy.data module
    :undoc-members:
    :show-inheritance:
 
-dvas.data.strategy.interpolate module
--------------------------------------
-
-.. automodule:: dvas.data.strategy.interpolate
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 dvas.data.strategy.load module
 ------------------------------
 

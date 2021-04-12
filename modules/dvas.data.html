@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.3.0
               </div>
             
           
@@ -207,7 +207,6 @@
 <li class="toctree-l1"><a class="reference internal" href="dvas.data.strategy.html">dvas.data.strategy package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="dvas.data.strategy.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dvas.data.strategy.html#module-dvas.data.strategy.data">dvas.data.strategy.data module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dvas.data.strategy.html#module-dvas.data.strategy.interpolate">dvas.data.strategy.interpolate module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dvas.data.strategy.html#module-dvas.data.strategy.load">dvas.data.strategy.load module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dvas.data.strategy.html#module-dvas.data.strategy.plot">dvas.data.strategy.plot module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dvas.data.strategy.html#module-dvas.data.strategy.rebase">dvas.data.strategy.rebase module</a></li>
@@ -272,7 +271,7 @@
 <dd><p>Data info</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>list of ProfileManger info</p>
+<dd class="field-odd"><p>List of ProfileManger info</p>
 </dd>
 </dl>
 </dd></dl>
@@ -317,6 +316,20 @@
 <dt id="dvas.data.data.MutliProfileAC.copy">
 <code class="sig-name descname"><span class="pre">copy</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.data.MutliProfileAC.copy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a deep copy of the object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.data.MutliProfileAC.extract">
+<code class="sig-name descname"><span class="pre">extract</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.data.MutliProfileAC.extract" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a new MultiProfile instance with a subset of the Profiles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inds</strong> (<em>int|list of int</em>) – indices of the Profiles to extract.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>dvas.data.data.MultiProfile</em> – the new instance.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -494,6 +507,24 @@ list should specify a shift for each Profile. Defaults to None (=no shift).</p><
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.data.data.</span></code><code class="sig-name descname"><span class="pre">MultiRSProfileAC</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.data.MultiRSProfileAC" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#dvas.data.data.MutliProfileAC" title="dvas.data.data.MutliProfileAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.data.MutliProfileAC</span></code></a></p>
 <p>Abstract MultiRSProfile class</p>
+<dl class="py method">
+<dt id="dvas.data.data.MultiRSProfileAC.resample">
+<code class="sig-name descname"><span class="pre">resample</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'1s'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.data.MultiRSProfileAC.resample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resample the profiles (one-by-one) onto regular timesteps using linear interpolation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>freq</strong> (<em>str</em>) – see pandas.timedelta_range(). Defaults to ‘1s’.</p>
+</dd>
+</dl>
+<p>— Decorating function infos —</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inplace</strong> (<em>bool, optional</em>) – If False, will return a deepcopy. Defaults to True.</p>
+</dd>
+</dl>
+<p>—   —   —   —   —   —</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -629,9 +660,9 @@ class.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="dvas.data.linker.FileHandler.file_suffix">
-<em class="property"><span class="pre">abstract</span> <span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">file_suffix</span></code><a class="headerlink" href="#dvas.data.linker.FileHandler.file_suffix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Handled file suffix (re.fullmatch of pathlib.Path.suffix)</p>
+<dt id="dvas.data.linker.FileHandler.file_suffix_re">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">file_suffix_re</span></code><a class="headerlink" href="#dvas.data.linker.FileHandler.file_suffix_re" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handled data file suffix.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>re.compile</p>
@@ -640,22 +671,101 @@ class.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="dvas.data.linker.FileHandler.file_instr_type_pat">
-<em class="property"><span class="pre">abstract</span> <span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">file_instr_type_pat</span></code><a class="headerlink" href="#dvas.data.linker.FileHandler.file_instr_type_pat" title="Permalink to this definition">¶</a></dt>
-<dd><p>File instr_type pattern
-(re.search within pathlib.Path.name). Group #1 must correspond to
-instr_type name.</p>
+<dt id="dvas.data.linker.FileHandler.prm_re">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">prm_re</span></code><a class="headerlink" href="#dvas.data.linker.FileHandler.prm_re" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handled parameter name.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>re.compile</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.FileHandler.file_model_pat">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">file_model_pat</span></code><a class="headerlink" href="#dvas.data.linker.FileHandler.file_model_pat" title="Permalink to this definition">¶</a></dt>
+<dd><p>File model pattern. Group #1 must correspond to model name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>re.compile</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.FileHandler.check_file">
+<code class="sig-name descname"><span class="pre">check_file</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FileHandler.check_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if file as the correct suffix pattern.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file</strong> (<em>pathlib.Path</em>) – File path or file name</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>bool</em> – True if file name match</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.FileHandler.check_prm">
+<code class="sig-name descname"><span class="pre">check_prm</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prm_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FileHandler.check_prm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if parameter as correct parameter pattern</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>prm_name</strong> (<em>str</em>) – Parameter name</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>bool</em> – True if file parameter name match</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.FileHandler.data_ok_tags">
+<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">data_ok_tags</span></code><a class="headerlink" href="#dvas.data.linker.FileHandler.data_ok_tags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tags list to add to metadata when data reading is successful</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.FileHandler.check_file_mdl">
+<code class="sig-name descname"><span class="pre">check_file_mdl</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FileHandler.check_file_mdl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if file name as correct model pattern</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file</strong> (<em>pathlib.Path</em>) – File path or file name</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>bool</em> – True if file parameter name match</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="dvas.data.linker.FileHandler.handle">
-<code class="sig-name descname"><span class="pre">handle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prm_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FileHandler.handle" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">handle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prm_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FileHandler.handle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Handle method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_file_path</strong> (<em>pathlib.Path</em>) – Data file path</p></li>
+<li><p><strong>prm_name</strong> (<em>str</em>) – Parameter name</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.FileHandler.get_data">
+<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">get_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FileHandler.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method used to get data</p>
 </dd></dl>
 
 <dl class="py method">
@@ -665,20 +775,20 @@ instr_type name.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="dvas.data.linker.FileHandler.get_metadata_filename">
+<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">get_metadata_filename</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_file_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FileHandler.get_metadata_filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to get metadata file name</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="dvas.data.linker.FileHandler.get_metadata">
-<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">get_metadata</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instr_type_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prm_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FileHandler.get_metadata" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">get_metadata</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mdl_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prm_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FileHandler.get_metadata" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to get metadata</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="dvas.data.linker.FileHandler.get_main">
-<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">get_main</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FileHandler.get_main" title="Permalink to this definition">¶</a></dt>
-<dd><p>Main get method called from handle method</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="dvas.data.linker.FileHandler.get_instr_type">
-<code class="sig-name descname"><span class="pre">get_instr_type</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FileHandler.get_instr_type" title="Permalink to this definition">¶</a></dt>
+<dt id="dvas.data.linker.FileHandler.get_model">
+<code class="sig-name descname"><span class="pre">get_model</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FileHandler.get_model" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get instrument type from file path</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -689,14 +799,25 @@ instr_type name.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="dvas.data.linker.FileHandler.exclude_file">
-<code class="sig-name descname"><span class="pre">exclude_file</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_scan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prm_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FileHandler.exclude_file" title="Permalink to this definition">¶</a></dt>
-<dd><p>Exclude file method</p>
+<dt id="dvas.data.linker.FileHandler.filter_files">
+<code class="sig-name descname"><span class="pre">filter_files</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prm_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FileHandler.filter_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter files already load.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path_list</strong> (<em>pathlib.Path</em>) – List of file path to be load.</p></li>
+<li><p><strong>prm_name</strong> (<em>str</em>) – Corresponding parameter name.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="dvas.data.linker.FileHandler.read_metaconfig_fields">
-<code class="sig-name descname"><span class="pre">read_metaconfig_fields</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">instr_type_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prm_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FileHandler.read_metaconfig_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">read_metaconfig_fields</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mdl_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prm_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FileHandler.read_metaconfig_fields" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read field from metaconfig</p>
 </dd></dl>
 
@@ -704,6 +825,10 @@ instr_type name.</p>
 <dt id="dvas.data.linker.FileHandler.get_source_unique_id">
 <em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">get_source_unique_id</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FileHandler.get_source_unique_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return string use to determine if a file have already be read.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Stem is used to have same hash for data file and flag file)</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>file_path</strong> (<em>pathlib.Path</em>) – Original file path</p>
@@ -720,7 +845,12 @@ instr_type name.</p>
 <dt id="dvas.data.linker.CSVHandler">
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.data.linker.</span></code><code class="sig-name descname"><span class="pre">CSVHandler</span></code><a class="headerlink" href="#dvas.data.linker.CSVHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.FileHandler" title="dvas.data.linker.FileHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.linker.FileHandler</span></code></a></p>
-<p>CSV Hanlder class</p>
+<p>CSV Handler class</p>
+<dl class="py attribute">
+<dt id="dvas.data.linker.CSVHandler.CFG_FILE_SUFFIX">
+<code class="sig-name descname"><span class="pre">CFG_FILE_SUFFIX</span></code><em class="property"> <span class="pre">=</span> <span class="pre">['.yml',</span> <span class="pre">'.yaml']</span></em><a class="headerlink" href="#dvas.data.linker.CSVHandler.CFG_FILE_SUFFIX" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt id="dvas.data.linker.CSVHandler.origmeta_mngr">
 <em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">origmeta_mngr</span></code><a class="headerlink" href="#dvas.data.linker.CSVHandler.origmeta_mngr" title="Permalink to this definition">¶</a></dt>
@@ -733,44 +863,26 @@ instr_type name.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="dvas.data.linker.CSVHandler.file_suffix">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">file_suffix</span></code><a class="headerlink" href="#dvas.data.linker.CSVHandler.file_suffix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Handled file suffix (re.fullmatch of pathlib.Path.suffix)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>re.compile</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="dvas.data.linker.CSVHandler.file_instr_type_pat">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">file_instr_type_pat</span></code><a class="headerlink" href="#dvas.data.linker.CSVHandler.file_instr_type_pat" title="Permalink to this definition">¶</a></dt>
-<dd><p>File instr_type pattern
-(re.search within pathlib.Path.name). Group #1 must correspond to
-instr_type name.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>re.compile</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt id="dvas.data.linker.CSVHandler.get_metadata_item">
 <code class="sig-name descname"><span class="pre">get_metadata_item</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.CSVHandler.get_metadata_item" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implementation of abstract method</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="dvas.data.linker.CSVHandler.get_metadata">
-<code class="sig-name descname"><span class="pre">get_metadata</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instr_type_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prm_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.CSVHandler.get_metadata" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to get metadata</p>
+<dt id="dvas.data.linker.CSVHandler.get_metadata_filename">
+<code class="sig-name descname"><span class="pre">get_metadata_filename</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_file_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.CSVHandler.get_metadata_filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of abstract method</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="dvas.data.linker.CSVHandler.get_main">
-<code class="sig-name descname"><span class="pre">get_main</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prm_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.CSVHandler.get_main" title="Permalink to this definition">¶</a></dt>
+<dt id="dvas.data.linker.CSVHandler.get_metadata">
+<code class="sig-name descname"><span class="pre">get_metadata</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mdl_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prm_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.CSVHandler.get_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of abstract method</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.CSVHandler.get_data">
+<code class="sig-name descname"><span class="pre">get_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mdl_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prm_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.CSVHandler.get_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implementation of abstract method</p>
 </dd></dl>
 
@@ -782,44 +894,52 @@ instr_type name.</p>
 <dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.FileHandler" title="dvas.data.linker.FileHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.linker.FileHandler</span></code></a></p>
 <p>GDP Handler class</p>
 <dl class="py method">
-<dt id="dvas.data.linker.GDPHandler.file_suffix">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">file_suffix</span></code><a class="headerlink" href="#dvas.data.linker.GDPHandler.file_suffix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Handled file suffix (re.fullmatch of pathlib.Path.suffix)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>re.compile</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="dvas.data.linker.GDPHandler.file_instr_type_pat">
-<em class="property"><span class="pre">property</span> </em><code class="sig-name descname"><span class="pre">file_instr_type_pat</span></code><a class="headerlink" href="#dvas.data.linker.GDPHandler.file_instr_type_pat" title="Permalink to this definition">¶</a></dt>
-<dd><p>File instr_type pattern
-(re.search within pathlib.Path.name). Group #1 must correspond to
-instr_type name.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>re.compile</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt id="dvas.data.linker.GDPHandler.get_metadata_item">
 <code class="sig-name descname"><span class="pre">get_metadata_item</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.GDPHandler.get_metadata_item" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implementation of abstract method</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="dvas.data.linker.GDPHandler.get_metadata_filename">
+<code class="sig-name descname"><span class="pre">get_metadata_filename</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_file_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.GDPHandler.get_metadata_filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of abstract method</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="dvas.data.linker.GDPHandler.get_metadata">
-<code class="sig-name descname"><span class="pre">get_metadata</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instr_type_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prm_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.GDPHandler.get_metadata" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">get_metadata</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mdl_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prm_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.GDPHandler.get_metadata" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to get file metadata</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="dvas.data.linker.GDPHandler.get_main">
-<code class="sig-name descname"><span class="pre">get_main</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prm_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.GDPHandler.get_main" title="Permalink to this definition">¶</a></dt>
+<dt id="dvas.data.linker.GDPHandler.get_data">
+<code class="sig-name descname"><span class="pre">get_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mdl_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prm_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.GDPHandler.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of abstract method</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="dvas.data.linker.FlagCSVHandler">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.data.linker.</span></code><code class="sig-name descname"><span class="pre">FlagCSVHandler</span></code><a class="headerlink" href="#dvas.data.linker.FlagCSVHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.CSVHandler" title="dvas.data.linker.CSVHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.linker.CSVHandler</span></code></a></p>
+<p>CSV flag file handler class</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="dvas.data.linker.FlagGDPHandler">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.data.linker.</span></code><code class="sig-name descname"><span class="pre">FlagGDPHandler</span></code><a class="headerlink" href="#dvas.data.linker.FlagGDPHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.GDPHandler" title="dvas.data.linker.GDPHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.linker.GDPHandler</span></code></a></p>
+<p>GDP flag file handler class</p>
+<dl class="py method">
+<dt id="dvas.data.linker.FlagGDPHandler.get_metadata_filename">
+<code class="sig-name descname"><span class="pre">get_metadata_filename</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_file_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FlagGDPHandler.get_metadata_filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implementation of abstract method</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="dvas.data.linker.FlagGDPHandler.get_data">
+<code class="sig-name descname"><span class="pre">get_data</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mdl_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prm_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FlagGDPHandler.get_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implementation of abstract method</p>
 </dd></dl>
 

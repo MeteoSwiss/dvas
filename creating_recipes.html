@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.3.0
               </div>
             
           
@@ -187,7 +187,7 @@ processing recipes, or create their own.</p>
 <p class="admonition-title">Hint</p>
 <p>If you plan on coding with dvas, we strongly suggest that you begin by taking a look at the
 <a class="reference external" href="https://github.com/MeteoSwiss-MDA/dvas/blob/develop/CONTRIBUTING.md">contributing guidelines</a>
-on Github. Even if you do not want to share your modifications (which is totally fine!), these
+on Github. Even if you do not want to share your modifications (which is totally fine !), these
 guidelines contain critical information regarding the structure and spirit of the code.</p>
 </div>
 <div class="section" id="naming-conventions">
@@ -203,6 +203,7 @@ guidelines contain critical information regarding the structure and spirit of th
 <li><p><code class="docutils literal notranslate"><span class="pre">derived</span></code>:</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">empty</span></code>:</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">sync</span></code>:</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">1s</span></code>:</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">resampled</span></code>:</p></li>
 </ul>
 </div></blockquote>
@@ -240,10 +241,10 @@ names are applicable:</p>
 <p>The following parameters are applicable to their event metadata:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">srn</span></code>: radiosonde Serial Number</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">evt</span></code>: measurement event ID</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">rig</span></code>: rig ID (in case of multiple flights)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">mdl</span></code>: the GDP model and version</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">oid</span></code>: object ID, unique for profiles with the same radiosonde serial number and product ID</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">eid</span></code>: measurement event ID</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rid</span></code>: rig ID (in case of multiple flights)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mid</span></code>: the GDP model ID</p></li>
 </ul>
 </div></blockquote>
 <p>All radiosonde profiles must be associated to a specific <code class="docutils literal notranslate"><span class="pre">event</span></code> and <code class="docutils literal notranslate"><span class="pre">rig</span></code>,
@@ -253,7 +254,7 @@ This information must be provided to dvas via <cite>tags</cite> in the metadata 
 <p class="admonition-title">Hint</p>
 <p>If two radiosondes are launched from the same location and at the same time, but with two
 distinct balloons, they have an identical <strong>event</strong> value, but distinct <strong>rig</strong> and
-<strong>serial number</strong> values.</p>
+<strong>object ID</strong> values.</p>
 </div>
 </div>
 </div>

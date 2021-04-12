@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                0.2.0
+                0.3.0
               </div>
             
           
@@ -197,6 +197,30 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
+<div class="section" id="module-dvas_recipes.uaii22.src.gdps">
+<span id="dvas-recipes-uaii22-src-gdps-module"></span><h2>dvas_recipes.uaii22.src.gdps module<a class="headerlink" href="#module-dvas_recipes.uaii22.src.gdps" title="Permalink to this headline">¶</a></h2>
+<p>Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<p>Module content: high-level GDP recipes for the UAII22 campaign</p>
+<dl class="py function">
+<dt id="dvas_recipes.uaii22.src.gdps.build_cws">
+<code class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii22.src.gdps.</span></code><code class="sig-name descname"><span class="pre">build_cws</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evt_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rig_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii22.src.gdps.build_cws" title="Permalink to this definition">¶</a></dt>
+<dd><p>Highest-level function responsible for assembling the cokbined working standards for a
+specific RS flight.</p>
+<p>This function directly builds the profiles and upload them to the db with the ‘cws’ tag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>evt_id</strong> (<em>str|int</em>) – event id to be synchronized, e.g. 80611</p></li>
+<li><p><strong>rig_id</strong> (<em>str|int</em>) – rig id to be synchronized, e.g. 1</p></li>
+<li><p><strong>**kwargs</strong> – keyword arguments to be fed to the underlying cws-building routines.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
 <div class="section" id="module-dvas_recipes.uaii22.src.sync">
 <span id="dvas-recipes-uaii22-src-sync-module"></span><h2>dvas_recipes.uaii22.src.sync module<a class="headerlink" href="#module-dvas_recipes.uaii22.src.sync" title="Permalink to this headline">¶</a></h2>
 <p>Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.</p>
@@ -211,15 +235,15 @@
 
 <dl class="py function">
 <dt id="dvas_recipes.uaii22.src.sync.sync_flight">
-<code class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii22.src.sync.</span></code><code class="sig-name descname"><span class="pre">sync_flight</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evt_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rig_id</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii22.src.sync.sync_flight" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii22.src.sync.</span></code><code class="sig-name descname"><span class="pre">sync_flight</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rid</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii22.src.sync.sync_flight" title="Permalink to this definition">¶</a></dt>
 <dd><p>Highest-level function responsible for synchronizing all the profile from a specific RS
 flight.</p>
 <p>This function directly synchronizes the profiles and upload them to the db with the ‘sync’ tag.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>evt_id</strong> (<em>str|int</em>) – event id to be synchronized, e.g. 80611</p></li>
-<li><p><strong>rig_id</strong> (<em>str|int</em>) – rig id to be synchronized, e.g. 1</p></li>
+<li><p><strong>eid</strong> (<em>str|int</em>) – event id to be synchronized, e.g. 80611</p></li>
+<li><p><strong>rid</strong> (<em>str|int</em>) – rig id to be synchronized, e.g. 1</p></li>
 <li><p><strong>**kwargs</strong> – keyword arguments to be fed to the underlying shift-identification routines.</p></li>
 </ul>
 </dd>
