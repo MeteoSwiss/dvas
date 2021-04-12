@@ -6,6 +6,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 ### Added:
+### Fixed:
+### Changed:
+### Deprecated:
+### Removed:
+### Security:
+
+## [v0.3.0] (2021-04-12)
+### Added:
  - [fpavogt, 2021-03-15] Add extract() class method to MultiProfile
  - [fpavogt, 2021-03-15] Make MultiProfile iterable using __getitem__() (see #114)
  - [modolol, 2021-03-11] Import flags from CSV files
@@ -27,9 +35,6 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [modolol, 2020-02-23] Change evt_id -> eid, rig_id -> rid
  - [modolol, 2020-02-22] Change InstrType -> Model. Change mdl_id in tag -> mid from Model table
  - [modolol, 2020-02-22] Add data source to InfoManager
-### Deprecated:
-### Removed:
-### Security:
 
 ## [v0.2.0] (2021-02-16)
 ### Added:
