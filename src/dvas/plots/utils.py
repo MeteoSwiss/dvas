@@ -18,6 +18,7 @@ from matplotlib import cm
 
 # Import from this package
 from ..hardcoded import PKG_PATH
+from ..errors import DvasError
 from ..environ import path_var as env_path_var
 from ..logger import log_func_call
 from ..logger import plots_logger as logger
@@ -141,14 +142,14 @@ def fancy_legend(ax, label=None):
 
     """
 
-    # If I amusing some fancy LaTeX, let's make sue that I escape all the nasty characters.
+    # If I am using some fancy LaTeX, let's make sue that I escape all the nasty characters.
     if plt.rcParams['text.usetex']:
         label = label.replace('_', '\_')
 
     # Add the legend.
     leg = ax.legend(loc='best', bbox_to_anchor=(1.01, 0, 0.1, 1), mode='expand',
-                     title=label, ncol=1, handlelength=1,
-                     fontsize='small', title_fontsize='small', borderaxespad=0)
+                    title=label, ncol=1, handlelength=1,
+                    fontsize='small', title_fontsize='small', borderaxespad=0)
 
     # Tweak the thickness of the legen lines as well.
     for line in leg.get_lines():
@@ -165,7 +166,7 @@ def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show=
         fn_prefix (str, optional): a prefix, to which fn_core will be appended with a '_'.
             Defauts to None.
         fn_suffix (str, optional): a suffix, that will be appended to fn_core with a '_'.
-        fmts (str | list of str, optional): which formats to export the plot to, e.g.: 'png'.
+        fmts (str|list of str, optional): which formats to export the plot to, e.g.: 'png'.
             Defaults to None (= as specified by dvas.plots.utils.PLOT_FMTS)
         show (bool, optional): whether to display the plot after saving it, or not. Defaults to
             None (= as specified by dvas.plots.utils.PLOT_SHOW)
@@ -183,22 +184,23 @@ def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show=
     # Build the fileneame
     fn_out = '_'.join([item for item in [fn_prefix, fn_core, fn_suffix] if item is not None])
 
+    # Let us first make sure the destination folder has been set ...
+    if env_path_var.output_path is None:
+        raise DvasError('Ouch ! dvas.environ.path_var.output_path is None')
+    # ... and that the location exists.
+    if not env_path_var.output_path.exists():
+        # If not, be bold and create the folder.
+        env_path_var.output_path.mkdir(parents=True)
+        # Set user read/write permission
+        env_path_var.output_path.chmod(env_path_var.output_path.stat().st_mode | 0o600)
+
     # Save the figure in all the requested formats
     for fmt in fmts:
+
+        # Make sure I can actually deal with the format ...
         if fmt not in fig.canvas.get_supported_filetypes().keys():
             logger.warning('%s format not supported by the OS. Ignoring it.', fmt)
-
-        # Save the file.
-        # Let us first make sure the destination folder exists
-        if env_path_var.output_path is None:
-            # TODO
-            #  Detail exception
-            raise Exception()
-
-        if not env_path_var.output_path.exists():
-            env_path_var.output_path.mkdir(parents=True)
-            # Set user read/write permission
-            env_path_var.output_path.chmod(env_path_var.output_path.stat().st_mode | 0o600)
+            continue
 
         # Note: never use a tight box fix here. If the plot looks weird, the gridspec
         # params should be altered. This is essential for the consistency of the DVAS plots.
@@ -209,3 +211,42 @@ def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show=
         fig.show()
     else:
         plt.close(fig.number)
+
+#@log_func_call(logger)
+#def pks_cmap(alpha=0.27/100, vmin=0.0, vmax=3*0.27/100):
+#    """ Defines a custom colormap for the p-value plot of the KS test function.
+#
+#    Args:
+#        alpha (float): the significance level of the KS test.
+#        vmin (float): vmin of the desired colorbar, for proper scaling of the transition level.
+#        vmax (float): vmax of the desired colorbar, for proper scaling of the transition level.
+#
+#    Returns:
+#       matplotlib.colors.LinearSegmentedColormap
+#
+#    """
+#
+#    # Some sanity checks
+#    if not isinstance(vmin, float) or not isinstance(vmax, float):
+#        raise Exception('Ouch ! vmin and vmax should be of type float, not %s and %s.' %
+#                        (type(vmin), type(vmax)))
+#
+#    if not 0 <= vmin <= vmax <= 1:
+#        raise Exception('Ouch ! I need 0 <= vmin <= vmax <= 1.')
+#
+#
+#    # What are the boundary colors I want ?
+#    a_start = colors.to_rgb('maroon')
+#    a_mid_m = colors.to_rgb('lightcoral')
+#    a_mid_p = colors.to_rgb('lightgrey')
+#    a_end = colors.to_rgb('white')
+#
+#    cdict = {}
+#    for c_ind, c_name in enumerate(['red', 'green', 'blue']):
+#        cdict[c_name] = ((0.00, a_start[c_ind], a_start[c_ind]),
+#                         ((alpha-vmin)/(vmax-vmin), a_mid_m[c_ind], a_mid_p[c_ind]),
+#                         (1.00, a_end[c_ind], a_end[c_ind])
+#                         )
+#
+#    # Build the colormap
+#    return colors.LinearSegmentedColormap('pks_cmap', cdict, 1024)

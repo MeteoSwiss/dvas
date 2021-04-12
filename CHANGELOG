@@ -6,15 +6,21 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 ### Added:
+ - [fpavogt, 2021-03-15] Add extract() class method to MultiProfile
  - [fpavogt, 2021-03-15] Make MultiProfile iterable using __getitem__() (see #114)
  - [modolol, 2021-03-11] Import flags from CSV files
  - [fpavogt, 2021-03-10] Add resampling strategy for RS and GDP Profiles
  - [fpavogt, 2021-03-03] Add new gdps sub-module in dvas.tools
 ### Fixed:
+ - [fpavogt, 2021-04-01] Fixed sync routines following #129, now with dedicated tests
+ - [fpavogt, 2021-03-31] Bring the ks_test() routine back from the dead
+ - [fpavogt, 2021-03-31] Profile.__getattr__() now always returns a pd.Series, even for an index (#130)
  - [fpavogt, 2021-03-05] Fix test_utils.py tests
  - [modolol, 2020-02-25] Fix issue #113
  - [modolol, 2020-02-17] Fix issue #96 (enhancement toward v0.3)
 ### Changed:
+ - [fpavogt, 2021-03-31] MultiProfile.get_prms() now returns a DataFrame instead of a list (#129)
+ - [fpavogt, 2021-03-29] Use masked arrays when dealing with Jacobians and correlation matrices to correctly handle NaNs
  - [fpavogt, 2021-03-03] Re-design GDP routine to use bigger Profile chunks to speed things up
  - [modolol, 2020-02-25] DB access methods
  - [modolol, 2020-02-23] Change evt_dt -> edt

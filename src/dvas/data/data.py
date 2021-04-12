@@ -30,9 +30,9 @@ from ..helper import RequiredAttrMetaClass
 from ..helper import deepcopy
 from ..helper import get_class_public_attr
 
-from ..errors import DvasError, DBIOError
+from ..errors import DBIOError
 
-from ..hardcoded import TAG_RAW_NAME
+from ..hardcoded import TAG_RAW_NAME, PRF_REF_INDEX_NAME
 
 
 # Loading strategies
@@ -140,12 +140,12 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
 
     @property
     def info(self):
-        """list of ProfileManger info: Data info"""
+        """ List of ProfileManger info: Data info"""
         return [arg.info for arg in self.profiles]
 
     @deepcopy
     def rm_info_tags(self, val):
-        """Remove some tags from all info tag lists.
+        """ Remove some tags from all info tag lists.
 
         Args:
             val (str|list of str): Tag value(s) to remove
@@ -156,7 +156,7 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
 
     @deepcopy
     def add_info_tags(self, val):
-        """Add tag from all info tags
+        """ Add tag from all info tags
 
         Args:
             val (str|list of str): Tag values to add.
@@ -166,15 +166,34 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
             self.profiles[i].info.add_tags(val)
 
     def copy(self):
-        """Return a deep copy of the object"""
+        """ Return a deep copy of the object"""
         obj = self.__class__()
         obj._db_variables = self.db_variables.copy()
         obj._profiles = [arg.copy() for arg in self.profiles]
         return obj
 
+    def extract(self, inds):
+        """ Return a new MultiProfile instance with a subset of the Profiles.
+
+        Args:
+            inds (int|list of int): indices of the Profiles to extract.
+
+        Return:
+            dvas.data.data.MultiProfile: the new instance.
+        """
+
+        # Be extra nice and turn ints into lists
+        if isinstance(inds, int):
+            inds = list[inds]
+
+        new_prfs = self.__class__()
+        new_prfs.update(self.db_variables.copy(),
+                        [item.copy() for (ind, item) in enumerate(self) if ind in inds])
+        return new_prfs
+
     @deepcopy
     def load_from_db(self, *args, **kwargs):
-        """Load data from the database.
+        """ Load data from the database.
 
         Args:
             *args: positional arguments
@@ -194,7 +213,7 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
 
     @deepcopy
     def sort(self):
-        """Sort method
+        """ Sort method
 
         """
 
@@ -205,7 +224,7 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
         self.update(self.db_variables, data)
 
     def save_to_db(self, add_tags=None, rm_tags=None, prms=None):
-        """Save method to store the *entire* content of the Multiprofile
+        """ Save method to store the *entire* content of the Multiprofile
         instance back into the database with an updated set of tags.
 
         Args:
@@ -248,7 +267,7 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
     # use the existing "save_to_db" method ?
 
     def update(self, db_df_keys, data):
-        """Update the whole Multiprofile list with new Profiles.
+        """ Update the whole Multiprofile list with new Profiles.
 
         Args:
             db_df_keys (dict): Relationship between database parameters and
@@ -282,7 +301,7 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
         self._profiles = data
 
     def append(self, db_df_keys, val):
-        """Append method
+        """ Append method
 
         Args:
             db_df_keys (dict): Relationship between database parameters and
@@ -312,31 +331,34 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
         """
 
         if prm_list is None:
-            prm_list = list(self.db_variables.keys())
+            prm_list = list(self.var_info.keys())
 
         if isinstance(prm_list, str):
-            # Assume the user forgot to put the key into a list.
+            # Be nice/foolish and assume the user forgot to put the key into a list.
             prm_list = [prm_list]
 
-        # Remove any prm that is an index name
-        prm_list = [prm for prm in prm_list
-                    if not any([prm in arg.get_index_attr() for arg in self.profiles])]
+        # Let's prepare the data. First, put all the DataFrames into a list
+        out = [pd.concat([getattr(prf, prm) for prm in prm_list], axis=1, ignore_index=False)
+               for prf in self.profiles]
 
-        # Check that I still have something valid to extract !
-        if len(prm_list) == 0:
-            raise DvasError("Ouch ! Invalid column name(s). Did you only specify index name(s) ?")
+        # Drop the superfluous index
+        out = [df.reset_index(level=[name for name in df.index.names
+                                     if name not in [PRF_REF_INDEX_NAME]],
+                              drop=True)
+               for df in out]
 
-        # Select data
-        try:
-            out = [
-                pd.concat(
-                    [getattr(arg, prm) for prm in prm_list],
-                    axis=1, ignore_index=False
-                )
-                for arg in self.profiles
-            ]
-        except AttributeError:
-            raise DvasError(f"Unknown parameter/attribute name in {prm_list}")
+        # Drop all the columns I do not want to keep
+        out = [df[prm_list] for df in out]
+
+        # Before I combine everything in one big DataFrame, I need to re-organize the columns
+        # to avoid collisions. Let's group all columns from one profile under its position in the
+        # list (0,1, ...) using pd.MultiIndex()
+        for (df_ind, df) in enumerate(out):
+            out[df_ind].columns = pd.MultiIndex.from_tuples([(df_ind, item) for item in df.columns],
+                                                            names=('#', 'prm'))
+
+        # Great, I can now bring everything into one large DataFrame
+        out = pd.concat(out, axis=1)
 
         return out
 

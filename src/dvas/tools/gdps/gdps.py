@@ -31,7 +31,7 @@ from ...data.strategy.data import GDPProfile
 from ...database.database import InfoManager
 
 @log_func_call(logger)
-def combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus='max'):
+def combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=1):
     ''' Combines and (possibly) rebins GDP profiles, with full error propagation.
 
     Note:
@@ -48,7 +48,7 @@ def combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=
             that length. The larger the chunks, the larger the memory requirements. The smaller the
             chunks the more items to process. Defaults to 200.
         n_cpus (int|str, optional): number of cpus to use. Can be a number, or 'max'. Set to 1 to
-            disable multiprocessing. Defaults to 'max'.
+            disable multiprocessing. Defaults to 1.
 
     Returns:
         (dvas.data.data.MultiGDPProfile): the combined GDP profile.
@@ -115,25 +115,9 @@ def combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=
     # Let's get started for real
     # First, let's extract all the information I (may) need, i.e. the values, errors, and total
     # errors.
-    # While we're at it, let's turn the alt and tdt back into regular columns.
-    x_dx = [item.reset_index([PRF_REF_ALT_NAME, PRF_REF_TDT_NAME])
-            for item in gdp_prfs.get_prms([PRF_REF_VAL_NAME, PRF_REF_FLG_NAME, PRF_REF_UCR_NAME,
-                                           PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME,
-                                           'uc_tot'])]
-
-    # Before I combine everything in one big DataFrame, I need to re-organize the indices to avoid
-    # collision. Let's group all columns from one profile under its position in the list (0,1, ...)
-    for (df_ind, df) in enumerate(x_dx):
-        x_dx[df_ind].columns = pd.MultiIndex.from_tuples([(df_ind, item) for item in df.columns])
-
-    # Check that the `_idx` columns are the same everywhere.
-    # This is a hard requirement so nothing unexpected happens with pd.concat().
-    if any([not np.array_equal(pdf.index, x_dx[0].index) for pdf in x_dx]):
-        raise DvasError('Ouch! Inconsistent `_idx` index between GDP profiles. ' +
-                        'Have these been synchronized ?')
-
-    # Great, I can now bring everything into one large DataFrame
-    x_dx = pd.concat(x_dx, axis=1)
+    x_dx = gdp_prfs.get_prms([PRF_REF_ALT_NAME, PRF_REF_TDT_NAME, PRF_REF_VAL_NAME,
+                              PRF_REF_FLG_NAME, PRF_REF_UCR_NAME, PRF_REF_UCS_NAME,
+                              PRF_REF_UCT_NAME, PRF_REF_UCU_NAME, 'uc_tot'])
 
     # I also need to extract some of the metadata required for computing cross-correlations.
     # Let's add it to the common DataFrame so I can carry it all in one go.
@@ -200,17 +184,17 @@ def combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=
     new_evt_tag = 'e:'+','.join([item.split(':')[1]
                                  for item in np.unique(gdp_prfs.get_info('eid')).tolist()])
 
-    cws_info = InfoManager(np.unique(gdp_prfs.get_info('edt'))[0], # dt
+    new_info = InfoManager(np.unique(gdp_prfs.get_info('edt'))[0], # dt
                            np.unique(gdp_prfs.get_info('oid')).tolist(),  # oids
-                           tags=['cws', new_rig_tag, new_evt_tag],
+                           tags=[new_rig_tag, new_evt_tag],
                            src='dvas combine() [{}]'.format(Path(__file__).name))
 
     # Let's create a dedicated Profile for the combined profile.
     # It's no different from a GDP, from the perspective of the errors.
-    cws_prf = GDPProfile(cws_info, data=proc_chunk)
+    new_prf = GDPProfile(new_info, data=proc_chunk)
 
     # And finally, package this into a MultiGDPProfile entity
-    cws = MultiGDPProfile()
-    cws.update(gdp_prfs.db_variables, data=[cws_prf])
+    out = MultiGDPProfile()
+    out.update(gdp_prfs.db_variables, data=[new_prf])
 
-    return cws
+    return out

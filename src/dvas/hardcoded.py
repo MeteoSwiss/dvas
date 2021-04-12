@@ -34,7 +34,7 @@ CONFIG_GEN_LIM = 10000
 GDP_FILE_EXT = 'nc'
 
 #: list of str: Data file extension
-CSV_FILE_EXT = ['csv', 'txt']
+CSV_FILE_EXT = ['csv', 'txt', 'cor']
 
 #: list of str: Flag data file extension
 FLAG_FILE_EXT = ['flg']
