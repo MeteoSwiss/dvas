@@ -19,6 +19,16 @@ from pprint import pprint, pformat
 from .database import DatabaseManager
 from .model import Parameter, Info
 from .search import SearchInfoExpr, AllExpr
+from ..errors import SearchError
+
+
+class Parser(ArgumentParser):
+
+    def exit(self, status, message):
+        print(message)
+
+    def error(self, message):
+        print(message)
 
 
 class DatabasePrompt(Cmd):
@@ -27,7 +37,7 @@ class DatabasePrompt(Cmd):
     prompt = 'db> '
     intro = "Welcome! Type '?' to list commands"
 
-    _EXIT_CMD = ['exit', 'x', 'q']
+    _EXIT_CMD = ['exit', 'quit', 'x', 'q']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -49,29 +59,36 @@ class DatabasePrompt(Cmd):
 
     def do_prm(self, inp):
 
-        #try:
-        out = self._db_reader.prm(inp)
+        try:
+            pprint(self._db_reader.prm(inp))
 
-        # except Exception as exc:
-        #     out = exc.args[0]
-
-        pprint(out)
+        except Exception as exc:
+            pprint(exc)
 
     def help_prm(self):
-        pprint("Display 'Parameter' table")
+        pprint(self._db_reader.prm('?'))
 
     def do_info(self, inp):
 
         try:
-            out = self._db_reader.info(inp)
+            pprint(self._db_reader.info(inp))
 
         except Exception as exc:
-            out = exc.args[0]
-
-        pprint(out)
+            pprint(exc)
 
     def help_info(self):
-        pprint("Display 'Info' table")
+        pprint(self._db_reader.info('?'))
+
+    def do_obj(self, inp):
+
+        try:
+            pprint(self._db_reader.obj(inp))
+
+        except Exception as exc:
+            pprint(exc)
+
+    def help_obj(self):
+        pprint(self._db_reader.obj('?'))
 
 
 class ReadDatabase:
@@ -81,72 +98,66 @@ class ReadDatabase:
 
         # Init attributes
         self._db_mngr = DatabaseManager()
-        self._parser = ArgumentParser()
+        self._parser = Parser()
 
         # Set parser
         self._parser.add_argument('expr', default=None, nargs='?')
         self._parser.add_argument('--length', '-l', action='store_true', default=False)
+        self._parser.add_argument('--recurse', '-r', action='store_true', default=False)
 
-    def info(self, expr):
+    def _execute(self, search_type, search_expr):
+        """Execute method
+
+        Args:
+            search_type (str): 'info' | 'prm' | 'obj'
+            search_expr (str): Search expression
+
+        """
 
         # Init
-        SearchInfoExpr.set_stgy('info')
-        self._parser.prog = 'info'
+        SearchInfoExpr.set_stgy(search_type)
+        self._parser.prog = search_type
+
+        # Split
+        search_expr = split(search_expr)
 
         # Parse
         try:
-            args = self._parser.parse_args(split(expr))
 
-        except Exception:
-            raise Exception(f"Error in parsing '{expr}'")
+            # Check help '?'
+            if search_expr == ['?']:
+                self._parser.parse_args(['-h'])
 
-        # Define
-        expr = args.expr
-        length = args.length
+            args = self._parser.parse_args(search_expr)
 
-        # Get all if None
-        if expr is None:
-            expr = AllExpr()
+            # Define
+            expr = args.expr
+            length = args.length
+            recurse = args.recurse
 
-        try:
-            out = SearchInfoExpr.eval(expr, out='dict')
+            # Get all if None
+            if expr is None:
+                expr = AllExpr()
+
+            # Search in DB
+            out = SearchInfoExpr.eval(expr, out='dict', recurse=recurse)
 
             if length:
                 out = len(out)
 
-        except Exception:
-            raise Exception('Error in argument')
+        except SystemExit:
+            out = None
 
         return out
+
+    def info(self, expr):
+        """Search from Info table"""
+        return self._execute('info', expr)
 
     def prm(self, expr):
+        """Search from Parameter table"""
+        return self._execute('prm', expr)
 
-        # Init
-        SearchInfoExpr.set_stgy('prm')
-        self._parser.prog = 'prm'
-
-        # Parse
-        #try:
-        args = self._parser.parse_args(split(expr))
-
-        # except Exception:
-        #     raise Exception(f"Error in parsing '{expr}'")
-
-        # Define
-        expr = args.expr
-        length = args.length
-
-        # Get all if None
-        if expr is None:
-            expr = AllExpr()
-
-        #try:
-        out = SearchInfoExpr.eval(expr, out='dict')
-
-        if length:
-            out = len(out)
-
-        # except Exception:
-        #     raise Exception('Error in argument')
-
-        return out
+    def obj(self, expr):
+        """Search from Object table"""
+        return self._execute('obj', expr)

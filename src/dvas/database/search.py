@@ -26,10 +26,12 @@ from .model import Parameter as TableParameter
 from .model import Tag as TableTag
 from .model import InfosObjects as TableInfosObjects
 from .model import InfosTags
+from .model import Model as TableModel
 from ..hardcoded import TAG_EMPTY_NAME
 from ..hardcoded import TAG_RAW_NAME, TAG_GDP_NAME
 from ..helper import TypedProperty as TProp
 from ..helper import check_datetime
+from ..errors import SearchError
 
 
 class SearchInfoExpr(metaclass=ABCMeta):
@@ -79,16 +81,19 @@ class SearchInfoExpr(metaclass=ABCMeta):
         elif method == 'prm':
             stgy = PrmStrategy()
 
-        cls._str_expr_dict = stgy.execute()['str_expr_dict']
-        cls._qry = stgy.execute()['qry']
-        cls._id = stgy.execute()['id']
+        elif method == 'obj':
+            stgy = ObjectStrategy()
+
+        cls._str_expr_dict = stgy.str_expr_dict
+        cls._qry = stgy.qry
+        cls._id = stgy.id
 
     @abstractmethod
     def interpret(self):
         """Interpreter method"""
 
     @staticmethod
-    def eval(expr, prm_name=None, filter_empty=False, out='id'):
+    def eval(expr, prm_name=None, filter_empty=False, out='id', recurse=False):
         """Evaluate search expression
 
         Args:
@@ -97,6 +102,7 @@ class SearchInfoExpr(metaclass=ABCMeta):
             filter_empty (bool, `optional`): Filter for empty data. Default to False.
             out (str, `optional`): 'id' return table element.
                 'dict' return table as dict. Default to 'table'.
+            recurse (bool, `optional`): Search recursively DB content. Default to False.
 
         Returns:
             List of Info.info_id
@@ -116,38 +122,44 @@ class SearchInfoExpr(metaclass=ABCMeta):
             - raw(): Same as tags('raw')
             - gdp(): Same as tags('gdp')
 
+        Raises:
+            - SearchError: Error in search expression
+
         """
 
-        # Eval str expression
-        if isinstance(expr, str):
-            expr = eval(expr, SearchInfoExpr._str_expr_dict)
+        # Test
+        assert out in ['id', 'dict'], "Bad value for 'out'"
 
-        # Add empty tag if False
-        if filter_empty is True:
-            expr = AndExpr(NotExpr(TagExpr(TAG_EMPTY_NAME)), expr)
+        try:
+            # Eval str expression
+            if isinstance(expr, str):
+                expr = eval(expr, SearchInfoExpr._str_expr_dict)
 
-        # Filter parameter
-        if prm_name:
-            expr = AndExpr(ParameterExpr(prm_name), expr)
+            # Add empty tag if False
+            if filter_empty is True:
+                expr = AndExpr(NotExpr(TagExpr(TAG_EMPTY_NAME)), expr)
 
-        # Interpret expression
-        expr_res = expr.interpret()
+            # Filter parameter
+            if prm_name:
+                expr = AndExpr(ParameterExpr(prm_name), expr)
 
-        # Convert results
-        qry = SearchInfoExpr._qry.where(
-            getattr(SearchInfoExpr._qry.model, SearchInfoExpr._id).in_(expr_res)
-        )
-        if out == 'id':
-            out = [arg for arg in qry.iterator()]
+            # Interpret expression
+            expr_res = expr.interpret()
 
-        elif out == 'dict':
-            out = [model_to_dict(arg, recurse=True) for arg in qry]
+            # Convert results
+            qry = SearchInfoExpr._qry.where(
+                getattr(SearchInfoExpr._qry.model, SearchInfoExpr._id).in_(expr_res)
+            )
+            if out == 'id':
+                out = [arg for arg in qry.iterator()]
 
-        else:
-            raise Exception("Bad key for 'out'")
+            else:
+                out = [model_to_dict(arg, recurse=recurse) for arg in qry]
 
-        # TODO
-        #  Raise exception
+        except Exception as exc:
+            # TODO
+            #  Detail exception
+            raise SearchError(exc)
 
         return out
 
@@ -323,70 +335,133 @@ class GDPExpr(TerminalSearchInfoExpr):
         return TableTag.tag_name.in_([TAG_GDP_NAME])
 
 
+class OIDExpr(TerminalSearchInfoExpr):
+    """OID filter"""
+
+    expression = TProp(int, lambda x: x)
+
+    def get_filter(self):
+        """Implement get_filter method"""
+        return TableObject.oid == self.expression
+
+
 class SearchStrategyAC(metaclass=ABCMeta):
     """Abstract class (AC) for a search strategy"""
 
+    @property
     @abstractmethod
-    def execute(self, *args, **kwargs):
-        """Execute strategy method"""
+    def str_expr_dict(self):
+        """dict: Str equivalent expression"""
+        return {
+            'all': AllExpr,
+            'and_': AndExpr,
+            'or_': OrExpr,
+            'not_': NotExpr,
+        }
+
+    @property
+    @abstractmethod
+    def qry(self):
+        """peewee.ModelSelect: Query"""
+
+    @property
+    @abstractmethod
+    def id(self):
+        """str: Query main table id name"""
+
 
 
 class InfoStrategy(SearchStrategyAC):
     """"""
 
-    def execute(self):
+    @property
+    def str_expr_dict(self):
         """"""
-
-        out = {
-            'str_expr_dict': {
-                'all': AllExpr,
+        return dict(
+            **super().str_expr_dict,
+            **{
                 'datetime': DatetimeExpr, 'dt': DatetimeExpr,
                 'serialnumber': SerialNumberExpr, 'srn': SerialNumberExpr,
+                'object_id': OIDExpr, 'oid': OIDExpr,
                 'product_id': ProductExpr, 'pid': ProductExpr,
                 'tags': TagExpr,
                 'prm': ParameterExpr,
-                'and_': AndExpr,
-                'or_': OrExpr,
-                'not_': NotExpr,
                 'raw': RawExpr,
                 'gdp': GDPExpr,
-            },
-            'qry': (
-                TableInfo
-                .select().distinct()
-                .join(TableInfosObjects).join(TableObject).switch(TableInfo)
-                .join(TableParameter).switch(TableInfo)
-                .join(InfosTags).join(TableTag).switch(TableInfo)
-            ),
-            'id': 'info_id'
-        }
+            }
+        )
 
-        return out
+    @property
+    def qry(self):
+        return (
+            TableInfo
+            .select().distinct()
+            .join(TableInfosObjects).join(TableObject).switch(TableInfo)
+            .join(TableParameter).switch(TableInfo)
+            .join(InfosTags).join(TableTag).switch(TableInfo)
+        )
+
+    @property
+    def id(self):
+        return 'info_id'
 
 
 class PrmStrategy(SearchStrategyAC):
     """"""
 
-    def execute(self):
+    @property
+    def str_expr_dict(self):
         """"""
-
-        out = {
-            'str_expr_dict': {
-                'all': AllExpr,
+        return dict(
+            **super().str_expr_dict,
+            **{
                 'datetime': DatetimeExpr, 'dt': DatetimeExpr,
                 'prm': ParameterExpr,
-                'and_': AndExpr,
-                'or_': OrExpr,
-                'not_': NotExpr,
+            }
+        )
+
+    @property
+    def qry(self):
+        return (
+            TableParameter
+            .select().distinct()
+            .join(TableInfo).switch(TableParameter)
+        )
+
+    @property
+    def id(self):
+        return 'prm_id'
+
+
+class ObjectStrategy(SearchStrategyAC):
+    """"""
+
+    @property
+    def str_expr_dict(self):
+        """"""
+        return dict(
+            **super().str_expr_dict,
+            **{
+                'datetime': DatetimeExpr, 'dt': DatetimeExpr,
+                'serialnumber': SerialNumberExpr, 'srn': SerialNumberExpr,
+                'object_id': OIDExpr, 'oid': OIDExpr,
+                'product_id': ProductExpr, 'pid': ProductExpr,
+                'tags': TagExpr,
                 'raw': RawExpr,
                 'gdp': GDPExpr,
-            },
-            'qry': (
-                TableParameter
-                .select().distinct()
-                .join(TableInfo, JOIN.LEFT_OUTER)
-            ),
-            'id': 'prm_id'
-        }
+            }
+        )
 
-        return out
+    @property
+    def qry(self):
+        return (
+            TableObject
+            .select().distinct()
+            .join(TableModel).switch(TableObject)
+            .join(TableInfosObjects).join(TableInfo)
+            .join(InfosTags).join(TableTag).switch(TableInfo)
+        )
+
+    @property
+    def id(self):
+        return 'oid'
