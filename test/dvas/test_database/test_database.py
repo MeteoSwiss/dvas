@@ -19,7 +19,6 @@ import pytest
 # Import from python packages and modules under test
 from dvas.database.model import Parameter as TableParameter
 from dvas.database.database import InfoManager, InfoManagerMetaData
-from dvas.database.database import SearchInfoExpr
 from dvas.database.database import DBInsertError
 from dvas.environ import glob_var
 from dvas.hardcoded import TAG_RAW_NAME, TAG_GDP_NAME
@@ -288,84 +287,3 @@ class TestInfoManager:
         assert info_mngr_gt > self.info_mngr
         assert self.info_mngr < info_mngr_gt
         assert self.info_mngr != info_mngr_gt
-
-
-def test_search_event_expr_eval(db_init):
-    """Test SearchInfoExpr.eval static function"""
-
-    # Define
-    data = db_init.data
-    args = (data[0]['prm_name'], True)
-
-    # Test all
-    assert len(SearchInfoExpr.eval('all()', *args)) > 0
-
-    # Test datetime
-    assert (
-        SearchInfoExpr.eval(
-            'datetime("20200101T0000Z", "==")', * args
-        ) ==
-        SearchInfoExpr.eval(
-            'datetime("20200101T0000Z")', *args
-        ) ==
-        SearchInfoExpr.eval(
-            'dt("2020-01-01 00:00:00+00:00")', *args
-        ) !=
-        SearchInfoExpr.eval(
-            'datetime("20180110T0000Z", "==")', *args
-        )
-    )
-
-    # Test not_ and or_
-    assert (
-        SearchInfoExpr.eval(
-            'datetime("20200101T0000Z", "==")', *args
-        ) ==
-        SearchInfoExpr.eval(
-            'not_(or_(datetime("20200101T0000Z", "<"), datetime("20200101T0000Z", ">")))',
-            *args
-        ) !=
-        SearchInfoExpr.eval(
-            'datetime("20180110T0000Z", "==")', *args
-        )
-    )
-
-    # Test tag
-    assert len(
-        SearchInfoExpr.eval(
-            f'tags(("e:1", "r:1"))', *args
-        )
-    ) > 0
-    assert (
-        SearchInfoExpr.eval(
-            'tags(("e:1", "r:1"))', *args
-        ) ==
-        SearchInfoExpr.eval(
-            'or_(tags("e:1"), tags("r:1"))',
-            *args
-        )
-    )
-
-    # Test serial number
-    assert len(
-        SearchInfoExpr.eval(
-            f'srn("{data[0]["info"]["srn"]}")', *args
-        )
-    ) > 0
-
-    # Test and_
-    assert (
-        SearchInfoExpr.eval(
-            f'and_(tags("{data[0]["info"]["tags"][1]}"), not_(tags("{data[0]["info"]["tags"][1]}")))', *args
-        ) ==
-        SearchInfoExpr.eval(
-            'not_(all())',
-            *args
-        )
-    )
-
-    # Test raw()
-    assert SearchInfoExpr.eval(f"tags('raw')", *args) == SearchInfoExpr.eval(f"raw()", *args)
-
-    # Test gdp()
-    assert SearchInfoExpr.eval(f"tags('gdp')", *args) == SearchInfoExpr.eval(f"gdp()", *args)

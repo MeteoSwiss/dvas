@@ -17,7 +17,6 @@ from datetime import datetime
 from pandas import Timestamp
 from pampy.helpers import Iterable, Union
 from playhouse.shortcuts import model_to_dict
-from peewee import JOIN
 
 # Import from current package
 from .model import Object as TableObject
@@ -73,7 +72,7 @@ class SearchInfoExpr(metaclass=ABCMeta):
 
     @classmethod
     def set_stgy(cls, method):
-        """"""
+        """Set class attribute in function of the strategy"""
 
         if method == 'info':
             stgy = InfoStrategy()
@@ -131,9 +130,21 @@ class SearchInfoExpr(metaclass=ABCMeta):
         assert out in ['id', 'dict'], "Bad value for 'out'"
 
         try:
-            # Eval str expression
+
+            # Skip if SearchInfoExpr
+            if isinstance(expr, SearchInfoExpr):
+                pass
+
+            # Eval expression if str
             if isinstance(expr, str):
                 expr = eval(expr, SearchInfoExpr._str_expr_dict)
+
+                # Eval twice for nested str
+                if isinstance(expr, str):
+                    expr = eval(expr, SearchInfoExpr._str_expr_dict)
+
+                # Test
+                assert isinstance(expr, SearchInfoExpr), "eval(expr) must return a 'SearchInfoExpr' type"
 
             # Add empty tag if False
             if filter_empty is True:
@@ -156,7 +167,7 @@ class SearchInfoExpr(metaclass=ABCMeta):
             else:
                 out = [model_to_dict(arg, recurse=recurse) for arg in qry]
 
-        except Exception as exc:
+        except (Exception, AssertionError) as exc:
             # TODO
             #  Detail exception
             raise SearchError(exc)
@@ -370,13 +381,12 @@ class SearchStrategyAC(metaclass=ABCMeta):
         """str: Query main table id name"""
 
 
-
 class InfoStrategy(SearchStrategyAC):
-    """"""
+    """Search Info strategy"""
 
     @property
     def str_expr_dict(self):
-        """"""
+        """dict: Str equivalent expression"""
         return dict(
             **super().str_expr_dict,
             **{
@@ -393,6 +403,7 @@ class InfoStrategy(SearchStrategyAC):
 
     @property
     def qry(self):
+        """peewee.ModelSelect: Query"""
         return (
             TableInfo
             .select().distinct()
@@ -403,15 +414,16 @@ class InfoStrategy(SearchStrategyAC):
 
     @property
     def id(self):
+        """str: Query main table id name"""
         return 'info_id'
 
 
 class PrmStrategy(SearchStrategyAC):
-    """"""
+    """Search Parameter strategy"""
 
     @property
     def str_expr_dict(self):
-        """"""
+        """dict: Str equivalent expression"""
         return dict(
             **super().str_expr_dict,
             **{
@@ -422,6 +434,7 @@ class PrmStrategy(SearchStrategyAC):
 
     @property
     def qry(self):
+        """peewee.ModelSelect: Query"""
         return (
             TableParameter
             .select().distinct()
@@ -430,15 +443,16 @@ class PrmStrategy(SearchStrategyAC):
 
     @property
     def id(self):
+        """str: Query main table id name"""
         return 'prm_id'
 
 
 class ObjectStrategy(SearchStrategyAC):
-    """"""
+    """Search Object strategy"""
 
     @property
     def str_expr_dict(self):
-        """"""
+        """dict: Str equivalent expression"""
         return dict(
             **super().str_expr_dict,
             **{
@@ -454,6 +468,7 @@ class ObjectStrategy(SearchStrategyAC):
 
     @property
     def qry(self):
+        """peewee.ModelSelect: Query"""
         return (
             TableObject
             .select().distinct()
@@ -464,4 +479,5 @@ class ObjectStrategy(SearchStrategyAC):
 
     @property
     def id(self):
+        """str: Query main table id name"""
         return 'oid'

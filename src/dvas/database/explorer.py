@@ -13,26 +13,42 @@ Module contents: Local database exploring tools
 from cmd import Cmd
 from shlex import split
 from argparse import ArgumentParser
-from pprint import pprint, pformat
+from pprint import pprint
+from inspect import stack
+from re import match, sub
 
 # Import from current package
 from .database import DatabaseManager
-from .model import Parameter, Info
 from .search import SearchInfoExpr, AllExpr
-from ..errors import SearchError
 
+
+class ParserExit(Exception):
+    """"""
 
 class Parser(ArgumentParser):
+    """Parser class"""
 
-    def exit(self, status, message):
-        print(message)
+    def exit(self, status=0, message=None):
+        """Overwrite exit method
+
+        Notes:
+            - Interrupt system exit behavior
+
+        """
+        raise ParserExit()
 
     def error(self, message):
+        """Overwrite error method
+
+        Notes:
+            - Interrupt system exit behavior
+
+        """
         print(message)
 
 
 class DatabasePrompt(Cmd):
-    """"""
+    """Class for DB prompt command interface"""
 
     prompt = 'db> '
     intro = "Welcome! Type '?' to list commands"
@@ -47,48 +63,74 @@ class DatabasePrompt(Cmd):
         self._db_reader = ReadDatabase()
 
     def default(self, inp):
+        """Default commande method"""
         if inp in self._EXIT_CMD:
             return self.do_exit(inp)
 
+    def _exec_cmd(self, arg=''):
+        """Execute command
+
+        Args:
+            arg (str, `optional`): Command argument. Default to ''
+
+        Note:
+            - Call it only from a do_* or help_* method
+
+        """
+
+        # Get origin method name
+        fct_name = stack()[1][3]
+        cmd_name = sub(r'^((do)|(help))_(\w*)$', r'\4', fct_name)
+        do_cmd = True if match('^do', fct_name) else False
+
+        # Test
+        assert (cmd_name != '') and (cmd_name != fct_name),\
+            'Must be called from a do_* or help_* function'
+
+        # Execute command
+        if do_cmd:
+            try:
+                pprint(getattr(self._db_reader, cmd_name)(arg))
+
+            except Exception as exc:
+                pprint(exc)
+
+        else:
+            pprint(getattr(self._db_reader, cmd_name)('?'))
+
+
     def do_exit(self, _):
+        """Exit command"""
         pprint("Bye! Bye!")
         return True
 
     def help_exit(self):
+        """Exit command help"""
         pprint(f"Type ({'|'.join(self._EXIT_CMD)}) to exit")
 
     def do_prm(self, inp):
-
-        try:
-            pprint(self._db_reader.prm(inp))
-
-        except Exception as exc:
-            pprint(exc)
+        """Parameter command"""
+        self._exec_cmd(inp)
 
     def help_prm(self):
-        pprint(self._db_reader.prm('?'))
+        """Parameter command help"""
+        self._exec_cmd()
 
     def do_info(self, inp):
-
-        try:
-            pprint(self._db_reader.info(inp))
-
-        except Exception as exc:
-            pprint(exc)
+        """Info command"""
+        self._exec_cmd(inp)
 
     def help_info(self):
-        pprint(self._db_reader.info('?'))
+        """Info command help"""
+        self._exec_cmd()
 
     def do_obj(self, inp):
-
-        try:
-            pprint(self._db_reader.obj(inp))
-
-        except Exception as exc:
-            pprint(exc)
+        """Object command"""
+        self._exec_cmd(inp)
 
     def help_obj(self):
-        pprint(self._db_reader.obj('?'))
+        """Object command help"""
+        self._exec_cmd()
 
 
 class ReadDatabase:
@@ -119,7 +161,7 @@ class ReadDatabase:
         self._parser.prog = search_type
 
         # Split
-        search_expr = split(search_expr)
+        search_expr = split(search_expr, posix=False)
 
         # Parse
         try:
@@ -145,7 +187,7 @@ class ReadDatabase:
             if length:
                 out = len(out)
 
-        except SystemExit:
+        except ParserExit:
             out = None
 
         return out

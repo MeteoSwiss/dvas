@@ -45,7 +45,8 @@ def db_init(request, tmp_path_factory):
     db_data.update({'db_path': path_var.local_db_path.as_posix()})
 
     # Set db
-    db_mngr = DatabaseManager(reset_db=db_data['reset_db'])
+    DatabaseManager().clear_db()
+    db_mngr = DatabaseManager()
 
     # Register db manager
     db_data.update({'db_mngr': db_mngr})
@@ -71,12 +72,11 @@ def db_init(request, tmp_path_factory):
                 )
 
                 # Create instrument entry
-                with db_mngr.db_access() as _:
-                    oid = TableObject.create(
-                        srn=arg[TableObject.srn.name],
-                        pid=arg[TableObject.pid.name],
-                        model=model
-                    ).oid
+                oid = TableObject.create(
+                    srn=arg[TableObject.srn.name],
+                    pid=arg[TableObject.pid.name],
+                    model=model
+                ).oid
 
                 db_data['data'][i].update({'oid': oid})
 

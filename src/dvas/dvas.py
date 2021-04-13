@@ -75,6 +75,7 @@ class Database:
 
     @staticmethod
     def explore():
+        """Explore DB method"""
         prmt = DatabasePrompt()
         prmt.cmdloop()
 

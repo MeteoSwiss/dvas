@@ -17,6 +17,7 @@ from pytest_data import use_data
 from dvas.data.linker import LocalDBLinker
 from dvas.data.linker import CSVHandler, GDPHandler
 from dvas.environ import path_var
+from dvas.config.config import OrigData
 
 
 # Define db_data
@@ -46,13 +47,17 @@ db_data = {
 class TestFileHandle:
     """Test FileHandle class"""
 
+    # Init orig data config
+    origdata_config_mngr = OrigData()
+    origdata_config_mngr.read()
+
     @use_data(db_data={'sub_dir': 'test_filehandle'})
     def test_handle(self):
         """Test handle method"""
 
         # Define
-        csv_handler = CSVHandler()
-        gdp_handler = GDPHandler()
+        csv_handler = CSVHandler(self.origdata_config_mngr)
+        gdp_handler = GDPHandler(self.origdata_config_mngr)
 
         csv_file_path = list(path_var.orig_data_path.rglob('*.csv'))[0]
         gdp_file_path = list(path_var.orig_data_path.rglob('*.nc'))[0]
@@ -88,8 +93,8 @@ class TestFileHandle:
         """Test set_next method"""
 
         # Define
-        handler1 = CSVHandler()
-        res = handler1.set_next(GDPHandler())
+        handler1 = CSVHandler(self.origdata_config_mngr)
+        res = handler1.set_next(GDPHandler(self.origdata_config_mngr))
 
         # Test return
         assert isinstance(res, GDPHandler)
