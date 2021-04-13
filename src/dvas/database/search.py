@@ -16,6 +16,7 @@ from functools import reduce
 from datetime import datetime
 from pandas import Timestamp
 from pampy.helpers import Iterable, Union
+from peewee import JOIN
 from playhouse.shortcuts import model_to_dict
 
 # Import from current package
@@ -438,7 +439,7 @@ class PrmStrategy(SearchStrategyAC):
         return (
             TableParameter
             .select().distinct()
-            .join(TableInfo).switch(TableParameter)
+            .join(TableInfo, JOIN.LEFT_OUTER).switch(TableParameter)
         )
 
     @property
@@ -473,7 +474,7 @@ class ObjectStrategy(SearchStrategyAC):
             TableObject
             .select().distinct()
             .join(TableModel).switch(TableObject)
-            .join(TableInfosObjects).join(TableInfo)
+            .join(TableInfosObjects, JOIN.LEFT_OUTER).join(TableInfo)
             .join(InfosTags).join(TableTag).switch(TableInfo)
         )
 

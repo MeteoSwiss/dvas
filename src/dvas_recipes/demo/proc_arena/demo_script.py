@@ -15,8 +15,9 @@ import numpy as np
 import pandas as pd
 
 # Import stuff from dvas
+from dvas.dvas import Log
+from dvas.dvas import Database as DB
 import dvas.plots.utils as dpu
-from dvas.dvas import start_log
 from dvas.data.data import MultiProfile, MultiRSProfile, MultiGDPProfile
 from dvas.data.io import update_db
 from dvas.database.database import DatabaseManager
@@ -77,15 +78,6 @@ if __name__ == '__main__':
 
     # Use this command to explore the DB
     # DB.explore()
-
-    # Update the database (i.e. load in the data)
-    update_db('tdtpros1', strict=True)
-    update_db('trepros1', strict=True)
-    update_db('trepros1_flag', strict=True)
-    update_db('treprosu_r', strict=True)
-    update_db('treprosu_s', strict=True)
-    update_db('treprosu_t', strict=True)
-    update_db('altpros1', strict=True)
 
     # ----------------------------------------------------------------------------------------------
     print("\n --- BASIC DATA EXTRACTION ---")
