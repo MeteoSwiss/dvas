@@ -23,7 +23,7 @@ from .search import SearchInfoExpr, AllExpr
 
 
 class ParserExit(Exception):
-    """"""
+    """Exception for parser exiting"""
 
 class Parser(ArgumentParser):
     """Parser class"""
