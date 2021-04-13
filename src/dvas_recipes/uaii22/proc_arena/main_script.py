@@ -7,23 +7,35 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 """
 
+# Import python package
+from pathlib import Path
+
 # Import stuff from dvas
+from dvas.dvas import Log
+from dvas.dvas import Database as DB
 import dvas.plots.utils as dpu
-from dvas.dvas import start_log
 from dvas.data.data import MultiRSProfile
-from dvas.data.io import update_db
-from dvas.database.database import DatabaseManager
+from dvas.environ import path_var
 
 # Import high-level stuff
 from dvas_recipes.uaii22 import sync as drs
 from dvas_recipes.uaii22 import gdps as drg
 
+# Extract our current location
+demo_file_path = Path(__file__).resolve()
 
 if __name__ == '__main__':
 
     # --- GENERAL SETUP ---
+
+    # Init paths
+    path_var.config_dir_path = demo_file_path.parent / 'config'
+    path_var.orig_data_path = demo_file_path.parent / 'data'
+    path_var.local_db_path = demo_file_path.parent / 'db'
+    path_var.output_path = demo_file_path.parent / 'output'
+
     # Start the logging
-    start_log(2) # 1 = log to file only, 2 = file+ screen, 3 = screen only.
+    Log.start_log(2) # 1 = log to file only, 2 = file+ screen, 3 = screen only.
 
     # Let us fine-tune the plotting behavior of dvas
     dpu.set_mplstyle('nolatex') # The safe option. Use 'latex' fo prettier plots.
@@ -39,18 +51,22 @@ if __name__ == '__main__':
 
     # --- DB SETUP ---
 
-    # Create the dvas database
-    db_mngr = DatabaseManager(reset_db=RESET_DB)
+    # Use this command to clear the DB
+    DB.clear_db()
 
-    # Fill the database
-    if RESET_DB:
-        update_db('tdtpros1', strict=True)
-        update_db('trepros1', strict=True)
-        update_db('treprosu_r', strict=True)
-        update_db('treprosu_s', strict=True)
-        update_db('treprosu_t', strict=True)
-        update_db('altpros1', strict=True)
+    # Init the DB
+    DB.init()
 
+    # Fetch
+    DB.fetch_raw_data(
+        [
+            'tdtpros1',
+            'trepros1',
+            'treprosu_r', 'treprosu_s', 'treprosu_t',
+            'altpros1'
+        ],
+        strict=True
+    )
 
     # --- SYNCHRONIZE PROFILES ---
 

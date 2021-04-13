@@ -19,8 +19,6 @@ from dvas.dvas import Log
 from dvas.dvas import Database as DB
 import dvas.plots.utils as dpu
 from dvas.data.data import MultiProfile, MultiRSProfile, MultiGDPProfile
-from dvas.data.io import update_db
-from dvas.database.database import DatabaseManager
 from dvas.environ import path_var
 from dvas.tools import sync as dts
 from dvas.tools.gdps import gdps as dtgg
