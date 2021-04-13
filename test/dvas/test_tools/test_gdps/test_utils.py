@@ -15,9 +15,12 @@ import numpy as np
 import pytest
 import pandas as pd
 
-from dvas.tools.gdps.utils import corcoefs, weighted_mean, process_chunk
+from dvas.errors import DvasError
 from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME, PRF_REF_FLG_NAME
 from dvas.hardcoded import PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME
+
+# Function to test
+from dvas.tools.gdps.utils import corcoefs, weighted_mean, delta, process_chunk
 
 # Define a series of reference measurement parameters, to test the different combination options.
 T_OK = [np.zeros(1), np.zeros(1)]                       # Same time
@@ -136,6 +139,7 @@ def chunk():
 
     # Set some NaN's
     test_chunk.loc[1, (slice(None), PRF_REF_VAL_NAME)] = np.nan
+    test_chunk.loc[8:9, (0, PRF_REF_VAL_NAME)] = np.nan
     test_chunk.loc[2, (0, PRF_REF_VAL_NAME)] = np.nan
     test_chunk.loc[8, (0, 'w_ps')] = np.nan
     test_chunk.loc[9, (slice(None), 'w_ps')] = np.nan
@@ -161,9 +165,7 @@ def chunk():
     return test_chunk
 
 def test_weighted_mean(chunk):
-    """ Function used to test the weighted_mean combination of profiles.
-
-    """
+    """ Function used to test the weighted_mean combination of profiles."""
 
     out, jac_mat = weighted_mean(chunk, binning=1)
     # Can I actually compute a weighted mean ?
@@ -183,10 +185,10 @@ def test_weighted_mean(chunk):
     assert jac_mat[0, 0] == 1/3
     assert jac_mat[0, 10] == 1/3
     assert jac_mat[0, 20] == 1/3
-    assert np.all(jac_mat[0, 1:10] == 0)
-    assert np.all(jac_mat[0, 11:20] == 0)
-    assert np.all(jac_mat[0, 21:] == 0)
-    assert np.all(np.isnan(jac_mat[9, :]))
+    assert all(jac_mat[0, 1:10].mask)
+    assert all(jac_mat[0, 11:20].mask)
+    assert all(jac_mat[0, 21:].mask)
+    assert all(jac_mat[9, :].mask)
 
     # Idem but with some binning this time
     out, jac_mat = weighted_mean(chunk, binning=3)
@@ -204,34 +206,33 @@ def test_weighted_mean(chunk):
     assert np.shape(jac_mat) == (int(np.ceil(len(chunk)/3)), len(chunk)*3)
     assert jac_mat[0, 0] == 1/5
 
+def test_delta(chunk):
+    """ Function used to test the weighted_mean combination of profiles."""
 
-# TODO: fix the stuff below
-#def test_delta():
-#    """ Function used to test the weighted_mean combination of profiles.
-#
-#    """
-#
-#    vals = pd.DataFrame(np.ones((10, 2)))
-#    vals[1] = 2.
-#
-#    # Can I actually compute a difference ?
-#    assert np.all(tools.delta(vals, binning=1)[0] == -1)
-#
-#    vals.iloc[0] = np.nan
-#    vals[0][9] = np.nan
-#
-#    # If all values for a bin a NaN, result should be NaN
-#    assert np.isnan(tools.delta(vals, binning=1)[0][0])
-#
-#    # If only part of a bin is NaN, then report a number
-#    assert tools.delta(vals, binning=2)[0][0] == -1
-#
-#    # If only on number is NaN, result should be Nan
-#    assert np.isnan(tools.delta(vals, binning=1)[0][9])
-#
-#    # Check that the last bin is smaller than the others, I still compute it
-#    assert len(tools.delta(vals, binning=4)[0]) == 3
-#
+    # Check that things fail cleanly if more than 1 profile is being fed.
+    with pytest.raises(DvasError):
+        out = delta(chunk, binning=1)
+
+    # No fancy binning
+    chunk_2 = chunk.loc[:, :1]
+    binning = 1
+    out, jac_out = delta(chunk_2, binning=binning)
+    assert len(out) == len(chunk)
+    assert out.loc[0, 'val'] == 1 # Can I compute a delta ?
+    assert np.isnan(out.loc[1, 'val']) # What if I have a partial NaN ?
+    assert np.isnan(out.loc[2, 'val']) # What if I have two NaNs ?
+    # Correct jacobian shape ?
+    assert np.shape(jac_out) == (len(chunk_2)//binning + len(chunk_2)%binning, 2*len(chunk_2))
+
+    # Now do the same with some binning
+    binning = 2
+    out, jac_out = delta(chunk_2, binning=binning)
+    # Correct Jacobian shape ?
+    assert np.shape(jac_out) == (len(chunk_2)//binning + len(chunk_2)%binning, 2*len(chunk_2))
+    # Partial NaN's are ignored ?
+    assert out.loc[0, 'val'] == 1
+    # Full NaN's are handled properly ?
+    assert np.isnan(out.loc[4, 'val'])
 
 def test_process_chunk(chunk):
     """ Function to test the processing of Profile chunks. This is the one responsible for the
@@ -239,10 +240,33 @@ def test_process_chunk(chunk):
     """
 
     # First test the mean
-    out = process_chunk(chunk, binning=1, method='mean')
-    assert out.loc[0, PRF_REF_UCR_NAME] == np.sqrt(1/3)
-    assert out.loc[0, PRF_REF_UCS_NAME] == 1
-    assert out.loc[0, PRF_REF_UCT_NAME] == 1
-    assert out.loc[0, PRF_REF_UCU_NAME] == np.sqrt(1/3)
-    assert np.isnan(out.loc[1, PRF_REF_UCR_NAME]) # Values are all NaNs
-    assert np.isnan(out.loc[9, PRF_REF_UCR_NAME]) # Error are all NaNs
+    out_1 = process_chunk(chunk, binning=1, method='weighted mean')
+    assert out_1.loc[0, PRF_REF_UCR_NAME] == np.sqrt(1/3)
+    assert out_1.loc[0, PRF_REF_UCS_NAME] == 1
+    assert out_1.loc[0, PRF_REF_UCT_NAME] == 1
+    assert out_1.loc[0, PRF_REF_UCU_NAME] == np.sqrt(1/3)
+    assert np.isnan(out_1.loc[1, PRF_REF_UCR_NAME]) # Values are all NaNs
+    assert np.isnan(out_1.loc[9, PRF_REF_UCR_NAME]) # Error are all NaNs
+
+    ## With partial NaN's, errors still get computed correctly.
+    assert not(np.isnan(out_1.loc[8, PRF_REF_UCR_NAME]))
+    assert not(np.isnan(out_1.loc[8, PRF_REF_VAL_NAME]))
+
+    # Now with binning
+    out_2 = process_chunk(chunk, binning=2, method='mean')
+    # Correct length ?
+    assert len(out_2) == len(out_1)//2 + len(out_1) % 2
+
+    # Then assess the delta
+    out_1 = process_chunk(chunk.loc[:, :1], binning=1, method='delta')
+
+    # If some crazy users has NaN's for values but non-NaN errors, make sure I fully ignore these.
+    assert np.isnan(out_1.loc[1, 'ucr'])
+
+    # What happens with binning ?
+    out_2 = process_chunk(chunk.loc[:, :1], binning=2, method='delta')
+
+    # In case of partial binning things get ignored accordingly.
+    assert all(out_1.iloc[0].values == out_2.iloc[0].values)
+    # If all is NaN, then result is NaN.
+    assert all(out_2.loc[4, ['val', 'ucr', 'ucs', 'uct', 'ucu']].isna())

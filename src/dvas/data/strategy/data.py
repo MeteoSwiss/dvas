@@ -18,7 +18,7 @@ import pandas as pd
 # Import from current package
 from ...database.model import Flag as TableFlag
 from ...database.database import DatabaseManager, InfoManager
-from ...errors import ProfileError
+from ...errors import ProfileError, DvasError
 from ...helper import RequiredAttrMetaClass
 from ...hardcoded import PRF_REF_INDEX_NAME, PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME
 from ...hardcoded import PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME
@@ -135,10 +135,13 @@ class ProfileAC(metaclass=RequiredAttrMetaClass):
                 return self.data[item]
 
             if item in self.get_index_attr():
-                # fpavogt, 2020-12-18: what follows returns an Index. We may need to revise this
-                # at some point. Or not. But as it stands, it's not designed to be concatenated
-                # with anythinbg else.
-                return self.data.index.get_level_values(item)
+                # For index, I cannot extract them directly.
+                # Instead, let's create a Series instead, and make sure it comes with the same index
+                # This is a bit of data duplication, but is critical to get coherent/consistent
+                # output.
+
+                return pd.Series(self.data.index.get_level_values(item),
+                                 index=self.data.index, name=item)
 
             return super().__getattribute__(item)
 
@@ -162,6 +165,9 @@ class ProfileAC(metaclass=RequiredAttrMetaClass):
 
                 # Prepare value
                 assert isinstance(val, pd.Series)
+                if any([ind not in self.data.index for ind in val.index]):
+                    raise DvasError('Ouch ! Bad index {}. Should be {}'.format(val.index,
+                                                                               self.data.index))
                 value = self._prepare_df(pd.DataFrame(val, columns=[item,]), cols_key=[item])
 
                 # Update value
