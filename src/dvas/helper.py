@@ -308,7 +308,7 @@ class TypedProperty:
                 match_tuple = pmatch(val, self._pampy_match, lambda *x: x)
 
             except (MatchError, TypeError) as first_error:
-                raise TypeError(f'Bad type while assignment of {self._name} <- {val}') from first_error
+                raise TypeError(f'Bad type while assignment of {val}. Expected {self._pampy_match}. Received {type(val)}') from first_error
 
             # Untuple
             if len(match_tuple) == 1:

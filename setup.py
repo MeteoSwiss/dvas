@@ -7,6 +7,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 """
 
+# Import from python packages
 from pathlib import Path
 from setuptools import setup, find_packages  # Always prefer setuptools over distutils
 

@@ -33,6 +33,10 @@ class DBIOError(DBError):
     """Exception for dvas database IOError"""
 
 
+class SearchError(DBError):
+    """Exception for dvas database search error"""
+
+
 class ProfileError(DvasError):
     """Exception for dvas profile error"""
 

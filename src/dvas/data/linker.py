@@ -24,7 +24,7 @@ from ..database.model import Info as TableInfo
 from ..database.model import DataSource
 from ..database.model import Parameter as TableParameter
 from ..database.database import DatabaseManager
-from ..config.config import OrigData, CSVOrigMeta
+from ..config.config import CSVOrigMeta
 from ..config.config import ConfigReadError
 from ..config.config import ConfigExprInterpreter
 from ..config.definitions.origdata import EXPR_FIELD_KEYS
@@ -137,16 +137,17 @@ class AbstractHandler(Handler):
 class FileHandler(AbstractHandler):
     """File handler"""
 
-    def __init__(self):
+    def __init__(self, orig_data_cfg):
+        """
+        Args:
+            orig_data_cfg (config.config.OrigData): Original data config manager
+        """
 
         # Call super constructor
         super().__init__()
 
-        # Set attributes
-        self._origdata_config_mngr = OrigData()
-
-        # Init origdata config manager
-        self._origdata_config_mngr.read()
+        # Init attributes
+        self._origdata_config_mngr = orig_data_cfg
 
         # Set default child defined attributes
         self._file_suffix_re = re.compile('')
@@ -481,10 +482,14 @@ class CSVHandler(FileHandler):
 
     CFG_FILE_SUFFIX = ['.' + arg for arg in glob_var.config_file_ext]
 
-    def __init__(self):
+    def __init__(self, orig_data_cfg):
+        """
+        Args:
+            orig_data_cfg (config.config.OrigData): Original data config manager
+        """
 
         # Call super constructor
-        super().__init__()
+        super().__init__(orig_data_cfg)
 
         # Define attributes
         self._file_suffix_re = re.compile(
@@ -639,10 +644,14 @@ class CSVHandler(FileHandler):
 class GDPHandler(FileHandler):
     """GDP Handler class"""
 
-    def __init__(self):
+    def __init__(self, orig_data_cfg):
+        """
+        Args:
+            orig_data_cfg (config.config.OrigData): Original data config manager
+        """
 
         # Call super constructor
-        super().__init__()
+        super().__init__(orig_data_cfg)
 
         # Set file id attribute
         self._file_suffix_re = re.compile(rf'\.{GDP_FILE_EXT}', re.IGNORECASE)
@@ -705,10 +714,14 @@ class GDPHandler(FileHandler):
 class FlagCSVHandler(CSVHandler):
     """CSV flag file handler class"""
 
-    def __init__(self):
+    def __init__(self, orig_data_cfg):
+        """
+        Args:
+            orig_data_cfg (config.config.OrigData): Original data config manager
+        """
 
         # Call super constructor
-        super().__init__()
+        super().__init__(orig_data_cfg)
 
         # Define attributes
         self._file_suffix_re = re.compile(
@@ -721,10 +734,14 @@ class FlagCSVHandler(CSVHandler):
 class FlagGDPHandler(GDPHandler):
     """GDP flag file handler class"""
 
-    def __init__(self):
+    def __init__(self, orig_data_cfg):
+        """
+        Args:
+            orig_data_cfg (config.config.OrigData): Original data config manager
+        """
 
         # Call super constructor
-        super().__init__()
+        super().__init__(orig_data_cfg)
 
         # Define attributes
         self._file_suffix_re = re.compile(

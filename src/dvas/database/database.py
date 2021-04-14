@@ -11,22 +11,14 @@ Module contents: Local database management tools
 
 # Import from python packages
 import pprint
-from pathlib import Path
 from hashlib import blake2b
-from abc import abstractmethod, ABCMeta
-from contextlib import contextmanager
-import operator
-from functools import reduce
 from math import floor
 from datetime import datetime
 from peewee import chunked, DoesNotExist
-from peewee import IntegrityError
-from peewee import PeeweeException
 from playhouse.shortcuts import model_to_dict
 import numpy as np
 from pandas import Timestamp
 from pampy.helpers import Iterable, Union
-
 
 # Import from current package
 from .model import db
@@ -39,11 +31,11 @@ from .model import MetaData as TableMetaData
 from .model import Flag, DataSource, Data
 from .model import InfosObjects as TableInfosObjects
 from .model import InfosTags
+from .search import SearchInfoExpr
 from ..config.config import OneDimArrayConfigLinker
 from ..config.definitions.origdata import EDT_FLD_NM
 from ..config.definitions.origdata import TAG_FLD_NM, META_FLD_NM
-from ..hardcoded import TAG_NONE_NAME, TAG_EMPTY_NAME
-from ..hardcoded import TAG_RAW_NAME, TAG_GDP_NAME
+from ..hardcoded import TAG_NONE_NAME
 from ..helper import SingleInstanceMetaClass
 from ..helper import TypedProperty as TProp
 from ..helper import get_by_path, check_datetime
@@ -52,7 +44,6 @@ from ..logger import localdb as localdb_logger
 from ..logger import log_func_call
 from ..environ import glob_var
 from ..environ import path_var as env_path_var
-from ..errors import DBError
 
 # Define
 SQLITE_MAX_VARIABLE_NUMBER = 999
@@ -84,19 +75,8 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         TableParameter,
         Flag,
     ]
-    DB_TABLES_PRINT = [
-        TableParameter, TableModel,
-        TableObject, Flag,
-        TableTag
-    ]
 
-    def __init__(self, reset_db=False):
-        """
-        Args:
-            reset_db (bool, optional): Force the data base to be reset.
-                Defaults to False.
-
-        """
+    def __init__(self):
 
         # Create config linker instance attribute
         self._cfg_linker = OneDimArrayConfigLinker()
@@ -112,15 +92,16 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             self._create_tables()
             self._fill_metadata()
 
-        # Reset db
-        if reset_db:
-            self._delete_tables()
-            self._fill_metadata()
-
     @property
     def db(self):
         """peewee.SqliteDatabase: Database instance"""
         return self._db
+
+    def clear_db(self):
+        """Clear DB"""
+        self._delete_tables()
+        self._create_tables()
+        self._fill_metadata()
 
     def _init_db(self):
         """Init db. Create new file if missing or take existing file.
@@ -168,7 +149,8 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         return db_new
 
-    def get_or_none(self, table, search=None, attr=None, get_first=True):
+    @staticmethod
+    def get_or_none(table, search=None, attr=None, get_first=True):
         """Get from DB
 
         Args:
@@ -198,21 +180,20 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             qry = qry.where(search['where'])
 
         try:
-            with self.db_access() as _:
-                if get_first:
-                    if attr:
-                        out = [get_by_path(qry.get(), arg) for arg in attr]
-                    else:
-                        out = qry.get()
-
+            if get_first:
+                if attr:
+                    out = [get_by_path(qry.get(), arg) for arg in attr]
                 else:
-                    if attr:
-                        out = [
-                            [get_by_path(qry_arg, arg) for arg in attr]
-                            for qry_arg in qry.iterator()
-                        ]
-                    else:
-                        out = list(qry.iterator())
+                    out = qry.get()
+
+            else:
+                if attr:
+                    out = [
+                        [get_by_path(qry_arg, arg) for arg in attr]
+                        for qry_arg in qry.iterator()
+                    ]
+                else:
+                    out = list(qry.iterator())
 
         except DoesNotExist:
             out = None
@@ -237,30 +218,21 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
     def _create_tables(self):
         """Create table (safe mode)"""
-        with self.db_access() as _:
-            for table in self.DB_TABLES:
-                table.create_table(safe=True)
+        for table in self.DB_TABLES:
+            table.create_table(safe=True)
 
     def _delete_tables(self):
         """Delete table instances"""
-        with self.db_access() as _:
-            for table in self.DB_TABLES:
-                qry = table.delete()
-                qry.execute()  # noqa pylint: disable=E1120
+        for table in self.DB_TABLES:
+            qry = table.delete()
+            qry.execute()  # noqa pylint: disable=E1120
 
     def _fill_metadata(self):
         """Create db tables"""
 
-        with self.db_access() as _:
-
-            try:
-
-                # Fill simple tables
-                for tbl in [TableParameter, TableModel, Flag, TableTag]:
-                    self._fill_table(tbl)
-
-            except IntegrityError as exc:
-                raise DBCreateError(exc) from exc
+        # Fill simple tables
+        for tbl in [TableParameter, TableModel, Flag, TableTag]:
+            self._fill_table(tbl)
 
     def _fill_table(self, table, foreign_constraint=None):
         """
@@ -311,18 +283,17 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         """
 
-        with self.db_access() as _:
-            qry = table.select()
-            if search:
+        qry = table.select()
+        if search:
 
-                if 'join_order' not in search.keys():
-                    search['join_order'] = []
+            if 'join_order' not in search.keys():
+                search['join_order'] = []
 
-                for jointbl in search['join_order']:
-                    qry = qry.join(jointbl)
-                    qry = qry.switch(table)
-                qry = qry.where(search['where'])
-            out = self.model_to_dict(qry, recurse=recurse)
+            for jointbl in search['join_order']:
+                qry = qry.join(jointbl)
+                qry = qry.switch(table)
+            qry = qry.where(search['where'])
+        out = self.model_to_dict(qry, recurse=recurse)
 
         return out
 
@@ -405,135 +376,131 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                 raise DBInsertError(err_msg % info.tags)
 
             # Create original data information
-            with self.db_access() as _:
-                data_src, _ = DataSource.get_or_create(src=info.src)
+            data_src, _ = DataSource.get_or_create(src=info.src)
 
             # Create info
-            with self.db_access() as _:
-                info_id, created = TableInfo.get_or_create(
-                    edt=info.edt, param=param,
-                    data_src=data_src, evt_hash=info.get_hash()
-                )
+            info_id, created = TableInfo.get_or_create(
+                edt=info.edt, param=param,
+                data_src=data_src, evt_hash=info.get_hash()
+            )
 
             # Erase data (created == False indicate that data already exists)
-            with self.db_access() as _:
-                if (created is False) and (force_write is True):
+            if (created is False) and (force_write is True):
 
-                    # Delete InfosTags entries
-                    InfosTags.delete().\
-                        where(InfosTags.info == info_id).\
-                        execute()
+                # Delete InfosTags entries
+                InfosTags.delete().\
+                    where(InfosTags.info == info_id).\
+                    execute()
 
-                    # Delete TableInfosObjects entries
-                    TableInfosObjects.delete().\
-                        where(TableInfosObjects.info == info_id).\
-                        execute()
+                # Delete TableInfosObjects entries
+                TableInfosObjects.delete().\
+                    where(TableInfosObjects.info == info_id).\
+                    execute()
 
-                    # Delete Data entries
-                    Data.delete().\
-                        where(Data.info == info_id).\
-                        execute()
+                # Delete Data entries
+                Data.delete().\
+                    where(Data.info == info_id).\
+                    execute()
 
-                    # Delete Metadata entries
-                    TableMetaData.delete().\
-                        where(TableMetaData.info == info_id).\
-                        execute()
+                # Delete Metadata entries
+                TableMetaData.delete().\
+                    where(TableMetaData.info == info_id).\
+                    execute()
 
-                    # TODO
-                    #  Add log
+                # TODO
+                #  Add log
 
             # Insert data (created == True indicate that data are new)
-            with self.db_access() as _:
-                if (created is True) or (force_write is True):
+            if (created is True) or (force_write is True):
 
-                    # Link info to tag
-                    tags_info = [
-                        {
-                            InfosTags.tag.name: tag_id,
-                            InfosTags.info.name: info_id
-                        } for tag_id in tags_id_list
-                    ]
-                    if tags_info:
-
-                        # Calculate max batch size
-                        n_max = floor(SQLITE_MAX_VARIABLE_NUMBER/get_dict_len(tags_info[0]))
-
-                        # Insert
-                        for batch in chunked(tags_info, n_max):
-                            InfosTags.insert_many(batch).execute()  # noqa pylint: disable=E1120
-
-                    # Link info to instrument
-                    object_info = [
-                        {
-                            TableInfosObjects.object.name: oid,
-                            TableInfosObjects.info.name: info_id
-                        } for oid in oid_list
-                    ]
-                    if object_info:
-
-                        # Calculate max batch size
-                        n_max = floor(SQLITE_MAX_VARIABLE_NUMBER / get_dict_len(object_info[0]))
-
-                        # Insert
-                        for batch in chunked(object_info, n_max):
-                            TableInfosObjects.insert_many(batch).execute()  # noqa pylint: disable=E1120
-
-                    # Add metadata
-                    # ------------
-
-                    # Create batch index
-                    fields = [
-                        TableMetaData.key_name, TableMetaData.value_str,
-                        TableMetaData.value_num, TableMetaData.info
-                    ]
-
-                    # Create batch data
-                    batch_data = [
-                        (key,
-                         val if isinstance(val, str) else None,
-                         val if isinstance(val, float) else None,
-                         info_id)
-                        for key, val in info.metadata.items()
-                    ]
+                # Link info to tag
+                tags_info = [
+                    {
+                        InfosTags.tag.name: tag_id,
+                        InfosTags.info.name: info_id
+                    } for tag_id in tags_id_list
+                ]
+                if tags_info:
 
                     # Calculate max batch size
-                    n_max = floor(SQLITE_MAX_VARIABLE_NUMBER / len(fields))
+                    n_max = floor(SQLITE_MAX_VARIABLE_NUMBER/get_dict_len(tags_info[0]))
 
-                    # Insert to db
-                    for batch in chunked(batch_data, n_max):
-                        TableMetaData.insert_many(batch, fields=fields).execute()  # noqa pylint: disable=E1120
+                    # Insert
+                    for batch in chunked(tags_info, n_max):
+                        InfosTags.insert_many(batch).execute()  # noqa pylint: disable=E1120
 
-                    # Add Data
-                    # --------
-
-                    # Create batch index
-                    fields = [Data.index, Data.value, Data.info]
-
-                    # Create batch data
-                    batch_data = zip(
-                        index,
-                        value,
-                        [info_id] * len(value)
-                    )
+                # Link info to instrument
+                object_info = [
+                    {
+                        TableInfosObjects.object.name: oid,
+                        TableInfosObjects.info.name: info_id
+                    } for oid in oid_list
+                ]
+                if object_info:
 
                     # Calculate max batch size
-                    n_max = floor(SQLITE_MAX_VARIABLE_NUMBER / len(fields))
+                    n_max = floor(SQLITE_MAX_VARIABLE_NUMBER / get_dict_len(object_info[0]))
 
-                    # Insert to db
-                    # TODO
-                    #  Test multithreading in order to speed up data select
-                    for batch in chunked(batch_data, n_max):
-                        Data.insert_many(batch, fields=fields).execute()  # noqa pylint: disable=E1120
+                    # Insert
+                    for batch in chunked(object_info, n_max):
+                        TableInfosObjects.insert_many(batch).execute()  # noqa pylint: disable=E1120
 
-                    # TODO
-                    #  Add log
+                # Add metadata
+                # ------------
 
-                else:
+                # Create batch index
+                fields = [
+                    TableMetaData.key_name, TableMetaData.value_str,
+                    TableMetaData.value_num, TableMetaData.info
+                ]
 
-                    # TODO
-                    #  Add log
+                # Create batch data
+                batch_data = [
+                    (key,
+                     val if isinstance(val, str) else None,
+                     val if isinstance(val, float) else None,
+                     info_id)
+                    for key, val in info.metadata.items()
+                ]
 
-                    pass
+                # Calculate max batch size
+                n_max = floor(SQLITE_MAX_VARIABLE_NUMBER / len(fields))
+
+                # Insert to db
+                for batch in chunked(batch_data, n_max):
+                    TableMetaData.insert_many(batch, fields=fields).execute()  # noqa pylint: disable=E1120
+
+                # Add Data
+                # --------
+
+                # Create batch index
+                fields = [Data.index, Data.value, Data.info]
+
+                # Create batch data
+                batch_data = zip(
+                    index,
+                    value,
+                    [info_id] * len(value)
+                )
+
+                # Calculate max batch size
+                n_max = floor(SQLITE_MAX_VARIABLE_NUMBER / len(fields))
+
+                # Insert to db
+                # TODO
+                #  Test multithreading in order to speed up data select
+                for batch in chunked(batch_data, n_max):
+                    Data.insert_many(batch, fields=fields).execute()  # noqa pylint: disable=E1120
+
+                # TODO
+                #  Add log
+
+            else:
+
+                # TODO
+                #  Add log
+
+                pass
 
         except DBInsertError as exc:
             raise DBInsertError(exc)
@@ -549,8 +516,11 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         """
 
+        # Init
+        SearchInfoExpr.set_stgy('info')
+
         try:
-            out = list(SearchInfoExpr.eval(search_expr, prm_name, filter_empty))
+            out = list(SearchInfoExpr.eval(search_expr, prm_name=prm_name, filter_empty=filter_empty))
 
         # TODO Detail exception
         except Exception as exc:
@@ -587,111 +557,81 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         for info_id in info_id_list:
 
             # TODO
-            #  Implement multithreading in order to speed up data select
-            with self.db_access() as _:
+            #  Consider to implement multithreading in order to speed up data select
+            try:
+                qry = (
+                    Data.
+                    select(Data.index, Data.value).
+                    where(Data.info == info_id)
+                )
 
-                try:
-                    qry = (
-                        Data.
-                        select(Data.index, Data.value).
-                        where(Data.info == info_id)
-                    )
+                # 0: index, 1: value
+                res.append(tuple(unzip(qry.tuples().iterator())))
 
-                    # 0: index, 1: value
-                    res.append(tuple(unzip(qry.tuples().iterator())))
-
-                # TODO
-                #  Detail exception
-                except Exception as ex:
-                    raise Exception(ex)
+            # TODO
+            #  Detail exception
+            except Exception as ex:
+                raise Exception(ex)
 
         # Group data
         out = []
-        with self.db_access() as _:
+        for i, arg in enumerate(res):
 
-            for i, arg in enumerate(res):
-
-                # Get related instrument id
-                oid_list = [
-                    arg.oid for arg in
-                    TableObject.select().distinct().
-                        join(TableInfosObjects).join(TableInfo).
-                        where(TableInfo.info_id == info_id_list[i].info_id).
-                        iterator()
-                ]
-
-                # Get related tags
-                tag_name_list = [
-                    arg.tag_name for arg in
-                    TableTag.select().distinct().
-                    join(InfosTags).join(TableInfo).
+            # Get related instrument id
+            oid_list = [
+                arg.oid for arg in
+                TableObject.select().distinct().
+                    join(TableInfosObjects).join(TableInfo).
                     where(TableInfo.info_id == info_id_list[i].info_id).
                     iterator()
-                ]
+            ]
 
-                # Get related metadata
-                metadata_dict = {
-                    arg.key_name: arg.value_num if arg.value_str is None else arg.value_str
-                    for arg in
-                    TableMetaData.select().distinct().
+            # Get related tags
+            tag_name_list = [
+                arg.tag_name for arg in
+                TableTag.select().distinct().
+                join(InfosTags).join(TableInfo).
+                where(TableInfo.info_id == info_id_list[i].info_id).
+                iterator()
+            ]
+
+            # Get related metadata
+            metadata_dict = {
+                arg.key_name: arg.value_num if arg.value_str is None else arg.value_str
+                for arg in
+                TableMetaData.select().distinct().
+                join(TableInfo).
+                where(TableInfo.info_id == info_id_list[i].info_id).
+                iterator()
+            }
+
+            # Get source
+            if not (data_src := [arg.src for arg in
+                    DataSource.select().distinct().
                     join(TableInfo).
+                    where(TableInfo.data_src == DataSource.id).
                     where(TableInfo.info_id == info_id_list[i].info_id).
                     iterator()
+                ]
+            ):
+                # TODO
+                #  Detail exception
+                raise Exception(f'Data source is empty')
+
+            # Append
+            out.append(
+                {
+                    'info': InfoManager(
+                        edt=info_id_list[i].edt,
+                        oid=oid_list,
+                        tags=tag_name_list,
+                        metadata=metadata_dict,
+                        src=data_src[0]
+                    ),
+                    'index': arg[0],
+                    'value': arg[1],
                 }
-
-                # Get source
-                if not (data_src := [arg.src for arg in
-                        DataSource.select().distinct().
-                        join(TableInfo).
-                        where(TableInfo.data_src == DataSource.id).
-                        where(TableInfo.info_id == info_id_list[i].info_id).
-                        iterator()
-                    ]
-                ):
-                    # TODO
-                    #  Detail exception
-                    raise Exception(f'Data source is empty')
-
-                # Append
-                out.append(
-                    {
-                        'info': InfoManager(
-                            edt=info_id_list[i].edt,
-                            oid=oid_list,
-                            tags=tag_name_list,
-                            metadata=metadata_dict,
-                            src=data_src[0]
-                        ),
-                        'index': arg[0],
-                        'value': arg[1],
-                    }
-                )
-
-        return out
-
-    def __str__(self, recurse=False, print_tables=None):
-        """
-
-        Args:
-            recurse:
-            print_tables:
-
-        Returns:
-
-        """
-
-        # Init
-        out = f"\nDatabase content in '{self.db.database}:'\n"
-        out += f"{'*' * len(out)}\n"
-
-        if not print_tables:
-            print_tables = self.DB_TABLES_PRINT
-
-        for print_tbl in print_tables:
-            out += f"{print_tbl.__name__}\n"
-            for arg in self.get_table(print_tbl, recurse=recurse):
-                out += f"{arg}\n"
-            out += "\n"
+            )
 
         return out
 
@@ -703,50 +643,6 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         """
         return self.get_table(Flag)
-
-    @staticmethod
-    def clear_db():
-        """Clear DB
-
-        Note:
-            !!!ONLY FOR ADVANCED USER!!! Use this method carefully.
-            Ensure that no more class instance are linked to this reference.
-
-        """
-
-        # Get current db file path
-        db_mngr = DatabaseManager()
-        db_file_path = db_mngr.db.database
-
-        # Close db
-        if not db_mngr.db.is_closed():
-            db_mngr.db.close()
-
-        # Delete singleton instance
-        del db_mngr
-        if SingleInstanceMetaClass.has_instance(DatabaseManager):
-            raise DBError(f"Can't delete {db_file_path} because an instance of DatabaseManager is still in memory.")
-
-        # Delete file
-        Path(db_file_path).unlink()
-
-    @contextmanager
-    def db_access(self):
-        """Local SQLite data base context decorator."""
-
-        # Connect
-        self.db.connect(reuse_if_open=True)
-
-        with self.db.atomic() as transaction:
-            try:
-                yield transaction
-            except PeeweeException:
-                transaction.rollout()
-            finally:
-                pass
-
-        # Close
-        db.close()
 
 
 class InfoManagerMetaData(dict):
@@ -1112,12 +1008,11 @@ class InfoManager:
                 raise Exception(f"{metadata[TableModel.mdl_name.name]} is missing in DB/InstrumentType")
 
             # Create instrument entry
-            with db_mngr.db_access() as _:
-                oid = TableObject.create(
-                    srn=metadata[TableObject.srn.name],
-                    pid=metadata[TableObject.pid.name],
-                    model=model
-                ).oid
+            oid = TableObject.create(
+                srn=metadata[TableObject.srn.name],
+                pid=metadata[TableObject.pid.name],
+                model=model
+            ).oid
 
         # Construct InfoManager
         try:
@@ -1134,290 +1029,6 @@ class InfoManager:
             raise Exception(exc)
 
         return info
-
-
-class SearchInfoExpr(metaclass=ABCMeta):
-    """Abstract search info expression interpreter class.
-
-    .. uml::
-
-        @startuml
-        footer Interpreter design pattern
-
-        class SearchInfoExpr {
-            {abstract} interpret()
-            {static} eval()
-        }
-
-        class LogicalSearchInfoExpr {
-            _expression: List
-            interpret()
-            {abstract} fct(*arg)
-        }
-
-        SearchInfoExpr <|-- LogicalSearchInfoExpr : extends
-        LogicalSearchInfoExpr o--> SearchInfoExpr
-
-        class TerminalSearchInfoExpr {
-            interpret()
-            {abstract} get_filter()
-        }
-
-        SearchInfoExpr <|-- TerminalSearchInfoExpr : extends
-
-        @enduml
-
-    """
-
-    @abstractmethod
-    def interpret(self):
-        """Interpreter method"""
-
-    @staticmethod
-    def eval(str_expr, prm_name, filter_empty):
-        """Evaluate search expression
-
-        Args:
-            str_expr (str): Expression to evaluate
-            prm_name (str): Search parameter
-            filter_empty (bool): Filter for empty data
-
-        Returns:
-            List of Info.info_id
-
-        Search expression grammar:
-            - all(): Select all
-            - [datetime ; dt]('<ISO datetime>', ['=='(default) ; '>=' ; '>' ; '<=' ; '<' ; '!=']): Select by datetime
-            - [serialnumber ; srn]('<Serial number>'): Select by serial number
-            - [product_id ; pid](<Product>): Select by product
-            - tags(['<Tag>' ; ('<Tag 1>', ...,'<Tag n>')]): Select by tag
-            - and_(<expr 1>, ..., <expr n>): Intersection
-            - or_(<expr 1>, ..., <expr n>): Union
-            - not_(<expr>): Negation, correspond to all() without <expr>
-
-        Shortcut expressions:
-            - raw(): Same as tags('raw')
-            - gdp(): Same as tags('gdp')
-
-        """
-
-        # Define
-        str_expr_dict = {
-            'all': AllExpr,
-            'datetime': DatetimeExpr, 'dt': DatetimeExpr,
-            'serialnumber': SerialNumberExpr, 'srn': SerialNumberExpr,
-            'product_id': ProductExpr, 'pid': ProductExpr,
-            'tags': TagExpr,
-            'and_': AndExpr,
-            'or_': OrExpr,
-            'not_': NotExpr,
-            'raw': RawExpr,
-            'gdp': GDPExpr,
-        }
-        db_mngr = DatabaseManager()
-
-        with db_mngr.db_access() as _:
-
-            # Eval expression
-            expr = eval(str_expr, str_expr_dict)
-
-            # Add empty tag if False
-            if filter_empty is True:
-                expr = AndExpr(NotExpr(TagExpr(TAG_EMPTY_NAME)), expr)
-
-            # Filter parameter
-            expr = AndExpr(ParameterExpr(prm_name), expr)
-
-            # Interpret expression
-            expr_res = expr.interpret()
-
-            # Convert id as table element
-            qry = TableInfo.select().where(TableInfo.info_id.in_(expr_res))
-            out = [arg for arg in qry.iterator()]
-
-            # TODO
-            #  Raise exception
-
-            return out
-
-
-class LogicalSearchInfoExpr(SearchInfoExpr):
-    """
-    Implement an interpret operation for nonterminal symbols in the grammar.
-    """
-
-    def __init__(self, *args):
-        self._expression = args
-
-    def interpret(self):
-        """Non terminal interpreter method"""
-        return reduce(
-            self.fct,
-            [arg.interpret() for arg in self._expression]
-        )
-
-    @abstractmethod
-    def fct(self, *args):
-        """Logical function between expression args"""
-
-
-class AndExpr(LogicalSearchInfoExpr):
-    """And operation"""
-
-    def fct(self, a, b):
-        """Implement fct method"""
-        return operator.and_(a, b)
-
-
-class OrExpr(LogicalSearchInfoExpr):
-    """Or operation"""
-
-    def fct(self, a, b):
-        """Implement fct method"""
-        return operator.or_(a, b)
-
-
-class NotExpr(LogicalSearchInfoExpr):
-    """Not operation"""
-
-    def __init__(self, arg):
-        self._expression = [AllExpr(), arg]
-
-    def fct(self, a, b):
-        """Implement fct method"""
-        return operator.sub(a, b)
-
-
-class TerminalSearchInfoExpr(SearchInfoExpr):
-    """
-    Implement an interpret operation associated with terminal symbols in
-    the grammar.
-    """
-
-    QRY_BASE = (
-        TableInfo
-        .select().distinct()
-        .join(TableInfosObjects).join(TableObject).switch(TableInfo)
-        .join(TableParameter).switch(TableInfo)
-        .join(InfosTags).join(TableTag).switch(TableInfo)
-    )
-
-    def __init__(self, arg):
-        self.expression = arg
-
-    def interpret(self):
-        """Terminal expression interpreter"""
-        return set(
-            arg.info_id for arg in
-            self.QRY_BASE.where(self.get_filter()).iterator()
-        )
-
-    @abstractmethod
-    def get_filter(self):
-        """Return query where method filter"""
-
-
-class AllExpr(TerminalSearchInfoExpr):
-    """All filter"""
-
-    def __init__(self):
-        pass
-
-    def get_filter(self):
-        """Implement get_filter method"""
-        return
-
-
-class DatetimeExpr(TerminalSearchInfoExpr):
-    """Datetime filter"""
-
-    _OPER_DICT = {
-        '==': operator.eq,
-        '!=': operator.ne,
-        '>': operator.gt,
-        '<': operator.lt,
-        '>=': operator.ge,
-        '>=': operator.le,
-    }
-    expression = TProp(Union[str, Timestamp, datetime], check_datetime)
-
-    def __init__(self, arg, op='=='):
-        self.expression = arg
-        self._op = self._OPER_DICT[op]
-
-    def get_filter(self):
-        """Implement get_filter method"""
-        return self._op(TableInfo.edt, self.expression)
-
-
-class SerialNumberExpr(TerminalSearchInfoExpr):
-    """Serial number filter"""
-
-    expression = TProp(
-        Union[str, Iterable[str]],
-        setter_fct=lambda x: [x] if isinstance(x, str) else list(x)
-    )
-
-    def get_filter(self):
-        """Implement get_filter method"""
-        return TableObject.srn.in_(self.expression)
-
-
-class ProductExpr(TerminalSearchInfoExpr):
-    """Product filter"""
-
-    expression = TProp(
-        Union[int, Iterable[int]],
-        setter_fct=lambda x: [x] if isinstance(x, int) else list(x)
-    )
-
-    def get_filter(self):
-        """Implement get_filter method"""
-        return TableObject.pid.in_(self.expression)
-
-
-class TagExpr(TerminalSearchInfoExpr):
-    """Tag filter"""
-
-    expression = TProp(
-        Union[str, Iterable[str]], lambda x: set((x,)) if isinstance(x, str) else set(x)
-    )
-
-    def get_filter(self):
-        """Implement get_filter method"""
-        return TableTag.tag_name.in_(self.expression)
-
-
-class ParameterExpr(TerminalSearchInfoExpr):
-    """Parameter filter"""
-
-    expression = TProp(str, lambda x: x)
-
-    def get_filter(self):
-        """Implement get_filter method"""
-        return TableParameter.prm_name == self.expression
-
-
-class RawExpr(TerminalSearchInfoExpr):
-    """Raw filter"""
-
-    def __init__(self):
-        pass
-
-    def get_filter(self):
-        """Implement get_filter method"""
-        return TableTag.tag_name.in_([TAG_RAW_NAME])
-
-
-class GDPExpr(TerminalSearchInfoExpr):
-    """GDP filter"""
-
-    def __init__(self):
-        pass
-
-    def get_filter(self):
-        """Implement get_filter method"""
-        return TableTag.tag_name.in_([TAG_GDP_NAME])
 
 
 class DBCreateError(Exception):

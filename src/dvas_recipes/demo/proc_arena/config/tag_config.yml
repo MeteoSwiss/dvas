@@ -10,7 +10,7 @@
   tag_desc: "cat('Rig', ' ', get(1))"
 
 - tag_name: 'p:(\d)'
-  # Generate p0, r1,...
+  # Generate p0, p1,...
   tag_desc: "cat('Product', ' ', get(1))"
 
 - tag_name: '^((day)|(night))'
