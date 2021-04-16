@@ -38,12 +38,14 @@ if __name__ == '__main__':
 
     # Init paths
     path_var.config_dir_path = demo_file_path.parent / 'config'
-    path_var.orig_data_path = demo_file_path.parent / 'data'
+    path_var.orig_data_path = Path('/Users', 'fvogt', 'Projects', 'MCH', 'UAII2021', 'dvas',
+                                   'codedev', 'testzone', 'dvas_devdata', 'devdata', 'data')
+    #path_var.orig_data_path = Path('TEST')
     path_var.local_db_path = demo_file_path.parent / 'db'
     path_var.output_path = demo_file_path.parent / 'output'
 
     # Start the logging
-    Log.start_log(1, level='DEBUG')  # 0 = no logs, 1 = log to file only, 2 = file + screen, 3 = screen only.
+    Log.start_log(2, level='DEBUG')  # 0 = no logs, 1 = log to file only, 2 = file + screen, 3 = screen only.
 
     # Fine-tune the plotting behavior of dvas
     dpu.set_mplstyle('nolatex')  # The safe option. Use 'latex' fo prettier plots.
@@ -87,7 +89,7 @@ if __name__ == '__main__':
     filt_raw = "tags('raw')"
     filt_raw_not = "not_(tags('raw'))"
     filt_all = "all()"
-    filt_dt = "dt('20171024T120000Z', '==')"
+    filt_dt = "dt('20210319T090000Z', '==')"
 
     # Define some more complex queries
     filt_raw_dt = "and_({}, {})".format(filt_raw, filt_dt)
@@ -109,6 +111,7 @@ if __name__ == '__main__':
                           ucr_abbr='temp_ucr', ucs_abbr='temp_ucs', uct_abbr='temp_uct',
                           inplace=True)
 
+    """
     # ----------------------------------------------------------------------------------------------
     print("\n --- BASIC DATA EXPLORATION ---")
 
@@ -254,3 +257,4 @@ if __name__ == '__main__':
     #                          tdt_abbr='tdtpros1',
     #                          ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t',
     #                          inplace=True)
+    """

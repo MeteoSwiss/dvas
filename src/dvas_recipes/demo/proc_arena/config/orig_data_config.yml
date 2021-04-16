@@ -67,9 +67,9 @@ _C34:
         value_col: 4
 
 # ----------------------------------------------------
-# RS-41 type (NOT THE GDP!)
+# RS-41 type (NOT THE GDP!), 2017 file format
 # ----------------------------------------------------
-_RS41:
+_RS41-2017:
 
     # -- META DATA ----------------------------------
     edt: "get('event_dt')"
@@ -95,9 +95,50 @@ _RS41:
 
     _temp:
         value_col: 4
+        lambda: 'lambda x: x + 273.15'
 
     _pres:
         value_col: 3
+
+    _rh:
+        value_col: 5
+
+# ----------------------------------------------------
+# RS-41 type (NOT THE GDP!), latest file format
+# ----------------------------------------------------
+_RS41:
+
+    # -- META DATA ----------------------------------
+    edt: "get('event_dt')"
+    srn: "get('srn')"
+    pid: "get('product_id')"
+    tags:
+        - "cat('e:', get('event_id'))"
+        - "cat('r:', get('rig'))"
+        - "get('day_night')"
+
+    # -- ORIG DATA ----------------------------------
+    csv_delimiter: ';'
+    csv_skip_blank_lines: True
+    csv_delim_whitespace: False
+    csv_skiprows: 48
+
+    _time:
+        value_col: 0
+        lambda: 'lambda x: x * 1E9'
+
+    _gph:
+        value_col: 2
+
+    _temp:
+        value_col: 4
+        lambda: 'lambda x: x + 273.15'
+
+    _pres:
+        value_col: 3
+
+    _rh:
+        value_col: 5
 
 # ----------------------------------------------------
 # RS-92 type (NOT THE GDP!)
@@ -131,6 +172,7 @@ _RS92:
 
     _temp:
         value_col: 3
+        lambda: 'lambda x: x + 273.15'
 
     _temp_flag:
         value_col: 0
@@ -138,6 +180,47 @@ _RS92:
 
     _pres:
         value_col: 2
+
+# ----------------------------------------------------
+# M10 type (NOT THE GDP!)
+# ----------------------------------------------------
+_M10:
+
+    # -- META DATA ----------------------------------
+    edt: "get('event_dt')"
+    srn: "get('srn')"
+    pid: "get('product_id')"
+    tags:
+        - "cat('e:', get('event_id'))"
+        - "cat('r:', get('rig'))"
+        - "get('day_night')"
+    # TODO: what is this thing ?
+    #metadata:
+    #    key_str: '1'
+    #    key_num: 1
+
+    # -- ORIG DATA ----------------------------------
+    csv_delimiter:
+    csv_skip_blank_lines: True
+    csv_delim_whitespace: True
+    csv_skiprows: 1
+
+    _time:
+        value_col: 0
+        lambda: 'lambda x: x * 1E9'
+
+    _gph:
+        value_col: 1
+
+    _temp:
+        value_col: 10
+        lambda: 'lambda x: x + 273.15'
+
+    _pres:
+        value_col: 12
+
+    _rh:
+        value_col: 11
 
 # ----------------------------------------------------
 # RS-41 GDP, version beta-1
@@ -243,7 +326,7 @@ _RS41-GDP-BETA_002:
         value_col: 'rh_uc_ucor'
 
     _rh_uct:
-        value-col: 'rh_uc_tcor'
+        value_col: 'rh_uc_tcor'
 
     _wdir:
         value_col: 'wdir'
