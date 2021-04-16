@@ -15,11 +15,10 @@ import numpy as np
 import pandas as pd
 
 # Import stuff from dvas
+from dvas.dvas import Log
+from dvas.dvas import Database as DB
 import dvas.plots.utils as dpu
-from dvas.dvas import start_log
 from dvas.data.data import MultiProfile, MultiRSProfile, MultiGDPProfile
-from dvas.data.io import update_db
-from dvas.database.database import DatabaseManager
 from dvas.environ import path_var
 from dvas.tools import sync as dts
 from dvas.tools.gdps import gdps as dtgg
@@ -44,10 +43,10 @@ if __name__ == '__main__':
     path_var.output_path = demo_file_path.parent / 'output'
 
     # Start the logging
-    start_log(1, level='DEBUG')  # 0 = no logs, 1 = log to file only, 2 = file + screen, 3 = screen only.
+    Log.start_log(1, level='DEBUG')  # 0 = no logs, 1 = log to file only, 2 = file + screen, 3 = screen only.
 
     # Fine-tune the plotting behavior of dvas
-    dpu.set_mplstyle('nolatex') # The safe option. Use 'latex' fo prettier plots.
+    dpu.set_mplstyle('nolatex')  # The safe option. Use 'latex' fo prettier plots.
 
     # The generic formats to save the plots in
     dpu.PLOT_FMTS = ['png', 'pdf']
@@ -58,17 +57,27 @@ if __name__ == '__main__':
     # ----------------------------------------------------------------------------------------------
     print("\n --- DATABASE SETUP ---")
 
-    # Create the dvas database
-    db_mngr = DatabaseManager(reset_db=True)
+    start_time = datetime.now()
 
-    # Update the database (i.e. load in the data)
-    update_db('time', strict=True)
-    update_db('temp', strict=True)
-    update_db('temp_flag', strict=True)
-    update_db('temp_ucr', strict=True)
-    update_db('temp_ucs', strict=True)
-    update_db('temp_uct', strict=True)
-    update_db('gph', strict=True)
+    # Use this command to clear the DB
+    DB.clear_db()
+
+    # Init the DB
+    DB.init()
+
+    # Fetch
+    DB.fetch_raw_data(
+        [
+            'time', 'gph',
+            'temp', 'temp_flag', 'temp_ucr', 'temp_ucs', 'temp_uct',
+        ],
+        strict=True
+    )
+
+    print('Database setup in: {}s'.format((datetime.now()-start_time).total_seconds()))
+
+    # Use this command to explore the DB
+    # DB.explore()
 
     # ----------------------------------------------------------------------------------------------
     print("\n --- BASIC DATA EXTRACTION ---")
@@ -96,7 +105,7 @@ if __name__ == '__main__':
 
     # Load GDPs for temperature, including all the errors at hand
     gdp_prfs = MultiGDPProfile()
-    gdp_prfs.load_from_db(filt_raw_gdp_dt, 'temp', alt_abbr='gph', tdt_abbr='time',
+    gdp_prfs.load_from_db(filt_raw_gdp_dt, 'temp', tdt_abbr='time', alt_abbr='gph',
                           ucr_abbr='temp_ucr', ucs_abbr='temp_ucs', uct_abbr='temp_uct',
                           inplace=True)
 
@@ -105,6 +114,10 @@ if __name__ == '__main__':
 
     # How many profiles were loaded ?
     n_prfs = len(prfs)
+
+    # What data has been lodaed from the DB ?
+    print("\nMulti-profile data content:\n")
+    print(prfs.var_info)
 
     # Each Profile carries an InfoManager entity with it, which contains useful data.
     # Side note: MultiProfile entities are iterable !
@@ -206,7 +219,7 @@ if __name__ == '__main__':
     filt_gdp_dt_sync = "and_(tags('sync'), {}, {})".format(filt_gdp, filt_dt)
 
     gdp_prfs = MultiGDPProfile()
-    gdp_prfs.load_from_db(filt_gdp_dt_sync, 'temp', alt_abbr='gph', tdt_abbr='time',
+    gdp_prfs.load_from_db(filt_gdp_dt_sync, 'temp', tdt_abbr='time', alt_abbr='gph',
                           ucr_abbr='temp_ucr', ucs_abbr='temp_ucs', uct_abbr='temp_uct',
                           inplace=True)
 

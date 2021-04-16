@@ -27,7 +27,8 @@
   prm_desc: 'cat(repls({"pres": "Pressure",
                         "alt": "Altitude a.m.s.l."}, get(1)),
                  repl({"_uct": " temporal-correlated uncertainty"}, get(2)))'
-  prm_unit: 'hPa'
+  prm_unit: 'repls({"pres": "hPa",
+                    "alt": "m"}, get(1))'
 
 - prm_name: '(wdir|wspeed)(|(_ucu))'
   # Generate variables from regex generator for wind direction.

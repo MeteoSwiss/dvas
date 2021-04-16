@@ -22,11 +22,11 @@ _C50:
         value_col: 0
         lambda: 'lambda x: x * 1E9'
 
-    _temp:
-        value_col: 5
-
     _gph:
         value_col: 1
+
+    _temp:
+        value_col: 5
 
     _pres:
         value_col: 4
@@ -57,11 +57,11 @@ _C34:
         value_col: 0
         lambda: 'lambda x: x * 1E9'
 
-    _temp:
-        value_col: 5
-
     _gph:
         value_col: 1
+
+    _temp:
+        value_col: 5
 
     _pres:
         value_col: 4
@@ -90,11 +90,11 @@ _RS41:
         value_col: 0
         lambda: 'lambda x: x * 1E9'
 
-    _temp:
-        value_col: 4
-
     _gph:
         value_col: 2
+
+    _temp:
+        value_col: 4
 
     _pres:
         value_col: 3
@@ -126,18 +126,18 @@ _RS92:
         value_col: 0
         lambda: 'lambda x: x * 1E9'
 
-    _temp:
-        value_col: 3
-
     _gph:
         value_col: 1
 
-    _pres:
-        value_col: 2
+    _temp:
+        value_col: 3
 
     _temp_flag:
         value_col: 0
         csv_use_default: True
+
+    _pres:
+        value_col: 2
 
 # ----------------------------------------------------
 # RS-41 GDP, version beta-1
@@ -158,6 +158,9 @@ _RS41-GDP-BETA_001:
         value_col: 'time'
         lambda: 'lambda x: x * 1E9'
 
+    _gph:
+        value_col: 'alt_gph'
+
     _temp:
         value_col: 'temp'
 
@@ -170,18 +173,15 @@ _RS41-GDP-BETA_001:
     _temp_uct:
         value_col: 'temp_uc_tcor'
 
-    _gph:
-        value_col: 'alt_gph'
+    _temp_flag:
+        value_col: 0
+        csv_use_default: True
 
     _pres:
         value_col: 'press'
 
     _pres_ucu:
         value_col: 'press_uc'
-
-    _temp_flag:
-        value_col: 0
-        csv_use_default: True
 
 # ----------------------------------------------------
 # RS92-GDP, version 2
@@ -201,6 +201,9 @@ _RS92-GDP_002:
         value_col: 'time'
         lambda: 'lambda x: x * 1E9'
 
+    _gph:
+        value_col: 'geopot'
+
     _temp:
         value_col: 'temp'
 
@@ -212,11 +215,8 @@ _RS92-GDP_002:
     _temp_uct:
         value_col: 'u_cor_temp'
 
-    _gph:
-        value_col: 'geopot'
-
     _pres:
         value_col: 'press'
 
-    _pres_ucu:
+    _pres_uct:
         value_col: 'u_press'
