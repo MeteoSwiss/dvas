@@ -18,17 +18,17 @@ _C50:
     csv_skiprows: 40
     csv_skipfooter: 1
 
-    _tdtpros1:
+    _time:
         value_col: 0
         lambda: 'lambda x: x * 1E9'
 
-    _trepros1:
+    _temp:
         value_col: 5
 
-    _altpros1:
+    _gph:
         value_col: 1
 
-    _prepros1:
+    _pres:
         value_col: 4
 
 
@@ -53,17 +53,17 @@ _C34:
     csv_skiprows: 48
     csv_skipfooter: 1
 
-    _tdtpros1:
+    _time:
         value_col: 0
         lambda: 'lambda x: x * 1E9'
 
-    _trepros1:
+    _temp:
         value_col: 5
 
-    _altpros1:
+    _gph:
         value_col: 1
 
-    _prepros1:
+    _pres:
         value_col: 4
 
 # ----------------------------------------------------
@@ -86,17 +86,17 @@ _RS41:
     csv_delim_whitespace: True
     csv_skiprows: 1
 
-    _tdtpros1:
+    _time:
         value_col: 0
         lambda: 'lambda x: x * 1E9'
 
-    _trepros1:
+    _temp:
         value_col: 4
 
-    _altpros1:
+    _gph:
         value_col: 2
 
-    _prepros1:
+    _pres:
         value_col: 3
 
 # ----------------------------------------------------
@@ -122,23 +122,22 @@ _RS92:
     csv_delim_whitespace: True
     csv_skiprows: 2
 
-    _tdtpros1:
+    _time:
         value_col: 0
         lambda: 'lambda x: x * 1E9'
 
-    _trepros1:
+    _temp:
         value_col: 3
 
-    _altpros1:
+    _gph:
         value_col: 1
 
-    _prepros1:
+    _pres:
         value_col: 2
 
-    _trepros1_flag:
+    _temp_flag:
         value_col: 0
         csv_use_default: True
-
 
 # ----------------------------------------------------
 # RS-41 GDP, version beta-1
@@ -155,35 +154,34 @@ _RS41-GDP-BETA_001:
         - "cat('r:', get('g.Measurement.BalloonNumber'))"
 
     # -- ORIG DATA ----------------------------------
-    _tdtpros1:
+    _time:
         value_col: 'time'
         lambda: 'lambda x: x * 1E9'
 
-    _trepros1:
+    _temp:
         value_col: 'temp'
 
-    _treprosu_r:
+    _temp_ucr:
         value_col: 'temp_uc_ncor'
 
-    _treprosu_s:
+    _temp_ucs:
         value_col: 'temp_uc_scor'
 
-    _treprosu_t:
+    _temp_uct:
         value_col: 'temp_uc_tcor'
 
-    _altpros1:
+    _gph:
         value_col: 'alt_gph'
 
-    _prepros1:
+    _pres:
         value_col: 'press'
 
-    _preprosu_u:
+    _pres_ucu:
         value_col: 'press_uc'
 
-    _trepros1_flag:
+    _temp_flag:
         value_col: 0
         csv_use_default: True
-
 
 # ----------------------------------------------------
 # RS92-GDP, version 2
@@ -199,26 +197,26 @@ _RS92-GDP_002:
         - "cat('r:', get('g.Ascent.BalloonNumber'))"
 
     # -- ORIG DATA ----------------------------------
-    _tdtpros1:
+    _time:
         value_col: 'time'
         lambda: 'lambda x: x * 1E9'
 
-    _trepros1:
+    _temp:
         value_col: 'temp'
 
-    _treprosu_r:
+    _temp_ucr:
         # TODO: in v2 of the GDP, this value is wrong. It must be reconstructed from:
         # value_col: sqrt('u_temp'**2 - 'u_cor_temp'**2)
         value_col: 'u_std_temp'
 
-    _treprosu_t:
+    _temp_uct:
         value_col: 'u_cor_temp'
 
-    _altpros1:
+    _gph:
         value_col: 'geopot'
 
-    _prepros1:
+    _pres:
         value_col: 'press'
 
-    _preprosu_u:
+    _pres_ucu:
         value_col: 'u_press'
