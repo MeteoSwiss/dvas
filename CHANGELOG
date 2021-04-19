@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 ### Added:
+ - [fpavogt, 2021-04-19] Add config info for variables other than T, and for the M10 raw file.
  - [modolol, 2021-04-13] Add DB exploring tool
 ### Fixed:
 ### Changed:
