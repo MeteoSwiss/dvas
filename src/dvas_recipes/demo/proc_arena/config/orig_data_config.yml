@@ -181,6 +181,9 @@ _RS92:
     _pres:
         value_col: 2
 
+    _rh:
+        value_col: 4
+
 # ----------------------------------------------------
 # M10 type (NOT THE GDP!)
 # ----------------------------------------------------
@@ -194,10 +197,6 @@ _M10:
         - "cat('e:', get('event_id'))"
         - "cat('r:', get('rig'))"
         - "get('day_night')"
-    # TODO: what is this thing ?
-    #metadata:
-    #    key_str: '1'
-    #    key_num: 1
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter:
@@ -261,10 +260,22 @@ _RS41-GDP-BETA_001:
         csv_use_default: True
 
     _pres:
-        value_col: 'press'
+        value_col: 'press_gnss'
 
-    _pres_ucu:
-        value_col: 'press_uc'
+    _pres_uct:
+        value_col: 'press_gnss_uc'
+
+    _wdir:
+        value_col: 'wdir'
+
+    _wdir_ucu:
+        value_col: 'wdir_uc'
+
+    _wspeed:
+        value_col: 'wspeed'
+
+    _wspeed_ucu:
+        value_col: 'wspeed_uc'
 
 # ----------------------------------------------------
 # RS-41 GDP, version beta-2
