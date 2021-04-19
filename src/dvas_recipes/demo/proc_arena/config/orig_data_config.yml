@@ -121,7 +121,7 @@ _RS41:
     csv_delimiter: ';'
     csv_skip_blank_lines: True
     csv_delim_whitespace: False
-    csv_skiprows: 48
+    csv_skiprows: 47
 
     _time:
         value_col: 0
