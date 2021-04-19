@@ -10,12 +10,12 @@
   mdl_desc: 'Vaisala RS-92'
   mid: 'RS92'
 
-- mdl_name: 'RS41-2017'
-  mdl_desc: 'Vaisala RS-41 SG (2017 file format)'
+- mdl_name: 'RS41-PRE2018'
+  mdl_desc: 'Vaisala RS-41 SG (pre-2018 file format)'
   mid: 'RS41'
 
 - mdl_name: 'RS41'
-  mdl_desc: 'Vaisala RS-41 SG (latest file format)'
+  mdl_desc: 'Vaisala RS-41 SG (current file format)'
   mid: 'RS41'
 
 - mdl_name: 'M10'
