@@ -248,12 +248,15 @@ _RS41-GDP-BETA_001:
 
     _temp_ucr:
         value_col: 'temp_uc_ncor'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
 
     _temp_ucs:
         value_col: 'temp_uc_scor'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
 
     _temp_uct:
         value_col: 'temp_uc_tcor'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
 
     _temp_flag:
         value_col: 0
@@ -264,18 +267,21 @@ _RS41-GDP-BETA_001:
 
     _pres_uct:
         value_col: 'press_gnss_uc'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
 
     _wdir:
         value_col: 'wdir'
 
     _wdir_ucu:
         value_col: 'wdir_uc'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
 
     _wspeed:
         value_col: 'wspeed'
 
     _wspeed_ucu:
         value_col: 'wspeed_uc'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
 
 # ----------------------------------------------------
 # RS-41 GDP, version beta-2
@@ -301,21 +307,26 @@ _RS41-GDP-BETA_002:
 
     _gph_uct:
         value_col: 'alt_gph_uc_tcor'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
 
     _gph_ucu:
         value_col: 'alt_gph_uc_ucor'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
 
     _temp:
         value_col: 'temp'
 
     _temp_ucr:
         value_col: 'temp_uc_ucor'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
 
     _temp_ucs:
         value_col: 'temp_uc_scor'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
 
     _temp_uct:
         value_col: 'temp_uc_tcor'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
 
     _temp_flag:
         value_col: 0
@@ -326,30 +337,36 @@ _RS41-GDP-BETA_002:
 
     _pres_uct:
         value_col: 'press_gnss_uc_tcor'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
 
     _pres_ucu:
         value_col: 'press_gnss_uc_ucor'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
 
     _rh:
         value_col: 'rh'
 
     _rh_ucr:
         value_col: 'rh_uc_ucor'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
 
     _rh_uct:
         value_col: 'rh_uc_tcor'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
 
     _wdir:
         value_col: 'wdir'
 
     _wdir_ucu:
         value_col: 'wdir_uc'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
 
     _wspeed:
         value_col: 'wspeed'
 
     _wspeed_ucu:
         value_col: 'wspeed_uc'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
 
 # ----------------------------------------------------
 # RS92-GDP, version 2
@@ -410,3 +427,90 @@ _RS92-GDP_002:
 
     _wspeed_ucu:
         value_col: 'u_wspeed'
+
+# ----------------------------------------------------
+# M10 GDP, version alpha-1
+# ----------------------------------------------------
+_M10-GDP-ALPHA_001:
+
+    # -- META DATA ----------------------------------
+    edt: "get('g.Measurement.StandardTime')"
+    srn: "get('g.MainSonde.SerialNumber')"
+    pid: "get('g.Product.Id')"
+    tags:
+        #- "cat('e:', get('g.Measurement.Id'))"
+        - "cat('r:', get('g.Measurement.BalloonNumber'))"
+
+    # -- ORIG DATA ----------------------------------
+    _time:
+        value_col: 'time'
+        # TODO: this is the number of seconds since 1970-01-01T00:00:00Z !!!
+        lambda: 'lambda x: x * 1E9'
+
+    _gph:
+        value_col: 'alt_gph'
+
+    _gph_uct:
+        value_col: 'alt_gph_uc'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
+
+    #TODO:
+    # alt_gph_uc_noise -> ucu ?
+    # sqrt(alt_gph_uc_repe**2 + alt_gph_uc_manuf**2) -> uct ?
+
+    #_gph_ucu:
+    #    value_col: 'alt_gph_uc_ucor'
+
+    _temp:
+        value_col: 'temp'
+
+    #_temp_ucr:
+    #    value_col: 'temp_uc_ucor'
+
+    #_temp_ucs:
+    #    value_col: 'temp_uc_scor'
+
+    _temp_uct:
+        value_col: 'temp_uc'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
+
+    #_temp_flag:
+    #    value_col: 0
+    #    csv_use_default: True
+
+    _pres:
+        value_col: 'press_gnss'
+
+    #TODO: is this assignment correct ?
+    _pres_uct:
+        value_col: 'press_gnss_uc_repe'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
+
+    #TODO: is this assignment correct ?
+    _pres_ucu:
+        value_col: 'press_gnss_uc_noise'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
+
+    _rh:
+        value_col: 'rh'
+
+    #_rh_ucr:
+    #    value_col: 'rh_uc_ucor'
+
+    _rh_uct:
+        value_col: 'rh_uc'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
+
+    _wdir:
+        value_col: 'wdir'
+
+    _wdir_ucu:
+        value_col: 'wdir_uc'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
+
+    _wspeed:
+        value_col: 'wspeed'
+
+    _wspeed_ucu:
+        value_col: 'wspeed_uc'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
