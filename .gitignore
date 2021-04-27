@@ -254,6 +254,7 @@ this_file_of_result.txt
 src/dvas_recipes/demo/proc_arena/output
 src/dvas_recipes/demo/proc_arena/demo_script_vof.py
 src/dvas_recipes/uaii22/proc_arena/output
+src/dvas_recipes/uaii22/proc_arena/m10_script.py
 .dev_utils/create_example_data/*.nc
 sandbox.csv
 sandbox_data.csv

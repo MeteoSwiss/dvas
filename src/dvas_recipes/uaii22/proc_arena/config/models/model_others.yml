@@ -1,4 +1,3 @@
-
 - mdl_name: 'C34'
   mdl_desc: 'Meteolabor SRS-C34'
   mid: 'C34'
@@ -12,7 +11,7 @@
   mid: 'RS92'
 
 - mdl_name: 'RS41-PRE2018'
-  mdl_desc: 'Vaisala RS-41 SG (pre2018 file format)'
+  mdl_desc: 'Vaisala RS-41 SG (pre-2018 file format)'
   mid: 'RS41'
 
 - mdl_name: 'RS41'

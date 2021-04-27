@@ -10,3 +10,7 @@
 - mdl_name: 'RS92-GDP_002'
   mdl_desc: 'RS92 GDP, version 2'
   mid: 'RS92-GDP'
+
+- mdl_name: 'M10-GDP-ALPHA_001'
+  mdl_desc: 'M10, ALPHA version 1'
+  mid: 'M10-GDP'
