@@ -243,6 +243,6 @@ def get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=None, rolling_flags=Tr
 
         # Plot things if needed
         if do_plot:
-            dpg.plot_ks_test(out, alpha, title=key)
+            dpg.plot_ks_test(out, alpha, title=key, fn_suffix=key)
 
     return incompat

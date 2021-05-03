@@ -438,7 +438,7 @@ _M10-GDP-ALPHA_001:
     srn: "get('g.MainSonde.SerialNumber')"
     pid: "get('g.Product.Id')"
     tags:
-        #- "cat('e:', get('g.Measurement.Id'))"
+        - "cat('e:', get('g.Measurement.Id'))"
         - "cat('r:', get('g.Measurement.BalloonNumber'))"
 
     # -- ORIG DATA ----------------------------------
