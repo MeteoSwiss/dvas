@@ -45,6 +45,9 @@ CLRS = {'cmap_anchors': ['#351659', '#67165b', '#901f55', '#af374a', '#c3563e', 
 
 #: matplotlib.colors.LinearSegmentedColormap: the default dvas colormap
 DVAS_CMAP_1 = colors.LinearSegmentedColormap.from_list('dvas_cmap_1', CLRS['cmap_anchors'], 1024)
+DVAS_CMAP_1_r = colors.LinearSegmentedColormap.from_list('dvas_cmap_1', CLRS['cmap_anchors'][::-1],
+                                                         1024)
+
 
 #: list[str]: The default file extensions to save the plots into.
 PLOT_FMTS = ['png']
