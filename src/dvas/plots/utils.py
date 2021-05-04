@@ -15,6 +15,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import colors
 from matplotlib import cm
+from cycler import cycler
 
 # Import from this package
 from ..hardcoded import PKG_PATH
@@ -22,6 +23,7 @@ from ..errors import DvasError
 from ..environ import path_var as env_path_var
 from ..logger import log_func_call
 from ..logger import plots_logger as logger
+from ..version import VERSION
 
 # Define some plotting constants
 #: float: Width of a 1-column plot [inches], to fit in scientific articles when scaled by 50%
@@ -34,6 +36,15 @@ WIDTH_TWOCOL = 14.16
 PLOT_STYLES = {'base': 'base.mplstyle',
                'nolatex': 'nolatex.mplstyle',
                'latex': 'latex.mplstyle'}
+
+#: dict: dvas core colors for the cmap, the color cycler, and NaNs.
+CLRS = {'cmap_anchors': ['#351659', '#67165b', '#901f55', '#af374a', '#c3563e', '#cc7a33',
+                         '#c38e49', '#bc9f64', '#b9ae82', '#babaa2', '#c3c4c0'],
+        'nan': '#7d7d7d',
+        }
+
+#: matplotlib.colors.LinearSegmentedColormap: the default dvas colormap
+DVAS_CMAP_1 = colors.LinearSegmentedColormap.from_list('dvas_cmap_1', CLRS['cmap_anchors'], 1024)
 
 #: list[str]: The default file extensions to save the plots into.
 PLOT_FMTS = ['png']
@@ -49,7 +60,6 @@ UNIT_LABELS = {'K': r'K$^{\circ}$',
                'm s-1': r'm s$^{-1}$',
                'degree': r'$^{\circ}$',
                }
-
 
 @log_func_call(logger)
 def set_mplstyle(style='base'):
@@ -72,6 +82,15 @@ def set_mplstyle(style='base'):
 
     """
 
+    # Always apply the base style first.
+    plt.style.use(str(Path(PKG_PATH, 'plots', 'mpl_styles', PLOT_STYLES['base'])))
+
+    # Update the color cycler to match our custom colorscheme
+    n_anchors = len(CLRS['cmap_anchors'])
+    default_cycler = (cycler(color=[CLRS['cmap_anchors'][(3*ind) % n_anchors]
+                                    for ind in range(10)]))
+    plt.rc('axes', prop_cycle=default_cycler)
+
     # Let's start with some sanity checks. If the user is foolish enough to feed a dict, trust it.
     if isinstance(style, dict):
         plt.style.use(style)
@@ -83,9 +102,6 @@ def set_mplstyle(style='base'):
     if style not in PLOT_STYLES.keys():
         raise Exception('Ouch! plot style "%s" unknown. Should be one of [%s].'
                         % (style, ', '.join(PLOT_STYLES.keys())))
-
-    # Always apply the base style first.
-    plt.style.use(str(Path(PKG_PATH, 'plots', 'mpl_styles', PLOT_STYLES['base'])))
 
     # Then apply which ever alternative style was requested, if we haven't already.
     if style != 'base':
@@ -147,14 +163,53 @@ def fancy_legend(ax, label=None):
         label = label.replace('_', '\_')
 
     # Add the legend.
-    leg = ax.legend(loc='best', bbox_to_anchor=(1.01, 0, 0.1, 1), mode='expand',
-                    title=label, ncol=1, handlelength=1,
+    leg = ax.legend(loc='upper left', bbox_to_anchor=(1.01, 1),
+                    title=label, ncol=1, handlelength=1, fancybox=True,
                     fontsize='small', title_fontsize='small', borderaxespad=0)
 
     # Tweak the thickness of the legen lines as well.
     for line in leg.get_lines():
         line.set_linewidth(2.0)
 
+@log_func_call(logger)
+def add_edt_eid_rid(ax, prfs):
+    """ Add basic edt, eid and rid info to a plot.
+
+    Args:
+        ax (matplotlib.pyplot.axes): the axes to add the info to.
+        prfs (Multiprofile|MultiRSProfile|MultiGDPProfile): the MultiProfile to extract the info
+            from.
+
+    """
+
+    # Get the data to print
+    edts = [item.strftime('%Y-%m-%d %H:%M %Z') for item in prfs.get_info('edt')]
+    eids = prfs.get_info('eid')
+    rids = prfs.get_info('rid')
+
+    # Format it all nicely for each Profile.
+    info_txt = set(['{} ({}, {})'.format(item, eids[ind], rids[ind])
+                                         for ind, item in enumerate(edts)])
+    # Make sure it does not overflow
+    info_txt = '\n'.join(info_txt)
+
+    # Add it to the ax
+    ax.text(0.98, 0.95, info_txt, fontsize='small',
+            verticalalignment='top', horizontalalignment='right',
+            transform=ax.transAxes)
+
+@log_func_call(logger)
+def add_source(fig):
+    """ Add a sentence about the dvas version to a given plot.
+
+    Args:
+        fig (matplotlib.pyplot.figure): the figure to add the text to.
+
+    """
+    msg = 'Created with dvas v{}'.format(VERSION)
+
+    fig.text(0.99, 0.02, msg, fontsize='xx-small',
+                 horizontalalignment='right', verticalalignment='bottom')
 
 @log_func_call(logger)
 def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show=None):

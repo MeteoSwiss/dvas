@@ -23,7 +23,7 @@ from . import utils as pu
 
 
 @log_func_call(logger)
-def multiprf(prfs, index='alt', label='oid', uc=None, **kwargs):
+def multiprf(prfs, index='alt', label='mid', uc=None, k_lvl=1, **kwargs):
     """ Plots the content of a MultiProfile instance.
 
     Args:
@@ -31,9 +31,10 @@ def multiprf(prfs, index='alt', label='oid', uc=None, **kwargs):
         index (str, optional): reference variables for the plots, either '_idx', 'tdt' or 'alt'.
             Defaults to 'alt'.
         label (str, optional): name of the label for each curve, that will be fed to
-            `prfs.get_info(label)`. Defaults to 'oid'.
+            `prfs.get_info(label)`. Defaults to 'mid'.
         uc (str, optional): which uncertainty to plot, if any. Can be one of  ['ucr', 'ucs', 'uct',
             'ucu', 'uc_tot']. Defaults to None.
+        k_lvl (int|float, optional): k-level for the uncertainty, if uc is not None. Defaults to 1.
         **kwargs: these get fed to the dvas.plots.utils.fancy_savefig() routine.
 
     Returns:
@@ -44,14 +45,18 @@ def multiprf(prfs, index='alt', label='oid', uc=None, **kwargs):
     # Some sanity checks
     if uc not in [None, 'uc_tot', PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME,
                   PRF_REF_UCU_NAME]:
-        raise DvasError('Ouch ! unknown uc name: {}'.format(uc))
+        raise DvasError('Ouch ! Unknown uc name: {}'.format(uc))
+
+    if not isinstance(k_lvl, (float, int)):
+        raise DvasError(
+            'Ouch ! Bad type for k_lvl. Needed int| float - got: {}'.format(type(k_lvl)))
 
     # Create the figure, with a suitable width.
     fig = plt.figure(figsize=(pu.WIDTH_TWOCOL, 4.0))
 
     # Use gridspec for a fine control of the figure area.
     fig_gs = gridspec.GridSpec(1, 1, height_ratios=[1], width_ratios=[1],
-                               left=0.08, right=0.9, bottom=0.15, top=0.9,
+                               left=0.08, right=0.87, bottom=0.15, top=0.9,
                                wspace=0.05, hspace=0.05)
 
     # Instantiate the axes
@@ -67,7 +72,7 @@ def multiprf(prfs, index='alt', label='oid', uc=None, **kwargs):
         x = getattr(prf, PRF_REF_VAL_NAME).index.get_level_values(index)
         y = getattr(prf, PRF_REF_VAL_NAME).values
         if uc is not None:
-            dy = getattr(prf, uc).values
+            dy = getattr(prf, uc).values * k_lvl
 
         # For time deltas, I need to get a float out for the limits.
         if index == 'tdt':
@@ -92,10 +97,13 @@ def multiprf(prfs, index='alt', label='oid', uc=None, **kwargs):
     # Add the legend
     pu.fancy_legend(ax1, label)
 
-    ax1.set_title('{} - {}'.format(np.unique(prfs.get_info('eid')),
-                                    np.unique(prfs.get_info('rid'))))
+    # Add the edt/eid/rid info
+    pu.add_edt_eid_rid(ax1, prfs)
 
-    # Save the plot.
+    # Add the source for the plot
+    pu.add_source(fig)
+
+    # Save the plot
     pu.fancy_savefig(fig, 'multiprf', **kwargs)
 
     return fig
