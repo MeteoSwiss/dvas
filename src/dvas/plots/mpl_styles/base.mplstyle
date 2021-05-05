@@ -6,7 +6,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
-lines.linewidth : 1.0
+lines.linewidth : 0.8
 
 font.family: sans-serif
 font.sans-serif: DejaVu Sans
