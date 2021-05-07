@@ -98,7 +98,7 @@ def set_mplstyle(style='base'):
     default_cycler = (cycler(color=CLRS['set_1']))
     plt.rc('axes', prop_cycle=default_cycler)
 
-    # Let's start with some sanity checks. If the user is foolish enough to feed a dict, trust it.
+    # Let's do some sanity checks. If the user is foolish enough to feed a dict, trust it.
     if isinstance(style, dict):
         plt.style.use(style)
 
@@ -198,11 +198,11 @@ def add_edt_eid_rid(ax, prfs):
     info_txt = set(['{} ({}, {})'.format(item, eids[ind], rids[ind])
                                          for ind, item in enumerate(edts)])
     # Make sure it does not overflow
-    info_txt = '\n'.join(info_txt)
+    info_txt = ' / '.join(info_txt)
 
     # Add it to the ax
-    ax.text(0.98, 0.95, info_txt, fontsize='small',
-            verticalalignment='top', horizontalalignment='right',
+    ax.text(0, 1.03, info_txt, fontsize='small',
+            verticalalignment='bottom', horizontalalignment='left',
             transform=ax.transAxes)
 
 @log_func_call(logger)
