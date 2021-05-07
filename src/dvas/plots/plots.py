@@ -134,6 +134,12 @@ def multiprf(prfs, index='alt', label='mid', uc=None, k_lvl=1, rel_to=None, expo
     # Add the edt/eid/rid info
     pu.add_edt_eid_rid(ax1, prfs)
 
+    # Add the k-level if warranted
+    if uc is not None:
+        ax1.text(1, 1.03, r'$k={}$'.format(k_lvl), fontsize='small',
+                 verticalalignment='bottom', horizontalalignment='right',
+                 transform=ax1.transAxes)
+
     # Add the source for the plot
     pu.add_source(fig)
 
