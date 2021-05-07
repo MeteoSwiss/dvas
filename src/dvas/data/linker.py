@@ -785,6 +785,8 @@ class FlagGDPHandler(GDPHandler):
             }
         )
 
+        CSV_NAMES_FLD_NM
+
         # Read raw csv
         data = pd.read_csv(data_file_path, **raw_csv_read_args)
         data = data.map(

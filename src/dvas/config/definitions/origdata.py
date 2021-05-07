@@ -36,7 +36,6 @@ CSV_USE_DEFAULT_FLD_NM = 'csv_use_default'
 CSV_DELIMITER_FLD_NM = 'csv_delimiter'
 CSV_HEADER_FLD_NM = 'csv_header'
 CSV_INDEX_COL_FLD_NM = 'csv_index_col'
-CSV_NAMES_FLD_NM = 'csv_names'
 CSV_SKIPINITSPACE_FLD_NM = 'csv_skipinitialspace'
 CSV_SKIPROWS_FLD_NM = 'csv_skiprows'
 CSV_SKIP_BLANK_LINES_FLD_NM = 'csv_skip_blank_lines'
@@ -65,6 +64,7 @@ NODE_PARAMS_DEF = {
     LAMBDA_FLD_NM: 'lambda x: x',
     CSV_USE_DEFAULT_FLD_NM: False,
     CSV_DELIMITER_FLD_NM: ';',
+    CSV_INDEX_COL_FLD_NM: None,
     CSV_SKIPINITSPACE_FLD_NM: False,
     CSV_SKIPROWS_FLD_NM: 0,
     CSV_SKIP_BLANK_LINES_FLD_NM: True,
@@ -77,7 +77,6 @@ NODE_PARAMS_DEF = {
 #: dict: Constant nodes
 CONST_NODES = {
     CSV_HEADER_FLD_NM: 0,
-    CSV_NAMES_FLD_NM: [VALUE_NM],
 }
 
 #: dict: Parameter pattern properties (JSON_SCHEMA)
@@ -124,6 +123,20 @@ PARAMETER_PATTERN_PROP = {
             },
             {
                 "type": "string",
+            },
+            {
+                "type": "array",
+                "items": {
+                    "oneOf": [
+                        {
+                            "type": "integer",
+                            "minimum": 0
+                        },
+                        {
+                            "type": "string",
+                        },
+                    ]
+                }
             }
         ]
     },
@@ -141,6 +154,16 @@ PARAMETER_PATTERN_PROP = {
         'anyOf': [
             {"type": "null"},
             {"type": 'string'}
+        ]
+    },
+    rf"^{CSV_INDEX_COL_FLD_NM}$": {
+        "oneOf": [
+          {
+              "type": "null",
+          },
+          {
+              "const": False,
+          }
         ]
     },
     rf"^{CSV_SKIPINITSPACE_FLD_NM}$": {
