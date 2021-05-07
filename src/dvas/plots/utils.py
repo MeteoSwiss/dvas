@@ -44,6 +44,7 @@ CLRS = {'set_1': ['#4c88b3', '#b34c88', '#88b34c', '#d15f56', '#7d70b4', '#00a7a
         'cmap_1': list(zip([0, 0, 0.5, 1, 1],
                            ['#000000', '#051729','#4c88b3','#dbd7cc', '#ffffff'])),
         'nan_1': '#7d7d7d',
+        'ref_1': 'crimson',
         }
 
 #: matplotlib.colors.LinearSegmentedColormap: the default dvas colormap 1

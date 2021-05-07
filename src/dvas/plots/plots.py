@@ -75,7 +75,7 @@ def multiprf(prfs, index='alt', label='mid', uc=None, k_lvl=1, rel_to=None, expo
 
     # Use gridspec for a fine control of the figure area.
     fig_gs = gridspec.GridSpec(1, 1, height_ratios=[1], width_ratios=[1],
-                               left=0.07, right=0.87, bottom=0.17, top=0.9,
+                               left=0.08, right=0.87, bottom=0.17, top=0.9,
                                wspace=0.05, hspace=0.05)
 
     # Instantiate the axes
@@ -94,13 +94,12 @@ def multiprf(prfs, index='alt', label='mid', uc=None, k_lvl=1, rel_to=None, expo
     for (p_ind, prf) in enumerate(prfs):
 
         # Get the color from the cycler if warranted ...
-        if expose in [None, p_ind]:
+        if expose is None:
             clr = cycler[p_ind]
+        elif expose == p_ind:
+            clr = pu.CLRS['ref_1']
         else:
             clr = pu.CLRS['nan_1']
-
-        # TODO: implement the option to scale the axis with different units. E.g. 'sec' for
-        # time deltas, etc ...
 
         # Let's extract the data
         x = getattr(prf, PRF_REF_VAL_NAME).index.get_level_values(index)
@@ -123,9 +122,17 @@ def multiprf(prfs, index='alt', label='mid', uc=None, k_lvl=1, rel_to=None, expo
         ax1.plot(x, y, linestyle='-', drawstyle='steps-mid', lw=1, color=clr,
                  label=prfs.get_info(label)[p_ind])
 
-    # Deal with the axes
-    ax1.set_xlabel(prfs.db_variables[index])
-    ax1.set_ylabel(prfs.db_variables[PRF_REF_VAL_NAME], labelpad=10)
+    # Deal with the axes labels
+    xlbl = prfs.var_info[index]['prm_name']
+    xlbl += ' [{}]'.format(prfs.var_info[index]['prm_unit'])
+    ax1.set_xlabel(xlbl)
+
+    ylbl = prfs.var_info[PRF_REF_VAL_NAME]['prm_name']
+    ylbl += ' [{}]'.format(prfs.var_info[PRF_REF_VAL_NAME]['prm_unit'])
+    if rel_to is not None:
+        ylbl = r'$\Delta$' + ylbl
+    ax1.set_ylabel(ylbl, labelpad=10)
+
     ax1.set_xlim(xmin, xmax)
 
     # Add the legend
