@@ -18,17 +18,17 @@ _C50:
     csv_skiprows: 40
     csv_skipfooter: 1
 
-    _tdtpros1:
+    _time:
         value_col: 0
         lambda: 'lambda x: x * 1E9'
 
-    _trepros1:
-        value_col: 5
-
-    _altpros1:
+    _gph:
         value_col: 1
 
-    _prepros1:
+    _temp:
+        value_col: 5
+
+    _pres:
         value_col: 4
 
 
@@ -53,23 +53,23 @@ _C34:
     csv_skiprows: 48
     csv_skipfooter: 1
 
-    _tdtpros1:
+    _time:
         value_col: 0
         lambda: 'lambda x: x * 1E9'
 
-    _trepros1:
-        value_col: 5
-
-    _altpros1:
+    _gph:
         value_col: 1
 
-    _prepros1:
+    _temp:
+        value_col: 5
+
+    _pres:
         value_col: 4
 
 # ----------------------------------------------------
-# RS-41 type (NOT THE GDP!)
+# RS-41 type (NOT THE GDP!), pre-2018 file format
 # ----------------------------------------------------
-_RS41:
+_RS41-PRE2018:
 
     # -- META DATA ----------------------------------
     edt: "get('event_dt')"
@@ -86,18 +86,59 @@ _RS41:
     csv_delim_whitespace: True
     csv_skiprows: 1
 
-    _tdtpros1:
+    _time:
         value_col: 0
         lambda: 'lambda x: x * 1E9'
 
-    _trepros1:
-        value_col: 4
-
-    _altpros1:
+    _gph:
         value_col: 2
 
-    _prepros1:
+    _temp:
+        value_col: 4
+        lambda: 'lambda x: x + 273.15'
+
+    _pres:
         value_col: 3
+
+    _rh:
+        value_col: 5
+
+# ----------------------------------------------------
+# RS-41 type (NOT THE GDP!), latest file format
+# ----------------------------------------------------
+_RS41:
+
+    # -- META DATA ----------------------------------
+    edt: "get('event_dt')"
+    srn: "get('srn')"
+    pid: "get('product_id')"
+    tags:
+        - "cat('e:', get('event_id'))"
+        - "cat('r:', get('rig'))"
+        - "get('day_night')"
+
+    # -- ORIG DATA ----------------------------------
+    csv_delimiter: ';'
+    csv_skip_blank_lines: True
+    csv_delim_whitespace: False
+    csv_skiprows: 47
+
+    _time:
+        value_col: 0
+        lambda: 'lambda x: x * 1E9'
+
+    _gph:
+        value_col: 2
+
+    _temp:
+        value_col: 4
+        lambda: 'lambda x: x + 273.15'
+
+    _pres:
+        value_col: 3
+
+    _rh:
+        value_col: 5
 
 # ----------------------------------------------------
 # RS-92 type (NOT THE GDP!)
@@ -122,23 +163,63 @@ _RS92:
     csv_delim_whitespace: True
     csv_skiprows: 2
 
-    _tdtpros1:
+    _time:
         value_col: 0
         lambda: 'lambda x: x * 1E9'
 
-    _trepros1:
-        value_col: 3
-
-    _altpros1:
+    _gph:
         value_col: 1
 
-    _prepros1:
-        value_col: 2
+    _temp:
+        value_col: 3
+        lambda: 'lambda x: x + 273.15'
 
-    _trepros1_flag:
+    _temp_flag:
         value_col: 0
         csv_use_default: True
 
+    _pres:
+        value_col: 2
+
+    _rh:
+        value_col: 4
+
+# ----------------------------------------------------
+# M10 type (NOT THE GDP!)
+# ----------------------------------------------------
+_M10:
+
+    # -- META DATA ----------------------------------
+    edt: "get('event_dt')"
+    srn: "get('srn')"
+    pid: "get('product_id')"
+    tags:
+        - "cat('e:', get('event_id'))"
+        - "cat('r:', get('rig'))"
+        - "get('day_night')"
+
+    # -- ORIG DATA ----------------------------------
+    csv_delimiter:
+    csv_skip_blank_lines: True
+    csv_delim_whitespace: True
+    csv_skiprows: 1
+
+    _time:
+        value_col: 0
+        lambda: 'lambda x: x * 1E9'
+
+    _gph:
+        value_col: 1
+
+    _temp:
+        value_col: 10
+        lambda: 'lambda x: x + 273.15'
+
+    _pres:
+        value_col: 12
+
+    _rh:
+        value_col: 11
 
 # ----------------------------------------------------
 # RS-41 GDP, version beta-1
@@ -155,35 +236,137 @@ _RS41-GDP-BETA_001:
         - "cat('r:', get('g.Measurement.BalloonNumber'))"
 
     # -- ORIG DATA ----------------------------------
-    _tdtpros1:
+    _time:
         value_col: 'time'
         lambda: 'lambda x: x * 1E9'
 
-    _trepros1:
-        value_col: 'temp'
-
-    _treprosu_r:
-        value_col: 'temp_uc_ncor'
-
-    _treprosu_s:
-        value_col: 'temp_uc_scor'
-
-    _treprosu_t:
-        value_col: 'temp_uc_tcor'
-
-    _altpros1:
+    _gph:
         value_col: 'alt_gph'
 
-    _prepros1:
-        value_col: 'press'
+    _temp:
+        value_col: 'temp'
 
-    _preprosu_u:
-        value_col: 'press_uc'
+    _temp_ucr:
+        value_col: 'temp_uc_ncor'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
 
-    _trepros1_flag:
+    _temp_ucs:
+        value_col: 'temp_uc_scor'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
+
+    _temp_uct:
+        value_col: 'temp_uc_tcor'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
+
+    _temp_flag:
         value_col: 0
         csv_use_default: True
 
+    _pres:
+        value_col: 'press_gnss'
+
+    _pres_uct:
+        value_col: 'press_gnss_uc'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
+
+    _wdir:
+        value_col: 'wdir'
+
+    _wdir_ucu:
+        value_col: 'wdir_uc'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
+
+    _wspeed:
+        value_col: 'wspeed'
+
+    _wspeed_ucu:
+        value_col: 'wspeed_uc'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
+
+# ----------------------------------------------------
+# RS-41 GDP, version beta-2
+# ----------------------------------------------------
+_RS41-GDP-BETA_002:
+
+    # -- META DATA ----------------------------------
+
+    edt: "get('g.Measurement.StandardTime')"
+    srn: "get('g.MainSonde.SerialNumber')"
+    pid: "get('g.Product.Id')"
+    tags:
+        - "cat('e:', get('g.Measurement.Id'))"
+        - "cat('r:', get('g.Measurement.BalloonNumber'))"
+
+    # -- ORIG DATA ----------------------------------
+    _time:
+        value_col: 'time'
+        lambda: 'lambda x: x * 1E9'
+
+    _gph:
+        value_col: 'alt_gph'
+
+    _gph_uct:
+        value_col: 'alt_gph_uc_tcor'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
+
+    _gph_ucu:
+        value_col: 'alt_gph_uc_ucor'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
+
+    _temp:
+        value_col: 'temp'
+
+    _temp_ucr:
+        value_col: 'temp_uc_ucor'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
+
+    _temp_ucs:
+        value_col: 'temp_uc_scor'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
+
+    _temp_uct:
+        value_col: 'temp_uc_tcor'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
+
+    _temp_flag:
+        value_col: 0
+        csv_use_default: True
+
+    _pres:
+        value_col: 'press_gnss'
+
+    _pres_uct:
+        value_col: 'press_gnss_uc_tcor'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
+
+    _pres_ucu:
+        value_col: 'press_gnss_uc_ucor'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
+
+    _rh:
+        value_col: 'rh'
+
+    _rh_ucr:
+        value_col: 'rh_uc_ucor'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
+
+    _rh_uct:
+        value_col: 'rh_uc_tcor'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
+
+    _wdir:
+        value_col: 'wdir'
+
+    _wdir_ucu:
+        value_col: 'wdir_uc'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
+
+    _wspeed:
+        value_col: 'wspeed'
+
+    _wspeed_ucu:
+        value_col: 'wspeed_uc'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
 
 # ----------------------------------------------------
 # RS92-GDP, version 2
@@ -199,26 +382,135 @@ _RS92-GDP_002:
         - "cat('r:', get('g.Ascent.BalloonNumber'))"
 
     # -- ORIG DATA ----------------------------------
-    _tdtpros1:
+    _time:
         value_col: 'time'
         lambda: 'lambda x: x * 1E9'
 
-    _trepros1:
+    _gph:
+        value_col: 'geopot'
+
+    _temp:
         value_col: 'temp'
 
-    _treprosu_r:
+    _temp_ucr:
         # TODO: in v2 of the GDP, this value is wrong. It must be reconstructed from:
         # value_col: sqrt('u_temp'**2 - 'u_cor_temp'**2)
         value_col: 'u_std_temp'
 
-    _treprosu_t:
+    _temp_uct:
         value_col: 'u_cor_temp'
 
-    _altpros1:
-        value_col: 'geopot'
-
-    _prepros1:
+    _pres:
         value_col: 'press'
 
-    _preprosu_u:
+    _pres_uct:
         value_col: 'u_press'
+
+    _rh:
+        value_col: 'rh'
+
+    _rh_ucr:
+        # TODO: this needs to be checked. Is it as wrong as the temperature ?
+        value_col: 'u_std_rh'
+
+    _rh_uct:
+        value_col: 'u_cor_rh'
+
+    _wdir:
+        value_col: 'wdir'
+
+    _wdir_ucu:
+        value_col: 'u_wdir'
+
+    _wspeed:
+        value_col: 'wspeed'
+
+    _wspeed_ucu:
+        value_col: 'u_wspeed'
+
+# ----------------------------------------------------
+# M10 GDP, version alpha-1
+# ----------------------------------------------------
+_M10-GDP-ALPHA_001:
+
+    # -- META DATA ----------------------------------
+    edt: "get('g.Measurement.StandardTime')"
+    srn: "get('g.MainSonde.SerialNumber')"
+    pid: "get('g.Product.Id')"
+    tags:
+        #- "cat('e:', get('g.Measurement.Id'))"
+        - "cat('r:', get('g.Measurement.BalloonNumber'))"
+
+    # -- ORIG DATA ----------------------------------
+    _time:
+        value_col: 'time'
+        # TODO: this is the number of seconds since 1970-01-01T00:00:00Z !!!
+        lambda: 'lambda x: x * 1E9'
+
+    _gph:
+        value_col: 'alt_gph'
+
+    _gph_uct:
+        value_col: 'alt_gph_uc'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
+
+    #TODO:
+    # alt_gph_uc_noise -> ucu ?
+    # sqrt(alt_gph_uc_repe**2 + alt_gph_uc_manuf**2) -> uct ?
+
+    #_gph_ucu:
+    #    value_col: 'alt_gph_uc_ucor'
+
+    _temp:
+        value_col: 'temp'
+
+    #_temp_ucr:
+    #    value_col: 'temp_uc_ucor'
+
+    #_temp_ucs:
+    #    value_col: 'temp_uc_scor'
+
+    _temp_uct:
+        value_col: 'temp_uc'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
+
+    #_temp_flag:
+    #    value_col: 0
+    #    csv_use_default: True
+
+    _pres:
+        value_col: 'press_gnss'
+
+    #TODO: is this assignment correct ?
+    _pres_uct:
+        value_col: 'press_gnss_uc_repe'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
+
+    #TODO: is this assignment correct ?
+    _pres_ucu:
+        value_col: 'press_gnss_uc_noise'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
+
+    _rh:
+        value_col: 'rh'
+
+    #_rh_ucr:
+    #    value_col: 'rh_uc_ucor'
+
+    _rh_uct:
+        value_col: 'rh_uc'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
+
+    _wdir:
+        value_col: 'wdir'
+
+    _wdir_ucu:
+        value_col: 'wdir_uc'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
+
+    _wspeed:
+        value_col: 'wspeed'
+
+    _wspeed_ucu:
+        value_col: 'wspeed_uc'
+        lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1

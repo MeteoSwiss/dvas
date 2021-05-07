@@ -1,12 +1,4 @@
 
-- mdl_name: 'RS92'
-  mdl_desc: 'Vaisala RS-92'
-  mid: 'RS92'
-
-- mdl_name: 'RS41'
-  mdl_desc: 'Vaisala RS-41 SG'
-  mid: 'RS41'
-
 - mdl_name: 'C34'
   mdl_desc: 'Meteolabor SRS-C34'
   mid: 'C34'
@@ -14,3 +6,19 @@
 - mdl_name: 'C50'
   mdl_desc: 'Meteolabor SRS-C50'
   mid: 'C50'
+
+- mdl_name: 'RS92'
+  mdl_desc: 'Vaisala RS-92'
+  mid: 'RS92'
+
+- mdl_name: 'RS41-PRE2018'
+  mdl_desc: 'Vaisala RS-41 SG (pre2018 file format)'
+  mid: 'RS41'
+
+- mdl_name: 'RS41'
+  mdl_desc: 'Vaisala RS-41 SG (current file format)'
+  mid: 'RS41'
+
+- mdl_name: 'M10'
+  mdl_desc: 'Modem M10'
+  mid: 'M10'

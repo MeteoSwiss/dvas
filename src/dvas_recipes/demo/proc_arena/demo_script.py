@@ -37,6 +37,8 @@ if __name__ == '__main__':
     print("\n --- GENERAL SETUP ---")
 
     # Init paths
+    # WARNING: to set an "absolute" path, make sure to preface it with "/", e.g.:
+    # path_var.orig_data_path = Path('/Users', 'jode', 'dvas_devdata')
     path_var.config_dir_path = demo_file_path.parent / 'config'
     path_var.orig_data_path = demo_file_path.parent / 'data'
     path_var.local_db_path = demo_file_path.parent / 'db'
@@ -66,10 +68,8 @@ if __name__ == '__main__':
     # Fetch
     DB.fetch_raw_data(
         [
-            'tdtpros1',
-            'trepros1', 'trepros1_flag',
-            'treprosu_r', 'treprosu_s', 'treprosu_t',
-            'altpros1'
+            'time', 'gph',
+            'temp', 'temp_flag', 'temp_ucr', 'temp_ucs', 'temp_uct'
         ],
         strict=True
     )
@@ -94,17 +94,17 @@ if __name__ == '__main__':
     # Load a series of basic profiles associated to a specific set of search criteria.
     # Each profile consists of a variable and an associated altitude.
     prfs = MultiProfile()
-    prfs.load_from_db(filt_raw, 'trepros1', 'altpros1')
+    prfs.load_from_db(filt_raw, 'temp', 'gph')
 
     # Idem for a series of radiosonde profiles, consisting of a variable, an associated timestep,
     # and an altitude.
     rs_prfs = MultiRSProfile()
-    rs_prfs.load_from_db(filt_raw_dt, 'trepros1', 'tdtpros1', alt_abbr='altpros1')
+    rs_prfs.load_from_db(filt_raw_dt, 'temp', 'time', alt_abbr='gph')
 
     # Load GDPs for temperature, including all the errors at hand
     gdp_prfs = MultiGDPProfile()
-    gdp_prfs.load_from_db(filt_raw_gdp_dt, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1',
-                          ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t',
+    gdp_prfs.load_from_db(filt_raw_gdp_dt, 'temp', tdt_abbr='time', alt_abbr='gph',
+                          ucr_abbr='temp_ucr', ucs_abbr='temp_ucs', uct_abbr='temp_uct',
                           inplace=True)
 
     # ----------------------------------------------------------------------------------------------
@@ -213,8 +213,8 @@ if __name__ == '__main__':
     filt_gdp_dt_sync = "and_(tags('sync'), {}, {})".format(filt_gdp, filt_dt)
 
     gdp_prfs = MultiGDPProfile()
-    gdp_prfs.load_from_db(filt_gdp_dt_sync, 'trepros1', alt_abbr='altpros1', tdt_abbr='tdtpros1',
-                          ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t',
+    gdp_prfs.load_from_db(filt_gdp_dt_sync, 'temp', tdt_abbr='time', alt_abbr='gph',
+                          ucr_abbr='temp_ucr', ucs_abbr='temp_ucs', uct_abbr='temp_uct',
                           inplace=True)
 
     # Before combining the GDPs with each other, let us assess their consistency. The idea here is

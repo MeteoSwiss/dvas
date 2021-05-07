@@ -60,10 +60,8 @@ if __name__ == '__main__':
     # Fetch
     DB.fetch_raw_data(
         [
-            'tdtpros1',
-            'trepros1',
-            'treprosu_r', 'treprosu_s', 'treprosu_t',
-            'altpros1'
+            'time', 'gph',
+            'temp', 'temp_ucr', 'temp_ucs', 'temp_uct'
         ],
         strict=True
     )
@@ -80,7 +78,7 @@ if __name__ == '__main__':
     # Get all the profiles, to see how they look.
     filt = "all()"
     prfs = MultiRSProfile()
-    prfs.load_from_db(filt, 'trepros1', 'tdtpros1', alt_abbr='altpros1')
+    prfs.load_from_db(filt, 'temp', 'time', alt_abbr='gph')
 
     #prfs.get_info(prm='oid')
     #prfs.get_info('tags')

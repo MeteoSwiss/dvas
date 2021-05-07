@@ -1,28 +1,40 @@
 # Parameter configuration file
 
-- prm_name: '^([tup])repros(1|(u_u)|(u_e)|(u_s)|(u_t)|(u_r))'
-  # Generate variables from regex generator for temperature, humidity and
-  #pressure for both instant and uncertainty values.
-  prm_desc: &fct_desc 'cat(rpls({"t": "Temperature", "u": "Relative humidity", "p": "Pressure", "f": "Wind speed", "d": "Wind direction"}, get(1)), repl_strict({"u_u": " uncorrelated uncertainty", "u_e": " environmental correlated uncertainty", "u_s": " spatial correlated uncertainty", "u_t": " temporal correlated uncertainty", "u_r": " rig uncorrelated uncertainty"}, get(2)))'
-  # Link anchor to str
-  prm_unit: &fct_unit 'rpls({"t": "degC", "u": "%", "p": "hPa", "f": "m/s", "d": "°"}, get(1))'
-
-- prm_name: 'altpros1'
-  # Variable can be generated from str only
-  prm_desc: 'Altitude'
-  prm_unit: 'm'
-
-- prm_name: 'altprosu'
-  prm_desc: 'Altitude uncertainty'
-  prm_unit: 'm'
-
-- prm_name: '^([fd])klpros([1])'
-  # Generate variables from regex generator for wind force and direction
-  # for both instant and uncertainty values
-  prm_desc: *fct_desc
-  # Reference to anchor
-  prm_unit: *fct_unit
-
-- prm_name: 'tdtpros1'
+- prm_name: 'time'
   prm_desc: 'Time'
   prm_unit: 's'
+
+- prm_name: 'gph'
+  prm_desc: 'Geopotential height'
+  prm_unit: 'm'
+
+- prm_name: 'temp(|(_ucr)|(_ucs)|(_uct)|(_ucu))'
+  # Generate variables from regex generator for temperature.
+  prm_desc: 'cat("Temperature", repl({"_ucr": " rig-correlated uncertainty",
+                                      "_ucs": " spatial-correlated uncertainty",
+                                      "_uct": " temporal-correlated uncertainty",
+                                      "_ucu": " un-correlated uncertainty"}, get(1)))'
+  prm_unit: 'K'
+
+- prm_name: 'rh(|(_ucr)|(_uct)|(_ucu))'
+  # Generate variables from regex generator for relative humidity.
+  prm_desc: 'cat("Relative humidity", repl({"_ucr": " rig-correlated uncertainty",
+                                            "_uct": " temporal-correlated uncertainty",
+                                            "_ucu": " un-correlated uncertainty"}, get(1)))'
+  prm_unit: '%'
+
+- prm_name: '(pres|alt)(|(_uct))'
+  # Generate variables from regex generator for pressure and altitude.
+  prm_desc: 'cat(repls({"pres": "Pressure",
+                        "alt": "Altitude a.m.s.l."}, get(1)),
+                 repl({"_uct": " temporal-correlated uncertainty"}, get(2)))'
+  prm_unit: 'repls({"pres": "hPa",
+                    "alt": "m"}, get(1))'
+
+- prm_name: '(wdir|wspeed)(|(_ucu))'
+  # Generate variables from regex generator for wind direction and wind speed.
+  prm_desc: 'cat(repls({"wdir": "Wind direction",
+                        "wspeed": "Wind speed"}, get(1)),
+                 repl({"_ucu": " un-correlated uncertainty"}, get(2)))'
+  prm_unit: 'repls({"wdir": "deg",
+                    "wspeed": "m/s"}, get(1))'
