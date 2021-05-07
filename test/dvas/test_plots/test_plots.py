@@ -20,7 +20,9 @@ from dvas.data.data import MultiGDPProfile
 from dvas.database.database import InfoManager
 
 # Functions to test
-#import dvas.plots.plots as dpp
+from dvas.plots import plots as dpp
+from dvas.plots import utils as dpu
+
 
 # Define db_data. This is some black magic that is directly related to conftest.py
 # This is a temporary db, that is required for get_info() to work properly with mdl_id.
@@ -50,25 +52,29 @@ def gdp_3_prfs(db_init):
     data_1 = pd.DataFrame({'alt': [10., 15., 20.], 'val': [10., 20., 30.], 'flg': [1, 1, 1],
                            'tdt': [1e9, 2e9, 3e9], 'ucr': [1, 1, 1], 'ucs': [1, 1, 1],
                            'uct': [1, 1, 1], 'ucu': [1, 1, 1]})
-    info_2 = InfoManager('20210302T0000Z', oids[1], tags=['e:1', 'r:1'])
-    data_2 = pd.DataFrame({'alt': [11., 16., 20.1], 'val': [10.5, 21., np.nan], 'flg': [1, 1, 1],
+    info_2 = InfoManager('20210303T0000Z', oids[1], tags=['e:1', 'r:1'])
+    data_2 = pd.DataFrame({'alt': [11., 16., 20.1], 'val': [15.2, 21., np.nan], 'flg': [1, 1, 1],
                            'tdt': [1e9, 2e9, 3e9], 'ucr': [1, 1, 1], 'ucs': [1, 1, 1],
                            'uct': [1, 1, 1], 'ucu': [1, 1, 1]})
     info_3 = InfoManager('20210302T0000Z', oids[2], tags=['e:1', 'r:1'])
-    data_3 = pd.DataFrame({'alt': [10.1, 17., 20.], 'val': [11., 21.1, np.nan], 'flg': [1, 1, 1],
+    data_3 = pd.DataFrame({'alt': [10.5, 17., 20.], 'val': [11., 21.1, np.nan], 'flg': [1, 1, 1],
                            'tdt': [1e9, 2e9, 3e9], 'ucr': [1, 1, 1], 'ucs': [1, 1, 1],
                            'uct': [1, 1, 1], 'ucu': [1, 1, 1]})
 
     # Let's build a multiprofile so I can test things out.
     multiprf = MultiGDPProfile()
-    multiprf.update({'val': None, 'tdt': None, 'alt': None, 'flg': None, 'ucr': None, 'ucs': None,
+    multiprf.update({'val': 'temp', 'tdt': 'time', 'alt': 'gph', 'flg': None, 'ucr': None, 'ucs': None,
                      'uct': None, 'ucu': None},
                     [GDPProfile(info_1, data_1), GDPProfile(info_2, data_2),
                      GDPProfile(info_3, data_3)])
 
     return multiprf
 
-#def test_multiprf(gdp_3_prfs):
-#    """ Test the multiprf plotting routine """
-#
-#    dpp.multiprf(gdp_3_prfs, index='alt', label='oid', uc=None, show=True)
+def test_multiprf(gdp_3_prfs):
+    """ Test the multiprf plotting routine """
+
+    dpp.multiprf(gdp_3_prfs, index='alt', label='mid', uc='uc_tot', show=True, fn_suffix='base',
+                 expose=2)
+
+    dpu.set_mplstyle(style='latex')
+    dpp.multiprf(gdp_3_prfs, index='alt', label='mid', uc='uc_tot', show=True, fn_suffix='latex')
