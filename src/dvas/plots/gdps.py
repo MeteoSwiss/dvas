@@ -266,7 +266,7 @@ def plot_ks_test(df, alpha, title=None, **kwargs):
                 edgecolor=None)
 
     # Let's build a discretized colormap, to be used for the different binning levels m
-    m_cm = pu.cmap_discretize(pu.DVAS_CMAP_1, n_bins)
+    m_cm = pu.cmap_discretize(pu.CMAP_1, n_bins)
 
     # Let's now deal with all the bin levels ...
     for bin_ind in range(n_bins):
@@ -330,7 +330,7 @@ def plot_ks_test(df, alpha, title=None, **kwargs):
 
     ax2.set_ylim((-6, 6))
     if title is not None:
-        ax1.set_title(title)
+        ax1.set_title(title.replace('_', ' '))
 
     # Add the source for the plot
     pu.add_source(fig)

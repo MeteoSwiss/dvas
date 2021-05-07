@@ -85,5 +85,5 @@ def test_ks_test(gdp_2_prfs):
 def test_get_incompatibility(gdp_2_prfs):
     """ Test the higher-level incompatibility checks """
 
-    out = get_incompatibility(gdp_2_prfs, alpha=0.0027, bin_sizes=[1], do_plot=False)
+    out = get_incompatibility(gdp_2_prfs, alpha=0.0027, bin_sizes=[1, 2], do_plot=True)
     assert isinstance(out, dict)
