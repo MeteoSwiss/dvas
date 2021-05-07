@@ -92,8 +92,7 @@ def combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=
     n_prf = len(gdp_prfs)
 
     # How long are the profiles ?
-    # TODO: simplify this once MultiProfiles are iterable
-    len_gdps = set(len(gdp_prfs.profiles[ind].data) for ind in range(len(gdp_prfs)))
+    len_gdps = set([len(prf) for prf in gdp_prfs])
 
     # Trigger an error if they do not have the same lengths.
     if len(len_gdps) > 1:
