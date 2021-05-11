@@ -13,7 +13,6 @@ Module contents: Required attributes definition for
 # Import from current packages modules
 from ...hardcoded import MODEL_PAT, PRM_AND_FLAG_PRM_PAT
 from ...database.model import Info as TableInfo
-from ...database.model import Data
 from ...database.model import MetaData as TableMetaData
 from ...database.model import Tag as TableTag
 from ...database.model import Object as TableObject
@@ -24,12 +23,7 @@ EDT_FLD_NM = TableInfo.edt.name  # Datetime field name
 TAG_FLD_NM = TableTag.__name__.lower() + 's'  # Tag field name
 META_FLD_NM = TableMetaData.__name__.lower()  # Metadata field name
 
-INDEX_FLD_NM = 'index_col'  # Index column field name
-PARAM_FLD_NM = 'value_col'  # Value column field name
-
-UNIT_FLD_NM = 'unit'  # Index unit field name
-
-LAMBDA_FLD_NM = 'lambda'  # Lambda field name
+VALUE_FLD_NM = 'value'  # Value column field name
 
 # Define csv field name
 CSV_USE_DEFAULT_FLD_NM = 'csv_use_default'
@@ -44,9 +38,6 @@ CSV_COMMENT_FLD_NM = 'csv_comment'
 CSV_NA_VALUES_FLD_NM = 'csv_na_values'
 CSV_SKIPFOOTER_FLD_NM = 'csv_skipfooter'
 
-INDEX_NM = Data.index.name
-VALUE_NM = Data.value.name
-
 #: list: Fields keys passed to expression interpreter
 EXPR_FIELD_KEYS = [
     EDT_FLD_NM, TableObject.srn.name,
@@ -60,8 +51,6 @@ NODE_PATTERN = [MODEL_PAT, PRM_AND_FLAG_PRM_PAT]
 NODE_PARAMS_DEF = {
     TAG_FLD_NM: [],
     META_FLD_NM: {},
-    UNIT_FLD_NM: '1',
-    LAMBDA_FLD_NM: 'lambda x: x',
     CSV_USE_DEFAULT_FLD_NM: False,
     CSV_DELIMITER_FLD_NM: ';',
     CSV_INDEX_COL_FLD_NM: None,
@@ -115,37 +104,8 @@ PARAMETER_PATTERN_PROP = {
             },
         ]
     },
-    rf"^{PARAM_FLD_NM}$": {
-        "oneOf": [
-            {
-                "type": "integer",
-                "minimum": 0
-            },
-            {
-                "type": "string",
-            },
-            {
-                "type": "array",
-                "items": {
-                    "oneOf": [
-                        {
-                            "type": "integer",
-                            "minimum": 0
-                        },
-                        {
-                            "type": "string",
-                        },
-                    ]
-                }
-            }
-        ]
-    },
-    rf"^{UNIT_FLD_NM}$": {
-        "type": "string",
-    },
-    rf"^{LAMBDA_FLD_NM}$": {
-        "type": 'string',
-        "pattern": r"^\s*lambda\s*\w+\s*\:.+"
+    rf"^{VALUE_FLD_NM}$": {
+        type: "string"
     },
     rf"^{CSV_USE_DEFAULT_FLD_NM}$": {
         "type": "boolean"
