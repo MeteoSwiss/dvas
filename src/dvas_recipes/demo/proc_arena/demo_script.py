@@ -60,7 +60,7 @@ if __name__ == '__main__':
     print("\n --- DATABASE SETUP ---")
 
     # Use this command to clear the DB
-    # DB.clear_db()
+    DB.clear_db()
 
     # Init the DB
     DB.init()
