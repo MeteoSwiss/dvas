@@ -693,12 +693,12 @@ class GDPHandler(FileHandler):
 
         return out
 
-def get_data(self, field_id, data_file_path, mdl_name, prm_name):
+    def get_data(self, field_id, data_file_path, mdl_name, prm_name):
         """Implementation of abstract method"""
 
         # Read data
         with nc.Dataset(data_file_path, 'r') as self._fid:
- data = pd.Series(self._fid[field_id][:])
+            data = pd.Series(self._fid[field_id][:])
 
         return data
 
