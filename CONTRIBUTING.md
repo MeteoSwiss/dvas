@@ -234,6 +234,10 @@ Until its release, the dvas repository will remain private: branching will thus 
 
        pytest
 
+   If you want to also test the good-looking "LaTeX" plots (which require a working local LaTeX installlation), type:
+
+       pytest --latex
+
    :warning: Needless to say, your code tweaks will *evidently* come with dedicated tests. Right ?
 
 10. Once ready with all your modifications, we'll ask that you do a rebase of your branch to
