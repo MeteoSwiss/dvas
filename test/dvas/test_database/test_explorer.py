@@ -25,7 +25,7 @@ db_data = {
         {
             'index': np.array([0, 1, 2]),
             'value': np.array([500, 501, 502]),
-            'prm_name': 'trepros1',
+            'prm_name': 'temp',
             'info': {
                 'edt': '20200101T0000Z',
                 'mdl_name': 'YT',

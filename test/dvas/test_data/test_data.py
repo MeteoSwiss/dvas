@@ -23,7 +23,7 @@ def mlt_prf():
     """# Load multiprofile"""
     mlt_prf = MultiRSProfile()
     prf_stgy = LoadRSProfileStrategy()
-    data = prf_stgy.execute("all()", 'trepros1', 'tdtpros1', alt_abbr='altpros1')
+    data = prf_stgy.execute("all()", 'temp', 'time', alt_abbr='gph')
     mlt_prf.update(data[1], data[0])
     return mlt_prf
 
@@ -32,7 +32,7 @@ def mlt_gdpprf():
     """# Load multiprofile"""
     mlt_gdpprf = MultiGDPProfile()
     prf_stgy = LoadGDPProfileStrategy()
-    data = prf_stgy.execute("all()", 'trepros1', 'tdtpros1', alt_abbr='altpros1',
+    data = prf_stgy.execute("all()", 'temp', 'time', alt_abbr='gph',
                             ucr_abbr='ucr1', ucs_abbr='ucs1', uct_abbr='uct1', ucu_abbr='ucu1')
     mlt_gdpprf.update(data[1], data[0])
     return mlt_gdpprf
@@ -52,7 +52,7 @@ db_data = {
                        'metadata': {},
                        'src': ''},
              } for (ind, dt) in enumerate(['20200101T0000Z', '20200202T0000Z'])
-             for prm in ['trepros1', 'altpros1', 'trepros1_flag', 'tdtpros1', 'ucr1', 'ucs1',
+             for prm in ['temp', 'gph', 'temp_flag', 'time', 'ucr1', 'ucs1',
                          'uct1', 'ucu1']
             ]
 }
@@ -186,9 +186,9 @@ class TestMutliProfile:
         mlt_prf_1 = MultiRSProfile()
 
         # Load from db
-        res = mlt_prf_1.load_from_db('all()', 'trepros1', 'tdtpros1', alt_abbr='altpros1')
-        mlt_prf_2 = MultiRSProfile().load_from_db('all()', 'trepros1', 'tdtpros1',
-                                                  alt_abbr='altpros1', inplace=False)
+        res = mlt_prf_1.load_from_db('all()', 'temp', 'time', alt_abbr='gph')
+        mlt_prf_2 = MultiRSProfile().load_from_db('all()', 'temp', 'time',
+                                                  alt_abbr='gph', inplace=False)
 
         # Test inplace = True
         assert res is None

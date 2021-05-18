@@ -17,16 +17,16 @@ _RS92:
     csv_delimiter: ','
     csv_skipinitialspace: True
 
-    _tdtpros1:
+    _time:
         value: get(0, 's2ns')
 
-    _trepros1:
+    _temp:
         value: get(2)
 
-    _altpros1:
+    _gph:
         value: get(9)
 
-    _prepros1:
+    _pres:
         value: get(1)
 
 # ----------------------------------------------------
@@ -47,19 +47,19 @@ _YT:
     csv_delimiter: ','
     csv_skipinitialspace: True
 
-    _tdtpros1:
+    _time:
         value: get(0, 's2ns')
 
-    _trepros1:
+    _temp:
         value: get(1)
 
-    _altpros1:
+    _gph:
         value: get(2)
 
-    _prepros1:
+    _pres:
         value: get(3)
 
-    _trepros1_flag:
+    _temp_flag:
         value: get(0)
         csv_use_default: True
 
@@ -82,18 +82,18 @@ _ZT:
     csv_delimiter: ';'
     csv_skip_blank_lines: True
 
-    _tdtpros1:
+    _time:
         value: get(0, 's2ns')
 
-    _trepros1:
+    _temp:
         value: get(1)
 
-    _altpros1:
+    _gph:
         value: get(2)
 
-    _prepros1:
+    _pres:
         value: get(3)
 
-    _trepros1_flag:
+    _temp_flag:
         value: get(0)
         csv_use_default: True

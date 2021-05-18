@@ -7,11 +7,12 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [Unreleased]
 ### Added:
  - [modolol, 2021-05-11] Add interpreter to mix raw parameter in config file
- - [fpavogt, 2021-04-19] Add config info for variables other than T, and for the M10 raw file.
+ - [fpavogt, 2021-04-19] Add config info for variables other than T, and for the M10 raw file
  - [modolol, 2021-04-13] Add DB exploring tool
 ### Fixed:
 ### Changed:
  - [fpavogt, 2021-05-18] Improve looks of plots, and split-up "orig_data_config.yml"
+ - [fpavogt, 2021-05-18] Changed parameter names in tests, for consistency with main code
 ### Deprecated:
 ### Removed:
 ### Security:
