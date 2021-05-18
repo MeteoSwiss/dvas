@@ -11,6 +11,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [modolol, 2021-04-13] Add DB exploring tool
 ### Fixed:
 ### Changed:
+ - [fpavogt, 2021-05-18] Improve looks of plots, and split-up "orig_data_config.yml"
 ### Deprecated:
 ### Removed:
 ### Security:
