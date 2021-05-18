@@ -21,6 +21,28 @@ from dvas.environ import path_var
 from dvas.helper import AttrDict
 
 
+def pytest_addoption(parser):
+    """ A nifty little function that allows to feed command line arguments to the pytest command,
+    e.g.:
+
+        pytest --latex
+
+    Intended to enable the use of a local LateX installation when running tests locally (i.e. NOT on
+    Github).
+    """
+
+    parser.addoption("--latex", action="store_true",
+                     help="Test plots also using a full (local) LaTeX installation.")
+
+@pytest.fixture(scope='session')
+def do_latex(request):
+    """ A pytext fixture to identify whether a local LaTeX installation exists, or not.
+
+    Adapted from the response of ipetrik on
+    `StackOverflow <https://stackoverflow.com/questions/40880259/how-to-pass-arguments-in-pytest-by-command-line>`__
+    """
+    return request.config.option.latex
+
 #TODO
 # Split into 2 fixtures. One for the DB reset and setup.
 # And one for the data insertion

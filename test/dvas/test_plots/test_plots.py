@@ -70,11 +70,12 @@ def gdp_3_prfs(db_init):
 
     return multiprf
 
-def test_multiprf(gdp_3_prfs):
+def test_multiprf(gdp_3_prfs, do_latex):
     """ Test the multiprf plotting routine """
 
     dpp.multiprf(gdp_3_prfs, index='alt', label='mid', uc='uc_tot', show=True, fn_suffix='base',
                  expose=2)
 
-    dpu.set_mplstyle(style='latex')
-    dpp.multiprf(gdp_3_prfs, index='alt', label='mid', uc='uc_tot', show=True, fn_suffix='latex')
+    if do_latex:
+        dpu.set_mplstyle(style='latex')
+        dpp.multiprf(gdp_3_prfs, index='alt', label='mid', uc='uc_tot', show=True, fn_suffix='latex')
