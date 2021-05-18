@@ -232,11 +232,12 @@ Until its release, the dvas repository will remain private: branching will thus 
 
 9. Run pytest to check that all is fine with your changes. From the core dvas folder, type:
 
-       pytest
+       pytest test/dvas
+       pytest test/dvas_recipes
 
    If you want to also test the good-looking "LaTeX" plots (which require a working local LaTeX installlation), type:
 
-       pytest --latex
+       pytest test/dvas --latex
 
    :warning: Needless to say, your code tweaks will *evidently* come with dedicated tests. Right ?
 

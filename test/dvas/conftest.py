@@ -34,6 +34,7 @@ def pytest_addoption(parser):
     parser.addoption("--latex", action="store_true",
                      help="Test plots also using a full (local) LaTeX installation.")
 
+
 @pytest.fixture(scope='session')
 def do_latex(request):
     """ A pytext fixture to identify whether a local LaTeX installation exists, or not.
@@ -41,7 +42,14 @@ def do_latex(request):
     Adapted from the response of ipetrik on
     `StackOverflow <https://stackoverflow.com/questions/40880259/how-to-pass-arguments-in-pytest-by-command-line>`__
     """
-    return request.config.option.latex
+
+    try:
+        return request.config.getoption("--latex")
+    except ValueError:
+        # This happens if pytest is being launched from the root directory, in which case it does
+        # NOT see conftest.py.
+        return False
+
 
 #TODO
 # Split into 2 fixtures. One for the DB reset and setup.
