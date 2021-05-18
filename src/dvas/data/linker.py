@@ -12,7 +12,9 @@ Module contents: Data linker classes
 # Import external python packages and modules
 from abc import ABC, abstractmethod
 import re
+from functools import reduce
 from itertools import takewhile
+import operator
 import inspect
 import netCDF4 as nc
 import pandas as pd
@@ -29,7 +31,7 @@ from ..config.config import ConfigReadError
 from ..config.config import ConfigExprInterpreter
 from ..config.definitions.origdata import EXPR_FIELD_KEYS
 from ..config.definitions.origdata import TAG_FLD_NM
-from ..config.definitions.origdata import PARAM_FLD_NM
+from ..config.definitions.origdata import VALUE_FLD_NM
 from ..config.definitions.origdata import CSV_USE_DEFAULT_FLD_NM
 from ..logger import rawcsv
 from ..environ import glob_var
@@ -265,7 +267,15 @@ class FileHandler(AbstractHandler):
             return
 
         try:
-            data = self.get_data(data_file_path, mdl_name, prm_name)
+
+            # Get parameter columns to read
+            param_value = self.origdata_config_mngr.get_val(
+                [mdl_name, prm_name], VALUE_FLD_NM
+            )
+
+            data = LoadExprInterpreter.eval(
+                param_value, self.get_data, data_file_path, mdl_name, prm_name
+            )
 
             # Add tags
             metadata[TAG_FLD_NM] += self.data_ok_tags
@@ -586,7 +596,7 @@ class CSVHandler(FileHandler):
 
         return out
 
-    def get_data(self, data_file_path, mdl_name, prm_name):
+    def get_data(self, field_id, data_file_path, mdl_name, prm_name):
         """Implementation of abstract method"""
 
         # Get config params for (model, prm_name) couple
@@ -620,11 +630,7 @@ class CSVHandler(FileHandler):
         # (Add usecols, squeeze and engine arguments)
         raw_csv_read_args.update(
             {
-                'usecols': [
-                    self.origdata_config_mngr.get_val(
-                        [mdl_name, prm_name], PARAM_FLD_NM
-                    ),
-                ],
+                'usecols': [field_id],
                 'squeeze': True,
                 'engine': 'python',
             }
@@ -632,11 +638,6 @@ class CSVHandler(FileHandler):
 
         # Read raw csv
         data = pd.read_csv(data_file_path, **raw_csv_read_args)
-        data = data.map(
-            eval(self.origdata_config_mngr.get_val(
-                [mdl_name, prm_name], 'lambda')
-            )
-        )
 
         return data
 
@@ -692,21 +693,12 @@ class GDPHandler(FileHandler):
 
         return out
 
-    def get_data(self, data_file_path, mdl_name, prm_name):
+    def get_data(self, field_id, data_file_path, mdl_name, prm_name):
         """Implementation of abstract method"""
 
         # Read data
         with nc.Dataset(data_file_path, 'r') as self._fid:
-            data_col_nm = self.origdata_config_mngr.get_val(
-                [mdl_name, prm_name], PARAM_FLD_NM
-            )
-
-            data = pd.Series(self._fid[data_col_nm][:])
-            data = data.map(
-                eval(self.origdata_config_mngr.get_val(
-                    [mdl_name, prm_name], 'lambda')
-                )
-            )
+            data = pd.Series(self._fid[field_id][:])
 
         return data
 
@@ -756,7 +748,7 @@ class FlagGDPHandler(GDPHandler):
         """Implementation of abstract method"""
         return data_file_path.parent / (data_file_path.stem + f'.{GDP_FILE_EXT}')
 
-    def get_data(self, data_file_path, mdl_name, prm_name):
+    def get_data(self, field_id, data_file_path, mdl_name, prm_name):
         """Implementation of abstract method"""
 
         # Get config params for (model, prm_name) couple
@@ -775,11 +767,7 @@ class FlagGDPHandler(GDPHandler):
         # (Add usecols, squeeze and engine arguments)
         raw_csv_read_args.update(
             {
-                'usecols': [
-                    self.origdata_config_mngr.get_val(
-                        [mdl_name, prm_name], PARAM_FLD_NM
-                    ),
-                ],
+                'usecols': [field_id],
                 'squeeze': True,
                 'engine': 'python',
             }
@@ -787,11 +775,6 @@ class FlagGDPHandler(GDPHandler):
 
         # Read raw csv
         data = pd.read_csv(data_file_path, **raw_csv_read_args)
-        data = data.map(
-            eval(self.origdata_config_mngr.get_val(
-                [mdl_name, prm_name], 'lambda')
-            )
-        )
 
         return data
 
@@ -909,6 +892,211 @@ class CSVOutputLinker(DataLinker):
 
         # Save data
         data.to_csv(env_path_var.output_path / 'data.csv', header=False, index=True)
+
+
+class LoadExprInterpreter(ABC):
+    """Abstract config expression interpreter class
+
+        Notes:
+            This class and subclasses construction are based on the interpreter
+            design pattern.
+
+        """
+
+    _FCT = None
+    _ARGS = tuple()
+    _KWARGS = dict()
+
+    @classmethod
+    def set_callable(cls, fct, *args, **kwargs):
+        """Set strategy
+        Args:
+            fct (callable): Function/Methode called by 'get' expression
+        """
+
+        # Test
+        assert callable(fct), "'fct' must be a callable"
+
+        cls._FCT = fct
+        cls._ARGS = args
+        cls._KWARGS = kwargs
+
+    @abstractmethod
+    def interpret(self):
+        """Interpreter method"""
+
+    @staticmethod
+    def eval(expr, get_fct, *args, **kwargs):
+        """Evaluate str expression
+
+        Args:
+            expr (str|ConfigExprInterpreter): Expression to evaluate
+            get_fct (callable): Function use by 'get'
+
+        Examples:
+            >>> import re
+            >>> mymatch = re.match('^a(\d)', 'a1b')
+            >>> print(ConfigExprInterpreter.eval("cat('My test', ' ', get(1))", mymatch.group))
+            My test 1
+        """
+
+        # Define
+        str_expr_dict = {
+            'add': AddExpr,
+            'sub': SubExpr,
+            'mul': MulExpr,
+            'div': DivExpr,
+            'get': GetExpr,
+            'pow': PowExpr,
+            'sqrt': SqrtExpr,
+        }
+
+
+        # Init
+        LoadExprInterpreter.set_callable(get_fct, *args, **kwargs)
+
+        # Treat expression
+        try:
+            # Eval
+            expr_out = eval(expr, str_expr_dict)
+
+            # Interpret
+            expr_out = expr_out.interpret()
+
+        # TODO
+        #  Detail exception
+        except Exception as exp:
+            raise Exception(exp)
+
+        return expr_out
+
+
+class NonTerminalLoadExprInterpreter(LoadExprInterpreter):
+    """Implement an interpreter operation for non terminal symbols in the
+    grammar.
+    """
+
+    def __init__(self, *args):
+        self._expression = args
+
+    def interpret(self):
+        """Non terminal interpreter method"""
+
+        # Apply interpreter
+        res_interp = [
+            (arg if isinstance(arg, LoadExprInterpreter)
+             else NoneExpr(arg)).interpret()
+            for arg in self._expression
+        ]
+
+        if len(self._expression) > 1:
+            return reduce(self.fct, res_interp)
+        else:
+            return self.fct(res_interp[0])
+
+    @abstractmethod
+    def fct(self, *args):
+        """Function between expression args"""
+
+
+class AddExpr(NonTerminalLoadExprInterpreter):
+    """Addition"""
+
+    def fct(self, a, b):
+        """Implement fct method"""
+        return operator.add(a, b)
+
+
+class SubExpr(NonTerminalLoadExprInterpreter):
+    """Subtractions"""
+
+    def fct(self, a, b):
+        """Implement fct method"""
+        return operator.sub(a, b)
+
+
+class MulExpr(NonTerminalLoadExprInterpreter):
+    """Multiplication"""
+
+    def fct(self, a, b):
+        """Implement fct method"""
+        return operator.mul(a, b)
+
+
+class DivExpr(NonTerminalLoadExprInterpreter):
+    """Division"""
+
+    def fct(self, a, b):
+        """Implement fct method"""
+        return operator.truediv(a, b)
+
+
+class PowExpr(NonTerminalLoadExprInterpreter):
+    """Power operator"""
+
+    def fct(self, a, b):
+        """Implement fct method"""
+        return operator.pow(a, b)
+
+
+class SqrtExpr(PowExpr):
+    """Square root"""
+
+    def __init__(self, arg):
+        super().__init__(arg, 0.5)
+
+
+class TerminalLoadExprInterpreter(LoadExprInterpreter):
+    """Implement an interpreter operation for terminal symbols in the
+    grammar.
+    """
+
+    def __init__(self, arg):
+        self._expression = arg
+
+
+class NoneExpr(TerminalLoadExprInterpreter):
+    """Apply none interpreter"""
+
+    def interpret(self):
+        """Implement fct method"""
+        return self._expression
+
+
+class GetExpr(TerminalLoadExprInterpreter):
+    """Get catch value"""
+
+    _CONV_DICT = {
+        'nop': lambda x: x,
+        'rel': lambda x: x - x.iloc[0],
+        'div2': lambda x: x / 2,
+        's2ns': lambda x: x * 1E9,
+        'd2k': lambda x: x + 273.15,
+        'k2d': lambda x: x - 273.15,
+        'd2f': lambda x: (x * 9 / 5) + 32,
+        'f2d': lambda x: (x - 32) * 5 / 9,
+        'ms2kmh': lambda x: x * 3.6,
+        'kmh2ms': lambda x: x / 3.6,
+        'm2km': lambda x: x / 1000,
+        'km2m': lambda x: x + 1000,
+    }
+
+    def __init__(self, arg, op='nop'):
+        self._expression = arg
+
+        # Set op
+        if isinstance(op, str):
+            self._op = [self._CONV_DICT[op]]
+        else:
+            self._op = [self._CONV_DICT[arg] for arg in op]
+
+    def interpret(self):
+        """Implement fct method"""
+        out = self._FCT(self._expression, *self._ARGS, **self._KWARGS)  # noqa pylint: disable=E1102
+        for op in self._op:
+            out = op(out)
+
+        return out
 
 
 class ConfigInstrIdError(Exception):

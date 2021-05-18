@@ -19,17 +19,16 @@ _C50:
     csv_skipfooter: 1
 
     _time:
-        value_col: 0
-        lambda: 'lambda x: x * 1E9'
+        value: get(0, 's2ns')
 
     _gph:
-        value_col: 1
+        value: get(1)
 
     _temp:
-        value_col: 5
+        value: get(5)
 
     _pres:
-        value_col: 4
+        value: get(4)
 
 
 # ----------------------------------------------------
@@ -54,22 +53,21 @@ _C34:
     csv_skipfooter: 1
 
     _time:
-        value_col: 0
-        lambda: 'lambda x: x * 1E9'
+        value: get(0, 's2ns')
 
     _gph:
-        value_col: 1
+        value: get(1)
 
     _temp:
-        value_col: 5
+        value: get(5)
 
     _pres:
-        value_col: 4
+        value: get(4)
 
 # ----------------------------------------------------
 # RS-41 type (NOT THE GDP!), pre-2018 file format
 # ----------------------------------------------------
-_RS41-2017:
+_RS41-PRE2018:
 
     # -- META DATA ----------------------------------
     edt: "get('event_dt')"
@@ -87,21 +85,19 @@ _RS41-2017:
     csv_skiprows: 1
 
     _time:
-        value_col: 0
-        lambda: 'lambda x: x * 1E9'
+        value: get(0, 's2ns')
 
     _gph:
-        value_col: 2
+        value: get(2)
 
     _temp:
-        value_col: 4
-        lambda: 'lambda x: x + 273.15'
+        value: get(4, 'd2k')
 
     _pres:
-        value_col: 3
+        value: get(3)
 
     _rh:
-        value_col: 5
+        value: get(5)
 
 # ----------------------------------------------------
 # RS-41 type (NOT THE GDP!), latest file format
@@ -124,21 +120,19 @@ _RS41:
     csv_skiprows: 47
 
     _time:
-        value_col: 0
-        lambda: 'lambda x: x * 1E9'
+        value: get(0, 's2ns')
 
     _gph:
-        value_col: 2
+        value: get(2)
 
     _temp:
-        value_col: 4
-        lambda: 'lambda x: x + 273.15'
+        value: get(4, 'd2k')
 
     _pres:
-        value_col: 3
+        value: get(3)
 
     _rh:
-        value_col: 5
+        value: get(5)
 
 # ----------------------------------------------------
 # RS-92 type (NOT THE GDP!)
@@ -164,25 +158,23 @@ _RS92:
     csv_skiprows: 2
 
     _time:
-        value_col: 0
-        lambda: 'lambda x: x * 1E9'
+        value: get(0, 's2ns')
 
     _gph:
-        value_col: 1
+        value: get(1)
 
     _temp:
-        value_col: 3
-        lambda: 'lambda x: x + 273.15'
+        value: get(3, 'd2k')
 
     _temp_flag:
-        value_col: 0
+        value: get(0)
         csv_use_default: True
 
     _pres:
-        value_col: 2
+        value: get(2)
 
     _rh:
-        value_col: 4
+        value: get(4)
 
 # ----------------------------------------------------
 # M10 type (NOT THE GDP!)
@@ -205,21 +197,19 @@ _M10:
     csv_skiprows: 1
 
     _time:
-        value_col: 0
-        lambda: 'lambda x: x * 1E9'
+        value: get(0, 's2ns')
 
     _gph:
-        value_col: 1
+        value: get(1)
 
     _temp:
-        value_col: 10
-        lambda: 'lambda x: x + 273.15'
+        value: get(10, 'd2k')
 
     _pres:
-        value_col: 12
+        value: get(12)
 
     _rh:
-        value_col: 11
+        value: get(11)
 
 # ----------------------------------------------------
 # RS-41 GDP, version beta-1
@@ -237,45 +227,44 @@ _RS41-GDP-BETA_001:
 
     # -- ORIG DATA ----------------------------------
     _time:
-        value_col: 'time'
-        lambda: 'lambda x: x * 1E9'
+        value: get('time', 's2ns')
 
     _gph:
-        value_col: 'alt_gph'
+        value: get('alt_gph')
 
     _temp:
-        value_col: 'temp'
+        value: get('temp')
 
     _temp_ucr:
-        value_col: 'temp_uc_ncor'
+        value: get('temp_uc_ncor', 'div2')  # Go from K=2 to K=1
 
     _temp_ucs:
-        value_col: 'temp_uc_scor'
+        value: get('temp_uc_scor', 'div2')  # Go from K=2 to K=1
 
     _temp_uct:
-        value_col: 'temp_uc_tcor'
+        value: get('temp_uc_tcor', 'div2')  # Go from K=2 to K=1
 
     _temp_flag:
-        value_col: 0
+        value: get(0)
         csv_use_default: True
 
     _pres:
-        value_col: 'press_gnss'
+        value: get('press_gnss')
 
     _pres_uct:
-        value_col: 'press_gnss_uc'
+        value: get('press_gnss_uc', 'div2')  # Go from K=2 to K=1
 
     _wdir:
-        value_col: 'wdir'
+        value: get('wdir')
 
     _wdir_ucu:
-        value_col: 'wdir_uc'
+        value: get('wdir_uc', 'div2')  # Go from K=2 to K=1
 
     _wspeed:
-        value_col: 'wspeed'
+        value: get('wspeed')
 
     _wspeed_ucu:
-        value_col: 'wspeed_uc'
+        value: get('wspeed_uc', 'div2')  # Go from K=2 to K=1
 
 # ----------------------------------------------------
 # RS-41 GDP, version beta-2
@@ -293,63 +282,62 @@ _RS41-GDP-BETA_002:
 
     # -- ORIG DATA ----------------------------------
     _time:
-        value_col: 'time'
-        lambda: 'lambda x: x * 1E9'
+        value: get('time', 's2ns')
 
     _gph:
-        value_col: 'alt_gph'
+        value: get('alt_gph')
 
     _gph_uct:
-        value_col: 'alt_gph_uc_tcor'
+        value: get('alt_gph_uc_tcor', 'div2')  # Go from K=2 to K=1
 
     _gph_ucu:
-        value_col: 'alt_gph_uc_ucor'
+        value: get('alt_gph_uc_ucor', 'div2')  # Go from K=2 to K=1
 
     _temp:
-        value_col: 'temp'
+        value: get('temp')
 
     _temp_ucr:
-        value_col: 'temp_uc_ucor'
+        value: get('temp_uc_ucor', 'div2')  # Go from K=2 to K=1
 
     _temp_ucs:
-        value_col: 'temp_uc_scor'
+        value: get('temp_uc_scor', 'div2')  # Go from K=2 to K=1
 
     _temp_uct:
-        value_col: 'temp_uc_tcor'
+        value: get('temp_uc_tcor', 'div2')  # Go from K=2 to K=1
 
     _temp_flag:
-        value_col: 0
+        value: get(0)
         csv_use_default: True
 
     _pres:
-        value_col: 'press_gnss'
+        value: get('press_gnss')
 
     _pres_uct:
-        value_col: 'press_gnss_uc_tcor'
+        value: get('press_gnss_uc_tcor', 'div2')  # Go from K=2 to K=1
 
     _pres_ucu:
-        value_col: 'press_gnss_uc_ucor'
+        value: get('press_gnss_uc_ucor', 'div2')  # Go from K=2 to K=1
 
     _rh:
-        value_col: 'rh'
+        value: get('rh')
 
     _rh_ucr:
-        value_col: 'rh_uc_ucor'
+        value: get('rh_uc_ucor', 'div2')  # Go from K=2 to K=1
 
     _rh_uct:
-        value_col: 'rh_uc_tcor'
+        value: get('rh_uc_tcor', 'div2')  # Go from K=2 to K=1
 
     _wdir:
-        value_col: 'wdir'
+        value: get('wdir')
 
     _wdir_ucu:
-        value_col: 'wdir_uc'
+        value: get('wdir_uc', 'div2')  # Go from K=2 to K=1
 
     _wspeed:
-        value_col: 'wspeed'
+        value: get('wspeed')
 
     _wspeed_ucu:
-        value_col: 'wspeed_uc'
+        value: get('wspeed_uc', 'div2')  # Go from K=2 to K=1
 
 # ----------------------------------------------------
 # RS92-GDP, version 2
@@ -366,50 +354,53 @@ _RS92-GDP_002:
 
     # -- ORIG DATA ----------------------------------
     _time:
-        value_col: 'time'
-        lambda: 'lambda x: x * 1E9'
+        value: get('time', 's2ns')
 
     _gph:
-        value_col: 'geopot'
+        value: get('geopot')
 
     _temp:
-        value_col: 'temp'
+        value: get('temp')
 
     _temp_ucr:
-        # TODO: in v2 of the GDP, this value is wrong. It must be reconstructed from:
-        # value_col: sqrt('u_temp'**2 - 'u_cor_temp'**2)
-        value_col: 'u_std_temp'
+        # In v2 of the GDP, this value is wrong. It must be reconstructed from:
+        # value: sqrt('u_temp'**2 - 'u_cor_temp'**2)
+        value: rss(get('u_temp'), get('u_cor_temp'))
 
     _temp_uct:
-        value_col: 'u_cor_temp'
+        value: get('u_cor_temp')
 
     _pres:
-        value_col: 'press'
+        value: get('press')
 
     _pres_uct:
-        value_col: 'u_press'
+        value: get('u_press')
 
     _rh:
-        value_col: 'rh'
+        value: get('rh')
 
     _rh_ucr:
         # TODO: this needs to be checked. Is it as wrong as the temperature ?
-        value_col: 'u_std_rh'
+        value: get('u_std_rh')
 
     _rh_uct:
-        value_col: 'u_cor_rh'
+        value: get('u_cor_rh')
 
     _wdir:
-        value_col: 'wdir'
+        value: get('wdir')
 
     _wdir_ucu:
-        value_col: 'u_wdir'
+        value: get('u_wdir')
 
     _wspeed:
-        value_col: 'wspeed'
+        value: get('wspeed')
 
     _wspeed_ucu:
+<<<<<<< HEAD
         value_col: 'u_wspeed'
+=======
+        value: get('u_wspeed')
+>>>>>>> ef8fe2a3a775f108df1eb92217d4b4b92bf916d0
 
 # ----------------------------------------------------
 # M10 GDP, version alpha-1
@@ -426,6 +417,7 @@ _M10-GDP-ALPHA_001:
 
     # -- ORIG DATA ----------------------------------
     _time:
+<<<<<<< HEAD
         value_col: 'time'
         # TODO: this is the number of seconds since 1970-01-01T00:00:00Z !!!
         lambda: 'lambda x: x * 1E9'
@@ -436,12 +428,22 @@ _M10-GDP-ALPHA_001:
     _gph_uct:
         value_col: 'alt_gph_uc'
         lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
+=======
+        value: get('time', ['rel', 's2ns'])  # this is the number of seconds since 1970-01-01T00:00:00Z
+
+    _gph:
+        value: get('alt_gph')
+
+    _gph_uct:
+        value: get('alt_gph_uc', 'div2')  # Go from K=2 to K=1
+>>>>>>> ef8fe2a3a775f108df1eb92217d4b4b92bf916d0
 
     #TODO:
     # alt_gph_uc_noise -> ucu ?
     # sqrt(alt_gph_uc_repe**2 + alt_gph_uc_manuf**2) -> uct ?
 
     #_gph_ucu:
+<<<<<<< HEAD
     #    value_col: 'alt_gph_uc_ucor'
 
     _temp:
@@ -497,3 +499,54 @@ _M10-GDP-ALPHA_001:
     _wspeed_ucu:
         value_col: 'wspeed_uc'
         lambda: 'lambda x: x * 0.5' # Go from K=2 to K=1
+=======
+    #    value: 'alt_gph_uc_ucor'
+
+    _temp:
+        value: get('temp')
+
+    #_temp_ucr:
+    #    value: 'temp_uc_ucor'
+
+    #_temp_ucs:
+    #    value: 'temp_uc_scor'
+
+    _temp_uct:
+        value: get('temp_uc', 'div2')  # Go from K=2 to K=1
+
+    #_temp_flag:
+    #    value: 0
+    #    csv_use_default: True
+
+    _pres:
+        value: get('press_gnss')
+
+    #TODO: is this assignment correct ?
+    _pres_uct:
+        value: get('press_gnss_uc_repe', 'div2')  # Go from K=2 to K=1
+
+    #TODO: is this assignment correct ?
+    _pres_ucu:
+        value: get('press_gnss_uc_noise', 'div2')  # Go from K=2 to K=1
+
+    _rh:
+        value: get('rh')
+
+    #_rh_ucr:
+    #    value: 'rh_uc_ucor'
+
+    _rh_uct:
+        value: get('rh_uc', 'div2')  # Go from K=2 to K=1
+
+    _wdir:
+        value: get('wdir')
+
+    _wdir_ucu:
+        value: get('wdir_uc', 'div2')  # Go from K=2 to K=1
+
+    _wspeed:
+        value: get('wspeed')
+
+    _wspeed_ucu:
+        value: get('wspeed_uc', 'div2')  # Go from K=2 to K=1
+>>>>>>> ef8fe2a3a775f108df1eb92217d4b4b92bf916d0
