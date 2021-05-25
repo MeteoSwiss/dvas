@@ -22,6 +22,7 @@ def test_initialize_recipe():
     try:
         # This will fail, because the recipe configuratiomn file does not exist.
         # But I use the error to make sure I was looking for the correct file.
-        dru.initialize_recipe(this_file_path)
+        # Adapted from the reply of boertel and Mingye Wang on StackOverflow:
+        # https://stackoverflow.com/questions/40666924
     except FileNotFoundError as not_found:
         assert Path(not_found.filename) == this_file_path.with_suffix('.yml')
