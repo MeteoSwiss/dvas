@@ -1,0 +1,197 @@
+# ----------------------------------------------------
+# RS-41 type (NOT THE GDP!), pre-2018 file format
+# ----------------------------------------------------
+_RS41-PRE2018:
+
+    # -- META DATA ----------------------------------
+    edt: "get('event_dt')"
+    srn: "get('srn')"
+    pid: "get('product_id')"
+    tags:
+        - "cat('e:', get('event_id'))"
+        - "cat('r:', get('rig'))"
+        - "get('day_night')"
+
+    # -- ORIG DATA ----------------------------------
+    csv_delimiter:
+    csv_skip_blank_lines: True
+    csv_delim_whitespace: True
+    csv_skiprows: 1
+
+    _time:
+        value: get(0, 's2ns')
+
+    _gph:
+        value: get(2)
+
+    _temp:
+        value: get(4, 'd2k')
+
+    _pres:
+        value: get(3)
+
+    _rh:
+        value: get(5)
+
+# ----------------------------------------------------
+# RS-41 type (NOT THE GDP!), latest file format
+# ----------------------------------------------------
+_RS41:
+
+    # -- META DATA ----------------------------------
+    edt: "get('event_dt')"
+    srn: "get('srn')"
+    pid: "get('product_id')"
+    tags:
+        - "cat('e:', get('event_id'))"
+        - "cat('r:', get('rig'))"
+        - "get('day_night')"
+
+    # -- ORIG DATA ----------------------------------
+    csv_delimiter: ';'
+    csv_skip_blank_lines: True
+    csv_delim_whitespace: False
+    csv_skiprows: 47
+
+    _time:
+        value: get(0, 's2ns')
+
+    _gph:
+        value: get(2)
+
+    _temp:
+        value: get(4, 'd2k')
+
+    _pres:
+        value: get(3)
+
+    _rh:
+        value: get(5)
+
+# ----------------------------------------------------
+# RS-41 GDP, version beta-1
+# ----------------------------------------------------
+_RS41-GDP-BETA_001:
+
+    # -- META DATA ----------------------------------
+
+    edt: "get('g.Measurement.StandardTime')"
+    srn: "get('g.MainSonde.SerialNumber')"
+    pid: "get('g.Product.ID')"
+    tags:
+        - "cat('e:', get('g.Measurement.Id'))"
+        - "cat('r:', get('g.Measurement.BalloonNumber'))"
+
+    # -- ORIG DATA ----------------------------------
+    _time:
+        value: get('time', 's2ns')
+
+    _gph:
+        value: get('alt_gph')
+
+    _temp:
+        value: get('temp')
+
+    _temp_ucr:
+        value: get('temp_uc_ncor', 'div2')  # Go from K=2 to K=1
+
+    _temp_ucs:
+        value: get('temp_uc_scor', 'div2')  # Go from K=2 to K=1
+
+    _temp_uct:
+        value: get('temp_uc_tcor', 'div2')  # Go from K=2 to K=1
+
+    _temp_flag:
+        value: get(0)
+        csv_use_default: True
+
+    _pres:
+        value: get('press_gnss')
+
+    _pres_uct:
+        value: get('press_gnss_uc', 'div2')  # Go from K=2 to K=1
+
+    _wdir:
+        value: get('wdir')
+
+    _wdir_ucu:
+        value: get('wdir_uc', 'div2')  # Go from K=2 to K=1
+
+    _wspeed:
+        value: get('wspeed')
+
+    _wspeed_ucu:
+        value: get('wspeed_uc', 'div2')  # Go from K=2 to K=1
+
+# ----------------------------------------------------
+# RS-41 GDP, version beta-2
+# ----------------------------------------------------
+_RS41-GDP-BETA_002:
+
+    # -- META DATA ----------------------------------
+
+    edt: "get('g.Measurement.StandardTime')"
+    srn: "get('g.MainSonde.SerialNumber')"
+    pid: "get('g.Product.Id')"
+    tags:
+        - "cat('e:', get('g.Measurement.Id'))"
+        - "cat('r:', get('g.Measurement.BalloonNumber'))"
+
+    # -- ORIG DATA ----------------------------------
+    _time:
+        value: get('time', 's2ns')
+
+    _gph:
+        value: get('alt_gph')
+
+    _gph_uct:
+        value: get('alt_gph_uc_tcor', 'div2')  # Go from K=2 to K=1
+
+    _gph_ucu:
+        value: get('alt_gph_uc_ucor', 'div2')  # Go from K=2 to K=1
+
+    _temp:
+        value: get('temp')
+
+    _temp_ucr:
+        value: get('temp_uc_ucor', 'div2')  # Go from K=2 to K=1
+
+    _temp_ucs:
+        value: get('temp_uc_scor', 'div2')  # Go from K=2 to K=1
+
+    _temp_uct:
+        value: get('temp_uc_tcor', 'div2')  # Go from K=2 to K=1
+
+    _temp_flag:
+        value: get(0)
+        csv_use_default: True
+
+    _pres:
+        value: get('press_gnss')
+
+    _pres_uct:
+        value: get('press_gnss_uc_tcor', 'div2')  # Go from K=2 to K=1
+
+    _pres_ucu:
+        value: get('press_gnss_uc_ucor', 'div2')  # Go from K=2 to K=1
+
+    _rh:
+        value: get('rh')
+
+    _rh_ucr:
+        value: get('rh_uc_ucor', 'div2')  # Go from K=2 to K=1
+
+    _rh_uct:
+        value: get('rh_uc_tcor', 'div2')  # Go from K=2 to K=1
+
+    _wdir:
+        value: get('wdir')
+
+    _wdir_ucu:
+        value: get('wdir_uc', 'div2')  # Go from K=2 to K=1
+
+    _wspeed:
+        value: get('wspeed')
+
+    _wspeed_ucu:
+        value: get('wspeed_uc', 'div2')  # Go from K=2 to K=1

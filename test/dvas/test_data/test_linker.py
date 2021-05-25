@@ -27,7 +27,7 @@ db_data = {
         {
             'index': np.array([0, 1, 2]),
             'value': val,
-            'prm_name': 'trepros1',
+            'prm_name': 'temp',
             'info': {
                 'edt': dt,
                 'mdl_name': 'YT',
@@ -69,7 +69,7 @@ class TestFileHandle:
         }
 
         # Read csv file
-        csv_res = csv_handler.handle(csv_file_path, 'trepros1')
+        csv_res = csv_handler.handle(csv_file_path, 'temp')
 
         # Test key
         assert isinstance(csv_res, dict)
@@ -79,7 +79,7 @@ class TestFileHandle:
         )
 
         # Read gdp file
-        gdp_res = gdp_handler.handle(gdp_file_path, 'trepros1')
+        gdp_res = gdp_handler.handle(gdp_file_path, 'temp')
 
         # Test key
         assert isinstance(gdp_res, dict)

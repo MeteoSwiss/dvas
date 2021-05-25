@@ -1,5 +1,4 @@
 # Parameter configuration file
-
 - prm_name: 'time'
   prm_desc: 'Time'
   prm_unit: 's'

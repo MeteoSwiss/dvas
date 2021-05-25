@@ -13,8 +13,10 @@ Module contents: Utility functions and parameters for plotting in dvas.
 from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 from matplotlib import colors
 from matplotlib import cm
+from cycler import cycler
 
 # Import from this package
 from ..hardcoded import PKG_PATH
@@ -22,6 +24,7 @@ from ..errors import DvasError
 from ..environ import path_var as env_path_var
 from ..logger import log_func_call
 from ..logger import plots_logger as logger
+from ..version import VERSION
 
 # Define some plotting constants
 #: float: Width of a 1-column plot [inches], to fit in scientific articles when scaled by 50%
@@ -34,6 +37,23 @@ WIDTH_TWOCOL = 14.16
 PLOT_STYLES = {'base': 'base.mplstyle',
                'nolatex': 'nolatex.mplstyle',
                'latex': 'latex.mplstyle'}
+
+#: dict: dvas core colors for the cmap, the color cycler, and NaNs.
+CLRS = {'set_1': ['#4c88b3', '#b34c88', '#88b34c', '#d15f56', '#7d70b4', '#00a7a0',
+                  '#bf8a31', '#d0d424','#b3b3b3','#575757'],
+        'cmap_1': list(zip([0, 0, 0.5, 1, 1],
+                           ['#000000', '#051729','#4c88b3','#dbd7cc', '#ffffff'])),
+        'nan_1': '#7d7d7d',
+        'ref_1': 'crimson',
+        }
+
+#: matplotlib.colors.LinearSegmentedColormap: the default dvas colormap 1
+CMAP_1 = colors.LinearSegmentedColormap.from_list('cmap_1', CLRS['cmap_1'], 1024)
+CMAP_1.set_bad(color=CLRS['nan_1'], alpha=1)
+#: matplotlib.colors.LinearSegmentedColormap: the default dvas colormap 1 reversed
+CMAP_1_R = colors.LinearSegmentedColormap.from_list('cmap_1',
+    [(abs(item[0]-1), item[1]) for item in CLRS['cmap_1'][::-1]], 1024)
+CMAP_1_R.set_bad(color=CLRS['nan_1'], alpha=1)
 
 #: list[str]: The default file extensions to save the plots into.
 PLOT_FMTS = ['png']
@@ -49,7 +69,6 @@ UNIT_LABELS = {'K': r'K$^{\circ}$',
                'm s-1': r'm s$^{-1}$',
                'degree': r'$^{\circ}$',
                }
-
 
 @log_func_call(logger)
 def set_mplstyle(style='base'):
@@ -72,7 +91,15 @@ def set_mplstyle(style='base'):
 
     """
 
-    # Let's start with some sanity checks. If the user is foolish enough to feed a dict, trust it.
+    # Always apply the base style first.
+    plt.style.use(str(Path(PKG_PATH, 'plots', 'mpl_styles', PLOT_STYLES['base'])))
+
+    # Update the color cycler to match our custom colorscheme
+    n_clrs = len(CLRS['set_1'])
+    default_cycler = (cycler(color=CLRS['set_1']))
+    plt.rc('axes', prop_cycle=default_cycler)
+
+    # Let's do some sanity checks. If the user is foolish enough to feed a dict, trust it.
     if isinstance(style, dict):
         plt.style.use(style)
 
@@ -83,9 +110,6 @@ def set_mplstyle(style='base'):
     if style not in PLOT_STYLES.keys():
         raise Exception('Ouch! plot style "%s" unknown. Should be one of [%s].'
                         % (style, ', '.join(PLOT_STYLES.keys())))
-
-    # Always apply the base style first.
-    plt.style.use(str(Path(PKG_PATH, 'plots', 'mpl_styles', PLOT_STYLES['base'])))
 
     # Then apply which ever alternative style was requested, if we haven't already.
     if style != 'base':
@@ -147,14 +171,53 @@ def fancy_legend(ax, label=None):
         label = label.replace('_', '\_')
 
     # Add the legend.
-    leg = ax.legend(loc='best', bbox_to_anchor=(1.01, 0, 0.1, 1), mode='expand',
-                    title=label, ncol=1, handlelength=1,
+    leg = ax.legend(loc='upper left', bbox_to_anchor=(1.01, 1),
+                    title=label, ncol=1, handlelength=1, fancybox=True,
                     fontsize='small', title_fontsize='small', borderaxespad=0)
 
     # Tweak the thickness of the legen lines as well.
     for line in leg.get_lines():
         line.set_linewidth(2.0)
 
+@log_func_call(logger)
+def add_edt_eid_rid(ax, prfs):
+    """ Add basic edt, eid and rid info to a plot.
+
+    Args:
+        ax (matplotlib.pyplot.axes): the axes to add the info to.
+        prfs (Multiprofile|MultiRSProfile|MultiGDPProfile): the MultiProfile to extract the info
+            from.
+
+    """
+
+    # Get the data to print
+    edts = [item.strftime('%Y-%m-%d %H:%M %Z') for item in prfs.get_info('edt')]
+    eids = prfs.get_info('eid')
+    rids = prfs.get_info('rid')
+
+    # Format it all nicely for each Profile.
+    info_txt = set(['{} ({}, {})'.format(item, eids[ind], rids[ind])
+                                         for ind, item in enumerate(edts)])
+    # Make sure it does not overflow
+    info_txt = ' / '.join(info_txt)
+
+    # Add it to the ax
+    ax.text(0, 1.03, info_txt, fontsize='small',
+            verticalalignment='bottom', horizontalalignment='left',
+            transform=ax.transAxes)
+
+@log_func_call(logger)
+def add_source(fig):
+    """ Add a sentence about the dvas version to a given plot.
+
+    Args:
+        fig (matplotlib.pyplot.figure): the figure to add the text to.
+
+    """
+    msg = 'Created with dvas v{}'.format(VERSION)
+
+    fig.text(0.99, 0.02, msg, fontsize='xx-small',
+                 horizontalalignment='right', verticalalignment='bottom')
 
 @log_func_call(logger)
 def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show=None):
@@ -212,41 +275,77 @@ def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show=
     else:
         plt.close(fig.number)
 
-#@log_func_call(logger)
-#def pks_cmap(alpha=0.27/100, vmin=0.0, vmax=3*0.27/100):
-#    """ Defines a custom colormap for the p-value plot of the KS test function.
-#
-#    Args:
-#        alpha (float): the significance level of the KS test.
-#        vmin (float): vmin of the desired colorbar, for proper scaling of the transition level.
-#        vmax (float): vmax of the desired colorbar, for proper scaling of the transition level.
-#
-#    Returns:
-#       matplotlib.colors.LinearSegmentedColormap
-#
-#    """
-#
-#    # Some sanity checks
-#    if not isinstance(vmin, float) or not isinstance(vmax, float):
-#        raise Exception('Ouch ! vmin and vmax should be of type float, not %s and %s.' %
-#                        (type(vmin), type(vmax)))
-#
-#    if not 0 <= vmin <= vmax <= 1:
-#        raise Exception('Ouch ! I need 0 <= vmin <= vmax <= 1.')
-#
-#
-#    # What are the boundary colors I want ?
-#    a_start = colors.to_rgb('maroon')
-#    a_mid_m = colors.to_rgb('lightcoral')
-#    a_mid_p = colors.to_rgb('lightgrey')
-#    a_end = colors.to_rgb('white')
-#
-#    cdict = {}
-#    for c_ind, c_name in enumerate(['red', 'green', 'blue']):
-#        cdict[c_name] = ((0.00, a_start[c_ind], a_start[c_ind]),
-#                         ((alpha-vmin)/(vmax-vmin), a_mid_m[c_ind], a_mid_p[c_ind]),
-#                         (1.00, a_end[c_ind], a_end[c_ind])
-#                         )
-#
-#    # Build the colormap
-#    return colors.LinearSegmentedColormap('pks_cmap', cdict, 1024)
+def clr_palette_demo():
+    """ A simple function to demonstrate the dvas color palette.
+
+    """
+
+    plt.close(99)
+    fig = plt.figure(99, figsize=(WIDTH_TWOCOL, 4.5))
+
+    # Use gridspec for a fine control of the figure area.
+    fig_gs = gridspec.GridSpec(1, 6, height_ratios=[1],
+                               width_ratios=[20, 10, 1, 1, 1, 1],
+                               left=0.05, right=0.97, bottom=0.05, top=0.95,
+                               wspace=0.05, hspace=0.05)
+
+    # Instantiate the axes
+    ax0a = fig.add_subplot(fig_gs[0, 0])
+    ax0b = fig.add_subplot(fig_gs[0, 1])
+    ax1 = fig.add_subplot(fig_gs[0, 2])
+    ax2 = fig.add_subplot(fig_gs[0, 3])
+    ax3 = fig.add_subplot(fig_gs[0, 4])
+    ax4 = fig.add_subplot(fig_gs[0, 5])
+
+    # First, plot some lines to illustrate the set colors ...
+    for (ind, clr) in enumerate(CLRS['set_1']):
+        ax0a.plot(np.sin(np.linspace(0, 2*np.pi, 100) + 2*np.pi*(1-ind/len(CLRS['set_1']))),
+                  '-', c=clr, label='{}'.format(clr))
+        ax0a.fill_between(np.arange(50, 100, 1),
+                          np.sin(np.linspace(np.pi, 2*np.pi, 50) +
+                                 2*np.pi*(1-ind/len(CLRS['set_1'])))-0.1,
+                          np.sin(np.linspace(np.pi, 2*np.pi, 50) +
+                                 2*np.pi*(1-ind/len(CLRS['set_1'])))+0.1,
+                          '-', facecolor=clr, alpha=0.4, edgecolor=None)
+
+    # Show the color names as legend
+    ax0a.legend(fontsize='xx-small')
+
+    # Second, show a 2D image with the defasult colormap ...
+    x, y = np.meshgrid(np.linspace(-3,3,30), np.linspace(-3,3,30))
+    d = np.sqrt(x**2 + y**2)
+    g = np.exp(-( (d)**2 / ( 2.0 * 1**2 ))) + (2*np.random.rand(30,30)-1)/10
+    # Add some NaN's to show their specific color
+    g[0:15,0:15] = np.nan
+
+    # Actually plot it ...
+    ax0b.imshow(g, cmap=CMAP_1, origin='lower', vmin=0, vmax=1)
+    ax0b.text(7.5, 7.5, 'NaN', horizontalalignment='center', verticalalignment='center')
+
+    # Clean it up a bit ...
+    for ax in [ax0b, ax0a]:
+        ax.tick_params(which='both', length=0)
+        ax.set_yticklabels([])
+        ax.set_xticklabels([])
+
+    # Then, show an actual colorbar in full ...
+    plt.colorbar(cm.ScalarMappable(norm=colors.Normalize(vmin=0, vmax=1),
+                                   cmap=CMAP_1), cax=ax1)
+    # ... then binned in 3 chunks ...
+    plt.colorbar(cm.ScalarMappable(norm=colors.Normalize(vmin=0, vmax=1),
+                                   cmap=cmap_discretize(CMAP_1, 3)), cax=ax2)
+    # ... and 5 chunks ...
+    plt.colorbar(cm.ScalarMappable(norm=colors.Normalize(vmin=0, vmax=1),
+                                   cmap=cmap_discretize(CMAP_1, 5)), cax=ax3)
+    # ... and 10 chunks ...
+    plt.colorbar(cm.ScalarMappable(norm=colors.Normalize(vmin=0, vmax=1),
+                                   cmap=cmap_discretize(CMAP_1, 10)), cax=ax4)
+
+    # Clean up the ticks ...
+    for ax in [ax1, ax2, ax3, ax4]:
+        ax.set_yticklabels([])
+        ax.tick_params(axis='y', length=0)
+
+
+    # Show and save
+    plt.show()

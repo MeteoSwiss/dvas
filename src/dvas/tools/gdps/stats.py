@@ -138,7 +138,7 @@ def get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=None, rolling_flags=Tr
     ''' Runs a series of KS tests to assess the consistency of several GDP profiles.
 
     Args:
-        gdp_profs (dvas.data.data.MultiGDPProfile): synchronized GDP profiles to check.
+        gdp_prfs (dvas.data.data.MultiGDPProfile): synchronized GDP profiles to check.
         alpha (float, optional): The significance level for the KS test. Defaults to 0.27%
         bin_sizes (ndarray of int, optional): The rolling binning sizes. Defaults to [1].
         rolling_flags (bool, optional):
@@ -200,7 +200,7 @@ def get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=None, rolling_flags=Tr
         # First make a high-resolution delta ...
         out = combine(gdp_pair, binning=1, method='delta', n_cpus=n_cpus)
 
-        # ... and extract the DataFrame Compute k_pqi (the normalized profile delta)
+        # ... and extract the DataFrame to compute k_pqi (the normalized profile delta)
         out = out.get_prms([PRF_REF_VAL_NAME, 'uc_tot'])[0]
         out = out[PRF_REF_VAL_NAME]/out['uc_tot']
 
@@ -216,7 +216,7 @@ def get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=None, rolling_flags=Tr
         for binning in bin_sizes:
 
             # Run the KS test on it
-            tmp = ks_test(gdp_pair, alpha=alpha, binning=binning)
+            tmp = ks_test(gdp_pair, alpha=alpha, binning=binning, n_cpus=n_cpus)
 
             # Turn this into a MultiIndex ...
             tmp.columns = pd.MultiIndex.from_tuples([(binning, item) for item in tmp.columns])
@@ -243,6 +243,6 @@ def get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=None, rolling_flags=Tr
 
         # Plot things if needed
         if do_plot:
-            dpg.plot_ks_test(out, alpha, title=key)
+            dpg.plot_ks_test(out, alpha, title=key, fn_suffix=key)
 
     return incompat
