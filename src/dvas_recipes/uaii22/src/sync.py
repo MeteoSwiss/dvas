@@ -30,9 +30,10 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
     # First the GDPs
     gdp_shifts = [item for (ind, item) in enumerate(sync_shifts) if is_gdp[ind]]
     gdps = MultiGDPProfile()
-    gdps.load_from_db("and_({filt}, tags('gdp'))".format(filt=filt), var_name, 'tdtpros1',
-                      alt_abbr='altpros1', ucr_abbr='treprosu_r', ucs_abbr='treprosu_s',
-                      uct_abbr='treprosu_t')
+    # TODO: tie uncertainties to the var_name
+    gdps.load_from_db("and_({filt}, tags('gdp'))".format(filt=filt), var_name, 'time',
+                      alt_abbr='gph', ucr_abbr='temp_ucr', ucs_abbr='temp_ucs',
+                      uct_abbr='temp_uct')
     gdps.sort()
     gdps.rebase(sync_length, shifts=gdp_shifts, inplace=True)
     gdps.save_to_db(add_tags=['sync'])
@@ -40,8 +41,8 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
     # And now idem for the non-GDPs
     non_gdp_shifts = [item for (ind, item) in enumerate(sync_shifts) if not is_gdp[ind]]
     non_gdps = MultiRSProfile()
-    non_gdps.load_from_db("and_({filt}, not_(tags('gdp')))".format(filt=filt), 'trepros1',
-                          'tdtpros1', alt_abbr='altpros1')
+    non_gdps.load_from_db("and_({filt}, not_(tags('gdp')))".format(filt=filt), var_name,
+                          'time', alt_abbr='gph')
     non_gdps.sort()
     non_gdps.rebase(sync_length, shifts=non_gdp_shifts, inplace=True)
     non_gdps.save_to_db(add_tags=['sync'])
@@ -66,7 +67,7 @@ def sync_flight(eid, rid, **kwargs):
 
     # First, extract the temperature data from the db
     prfs = MultiRSProfile()
-    prfs.load_from_db(filt, 'trepros1', 'tdtpros1', alt_abbr='altpros1')
+    prfs.load_from_db(filt, 'temp', 'time', alt_abbr='gph')
     prfs.sort()
 
     # Get the Object IDs, so I can keep track of the different profiles and don't mess things up.
@@ -102,4 +103,4 @@ def sync_flight(eid, rid, **kwargs):
 
     # Finally, apply the shifts and update the db with the new profiles, not overlooking the fact
     # that for GDPs, I also need to deal with the associated uncertainties.
-    apply_sync_shifts('trepros1', filt, sync_length, sync_shifts, is_gdp)
+    apply_sync_shifts('temp', filt, sync_length, sync_shifts, is_gdp)

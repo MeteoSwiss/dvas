@@ -63,19 +63,23 @@ def gdp_3_prfs(db_init):
 
     # Let's build a multiprofile so I can test things out.
     multiprf = MultiGDPProfile()
-    multiprf.update({'val': 'temp', 'tdt': 'time', 'alt': 'gph', 'flg': None, 'ucr': None, 'ucs': None,
-                     'uct': None, 'ucu': None},
+    multiprf.update({'val': 'temp', 'tdt': 'time', 'alt': 'gph', 'flg': None,
+                     'ucr': None, 'ucs': None, 'uct': None, 'ucu': None},
                     [GDPProfile(info_1, data_1), GDPProfile(info_2, data_2),
                      GDPProfile(info_3, data_3)])
 
     return multiprf
 
 def test_multiprf(gdp_3_prfs, do_latex):
-    """ Test the multiprf plotting routine """
+    """ Test the multiprf plotting routine.
+
+    do_latex is a fixture that is True is pytest is being run with the argument "--latex".
+    """
 
     dpp.multiprf(gdp_3_prfs, index='alt', label='mid', uc='uc_tot', show=True, fn_suffix='base',
                  expose=2)
 
     if do_latex:
         dpu.set_mplstyle(style='latex')
-        dpp.multiprf(gdp_3_prfs, index='alt', label='mid', uc='uc_tot', show=True, fn_suffix='latex')
+        dpp.multiprf(gdp_3_prfs, index='alt', label='mid', uc='uc_tot',
+                     show=True, fn_suffix='latex')
