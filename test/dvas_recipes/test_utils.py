@@ -24,5 +24,6 @@ def test_initialize_recipe():
         # But I use the error to make sure I was looking for the correct file.
         # Adapted from the reply of boertel and Mingye Wang on StackOverflow:
         # https://stackoverflow.com/questions/40666924
+        dru.initialize_recipe(this_file_path)
     except FileNotFoundError as not_found:
         assert Path(not_found.filename) == this_file_path.with_suffix('.yml')
