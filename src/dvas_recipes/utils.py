@@ -52,7 +52,9 @@ def initialize_recipe(rcp_fpath):
 
     # Let us fine-tune the plotting behavior of dvas if warranted
     if rcp_params['general']['do_latex']:
-        dpu.set_mplstyle('nolatex') # The safe option. Use 'latex' fo prettier plots.
+        dpu.set_mplstyle('latex')
+    else:
+        dpu.set_mplstyle('nolatex')
 
     # The generic formats to save the plots in
     dpu.PLOT_FMTS = rcp_params['general']['plot_fmts']

@@ -18,6 +18,7 @@ from dvas.dvas import Database as DB
 # Import high-level stuff
 from dvas_recipes import utils as dru
 from dvas_recipes.uaii22 import sync as drs
+from dvas_recipes.uaii22 import plots as drp
 from dvas_recipes.uaii22 import gdps as drg
 
 # Extract our current location
@@ -32,17 +33,18 @@ if __name__ == '__main__':
     # Reset the DB to "start fresh" ?
     RESET_DB = True
 
-    # Use this command to clear the DB
-    DB.clear_db()
+    if RESET_DB:
+        # Use this command to clear the DB
+        DB.clear_db()
 
-    # Init the DB
-    DB.init()
+        # Init the DB
+        DB.init()
 
-    # Fetch
-    DB.fetch_raw_data(['time', 'gph'] +
-                      list(rcp_vars) +
-                      [rcp_vars[var][uc] for var in rcp_vars for uc in rcp_vars[var]],
-                      strict=True)
+        # Fetch
+        DB.fetch_raw_data(['time', 'gph'] +
+                          list(rcp_vars) +
+                          [rcp_vars[var][uc] for var in rcp_vars for uc in rcp_vars[var]],
+                          strict=True)
 
     # What are the flights id of interest ?
     eids = [139164, # day, RS-41 x2, M10 x1
@@ -58,6 +60,7 @@ if __name__ == '__main__':
     # --- GENERIC PROFILE PLOT ---
 
     # Make a plot showing all the variables of interest.
+        drp.flight_overview(eid, 1, rcp_vars)
 
     # --- ASSEMBLE GDPS ---
 
