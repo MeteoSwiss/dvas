@@ -19,7 +19,7 @@ _M10:
     csv_skiprows: 1
 
     _time:
-        value: get(0, 's2ns')
+        value: get(0, ['rel', 's2ns'])
 
     _gph:
         value: get(1)
