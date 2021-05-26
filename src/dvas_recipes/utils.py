@@ -30,6 +30,10 @@ def initialize_recipe(rcp_fpath):
     Args:
         rcp_fpath (pathlib.Path): path+name of the recipe file.
 
+    Returns:
+        dict: variable names as dict entries, and associated uncertainties, e.g.:
+            {'temp': {'ucr': 'temp_ucr', 'ucs': 'temp_ucs', 'uct': 'temp_uct', 'ucu':}}
+
     """
 
     # Load the recipe parameters
@@ -55,3 +59,5 @@ def initialize_recipe(rcp_fpath):
 
     # Show the plots on-screen ?
     dpu.PLOT_SHOW = rcp_params['general']['plot_show']
+
+    return rcp_params['vars']

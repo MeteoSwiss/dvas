@@ -26,8 +26,13 @@ general:
 
 # Variables to process using the recipe, and associated uncertainties.
 vars:
-    'temp':
-        ucr: 'temp_ucr'
-        ucs: 'temp_ucs'
-        uct: 'temp_uct'
-        ucu: None
+    temp:
+        ucr: temp_ucr
+        ucs: temp_ucs
+        uct: temp_uct
+        ucu:
+    rh:
+        ucr: rh_ucr
+        ucs:
+        uct: rh_uct
+        ucu:

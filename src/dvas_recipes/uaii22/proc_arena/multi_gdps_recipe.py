@@ -26,7 +26,7 @@ rcp_fpath = Path(__file__).resolve()
 if __name__ == '__main__':
 
     # --- GENERAL SETUP ---
-    dru.initialize_recipe(rcp_fpath)
+    rcp_vars = dru.initialize_recipe(rcp_fpath)
 
     # --- DB SETUP ---
     # Reset the DB to "start fresh" ?
@@ -39,14 +39,10 @@ if __name__ == '__main__':
     DB.init()
 
     # Fetch
-    DB.fetch_raw_data(
-        [
-            'time', 'gph',
-            'temp', 'temp_flag', 'temp_ucr', 'temp_ucs', 'temp_uct',
-            'rh', 'rh_ucr', 'rh_uct',
-        ],
-        strict=True
-    )
+    DB.fetch_raw_data(['time', 'gph'] +
+                      list(rcp_vars) +
+                      [rcp_vars[var][uc] for var in rcp_vars for uc in rcp_vars[var]],
+                      strict=True)
 
     # What are the flights id of interest ?
     eids = [139164, # day, RS-41 x2, M10 x1
@@ -56,9 +52,8 @@ if __name__ == '__main__':
             ]
 
     # --- SYNCHRONIZE PROFILES ---
-
     for eid in eids:
-        drs.sync_flight(eid, 1)
+        drs.sync_flight(eid, 1, rcp_vars)
 
     # --- GENERIC PROFILE PLOT ---
 

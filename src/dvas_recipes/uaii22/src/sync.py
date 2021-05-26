@@ -19,9 +19,19 @@ from dvas.data.data import MultiRSProfile, MultiGDPProfile
 from dvas.tools import sync as dts
 
 @log_func_call(logger, time_it=True)
-def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
+def apply_sync_shifts(var_name, rcp_vars, filt, sync_length, sync_shifts, is_gdp):
     """ Apply shifts to GDP and non-GDP profiles from a given flight, and upload them to the db.
 
+    Args:
+        var_name (str): name of variable to sync, e.g. 'temp'
+        rcp_vars (dict): names of variables to process, and associated uncertainties, e.g.::
+
+            {'temp': {'ucr': 'temp_ucr', 'ucs': 'temp_ucs', 'uct': 'temp_uct', 'ucu':}}
+
+        filt (str): filtering query for the database.
+        sync_length (int): length of the sync'ed profiles.
+        sync_shifts (list of int): relative shifts required to sync the profiles.
+        is_gdp (list of bool): to keep track of GDPs, in order to also sync their uncertainties.
     """
 
     # Let's apply the synchronization. Deal with GDPs and non-GDPs separately, to make sure the
@@ -30,10 +40,10 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
     # First the GDPs
     gdp_shifts = [item for (ind, item) in enumerate(sync_shifts) if is_gdp[ind]]
     gdps = MultiGDPProfile()
-    # TODO: tie uncertainties to the var_name
     gdps.load_from_db("and_({filt}, tags('gdp'))".format(filt=filt), var_name, 'time',
-                      alt_abbr='gph', ucr_abbr='temp_ucr', ucs_abbr='temp_ucs',
-                      uct_abbr='temp_uct')
+                      alt_abbr='gph',
+                      ucr_abbr=rcp_vars[var_name]['ucr'], ucs_abbr=rcp_vars[var_name]['ucs'],
+                      uct_abbr=rcp_vars[var_name]['uct'], ucu_abbr=rcp_vars[var_name]['ucu'])
     gdps.sort()
     gdps.rebase(sync_length, shifts=gdp_shifts, inplace=True)
     gdps.save_to_db(add_tags=['sync'])
@@ -47,9 +57,8 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
     non_gdps.rebase(sync_length, shifts=non_gdp_shifts, inplace=True)
     non_gdps.save_to_db(add_tags=['sync'])
 
-
 @log_func_call(logger, time_it=True)
-def sync_flight(eid, rid, **kwargs):
+def sync_flight(eid, rid, rcp_vars, **kwargs):
     """ Highest-level function responsible for synchronizing all the profile from a specific RS
     flight.
 
@@ -58,6 +67,10 @@ def sync_flight(eid, rid, **kwargs):
     Args:
         eid (str|int): event id to be synchronized, e.g. 80611
         rid (str|int): rig id to be synchronized, e.g. 1
+        rcp_vars (dict): names of variables to process, and associated uncertainties, e.g.::
+
+            {'temp': {'ucr': 'temp_ucr', 'ucs': 'temp_ucs', 'uct': 'temp_uct', 'ucu':}}
+
         **kwargs: keyword arguments to be fed to the underlying shift-identification routines.
 
     """
@@ -103,4 +116,5 @@ def sync_flight(eid, rid, **kwargs):
 
     # Finally, apply the shifts and update the db with the new profiles, not overlooking the fact
     # that for GDPs, I also need to deal with the associated uncertainties.
-    apply_sync_shifts('temp', filt, sync_length, sync_shifts, is_gdp)
+    for var_name in rcp_vars:
+        apply_sync_shifts(var_name, rcp_vars, filt, sync_length, sync_shifts, is_gdp)
