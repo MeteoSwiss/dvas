@@ -36,3 +36,18 @@ vars:
         ucs:
         uct: rh_uct
         ucu:
+    pres:
+        ucr:
+        ucs:
+        uct: pres_uct
+        ucu:
+    wdir:
+        ucr:
+        ucs:
+        uct:
+        ucu: wdir_ucu
+    wspeed:
+        ucr:
+        ucs:
+        uct:
+        ucu: wspeed_ucu

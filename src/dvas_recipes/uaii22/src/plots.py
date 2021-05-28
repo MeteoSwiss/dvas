@@ -16,6 +16,7 @@ import matplotlib.gridspec as gridspec
 # Import dvas modules and classes
 from dvas.logger import recipes_logger as logger
 from dvas.logger import log_func_call
+from dvas.hardcoded import PRF_REF_VAL_NAME
 from dvas.data.data import MultiRSProfile
 from dvas.plots import utils as dpu
 
@@ -47,28 +48,82 @@ def flight_overview(eid, rid, rcp_vars, tags='sync'):
     filt = "and_(tags('e:{}'), tags('r:{}'), {})".format(eid, rid,
                                                          "tags('" + "'), tags('".join(tags) + "')")
 
-    plt.close()
-    fig = plt.figure(figsize=(dpu.WIDTH_TWOCOL, 5))
+    # The plot will have different number of rows depending on the number of variables.
+    # Let's define some hardcoded heights, such that the look is salways consistent
+    top_gap = 0.4 # inch
+    bottom_gap = 0.7 # inch
+    plot_height = 1.3 # inch
+    plot_gap = 0.05 # inch
+    fig_height = (top_gap + bottom_gap + plot_height * len(rcp_vars))/\
+        (1 - plot_gap * (len(rcp_vars)-1))
+
+    fig = plt.figure(figsize=(dpu.WIDTH_TWOCOL, fig_height))
 
     # Use gridspec for a fine control of the figure area.
     fig_gs = gridspec.GridSpec(len(rcp_vars), 1, height_ratios=[1]*len(rcp_vars), width_ratios=[1],
-                                   left=0.08, right=0.87, bottom=0.17, top=0.9,
-                                   wspace=0.05, hspace=0.05)
+                                   left=0.08, right=0.87,
+                                   bottom=bottom_gap/fig_height, top=1-top_gap/fig_height,
+                                   wspace=0.05, hspace=plot_gap)
 
     for (var_ind, var_name) in enumerate(rcp_vars):
 
+        # Make x a shared axis if warranted
+        if var_ind > 0:
+            ax = fig.add_subplot(fig_gs[var_ind, 0], sharex=fig.axes[0])
+        else:
+            ax = fig.add_subplot(fig_gs[var_ind, 0])
 
-        ax = fig.add_subplot(fig_gs[var_ind, 0])
+        # Reset the color cycle for each plot, so that a given model always has the same color
+        # Adapted from the reply of pelson and gg349 on StackOverflow:
+        # https://stackoverflow.com/questions/24193174
+        plt.gca().set_prop_cycle(None)
 
         rs_prfs = MultiRSProfile()
         rs_prfs.load_from_db(filt, var_name, 'time', alt_abbr='gph')
+        rs_prfs.sort() # Sorting is important to make sure I have the same colors for each plot
 
+        xmin = np.infty
+        xmax = -np.infty
 
         for (prf_ind, prf) in enumerate(rs_prfs):
 
-            x = getattr(prf, 'val').index.get_level_values('tdt')
-            y = getattr(prf, 'val').values
-            ax.plot(x/1e9, y, '-', lw=0.7, label=rs_prfs.get_info('mid')[prf_ind])
+            x = getattr(prf, PRF_REF_VAL_NAME).index.get_level_values('tdt')
+            # Transform the timedelta64[ns] in seconds
+            x = x.total_seconds()
+            y = getattr(prf, PRF_REF_VAL_NAME).values
 
+            ax.plot(x, y, '-', lw=0.7, label=rs_prfs.get_info('mid')[prf_ind])
 
-    plt.show()
+            xmin = np.min([xmin, np.min(x)])
+            xmax = np.max([xmax, np.max(x)])
+
+        # Set tight x limits
+        ax.set_xlim((xmin, xmax))
+
+        # Once only: show the legend and the edt/eid/rid info
+        if var_ind == 0:
+            dpu.add_edt_eid_rid(ax, rs_prfs)
+            dpu.fancy_legend(ax, label='mid')
+            # TODO: create a specific function for random text like below ?
+            ax.text(1, 1.03, 'tags: ' + ' / '.join(tags), fontsize='small',
+                    verticalalignment='bottom', horizontalalignment='right',
+                    transform=ax.transAxes)
+        # Hide the tick labels except for the bottom-most plot
+        if var_ind < len(rcp_vars)-1:
+            plt.setp(ax.get_xticklabels(), visible=False)
+
+        # Set the ylabel:
+        ylbl = rs_prfs.var_info[PRF_REF_VAL_NAME]['prm_name']
+        ylbl += ' [{}]'.format(rs_prfs.var_info[PRF_REF_VAL_NAME]['prm_unit'])
+        ax.set_ylabel(ylbl, labelpad=10)
+
+    # Set the label for the last plot only
+    ax.set_xlabel('Time [s]')
+
+    # Add the source
+    dpu.add_source(fig)
+
+    # Save it all
+    dpu.fancy_savefig(fig, 'flight_overview', fn_prefix='dr',
+                      fn_suffix='e{}_r{}_{}'.format(eid, rid, '-'.join(tags)),
+                      fmts='pdf', show=True) # TODO: these two should come from the param file
