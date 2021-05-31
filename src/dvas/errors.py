@@ -9,16 +9,48 @@ Module contents: Error management
 
 """
 
-# TODO
-#  Modify exceptions using "raise MyCustomExc from my_raised_exc".
+import inspect
+
+# Import form current packages/modules
+from . import __name__ as main_pkg_nm
+
 
 class DvasError(Exception):
-    """General error class for dvas."""
+    """General exception class for dvas."""
 
-    ERR_MSG = 'dvas Error'
 
-    def __str__(self):
-        return f"{super().__str__()}\n\n{'*' * 5}{self.ERR_MSG}{'*' * 5}"
+class ConfigError(DvasError):
+    """Exception for error in config"""
+
+
+class ConfigPathError(ConfigError):
+    """Exception for error in config file path"""
+
+
+class ConfigReadError(ConfigError):
+    """Error while reading config"""
+
+
+class ConfigReadYAMLError(ConfigReadError):
+    """Exception for error in reading YAML file"""
+
+
+class ConfigCheckJSONError(ConfigReadError):
+    """Exception for error in checking JSON"""
+
+
+
+class ConfigNodeError(ConfigError):
+    """Error in config node"""
+
+
+class ConfigItemKeyError(ConfigError):
+    """Error in config key item"""
+
+
+class ConfigGenMaxLenError(ConfigError):
+    """Exception class for max length config generator error"""
+
 
 
 class LogDirError(DvasError):

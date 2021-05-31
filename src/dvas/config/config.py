@@ -36,35 +36,41 @@ from ..helper import TypedProperty
 from ..helper import camel_to_snake
 from ..database.model import Parameter as TableParameter
 from ..hardcoded import FLAG_PRM_NAME_SUFFIX, FLAG_PRM_DESC_PREFIX
+from ..errors import ConfigError
+from ..errors import ConfigPathError, ConfigReadYAMLError, ConfigCheckJSONError, ConfigReadError
+from ..errors import ConfigNodeError, ConfigItemKeyError, ConfigGenMaxLenError
+
 
 # Define
 NODE_ESCAPE_CHAR = '_'
 
 
 def instantiate_config_managers(*args, read=True):
-    """Generate a dictionary with instances of all ConfigManagers
+    """Generate a dictionary with instances of all specified ConfigManagers
 
     Args:
         args (ConfigManager):
             ConfigManager to instantiate
-        read (bool, optional): Read config during class instantiation.
+        read (bool, optional): Read config automatically after instantiation.
             Default to True.
 
     Returns:
-        dict: key are ConfigManager name, value are ConfigManager instances
+        dict: instances of ConfigManager
 
     """
 
     # Create instances
     instances = []
-
     for config_manager in args:
         instances.append(config_manager())
 
     # Read
     if read:
         for inst in instances:
-            inst.read()
+            try:
+                inst.read()
+            except ConfigError as exc:
+                raise ConfigError(f"Error in reading instance of '{inst.CLASS_KEY}'") from exc
 
     return {arg.CLASS_KEY: arg for arg in instances}
 
@@ -85,15 +91,12 @@ class ConfigManager(metaclass=RequiredAttrMetaClass):
     """
 
     def __init__(self):
-        """Constructor"""
         self.init_document()
 
     def __getitem__(self, item):
-        """Overwrite __getitem__ method"""
         return self.document[item]
 
     def __repr__(self):
-        """Overwrite __repr__ method"""
         p_printer = pprint.PrettyPrinter()
         return p_printer.pformat(self.document)
 
@@ -133,7 +136,7 @@ class OneLayerConfigManager(ConfigManager):
         **ConfigManager.REQUIRED_ATTRIBUTES,
         **{
             'PARAMETER_PATTERN_PROP': dict,
-            'NODE_PARAMS_DEF': dict,
+            'LABEL_VAL_DEF': dict,
             'CLASS_KEY': str
         }
     )
@@ -142,7 +145,7 @@ class OneLayerConfigManager(ConfigManager):
     DOC_TYPE = dict
 
     PARAMETER_PATTERN_PROP = None
-    """dict: JSON parameter schema. Constant value.
+    """dict: Parameter JSON 7 schema. Constant value.
 
        Must be a dict like::
 
@@ -152,8 +155,8 @@ class OneLayerConfigManager(ConfigManager):
          }
 
     """
-    #: dict: Default root node parameters
-    NODE_PARAMS_DEF = None
+    #: dict: Default values of labels
+    LABEL_VAL_DEF = None
     #: str: Class key denomination
     CLASS_KEY = None
 
@@ -180,8 +183,8 @@ class OneLayerConfigManager(ConfigManager):
         self.init_document()
         self._get_document(doc_in)
 
-        # Add missing default node params
-        for key, val in self.NODE_PARAMS_DEF.items():
+        # Add default values of missing labels
+        for key, val in self.LABEL_VAL_DEF.items():
             if key not in self.document.keys():
                 self.document[key] = val
 
@@ -205,10 +208,11 @@ class OneLayerConfigManager(ConfigManager):
             )
 
             # Test
-            if path_var.config_dir_path is None:
-                # TODO
-                #  Detail exception
-                raise Exception()
+            if (
+                (path_var.config_dir_path is None) or
+                (path_var.config_dir_path.exists() is False)
+            ):
+                raise ConfigPathError(f'Missing config dir path::{path_var.config_dir_path}')
 
             # Filter (case insensitive)
             doc_in = [
@@ -221,37 +225,28 @@ class OneLayerConfigManager(ConfigManager):
 
         # Convert YAML string as JSON dict
         if isinstance(doc_in, str):
-            self.append(
-                self.read_yaml(doc_in)
-            )
+            try:
+                self.append(
+                    self.read_yaml(doc_in)
+                )
+            except ConfigReadError as exc:
+                raise ConfigReadError("Error in reading config 'str'") from exc
 
         # Convert YAML file as JSON dict
         else:
             for filepath in doc_in:
-                self.append(
-                    self.read_yaml(Path(filepath))
-                )
+                try:
+                    self.append(
+                        self.read_yaml(Path(filepath))
+                    )
+                except ConfigReadError as exc:
+                    raise ConfigReadError(f"Error in reading config file '{filepath}'") from exc
 
-        # Check json schema validity
-        try:
-            validate(instance=self.document, schema=self.json_schema)
-
-        except exceptions.ValidationError as exc:
-            raise ConfigReadError(
-                f"Error in '{list(doc_in)}'\n{exc}"
-            )
-
-        except exceptions.SchemaError as exc:
-            raise ConfigReadError(
-                f"Error in {self.__class__.__name__}.json_schema\n{exc}"
-            )
-
-    @staticmethod
-    def read_yaml(file):
+    def read_yaml(self, yaml_doc):
         """Read YAML document.
 
         Args:
-            file (str | pathlib.Path): YAML document
+            yaml_doc (str | pathlib.Path): YAML document
 
         Returns:
             dict
@@ -261,27 +256,37 @@ class OneLayerConfigManager(ConfigManager):
         try:
 
             # Load from file
-            if isinstance(file, Path):
+            if isinstance(yaml_doc, Path):
 
                 # Check file existence
-                assert file.exists(), f"Missing file {file}"
+                assert yaml_doc.exists(), f"Missing file {yaml_doc}"
 
-                with file.open() as fid:
-                    # Load yaml
+                # Load yaml
+                with yaml_doc.open() as fid:
                     document = YAML().load(fid)
 
             # Load as string
             else:
-                document = YAML().load(file)
+                document = YAML().load(yaml_doc)
 
             # Use json to convert ordered dict to dict
             document = document if document else {}
             document = json.loads(json.dumps(document))
 
-        except IOError as exc:
-            raise ConfigReadError(exc)
-        except YAMLError as exc:
-            raise ConfigReadError(exc)
+        except (AssertionError, IOError, YAMLError) as exc:
+            raise ConfigReadYAMLError("Error in reading YAML document") from exc
+
+        # Check json schema validity
+        try:
+            validate(instance=document, schema=self.json_schema)
+
+        except exceptions.ValidationError as exc:
+            p_printer = pprint.PrettyPrinter()
+            raise ConfigCheckJSONError(f"JSON validation error::\n{p_printer.pformat(document)}") from exc
+
+        except exceptions.SchemaError as exc:
+            p_printer = pprint.PrettyPrinter()
+            raise ConfigCheckJSONError(f"JSON schema error::\n{p_printer.pformat(self.json_schema)}") from exc
 
         return document
 
@@ -290,7 +295,7 @@ class CSVOrigMeta(OneLayerConfigManager):
     """CSV original metadata config manager"""
 
     PARAMETER_PATTERN_PROP = csvorigmeta.PARAMETER_PATTERN_PROP
-    NODE_PARAMS_DEF = {}
+    LABEL_VAL_DEF = {}
     CLASS_KEY = csvorigmeta.KEY
 
     #: dict: Config document
@@ -371,7 +376,7 @@ class OneDimArrayConfigManager(OneLayerConfigManager):
         self.append(self.CONST_NODES)
 
         # Add missing default node params
-        for key, val in self.NODE_PARAMS_DEF.items():
+        for key, val in self.LABEL_VAL_DEF.items():
             for i, _ in enumerate(self.document):
                 if key not in self.document[i].keys():
                     self.document[i][key] = val
@@ -381,7 +386,7 @@ class Model(OneDimArrayConfigManager):
     """Instrument type config manager"""
 
     PARAMETER_PATTERN_PROP = model.PARAMETER_PATTERN_PROP
-    NODE_PARAMS_DEF = model.NODE_PARAMS_DEF
+    LABEL_VAL_DEF = model.LABEL_VAL_DEF
     CLASS_KEY = model.KEY
     CONST_NODES = model.CONST_NODES
     NODE_GEN = model.NODE_GEN
@@ -394,7 +399,7 @@ class Parameter(OneDimArrayConfigManager):
     """Parameter config manager """
 
     PARAMETER_PATTERN_PROP = parameter.PARAMETER_PATTERN_PROP
-    NODE_PARAMS_DEF = parameter.NODE_PARAMS_DEF
+    LABEL_VAL_DEF = parameter.LABEL_VAL_DEF
     CLASS_KEY = parameter.KEY
     CONST_NODES = []
     NODE_GEN = parameter.NODE_GEN
@@ -407,7 +412,7 @@ class Flag(OneDimArrayConfigManager):
     """Flag config manager """
 
     PARAMETER_PATTERN_PROP = flag.PARAMETER_PATTERN_PROP
-    NODE_PARAMS_DEF = {}
+    LABEL_VAL_DEF = {}
     CLASS_KEY = flag.KEY
     CONST_NODES = flag.CONST_NODES
     NODE_GEN = flag.NODE_GEN
@@ -420,7 +425,7 @@ class Tag(OneDimArrayConfigManager):
     """Flag config manager """
 
     PARAMETER_PATTERN_PROP = tag.PARAMETER_PATTERN_PROP
-    NODE_PARAMS_DEF = {}
+    LABEL_VAL_DEF = {}
     CLASS_KEY = tag.KEY
     CONST_NODES = tag.CONST_NODES
     NODE_GEN = tag.NODE_GEN
@@ -529,7 +534,7 @@ class MultiLayerConfigManager(OneLayerConfigManager):
 
         out = {
             key: self.get_val(node_keys, key)
-            for key in [*self.NODE_PARAMS_DEF.keys(), *self.CONST_NODES.keys()]
+            for key in [*self.LABEL_VAL_DEF.keys(), *self.CONST_NODES.keys()]
         }
 
         return out
@@ -645,7 +650,7 @@ class OrigData(MultiLayerConfigManager):
     """Original data config manager"""
 
     PARAMETER_PATTERN_PROP = origdata.PARAMETER_PATTERN_PROP
-    NODE_PARAMS_DEF = origdata.NODE_PARAMS_DEF
+    LABEL_VAL_DEF = origdata.LABEL_VAL_DEF
     CLASS_KEY = origdata.KEY
     NODE_PATTERN = origdata.NODE_PATTERN
     CONST_NODES = origdata.CONST_NODES
@@ -955,19 +960,3 @@ class NoneExpr(TerminalConfigExprInterpreter):
     def interpret(self):
         """Implement fct method"""
         return self._expression
-
-
-class ConfigReadError(Exception):
-    """Error while reading config"""
-
-
-class ConfigNodeError(Exception):
-    """Error in config node"""
-
-
-class ConfigItemKeyError(KeyError):
-    """Error in config key item"""
-
-
-class ConfigGenMaxLenError(Exception):
-    """Exception class for max length config generator error"""

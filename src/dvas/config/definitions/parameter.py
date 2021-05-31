@@ -16,8 +16,8 @@ Module contents: Required attributes definition for
 # Import current packages modules
 from ...database.model import Parameter as TableParameter
 
-#: dict: Default node params
-NODE_PARAMS_DEF = {
+#: dict: Default values of labels
+LABEL_VAL_DEF = {
     TableParameter.prm_desc.name: '',
     TableParameter.prm_unit.name: '',
 }

@@ -47,8 +47,8 @@ EXPR_FIELD_KEYS = [
 #: list: Node pattern
 NODE_PATTERN = [MODEL_PAT, PRM_AND_FLAG_PRM_PAT]
 
-#: dict: Node parameters default value
-NODE_PARAMS_DEF = {
+#: dict: Default values of labels
+LABEL_VAL_DEF = {
     TAG_FLD_NM: [],
     META_FLD_NM: {},
     CSV_USE_DEFAULT_FLD_NM: False,

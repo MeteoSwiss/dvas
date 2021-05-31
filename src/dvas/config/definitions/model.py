@@ -14,8 +14,8 @@ Module contents: Required attributes definition for
 from ...hardcoded import MODEL_PAT
 from ...database.model import Model as TableModel
 
-#: dict: Default node params
-NODE_PARAMS_DEF = {
+#: dict: Default values of labels
+LABEL_VAL_DEF = {
     TableModel.mid.name: '',
 }
 
