@@ -24,7 +24,7 @@ from dvas.plots import utils as dpu
 from ...errors import DvasRecipesError
 
 @log_func_call(logger, time_it=True)
-def flight_overview(eid, rid, rcp_vars, tags='sync'):
+def flight_overview(eid, rid, rcp_vars, tags='sync', step_id=None):
     """ Create an "overview" plot of all the recipe variables for a given flight.
     Args:
         eid (str|int): event id to be synchronized, e.g. 80611
@@ -35,6 +35,8 @@ def flight_overview(eid, rid, rcp_vars, tags='sync'):
 
         tags (str|list of str, optional): tag names for the search query into the database.
             Defaults to 'sync'.
+        step_id (int|str): recipe step id, to be added at thew front of the resulting plot file.
+            Defaults to None.
 
     """
 
@@ -124,6 +126,6 @@ def flight_overview(eid, rid, rcp_vars, tags='sync'):
     dpu.add_source(fig)
 
     # Save it all
-    dpu.fancy_savefig(fig, 'flight_overview', fn_prefix='dr',
+    dpu.fancy_savefig(fig, 'flight_overview', fn_prefix=step_id,
                       fn_suffix='e{}_r{}_{}'.format(eid, rid, '-'.join(tags)),
-                      fmts='pdf', show=True) # TODO: these two should come from the param file
+                      fmts=dpu.PLOT_FMTS, show=dpu.PLOT_SHOW)

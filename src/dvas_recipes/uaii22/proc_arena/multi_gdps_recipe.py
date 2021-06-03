@@ -58,9 +58,8 @@ if __name__ == '__main__':
         drs.sync_flight(eid, 1, rcp_vars)
 
     # --- GENERIC PROFILE PLOT ---
-
     # Make a plot showing all the variables of interest.
-        drp.flight_overview(eid, 1, rcp_vars)
+        drp.flight_overview(eid, 1, rcp_vars, tags='sync', step_id='01b')
 
     # --- ASSEMBLE GDPS ---
 
