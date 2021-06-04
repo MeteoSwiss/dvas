@@ -8,4 +8,5 @@ SPDX-License-Identifier: GPL-3.0-or-later
 Module content: hardcocded parameters for dvas_recipes
 """
 
-DVAS_RECIPES = ['demo', 'uaii22']
+DVAS_RECIPE_NAMES = ['demo', 'uaii22']
+DVAS_RECIPE_FNEXT = '.rcp'

@@ -18,7 +18,7 @@ paths:
 general:
     log_mode: 2 # 0 = no logs, 1 = log to file only, 2 = file + screen, 3 = screen only.
     log_lvl: DEBUG # DEBUG, INFO, WARNING
-    do_latex: True # True for slower but prettier plots. Requires a working system-wide LaTeX setup !
+    do_latex: False # True for slower but prettier plots. Requires a working system-wide LaTeX setup !
     plot_fmts:
         - pdf
         #- png
@@ -31,23 +31,36 @@ vars:
         ucs: temp_ucs
         uct: temp_uct
         ucu:
-    rh:
-        ucr: rh_ucr
-        ucs:
-        uct: rh_uct
-        ucu:
-    pres:
-        ucr:
-        ucs:
-        uct: pres_uct
-        ucu:
-    wdir:
-        ucr:
-        ucs:
-        uct:
-        ucu: wdir_ucu
-    wspeed:
-        ucr:
-        ucs:
-        uct:
-        ucu: wspeed_ucu
+    #rh:
+    #    ucr: rh_ucr
+    #    ucs:
+    #    uct: rh_uct
+    #    ucu:
+    #pres:
+    #    ucr:
+    #    ucs:
+    #    uct: pres_uct
+    #    ucu:
+    #wdir:
+    #    ucr:
+    #    ucs:
+    #    uct:
+    #    ucu: wdir_ucu
+    #wspeed:
+    #    ucr:
+    #    ucs:
+    #    uct:
+    #    ucu: wspeed_ucu
+
+# Recipe steps
+rcp_steps:
+
+    sync_flights:
+        step_id: '01'
+        run: True
+        args:
+
+    show_flights:
+        step_id: '02'
+        run: True
+        args:

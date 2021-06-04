@@ -15,23 +15,22 @@ import argparse
 from pathlib import Path
 
 from dvas import VERSION
-from .hardcoded import DVAS_RECIPES
-from .initialize import init_arena
+from .hardcoded import DVAS_RECIPE_NAMES
+from .hl_commands import init_arena, run_recipe
 
-def dvas_init():
-    ''' The dvas_init entry point, wrapping around the actual init_arena function.
-    '''
+def dvas_init_arena():
+    """ The dvas_init_arena entry point, wrapping around the actual init_arena function. """
 
     # Use argparse to make dvas user friendly
     parser = argparse.ArgumentParser(description=
                                      'DVAS {}'.format(VERSION) +
                                      ' - Data Visualization and Analysis Software:' +
-                                     ' Initialization function.',
+                                     ' Initialization entry point.',
                                      epilog='For more info: https://MeteoSwiss.github.io/dvas\n ',
                                      formatter_class=argparse.RawTextHelpFormatter)
 
     parser.add_argument('recipe', action='store', default='demo',
-                        choices=DVAS_RECIPES,
+                        choices=DVAS_RECIPE_NAMES,
                         help='The processing recipe to initialize.')
 
     parser.add_argument('-ap', '--arena_path', action='store', default=None,
@@ -49,6 +48,23 @@ def dvas_init():
     # Launch the initialization of a new processing arena
     init_arena(args.recipe, arena_path=args.arena_path)
 
-# Make everything above actually work.
-#if __name__ == "__main__":
-#    main()
+def dvas_run_recipe():
+    """ The dvas_run_recipe entry point, wrapping around the actual run_recipe function. """
+
+    # Use argparse to make dvas user friendly
+    parser = argparse.ArgumentParser(description=
+                                     'DVAS {}'.format(VERSION) +
+                                     ' - Data Visualization and Analysis Software:' +
+                                     ' Recipe initialization & execution entry point.',
+                                     epilog='For more info: https://MeteoSwiss.github.io/dvas\n ',
+                                     formatter_class=argparse.RawTextHelpFormatter)
+
+    parser.add_argument('rcp_fn', action='store',
+                        help=' (Path +) Name of the dvas recipe file (.rcp) to use.')
+
+    # Done getting ready.
+    # What did we get from the user ?
+    args = parser.parse_args()
+
+    # Feed this to the actual recipe routine
+    run_recipe(Path(args.rcp_fn))

@@ -31,7 +31,7 @@ if __name__ == '__main__':
 
     # --- DB SETUP ---
     # Reset the DB to "start fresh" ?
-    RESET_DB = True
+    RESET_DB = False
 
     if RESET_DB:
         # Use this command to clear the DB
@@ -59,17 +59,8 @@ if __name__ == '__main__':
 
     # --- GENERIC PROFILE PLOT ---
     # Make a plot showing all the variables of interest.
-        drp.flight_overview(eid, 1, rcp_vars, tags='sync', step_id='01b')
+        #drp.flight_overview(eid, 1, rcp_vars, tags='sync', step_id='01b')
 
     # --- ASSEMBLE GDPS ---
 
-    #drg.build_cws(80611, 1)
-
-
-    # Get all the profiles, to see how they look.
-    #filt = "all()"
-    #prfs = MultiRSProfile()
-    #prfs.load_from_db(filt, 'temp', 'time', alt_abbr='gph')
-
-    #prfs.get_info(prm='oid')
-    #prfs.get_info('tags')
+        drg.build_cws(eid, 1, rcp_vars, tags='sync', step_id='02')
