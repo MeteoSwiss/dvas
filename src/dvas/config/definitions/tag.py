@@ -31,7 +31,7 @@ PARAMETER_PATTERN_PROP = {
 }
 
 #: list: Constant node values
-CONST_NODES = [
+CONST_LABELS = [
     {
         TableTag.tag_name.name: TAG_NONE_NAME,
         TableTag.tag_desc.name: TAG_NONE_DESC

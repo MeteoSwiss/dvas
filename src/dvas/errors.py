@@ -39,13 +39,12 @@ class ConfigCheckJSONError(ConfigReadError):
     """Exception for error in checking JSON"""
 
 
-
 class ConfigNodeError(ConfigError):
     """Error in config node"""
 
 
-class ConfigItemKeyError(ConfigError):
-    """Error in config key item"""
+class ConfigLabelNameError(ConfigError):
+    """Error in config label name"""
 
 
 class ConfigGenMaxLenError(ConfigError):

@@ -949,6 +949,7 @@ class LoadExprInterpreter(ABC):
             'get': GetExpr,
             'pow': PowExpr,
             'sqrt': SqrtExpr,
+            'wcomp': WindComp,
         }
 
 
