@@ -62,7 +62,7 @@ def dvas_run_recipe():
     parser.add_argument('rcp_fn', action='store',
                         help=' (Path +) Name of the dvas recipe file (.rcp) to use.')
 
-    parser.add_argument('-flights', action='store', default=None,
+    parser.add_argument('--flights', action='store', default=None,
                         help='(Path +) Name of text file listing specific flights to process.')
 
     # Done getting ready.

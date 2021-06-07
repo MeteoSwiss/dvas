@@ -30,12 +30,13 @@ yaml = YAML(typ='safe')
 class RecipeStep:
     """ RecipeStep class, to handle individual recipe steps and their execution """
 
-    _step_id = None
-    _run = None
+    _step_id = None # str: to identify the recipe
+    _step_type = None # 'seq' = process each flight one-by-one, 'grp' = all flights as one
+    _run = None # bool: whether to run the step, or not.
     _func = None
     _args = None
 
-    def __init__(self, func, step_id, run, args):
+    def __init__(self, func, step_id, step_type, run, args):
         """ RecipeStep initialization function.
 
         Args:
@@ -47,6 +48,7 @@ class RecipeStep:
 
         self._func = func
         self._step_id = step_id
+        self._step_type = step_type
         self._run = run
         self._args = args
 
@@ -56,16 +58,33 @@ class RecipeStep:
         return self._step_id
 
     @property
+    def step_type(self):
+        """ Type of this recipe step.
+
+        seq = run sequentially on each flights specified in the call.
+
+        """
+        return self._step_type
+
+    @property
     def run(self):
         """ Whether this step should be executed, or not, as part of the recipe """
         return self._run
 
-    def execute(self):
-        """ Launches the processing associated with this recipe step. """
-        #return self._func(**self._args)
-        import pdb
-        pdb.set_trace()
-        print(self.step_id, self.run)
+    def execute(self, flights):
+        """ Launches the processing associated with this recipe step.
+
+        Args:
+            flights (list of list of int): list of flights to process, as [evt_id, rig_id] pairs.
+
+        """
+
+        if self.step_type == 'seq':
+            for flight in flights:
+                self._func(flight, self.step_id, **self._args)
+        else:
+            raise DvasRecipesError('Ouch ! step_type unknown.')
+
 
 class Recipe:
     """ Recipe class, designed to handle the loading/initialization/execution of dvas recipes from
@@ -139,7 +158,8 @@ class Recipe:
 
             # Initialize the recipe step
             rcp_steps += [RecipeStep(getattr(rcp_mod, item[0].split('.')[-1]),
-                                    item[1]['step_id'], item[1]['run'], item[1]['args'])]
+                                     item[1]['step_id'], item[1]['step_type'],
+                                     item[1]['run'], item[1]['args'])]
 
         self._steps =  rcp_steps
 
@@ -189,7 +209,8 @@ class Recipe:
                     [[12345, 1], [12346, 1]]
         """
 
-        #TODO
+        import pdb
+        pdb.set_trace()
 
         return 0
 
@@ -215,8 +236,8 @@ class Recipe:
         run_step = False
         for step in self._steps:
             if run_step or (from_step_id is None):
-                step.execute()
+                step.execute(self._flights)
             else:
                 if step.step_id == from_step_id:
                     run_step = True
-                    step.execute()
+                    step.execute(self._flights)

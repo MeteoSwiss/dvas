@@ -59,18 +59,12 @@ rcp_params:
         #    uct:
         #    ucu: wspeed_ucu
 
-    # If applicable, process specific flights identified as (event_id, rig_id) tuples
-    flights:
-        - (139164, 1) # day, RS-41 x2, M10 x1
-        #- (139165, 1) # day, RS-41 x1, M10 x1
-        #- (139926, 1) # day, RS-41 x2, M10 x2,
-        #- (140075, 1) # night, RS-41 x2, M10 x1
-
 # Recipe steps, and associated arguments/parameters
 rcp_steps:
 
     uaii22.src.sync.sync_flight:
         step_id: '01'
+        step_type: 'seq' # 'seq' = run sequentially on each flight
         run: True
         args:
             a: 1
@@ -78,5 +72,6 @@ rcp_steps:
 
     uaii22.src.plots.flight_overview:
         step_id: '02'
+        step_type: 'seq' # 'seq' = run sequentially on each flight
         run: True
         args:
