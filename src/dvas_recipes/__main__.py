@@ -62,9 +62,15 @@ def dvas_run_recipe():
     parser.add_argument('rcp_fn', action='store',
                         help=' (Path +) Name of the dvas recipe file (.rcp) to use.')
 
+    parser.add_argument('-flights', action='store', default=None,
+                        help='(Path +) Name of text file listing specific flights to process.')
+
     # Done getting ready.
     # What did we get from the user ?
     args = parser.parse_args()
 
+    if args.flights is not None:
+        args.flights = Path(args.flights)
+
     # Feed this to the actual recipe routine
-    run_recipe(Path(args.rcp_fn))
+    run_recipe(Path(args.rcp_fn), flights=args.flights)

@@ -26,6 +26,7 @@ from ...errors import DvasRecipesError
 @log_func_call(logger, time_it=True)
 def flight_overview(eid, rid, rcp_vars, tags='sync', step_id=None):
     """ Create an "overview" plot of all the recipe variables for a given flight.
+
     Args:
         eid (str|int): event id to be synchronized, e.g. 80611
         rid (str|int): rig id to be synchronized, e.g. 1

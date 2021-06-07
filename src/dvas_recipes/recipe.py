@@ -12,6 +12,7 @@ This file contains specific recipe classes and utilities.
 # Import generic packages
 from importlib import import_module
 from ruamel.yaml import YAML
+import numpy as np
 
 # Import from dvas
 from dvas.environ import path_var
@@ -75,12 +76,18 @@ class Recipe:
     _steps = None
     _vars = None
     _index = None
+    _flights = None
 
-    def __init__(self, rcp_fn):
+    def __init__(self, rcp_fn, flights=None):
         """ Recipe initialization from a suitable YAML recipe file.
 
         Args:
             rcp_fn (pathlib.Path): path of the recipe file to initialize.
+            flights (2D ndarray of int, optional): ndarray listing specific flights to be processed,
+                using their event id and rig id for identification.
+                Defaults to None = all available. Array must be 2D, e.g.::
+
+                    [[12345, 1], [12346, 1]]
 
         """
 
@@ -136,8 +143,11 @@ class Recipe:
 
         self._steps =  rcp_steps
 
-        import pdb
-        pdb.set_trace()
+        # Set the flights to be processed, if warranted.
+        if flights is not None:
+            if ndim:=np.ndim(flights) != 2:
+                raise DvasRecipesError('Ouch ! np.ndim(flights) should be 2, not: {}'.format(ndim))
+            self._flights = flights
 
     @property
     def name(self):
@@ -169,13 +179,44 @@ class Recipe:
                           [self._vars[var][uc] for var in self._vars for uc in self._vars[var]],
                           strict=True)
 
-    def execute(self, from_step=0):
-        """ Run the recipe step-by-step, possibly skipping some of the first ones. """
+    def get_all_flights_from_db(self):
+        """ Identifies all the radiosonde flights present in the dvas database.
+
+        Returns:
+            2D ndarray of int: the array of event_id and rig_id for each flight, with the following
+                structrure::
+
+                    [[12345, 1], [12346, 1]]
+        """
+
+        #TODO
+
+        return 0
+
+
+    def execute(self, from_step_id=None):
+        """ Run the recipe step-by-step, possibly skipping some of the first ones.
+
+        Args:
+            from_step_id (str|int, optional): if set, will start the processing from this specific
+                step_id. Defaults to None = start at first step.
+
+        """
 
         # First, we setup the dvas database
         self.init_db()
 
+        # If warranted, find all the flights that need tio be processed.
+        if self._flights is None:
+            self._flights = self.get_all_flights_from_db()
+
         # Now that everything is in place, all that is required at this point is to launch each step
-        # one after the other.
+        # one after the other. If warranted, start with a specific step.
+        run_step = False
         for step in self._steps:
-            step.execute()
+            if run_step or (from_step_id is None):
+                step.execute()
+            else:
+                if step.step_id == from_step_id:
+                    run_step = True
+                    step.execute()

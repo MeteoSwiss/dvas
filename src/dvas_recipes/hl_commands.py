@@ -12,6 +12,7 @@ import os
 from datetime import datetime
 from pathlib import Path
 import shutil
+import numpy as np
 
 from .errors import DvasRecipesError
 from .hardcoded import DVAS_RECIPE_FNEXT
@@ -24,7 +25,7 @@ def init_arena(recipe, arena_path=None):
     Args:
         recipe (str): the processing recipe. Must be one of `dvas_recipes.hardcoded.DVAS_RECIPES`.
         arena_path (pathlib.Path, optional): relative Path to the processing arena to initialize.
-            Defaults to None=`./dvas_arena_"recipe-name"`.
+            Defaults to None == ``./dvas_arena_"recipe-name"``.
 
     '''
 
@@ -55,11 +56,20 @@ def init_arena(recipe, arena_path=None):
     print('All done in %i s.' % ((datetime.now()-start_time).total_seconds()))
 
 
-def run_recipe(rcp_fn=None):
+def run_recipe(rcp_fn=None, flights=None):
     ''' Loads and execute a dvas recipe.
 
     Args:
         rcp_fn (pathlib.Path, optional): path to the specific dvas recipe to execute.
+        flights (pathlib.Path, optional): path to the text file specifiying specific radiososnde
+            flights to process. The file should contain one tuple of evt_id, rig_rid per line,
+            e.g.::
+
+                # This is a comment
+                # Each line should contain the event_id, rig_id
+                # These must be integers !
+                12345, 1
+                12346, 1
 
     '''
 
@@ -91,8 +101,16 @@ def run_recipe(rcp_fn=None):
         if not rcp_fn.exists():
             raise DvasRecipesError('Ouch ! {} does not exist.'.format(rcp_fn))
 
+    # If warranted, extract the specific flights' eid/rid that should be processed
+    if flights is not None:
+        if not isinstance(flights, Path):
+            raise DvasRecipesError('Ouch ! flights should be of type pathlib.Path, not: '+
+                                   '{}'.format(type(flights)))
+        flights = np.atleast_2d(np.genfromtxt(flights, comments='#', delimiter=',', dtype=int))
+
+
     # Very well, I am now ready to start initializing the recipe.
-    rcp = Recipe(rcp_fn)
+    rcp = Recipe(rcp_fn, flights=flights)
 
     # Launch the procesing !
     rcp.execute()

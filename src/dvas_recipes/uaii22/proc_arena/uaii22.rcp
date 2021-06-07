@@ -73,6 +73,8 @@ rcp_steps:
         step_id: '01'
         run: True
         args:
+            a: 1
+            b: 2
 
     uaii22.src.plots.flight_overview:
         step_id: '02'
