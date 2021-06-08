@@ -9,14 +9,10 @@ Module contents: Error management
 
 """
 
-import inspect
-
-# Import form current packages/modules
-from . import __name__ as main_pkg_nm
-
 
 class DvasError(Exception):
     """General exception class for dvas."""
+
 
 
 class ConfigError(DvasError):
@@ -39,17 +35,32 @@ class ConfigCheckJSONError(ConfigReadError):
     """Exception for error in checking JSON"""
 
 
+class ConfigGenMaxLenError(ConfigReadError):
+    """Exception class for max length config generator error"""
+
+
 class ConfigNodeError(ConfigError):
     """Error in config node"""
 
 
-class ConfigLabelNameError(ConfigError):
+class ConfigGetError(ConfigError):
+    """Error in get config value"""
+
+
+class ConfigLabelNameError(ConfigGetError):
     """Error in config label name"""
 
 
-class ConfigGenMaxLenError(ConfigError):
-    """Exception class for max length config generator error"""
+class ExprInterpreterError(ConfigError):
+    """Error in expression interpreter"""
 
+
+class NonTerminalExprInterpreterError(ExprInterpreterError):
+    """Error in non terminal expression interpreter"""
+
+
+class TerminalExprInterpreterError(ExprInterpreterError):
+    """Error in terminal expression interpreter"""
 
 
 class LogDirError(DvasError):

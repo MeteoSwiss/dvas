@@ -37,8 +37,11 @@ from ..helper import camel_to_snake
 from ..database.model import Parameter as TableParameter
 from ..hardcoded import FLAG_PRM_NAME_SUFFIX, FLAG_PRM_DESC_PREFIX
 from ..errors import ConfigError
-from ..errors import ConfigPathError, ConfigReadYAMLError, ConfigCheckJSONError, ConfigReadError
-from ..errors import ConfigNodeError, ConfigLabelNameError, ConfigGenMaxLenError
+from ..errors import ConfigPathError, ConfigReadYAMLError, ConfigCheckJSONError
+from ..errors import ConfigReadError, ConfigNodeError
+from ..errors import ConfigGetError, ConfigLabelNameError
+from ..errors import ConfigGenMaxLenError
+from ..errors import ExprInterpreterError, NonTerminalExprInterpreterError, TerminalExprInterpreterError
 
 
 # Define
@@ -94,7 +97,13 @@ class ConfigManager(metaclass=RequiredAttrMetaClass):
         self.init_document()
 
     def __getitem__(self, item):
-        return self.document[item]
+        try:
+            out = self.document[item]
+
+        except (KeyError, TypeError) as exc:
+            raise ConfigGetError from exc
+
+        return out
 
     def __repr__(self):
         p_printer = pprint.PrettyPrinter()
@@ -431,6 +440,58 @@ class OneDimArrayConfigManager(OneLayerConfigManager):
         except ConfigReadError as exc:
             raise ConfigReadError('Error in hard coded config') from exc
 
+    def _get_document(self, doc_in=None):
+        """Override method"""
+
+        # Call super method
+        super()._get_document(doc_in=doc_in)
+
+        # Generate automatic labels
+        if self.NODE_GEN:
+
+            document_new = []
+            for doc in self.document:
+
+                # Init new sub dict
+                sub_dict_new = {}
+
+                # Generate from regexp generator
+                node_gen_val = sre_yield.AllMatches(doc[self.NODE_GEN])
+
+                # Check length
+                if (n_val := len(node_gen_val)) > env_glob_var.config_gen_max:
+                    raise ConfigGenMaxLenError(
+                        f"Generator {doc[self.NODE_GEN]} will generate {n_val} config field. " +
+                        f"Max allowed {env_glob_var.config_gen_max}"
+                    )
+
+                # Update sub dict
+                sub_dict_new.update({self.NODE_GEN: list(node_gen_val)})
+
+                # Loop over other config item key
+                for doc_key in filter(lambda x: x != self.NODE_GEN, doc.keys()):
+                    # Update new sub dict for current key
+                    sub_dict_new.update(
+                        {
+                            doc_key: [
+                                ConfigExprInterpreter.eval(
+                                    doc[doc_key], node_gen_val[i].group
+                                )
+                                for i in range(len(node_gen_val))
+                            ]
+                        }
+                    )
+
+                # Rearange dict of list in list of dict
+                document_new += [
+                    dict(zip(sub_dict_new, arg))
+                    for arg in zip(*sub_dict_new.values())
+                ]
+
+            # Copy now doc
+            self.document = document_new.copy()
+
+
 
 class Model(OneDimArrayConfigManager):
     """Instrument type config manager"""
@@ -456,6 +517,33 @@ class Parameter(OneDimArrayConfigManager):
 
     #: dict: Config document
     document = TypedProperty(OneDimArrayConfigManager.DOC_TYPE)
+
+    def _get_document(self, doc_in=None):
+        """Override method"""
+
+        # Call super method
+        super()._get_document(doc_in=doc_in)
+
+        # Duplicate parameters into there flag item
+        # Remark: It's not necessarily the most elegant way to duplicate parameters to get the flag side...
+
+        # Define mapping
+        arg_key_to_dict = {
+            TableParameter.prm_name.name: lambda x: f"{x}{FLAG_PRM_NAME_SUFFIX}",
+            TableParameter.prm_desc.name: lambda x: f"{FLAG_PRM_DESC_PREFIX}{x[0].lower()}{x[1:]}",
+            TableParameter.prm_unit.name: lambda _: '',
+        }
+
+        # Create duplicate array of flags
+        array_prm_flg = [
+            {
+                arg_key: arg_key_to_dict[arg_key](arg_val) for arg_key, arg_val in arg.items()
+            }
+            for arg in self.document
+        ]
+
+        # Append
+        self.document += array_prm_flg
 
 
 class Flag(OneDimArrayConfigManager):
@@ -501,13 +589,16 @@ class MultiLayerConfigManager(OneLayerConfigManager):
     NODE_PATTERN = None
 
     def __getitem__(self, item):
-        """Overwrite __getitem method.
+        """Override __getitem__ method.
 
         Args:
             item (list of str): Document item as list
 
         Returns:
             object
+
+        Raises:
+            ConfigGetError: Error in getting config label value
 
         """
 
@@ -524,62 +615,74 @@ class MultiLayerConfigManager(OneLayerConfigManager):
             try:
                 return get_by_path(self.document, nested_item)
 
-            except (KeyError, TypeError, IndexError):
+            except (KeyError, TypeError, IndexError) as exc:
                 if len(nested_item) <= 1:
-                    raise KeyError
+                    raise ConfigLabelNameError from exc
                 return find_val(nested_item[:-2] + nested_item[-1:])
 
         # Get for item
         try:
             out = find_val(item)
-        except KeyError:
+        except ConfigLabelNameError as exc:
             errmsg = (
-                "Bad item {} in __getitem__({})".format(item, self.document)
+                f"Can't find item {item} in\n{self}"
             )
-            raise ConfigLabelNameError(errmsg)
+            raise ConfigGetError(errmsg) from exc
 
         return out
 
-    def get_val(self, node_keys, key_param):
-        """Return single node_keys value
+    def get_val(self, node_labels, final_label):
+        """Return single node_labels value
 
         Args:
-            node_keys (list of str): Node keys
-            key_param (str): Key parameter
+            node_labels (list of str): Node keys. If the escape character is missing in the prefix of the node,
+                it is added automatically.
+            final_label (str): Key parameter
 
         Returns
             `object`
 
         Raises:
-
+            ConfigGetError: Error in getting config label value
 
         """
 
+        # Convert node to list
+        if isinstance(node_labels, str):
+            node_labels = [node_labels]
+
+        # Add node escape char if necessary
+        node_labels_mod = [
+            (arg if arg.startswith(NODE_ESCAPE_CHAR) else NODE_ESCAPE_CHAR + arg)
+            for arg in node_labels
+        ]
+
         try:
-            out = self[
-                [NODE_ESCAPE_CHAR + arg for arg in node_keys] + [key_param]
-            ]
-        except ConfigLabelNameError as exc:
-            raise ConfigLabelNameError(
-                f"Bad key '{node_keys + [key_param]}' " +
-                f"for {self.__class__.__name__}"
+            out = self[node_labels_mod + [final_label]]
+
+        except ConfigGetError as exc:
+            raise ConfigGetError(
+                f"Can't find '{node_labels + [final_label]}' in config"
             ) from exc
 
         return out
 
-    def get_all(self, node_keys):
-        """Return all values
+    def get_all(self, node_labels):
+        """Return all values for a given node labels. Only values specified in defaults labels will be returned.
 
         Args:
-            node_keys (list of str): Node keys
+            node_labels (list of str): Node keys
 
         Returns:
             dict
 
+        Raises:
+            ConfigGetError: Error in getting config label value
+
         """
 
         out = {
-            key: self.get_val(node_keys, key)
+            key: self.get_val(node_labels, key)
             for key in [*self.LABEL_VAL_DEF.keys()]
         }
 
@@ -700,126 +803,6 @@ class OrigData(MultiLayerConfigManager):
     document = TypedProperty(MultiLayerConfigManager.DOC_TYPE)
 
 
-class OneDimArrayConfigLinker:
-    """Link to OneDimArrayConfigManager
-    config managers."""
-
-    #: list: Default instantiated config managers
-    CFG_MNGRS_DFLT = [Parameter, Model, Flag, Tag]
-
-    def __init__(self, cfg_mngrs=None):
-        """
-        Args:
-            cfg_mngrs (list of OneDimArrayConfigManager): Config managers
-        """
-
-        if cfg_mngrs is None:
-            cfg_mngrs = self.CFG_MNGRS_DFLT
-
-        # Set attributes
-        self._cfg_mngr = instantiate_config_managers(*cfg_mngrs)
-
-    def get_document(self, key):
-        """Interpret the generator syntax if necessary and
-        return the config document.
-
-        The generator syntax is apply only in OneDimArrayConfig with
-        not empty NODE_GEN. Generator syntax is based on regexpr. Fields which
-        are not generator can contain expression to be evaluated. The syntax
-        used is the one described in ConfigExprInterpreter.eval
-
-        Args:
-            key (str): Config manager key
-
-        Returns:
-            dict
-
-        Raises:
-            - ConfigGenMaxLenError: Error for to much generated items.
-
-        """
-
-        # Define
-        array_old = self._cfg_mngr[key].document
-        node_gen = self._cfg_mngr[key].NODE_GEN
-        array_new = []
-
-        # Loop over te config array items
-        for doc in array_old:
-
-            # Test if node generator allowed
-            if node_gen:
-
-                # Init new sub dict
-                sub_dict_new = {}
-
-                # Generate from regexp generator
-                node_gen_val = sre_yield.AllMatches(doc[node_gen])
-
-                # Check length
-                if (n_val := len(node_gen_val)) > env_glob_var.config_gen_max:
-                    raise ConfigGenMaxLenError(
-                        f"{n_val} generated config field. " +
-                        f"Max allowed {env_glob_var.config_gen_max}"
-                    )
-
-                # Update sub dict
-                sub_dict_new.update({node_gen: list(node_gen_val)})
-
-                # Loop over other config item key
-                for doc_key in filter(lambda x: x != node_gen, doc.keys()):
-
-                    # Update new sub dict for current key
-                    sub_dict_new.update(
-                        {
-                            doc_key: [
-                                ConfigExprInterpreter.eval(
-                                    doc[doc_key], node_gen_val[i].group
-                                )
-                                for i in range(len(node_gen_val))
-                            ]
-                        }
-                    )
-
-                # Rearange dict of list in list of dict
-                res = [
-                    dict(zip(sub_dict_new, arg))
-                    for arg in zip(*sub_dict_new.values())
-                ]
-
-            # Case without generator
-            else:
-                res = [doc]
-
-            # Append to new array
-            array_new += res
-
-        # Duplicate duplicate parameters into there flag item
-        # (Remark: It's not necessarily the most elegant way to duplicate
-        # parameters to get the flag side... but it's the only one I could easily implement.)
-        if key == Parameter.CLASS_KEY:
-
-            # Define mapping
-            arg_key_to_dict = {
-                TableParameter.prm_name.name: lambda x: f"{x}{FLAG_PRM_NAME_SUFFIX}",
-                TableParameter.prm_desc.name: lambda x: f"{FLAG_PRM_DESC_PREFIX}{x[0].lower()}{x[1:]}",
-                TableParameter.prm_unit.name: lambda _: '',
-            }
-
-            # Create duplicate array of flags
-            array_prm_flg = [
-                {
-                    arg_key: arg_key_to_dict[arg_key](arg_val) for arg_key, arg_val in arg.items()
-                }
-                for arg in array_new
-            ]
-
-            # Append
-            array_new += array_prm_flg
-
-        return array_new
-
-
 class ConfigExprInterpreter(metaclass=ABCMeta):
     """Abstract config expression interpreter class
 
@@ -849,11 +832,18 @@ class ConfigExprInterpreter(metaclass=ABCMeta):
 
     @staticmethod
     def eval(expr, get_fct):
-        """Evaluate str expression
+        """Interprete expression.
 
         Args:
-            expr (str|ConfigExprInterpreter): Expression to evaluate
+            expr (str|ConfigExprInterpreter): Expression to evaluate.
             get_fct (callable): Function use by 'get'
+
+        Syntax:
+            cat(<str_1>, ..., <str_n>): Concatenate str_1 to str_n
+
+
+        Raises:
+            ExprInterpreterError: Error while interpreting expression
 
         Examples:
             >>> import re
@@ -886,10 +876,11 @@ class ConfigExprInterpreter(metaclass=ABCMeta):
             # Interpret
             expr_out = expr_out.interpret()
 
-        # TODO
-        #  Detail exception
-        except Exception:
+        except (NameError, SyntaxError) as exc:
             expr_out = expr
+
+        except (NonTerminalExprInterpreterError, TerminalExprInterpreterError) as exc:
+            raise ExprInterpreterError(f"Error in '{expr}'") from exc
 
         return expr_out
 
@@ -927,30 +918,41 @@ class CatExpr(NonTerminalConfigExprInterpreter):
 
     def fct(self, a, b):
         """Implement fct method"""
-        return operator.add(a, b)
+        try:
+            out = operator.add(a, b)
+        except TypeError as exc:
+            raise NonTerminalExprInterpreterError() from exc
+
+        return out
 
 
 class ReplExpr(NonTerminalConfigExprInterpreter):
-    """Replace dict key by its value. If key is missing, return key"""
+    """Replace dict key or list index by its value. If key is missing, return key"""
 
     def fct(self, a, b):
         """Implement fct method"""
         try:
             out = operator.getitem(a, b)
-        except KeyError:
+        except (KeyError, IndexError):
             out = b
+        except TypeError as exc:
+            raise NonTerminalExprInterpreterError() from exc
+
         return out
 
 
 class ReplStrictExpr(NonTerminalConfigExprInterpreter):
-    """Replace dict key by its value. If key is missing, return ''"""
+    """Replace dict key or list index by its value. If key is missing, return ''"""
 
     def fct(self, a, b):
         """Implement fct method"""
         try:
             out = operator.getitem(a, b)
-        except KeyError:
+        except (KeyError, IndexError):
             out = ''
+        except TypeError as exc:
+            raise NonTerminalExprInterpreterError() from exc
+
         return out
 
 
@@ -959,7 +961,12 @@ class LowerExpr(NonTerminalConfigExprInterpreter):
 
     def fct(self, a):
         """Implement fct method"""
-        return a.lower()
+        try:
+            out = a.lower()
+        except AttributeError as exc:
+            raise NonTerminalExprInterpreterError() from exc
+
+        return out
 
 
 class UpperExpr(NonTerminalConfigExprInterpreter):
@@ -967,7 +974,12 @@ class UpperExpr(NonTerminalConfigExprInterpreter):
 
     def fct(self, a):
         """Implement fct method"""
-        return a.upper()
+        try:
+            out = a.upper()
+        except AttributeError as exc:
+            raise NonTerminalExprInterpreterError() from exc
+
+        return out
 
 
 class SmallUpperExpr(NonTerminalConfigExprInterpreter):
@@ -975,8 +987,12 @@ class SmallUpperExpr(NonTerminalConfigExprInterpreter):
 
     def fct(self, a):
         """Implement fct method"""
-        return a[0].upper() + a[1:].lower()
+        try:
+            out = a[0].upper() + a[1:].lower()
+        except (AttributeError, TypeError) as exc:
+            raise NonTerminalExprInterpreterError() from exc
 
+        return out
 
 class TerminalConfigExprInterpreter(ConfigExprInterpreter):
     """Implement an interpreter operation for terminal symbols in the
@@ -992,7 +1008,12 @@ class GetExpr(TerminalConfigExprInterpreter):
 
     def interpret(self):
         """Implement fct method"""
-        return self._FCT(self._expression)
+        try:
+            out = self._FCT(self._expression)
+        except IndexError as exc:
+            raise TerminalExprInterpreterError() from exc
+
+        return out
 
 
 class NoneExpr(TerminalConfigExprInterpreter):

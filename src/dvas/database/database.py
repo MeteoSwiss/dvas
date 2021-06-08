@@ -32,7 +32,11 @@ from .model import Flag, DataSource, Data
 from .model import InfosObjects as TableInfosObjects
 from .model import InfosTags
 from .search import SearchInfoExpr
-from ..config.config import OneDimArrayConfigLinker
+from ..config.config import Parameter as ParameterCfg
+from ..config.config import Model as ModelCfg
+from ..config.config import Flag as FlagCfg
+from ..config.config import Tag as TagCfg
+from ..config.config import instantiate_config_managers
 from ..config.definitions.origdata import EDT_FLD_NM
 from ..config.definitions.origdata import TAG_FLD_NM, META_FLD_NM
 from ..hardcoded import TAG_NONE_NAME
@@ -79,7 +83,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
     def __init__(self):
 
         # Create config linker instance attribute
-        self._cfg_linker = OneDimArrayConfigLinker()
+        self._cfg_mngr = instantiate_config_managers(ParameterCfg, ModelCfg, FlagCfg, TagCfg, read=True)
 
         # Create db attribute
         self._db = db
@@ -244,7 +248,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         """
 
         # Init
-        document = self._cfg_linker.get_document(table.__name__)
+        document = self._cfg_mngr[table.__name__]
 
         # get foreign constraint attribute
         if foreign_constraint:
