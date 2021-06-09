@@ -16,6 +16,7 @@ import dvas.plots.gdps as dpg
 
 # Import from dvas_recipes
 from ...errors import DvasRecipesError
+from ... import dynamic
 
 def build_cws(evt_id, rig_id, rcp_vars, tags='sync', step_id=None):
     """ Highest-level function responsible for assembling the combined working standard for a

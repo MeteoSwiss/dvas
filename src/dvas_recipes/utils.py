@@ -17,15 +17,14 @@ def recipe_storage_path():
     """
     return Path(__file__).resolve(strict=True).parent
 
-def default_arena_path(recipe):
+def default_arena_path():
     """ Returns the default **relative** location and name of the dvas processing arena for a
     specific recipe: './dvas_recipe_arena/'
 
     Args:
-        recipe (str): recipe name
 
     Returns:
         pathlib.Path: the default relative Path.
     """
 
-    return Path('.', 'dvas-arena_{}'.format(recipe))
+    return Path('.', 'dvas_proc_arena')

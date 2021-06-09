@@ -15,7 +15,6 @@ import argparse
 from pathlib import Path
 
 from dvas import VERSION
-from .hardcoded import DVAS_RECIPE_NAMES
 from .hl_commands import init_arena, run_recipe
 
 def dvas_init_arena():
@@ -29,11 +28,7 @@ def dvas_init_arena():
                                      epilog='For more info: https://MeteoSwiss.github.io/dvas\n ',
                                      formatter_class=argparse.RawTextHelpFormatter)
 
-    parser.add_argument('recipe', action='store', default='demo',
-                        choices=DVAS_RECIPE_NAMES,
-                        help='The processing recipe to initialize.')
-
-    parser.add_argument('-ap', '--arena_path', action='store', default=None,
+    parser.add_argument('--path', action='store', default=None,
                         metavar='./a/new/folder/',
                         help='Relative path & name for the new processing arena.')
 
@@ -42,11 +37,11 @@ def dvas_init_arena():
     args = parser.parse_args()
 
     # If a path was specified, let's deal with it.
-    if args.arena_path is not None:
-        args.arena_path = Path(args.arena_path)
+    if args.path is not None:
+        args.path = Path(args.path)
 
     # Launch the initialization of a new processing arena
-    init_arena(args.recipe, arena_path=args.arena_path)
+    init_arena(arena_path=args.path)
 
 def dvas_run_recipe():
     """ The dvas_run_recipe entry point, wrapping around the actual run_recipe function. """

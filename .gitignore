@@ -254,6 +254,7 @@ this_file_of_result.txt
 src/dvas_demo/output
 src/dvas_demo/demo_script_vof.py
 src/dvas_recipes/uaii22/proc_arena/output
+src/dvas_recipes/uaii22/proc_arena/db
 src/dvas_recipes/uaii22/proc_arena/m10_script.py
 test/dvas/processing_arena/output
 .dev_utils/create_example_data/*.nc
