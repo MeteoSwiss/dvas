@@ -21,9 +21,9 @@ from dvas.data.data import MultiRSProfile
 from dvas.plots import utils as dpu
 
 # Import from dvas_recipes
-from ...errors import DvasRecipesError
-from ... import dynamic
-from ...recipe import for_each_flight
+from ..errors import DvasRecipesError
+from .. import dynamic
+from ..recipe import for_each_flight
 
 @for_each_flight
 @log_func_call(logger, time_it=True)

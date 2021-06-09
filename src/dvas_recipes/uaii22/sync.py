@@ -19,8 +19,8 @@ from dvas.data.data import MultiRSProfile, MultiGDPProfile
 from dvas.tools import sync as dts
 
 # Import from dvas_recipes
-from ... import dynamic
-from ...recipe import for_each_flight
+from .. import dynamic
+from ..recipe import for_each_flight
 
 
 @log_func_call(logger, time_it=True)

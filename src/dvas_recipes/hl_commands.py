@@ -8,14 +8,12 @@ SPDX-License-Identifier: GPL-3.0-or-later
 This file contains the very-high-level dvas_recipe commands, to initialize and run them.
 """
 
-import os
 from datetime import datetime
 from pathlib import Path
 import shutil
 import numpy as np
 
 from .errors import DvasRecipesError
-from .hardcoded import DVAS_RECIPE_FNEXT
 from .utils import default_arena_path, recipe_storage_path
 from .recipe import Recipe
 
@@ -55,11 +53,11 @@ def init_arena(arena_path=None):
     print('All done in %i s.' % ((datetime.now()-start_time).total_seconds()))
 
 
-def run_recipe(rcp_fn=None, flights=None):
+def run_recipe(rcp_fn, flights=None):
     ''' Loads and execute a dvas recipe.
 
     Args:
-        rcp_fn (pathlib.Path, optional): path to the specific dvas recipe to execute.
+        rcp_fn (pathlib.Path): path to the specific dvas recipe to execute.
         flights (pathlib.Path, optional): path to the text file specifiying specific radiososnde
             flights to process. The file should contain one tuple of evt_id, rig_rid per line,
             e.g.::
@@ -72,33 +70,13 @@ def run_recipe(rcp_fn=None, flights=None):
 
     '''
 
-    # If warranted, look for local dvas recipe files.
-    if rcp_fn is None:
-        print("Looking for local dvas recipe (.rcp) files ...")
-        rcp_fns = [item for item in os.listdir('.')
-                   if item[:-len(DVAS_RECIPE_FNEXT)]==DVAS_RECIPE_FNEXT]
+    # Make sure the user specified info is valid.
+    if not isinstance(rcp_fn, Path):
+        raise DvasRecipesError('Ouch ! rcp_fn should be of type pathlib.Path, ' +
+                               'not: {}'.format(type(rcp_fn)))
 
-        if len(rcp_fns) == 0:
-            raise DvasRecipesError(' Ouch ! No dvas recipe file (.rcp) found here !')
-        if len(rcp_fns) > 1:
-            print('Found {} dvas recipes: which one should be launched ?'.format(len(rcp_fns)))
-            rcp_fn = None
-            while rcp_fn not in rcp_fns:
-                rcp_fn = input('Please specifiy:')
-        else:
-            rcp_fn = rcp_fns[0]
-
-        # Let us not forget to turn the str into a Path
-        rcp_fn = Path('.', rcp_fn)
-
-    else:
-        # Make sure the user specified info is valid.
-        if not isinstance(rcp_fn, Path):
-            raise DvasRecipesError('Ouch ! rcp_fn should be of type pathlib.Path, ' +
-                                   'not: {}'.format(type(rcp_fn)))
-
-        if not rcp_fn.exists():
-            raise DvasRecipesError('Ouch ! {} does not exist.'.format(rcp_fn))
+    if not rcp_fn.exists():
+        raise DvasRecipesError('Ouch ! {} does not exist.'.format(rcp_fn))
 
     # If warranted, extract the specific flights' eid/rid that should be processed
     if flights is not None:

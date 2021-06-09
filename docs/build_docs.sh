@@ -23,7 +23,7 @@ sphinx-apidoc -f -M -o ./source/modules/ ../src/
 rm -f ./source/modules/modules.rst
 
 # Run the dvas help, to automate the display of the response in the docs.
-dvas_init -h > source/dvas_help_msg.txt
+dvas_init_arena -h > source/dvas_help_msg.txt
 
 # Generate the documentation, storing it in the build directory
 sphinx-build -a -b html ./source ./build

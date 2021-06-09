@@ -62,19 +62,19 @@ rcp_params:
 # Recipe steps, and associated arguments/parameters
 rcp_steps:
 
-    demo.src.demo.sequential_dummy:
+    demo.demo.sequential_dummy:
         step_id: '00'
         run: False
         kwargs:
             dummy_arg: test
 
-    uaii22.src.sync.sync_flight:
+    uaii22.sync.sync_flight:
         step_id: '01'
         run: True
         kwargs:
             first_guess_var: 'time'
 
-    uaii22.src.plots.flight_overview:
+    uaii22.plots.flight_overview:
         step_id: '02'
         run: True
         kwargs:
