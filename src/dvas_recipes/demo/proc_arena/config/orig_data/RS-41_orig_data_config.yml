@@ -77,7 +77,7 @@ _RS41-GDP-BETA_001:
 
     edt: "get('g.Measurement.StandardTime')"
     srn: "get('g.MainSonde.SerialNumber')"
-    pid: "get('g.Product.ID')"
+    pid: "get('g.Product.Id')"
     tags:
         - "cat('e:', get('g.Measurement.Id'))"
         - "cat('r:', get('g.Measurement.BalloonNumber'))"

@@ -85,8 +85,12 @@ class TestFileHandle:
         assert isinstance(gdp_res, dict)
         assert res_fmt.keys() == gdp_res.keys()
         assert all(
-            [isinstance(gdp_res[key], val)for key, val in res_fmt.items()]
+            [isinstance(gdp_res[key], val) for key, val in res_fmt.items()]
         )
+
+        # Test load of missing parameter
+        res_missing = gdp_handler.handle(gdp_file_path, 'temp_missing')
+        assert len(res_missing['value']) == 0
 
     @use_data(db_data={'sub_dir': 'test_filehandle'})
     def test_set_next(self):
