@@ -30,7 +30,7 @@ PARAMETER_PATTERN_PROP = {
     }
 }
 
-#: list: Constant lables
+#: list: Constant labels
 CONST_LABELS = [
     {
         TableFlag.bit_pos.name: i,
