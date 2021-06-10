@@ -47,12 +47,13 @@ EXPR_FIELD_KEYS = [
 #: list: Node pattern
 NODE_PATTERN = [MODEL_PAT, PRM_AND_FLAG_PRM_PAT]
 
-#: dict: Node parameters default value
-NODE_PARAMS_DEF = {
+#: dict: Default values of labels
+LABEL_VAL_DEF = {
     TAG_FLD_NM: [],
     META_FLD_NM: {},
     CSV_USE_DEFAULT_FLD_NM: False,
     CSV_DELIMITER_FLD_NM: ';',
+    CSV_HEADER_FLD_NM: 0,
     CSV_INDEX_COL_FLD_NM: None,
     CSV_SKIPINITSPACE_FLD_NM: False,
     CSV_SKIPROWS_FLD_NM: 0,
@@ -60,12 +61,7 @@ NODE_PARAMS_DEF = {
     CSV_DELIM_WHITESPACE_FLD_NM: False,
     CSV_COMMENT_FLD_NM: '#',
     CSV_NA_VALUES_FLD_NM: ['/'],
-    CSV_SKIPFOOTER_FLD_NM: 0
-}
-
-#: dict: Constant nodes
-CONST_NODES = {
-    CSV_HEADER_FLD_NM: 0,
+    CSV_SKIPFOOTER_FLD_NM: 0,
 }
 
 #: dict: Parameter pattern properties (JSON_SCHEMA)
@@ -84,7 +80,6 @@ PARAMETER_PATTERN_PROP = {
         "items": {
             "type": "string",
         },
-        "minItems": 1,
         "uniqueItems": True
     },
     rf"^{META_FLD_NM}$": {
@@ -115,6 +110,9 @@ PARAMETER_PATTERN_PROP = {
             {"type": "null"},
             {"type": 'string'}
         ]
+    },
+    rf"^{CSV_HEADER_FLD_NM}$": {
+        'const': 0
     },
     rf"^{CSV_INDEX_COL_FLD_NM}$": {
         "oneOf": [

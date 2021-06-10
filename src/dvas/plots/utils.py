@@ -95,7 +95,9 @@ def set_mplstyle(style='base'):
     plt.style.use(str(Path(PKG_PATH, 'plots', 'mpl_styles', PLOT_STYLES['base'])))
 
     # Update the color cycler to match our custom colorscheme
-    n_clrs = len(CLRS['set_1'])
+    # TODO
+    #  @fpavogt This line in comment to resolve pylint issue. Please check if necessary.
+    # n_clrs = len(CLRS['set_1'])
     default_cycler = (cycler(color=CLRS['set_1']))
     plt.rc('axes', prop_cycle=default_cycler)
 

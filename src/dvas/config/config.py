@@ -36,35 +36,44 @@ from ..helper import TypedProperty
 from ..helper import camel_to_snake
 from ..database.model import Parameter as TableParameter
 from ..hardcoded import FLAG_PRM_NAME_SUFFIX, FLAG_PRM_DESC_PREFIX
+from ..errors import ConfigError
+from ..errors import ConfigPathError, ConfigReadYAMLError, ConfigCheckJSONError
+from ..errors import ConfigReadError, ConfigNodeError
+from ..errors import ConfigGetError, ConfigLabelNameError
+from ..errors import ConfigGenMaxLenError
+from ..errors import ExprInterpreterError, NonTerminalExprInterpreterError, TerminalExprInterpreterError
+
 
 # Define
 NODE_ESCAPE_CHAR = '_'
 
 
 def instantiate_config_managers(*args, read=True):
-    """Generate a dictionary with instances of all ConfigManagers
+    """Generate a dictionary with instances of all specified ConfigManagers
 
     Args:
         args (ConfigManager):
             ConfigManager to instantiate
-        read (bool, optional): Read config during class instantiation.
+        read (bool, optional): Read config automatically after instantiation.
             Default to True.
 
     Returns:
-        dict: key are ConfigManager name, value are ConfigManager instances
+        dict: instances of ConfigManager
 
     """
 
     # Create instances
     instances = []
-
     for config_manager in args:
         instances.append(config_manager())
 
     # Read
     if read:
         for inst in instances:
-            inst.read()
+            try:
+                inst.read()
+            except ConfigError as exc:
+                raise ConfigError(f"Error in reading instance of '{inst.CLASS_KEY}'") from exc
 
     return {arg.CLASS_KEY: arg for arg in instances}
 
@@ -85,15 +94,18 @@ class ConfigManager(metaclass=RequiredAttrMetaClass):
     """
 
     def __init__(self):
-        """Constructor"""
         self.init_document()
 
     def __getitem__(self, item):
-        """Overwrite __getitem__ method"""
-        return self.document[item]
+        try:
+            out = self.document[item]
+
+        except (KeyError, TypeError) as exc:
+            raise ConfigGetError from exc
+
+        return out
 
     def __repr__(self):
-        """Overwrite __repr__ method"""
         p_printer = pprint.PrettyPrinter()
         return p_printer.pformat(self.document)
 
@@ -116,16 +128,20 @@ class ConfigManager(metaclass=RequiredAttrMetaClass):
         else:
             self.document += value
 
+    @abstractmethod
+    def read(self, doc_in):
+        """Abstract read method"""
+
 
 class OneLayerConfigManager(ConfigManager):
     """Abstract class for managing 'one-layer' YAML config.
 
     'one-layer' means YAML file of such type::
 
-        tag1: value_tag1
-        tag2: value_tag2
+        label1: value_label1
+        label2: value_label2
         ...
-        tagN: value_tagN
+        labelN: value_labelN
 
     """
 
@@ -133,7 +149,7 @@ class OneLayerConfigManager(ConfigManager):
         **ConfigManager.REQUIRED_ATTRIBUTES,
         **{
             'PARAMETER_PATTERN_PROP': dict,
-            'NODE_PARAMS_DEF': dict,
+            'LABEL_VAL_DEF': dict,
             'CLASS_KEY': str
         }
     )
@@ -142,7 +158,7 @@ class OneLayerConfigManager(ConfigManager):
     DOC_TYPE = dict
 
     PARAMETER_PATTERN_PROP = None
-    """dict: JSON parameter schema. Constant value.
+    """dict: Parameter JSON 7 schema. Constant value.
 
        Must be a dict like::
 
@@ -152,8 +168,8 @@ class OneLayerConfigManager(ConfigManager):
          }
 
     """
-    #: dict: Default root node parameters
-    NODE_PARAMS_DEF = None
+    #: dict: Default values of labels
+    LABEL_VAL_DEF = None
     #: str: Class key denomination
     CLASS_KEY = None
 
@@ -173,17 +189,36 @@ class OneLayerConfigManager(ConfigManager):
         """Read config from config files
 
         Args:
-            doc_in (str, optional): Read input str instead of file. Defaults to None.
+            doc_in (:obj:`str`, optional): Default None -> read from directory
+                Else read from doc_in.
+
+        Raises:
+            ConfigReadError: Error in reading YAML config data.
 
         """
 
+        # Init
         self.init_document()
-        self._get_document(doc_in)
 
-        # Add missing default node params
-        for key, val in self.NODE_PARAMS_DEF.items():
+        try:
+            # Get
+            self._get_document(doc_in)
+
+        except ConfigReadError as exc:
+            raise ConfigReadError('Error in user config') from exc
+
+        # Add default values of missing labels
+        for key, val in self.LABEL_VAL_DEF.items():
             if key not in self.document.keys():
                 self.document[key] = val
+
+        # Validate hard coded config
+        try:
+            self._validate_json(self.document)
+
+        except ConfigReadError as exc:
+            raise ConfigReadError('Error in hard coded config') from exc
+
 
     def _get_document(self, doc_in=None):
         """Get YAML document as python dict
@@ -205,10 +240,11 @@ class OneLayerConfigManager(ConfigManager):
             )
 
             # Test
-            if path_var.config_dir_path is None:
-                # TODO
-                #  Detail exception
-                raise Exception()
+            if (
+                (path_var.config_dir_path is None) or
+                (path_var.config_dir_path.exists() is False)
+            ):
+                raise ConfigPathError(f'Missing config dir path::{path_var.config_dir_path}')
 
             # Filter (case insensitive)
             doc_in = [
@@ -221,37 +257,28 @@ class OneLayerConfigManager(ConfigManager):
 
         # Convert YAML string as JSON dict
         if isinstance(doc_in, str):
-            self.append(
-                self.read_yaml(doc_in)
-            )
+            try:
+                self.append(
+                    self.read_yaml(doc_in)
+                )
+            except ConfigReadError as exc:
+                raise ConfigReadError("Error in reading config 'str'") from exc
 
         # Convert YAML file as JSON dict
         else:
             for filepath in doc_in:
-                self.append(
-                    self.read_yaml(Path(filepath))
-                )
+                try:
+                    self.append(
+                        self.read_yaml(Path(filepath))
+                    )
+                except ConfigReadError as exc:
+                    raise ConfigReadError(f"Error in reading config file '{filepath}'") from exc
 
-        # Check json schema validity
-        try:
-            validate(instance=self.document, schema=self.json_schema)
-
-        except exceptions.ValidationError as exc:
-            raise ConfigReadError(
-                f"Error in '{list(doc_in)}'\n{exc}"
-            )
-
-        except exceptions.SchemaError as exc:
-            raise ConfigReadError(
-                f"Error in {self.__class__.__name__}.json_schema\n{exc}"
-            )
-
-    @staticmethod
-    def read_yaml(file):
+    def read_yaml(self, yaml_doc):
         """Read YAML document.
 
         Args:
-            file (str | pathlib.Path): YAML document
+            yaml_doc (str | pathlib.Path): YAML document
 
         Returns:
             dict
@@ -261,36 +288,60 @@ class OneLayerConfigManager(ConfigManager):
         try:
 
             # Load from file
-            if isinstance(file, Path):
+            if isinstance(yaml_doc, Path):
 
                 # Check file existence
-                assert file.exists(), f"Missing file {file}"
+                assert yaml_doc.exists(), f"Missing file {yaml_doc}"
 
-                with file.open() as fid:
-                    # Load yaml
+                # Load yaml
+                with yaml_doc.open() as fid:
                     document = YAML().load(fid)
 
             # Load as string
             else:
-                document = YAML().load(file)
+                document = YAML().load(yaml_doc)
 
             # Use json to convert ordered dict to dict
             document = document if document else {}
             document = json.loads(json.dumps(document))
 
-        except IOError as exc:
-            raise ConfigReadError(exc)
-        except YAMLError as exc:
-            raise ConfigReadError(exc)
+        except (AssertionError, IOError, YAMLError) as exc:
+            raise ConfigReadYAMLError("Error in reading YAML document") from exc
+
+        # Validate JSON
+        self._validate_json(document)
 
         return document
+
+    def _validate_json(self, document):
+        """Validate JSON document
+
+        Args:
+            document (dict): JSON document
+
+        Raises:
+            ConfigCheckJSONError: Error in validation or JSON schema.
+
+        """
+
+        # Check json schema validity
+        try:
+            validate(instance=document, schema=self.json_schema)
+
+        except exceptions.ValidationError as exc:
+            p_printer = pprint.PrettyPrinter()
+            raise ConfigCheckJSONError(f"JSON validation error::\n{p_printer.pformat(document)}") from exc
+
+        except exceptions.SchemaError as exc:
+            p_printer = pprint.PrettyPrinter()
+            raise ConfigCheckJSONError(f"JSON schema error::\n{p_printer.pformat(self.json_schema)}") from exc
 
 
 class CSVOrigMeta(OneLayerConfigManager):
     """CSV original metadata config manager"""
 
     PARAMETER_PATTERN_PROP = csvorigmeta.PARAMETER_PATTERN_PROP
-    NODE_PARAMS_DEF = {}
+    LABEL_VAL_DEF = {}
     CLASS_KEY = csvorigmeta.KEY
 
     #: dict: Config document
@@ -302,26 +353,26 @@ class OneDimArrayConfigManager(OneLayerConfigManager):
 
     'one-dim-array' means YAML file of such type::
 
-        - tag11: value_tag11
-          tag12: value_tag12
+        - label11: value_label11
+          label12: value_label12
           ...
-          tag1N: value_tag1N
+          label1N: value_label1N
 
-        - tag21: value_tag21
-          tag22: value_tag22
+        - label21: value_label21
+          label22: value_label22
           ...
-          tag2N: value_tag2N
+          label2N: value_label2N
         ...
-        - tagM1: value_tagM1
-          tagM2: value_tagM2
+        - labelM1: value_labelM1
+          labelM2: value_labelM2
           ...
-          tagMN: value_tagMN
+          labelMN: value_labelMN
 
     """
     REQUIRED_ATTRIBUTES = dict(
         **OneLayerConfigManager.REQUIRED_ATTRIBUTES,
         **{
-            'CONST_NODES': list,
+            'CONST_LABELS': list,
             'NODE_GEN': str,
         }
     )
@@ -329,8 +380,8 @@ class OneDimArrayConfigManager(OneLayerConfigManager):
     # Define required attributes
     DOC_TYPE = list
 
-    #: list: Constant node value
-    CONST_NODES = None
+    #: list: Constant labels
+    CONST_LABELS = None
 
     NODE_GEN = None
     """str: Node name able to be generated by regexp. Use empty str to assign
@@ -356,34 +407,99 @@ class OneDimArrayConfigManager(OneLayerConfigManager):
         """Read config
 
         Args:
-            doc_in (:obj:`str`, optional): Default None -> read from directiory
+            doc_in (:obj:`str`, optional): Default None -> read from directory
                 Else read from doc_in.
+        Raises:
+            ConfigReadError: Error in reading YAML config data.
 
         """
 
         # Init
         self.init_document()
 
-        # Get
-        self._get_document(doc_in)
+        try:
+            # Get
+            self._get_document(doc_in)
 
-        # Append constant node
-        self.append(self.CONST_NODES)
+        except ConfigReadError as exc:
+            raise ConfigReadError('Error in user config') from exc
 
-        # Add missing default node params
-        for key, val in self.NODE_PARAMS_DEF.items():
+        # Append constant labels
+        self.append(self.CONST_LABELS)
+
+        # Add default values of missing labels
+        for key, val in self.LABEL_VAL_DEF.items():
             for i, _ in enumerate(self.document):
                 if key not in self.document[i].keys():
                     self.document[i][key] = val
+
+        # Validate hard coded config
+        try:
+            self._validate_json(self.document)
+
+        except ConfigReadError as exc:
+            raise ConfigReadError('Error in hard coded config') from exc
+
+    def _get_document(self, doc_in=None):
+        """Override method"""
+
+        # Call super method
+        super()._get_document(doc_in=doc_in)
+
+        # Generate automatic labels
+        if self.NODE_GEN:
+
+            document_new = []
+            for doc in self.document:
+
+                # Init new sub dict
+                sub_dict_new = {}
+
+                # Generate from regexp generator
+                node_gen_val = sre_yield.AllMatches(doc[self.NODE_GEN])
+
+                # Check length
+                if (n_val := len(node_gen_val)) > env_glob_var.config_gen_max:
+                    raise ConfigGenMaxLenError(
+                        f"Generator {doc[self.NODE_GEN]} will generate {n_val} config field. " +
+                        f"Max allowed {env_glob_var.config_gen_max}"
+                    )
+
+                # Update sub dict
+                sub_dict_new.update({self.NODE_GEN: list(node_gen_val)})
+
+                # Loop over other config item key
+                for doc_key in filter(lambda x: x != self.NODE_GEN, doc.keys()):
+                    # Update new sub dict for current key
+                    sub_dict_new.update(
+                        {
+                            doc_key: [
+                                ConfigExprInterpreter.eval(
+                                    doc[doc_key], node_gen_val[i].group
+                                )
+                                for i in range(len(node_gen_val))
+                            ]
+                        }
+                    )
+
+                # Rearange dict of list in list of dict
+                document_new += [
+                    dict(zip(sub_dict_new, arg))
+                    for arg in zip(*sub_dict_new.values())
+                ]
+
+            # Copy now doc
+            self.document = document_new.copy()
+
 
 
 class Model(OneDimArrayConfigManager):
     """Instrument type config manager"""
 
     PARAMETER_PATTERN_PROP = model.PARAMETER_PATTERN_PROP
-    NODE_PARAMS_DEF = model.NODE_PARAMS_DEF
+    LABEL_VAL_DEF = model.LABEL_VAL_DEF
     CLASS_KEY = model.KEY
-    CONST_NODES = model.CONST_NODES
+    CONST_LABELS = model.CONST_LABELS
     NODE_GEN = model.NODE_GEN
 
     #: dict: Config document
@@ -394,22 +510,49 @@ class Parameter(OneDimArrayConfigManager):
     """Parameter config manager """
 
     PARAMETER_PATTERN_PROP = parameter.PARAMETER_PATTERN_PROP
-    NODE_PARAMS_DEF = parameter.NODE_PARAMS_DEF
+    LABEL_VAL_DEF = parameter.LABEL_VAL_DEF
     CLASS_KEY = parameter.KEY
-    CONST_NODES = []
+    CONST_LABELS = []
     NODE_GEN = parameter.NODE_GEN
 
     #: dict: Config document
     document = TypedProperty(OneDimArrayConfigManager.DOC_TYPE)
+
+    def _get_document(self, doc_in=None):
+        """Override method"""
+
+        # Call super method
+        super()._get_document(doc_in=doc_in)
+
+        # Duplicate parameters into there flag item
+        # Remark: It's not necessarily the most elegant way to duplicate parameters to get the flag side...
+
+        # Define mapping
+        arg_key_to_dict = {
+            TableParameter.prm_name.name: lambda x: f"{x}{FLAG_PRM_NAME_SUFFIX}",
+            TableParameter.prm_desc.name: lambda x: f"{FLAG_PRM_DESC_PREFIX}{x[0].lower()}{x[1:]}",
+            TableParameter.prm_unit.name: lambda _: '',
+        }
+
+        # Create duplicate array of flags
+        array_prm_flg = [
+            {
+                arg_key: arg_key_to_dict[arg_key](arg_val) for arg_key, arg_val in arg.items()
+            }
+            for arg in self.document
+        ]
+
+        # Append
+        self.document += array_prm_flg
 
 
 class Flag(OneDimArrayConfigManager):
     """Flag config manager """
 
     PARAMETER_PATTERN_PROP = flag.PARAMETER_PATTERN_PROP
-    NODE_PARAMS_DEF = {}
+    LABEL_VAL_DEF = {}
     CLASS_KEY = flag.KEY
-    CONST_NODES = flag.CONST_NODES
+    CONST_LABELS = flag.CONST_LABELS
     NODE_GEN = flag.NODE_GEN
 
     #: dict: Config document
@@ -420,9 +563,9 @@ class Tag(OneDimArrayConfigManager):
     """Flag config manager """
 
     PARAMETER_PATTERN_PROP = tag.PARAMETER_PATTERN_PROP
-    NODE_PARAMS_DEF = {}
+    LABEL_VAL_DEF = {}
     CLASS_KEY = tag.KEY
-    CONST_NODES = tag.CONST_NODES
+    CONST_LABELS = tag.CONST_LABELS
     NODE_GEN = tag.NODE_GEN
 
     #: dict: Config document
@@ -430,13 +573,12 @@ class Tag(OneDimArrayConfigManager):
 
 
 class MultiLayerConfigManager(OneLayerConfigManager):
-    """Abstract class for managing YAML config"""
+    """Abstract class for managing 'multi-layer' YAML config."""
 
     REQUIRED_ATTRIBUTES = dict(
         **OneLayerConfigManager.REQUIRED_ATTRIBUTES,
         **{
             'NODE_PATTERN': list,
-            'CONST_NODES': dict,
         },
     )
 
@@ -446,17 +588,17 @@ class MultiLayerConfigManager(OneLayerConfigManager):
     #: list: Node pattern (order matter)
     NODE_PATTERN = None
 
-    #: dict: Constant node value
-    CONST_NODES = None
-
     def __getitem__(self, item):
-        """Overwrite __getitem method.
+        """Override __getitem__ method.
 
         Args:
             item (list of str): Document item as list
 
         Returns:
             object
+
+        Raises:
+            ConfigGetError: Error in getting config label value
 
         """
 
@@ -473,63 +615,75 @@ class MultiLayerConfigManager(OneLayerConfigManager):
             try:
                 return get_by_path(self.document, nested_item)
 
-            except (KeyError, TypeError, IndexError):
+            except (KeyError, TypeError, IndexError) as exc:
                 if len(nested_item) <= 1:
-                    raise KeyError
+                    raise ConfigLabelNameError from exc
                 return find_val(nested_item[:-2] + nested_item[-1:])
 
         # Get for item
         try:
             out = find_val(item)
-        except KeyError:
+        except ConfigLabelNameError as exc:
             errmsg = (
-                "Bad item {} in __getitem__({})".format(item, self.document)
+                f"Can't find item {item} in\n{self}"
             )
-            raise ConfigItemKeyError(errmsg)
+            raise ConfigGetError(errmsg) from exc
 
         return out
 
-    def get_val(self, node_keys, key_param):
-        """Return single node_keys value
+    def get_val(self, node_labels, final_label):
+        """Return single node_labels value
 
         Args:
-            node_keys (list of str): Node keys
-            key_param (str): Key parameter
+            node_labels (list of str): Node keys. If the escape character is missing in the prefix of the node,
+                it is added automatically.
+            final_label (str): Key parameter
 
         Returns
             `object`
 
         Raises:
-
+            ConfigGetError: Error in getting config label value
 
         """
 
+        # Convert node to list
+        if isinstance(node_labels, str):
+            node_labels = [node_labels]
+
+        # Add node escape char if necessary
+        node_labels_mod = [
+            (arg if arg.startswith(NODE_ESCAPE_CHAR) else NODE_ESCAPE_CHAR + arg)
+            for arg in node_labels
+        ]
+
         try:
-            out = self[
-                [NODE_ESCAPE_CHAR + arg for arg in node_keys] + [key_param]
-            ]
-        except ConfigItemKeyError as _:
-            raise KeyError(
-                f"Bad key '{node_keys + [key_param]}' " +
-                f"for {self.__class__.__name__}"
-            )
+            out = self[node_labels_mod + [final_label]]
+
+        except ConfigGetError as exc:
+            raise ConfigGetError(
+                f"Can't find '{node_labels + [final_label]}' in config"
+            ) from exc
 
         return out
 
-    def get_all(self, node_keys):
-        """Return all values
+    def get_all(self, node_labels):
+        """Return all values for a given node labels. Only values specified in defaults labels will be returned.
 
         Args:
-            node_keys (list of str): Node keys
+            node_labels (list of str): Node keys
 
         Returns:
             dict
 
+        Raises:
+            ConfigGetError: Error in getting config label value
+
         """
 
         out = {
-            key: self.get_val(node_keys, key)
-            for key in [*self.NODE_PARAMS_DEF.keys(), *self.CONST_NODES.keys()]
+            key: self.get_val(node_labels, key)
+            for key in [*self.LABEL_VAL_DEF.keys()]
         }
 
         return out
@@ -569,14 +723,6 @@ class MultiLayerConfigManager(OneLayerConfigManager):
             ]
         }
 
-    def read(self, doc_in=None):
-        """Overwrite read method"""
-
-        # Call super method
-        super().read(doc_in=doc_in)
-
-        # Append constant node
-        self.document.update(self.CONST_NODES)
 
     def _get_document(self, doc_in=None):
         """Get YAML document as python dict
@@ -594,24 +740,26 @@ class MultiLayerConfigManager(OneLayerConfigManager):
 
     @staticmethod
     def _check_dict_nodes(document, node_pat):
-        """Check document key node order
+        """Check document labels - nodes - order.
 
         Args:
-            document:
-            node_pat:
+            document (dict): JSON document
+            node_pat (list): Node order pattern
 
-        Returns:
+        Raises:
+            ConfigNodeError: Error in node order
 
         """
 
         def check_single_node(doc, pat):
-            """
+            """Check single document labels order
 
             Args:
-                doc:
-                pat:
+                doc (dict): JSON docuument
+                pat (list): Node order pattern
 
-            Returns:
+            Raises:
+                ConfigNodeError: Error in node order
 
             """
             if isinstance(doc, dict):
@@ -623,12 +771,14 @@ class MultiLayerConfigManager(OneLayerConfigManager):
                         continue
 
                     if not pat:
-                        err_msg = f"Bad node. No key to match in {doc}"
+                        pprinter = pprint.PrettyPrinter()
+                        err_msg = f"Bad node label.\nNo matching keys in\n{pprinter.pformat(doc)}"
                         raise ConfigNodeError(err_msg)
 
                     if re.fullmatch(rf"{NODE_ESCAPE_CHAR}{pat[0]}", key) is None:
+                        pprinter = pprint.PrettyPrinter()
                         err_msg = (
-                            f"Bad node. '{pat[0]}' didn't match key in {doc}"
+                            f"Bad node label.\n'{pprinter.pformat(pat[0])}' didn't match any keys in\n{pprinter.pformat(doc)}"
                         )
                         raise ConfigNodeError(err_msg)
 
@@ -645,133 +795,12 @@ class OrigData(MultiLayerConfigManager):
     """Original data config manager"""
 
     PARAMETER_PATTERN_PROP = origdata.PARAMETER_PATTERN_PROP
-    NODE_PARAMS_DEF = origdata.NODE_PARAMS_DEF
+    LABEL_VAL_DEF = origdata.LABEL_VAL_DEF
     CLASS_KEY = origdata.KEY
     NODE_PATTERN = origdata.NODE_PATTERN
-    CONST_NODES = origdata.CONST_NODES
 
     #: dict: Config document
     document = TypedProperty(MultiLayerConfigManager.DOC_TYPE)
-
-
-class OneDimArrayConfigLinker:
-    """Link to OneDimArrayConfigManager
-    config managers."""
-
-    #: list: Default instantiated config managers
-    CFG_MNGRS_DFLT = [Parameter, Model, Flag, Tag]
-
-    def __init__(self, cfg_mngrs=None):
-        """
-        Args:
-            cfg_mngrs (list of OneDimArrayConfigManager): Config managers
-        """
-
-        if cfg_mngrs is None:
-            cfg_mngrs = self.CFG_MNGRS_DFLT
-
-        # Set attributes
-        self._cfg_mngr = instantiate_config_managers(*cfg_mngrs)
-
-    def get_document(self, key):
-        """Interpret the generator syntax if necessary and
-        return the config document.
-
-        The generator syntax is apply only in OneDimArrayConfig with
-        not empty NODE_GEN. Generator syntax is based on regexpr. Fields which
-        are not generator can contain expression to be evaluated. The syntax
-        used is the one described in ConfigExprInterpreter.eval
-
-        Args:
-            key (str): Config manager key
-
-        Returns:
-            dict
-
-        Raises:
-            - ConfigGenMaxLenError: Error for to much generated items.
-
-        """
-
-        # Define
-        array_old = self._cfg_mngr[key].document
-        node_gen = self._cfg_mngr[key].NODE_GEN
-        array_new = []
-
-        # Loop over te config array items
-        for doc in array_old:
-
-            # Test if node generator allowed
-            if node_gen:
-
-                # Init new sub dict
-                sub_dict_new = {}
-
-                # Generate from regexp generator
-                node_gen_val = sre_yield.AllMatches(doc[node_gen])
-
-                # Check length
-                if (n_val := len(node_gen_val)) > env_glob_var.config_gen_max:
-                    raise ConfigGenMaxLenError(
-                        f"{n_val} generated config field. " +
-                        f"Max allowed {env_glob_var.config_gen_max}"
-                    )
-
-                # Update sub dict
-                sub_dict_new.update({node_gen: list(node_gen_val)})
-
-                # Loop over other config item key
-                for doc_key in filter(lambda x: x != node_gen, doc.keys()):
-
-                    # Update new sub dict for current key
-                    sub_dict_new.update(
-                        {
-                            doc_key: [
-                                ConfigExprInterpreter.eval(
-                                    doc[doc_key], node_gen_val[i].group
-                                )
-                                for i in range(len(node_gen_val))
-                            ]
-                        }
-                    )
-
-                # Rearange dict of list in list of dict
-                res = [
-                    dict(zip(sub_dict_new, arg))
-                    for arg in zip(*sub_dict_new.values())
-                ]
-
-            # Case without generator
-            else:
-                res = [doc]
-
-            # Append to new array
-            array_new += res
-
-        # Duplicate duplicate parameters into there flag item
-        # (Remark: It's not necessarily the most elegant way to duplicate
-        # parameters to get the flag side... but it's the only one I could easily implement.)
-        if key == Parameter.CLASS_KEY:
-
-            # Define mapping
-            arg_key_to_dict = {
-                TableParameter.prm_name.name: lambda x: f"{x}{FLAG_PRM_NAME_SUFFIX}",
-                TableParameter.prm_desc.name: lambda x: f"{FLAG_PRM_DESC_PREFIX}{x[0].lower()}{x[1:]}",
-                TableParameter.prm_unit.name: lambda _: '',
-            }
-
-            # Create duplicate array of flags
-            array_prm_flg = [
-                {
-                    arg_key: arg_key_to_dict[arg_key](arg_val) for arg_key, arg_val in arg.items()
-                }
-                for arg in array_new
-            ]
-
-            # Append
-            array_new += array_prm_flg
-
-        return array_new
 
 
 class ConfigExprInterpreter(metaclass=ABCMeta):
@@ -803,11 +832,18 @@ class ConfigExprInterpreter(metaclass=ABCMeta):
 
     @staticmethod
     def eval(expr, get_fct):
-        """Evaluate str expression
+        """Interprete expression.
 
         Args:
-            expr (str|ConfigExprInterpreter): Expression to evaluate
+            expr (str|ConfigExprInterpreter): Expression to evaluate.
             get_fct (callable): Function use by 'get'
+
+        Syntax:
+            cat(<str_1>, ..., <str_n>): Concatenate str_1 to str_n
+
+
+        Raises:
+            ExprInterpreterError: Error while interpreting expression
 
         Examples:
             >>> import re
@@ -840,10 +876,11 @@ class ConfigExprInterpreter(metaclass=ABCMeta):
             # Interpret
             expr_out = expr_out.interpret()
 
-        # TODO
-        #  Detail exception
-        except Exception:
+        except (NameError, SyntaxError) as exc:
             expr_out = expr
+
+        except (NonTerminalExprInterpreterError, TerminalExprInterpreterError) as exc:
+            raise ExprInterpreterError(f"Error in '{expr}'") from exc
 
         return expr_out
 
@@ -881,30 +918,41 @@ class CatExpr(NonTerminalConfigExprInterpreter):
 
     def fct(self, a, b):
         """Implement fct method"""
-        return operator.add(a, b)
+        try:
+            out = operator.add(a, b)
+        except TypeError as exc:
+            raise NonTerminalExprInterpreterError() from exc
+
+        return out
 
 
 class ReplExpr(NonTerminalConfigExprInterpreter):
-    """Replace dict key by its value. If key is missing, return key"""
+    """Replace dict key or list index by its value. If key is missing, return key"""
 
     def fct(self, a, b):
         """Implement fct method"""
         try:
             out = operator.getitem(a, b)
-        except KeyError:
+        except (KeyError, IndexError):
             out = b
+        except TypeError as exc:
+            raise NonTerminalExprInterpreterError() from exc
+
         return out
 
 
 class ReplStrictExpr(NonTerminalConfigExprInterpreter):
-    """Replace dict key by its value. If key is missing, return ''"""
+    """Replace dict key or list index by its value. If key is missing, return ''"""
 
     def fct(self, a, b):
         """Implement fct method"""
         try:
             out = operator.getitem(a, b)
-        except KeyError:
+        except (KeyError, IndexError):
             out = ''
+        except TypeError as exc:
+            raise NonTerminalExprInterpreterError() from exc
+
         return out
 
 
@@ -913,7 +961,12 @@ class LowerExpr(NonTerminalConfigExprInterpreter):
 
     def fct(self, a):
         """Implement fct method"""
-        return a.lower()
+        try:
+            out = a.lower()
+        except AttributeError as exc:
+            raise NonTerminalExprInterpreterError() from exc
+
+        return out
 
 
 class UpperExpr(NonTerminalConfigExprInterpreter):
@@ -921,7 +974,12 @@ class UpperExpr(NonTerminalConfigExprInterpreter):
 
     def fct(self, a):
         """Implement fct method"""
-        return a.upper()
+        try:
+            out = a.upper()
+        except AttributeError as exc:
+            raise NonTerminalExprInterpreterError() from exc
+
+        return out
 
 
 class SmallUpperExpr(NonTerminalConfigExprInterpreter):
@@ -929,8 +987,12 @@ class SmallUpperExpr(NonTerminalConfigExprInterpreter):
 
     def fct(self, a):
         """Implement fct method"""
-        return a[0].upper() + a[1:].lower()
+        try:
+            out = a[0].upper() + a[1:].lower()
+        except (AttributeError, TypeError) as exc:
+            raise NonTerminalExprInterpreterError() from exc
 
+        return out
 
 class TerminalConfigExprInterpreter(ConfigExprInterpreter):
     """Implement an interpreter operation for terminal symbols in the
@@ -946,7 +1008,12 @@ class GetExpr(TerminalConfigExprInterpreter):
 
     def interpret(self):
         """Implement fct method"""
-        return self._FCT(self._expression)
+        try:
+            out = self._FCT(self._expression)
+        except IndexError as exc:
+            raise TerminalExprInterpreterError() from exc
+
+        return out
 
 
 class NoneExpr(TerminalConfigExprInterpreter):
@@ -955,19 +1022,3 @@ class NoneExpr(TerminalConfigExprInterpreter):
     def interpret(self):
         """Implement fct method"""
         return self._expression
-
-
-class ConfigReadError(Exception):
-    """Error while reading config"""
-
-
-class ConfigNodeError(Exception):
-    """Error in config node"""
-
-
-class ConfigItemKeyError(KeyError):
-    """Error in config key item"""
-
-
-class ConfigGenMaxLenError(Exception):
-    """Exception class for max length config generator error"""

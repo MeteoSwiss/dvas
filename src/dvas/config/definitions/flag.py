@@ -19,7 +19,7 @@ from ...hardcoded import FLG_INTERP_NAME, FLG_INTERP_DESC
 PARAMETER_PATTERN_PROP = {
     rf"^{TableFlag.bit_pos.name}$": {
         "type": "integer",
-        "minimum": 10,
+        "minimum": 0,
         "maximum": 63,
     },
     rf"^{TableFlag.flag_name.name}$": {
@@ -30,8 +30,8 @@ PARAMETER_PATTERN_PROP = {
     }
 }
 
-#: list: Constant node values
-CONST_NODES = [
+#: list: Constant labels
+CONST_LABELS = [
     {
         TableFlag.bit_pos.name: i,
         TableFlag.flag_name.name: arg[0],

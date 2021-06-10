@@ -14,13 +14,13 @@ Module contents: Required attributes definition for
 from ...hardcoded import MODEL_PAT
 from ...database.model import Model as TableModel
 
-#: dict: Default node params
-NODE_PARAMS_DEF = {
+#: dict: Default values of labels
+LABEL_VAL_DEF = {
     TableModel.mid.name: '',
 }
 
-#: list: Constant node values
-CONST_NODES = [
+#: list: Constant labels
+CONST_LABELS = [
     {
         TableModel.mdl_name.name: '',
         TableModel.mdl_desc.name: 'Null instrument type',
@@ -30,8 +30,16 @@ CONST_NODES = [
 #: dict: Parameter pattern properties (JSON_SCHEMA)
 PARAMETER_PATTERN_PROP = {
     rf"^{TableModel.mdl_name.name}$": {
-        "type": "string",
-        "pattern": MODEL_PAT,
+        "oneOf": [
+            {
+                "type": "string",
+                "pattern": MODEL_PAT,
+            },
+            {
+                "const": ''
+            },
+        ]
+
     },
     rf"^{TableModel.mdl_desc.name}$": {
         "type": "string"

@@ -18,10 +18,9 @@ from dvas.config.config import instantiate_config_managers
 from dvas.config.config import CSVOrigMeta
 from dvas.config.config import OrigData, Model
 from dvas.config.config import Parameter, Flag, Tag
-from dvas.config.config import ConfigReadError
-from dvas.config.config import OneDimArrayConfigLinker
+from dvas.config.config import ConfigReadError, ConfigGetError
 from dvas.config.config import ConfigExprInterpreter
-from dvas.config.config import ConfigGenMaxLenError
+from dvas.config.config import ExprInterpreterError
 from dvas.environ import glob_var
 from dvas.hardcoded import FLAG_PRM_NAME_SUFFIX
 
@@ -111,14 +110,23 @@ class TestOneDimArrayConfigManager():
             self.cfg.read("mdl_name: 'TEST'\nmdl_desc': 'Test'")
 
 
-class TestOneDimArrayConfigLinker:
-    """Test OneDimArrayConfigLinker class
+    def test_get(self):
+        """Test get methods (__getitem__)"""
 
-    Tests:
-        - String generator
-        - Catch generated string
+        self.cfg.read("- mdl_name: 'TEST'\n  'mdl_desc': 'Test'")
 
-    """
+        assert self.cfg[0]['mdl_name'] == 'TEST'
+
+        # Test bad key
+        with pytest.raises(ConfigGetError):
+            self.cfg['mdl_name']
+
+        with pytest.raises(IndexError):
+            self.cfg[2]
+
+
+class TestParameter:
+    """Test class for Parameter"""
 
     # Dummy param number
     n_dummy = 10
@@ -130,37 +138,28 @@ class TestOneDimArrayConfigLinker:
     # Catched string patern
     desc_pat = re.compile(r'param\d+')
 
-    # Config linker
-    cfg_lkr = OneDimArrayConfigLinker([Parameter])
+    def test_read(self):
+        """Test read method"""
 
-    def test_get_document(self):
-        """Test get_document method
+        # Init
+        cfg = Parameter()
+        cfg.read(f"- prm_name: {self.prm_pat.pattern}\n  prm_desc: get(1)")
 
-        Test:
-            Returned type
-            Item generator
-            Automatic generation of '_flag' parameter
-            Raises ConfigGenMaxLenError
-
-        """
-
-        doc = self.cfg_lkr.get_document(Parameter.CLASS_KEY)
-
-        assert isinstance(doc, list)
         assert sum(
-            [self.prm_pat.fullmatch(arg['prm_name']) is not None for arg in doc]
+            [self.prm_pat.fullmatch(arg['prm_name']) is not None for arg in cfg.document]
         ) == self.n_dummy
         assert sum(
-            [self.flg_pat.fullmatch(arg['prm_name']) is not None for arg in doc]
+            [self.flg_pat.fullmatch(arg['prm_name']) is not None for arg in cfg.document]
         ) == self.n_dummy
         assert sum(
-            [self.desc_pat.fullmatch(arg['prm_desc']) is not None for arg in doc]
+            [self.desc_pat.fullmatch(arg['prm_desc']) is not None for arg in cfg.document]
         ) == self.n_dummy
 
+        # Test gnerator limit overflow
         with glob_var.protect():
             glob_var.config_gen_max = 2
-            with pytest.raises(ConfigGenMaxLenError):
-                self.cfg_lkr.get_document(Parameter.CLASS_KEY)
+            with pytest.raises(ConfigReadError):
+                cfg.read(f"- prm_name: {self.prm_pat.pattern}\n  prm_desc: get(1)")
 
 
 class TestConfigExprInterpreter:
@@ -182,6 +181,7 @@ class TestConfigExprInterpreter:
 
         # Test str
         assert ConfigExprInterpreter.eval("a", self.match_val.group) == 'a'
+        assert ConfigExprInterpreter.eval("get(1", self.match_val.group) == 'get(1'
 
         # Test cat
         assert ConfigExprInterpreter.eval("cat('a', 'b')", self.match_val.group) == 'ab'
@@ -211,3 +211,10 @@ class TestConfigExprInterpreter:
         # Test small upper
         assert ConfigExprInterpreter.eval("supper('aa')", self.match_val.group) == \
             ConfigExprInterpreter.eval("small_upper('aa')", self.match_val.group) == 'Aa'
+
+        # Test error
+        with pytest.raises(ExprInterpreterError):
+            ConfigExprInterpreter.eval("supper(1)", self.match_val.group)
+
+        with pytest.raises(ExprInterpreterError):
+            ConfigExprInterpreter.eval("get(10)", self.match_val.group)
