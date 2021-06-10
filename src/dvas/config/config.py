@@ -876,7 +876,7 @@ class ConfigExprInterpreter(metaclass=ABCMeta):
             # Interpret
             expr_out = expr_out.interpret()
 
-        except (NameError, SyntaxError) as exc:
+        except (NameError, SyntaxError, AttributeError) as exc:
             expr_out = expr
 
         except (NonTerminalExprInterpreterError, TerminalExprInterpreterError) as exc:
@@ -1010,7 +1010,7 @@ class GetExpr(TerminalConfigExprInterpreter):
         """Implement fct method"""
         try:
             out = self._FCT(self._expression)
-        except IndexError as exc:
+        except (IndexError, AttributeError) as exc:
             raise TerminalExprInterpreterError() from exc
 
         return out

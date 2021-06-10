@@ -11,7 +11,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [modolol, 2021-04-13] Add DB exploring tool
  - [fpavogt, 2021-05-18] Add pytest fixture to test LaTeX plots using the command line argument "--latex"
 ### Fixed:
- - [modolol, 2021-06-10] Fix missing correction in PR #147
+ - [modolol, 2021-06-10] Fix missing correction + bugs in PR #147
  - [modolol, 2021-06-08] Cleanup toward v04 (config module)
 ### Changed:
  - [fpavogt, 2021-05-18] Improve looks of plots, and split-up "orig_data_config.yml"

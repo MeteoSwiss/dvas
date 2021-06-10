@@ -27,7 +27,7 @@ from ..database.model import DataSource
 from ..database.model import Parameter as TableParameter
 from ..database.database import DatabaseManager
 from ..config.config import CSVOrigMeta
-from ..config.config import ConfigReadError
+from ..config.config import ConfigGetError, ConfigReadError
 from ..config.config import ConfigExprInterpreter
 from ..config.definitions.origdata import EXPR_FIELD_KEYS
 from ..config.definitions.origdata import TAG_FLD_NM
@@ -286,7 +286,7 @@ class FileHandler(AbstractHandler):
                 prm_name, data_file_path,
             )
 
-        except KeyError:
+        except ConfigGetError:
 
             # Create empty data set
             data = pd.Series([])
