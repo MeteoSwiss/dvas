@@ -130,9 +130,6 @@ def flight_overview(tags='sync', label='mid'):
     # Add the source
     dpu.add_source(fig)
 
-    import pdb
-    pdb.set_trace()
-
     # Save it all
     dpu.fancy_savefig(fig, 'flight_overview', fn_prefix=dynamic.CURRENT_STEP_ID,
                       fn_suffix='e{}_r{}_{}'.format(eid, rid, '-'.join(tags)),

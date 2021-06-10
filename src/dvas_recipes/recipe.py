@@ -21,7 +21,7 @@ from dvas.dvas import Database as DB
 from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME
 import dvas.plots.utils as dpu
 
-# Import from dvas_recipes
+# Import from dvas_recipesz
 from .errors import DvasRecipesError
 from . import dynamic
 
@@ -229,6 +229,7 @@ class Recipe:
         # Fetch the raw data
         DB.fetch_raw_data([dynamic.INDEXES[PRF_REF_TDT_NAME]] +
                           [dynamic.INDEXES[PRF_REF_ALT_NAME]] +
+                          list(dynamic.ALL_VARS) +
                           [dynamic.ALL_VARS[var][uc] for var in dynamic.ALL_VARS
                            for uc in dynamic.ALL_VARS[var]],
                           strict=True)
