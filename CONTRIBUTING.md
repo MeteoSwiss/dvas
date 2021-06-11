@@ -235,9 +235,14 @@ Until its release, the dvas repository will remain private: branching will thus 
        pytest test/dvas
        pytest test/dvas_recipes
 
-   If you want to also test the good-looking "LaTeX" plots (which require a working local LaTeX installlation), type:
+   By default, no test plot will be displayed on screen, a choice motivated by the use of these
+   tests as Github actions. If you want to actually display the test plots, you should type:
 
-       pytest test/dvas --latex
+       pytest test/dvas --show-plots
+
+   If you want to also test the good-looking "LaTeX" plots (which require a working local LaTeX installation), type:
+
+       pytest test/dvas --latex --show-plots
 
    :warning: Needless to say, your code tweaks will *evidently* come with dedicated tests. Right ?
 

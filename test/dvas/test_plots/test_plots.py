@@ -70,16 +70,18 @@ def gdp_3_prfs(db_init):
 
     return multiprf
 
-def test_multiprf(gdp_3_prfs, do_latex):
+def test_multiprf(gdp_3_prfs, do_latex, show_plots):
     """ Test the multiprf plotting routine.
 
     do_latex is a fixture that is True is pytest is being run with the argument "--latex".
+    show_plots is also a ficture that is True if pytest is being run with the argument
+    "--show-plots".
     """
 
-    dpp.multiprf(gdp_3_prfs, index='alt', label='mid', uc='uc_tot', show=False, fn_suffix='base',
-                 expose=2)
+    dpp.multiprf(gdp_3_prfs, index='alt', label='mid', uc='uc_tot', show=show_plots,
+                 fn_suffix='base', expose=2)
 
     if do_latex:
         dpu.set_mplstyle(style='latex')
         dpp.multiprf(gdp_3_prfs, index='alt', label='mid', uc='uc_tot',
-                     show=False, fn_suffix='latex')
+                     show=show_plots, fn_suffix='latex')

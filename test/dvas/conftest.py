@@ -34,6 +34,9 @@ def pytest_addoption(parser):
     parser.addoption("--latex", action="store_true",
                      help="Test plots also using a full (local) LaTeX installation.")
 
+    parser.addoption("--show-plots", action="store_true",
+                     help="Display the test plots on screen.")
+
 
 @pytest.fixture(scope='session')
 def do_latex(request):
@@ -49,6 +52,22 @@ def do_latex(request):
         # This happens if pytest is being launched from the root directory, in which case it does
         # NOT see conftest.py.
         return False
+
+@pytest.fixture(scope='session')
+def show_plots(request):
+    """ A pytext fixture to decide whether test plots should be shown on-screen, or not.
+
+    This is useful to disable all displays when running automated tests using Github actions,
+    which, on some OS, do not handle the display of plots very well.
+    """
+
+    try:
+        return request.config.getoption("--show-plots")
+    except ValueError:
+        # This happens if pytest is being launched from the root directory, in which case it does
+        # NOT see conftest.py.
+        return False
+
 
 
 #TODO
