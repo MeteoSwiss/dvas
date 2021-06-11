@@ -43,7 +43,7 @@ def do_latex(request):
     """ A pytext fixture to identify whether a local LaTeX installation exists, or not.
 
     Adapted from the response of ipetrik on
-    `StackOverflow <https://stackoverflow.com/questions/40880259/how-to-pass-arguments-in-pytest-by-command-line>`__
+    `StackOverflow <https://stackoverflow.com/questions/40880259>`__
 
     To use this, simply call it as an argument in any of the test function, e.g.:
 
