@@ -20,7 +20,7 @@
   prm_desc: 'cat("Relative humidity", repl({"_ucr": " rig-correlated uncertainty",
                                             "_uct": " temporal-correlated uncertainty",
                                             "_ucu": " un-correlated uncertainty"}, get(1)))'
-  prm_unit: '\%'
+  prm_unit: '%'
 
 - prm_name: '(pres|alt)(|(_uct))'
   # Generate variables from regex generator for pressure and altitude.

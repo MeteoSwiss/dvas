@@ -125,7 +125,7 @@ def flight_overview(tags='sync', label='mid', show=None):
         # Set the ylabel:
         ylbl = rs_prfs.var_info[PRF_REF_VAL_NAME]['prm_name']
         ylbl += ' [{}]'.format(rs_prfs.var_info[PRF_REF_VAL_NAME]['prm_unit'])
-        this_ax.set_ylabel(ylbl, labelpad=10)
+        this_ax.set_ylabel(dpu.fix_txt(ylbl), labelpad=10)
 
     # Set the label for the last plot only
     this_ax.set_xlabel('Time [s]')

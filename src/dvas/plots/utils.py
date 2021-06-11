@@ -14,8 +14,7 @@ from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-from matplotlib import colors
-from matplotlib import cm
+from matplotlib import colors, cm, rcParams
 from cycler import cycler
 
 # Import from this package
@@ -114,9 +113,28 @@ def set_mplstyle(style='base'):
     if style != 'base':
         plt.style.use(str(Path(PKG_PATH, 'plots', 'mpl_styles', PLOT_STYLES[style])))
 
+def fix_txt(txt):
+    """ Corrects any string for problematic characters before it gets added to a plot. Fixes vary
+    depending whether on the chosen plotting style's value of `usetex` in `rcparams`.
+
+    Args:
+        txt (str): text to cleanup.
+
+    Returns:
+        str: the corrected string.
+    """
+
+    usetex = rcParams['text.usetex']
+
+    # First deal with the cases when a proper LaTeX is being used
+    if usetex:
+        txt = txt.replace('%', r'\%')
+        txt = txt.replace('_', r'\_')
+
+    return txt
 
 def cmap_discretize(cmap, n_cols):
-    """Return a discrete colormap from the continuous colormap cmap.
+    """Return a discrete colormap from any continuous colormap cmap.
 
     Args:
         cmap (str): colormap name or instance.

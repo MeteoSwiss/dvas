@@ -47,3 +47,12 @@ def test_plot_styles():
     # Undo it
     dpu.set_mplstyle('nolatex')
     assert not mpl.rcParams['text.usetex']
+
+def test_fix_txt():
+    """ Function to test the correction of strings for plots, depending on the chosen style.
+    """
+
+    # Set the LateX style
+    dpu.set_mplstyle('latex')
+    assert dpu.fix_txt('_idx') == r'\_idx'
+    assert dpu.fix_txt('[%]') == r'[\%]'
