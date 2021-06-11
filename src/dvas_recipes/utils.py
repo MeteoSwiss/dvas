@@ -28,3 +28,26 @@ def default_arena_path():
     """
 
     return Path('.', 'dvas_proc_arena')
+
+def fn_suffix(eid=None, rid=None, var=None, tags=None):
+    """ Returns the default suffix of filenames given a set of info provided by the user.
+
+    Args:
+        eid (int, optional): the event id
+        rid (int, optional): the rig id
+        var (str, optional): the variable name
+        tags (list of str, optional): the list of tags associated with the data
+
+    Returns:
+        str: the filename suffix, that can be fed to the `dvas.plots.utils.fancy_savefig()`.
+    """
+
+    suffix = ''
+    for item in [eid, rid, var]:
+        if item is not None:
+            suffix += '_{}'.format(eid)
+
+    if tags is not None:
+        suffix += '_{}'.format('-'.join(tags))
+
+    return suffix[1:] if len(suffix)>0 else None

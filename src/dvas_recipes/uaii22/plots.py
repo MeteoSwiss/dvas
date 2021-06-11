@@ -24,6 +24,7 @@ from dvas.plots import utils as dpu
 from ..errors import DvasRecipesError
 from .. import dynamic
 from ..recipe import for_each_flight
+from ..utils import fn_suffix
 
 @for_each_flight
 @log_func_call(logger, time_it=True)
@@ -134,5 +135,5 @@ def flight_overview(tags='sync', label='mid', show=None):
 
     # Save it all
     dpu.fancy_savefig(fig, 'flight_overview', fn_prefix=dynamic.CURRENT_STEP_ID,
-                      fn_suffix='e{}_r{}_{}'.format(eid, rid, '-'.join(tags)),
+                      fn_suffix=fn_suffix(eid=eid, rid=rid, tags=tags),
                       fmts=dpu.PLOT_FMTS, show=show)
