@@ -38,11 +38,11 @@ rcp_params:
             ucs: temp_ucs
             uct: temp_uct
             ucu:
-        rh:
-            ucr: rh_ucr
-            ucs:
-            uct: rh_uct
-            ucu:
+        #rh:
+        #    ucr: rh_ucr
+        #    ucs:
+        #    uct: rh_uct
+        #    ucu:
         #pres:
         #    ucr:
         #    ucs:
@@ -62,22 +62,32 @@ rcp_params:
 # Recipe steps, and associated arguments/parameters
 rcp_steps:
 
+    # This is a dummy function used for test/demonstration purposes.
     demo.demo.sequential_dummy:
         step_id: '00'
         run: False
         kwargs:
             dummy_arg: test
 
+    # Profile synchronization on a per-flight basis.
     uaii22.sync.sync_flight:
         step_id: '01'
         run: True
         kwargs:
             first_guess_var: 'time'
 
+    # Simple plotting step of the complete profiles for all the variables.
     uaii22.plots.flight_overview:
         step_id: '02'
-        run: True
+        run: False
         kwargs:
             tags: sync # list of tags to identify profiles in the database
             label: mid # Labelling of plot legend, e.g.: mid, oid, etc ...
             show: # bool: if set, will override the global plot_show value.
+
+    # Assembly of the Combined Working Standard on a per-flight basis.
+    uaii22.gdps.build_cws:
+        step_id: '03'
+        run: True
+        kwargs:
+            tags: raw # list of tags to identify profiles in the database

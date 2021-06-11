@@ -77,7 +77,7 @@ def gdps_vs_cws(gdp_prfs, cws_prf, index_name='alt', **kwargs):
     ax0.fill_between(x, -cws['uc_tot'], +cws['uc_tot'], alpha=0.3, color='k')
 
     # Make it look pretty
-    ax0.set_xlabel(index_name)
+    ax0.set_xlabel(pu.fix_txt(index_name))
     ax0.set_ylabel(r'GDP - CWS')
 
     ax0.set_xlim((np.min(x), np.max(x)))

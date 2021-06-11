@@ -96,7 +96,7 @@ def combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=
 
     # Trigger an error if they do not have the same lengths.
     if len(len_gdps) > 1:
-        raise DvasError('Ouch ! GDPs must have the same length to be combined.'+
+        raise DvasError('Ouch ! GDPs must have the same length to be combined. '+
                         'Have these been synchronized ?')
 
     # Turn the set back into an int.

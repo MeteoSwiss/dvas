@@ -134,7 +134,7 @@ def ks_test(gdp_pair, alpha=0.0027, binning=1, n_cpus=1):
 
 @log_func_call(logger, time_it=True)
 def get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=None, rolling_flags=True,
-                        do_plot=False, n_cpus=1, **kwargs):
+                        n_cpus=1, do_plot=False, fn_prefix=None, fn_suffix=None):
     ''' Runs a series of KS tests to assess the consistency of several GDP profiles.
 
     Args:
@@ -142,13 +142,15 @@ def get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=None, rolling_flags=Tr
         alpha (float, optional): The significance level for the KS test. Defaults to 0.27%
         bin_sizes (ndarray of int, optional): The rolling binning sizes. Defaults to [1].
         rolling_flags (bool, optional):
-        do_plot (bool, optional): Whether to create the diagnostic plot, or not. Defaults to False.
         n_cpus (int|str, optional): number of cpus to use. Can be a number, or 'max'. Set to 1 to
             disable multiprocessing. Defaults to 1.
+        do_plot (bool, optional): Whether to create the diagnostic plot, or not. Defaults to False.
+        fn_prefix (str, optional): if set, the prefix of the plot filename.
+        fn_suffix (str, optional): if set, the suffix of the plot filename.
 
     Returns:
         dict of ndarray of bool: list of pair-wise incompatible measurements between GDPs.
-            Each distionary entry is labeled: "oid_1__vs__oid_2", to identify the profile pair.
+            Each dictionary entry is labeled: "oid_1__vs__oid_2", to identify the profile pair.
             True  indicates that the p-value of the KS test is <= alpha for a specific measurement.
 
     Note:
@@ -195,7 +197,7 @@ def get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=None, rolling_flags=Tr
         gdp_pair = gdp_prfs.extract([prf_a_inds[test_id], prf_b_inds[test_id]])
 
         # Get the oids to form the dictionary key
-        key = '__vs__'.join([str(item.info.oid) for item in gdp_pair])
+        key = '_vs_'.join([str(item.info.oid) for item in gdp_pair])
 
         # First make a high-resolution delta ...
         out = combine(gdp_pair, binning=1, method='delta', n_cpus=n_cpus)
@@ -243,6 +245,14 @@ def get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=None, rolling_flags=Tr
 
         # Plot things if needed
         if do_plot:
-            dpg.plot_ks_test(out, alpha, title=key, fn_suffix=key)
+            # Add the pair details to the file suffix
+            title = '{}-{}_vs_{}-{}'.format(gdp_pair[0].info.oid, gdp_pair[0].info.mid,
+                                                  gdp_pair[1].info.oid, gdp_pair[1].info.mid)
+
+            fnsuf = title
+            if fn_suffix is not None:
+                fnsuf = fn_suffix + '_' + fnsuf
+
+            dpg.plot_ks_test(out, alpha, title=title, fn_prefix=fn_prefix, fn_suffix=fnsuf)
 
     return incompat
