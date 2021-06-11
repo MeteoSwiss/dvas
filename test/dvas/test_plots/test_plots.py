@@ -76,10 +76,10 @@ def test_multiprf(gdp_3_prfs, do_latex):
     do_latex is a fixture that is True is pytest is being run with the argument "--latex".
     """
 
-    dpp.multiprf(gdp_3_prfs, index='alt', label='mid', uc='uc_tot', show=True, fn_suffix='base',
+    dpp.multiprf(gdp_3_prfs, index='alt', label='mid', uc='uc_tot', show=False, fn_suffix='base',
                  expose=2)
 
     if do_latex:
         dpu.set_mplstyle(style='latex')
         dpp.multiprf(gdp_3_prfs, index='alt', label='mid', uc='uc_tot',
-                     show=True, fn_suffix='latex')
+                     show=False, fn_suffix='latex')
