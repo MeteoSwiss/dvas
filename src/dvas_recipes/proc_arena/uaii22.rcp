@@ -78,5 +78,6 @@ rcp_steps:
         step_id: '02'
         run: True
         kwargs:
-            tags: sync
-            label: mid
+            tags: sync # list of tags to identify profiles in the database
+            label: mid # Labelling of plot legend, e.g.: mid, oid, etc ...
+            show: # bool: if set, will override the global plot_show value.

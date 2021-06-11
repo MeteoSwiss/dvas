@@ -270,7 +270,7 @@ def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show=
 
     # Show the plot, or just close it and move on
     if show:
-        fig.show()
+        plt.show()
     else:
         plt.close(fig.number)
 

@@ -27,12 +27,15 @@ from ..recipe import for_each_flight
 
 @for_each_flight
 @log_func_call(logger, time_it=True)
-def flight_overview(tags='sync', label='mid'):
+def flight_overview(tags='sync', label='mid', show=None):
     """ Create an "overview" plot of all the recipe variables for a given flight.
 
     Args:
         tags (str|list of str, optional): tag names for the search query into the database.
             Defaults to 'sync'.
+        label (str, optional): label of the plot legend. Defaults to 'mid'.
+        show (bool, optional): if set, overrides the default dvas rule about whether to show the
+            plot, or not. Defaults to None.
 
     """
 
@@ -110,7 +113,6 @@ def flight_overview(tags='sync', label='mid'):
         if var_ind == 0:
             dpu.add_edt_eid_rid(this_ax, rs_prfs)
             dpu.fancy_legend(this_ax, label=label)
-            # TODO: create a specific function for random text like below ?
             this_ax.text(1, 1.03, 'tags: ' + ' / '.join(tags), fontsize='small',
                     verticalalignment='bottom', horizontalalignment='right',
                     transform=this_ax.transAxes)
@@ -133,4 +135,4 @@ def flight_overview(tags='sync', label='mid'):
     # Save it all
     dpu.fancy_savefig(fig, 'flight_overview', fn_prefix=dynamic.CURRENT_STEP_ID,
                       fn_suffix='e{}_r{}_{}'.format(eid, rid, '-'.join(tags)),
-                      fmts=dpu.PLOT_FMTS, show=dpu.PLOT_SHOW)
+                      fmts=dpu.PLOT_FMTS, show=show)
