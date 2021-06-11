@@ -15,27 +15,27 @@ UAII 2022 analysis cascade:
 
     .. code-block:: none
 
-       dvas_init uaii22
+       dvas_init_arena
 
-    This will create a new folder ``dvas_uaii22_arena``.
+    This will create a new folder ``dvas_proc_arena``.
 
     .. hint::
 
-       You can see all the available recipes using ``dvas_init --help``:
+       Use ``dvas_init_arena --help`` to see what options exist:
 
        .. literalinclude:: dvas_help_msg.txt
           :language: none
 
-  2. To run the recipe, simply move into the processing arena, launch an ipython session, and launch
-     the recipe:
+  2. The processing arena you just created got pre-filled with 1) a series of configuration files
+  for the dvas database (more on this below) and 2) the official dvas recipe files, including
+  `uaii22.rcp`. To run the recipe, use the `dvas_run_recipe` entry point from the command line:
 
      .. code-block:: none
 
-       cd dvas_uaii22_arena
-       ipython --pylab
-       In [1]: run main_script.py
+       cd dvas_proc_arena
+       dvas_run_recipe uaii22.rcp
 
-Launching the `uaii22` recipe was the easy part. But what is actually happening ?  Time to take a
+Launching the recipe was the easy part. But what is actually happening ?  Time to take a
 closer look at the ...
 
 Anatomy of a dvas processing arena
@@ -44,19 +44,21 @@ Anatomy of a dvas processing arena
 There are 3 main components to a dvas processing arena: the
 :ref:`raw data <raw_data>`,
 the :ref:`database config files <config_data>`,
-and the :ref:`core script <core_script>` of the recipe. Let's take a look at each of these.
+and the :ref:`recipe file <recipe_file>`. Let's take a closer look at each of these.
 
 .. _raw_data:
 
 The data folder
 ...............
-This folder contains all the raw data to be processed. THe actual structuring of subfolders inside
+This folder contains all the raw data to be processed. The actual structuring of subfolders inside
 `./data` does not actually matter to dvas, so feel free to organize your datasets as you please.
 Note, however, the following restrictions:
 
   - for non-GDP radiosondes: a `.yml` text file **with the same name** as the raw data file must be
-    be specified for all datasets. These `.yml` contain all the metadata not otherwise present in
+    specified for all datasets. These must `.yml` contain all the metadata not otherwise present in
     the raw data files.
+
+    .. todo:: Specify what these metadata should be
 
 .. _config_data:
 
@@ -64,19 +66,19 @@ The config folder
 .................
 
 This folder contains all the information required to setup the dvas database, and have it ingest all
-all the data. Modifying these files is only required if one wishes to include datasets that differ
-from those already supported by the recipe.
+the raw data correctly. Modifying these files is only required if one wishes to include datasets
+that differ from those already supported by dvas.
 
-.. _core_script:
+.. _recipe_file:
 
-The recipe core script
-......................
+The recipe file
+...............
 
-This Python script contains the actual processing steps of the recipe. It is build upon high-level
+The dvas recipes are described in YAML file with the `.rcp` extension. In there, you will find
+general recipe parameters, including the list of variable names to process, together with the list
+of all the processing steps and their associated parameters. All these steps refer to high-level
 routines and modules from the ``dvas_recipes`` sub-package, that themselves rely on core ``dvas``
 modules and functions.
-
-
 
 Specifc recipes
 ----------------
@@ -84,9 +86,8 @@ Specifc recipes
 demo
 ....
 
-Illustrates many of the core ``dvas`` tools and how to use them. This is a good starting point for
-users interested to modify existing recipes, or create their own.
-
+Used for test and development purposes. It contains dummy routines to illustrate how recipe
+processing steps can be assembled.
 
 uaii22
 ......

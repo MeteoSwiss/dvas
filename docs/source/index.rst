@@ -28,11 +28,17 @@ There are therefore two distinct ways to use dvas:
 
   1. :ref:`running_recipes:Running dvas recipes`: users interested to reproduce the UAII 2022
      analysis (either for the original dataset, or for a different-but-similar one) need only to use
-     the ``dvas_recipes`` sub-package to do so
+     the ``dvas_recipes`` sub-package to do so.
 
   2. :ref:`creating_recipes:Creating dvas recipes`: users interesting to adjust/alter/expand the
      default analysis recipes, or even to write their own recipe from scratch, must use the core
      ``dvas`` package to do so.
+
+.. note::
+    The processing routines inside dvas are intimately linked the specific `Profile` dvas classes.
+    These, in turn, are best populated from the dvas database. This implies that using the
+    processing routines while by-passing the use of the dvas database (e.g. for custom applications)
+    is neither straightforward, nor supported.
 
 dvas is being developed on Github, where you can submit all your
 `questions <https://github.com/MeteoSwiss/dvas/discussions>`_ and

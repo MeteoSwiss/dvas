@@ -38,17 +38,23 @@ Default database variable names
 The following names can be altered by the users in the different config files. These are the ones
 implemented by defaults. They follow MeteoSwiss conventions:
 
-    * ``altpros1``: altitude
-    * ``trepros1``: temperature
-    * ``trepros_r``: rig-uncorrelated temperature uncertainty
-    * ``trepros_s``: spatial-correlated temperature uncertainty
-    * ``trepros_t``: temporal-correlated temperature uncertainty
+    * ``time``: time since launch
+    * ``gph``: geopotential height
+    * ``temp``: temperature
+    * ``rh``: relative humidty
+    * ``pres``: pressure
+    * ``wdir``: wind direction
+    * ``wspeed``: wind speed
+    * ``xxx_ucr``: rig-uncorrelated uncertainty of xxx
+    * ``xxx_ucs``: spatial-correlated uncertainty of xxx
+    * ``xxx_uct``: temporal-correlated uncertainty of xxx
+    * ``xxx_ucu``: true uncorrelated uncertainty of xxx
 
 Parameter names
 ...............
 
 For instances of `Profile`, `MultiProfile`, and their children, the following parameter (`prm`)
-names are applicable:
+names are applicable (as defined in `dvas.hardcoded`):
 
    * ``val``: primary Profile value
    * ``alt``: altitude
@@ -134,7 +140,6 @@ Here's a few things you can do as a dvas user to control the general plotting be
     dpu.PLOT_FMTS = ['png', 'pdf']
     # If you do not want to save anything, set:
     #dpu.PLOT_FMTS = []
-
 
 
 Each plotting function can also be fed a series of ``**kwargs`` keywords arguments. The following
