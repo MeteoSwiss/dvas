@@ -58,7 +58,8 @@ CMAP_1_R.set_bad(color=CLRS['nan_1'], alpha=1)
 PLOT_FMTS = ['png']
 
 #: bool: A flag to display the plots or not.
-PLOT_SHOW = True
+# WARNING: keep this False by default, else all hell will break loose with Github actions
+PLOT_SHOW = False
 
 #: dict: matches the GDP units name to their (better) plot format
 UNIT_LABELS = {'K': r'K$^{\circ}$',
