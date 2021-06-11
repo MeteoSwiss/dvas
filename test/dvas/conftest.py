@@ -44,6 +44,14 @@ def do_latex(request):
 
     Adapted from the response of ipetrik on
     `StackOverflow <https://stackoverflow.com/questions/40880259/how-to-pass-arguments-in-pytest-by-command-line>`__
+
+    To use this, simply call it as an argument in any of the test function, e.g.:
+
+        def test_some_func(a, b, do_latex):
+            ...
+            if do_latex:
+                dpu.set_mplstyle('latex')
+                some_test_plot(...)
     """
 
     try:
@@ -59,6 +67,12 @@ def show_plots(request):
 
     This is useful to disable all displays when running automated tests using Github actions,
     which, on some OS, do not handle the display of plots very well.
+
+    To use this, simply call it as an argument in any of the test function, e.g.:
+
+        def test_some_func(a, b, show_plot):
+            ...
+            some_test_plot(..., show=show_plot, ...)
     """
 
     try:
