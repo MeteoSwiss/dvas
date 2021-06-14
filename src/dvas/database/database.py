@@ -101,8 +101,9 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         """peewee.SqliteDatabase: Database instance"""
         return self._db
 
-    def clear_db(self):
-        """Clear DB"""
+    def refresh_db(self):
+        """ Refresh the database, by deleting the current tables and reloading them with fresh
+        metadata."""
         self._delete_tables()
         self._create_tables()
         self._fill_metadata()

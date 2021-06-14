@@ -59,8 +59,8 @@ if __name__ == '__main__':
     # ----------------------------------------------------------------------------------------------
     print("\n --- DATABASE SETUP ---")
 
-    # Use this command to clear the DB
-    DB.clear_db()
+    # Use this command to refresh the DB, if it exists
+    DB.refresh_db()
 
     # Init the DB
     DB.init()

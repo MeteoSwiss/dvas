@@ -108,7 +108,7 @@ def db_init(request, tmp_path_factory):
     db_data.update({'db_path': path_var.local_db_path.as_posix()})
 
     # Set db
-    DatabaseManager().clear_db()
+    DatabaseManager().refresh_db()
     db_mngr = DatabaseManager()
 
     # Register db manager

@@ -51,8 +51,9 @@ class Database:
         DatabaseManager()
 
     @staticmethod
-    def clear_db():
-        """Reset DB"""
+    def refresh_db():
+        """ Refreshes the database, by deleting the existing tables and reloading them from the
+        existing metadata. """
         DatabaseManager().clear_db()
 
     @staticmethod
