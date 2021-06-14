@@ -276,19 +276,18 @@ class Profile(ProfileAC):
         PRF_REF_FLG_NAME: {'test': FLOAT_TEST, 'type': 'Int64', 'index': False}
     }
 
-    def __init__(self, info, data=None):
+    def __init__(self, info, data=None, db_exists=True):
         """ Profile Constructor.
 
         Args:
             info (InfoManager): Data information
             data (pd.DataFrame, optional): The profile values in a pandas DataFrame.
                Default to None.
+            db_exists (bool, optional): If False, assumes that the db does not exists and deal with
+                this fact accordingly.
 
         """
         super(Profile, self).__init__()
-
-        # Init
-        db_mngr = DatabaseManager()
 
         # Test info
         try:
@@ -304,7 +303,14 @@ class Profile(ProfileAC):
                                    for key, val in self.DF_COLS_ATTR.items()], axis=1)
 
         self._info = info
-        self._flags_name = {arg[self.FLAG_NAME_NM]: arg for arg in db_mngr.get_flags()}
+
+        if db_exists:
+            # Init
+            db_mngr = DatabaseManager()
+            self._flags_name = {arg[self.FLAG_NAME_NM]: arg for arg in db_mngr.get_flags()}
+        else:
+            # DB does not exists ... so no flags are defined.
+            self._flags_name = None
 
     @property
     def info(self):
