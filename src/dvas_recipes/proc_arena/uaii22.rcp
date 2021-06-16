@@ -27,6 +27,7 @@ rcp_params:
             - pdf
             #- png
         plot_show: True
+        chunK_size: 150
 
     # Variables to process using the recipe, and associated uncertainties.
     index:

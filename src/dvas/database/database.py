@@ -48,6 +48,8 @@ from ..logger import localdb as localdb_logger
 from ..logger import log_func_call
 from ..environ import glob_var
 from ..environ import path_var as env_path_var
+from ..errors import DvasError
+from .. import dynamic as dyn
 
 # Define
 SQLITE_MAX_VARIABLE_NUMBER = 999
@@ -102,56 +104,58 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         return self._db
 
     def refresh_db(self):
-        """ Refresh the database, by deleting the current tables and reloading them with fresh
-        metadata."""
+        """ Refreshes the database, by deleting the current tables and reloading them with fresh
+        metadata. """
         self._delete_tables()
         self._create_tables()
         self._fill_metadata()
 
     def _init_db(self):
-        """Init db. Create new file if missing or take existing file.
+        """ Init db. Create new file if missing or take existing file.
 
         Returns:
-            bool: True if the DB is newly created
+            bool: True if the DB is newly created, and not in memory.
 
         """
 
-        # Test
-        if env_path_var.local_db_path is None:
-            # TODO
-            #  Detail exception
-            raise Exception()
+        # Test if I got a proper path to store the DB (unless I was asked to store it in memory).
+        if env_path_var.local_db_path is None and not dyn.DB_IN_MEMORY:
+            raise DvasError("Ouch ! I can't find any value for "+
+                            "`dvas.environ.path_var.local_db_path`. Was it properly defined ?")
 
-        # Define
-        file_path = env_path_var.local_db_path / DB_FILE_NM
-        pragmas = {
-            'foreign_keys': True,
-            'cache_size': -DB_CACHE_SIZE,  # Set cache to 10MB
-            'permanent': True,
-            'synchronous': False,
-            'journal_mode': 'MEMORY'
-        }
+        # Define the DB parameters
+        pragmas = {'foreign_keys': True,
+                   'cache_size': -DB_CACHE_SIZE,  # Set cache to 10MB
+                   'permanent': True,
+                   'synchronous': False,
+                   'journal_mode': 'MEMORY'
+                  }
 
-        # Create local DB directory
-        if file_path.exists():
-            db_new = False
+        if dyn.DB_IN_MEMORY:
+            file_path = ':memory:'
+            # The following assumes that in case of in-memory storage, the db is always new.
+            # Assumed to be correct, until proven otherwise. fpavogt, 14.06.2021
+            db_new = True
 
         else:
-            db_new = True
-            try:
-                file_path.parent.mkdir(parents=True, exist_ok=True)
-                # Set user read/write permission
-                file_path.parent.chmod(
-                    file_path.parent.stat().st_mode | 0o600
-                )
-            except (OSError,) as exc:
-                raise DBDirError(f"Error in creating '{self._db.database.parent}' ({exc})") from exc
+            file_path = env_path_var.local_db_path / DB_FILE_NM
 
-        # Init DB
-        self._db.init(
-            file_path,
-            pragmas=pragmas)
+            # Create local DB directory
+            if file_path.exists():
+                db_new = False
 
+            else:
+                db_new = True
+                try:
+                    file_path.parent.mkdir(parents=True, exist_ok=True)
+                    # Set user read/write permission
+                    file_path.parent.chmod(file_path.parent.stat().st_mode | 0o600)
+                except (OSError,) as exc:
+                    raise DBDirError(f"Error in creating '{self._db.database.parent}' ({exc})") \
+                        from exc
+
+        # Ready to actually initialize the DB
+        self._db.init(file_path, pragmas=pragmas)
         return db_new
 
     @staticmethod

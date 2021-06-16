@@ -56,17 +56,17 @@ def combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=
     '''
 
     # Some safety checks first of all
-    if not isinstance(binning, int):
+    if not isinstance(binning, (int, np.integer)):
         raise DvasError('Ouch! binning must be of type int, not %s' % (type(binning)))
     if binning <= 0:
         raise DvasError('Ouch! binning must be greater or equal to 1 !')
     if method not in ['weighted mean', 'mean', 'delta']:
         raise DvasError('Ouch! Method %s unsupported.' % (method))
 
-    if not isinstance(chunk_size, int):
+    if not isinstance(chunk_size, (int, np.integer)):
         raise DvasError('Ouch! chunk_size should be an int, not {}'.format(type(chunk_size)))
 
-    if not isinstance(n_cpus, int):
+    if not isinstance(n_cpus, (int, np.integer)):
         if n_cpus == 'max':
             n_cpus = mp.cpu_count()
         else:

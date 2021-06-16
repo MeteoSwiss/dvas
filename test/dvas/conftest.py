@@ -141,6 +141,9 @@ def db_init(request, tmp_path_factory):
                     model=model
                 ).oid
 
+                #TODO: shouldn't the following line be:
+                # arg.update({'oid': oid})
+                # ? fpavogt, 16.06.2021
                 db_data['data'][i].update({'oid': oid})
 
             data_out.append(arg)

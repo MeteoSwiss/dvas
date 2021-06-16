@@ -47,14 +47,17 @@ class Database:
 
     @staticmethod
     def init():
-        """Init DB"""
+        """ Initialize the dvas DB.
+
+        """
         DatabaseManager()
 
     @staticmethod
     def refresh_db():
         """ Refreshes the database, by deleting the existing tables and reloading them from the
-        existing metadata. """
-        DatabaseManager().clear_db()
+        existing metadata.
+        """
+        DatabaseManager().refresh_db()
 
     @staticmethod
     def fetch_raw_data(search_prms, strict=True):

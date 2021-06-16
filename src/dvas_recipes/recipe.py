@@ -20,10 +20,11 @@ from dvas.dvas import Log
 from dvas.dvas import Database as DB
 from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME
 import dvas.plots.utils as dpu
+from dvas import dynamic as dyn
 
 # Import from dvas_recipesz
 from .errors import DvasRecipesError
-from . import dynamic
+from . import dynamic as rcp_dyn
 
 # Setup the YAML loader
 yaml = YAML(typ='safe')
@@ -38,7 +39,7 @@ def for_each_flight(func):
     """
 
     def wrapper(**kwargs):
-        """ A small wrapper function that loops over dynamic.ALL_FLIGHTS and updates the value of
+        """ A small wrapper function that loops over dynamics.ALL_FLIGHTS and updates the value of
         dynamic.THIS_FLIGHT before calling the wrapped function (that is assumed will itself call
         dynamic.THIS_FLIGHT directly).
 
@@ -52,8 +53,8 @@ def for_each_flight(func):
 
         # Loop through each flight, and apply func as intended, after updating the value of
         # dynamic.THIS_FLIGHT
-        for flight in dynamic.ALL_FLIGHTS:
-            dynamic.CURRENT_FLIGHT = flight
+        for flight in rcp_dyn.ALL_FLIGHTS:
+            rcp_dyn.CURRENT_FLIGHT = flight
             func(**kwargs)
 
     return wrapper
@@ -82,8 +83,8 @@ def for_each_var(func):
 
         # Loop through each flight, and apply func as intended, after updating the value of
         # dynamic.THIS_FLIGHT
-        for  var in dynamic.ALL_VARS:
-            dynamic.CURRENT_VAR = var
+        for  var in rcp_dyn.ALL_VARS:
+            rcp_dyn.CURRENT_VAR = var
             func(**kwargs)
 
     return wrapper
@@ -127,7 +128,7 @@ class RecipeStep:
         """
 
         # Store the step_id in the dynamic module for easy access by the function if needed
-        dynamic.CURRENT_STEP_ID = self.step_id
+        rcp_dyn.CURRENT_STEP_ID = self.step_id
 
         # Actually launch the function, which may be decorated (but I don't need to know that !)
         self._func(**self._kwargs)
@@ -181,11 +182,14 @@ class Recipe:
         # Show the plots on-screen ?
         dpu.PLOT_SHOW = rcp_data['rcp_params']['general']['plot_show']
 
+        # Adjust the dvas chunk size
+        dyn.CHUNK_SIZE = rcp_data['rcp_params']['general']['chunk_size']
+
         # Store the index names
-        dynamic.INDEXES = rcp_data['rcp_params']['index']
+        rcp_dyn.INDEXES = rcp_data['rcp_params']['index']
 
         # Store the variables to be processed and their associated uncertainties.
-        dynamic.ALL_VARS = rcp_data['rcp_params']['vars']
+        rcp_dyn.ALL_VARS = rcp_data['rcp_params']['vars']
 
         # Get started with the initializations of the different recipe steps
         self._steps = []
@@ -205,7 +209,7 @@ class Recipe:
             if ndim:=np.ndim(flights) != 2:
                 raise DvasRecipesError('Ouch ! np.ndim(flights) should be 2, not: {}'.format(ndim))
 
-            dynamic.ALL_FLIGHTS = flights
+            rcp_dyn.ALL_FLIGHTS = flights
 
     @property
     def name(self):
@@ -220,18 +224,21 @@ class Recipe:
     def init_db(self):
         """ Initialize the dvas database, and fetch the raw data required for the recipe. """
 
+        # Here, make sure the DB is stored locally, and not in memory.
+        dyn.DB_IN_MEMORY = False
+
         # Use this command to clear the DB
-        DB.clear_db()
+        DB.refresh_db()
 
         # Init the DB
         DB.init()
 
         # Fetch the raw data
-        DB.fetch_raw_data([dynamic.INDEXES[PRF_REF_TDT_NAME]] +
-                          [dynamic.INDEXES[PRF_REF_ALT_NAME]] +
-                          list(dynamic.ALL_VARS) +
-                          [dynamic.ALL_VARS[var][uc] for var in dynamic.ALL_VARS
-                           for uc in dynamic.ALL_VARS[var]],
+        DB.fetch_raw_data([rcp_dyn.INDEXES[PRF_REF_TDT_NAME]] +
+                          [rcp_dyn.INDEXES[PRF_REF_ALT_NAME]] +
+                          list(rcp_dyn.ALL_VARS) +
+                          [rcp_dyn.ALL_VARS[var][uc] for var in rcp_dyn.ALL_VARS
+                           for uc in rcp_dyn.ALL_VARS[var]],
                           strict=True)
 
     def get_all_flights_from_db(self):
@@ -264,8 +271,8 @@ class Recipe:
         self.init_db()
 
         # If warranted, find all the flights that need tio be processed.
-        if dynamic.ALL_FLIGHTS is None:
-            dynamic.ALL_FLIGHTS = self.get_all_flights_from_db()
+        if rcp_dyn.ALL_FLIGHTS is None:
+            rcp_dyn.ALL_FLIGHTS = self.get_all_flights_from_db()
 
         # Now that everything is in place, all that is required at this point is to launch each step
         # one after the other. If warranted, lock the execution of steps until a certain one is
