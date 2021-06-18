@@ -31,7 +31,7 @@ from ...data.strategy.data import GDPProfile
 from ...database.database import InfoManager
 
 @log_func_call(logger)
-def combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=1):
+def combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=150, n_cpus=1):
     ''' Combines and (possibly) rebins GDP profiles, with full error propagation.
 
     Note:
@@ -46,7 +46,7 @@ def combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=
             ['weighted mean', 'mean', or 'delta']. Defaults to 'weighted mean'.
         chunk_size (int, optional): to speed up computation, Profiles get broken up in chunks of
             that length. The larger the chunks, the larger the memory requirements. The smaller the
-            chunks the more items to process. Defaults to 200.
+            chunks the more items to process. Defaults to 150.
         n_cpus (int|str, optional): number of cpus to use. Can be a number, or 'max'. Set to 1 to
             disable multiprocessing. Defaults to 1.
 

@@ -183,7 +183,7 @@ class Recipe:
         dpu.PLOT_SHOW = rcp_data['rcp_params']['general']['plot_show']
 
         # Adjust the dvas chunk size
-        dyn.CHUNK_SIZE = rcp_data['rcp_params']['general']['chunk_size']
+        rcp_dyn.CHUNK_SIZE = rcp_data['rcp_params']['general']['chunk_size']
 
         # Store the index names
         rcp_dyn.INDEXES = rcp_data['rcp_params']['index']

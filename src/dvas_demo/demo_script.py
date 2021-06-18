@@ -229,7 +229,7 @@ if __name__ == '__main__':
 
     # Let us now create a high-resolution CWS for these synchronized GDPs
     start_time = datetime.now()
-    cws = dtgg.combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=4)
+    cws = dtgg.combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=150, n_cpus=4)
     print('CWS assembled in: {}s'.format((datetime.now()-start_time).total_seconds()))
 
     # We can now inspect the result visually

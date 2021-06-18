@@ -10,9 +10,5 @@ Module contents: dvas dynamic variables
 """
 
 #: bool: whether the DB should be stored in memory, or not.
-# Placing this here for now ... probably there's a better place for it.
+# Placing this here for now ... probably there's a better place for it `/`
 DB_IN_MEMORY = False
-
-#: int: size in which Profiles get sliced when combining them, to speed up computing. Use
-# the dvas_optimize entry point to find the best values for this, depending on the machine.
-CHUNK_SIZE = 150
