@@ -64,7 +64,7 @@ from ...hardcoded import PRF_REF_VAL_NAME
 #    return chi_sq
 
 @log_func_call(logger, time_it=True)
-def ks_test(gdp_pair, alpha=0.0027, binning=1, n_cpus=1):
+def ks_test(gdp_pair, alpha=0.0027, binning=1, **kwargs):
     ''' Runs a ``scipy.stats.kstest()`` two-sided test on the normalized-delta between two
     GDPProfile instances, against a normal distribution.
 
@@ -81,8 +81,7 @@ def ks_test(gdp_pair, alpha=0.0027, binning=1, n_cpus=1):
             Defaults to 0.27%.
         binning (int, optional): Whether to bin the Profile delta before running the KS test.
             Defaults to 1 (=no binning).
-        n_cpus (int|str, optional): number of cpus to use. Can be a number, or 'max'. Set to 1 to
-            disable multiprocessing. Defaults to 1.
+        **kwargs: n_cpus and/or chunk_size, that will get fed to dvas.tools.gdps.gdps.combine().
 
     Returns:
         pandas DataFrame: a DataFrame containing k_pqi, p_ksi, and f_pqi values. k_pqi contains the
@@ -111,7 +110,7 @@ def ks_test(gdp_pair, alpha=0.0027, binning=1, n_cpus=1):
     out = pd.DataFrame(np.zeros((len_prf, 3)), columns=['k_pqi', 'f_pqi', 'p_ksi'])
 
     # Compute the profile delta with the specified sampling
-    gdp_delta = combine(gdp_pair, binning=binning, method='delta', n_cpus=n_cpus)
+    gdp_delta = combine(gdp_pair, binning=binning, method='delta', **kwargs)
 
     # Compute k_pqi (the normalized profile delta)
     k_pqi = gdp_delta.get_prms([PRF_REF_VAL_NAME, 'uc_tot'])[0]
@@ -134,7 +133,7 @@ def ks_test(gdp_pair, alpha=0.0027, binning=1, n_cpus=1):
 
 @log_func_call(logger, time_it=True)
 def get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=None, rolling_flags=True,
-                        n_cpus=1, do_plot=False, fn_prefix=None, fn_suffix=None):
+                        do_plot=False, fn_prefix=None, fn_suffix=None, **kwargs):
     ''' Runs a series of KS tests to assess the consistency of several GDP profiles.
 
     Args:
@@ -142,11 +141,11 @@ def get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=None, rolling_flags=Tr
         alpha (float, optional): The significance level for the KS test. Defaults to 0.27%
         bin_sizes (ndarray of int, optional): The rolling binning sizes. Defaults to [1].
         rolling_flags (bool, optional):
-        n_cpus (int|str, optional): number of cpus to use. Can be a number, or 'max'. Set to 1 to
-            disable multiprocessing. Defaults to 1.
         do_plot (bool, optional): Whether to create the diagnostic plot, or not. Defaults to False.
         fn_prefix (str, optional): if set, the prefix of the plot filename.
         fn_suffix (str, optional): if set, the suffix of the plot filename.
+        **kwargs: n_cpus and/or chunk_size, that will get fed to dvas.tools.gdps.gdps.combine().
+
 
     Returns:
         dict of ndarray of bool: list of pair-wise incompatible measurements between GDPs.
@@ -159,8 +158,6 @@ def get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=None, rolling_flags=Tr
 
     Todo:
         * When rolling, take into account the previously flagged data point.
-        * Deal with the plot tag.
-
     '''
 
     # Some sanity checks to begin with
@@ -200,7 +197,7 @@ def get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=None, rolling_flags=Tr
         key = '_vs_'.join([str(item.info.oid) for item in gdp_pair])
 
         # First make a high-resolution delta ...
-        out = combine(gdp_pair, binning=1, method='delta', n_cpus=n_cpus)
+        out = combine(gdp_pair, binning=1, method='delta', **kwargs)
 
         # ... and extract the DataFrame to compute k_pqi (the normalized profile delta)
         out = out.get_prms([PRF_REF_VAL_NAME, 'uc_tot'])[0]
@@ -218,7 +215,7 @@ def get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=None, rolling_flags=Tr
         for binning in bin_sizes:
 
             # Run the KS test on it
-            tmp = ks_test(gdp_pair, alpha=alpha, binning=binning, n_cpus=n_cpus)
+            tmp = ks_test(gdp_pair, alpha=alpha, binning=binning, **kwargs)
 
             # Turn this into a MultiIndex ...
             tmp.columns = pd.MultiIndex.from_tuples([(binning, item) for item in tmp.columns])

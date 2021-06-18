@@ -95,11 +95,7 @@ def optimize(n_cpus=None, prf_length=7001, chunk_min=50, chunk_max=400, n_chunk=
     """
 
     # Some sanity checks at first.
-    if n_cpus is None:
-        n_cpus = mpr.cpu_count()
-    if n_cpus > mpr.cpu_count():
-        print('\n Only {} cpus detected. Using this value instead of {} for n_cpus.'.format(
-            mpr.cpu_count(), n_cpus))
+    if n_cpus is None or n_cpus > mpr.cpu_count():
         n_cpus = mpr.cpu_count()
 
     # Let's create DB in memory - a DB is required to run the combine function (which requires

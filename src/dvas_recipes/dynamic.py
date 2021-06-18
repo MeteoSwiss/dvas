@@ -32,3 +32,6 @@ CURRENT_STEP_ID = None
 #: int: size in which Profiles get sliced when combining them, to speed up computing. Use
 # the dvas_optimize entry point to find the best values for this, depending on the machine.
 CHUNK_SIZE = 150
+
+#: int: number of cpus to use to run the dvas recipe
+N_CPUS = 1

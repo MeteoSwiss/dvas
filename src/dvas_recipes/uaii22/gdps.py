@@ -63,14 +63,15 @@ def build_cws(tags='sync'):
     # The idea here is to flag any inconsistent measurement, so that they can be ignored during
     # the combination process.
     out = dtgs.get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=[1, 2, 4, 8], do_plot=True,
-                                   n_cpus=8, fn_prefix=dynamic.CURRENT_STEP_ID,
+                                   n_cpus=dynamic.N_CPUS, fn_prefix=dynamic.CURRENT_STEP_ID,
                                    fn_suffix=fn_suffix(eid=eid, rid=rid, tags=tags,
                                                        var=dynamic.CURRENT_VAR))
 
     # TODO: set flags based on the incompatibilities derived.
 
     # Let us now create a high-resolution CWS for these synchronized GDPs
-    cws = dtgg.combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=8)
+    cws = dtgg.combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=dynamic.CHUNK_SIZE,
+                       n_cpus=dynamic.N_CPUS)
 
     # We can now inspect the result visually
     dpg.gdps_vs_cws(gdp_prfs, cws, index_name='_idx', show=True, fn_prefix=dynamic.CURRENT_STEP_ID,
