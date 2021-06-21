@@ -23,7 +23,7 @@ from ...errors import DvasError
 from .gdps import combine
 from ...plots import gdps as dpg
 from ...plots import utils as dpu
-from ...hardcoded import PRF_REF_VAL_NAME
+from ...hardcoded import PRF_REF_VAL_NAME, FLG_INCOMPATIBLE_NAME
 
 #@log_func_call(logger, time_it=True)
 #def chi_square(gdp_prfs, cws_prf):
@@ -82,7 +82,7 @@ def ks_test(gdp_pair, alpha=0.0027, binning=1, **kwargs):
             Defaults to 0.27%=0.0027.
         binning (int, optional): Whether to bin the Profile delta before running the KS test.
             Defaults to 1 (=no binning).
-        **kwargs: n_cpus and/or chunk_size, that will get fed to dvas.tools.gdps.gdps.combine().
+        **kwargs: mask_flags and/or n_cpus and/or chunk_size, that will get fed to dvas.tools.gdps.gdps.combine().
 
     Returns:
         pandas DataFrame: a DataFrame containing k_pqi, p_ksi, and f_pqi values. k_pqi contains the
@@ -141,24 +141,20 @@ def get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=None, rolling_flags=Tr
         gdp_prfs (dvas.data.data.MultiGDPProfile): synchronized GDP profiles to check.
         alpha (float, optional): The significance level for the KS test. Defaults to 0.27%
         bin_sizes (ndarray of int, optional): The rolling binning sizes. Defaults to [1].
-        rolling_flags (bool, optional):
+        rolling_flags (bool, optional): if True and len(bin_sizes)>1, any incompatibility found
+            for a specific bin_sizes will be forwarded to the subsequent ones. Else, each bin size
+            is treated independantly. Defaults to True. If rolling_flag is True, the order of the
+            bin_sizes list thus matters.
         do_plot (bool, optional): Whether to create the diagnostic plot, or not. Defaults to False.
         fn_prefix (str, optional): if set, the prefix of the plot filename.
         fn_suffix (str, optional): if set, the suffix of the plot filename.
         **kwargs: n_cpus and/or chunk_size, that will get fed to dvas.tools.gdps.gdps.combine().
 
-
     Returns:
         dict of ndarray of bool: list of pair-wise incompatible measurements between GDPs.
-            Each dictionary entry is labeled: "oid_1__vs__oid_2", to identify the profile pair.
-            True  indicates that the p-value of the KS test is <= alpha for a specific measurement.
+            Each dictionary entry is labeled: "oid_1_vs_oid_2", to identify the profile pair.
+            True indicates that the p-value of the KS test is <= alpha for a specific measurement.
 
-    Note:
-        The diagnostic plot will be generated only if a binning of 1 is included in the
-        binning_list.
-
-    Todo:
-        * When rolling, take into account the previously flagged data point.
     '''
 
     # Some sanity checks to begin with
@@ -172,13 +168,18 @@ def get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=None, rolling_flags=Tr
     if not isinstance(bin_sizes, list):
         raise DvasError('Ouch ! bin_sizes must be a list, not: {}'.format(type(bin_sizes)))
 
+    # If warranted select which flags we want to mask in the rolling process.
+    mask_flags = None
+    if rolling_flags:
+        mask_flags = FLG_INCOMPATIBLE_NAME
+
     # How many gdp Profiles do I have ?
     n_prf = len(gdp_prfs)
 
     # How many KS tests do I need to make ? (They are symmetric)
     n_test = ((n_prf-1)*n_prf)//2
 
-    # What the are the indices of the profile pairs I want to check. Make sure to check each pair
+    # What are the indices of the profile pairs I want to check ? Make sure to check each pair
     # only once.
     prf_a_inds = [[i]*(n_prf-1-i) for i in range(n_prf-1)]
     prf_a_inds = [item for sublist in prf_a_inds for item in sublist]
@@ -188,7 +189,7 @@ def get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=None, rolling_flags=Tr
     # Prepare a dictionnary to hold the results
     incompat = {}
 
-    # Let us loop through all these test and run them sequentially.
+    # Let us loop through all these tests and run them sequentially.
     for test_id in range(n_test):
 
         # Extract the specific profile pair I need to assess
@@ -216,15 +217,15 @@ def get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=None, rolling_flags=Tr
         for binning in bin_sizes:
 
             # Run the KS test on it
-            tmp = ks_test(gdp_pair, alpha=alpha, binning=binning, **kwargs)
+            tmp = ks_test(gdp_pair, alpha=alpha, binning=binning, mask_flags=mask_flags, **kwargs)
 
             # Turn this into a MultiIndex ...
             tmp.columns = pd.MultiIndex.from_tuples([(binning, item) for item in tmp.columns])
 
-            # If binning >1, this will have the wrong size. Correct it (i.e. tie the KS results back
-            # to the original levels) ...
-            # Inspired from the asnwer of DSM on this following Stack Overflow post:
-            # https://stackoverflow.com/questions/26777832/replicating-rows-in-a-pandas-data-frame-by-a-column-value
+            # If binning >1, this will have the wrong size.
+            # Correct it (i.e. tie the KS results back to the original levels) ...
+            # Inspired from the asnwer of DSM on Stack Overflow:
+            # https://stackoverflow.com/questions/26777832/
             tmp = tmp.reset_index(drop=True)
             tmp = tmp.loc[np.repeat(range(len(tmp)), binning)]
             tmp = tmp.reset_index(drop=True)
