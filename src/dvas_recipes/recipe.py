@@ -187,10 +187,9 @@ class Recipe:
         rcp_dyn.CHUNK_SIZE = rcp_data['rcp_params']['general']['chunk_size']
 
         # Set the number of cpus.
-        n_cpus = rcp_data['rcp_params']['general']['n_cpus']
-        if n_cpus is None or n_cpus > cpu_count():
-            n_cpus = cpu_count()
         rcp_dyn.N_CPUS = rcp_data['rcp_params']['general']['n_cpus']
+        if rcp_dyn.N_CPUS is None or rcp_dyn.N_CPUS > cpu_count():
+            rcp_dyn.N_CPUS = cpu_count()
 
         # Store the index names
         rcp_dyn.INDEXES = rcp_data['rcp_params']['index']

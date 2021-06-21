@@ -92,4 +92,4 @@ rcp_steps:
         step_id: '03'
         run: True
         kwargs:
-            tags: raw # list of tags to identify profiles in the database
+            tags: sync # list of tags to identify profiles in the database
