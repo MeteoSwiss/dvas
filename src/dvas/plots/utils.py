@@ -194,13 +194,16 @@ def fancy_legend(this_ax, label=None):
         line.set_linewidth(2.0)
 
 @log_func_call(logger)
-def add_edt_eid_rid(this_ax, prfs):
-    """ Add basic edt, eid and rid info to a plot.
+def get_edt_eid_rid(prfs):
+    """ Extract basic edt, eid, and rid info from a MultiProfile, and build a basic string with
+    this info. Intented to be used for adding consistent info to plots.
 
     Args:
-        this_ax (matplotlib.pyplot.axes): the axes to add the info to.
         prfs (Multiprofile|MultiRSProfile|MultiGDPProfile): the MultiProfile to extract the info
             from.
+
+    Returns:
+        str: a formatted string, ready to b added to a plot or a filename.
 
     """
 
@@ -212,8 +215,24 @@ def add_edt_eid_rid(this_ax, prfs):
     # Format it all nicely for each Profile.
     info_txt = set(['{} ({}, {})'.format(item, eids[ind], rids[ind])
                                          for ind, item in enumerate(edts)])
-    # Make sure it does not overflow
+    # Stich the different items together in case I have more than one flight in the list
     info_txt = ' / '.join(info_txt)
+
+    return info_txt
+
+@log_func_call(logger)
+def add_edt_eid_rid(this_ax, prfs):
+    """ Add basic edt, eid and rid info to a plot.
+
+    Args:
+        this_ax (matplotlib.pyplot.axes): the axes to add the info to.
+        prfs (Multiprofile|MultiRSProfile|MultiGDPProfile): the MultiProfile to extract the info
+            from.
+
+    """
+
+    # Get the text to display
+    info_txt = get_edt_eid_rid(prfs)
 
     # Add it to the ax
     this_ax.text(0, 1.03, info_txt, fontsize='small',

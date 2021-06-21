@@ -24,13 +24,13 @@ from ..utils import fn_suffix
 @for_each_var
 @for_each_flight
 def build_cws(tags='sync'):
-    """ Highest-level function responsible for assembling the combined working standard for a
-    specific RS flight.
+    """ Highest-level recipe function responsible for assembling the combined working standard for
+    a specific RS flight.
 
     This function directly builds the profiles and upload them to the db with the 'cws' tag.
 
     Args:
-        tags (str|list of str, optional): tag names for the search query into the database.
+        tags (str|list of str, optional): tag name(s) for the search query into the database.
             Defaults to 'sync'.
 
     """
@@ -62,7 +62,7 @@ def build_cws(tags='sync'):
     # Before combining the GDPs with each other, let us assess their consistency.
     # The idea here is to flag any inconsistent measurement, so that they can be ignored during
     # the combination process.
-    out = dtgs.get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=[1, 2, 4, 8], do_plot=True,
+    out = dtgs.get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=[1, 2, 4], do_plot=True,
                                    n_cpus=dynamic.N_CPUS, fn_prefix=dynamic.CURRENT_STEP_ID,
                                    fn_suffix=fn_suffix(eid=eid, rid=rid, tags=tags,
                                                        var=dynamic.CURRENT_VAR))

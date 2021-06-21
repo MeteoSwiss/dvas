@@ -22,6 +22,7 @@ from ...logger import tools_logger as logger
 from ...errors import DvasError
 from .gdps import combine
 from ...plots import gdps as dpg
+from ...plots import utils as dpu
 from ...hardcoded import PRF_REF_VAL_NAME
 
 #@log_func_call(logger, time_it=True)
@@ -68,7 +69,7 @@ def ks_test(gdp_pair, alpha=0.0027, binning=1, **kwargs):
     ''' Runs a ``scipy.stats.kstest()`` two-sided test on the normalized-delta between two
     GDPProfile instances, against a normal distribution.
 
-    The KS test is being run on a level-pre-level basis.
+    The KS test is being run on a level-per-level basis.
 
     Note:
 
@@ -78,7 +79,7 @@ def ks_test(gdp_pair, alpha=0.0027, binning=1, **kwargs):
     Args:
         gdp_pair (list of dvas.data.strategy.data.GDPProfile): GDP Profiles to compare.
         alpha (float, optional): The significance level for the KS test. Must be 0<alpha<1.
-            Defaults to 0.27%.
+            Defaults to 0.27%=0.0027.
         binning (int, optional): Whether to bin the Profile delta before running the KS test.
             Defaults to 1 (=no binning).
         **kwargs: n_cpus and/or chunk_size, that will get fed to dvas.tools.gdps.gdps.combine().
@@ -242,14 +243,19 @@ def get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=None, rolling_flags=Tr
 
         # Plot things if needed
         if do_plot:
-            # Add the pair details to the file suffix
-            title = '{}-{}_vs_{}-{}'.format(gdp_pair[0].info.oid, gdp_pair[0].info.mid,
-                                                  gdp_pair[1].info.oid, gdp_pair[1].info.mid)
 
-            fnsuf = title
+            # Extract the edt eid rid info for the pair
+            edt_eid_rid_info = dpu.get_edt_eid_rid(gdp_pair)
+
+            # Get the specific pair details
+            pair_info= '{}-{}_vs_{}-{}'.format(gdp_pair[0].info.oid, gdp_pair[0].info.mid,
+                                               gdp_pair[1].info.oid, gdp_pair[1].info.mid)
+
+            fnsuf = pair_info
             if fn_suffix is not None:
                 fnsuf = fn_suffix + '_' + fnsuf
 
-            dpg.plot_ks_test(out, alpha, title=title, fn_prefix=fn_prefix, fn_suffix=fnsuf)
+            dpg.plot_ks_test(out, alpha, left_label=edt_eid_rid_info+'_'+pair_info,
+                             fn_prefix=fn_prefix, fn_suffix=fnsuf)
 
     return incompat

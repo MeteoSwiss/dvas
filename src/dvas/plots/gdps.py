@@ -224,7 +224,7 @@ def plot_gdps(fn_list, ref_var='time', tag=None, save_loc=None):
     #
 
 @log_func_call(logger)
-def plot_ks_test(df, alpha, title=None, **kwargs):
+def plot_ks_test(df, alpha, left_label=None, right_label=None, **kwargs):
     """ Creates a diagnostic plot for the KS test.
 
     Args:
@@ -232,7 +232,8 @@ def plot_ks_test(df, alpha, title=None, **kwargs):
             dvas.tools.gdps.stats.get_incomptibility().
         alpha (float): significance level used for the flags. Must be 0 <= alpha <= 1.
             Required for setting up the colorbar properly.
-        tag (str, optional): the plot title. Defaults to None.
+        left_label (str, optional): top-left plot label. Defaults to None.
+        right_label (str, optional): top-right plot label. Defaults to None.
         **kwargs: these get fed to the dvas.plots.utils.fancy_savefig() routine.
 
     Returns:
@@ -250,69 +251,52 @@ def plot_ks_test(df, alpha, title=None, **kwargs):
     # rolling KS test.
     n_bins = len(df.columns.levels[0])-1
 
+    # The plot will have different number of rows depending on the number of variables.
+    # Let's define some hardcoded heights, such that the look is always consistent
+    top_gap = 0.4 # inch
+    bottom_gap = 0.6 # inch
+    plot_1_height = 0.35*n_bins # inch
+    plot_2_height = 2.2 # inch
+    mid_gap = 0.05 # inch
+    fig_height = top_gap + bottom_gap + plot_1_height + plot_2_height + mid_gap
+
     # Set up the scene ...
-    fig = plt.figure(figsize=(pu.WIDTH_TWOCOL, 5))
+    fig = plt.figure(figsize=(pu.WIDTH_TWOCOL, fig_height))
 
-    gs_info = gridspec.GridSpec(2, 2, height_ratios=[1, 1], width_ratios=[1, 0.02],
-                                left=0.08, right=0.95, bottom=0.12, top=0.9,
-                                wspace=0.02, hspace=0.08)
+    gs_info = gridspec.GridSpec(2, 1, height_ratios=[plot_1_height/plot_2_height, 1],
+                                width_ratios=[1], left=0.08, right=0.95,
+                                bottom=bottom_gap/fig_height, top=1-top_gap/fig_height,
+                                wspace=0.02, hspace=mid_gap)
 
-    ax1 = fig.add_subplot(gs_info[0, 0]) # A 2D plot of p_pq^i as a function of m
-    ax2 = fig.add_subplot(gs_info[1, 0]) # A scatter plot of k_pq^i
-    cax2 = fig.add_subplot(gs_info[:, 1]) # The colorbar for different values of m
+    ax1 = fig.add_subplot(gs_info[0, 0]) # A 2D plot of the incompatible points as a function of m
+    ax2 = fig.add_subplot(gs_info[1, 0], sharex=ax1) # A scatter plot of k_pq^i
 
     # First, let's plot the full-resolution delta.
-    ax2.scatter(df.index.values, df.loc[:, (0, 'k_pqi')], marker='o', facecolor='darkgrey', s=1,
-                edgecolor=None)
-
-    # Let's build a discretized colormap, to be used for the different binning levels m
-    m_cm = pu.cmap_discretize(pu.CMAP_1, n_bins)
+    ax2.scatter(df.index.values, df.loc[:, (0, 'k_pqi')], marker='o', facecolor=pu.CLRS['nan_1'],
+                s=1, edgecolor=None, zorder=10)
 
     # Let's now deal with all the bin levels ...
     for bin_ind in range(n_bins):
-        # What color does this binning level correspond to ?
-        clr = m_cm((bin_ind + 0.5)/n_bins)
-
-        # Plot the binned profile as a line # <- too busy for the plot: bad readibility
-        #ax2.plot(df.index.values, df.loc[:, (df.columns.levels[0][1+bin_ind], 'k_pqi')],
-        #         ls='-', lw=0.75, c=clr, drawstyle='steps-mid')
 
         # Which levels have been flagged ?
         flagged = df[(df.columns.levels[0][1+bin_ind], 'f_pqi')] == 1
 
         # Clearly mark the bad regions in the top plot
         ax1.errorbar(df[flagged].index.values, [bin_ind] * len(df[flagged]),
-                     yerr=None, xerr=0.5, elinewidth=10,
-                     ecolor=clr, fmt='|', c=clr, markersize='10')
+                     yerr=None, xerr=0.5, elinewidth=20, ecolor='k', fmt='|', c='k',
+                     markersize='20')
 
         # Draw circles around the flagged values in the full-resolution scatter plot.
         ax2.scatter(df[flagged].index.values,
                     df[flagged].loc[:, (0, 'k_pqi')].values,
                     marker='o',
-                    s=2*(1+bin_ind)**2, # With this, we get circles growing linearly in radius
-                    edgecolors=clr, # We color each circle manually. No cmap !!!
-                    linewidth=0.5, facecolor='none')
+                    #s=2*(1+bin_ind)**2, # With this, we get circles growing linearly in radius
+                    s=20,
+                    edgecolors=pu.CLRS['ref_1'], # We color each circle manually. No cmap !!!
+                    linewidth=0.5, facecolor='none', zorder=0)
 
     # Add the 0 line for reference.
     ax2.axhline(0, c='k', ls='-', lw=1)
-
-    # Add the discretrized colorbar and ticks.
-    # Since I did not use 'cmap' in the scatter function, I must draw the colorbar manually.
-    # https://matplotlib.org/tutorials/colors/colorbar_only.html?highlight=colorbarbase
-    # Note how the vmin & vmax value match what we did earlier.
-    cb2 = plt.colorbar(cm.ScalarMappable(norm=colors.Normalize(vmin=-0.5, vmax=n_bins-0.5),
-                                         cmap=m_cm),
-                       cax=cax2)
-
-    # Back to solid ground. Let's label things properly.
-    cb2.set_label(r'$m$', labelpad=10)
-    # For the ticks, let's tag them with the actual binning value.
-    # Downside: this will get very crowded for dense rolling KS tests ...
-    cb2.set_ticks(np.arange(0, n_bins, 1))
-    cb2.set_ticklabels([r'%i' % (m_val) for m_val in df.columns.levels[0][1:]])
-
-    # Let's hide the minor cb ticks that have no sense in this case (m is discrete).
-    cb2.ax.minorticks_off()
 
     # Set the proper axis labels, etc ...
     for this_ax in [ax1, ax2]:
@@ -329,8 +313,15 @@ def plot_ks_test(df, alpha, title=None, **kwargs):
     ax1.tick_params(which='minor', axis='y', left=False, right=False)
 
     ax2.set_ylim((-6, 6))
-    if title is not None:
-        ax1.set_title(title.replace('_', ' '))
+    # Add the plot labels, if warranted.
+    if left_label is not None:
+        ax1.text(0, 1.03, pu.fix_txt(left_label), fontsize='small',
+                 verticalalignment='bottom', horizontalalignment='left',
+                 transform=ax1.transAxes)
+    if right_label is not None:
+        ax1.text(1, 1.03, pu.fix_txt(right_label), fontsize='small',
+                 verticalalignment='bottom', horizontalalignment='right',
+                 transform=ax1.transAxes)
 
     # Add the source for the plot
     pu.add_source(fig)
