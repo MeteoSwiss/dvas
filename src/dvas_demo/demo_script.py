@@ -160,7 +160,7 @@ if __name__ == '__main__':
     # Let us inspect the (raw) GDP profiles with dedicated plots.
     gdp_prfs.plot(fn_prefix='01') # Defaults behavior, just adding a prefix to the filename.
     # Now with errors. Show the plot but don't save it.
-    gdp_prfs.plot(label='oid', uc='uc_tot', show=True, fmts=[])
+    gdp_prfs.plot(label='oid', uc='uc_tot', show=False, fmts=[])
 
     # ----------------------------------------------------------------------------------------------
     print("\n --- PROFILE RESAMPLING ---")
@@ -245,7 +245,7 @@ if __name__ == '__main__':
     print('CWS assembled in: {}s'.format((datetime.now()-start_time).total_seconds()))
 
     # We can now inspect the result visually
-    dpg.gdps_vs_cws(gdp_prfs, cws, index_name='_idx', show=True, fn_prefix='03')
+    dpg.gdps_vs_cws(gdp_prfs, cws, index_name='_idx', show=False, fn_prefix='03')
 
     # Save the CWS to the database
     cws.save_to_db(add_tags=['cws'], rm_tags=['gdp'])

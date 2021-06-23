@@ -43,7 +43,6 @@ def dvas_init_arena():
     # Launch the initialization of a new processing arena
     init_arena(arena_path=args.path)
 
-
 def dvas_optimize():
     """ The dvas_optimize entry point, wrapping around the optimize function designed to find the
     optimum chunk_size given a certain number of cpus (and memory).
@@ -82,7 +81,6 @@ def dvas_optimize():
 
     optimize(n_cpus=args.n_cpus, prf_length=args.prf_length, chunk_min=args.chunk_min,
              chunk_max=args.chunk_max, n_chunk=args.n_chunk)
-
 
 def dvas_run_recipe():
     """ The dvas_run_recipe entry point, wrapping around the actual run_recipe function. """
