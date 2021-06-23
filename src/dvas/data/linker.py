@@ -36,7 +36,7 @@ from ..config.definitions.origdata import CSV_USE_DEFAULT_FLD_NM
 from ..logger import rawcsv
 from ..environ import glob_var
 from ..hardcoded import GDP_FILE_EXT
-from ..hardcoded import PRM_PAT, FLAG_PRM_PAT
+from ..hardcoded import PRM_PAT, FLG_PRM_PAT
 from ..hardcoded import CSV_FILE_MDL_PAT, GDP_FILE_MDL_PAT
 from ..hardcoded import TAG_RAW_NAME, TAG_GDP_NAME, TAG_EMPTY_NAME
 
@@ -703,7 +703,7 @@ class GDPHandler(FileHandler):
         return data
 
 
-class FlagCSVHandler(CSVHandler):
+class FlgCSVHandler(CSVHandler):
     """CSV flag file handler class"""
 
     def __init__(self, orig_data_cfg):
@@ -717,13 +717,13 @@ class FlagCSVHandler(CSVHandler):
 
         # Define attributes
         self._file_suffix_re = re.compile(
-            rf'\.(({")|(".join(glob_var.flag_file_ext)}))',
+            rf'\.(({")|(".join(glob_var.flg_file_ext)}))',
             re.IGNORECASE
         )
-        self._prm_re = re.compile(FLAG_PRM_PAT)
+        self._prm_re = re.compile(FLG_PRM_PAT)
 
 
-class FlagGDPHandler(GDPHandler):
+class FlgGDPHandler(GDPHandler):
     """GDP flag file handler class"""
 
     def __init__(self, orig_data_cfg):
@@ -737,10 +737,10 @@ class FlagGDPHandler(GDPHandler):
 
         # Define attributes
         self._file_suffix_re = re.compile(
-            rf'\.(({")|(".join(glob_var.flag_file_ext)}))',
+            rf'\.(({")|(".join(glob_var.flg_file_ext)}))',
             re.IGNORECASE
         )
-        self._prm_re = re.compile(FLAG_PRM_PAT)
+        self._prm_re = re.compile(FLG_PRM_PAT)
 
         self._data_ok_tags = [TAG_RAW_NAME, TAG_GDP_NAME]
 

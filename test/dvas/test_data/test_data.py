@@ -121,10 +121,10 @@ class TestMutliProfile:
         # Try to get masked data
         # First, set the mask, so I am sure it is there
         mlt_gdpprf[0].set_flg('user_qc', True, [0])
-        out_msk = mlt_gdpprf.get_prms(prm_list='val', mask_flags='user_qc')
+        out_msk = mlt_gdpprf.get_prms(prm_list='val', mask_flgs='user_qc')
         # Then unset it, to see if I can see the data again ...
         mlt_gdpprf[0].set_flg('user_qc', False, [0])
-        out_nomsk = mlt_gdpprf.get_prms(prm_list='val', mask_flags='user_qc')
+        out_nomsk = mlt_gdpprf.get_prms(prm_list='val', mask_flgs='user_qc')
 
         #Check that data was masked as I expected
         assert np.isnan(out_msk[0]['val'][0])
@@ -132,7 +132,7 @@ class TestMutliProfile:
 
         # Now check what happens in case I ask for an index, especially a time delta
         mlt_gdpprf[0].set_flg('user_qc', True, [0])
-        out_msk = mlt_gdpprf.get_prms(prm_list='tdt', mask_flags='user_qc')
+        out_msk = mlt_gdpprf.get_prms(prm_list='tdt', mask_flgs='user_qc')
         assert pd.isnull(out_msk[0]['tdt'][0])
 
     def test_rm_info_tags(self, mlt_prf):

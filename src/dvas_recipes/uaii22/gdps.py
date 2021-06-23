@@ -13,7 +13,7 @@ from dvas.data.data import MultiGDPProfile
 from dvas.tools.gdps import stats as dtgs
 from dvas.tools.gdps import gdps as dtgg
 import dvas.plots.gdps as dpg
-from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME
+from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, FLG_INCOMPATIBLE_NAME
 
 # Import from dvas_recipes
 from ..errors import DvasRecipesError
@@ -23,7 +23,7 @@ from ..utils import fn_suffix
 
 @for_each_var
 @for_each_flight
-def build_cws(tags='sync'):
+def build_cws(tags='sync', m_vals=[1, '2*'], strategy='all-or-none'):
     """ Highest-level recipe function responsible for assembling the combined working standard for
     a specific RS flight.
 
@@ -32,6 +32,11 @@ def build_cws(tags='sync'):
     Args:
         tags (str|list of str, optional): tag name(s) for the search query into the database.
             Defaults to 'sync'.
+        m_vals (int|list, optional): list of m-values used for identifiying incompatible and valid
+            regions between GDPs. Any value listed as 'x*' will be ignored when computing the cws.
+        strategy (str, optional): name of GDP combination strategy (for deciding which levels/
+            measurements are valid or not). Defaults to 'all-or-none'. These ared defined in
+            `dvas.tools.gdps.stats.get_validities()`.
 
     """
 
@@ -40,6 +45,11 @@ def build_cws(tags='sync'):
         tags = [tags]
     if not isinstance(tags, list):
         raise DvasRecipesError('Ouch ! tags should be of type str|list. not: {}'.format(type(tags)))
+
+    # Deal with the m_vals if warranted
+    if isinstance(m_vals, str):
+        # Here, let's just deconstruct the string into components, but keep everything as str
+        m_vals = m_vals.split(' ')
 
     # Get the event id and rig id
     (eid, rid) = dynamic.CURRENT_FLIGHT
@@ -62,16 +72,31 @@ def build_cws(tags='sync'):
     # Before combining the GDPs with each other, let us assess their consistency.
     # The idea here is to flag any inconsistent measurement, so that they can be ignored during
     # the combination process.
-    out = dtgs.get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=[1, 2, 4], do_plot=True,
-                                   n_cpus=dynamic.N_CPUS, fn_prefix=dynamic.CURRENT_STEP_ID,
-                                   fn_suffix=fn_suffix(eid=eid, rid=rid, tags=tags,
-                                                       var=dynamic.CURRENT_VAR))
+    incompat = dtgs.gdp_incompatibilities(gdp_prfs, alpha=0.0027,
+                                          m_vals=[int(item.replace('*', '')) for item in m_vals],
+                                          do_plot=True,
+                                          n_cpus=dynamic.N_CPUS, fn_prefix=dynamic.CURRENT_STEP_ID,
+                                          fn_suffix=fn_suffix(eid=eid, rid=rid, tags=tags,
+                                                              var=dynamic.CURRENT_VAR))
 
-    # TODO: set flags based on the incompatibilities derived.
+    # Next, we derive "validities" given a specific strategy to assess the different GDP pair
+    # incompatibilities ...
+    # Note how the m_vals used for the combination can differ from the ones used to check the
+    # incompatibilities. This is intended to let people experiment a bit without affecting the final
+    # CWS.
+    valids = dtgs.gdp_validities(incompat,
+                                 m_vals=[int(item) for item in m_vals if '*' not in item],
+                                 strategy=strategy)
+
+    # ... and set them using the dvas.hardcoded.FLG_INCOMPATIBLE_NAME flag
+    for gdp_prf in gdp_prfs:
+        gdp_prf.set_flg(FLG_INCOMPATIBLE_NAME, True,
+                        index=valids[~valids[str(gdp_prf.info.oid)]].index)
 
     # Let us now create a high-resolution CWS for these synchronized GDPs
-    cws = dtgg.combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=dynamic.CHUNK_SIZE,
-                       n_cpus=dynamic.N_CPUS)
+    cws = dtgg.combine(gdp_prfs, binning=1, method='weighted mean',
+                       mask_flgs=FLG_INCOMPATIBLE_NAME,
+                       chunk_size=dynamic.CHUNK_SIZE, n_cpus=dynamic.N_CPUS)
 
     # We can now inspect the result visually
     dpg.gdps_vs_cws(gdp_prfs, cws, index_name='_idx', show=True, fn_prefix=dynamic.CURRENT_STEP_ID,

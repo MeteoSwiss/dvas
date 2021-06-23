@@ -28,13 +28,13 @@ from .model import Info as TableInfo
 from .model import Parameter as TableParameter
 from .model import Tag as TableTag
 from .model import MetaData as TableMetaData
-from .model import Flag, DataSource, Data
+from .model import Flg, DataSource, Data
 from .model import InfosObjects as TableInfosObjects
 from .model import InfosTags
 from .search import SearchInfoExpr
 from ..config.config import Parameter as ParameterCfg
 from ..config.config import Model as ModelCfg
-from ..config.config import Flag as FlagCfg
+from ..config.config import Flg as FlgCfg
 from ..config.config import Tag as TagCfg
 from ..config.config import instantiate_config_managers
 from ..config.definitions.origdata import EDT_FLD_NM
@@ -79,13 +79,14 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         Data,
         TableMetaData,
         TableParameter,
-        Flag,
+        Flg,
     ]
 
     def __init__(self):
 
         # Create config linker instance attribute
-        self._cfg_mngr = instantiate_config_managers(ParameterCfg, ModelCfg, FlagCfg, TagCfg, read=True)
+        self._cfg_mngr = instantiate_config_managers(ParameterCfg, ModelCfg, FlgCfg, TagCfg,
+                                                     read=True)
 
         # Create db attribute
         self._db = db
@@ -240,7 +241,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         """Create db tables"""
 
         # Fill simple tables
-        for tbl in [TableParameter, TableModel, Flag, TableTag]:
+        for tbl in [TableParameter, TableModel, Flg, TableTag]:
             self._fill_table(tbl)
 
     def _fill_table(self, table, foreign_constraint=None):
@@ -284,8 +285,8 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         Args:
             table:
-            search (dict): key 'join_order' must be a list of database.database.MetadataModel, `optional`,
-                key 'where' a logical peewee expression
+            search (dict, optional): key 'join_order' must be a list of database.database.MetadataModel,
+                `optional`, key 'where' a logical peewee expression
 
         Returns:
             dict:
@@ -644,14 +645,14 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         return out
 
-    def get_flags(self):
+    def get_flgs(self):
         """Get config flags
 
         Returns:
             list
 
         """
-        return self.get_table(Flag)
+        return self.get_table(Flg)
 
 
 class InfoManagerMetaData(dict):

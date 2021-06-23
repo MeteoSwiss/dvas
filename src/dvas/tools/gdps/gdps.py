@@ -31,7 +31,7 @@ from ...data.strategy.data import GDPProfile
 from ...database.database import InfoManager
 
 @log_func_call(logger)
-def combine(gdp_prfs, binning=1, method='weighted mean', mask_flags=None, chunk_size=150, n_cpus=1):
+def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_size=150, n_cpus=1):
     ''' Combines and (possibly) rebins GDP profiles, with full error propagation.
 
     Note:
@@ -44,7 +44,7 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flags=None, chunk_
         binning (int, optional): the number of profile steps to put into a bin. Defaults to 1.
         method (str, optional): combination rule. Can be one of
             ['weighted mean', 'mean', or 'delta']. Defaults to 'weighted mean'.
-        mask_flags (str|list of str, optional): (list of) flag(s) to ignore when combining profiles.
+        mask_flgs (str|list of str, optional): (list of) flag(s) to ignore when combining profiles.
         chunk_size (int, optional): to speed up computation, Profiles get broken up in chunks of
             that length. The larger the chunks, the larger the memory requirements. The smaller the
             chunks the more items to process. Defaults to 150.
@@ -118,7 +118,7 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flags=None, chunk_
     x_dx = gdp_prfs.get_prms([PRF_REF_ALT_NAME, PRF_REF_TDT_NAME, PRF_REF_VAL_NAME,
                               PRF_REF_FLG_NAME, PRF_REF_UCR_NAME, PRF_REF_UCS_NAME,
                               PRF_REF_UCT_NAME, PRF_REF_UCU_NAME, 'uc_tot'],
-                              mask_flags=mask_flags)
+                              mask_flgs=mask_flgs)
 
     # I also need to extract some of the metadata required for computing cross-correlations.
     # Let's add it to the common DataFrame so I can carry it all in one go.
@@ -175,8 +175,10 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flags=None, chunk_
     # Re-assemble all the chunks into one DataFrame.
     proc_chunk = pd.concat(proc_chunks, axis=0)
 
-    # TODO: fix this once the flags are operational
-    proc_chunk.loc[:, 'flg'] = 64
+    # Set the intiial flags of the combined profile.
+    # Should I actually be setting any ? E.g. to make the difference between True NaN's and
+    # Compatibility NaN's ? Can I even do that in here ?
+    proc_chunk.loc[:, 'flg'] = 0
 
     # Almost there. Now we just need to package this into a clean MultiGDPProfile
     # Let's first prepare the info dict

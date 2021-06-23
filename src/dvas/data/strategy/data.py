@@ -16,7 +16,7 @@ import numpy as np
 import pandas as pd
 
 # Import from current package
-from ...database.model import Flag as TableFlag
+from ...database.model import Flg as TableFlg
 from ...database.database import DatabaseManager, InfoManager
 from ...errors import ProfileError, DvasError
 from ...helper import RequiredAttrMetaClass
@@ -265,9 +265,9 @@ class Profile(ProfileAC):
 
     """
 
-    FLAG_BIT_POS_NM = TableFlag.bit_pos.name
-    FLAG_NAME_NM = TableFlag.flag_name.name
-    FLAG_DESC_NM = TableFlag.flag_desc.name
+    FLG_BIT_POS_NM = TableFlg.bit_pos.name
+    FLG_NAME_NM = TableFlg.flg_name.name
+    FLG_DESC_NM = TableFlg.flg_desc.name
 
     # The column names for the pandas DataFrame
     DF_COLS_ATTR = {
@@ -304,7 +304,7 @@ class Profile(ProfileAC):
 
         # Init
         db_mngr = DatabaseManager()
-        self._flags_name = {arg[self.FLAG_NAME_NM]: arg for arg in db_mngr.get_flags()}
+        self._flg_names = {arg[self.FLG_NAME_NM]: arg for arg in db_mngr.get_flgs()}
 
     @property
     def info(self):
@@ -312,9 +312,9 @@ class Profile(ProfileAC):
         return self._info
 
     @property
-    def flags_name(self):
+    def flg_names(self):
         """dict: Flag name, description and bit position."""
-        return self._flags_name
+        return self._flg_names
 
     @property
     def alt(self):
@@ -354,7 +354,7 @@ class Profile(ProfileAC):
             val (str): Flag name
 
         """
-        return self.flags_name[val][self.FLAG_BIT_POS_NM]
+        return self.flg_names[val][self.FLG_BIT_POS_NM]
 
     def set_flg(self, val, set_val, index=None):
         """ Set flag values to True/False.
@@ -395,7 +395,7 @@ class Profile(ProfileAC):
         else:
             self.flg = self.flg.loc[index].apply(set_to_false)
 
-    def is_flagged(self, val):
+    def has_flg(self, val):
         """Check if a specific flag name is set.
 
         Args:

@@ -93,3 +93,5 @@ rcp_steps:
         run: True
         kwargs:
             tags: sync # list of tags to identify profiles in the database
+            m_vals: 1 8* # list of m values. Those with * are ignored for the cws assembly
+            strategy: 'all-or-none' # Strategy to decide which GDPs to combine, given their incompatibilities.

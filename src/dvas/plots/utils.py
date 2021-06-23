@@ -44,6 +44,7 @@ CLRS = {'set_1': ['#4c88b3', '#b34c88', '#88b34c', '#d15f56', '#7d70b4', '#00a7a
                            ['#000000', '#051729','#4c88b3','#dbd7cc', '#ffffff'])),
         'nan_1': '#7d7d7d',
         'ref_1': 'crimson',
+        'cws_1': '#323232'
         }
 
 #: matplotlib.colors.LinearSegmentedColormap: the default dvas colormap 1
@@ -249,8 +250,8 @@ def add_source(fig):
     """
     msg = 'Created with dvas v{}'.format(VERSION)
 
-    fig.text(0.99, 0.02, msg, fontsize='xx-small',
-                 horizontalalignment='right', verticalalignment='bottom')
+    fig.text(0.01, 0.02, msg, fontsize='xx-small',
+                 horizontalalignment='left', verticalalignment='bottom')
 
 @log_func_call(logger)
 def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show=None):
