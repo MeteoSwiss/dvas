@@ -13,6 +13,8 @@
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
 
   
   
@@ -29,6 +31,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
@@ -63,7 +66,7 @@
             
             
               <div class="version">
-                0.3.0
+                0.4.0
               </div>
             
           
@@ -88,8 +91,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Table of contents</span></p>
-<ul class="current">
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="running_recipes.html">Running dvas recipes</a></li>
@@ -186,10 +188,15 @@ processing recipes, or create their own.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p>If you plan on coding with dvas, we strongly suggest that you begin by taking a look at the
-<a class="reference external" href="https://github.com/MeteoSwiss-MDA/dvas/blob/develop/CONTRIBUTING.md">contributing guidelines</a>
+<a class="reference external" href="https://github.com/MeteoSwiss/dvas/blob/develop/CONTRIBUTING.md">contributing guidelines</a>
 on Github. Even if you do not want to share your modifications (which is totally fine !), these
 guidelines contain critical information regarding the structure and spirit of the code.</p>
 </div>
+<p>Assuming that you have initialized a new dvas processing arena using the <code class="docutils literal notranslate"><span class="pre">dvas_init_arena</span></code> entry
+point, take a look at <code class="docutils literal notranslate"><span class="pre">demo_script.py</span></code>. This Python script, which we suggest you run from inside
+a Python shell (using <code class="docutils literal notranslate"><span class="pre">run</span> <span class="pre">demo_script.py</span></code>), illustrates the main functions and tools of the core
+dvas sub-package. It is therefore an excellent place to familiarize yourself with the dvas spirit.</p>
+<p>** AND NOW FOR A BIG PILE OF IMPORTANT INFO THAT NEEDS TO BE SORTED …**</p>
 <div class="section" id="naming-conventions">
 <h2>Naming conventions<a class="headerlink" href="#naming-conventions" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="protected-tag-names">
@@ -214,18 +221,24 @@ guidelines contain critical information regarding the structure and spirit of th
 implemented by defaults. They follow MeteoSwiss conventions:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">altpros1</span></code>: altitude</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">trepros1</span></code>: temperature</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">trepros_r</span></code>: rig-uncorrelated temperature uncertainty</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">trepros_s</span></code>: spatial-correlated temperature uncertainty</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">trepros_t</span></code>: temporal-correlated temperature uncertainty</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time</span></code>: time since launch</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gph</span></code>: geopotential height</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">temp</span></code>: temperature</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rh</span></code>: relative humidty</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pres</span></code>: pressure</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wdir</span></code>: wind direction</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wspeed</span></code>: wind speed</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xxx_ucr</span></code>: rig-uncorrelated uncertainty of xxx</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xxx_ucs</span></code>: spatial-correlated uncertainty of xxx</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xxx_uct</span></code>: temporal-correlated uncertainty of xxx</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xxx_ucu</span></code>: true uncorrelated uncertainty of xxx</p></li>
 </ul>
 </div></blockquote>
 </div>
 <div class="section" id="parameter-names">
 <h3>Parameter names<a class="headerlink" href="#parameter-names" title="Permalink to this headline">¶</a></h3>
 <p>For instances of <cite>Profile</cite>, <cite>MultiProfile</cite>, and their children, the following parameter (<cite>prm</cite>)
-names are applicable:</p>
+names are applicable (as defined in <cite>dvas.hardcoded</cite>):</p>
 <blockquote>
 <div><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">val</span></code>: primary Profile value</p></li>

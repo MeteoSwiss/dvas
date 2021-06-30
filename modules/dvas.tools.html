@@ -13,6 +13,8 @@
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
 
   
   
@@ -29,6 +31,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
@@ -63,7 +66,7 @@
             
             
               <div class="version">
-                0.3.0
+                0.4.0
               </div>
             
           
@@ -88,8 +91,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Table of contents</span></p>
-<ul class="current">
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Home</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../running_recipes.html">Running dvas recipes</a></li>
@@ -112,6 +114,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="dvas.html#submodules">Submodules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.dvas">dvas.dvas module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.dynamic">dvas.dynamic module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.environ">dvas.environ module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.errors">dvas.errors module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.hardcoded">dvas.hardcoded module</a></li>
@@ -207,6 +210,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dvas.tools.gdps.html">dvas.tools.gdps package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="dvas.tools.gdps.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.tools.gdps.html#module-dvas.tools.gdps.correlations">dvas.tools.gdps.correlations module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dvas.tools.gdps.html#module-dvas.tools.gdps.gdps">dvas.tools.gdps.gdps module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dvas.tools.gdps.html#module-dvas.tools.gdps.stats">dvas.tools.gdps.stats module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dvas.tools.gdps.html#module-dvas.tools.gdps.utils">dvas.tools.gdps.utils module</a></li>
@@ -225,8 +229,8 @@
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>Module contents: Specialized mathematical operation on data</p>
 <dl class="py function">
-<dt id="dvas.tools.math.crosscorr">
-<code class="sig-prename descclassname"><span class="pre">dvas.tools.math.</span></code><code class="sig-name descname"><span class="pre">crosscorr</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datay</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wrap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'kendall'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.math.crosscorr" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="dvas.tools.math.crosscorr">
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.math.</span></span><span class="sig-name descname"><span class="pre">crosscorr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datay</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wrap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'kendall'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.math.crosscorr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Lag-N cross correlation.
 If wrap is False, shifted data are filled with NaNs.</p>
 <dl class="field-list simple">
@@ -246,8 +250,8 @@ Default is ‘kendall’</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="dvas.tools.math.calc_tropopause">
-<code class="sig-prename descclassname"><span class="pre">dvas.tools.math.</span></code><code class="sig-name descname"><span class="pre">calc_tropopause</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_alt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grad_cond</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.math.calc_tropopause" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="dvas.tools.math.calc_tropopause">
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.math.</span></span><span class="sig-name descname"><span class="pre">calc_tropopause</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">temp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_alt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grad_cond</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.math.calc_tropopause" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate tropopause altitude</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -279,15 +283,15 @@ Default to 2000.</p></li>
 </dd></dl>
 
 <dl class="py exception">
-<dt id="dvas.tools.math.TropopauseError">
-<em class="property"><span class="pre">exception</span> </em><code class="sig-prename descclassname"><span class="pre">dvas.tools.math.</span></code><code class="sig-name descname"><span class="pre">TropopauseError</span></code><a class="headerlink" href="#dvas.tools.math.TropopauseError" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="dvas.tools.math.TropopauseError">
+<em class="property"><span class="pre">exception</span> </em><span class="sig-prename descclassname"><span class="pre">dvas.tools.math.</span></span><span class="sig-name descname"><span class="pre">TropopauseError</span></span><a class="headerlink" href="#dvas.tools.math.TropopauseError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 <p>Exception if no tropopause where found</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="dvas.tools.math.calc_tropopause_old">
-<code class="sig-prename descclassname"><span class="pre">dvas.tools.math.</span></code><code class="sig-name descname"><span class="pre">calc_tropopause_old</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alti</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">press</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.math.calc_tropopause_old" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="dvas.tools.math.calc_tropopause_old">
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.math.</span></span><span class="sig-name descname"><span class="pre">calc_tropopause_old</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alti</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">press</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.math.calc_tropopause_old" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate tropopause altitude</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -322,8 +326,8 @@ km in a layer at least 2 km thick.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>This module contains tools to synchronize profiles.</p>
 <dl class="py function">
-<dt id="dvas.tools.sync.get_sync_shifts_from_alt">
-<code class="sig-prename descclassname"><span class="pre">dvas.tools.sync.</span></code><code class="sig-name descname"><span class="pre">get_sync_shifts_from_alt</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_alt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5000.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.sync.get_sync_shifts_from_alt" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="dvas.tools.sync.get_sync_shifts_from_alt">
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.sync.</span></span><span class="sig-name descname"><span class="pre">get_sync_shifts_from_alt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_alt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5000.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.sync.get_sync_shifts_from_alt" title="Permalink to this definition">¶</a></dt>
 <dd><p>A routine that estimates the shifts required to synchronize profiles, based on the
 different in their altitude index.</p>
 <p>This is a very crude function that does the sync nased on a single altitude, and thus happily
@@ -342,8 +346,8 @@ ignore any drift/stretch of any kind.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="dvas.tools.sync.get_sync_shifts_from_val">
-<code class="sig-prename descclassname"><span class="pre">dvas.tools.sync.</span></code><code class="sig-name descname"><span class="pre">get_sync_shifts_from_val</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_guess</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.sync.get_sync_shifts_from_val" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="dvas.tools.sync.get_sync_shifts_from_val">
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.sync.</span></span><span class="sig-name descname"><span class="pre">get_sync_shifts_from_val</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_guess</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.sync.get_sync_shifts_from_val" title="Permalink to this definition">¶</a></dt>
 <dd><p>Estimates the shifts required to synchronize profiles, such that &lt;abs(val_A-val_B)&gt; is
 minimized.</p>
 <dl class="field-list simple">
@@ -370,8 +374,8 @@ Defaults to None.</p></li>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>This module contains low-level, stand-alone, dvas tools.</p>
 <dl class="py function">
-<dt id="dvas.tools.tools.fancy_nansum">
-<code class="sig-prename descclassname"><span class="pre">dvas.tools.tools.</span></code><code class="sig-name descname"><span class="pre">fancy_nansum</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.tools.fancy_nansum" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="dvas.tools.tools.fancy_nansum">
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.tools.</span></span><span class="sig-name descname"><span class="pre">fancy_nansum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.tools.fancy_nansum" title="Permalink to this definition">¶</a></dt>
 <dd><p>A custom nansum routine that treats NaNs as zeros, unless the data contains <em>only</em> NaNs,
 if which case it returns a NaN.</p>
 <dl class="field-list simple">
@@ -420,8 +424,8 @@ if which case it returns a NaN.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="dvas.tools.tools.df_to_chunks">
-<code class="sig-prename descclassname"><span class="pre">dvas.tools.tools.</span></code><code class="sig-name descname"><span class="pre">df_to_chunks</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.tools.df_to_chunks" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="dvas.tools.tools.df_to_chunks">
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.tools.</span></span><span class="sig-name descname"><span class="pre">df_to_chunks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.tools.df_to_chunks" title="Permalink to this definition">¶</a></dt>
 <dd><p>A utility function that breaks a Pandas dataframe into chunks of a specified size.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

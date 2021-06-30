@@ -29,6 +29,14 @@ dvas.dvas module
    :undoc-members:
    :show-inheritance:
 
+dvas.dynamic module
+-------------------
+
+.. automodule:: dvas.dynamic
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dvas.environ module
 -------------------
 

@@ -1,0 +1,18 @@
+dvas\_recipes.demo package
+==========================
+
+.. automodule:: dvas_recipes.demo
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+dvas\_recipes.demo.demo module
+------------------------------
+
+.. automodule:: dvas_recipes.demo.demo
+   :members:
+   :undoc-members:
+   :show-inheritance:

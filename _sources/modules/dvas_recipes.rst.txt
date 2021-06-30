@@ -12,10 +12,19 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   dvas_recipes.demo
    dvas_recipes.uaii22
 
 Submodules
 ----------
+
+dvas\_recipes.dynamic module
+----------------------------
+
+.. automodule:: dvas_recipes.dynamic
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 dvas\_recipes.errors module
 ---------------------------
@@ -25,18 +34,26 @@ dvas\_recipes.errors module
    :undoc-members:
    :show-inheritance:
 
-dvas\_recipes.hardcoded module
-------------------------------
+dvas\_recipes.hl\_commands module
+---------------------------------
 
-.. automodule:: dvas_recipes.hardcoded
+.. automodule:: dvas_recipes.hl_commands
    :members:
    :undoc-members:
    :show-inheritance:
 
-dvas\_recipes.initialize module
--------------------------------
+dvas\_recipes.recipe module
+---------------------------
 
-.. automodule:: dvas_recipes.initialize
+.. automodule:: dvas_recipes.recipe
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas\_recipes.utils module
+--------------------------
+
+.. automodule:: dvas_recipes.utils
    :members:
    :undoc-members:
    :show-inheritance:

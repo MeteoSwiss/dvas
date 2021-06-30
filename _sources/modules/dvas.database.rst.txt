@@ -17,10 +17,26 @@ dvas.database.database module
    :undoc-members:
    :show-inheritance:
 
+dvas.database.explorer module
+-----------------------------
+
+.. automodule:: dvas.database.explorer
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dvas.database.model module
 --------------------------
 
 .. automodule:: dvas.database.model
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas.database.search module
+---------------------------
+
+.. automodule:: dvas.database.search
    :members:
    :undoc-members:
    :show-inheritance:

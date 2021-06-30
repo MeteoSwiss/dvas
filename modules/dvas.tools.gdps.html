@@ -13,6 +13,8 @@
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
 
   
   
@@ -29,6 +31,7 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
@@ -63,7 +66,7 @@
             
             
               <div class="version">
-                0.3.0
+                0.4.0
               </div>
             
           
@@ -88,8 +91,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">Table of contents</span></p>
-<ul class="current">
+              <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Home</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../running_recipes.html">Running dvas recipes</a></li>
@@ -112,6 +114,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="dvas.html#submodules">Submodules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.dvas">dvas.dvas module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.dynamic">dvas.dynamic module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.environ">dvas.environ module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.errors">dvas.errors module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.hardcoded">dvas.hardcoded module</a></li>
@@ -206,130 +209,16 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-dvas.tools.gdps.gdps">
-<span id="dvas-tools-gdps-gdps-module"></span><h2>dvas.tools.gdps.gdps module<a class="headerlink" href="#module-dvas.tools.gdps.gdps" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-dvas.tools.gdps.correlations">
+<span id="dvas-tools-gdps-correlations-module"></span><h2>dvas.tools.gdps.correlations module<a class="headerlink" href="#module-dvas.tools.gdps.correlations" title="Permalink to this headline">¶</a></h2>
 <p>Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
-<p>This module contains GRUAN-related routines, including correlation rules for GDP uncertainties.</p>
+<p>This module contains GRUAN-correlations-related utilities, including the means to compute
+correlation coefficients.</p>
 <dl class="py function">
-<dt id="dvas.tools.gdps.gdps.combine">
-<code class="sig-prename descclassname"><span class="pre">dvas.tools.gdps.gdps.</span></code><code class="sig-name descname"><span class="pre">combine</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdp_prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'weighted</span> <span class="pre">mean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cpus</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gdps.gdps.combine" title="Permalink to this definition">¶</a></dt>
-<dd><p>Combines and (possibly) rebins GDP profiles, with full error propagation.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This function requires profiles that have been resampled (if applicable) and synchronized
-beforehand. This implies that the <cite>_idx</cite> index must be identical for all Profiles.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>gdp_profs</strong> (<em>dvas.data.data.MultiGDPProfile</em>) – synchronized GDP profiles to combine.</p></li>
-<li><p><strong>binning</strong> (<em>int, optional</em>) – the number of profile steps to put into a bin. Defaults to 1.</p></li>
-<li><p><strong>method</strong> (<em>str, optional</em>) – combination rule. Can be one of
-[‘weighted mean’, ‘mean’, or ‘delta’]. Defaults to ‘weighted mean’.</p></li>
-<li><p><strong>chunk_size</strong> (<em>int, optional</em>) – to speed up computation, Profiles get broken up in chunks of
-that length. The larger the chunks, the larger the memory requirements. The smaller the
-chunks the more items to process. Defaults to 200.</p></li>
-<li><p><strong>n_cpus</strong> (<em>int|str, optional</em>) – number of cpus to use. Can be a number, or ‘max’. Set to 1 to
-disable multiprocessing. Defaults to 1.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>(dvas.data.data.MultiGDPProfile)</em> – the combined GDP profile.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</div>
-<div class="section" id="module-dvas.tools.gdps.stats">
-<span id="dvas-tools-gdps-stats-module"></span><h2>dvas.tools.gdps.stats module<a class="headerlink" href="#module-dvas.tools.gdps.stats" title="Permalink to this headline">¶</a></h2>
-<p>Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.</p>
-<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
-<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
-<p>This module contains statistical routines and tools for handling GDPs.</p>
-<dl class="py function">
-<dt id="dvas.tools.gdps.stats.ks_test">
-<code class="sig-prename descclassname"><span class="pre">dvas.tools.gdps.stats.</span></code><code class="sig-name descname"><span class="pre">ks_test</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdp_pair</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0027</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cpus</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gdps.stats.ks_test" title="Permalink to this definition">¶</a></dt>
-<dd><p>Runs a <code class="docutils literal notranslate"><span class="pre">scipy.stats.kstest()</span></code> two-sided test on the normalized-delta between two
-GDPProfile instances, against a normal distribution.</p>
-<p>The KS test is being run on a level-pre-level basis.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>See the dvas documentation for more details about the scientific motivation for this
-function.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>gdp_pair</strong> (<em>list of dvas.data.strategy.data.GDPProfile</em>) – GDP Profiles to compare.</p></li>
-<li><p><strong>alpha</strong> (<em>float, optional</em>) – The significance level for the KS test. Must be 0&lt;alpha&lt;1.
-Defaults to 0.27%.</p></li>
-<li><p><strong>binning</strong> (<em>int, optional</em>) – Whether to bin the Profile delta before running the KS test.
-Defaults to 1 (=no binning).</p></li>
-<li><p><strong>n_cpus</strong> (<em>int|str, optional</em>) – number of cpus to use. Can be a number, or ‘max’. Set to 1 to
-disable multiprocessing. Defaults to 1.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>pandas DataFrame</em> – a DataFrame containing k_pqi, p_ksi, and f_pqi values. k_pqi contains the
-(binned) profile delta normalized by the total uncertainty. p_ksi contains the
-corresponding p-value from the KS test. f_pqi contains 1 where the KS test failed, and
-0 otherwise. That is: 1 &lt;=&gt; the p-value of the KS test is &lt;= alpha.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="dvas.tools.gdps.stats.get_incompatibility">
-<code class="sig-prename descclassname"><span class="pre">dvas.tools.gdps.stats.</span></code><code class="sig-name descname"><span class="pre">get_incompatibility</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdp_prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0027</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_sizes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rolling_flags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cpus</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gdps.stats.get_incompatibility" title="Permalink to this definition">¶</a></dt>
-<dd><p>Runs a series of KS tests to assess the consistency of several GDP profiles.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>gdp_profs</strong> (<em>dvas.data.data.MultiGDPProfile</em>) – synchronized GDP profiles to check.</p></li>
-<li><p><strong>alpha</strong> (<em>float, optional</em>) – The significance level for the KS test. Defaults to 0.27%</p></li>
-<li><p><strong>bin_sizes</strong> (<em>ndarray of int, optional</em>) – The rolling binning sizes. Defaults to [1].</p></li>
-<li><p><strong>rolling_flags</strong> (<em>bool, optional</em>)</p></li>
-<li><p><strong>do_plot</strong> (<em>bool, optional</em>) – Whether to create the diagnostic plot, or not. Defaults to False.</p></li>
-<li><p><strong>n_cpus</strong> (<em>int|str, optional</em>) – number of cpus to use. Can be a number, or ‘max’. Set to 1 to
-disable multiprocessing. Defaults to 1.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><em>dict of ndarray of bool</em> –</p>
-<dl class="simple">
-<dt>list of pair-wise incompatible measurements between GDPs.</dt><dd><p>Each distionary entry is labeled: “oid_1__vs__oid_2”, to identify the profile pair.
-True  indicates that the p-value of the KS test is &lt;= alpha for a specific measurement.</p>
-</dd>
-</dl>
-</p>
-</dd>
-</dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The diagnostic plot will be generated only if a binning of 1 is included in the
-binning_list.</p>
-</div>
-<div class="admonition-todo admonition" id="id1">
-<p class="admonition-title">Todo</p>
-<ul class="simple">
-<li><p>When rolling, take into account the previously flagged data point.</p></li>
-<li><p>Deal with the plot tag.</p></li>
-</ul>
-</div>
-</dd></dl>
-
-</div>
-<div class="section" id="module-dvas.tools.gdps.utils">
-<span id="dvas-tools-gdps-utils-module"></span><h2>dvas.tools.gdps.utils module<a class="headerlink" href="#module-dvas.tools.gdps.utils" title="Permalink to this headline">¶</a></h2>
-<p>Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.</p>
-<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
-<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
-<p>This module contains GRUAN-related utilities.</p>
-<dl class="py function">
-<dt id="dvas.tools.gdps.utils.corcoefs">
-<code class="sig-prename descclassname"><span class="pre">dvas.tools.gdps.utils.</span></code><code class="sig-name descname"><span class="pre">corcoefs</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oid_i</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oid_j</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mid_i</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mid_j</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rid_i</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rid_j</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eid_i</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eid_j</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gdps.utils.corcoefs" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="dvas.tools.gdps.correlations.coeffs">
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.gdps.correlations.</span></span><span class="sig-name descname"><span class="pre">coeffs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oid_i</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oid_j</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mid_i</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mid_j</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rid_i</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rid_j</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eid_i</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eid_j</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gdps.correlations.coeffs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the correlation coefficient(s), for the different uncertainty types of GRUAN Data
 Products (GDPs), between specific measurements.</p>
 <dl class="field-list simple">
@@ -385,8 +274,8 @@ irrespective of the time step/altitude, rig, radiosonde model, or serial number.
 </dl>
 </li>
 <li><dl class="simple">
-<dt>‘uct’: temporal-correlated uncertainty.</dt><dd><p>Full correlation between measurements acquired at distinct sites during distinct events,
-with distinct radiosondes models and serial numbers.</p>
+<dt>‘uct’: temporal-correlated uncertainty.</dt><dd><p>Full correlation between measurements acquired at distinct sites during distinct
+events, with distinct radiosondes models and serial numbers.</p>
 </dd>
 </dl>
 </li>
@@ -396,7 +285,7 @@ with distinct radiosondes models and serial numbers.</p>
 </dl>
 </li>
 </ul>
-<div class="admonition-todo admonition" id="id2">
+<div class="admonition-todo admonition" id="id1">
 <p class="admonition-title">Todo</p>
 <ul class="simple">
 <li><p>Add reference to GRUAN docs &amp; dvas articles in this docstring.</p></li>
@@ -404,9 +293,153 @@ with distinct radiosondes models and serial numbers.</p>
 </div>
 </dd></dl>
 
+</div>
+<div class="section" id="module-dvas.tools.gdps.gdps">
+<span id="dvas-tools-gdps-gdps-module"></span><h2>dvas.tools.gdps.gdps module<a class="headerlink" href="#module-dvas.tools.gdps.gdps" title="Permalink to this headline">¶</a></h2>
+<p>Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<p>This module contains GRUAN-related routines, including correlation rules for GDP uncertainties.</p>
 <dl class="py function">
-<dt id="dvas.tools.gdps.utils.weighted_mean">
-<code class="sig-prename descclassname"><span class="pre">dvas.tools.gdps.utils.</span></code><code class="sig-name descname"><span class="pre">weighted_mean</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_chunk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gdps.utils.weighted_mean" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="dvas.tools.gdps.gdps.combine">
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.gdps.gdps.</span></span><span class="sig-name descname"><span class="pre">combine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdp_prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'weighted</span> <span class="pre">mean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_flgs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">150</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cpus</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gdps.gdps.combine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Combines and (possibly) rebins GDP profiles, with full error propagation.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function requires profiles that have been resampled (if applicable) and synchronized
+beforehand. This implies that the <cite>_idx</cite> index must be identical for all Profiles.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gdp_profs</strong> (<em>dvas.data.data.MultiGDPProfile</em>) – synchronized GDP profiles to combine.</p></li>
+<li><p><strong>binning</strong> (<em>int, optional</em>) – the number of profile steps to put into a bin. Defaults to 1.</p></li>
+<li><p><strong>method</strong> (<em>str, optional</em>) – combination rule. Can be one of
+[‘weighted mean’, ‘mean’, or ‘delta’]. Defaults to ‘weighted mean’.</p></li>
+<li><p><strong>mask_flgs</strong> (<em>str|list of str, optional</em>) – (list of) flag(s) to ignore when combining profiles.</p></li>
+<li><p><strong>chunk_size</strong> (<em>int, optional</em>) – to speed up computation, Profiles get broken up in chunks of
+that length. The larger the chunks, the larger the memory requirements. The smaller the
+chunks the more items to process. Defaults to 150.</p></li>
+<li><p><strong>n_cpus</strong> (<em>int|str, optional</em>) – number of cpus to use. Can be a number, or ‘max’. Set to 1 to
+disable multiprocessing. Defaults to 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>(dvas.data.data.MultiGDPProfile)</em> – the combined GDP profile.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-dvas.tools.gdps.stats">
+<span id="dvas-tools-gdps-stats-module"></span><h2>dvas.tools.gdps.stats module<a class="headerlink" href="#module-dvas.tools.gdps.stats" title="Permalink to this headline">¶</a></h2>
+<p>Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<p>This module contains statistical routines and tools for handling GDPs.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="dvas.tools.gdps.stats.ks_test">
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.gdps.stats.</span></span><span class="sig-name descname"><span class="pre">ks_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdp_pair</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0027</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gdps.stats.ks_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs a <code class="docutils literal notranslate"><span class="pre">scipy.stats.kstest()</span></code> two-sided test on the normalized-delta between two
+GDPProfile instances, against a normal distribution.</p>
+<p>The KS test is being run on a level-per-level basis.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>See the dvas documentation for more details about the scientific motivation for this
+function.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gdp_pair</strong> (<em>list of dvas.data.strategy.data.GDPProfile</em>) – GDP Profiles to compare.</p></li>
+<li><p><strong>alpha</strong> (<em>float, optional</em>) – The significance level for the KS test. Must be 0&lt;alpha&lt;1.
+Defaults to 0.27%=0.0027.</p></li>
+<li><p><strong>m_val</strong> (<em>int, optional</em>) – Binning strength for the Profile delta (Important: the binning is
+performed before running the KS test). Defaults to 1 (=no binning).</p></li>
+<li><p><strong>**kwargs</strong> – mask_flgs and/or n_cpus and/or chunk_size, that will get fed to
+dvas.tools.gdps.gdps.combine().</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>pandas DataFrame</em> – a DataFrame containing k_pqi, p_ksi, and f_pqi values. k_pqi contains the
+(binned) profile delta normalized by the total uncertainty. p_ksi contains the
+corresponding p-value from the KS test. f_pqi contains 1 where the KS test failed, and
+0 otherwise. That is: 1 &lt;=&gt; the p-value of the KS test is &lt;= alpha.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dvas.tools.gdps.stats.gdp_incompatibilities">
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.gdps.stats.</span></span><span class="sig-name descname"><span class="pre">gdp_incompatibilities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdp_prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0027</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_vals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rolling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn_suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gdps.stats.gdp_incompatibilities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs a series of KS tests to assess the consistency of several GDP profiles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gdp_prfs</strong> (<em>dvas.data.data.MultiGDPProfile</em>) – synchronized GDP profiles to check.</p></li>
+<li><p><strong>alpha</strong> (<em>float, optional</em>) – The significance level for the KS test. Defaults to 0.27%</p></li>
+<li><p><strong>m_vals</strong> (<em>ndarray of int, optional</em>) – The rolling binning sizes “m”. Defaults to None==[1].</p></li>
+<li><p><strong>rolling</strong> (<em>bool, optional</em>) – if True and len(m_vals)&gt;1, any incompatibility found
+for a specific m value will be forwarded to the subsequent ones. Else, each m value
+is treated independantly. Defaults to True. If rolling is True, the order of the
+m_vals list thus matters.</p></li>
+<li><p><strong>do_plot</strong> (<em>bool, optional</em>) – Whether to create the diagnostic plot, or not. Defaults to False.</p></li>
+<li><p><strong>fn_prefix</strong> (<em>str, optional</em>) – if set, the prefix of the plot filename.</p></li>
+<li><p><strong>fn_suffix</strong> (<em>str, optional</em>) – if set, the suffix of the plot filename.</p></li>
+<li><p><strong>**kwargs</strong> – n_cpus and/or chunk_size, that will get fed to dvas.tools.gdps.gdps.combine().</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><em>pd.DataFrame</em> –</p>
+<dl class="simple">
+<dt>the values of k_pqi, p_ksi and f_pqi for each pair of GDPs and each m value.</dt><dd><p>GDP pairs are identified using their oids, as: <cite>oid_1_vs_oid_2</cite>.
+f_pqi==1 indicates that the p-value of the KS test is &lt;= alpha for this measurement,
+i.e. that the profiles are incompatible.</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dvas.tools.gdps.stats.gdp_validities">
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.gdps.stats.</span></span><span class="sig-name descname"><span class="pre">gdp_validities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">incompat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_vals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strategy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all-or-none'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gdps.stats.gdp_validities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given GDP incompatibilities, identifies valid measurements (suitable for the assembly of a
+combined working standard) given a specific combination strategy.</p>
+<dl class="simple">
+<dt>Valid strategies include:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>‘all-or-none’: either all GDP measurements from a certain bin are compatible with each</dt><dd><p>others, or all of them are dropped.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>incompat</strong> (<em>dict</em>) – outcome of dvas.tools.gdps.stats.gdp_incompatibilities().</p></li>
+<li><p><strong>m_vals</strong> (<em>list of int, oprtional</em>) – list of m values to take into account when checking
+incompatibilities. Defaults to None = [1].</p></li>
+<li><p><strong>strategy</strong> (<em>str, optional</em>) – name of a validation strategy. Defaults to ‘all-or-none’.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-dvas.tools.gdps.utils">
+<span id="dvas-tools-gdps-utils-module"></span><h2>dvas.tools.gdps.utils module<a class="headerlink" href="#module-dvas.tools.gdps.utils" title="Permalink to this headline">¶</a></h2>
+<p>Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<p>This module contains GRUAN-related utilities.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="dvas.tools.gdps.utils.weighted_mean">
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.gdps.utils.</span></span><span class="sig-name descname"><span class="pre">weighted_mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_chunk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gdps.utils.weighted_mean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the (respective) weighted mean of the ‘tdt’, ‘val’, and ‘alt’ columns of a
 pd.DataFrame, with weights defined in the ‘w_ps’ column. Also returns the Jacobian matrix for
 <cite>val</cite> to enable accurate error propagation.</p>
@@ -447,8 +480,8 @@ See fancy_nansum() for details.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="dvas.tools.gdps.utils.delta">
-<code class="sig-prename descclassname"><span class="pre">dvas.tools.gdps.utils.</span></code><code class="sig-name descname"><span class="pre">delta</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_chunk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gdps.utils.delta" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="dvas.tools.gdps.utils.delta">
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.gdps.utils.</span></span><span class="sig-name descname"><span class="pre">delta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_chunk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gdps.utils.delta" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the delta of the ‘tdt’, ‘val’, and ‘alt’ columns of a pd.DataFrame containing
 exactly 2 Profiles. Also returns the Jacobian matrix for <cite>val</cite> to enable accurate error
 propagation.</p>
@@ -489,8 +522,8 @@ See fancy_nansum() for details.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="dvas.tools.gdps.utils.process_chunk">
-<code class="sig-prename descclassname"><span class="pre">dvas.tools.gdps.utils.</span></code><code class="sig-name descname"><span class="pre">process_chunk</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_chunk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'weighted</span> <span class="pre">mean'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gdps.utils.process_chunk" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="dvas.tools.gdps.utils.process_chunk">
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.gdps.utils.</span></span><span class="sig-name descname"><span class="pre">process_chunk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_chunk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'weighted</span> <span class="pre">mean'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gdps.utils.process_chunk" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process a DataFrame chunk and propagate the errors.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>

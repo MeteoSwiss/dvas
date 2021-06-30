@@ -17,10 +17,10 @@ dvas.config.definitions.csvorigmeta module
    :undoc-members:
    :show-inheritance:
 
-dvas.config.definitions.flag module
------------------------------------
+dvas.config.definitions.flg module
+----------------------------------
 
-.. automodule:: dvas.config.definitions.flag
+.. automodule:: dvas.config.definitions.flg
    :members:
    :undoc-members:
    :show-inheritance:

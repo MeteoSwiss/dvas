@@ -6,10 +6,29 @@ dvas\_recipes.uaii22 package
    :undoc-members:
    :show-inheritance:
 
-Subpackages
------------
+Submodules
+----------
 
-.. toctree::
-   :maxdepth: 4
+dvas\_recipes.uaii22.gdps module
+--------------------------------
 
-   dvas_recipes.uaii22.src
+.. automodule:: dvas_recipes.uaii22.gdps
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas\_recipes.uaii22.plots module
+---------------------------------
+
+.. automodule:: dvas_recipes.uaii22.plots
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas\_recipes.uaii22.sync module
+--------------------------------
+
+.. automodule:: dvas_recipes.uaii22.sync
+   :members:
+   :undoc-members:
+   :show-inheritance:

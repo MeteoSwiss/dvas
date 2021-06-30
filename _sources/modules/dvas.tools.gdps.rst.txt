@@ -9,6 +9,14 @@ dvas.tools.gdps package
 Submodules
 ----------
 
+dvas.tools.gdps.correlations module
+-----------------------------------
+
+.. automodule:: dvas.tools.gdps.correlations
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dvas.tools.gdps.gdps module
 ---------------------------
 
