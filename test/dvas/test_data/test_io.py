@@ -24,16 +24,16 @@ def test_update_db():
     """Test update_db function"""
 
     # Update
-    update_db('trepros1', strict=True)
-    update_db('trepros1_flag', strict=True)
-    update_db('tdtpros1', strict=True)
-    update_db('altpros1', strict=True)
+    update_db('temp', strict=True)
+    update_db('temp_flag', strict=True)
+    update_db('time', strict=True)
+    update_db('gph', strict=True)
 
     # Load
     prf_stgy = LoadRSProfileStrategy()
     data = prf_stgy.execute(
-        "tags('raw')", 'trepros1', 'tdtpros1',
-        alt_abbr='altpros1'
+        "tags('raw')", 'temp', 'time',
+        alt_abbr='gph'
     )
 
     assert all([not arg.val.isna().all() for arg in data[0]])

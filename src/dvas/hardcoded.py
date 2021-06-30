@@ -37,7 +37,7 @@ GDP_FILE_EXT = 'nc'
 CSV_FILE_EXT = ['csv', 'txt', 'cor']
 
 #: list of str: Flag data file extension
-FLAG_FILE_EXT = ['flg']
+FLG_FILE_EXT = ['flg']
 
 #: list of str: Config file extension
 CONFIG_FILE_EXT = ['yml', 'yaml']
@@ -52,10 +52,10 @@ RID_PAT = r'^r:\w+$'
 PRF_REF_INDEX_NAME = '_idx'
 
 #: str: Suffix used for flag parameter's name or file's name
-FLAG_PRM_NAME_SUFFIX = '_flag'
+FLG_PRM_NAME_SUFFIX = '_flag'
 
 #: str: Suffix used for flag parameter's desc
-FLAG_PRM_DESC_PREFIX = 'Flag of '
+FLG_PRM_DESC_PREFIX = 'Flag of '
 
 
 # Models
@@ -72,13 +72,13 @@ GDP_FILE_MDL_PAT = r"^[A-Z]{3}\-[A-Z]{2}\-\d{2}\_\d\_([\w\-]+\_\d{3})\_\d{8}T"
 # Parameters
 # ----------
 #: str: Parameter pattern (e.g. tre200s0, uorpros1, uorprosu_r)
-PRM_PAT = rf"{RE_LOWER_W}+(({RE_LOWER_W})|([\_]))*(?:(?<!{FLAG_PRM_NAME_SUFFIX}))"
+PRM_PAT = rf"{RE_LOWER_W}+(({RE_LOWER_W})|([\_]))*(?:(?<!{FLG_PRM_NAME_SUFFIX}))"
 
 #: str: Flag parameter pattern (e.g. tre200s0, tre200s0_flag, uorpros1, uorpros1_flag)
-FLAG_PRM_PAT = rf"{RE_LOWER_W}+(({RE_LOWER_W})|([\_]))*(?:(?<={FLAG_PRM_NAME_SUFFIX}))"
+FLG_PRM_PAT = rf"{RE_LOWER_W}+(({RE_LOWER_W})|([\_]))*(?:(?<={FLG_PRM_NAME_SUFFIX}))"
 
 #: str: Parameter and flag parameter pattern (e.g. tre200s0, tre200s0_flag, uorpros1, uorpros1_flag)
-PRM_AND_FLAG_PRM_PAT = rf"(?:(({PRM_PAT})|({FLAG_PRM_PAT})))"
+PRM_AND_FLG_PRM_PAT = rf"(?:(({PRM_PAT})|({FLG_PRM_PAT})))"
 
 
 # DataFrame columns

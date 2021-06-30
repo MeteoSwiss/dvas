@@ -17,6 +17,7 @@ from pytest_data import use_data
 from dvas.data.linker import LocalDBLinker
 from dvas.data.linker import CSVHandler, GDPHandler
 from dvas.environ import path_var
+from dvas.config.config import OrigData
 
 
 # Define db_data
@@ -26,7 +27,7 @@ db_data = {
         {
             'index': np.array([0, 1, 2]),
             'value': val,
-            'prm_name': 'trepros1',
+            'prm_name': 'temp',
             'info': {
                 'edt': dt,
                 'mdl_name': 'YT',
@@ -46,13 +47,17 @@ db_data = {
 class TestFileHandle:
     """Test FileHandle class"""
 
+    # Init orig data config
+    origdata_config_mngr = OrigData()
+    origdata_config_mngr.read()
+
     @use_data(db_data={'sub_dir': 'test_filehandle'})
     def test_handle(self):
         """Test handle method"""
 
         # Define
-        csv_handler = CSVHandler()
-        gdp_handler = GDPHandler()
+        csv_handler = CSVHandler(self.origdata_config_mngr)
+        gdp_handler = GDPHandler(self.origdata_config_mngr)
 
         csv_file_path = list(path_var.orig_data_path.rglob('*.csv'))[0]
         gdp_file_path = list(path_var.orig_data_path.rglob('*.nc'))[0]
@@ -64,7 +69,7 @@ class TestFileHandle:
         }
 
         # Read csv file
-        csv_res = csv_handler.handle(csv_file_path, 'trepros1')
+        csv_res = csv_handler.handle(csv_file_path, 'temp')
 
         # Test key
         assert isinstance(csv_res, dict)
@@ -74,22 +79,26 @@ class TestFileHandle:
         )
 
         # Read gdp file
-        gdp_res = gdp_handler.handle(gdp_file_path, 'trepros1')
+        gdp_res = gdp_handler.handle(gdp_file_path, 'temp')
 
         # Test key
         assert isinstance(gdp_res, dict)
         assert res_fmt.keys() == gdp_res.keys()
         assert all(
-            [isinstance(gdp_res[key], val)for key, val in res_fmt.items()]
+            [isinstance(gdp_res[key], val) for key, val in res_fmt.items()]
         )
+
+        # Test load of missing parameter
+        res_missing = gdp_handler.handle(gdp_file_path, 'temp_missing')
+        assert len(res_missing['value']) == 0
 
     @use_data(db_data={'sub_dir': 'test_filehandle'})
     def test_set_next(self):
         """Test set_next method"""
 
         # Define
-        handler1 = CSVHandler()
-        res = handler1.set_next(GDPHandler())
+        handler1 = CSVHandler(self.origdata_config_mngr)
+        res = handler1.set_next(GDPHandler(self.origdata_config_mngr))
 
         # Test return
         assert isinstance(res, GDPHandler)

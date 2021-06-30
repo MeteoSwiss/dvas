@@ -29,5 +29,8 @@ src/dvas/data           @modolol
 # All database
 src/dvas/database       @modolol
 
-# All UAII22 high-level scripts
-src/dvas_recipes/uaii22 @fpavogt
+# dvas demo
+src/dvas_demo           @fpavogt
+
+# dvas recipes
+src/dvas_recipes        @fpavogt

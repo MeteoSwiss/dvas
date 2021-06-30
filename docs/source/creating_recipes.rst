@@ -9,11 +9,17 @@ processing recipes, or create their own.
 .. hint::
 
     If you plan on coding with dvas, we strongly suggest that you begin by taking a look at the
-    `contributing guidelines <https://github.com/MeteoSwiss-MDA/dvas/blob/develop/CONTRIBUTING.md>`_
+    `contributing guidelines <https://github.com/MeteoSwiss/dvas/blob/develop/CONTRIBUTING.md>`_
     on Github. Even if you do not want to share your modifications (which is totally fine !), these
     guidelines contain critical information regarding the structure and spirit of the code.
 
+Assuming that you have initialized a new dvas processing arena using the ``dvas_init_arena`` entry
+point, take a look at ``demo_script.py``. This Python script, which we suggest you run from inside
+a Python shell (using ``run demo_script.py``), illustrates the main functions and tools of the core
+dvas sub-package. It is therefore an excellent place to familiarize yourself with the dvas spirit.
 
+
+** AND NOW FOR A BIG PILE OF IMPORTANT INFO THAT NEEDS TO BE SORTED ...**
 
 Naming conventions
 ------------------
@@ -38,17 +44,23 @@ Default database variable names
 The following names can be altered by the users in the different config files. These are the ones
 implemented by defaults. They follow MeteoSwiss conventions:
 
-    * ``altpros1``: altitude
-    * ``trepros1``: temperature
-    * ``trepros_r``: rig-uncorrelated temperature uncertainty
-    * ``trepros_s``: spatial-correlated temperature uncertainty
-    * ``trepros_t``: temporal-correlated temperature uncertainty
+    * ``time``: time since launch
+    * ``gph``: geopotential height
+    * ``temp``: temperature
+    * ``rh``: relative humidty
+    * ``pres``: pressure
+    * ``wdir``: wind direction
+    * ``wspeed``: wind speed
+    * ``xxx_ucr``: rig-uncorrelated uncertainty of xxx
+    * ``xxx_ucs``: spatial-correlated uncertainty of xxx
+    * ``xxx_uct``: temporal-correlated uncertainty of xxx
+    * ``xxx_ucu``: true uncorrelated uncertainty of xxx
 
 Parameter names
 ...............
 
 For instances of `Profile`, `MultiProfile`, and their children, the following parameter (`prm`)
-names are applicable:
+names are applicable (as defined in `dvas.hardcoded`):
 
    * ``val``: primary Profile value
    * ``alt``: altitude
@@ -134,7 +146,6 @@ Here's a few things you can do as a dvas user to control the general plotting be
     dpu.PLOT_FMTS = ['png', 'pdf']
     # If you do not want to save anything, set:
     #dpu.PLOT_FMTS = []
-
 
 
 Each plotting function can also be fed a series of ``**kwargs`` keywords arguments. The following

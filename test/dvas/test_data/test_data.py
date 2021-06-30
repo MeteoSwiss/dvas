@@ -23,7 +23,7 @@ def mlt_prf():
     """# Load multiprofile"""
     mlt_prf = MultiRSProfile()
     prf_stgy = LoadRSProfileStrategy()
-    data = prf_stgy.execute("all()", 'trepros1', 'tdtpros1', alt_abbr='altpros1')
+    data = prf_stgy.execute("all()", 'temp', 'time', alt_abbr='gph')
     mlt_prf.update(data[1], data[0])
     return mlt_prf
 
@@ -32,7 +32,7 @@ def mlt_gdpprf():
     """# Load multiprofile"""
     mlt_gdpprf = MultiGDPProfile()
     prf_stgy = LoadGDPProfileStrategy()
-    data = prf_stgy.execute("all()", 'trepros1', 'tdtpros1', alt_abbr='altpros1',
+    data = prf_stgy.execute("all()", 'temp', 'time', alt_abbr='gph',
                             ucr_abbr='ucr1', ucs_abbr='ucs1', uct_abbr='uct1', ucu_abbr='ucu1')
     mlt_gdpprf.update(data[1], data[0])
     return mlt_gdpprf
@@ -52,7 +52,7 @@ db_data = {
                        'metadata': {},
                        'src': ''},
              } for (ind, dt) in enumerate(['20200101T0000Z', '20200202T0000Z'])
-             for prm in ['trepros1', 'altpros1', 'trepros1_flag', 'tdtpros1', 'ucr1', 'ucs1',
+             for prm in ['temp', 'gph', 'temp_flag', 'time', 'ucr1', 'ucs1',
                          'uct1', 'ucu1']
             ]
 }
@@ -117,6 +117,23 @@ class TestMutliProfile:
         # Try to get an index out.
         out = mlt_gdpprf.get_prms(prm_list='alt')
         assert np.unique(out.columns.get_level_values('prm')) == 'alt'
+
+        # Try to get masked data
+        # First, set the mask, so I am sure it is there
+        mlt_gdpprf[0].set_flg('user_qc', True, [0])
+        out_msk = mlt_gdpprf.get_prms(prm_list='val', mask_flgs='user_qc')
+        # Then unset it, to see if I can see the data again ...
+        mlt_gdpprf[0].set_flg('user_qc', False, [0])
+        out_nomsk = mlt_gdpprf.get_prms(prm_list='val', mask_flgs='user_qc')
+
+        #Check that data was masked as I expected
+        assert np.isnan(out_msk[0]['val'][0])
+        assert not np.isnan(out_nomsk[0]['val'][0])
+
+        # Now check what happens in case I ask for an index, especially a time delta
+        mlt_gdpprf[0].set_flg('user_qc', True, [0])
+        out_msk = mlt_gdpprf.get_prms(prm_list='tdt', mask_flgs='user_qc')
+        assert pd.isnull(out_msk[0]['tdt'][0])
 
     def test_rm_info_tags(self, mlt_prf):
         """Test rm_info_tags method"""
@@ -186,9 +203,9 @@ class TestMutliProfile:
         mlt_prf_1 = MultiRSProfile()
 
         # Load from db
-        res = mlt_prf_1.load_from_db('all()', 'trepros1', 'tdtpros1', alt_abbr='altpros1')
-        mlt_prf_2 = MultiRSProfile().load_from_db('all()', 'trepros1', 'tdtpros1',
-                                                  alt_abbr='altpros1', inplace=False)
+        res = mlt_prf_1.load_from_db('all()', 'temp', 'time', alt_abbr='gph')
+        mlt_prf_2 = MultiRSProfile().load_from_db('all()', 'temp', 'time',
+                                                  alt_abbr='gph', inplace=False)
 
         # Test inplace = True
         assert res is None

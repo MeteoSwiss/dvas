@@ -31,7 +31,7 @@ from ...data.strategy.data import GDPProfile
 from ...database.database import InfoManager
 
 @log_func_call(logger)
-def combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=1):
+def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_size=150, n_cpus=1):
     ''' Combines and (possibly) rebins GDP profiles, with full error propagation.
 
     Note:
@@ -44,9 +44,10 @@ def combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=
         binning (int, optional): the number of profile steps to put into a bin. Defaults to 1.
         method (str, optional): combination rule. Can be one of
             ['weighted mean', 'mean', or 'delta']. Defaults to 'weighted mean'.
+        mask_flgs (str|list of str, optional): (list of) flag(s) to ignore when combining profiles.
         chunk_size (int, optional): to speed up computation, Profiles get broken up in chunks of
             that length. The larger the chunks, the larger the memory requirements. The smaller the
-            chunks the more items to process. Defaults to 200.
+            chunks the more items to process. Defaults to 150.
         n_cpus (int|str, optional): number of cpus to use. Can be a number, or 'max'. Set to 1 to
             disable multiprocessing. Defaults to 1.
 
@@ -56,17 +57,17 @@ def combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=
     '''
 
     # Some safety checks first of all
-    if not isinstance(binning, int):
+    if not isinstance(binning, (int, np.integer)):
         raise DvasError('Ouch! binning must be of type int, not %s' % (type(binning)))
     if binning <= 0:
         raise DvasError('Ouch! binning must be greater or equal to 1 !')
     if method not in ['weighted mean', 'mean', 'delta']:
         raise DvasError('Ouch! Method %s unsupported.' % (method))
 
-    if not isinstance(chunk_size, int):
+    if not isinstance(chunk_size, (int, np.integer)):
         raise DvasError('Ouch! chunk_size should be an int, not {}'.format(type(chunk_size)))
 
-    if not isinstance(n_cpus, int):
+    if not isinstance(n_cpus, (int, np.integer)):
         if n_cpus == 'max':
             n_cpus = mp.cpu_count()
         else:
@@ -92,12 +93,11 @@ def combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=
     n_prf = len(gdp_prfs)
 
     # How long are the profiles ?
-    # TODO: simplify this once MultiProfiles are iterable
-    len_gdps = set(len(gdp_prfs.profiles[ind].data) for ind in range(len(gdp_prfs)))
+    len_gdps = {len(prf) for prf in gdp_prfs}
 
     # Trigger an error if they do not have the same lengths.
     if len(len_gdps) > 1:
-        raise DvasError('Ouch ! GDPs must have the same length to be combined.'+
+        raise DvasError('Ouch ! GDPs must have the same length to be combined. '+
                         'Have these been synchronized ?')
 
     # Turn the set back into an int.
@@ -117,7 +117,8 @@ def combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=
     # errors.
     x_dx = gdp_prfs.get_prms([PRF_REF_ALT_NAME, PRF_REF_TDT_NAME, PRF_REF_VAL_NAME,
                               PRF_REF_FLG_NAME, PRF_REF_UCR_NAME, PRF_REF_UCS_NAME,
-                              PRF_REF_UCT_NAME, PRF_REF_UCU_NAME, 'uc_tot'])
+                              PRF_REF_UCT_NAME, PRF_REF_UCU_NAME, 'uc_tot'],
+                              mask_flgs=mask_flgs)
 
     # I also need to extract some of the metadata required for computing cross-correlations.
     # Let's add it to the common DataFrame so I can carry it all in one go.
@@ -174,8 +175,10 @@ def combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=
     # Re-assemble all the chunks into one DataFrame.
     proc_chunk = pd.concat(proc_chunks, axis=0)
 
-    # TODO: fix this once the flags are operational
-    proc_chunk.loc[:, 'flg'] = 64
+    # Set the intiial flags of the combined profile.
+    # Should I actually be setting any ? E.g. to make the difference between True NaN's and
+    # Compatibility NaN's ? Can I even do that in here ?
+    proc_chunk.loc[:, 'flg'] = 0
 
     # Almost there. Now we just need to package this into a clean MultiGDPProfile
     # Let's first prepare the info dict

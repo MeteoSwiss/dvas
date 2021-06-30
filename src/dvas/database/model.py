@@ -20,7 +20,7 @@ from peewee import ForeignKeyField
 
 
 # Import from current package
-from ..hardcoded import MODEL_PAT, PRM_AND_FLAG_PRM_PAT
+from ..hardcoded import MODEL_PAT, PRM_AND_FLG_PRM_PAT
 
 
 # Create db instance
@@ -63,20 +63,20 @@ class Model(MetadataModel):
         null=False, unique=True,
         constraints=[
             Check(f"re_fullmatch('({MODEL_PAT})|()', mdl_name)"),
-            Check(f"str_len_max(mdl_name, 64)")
+            Check("str_len_max(mdl_name, 64)")
         ]
     )
 
     # Model description
     mdl_desc = TextField(
         null=True, unique=False, default='',
-        constraints=[Check(f"str_len_max(mdl_desc, 256)")]
+        constraints=[Check("str_len_max(mdl_desc, 256)")]
     )
 
     # Model identifier
     mid = TextField(
         null=False, unique=False, default='',
-        constraints=[Check(f"str_len_max(mdl_desc, 64)")]
+        constraints=[Check("str_len_max(mdl_desc, 64)")]
     )
 
 
@@ -89,13 +89,13 @@ class Object(MetadataModel):
     # Object serial number
     srn = TextField(
         null=False,
-        constraints=[Check(f"str_len_max(srn, 64)")]
+        constraints=[Check("str_len_max(srn, 64)")]
     )
 
     # Object product identifier
     pid = TextField(
         null=False,
-        constraints=[Check(f"str_len_max(pid, 64)")]
+        constraints=[Check("str_len_max(pid, 64)")]
     )
 
     # Link to model
@@ -115,7 +115,7 @@ class Parameter(MetadataModel):
         null=False,
         unique=True,
         constraints=[
-            Check(f"re_fullmatch('{PRM_AND_FLAG_PRM_PAT}', prm_name)"),
+            Check(f"re_fullmatch('{PRM_AND_FLG_PRM_PAT}', prm_name)"),
             Check(f"str_len_max(prm_name, 64)")
         ]
     )
@@ -133,11 +133,11 @@ class Parameter(MetadataModel):
 )
 
 
-class Flag(MetadataModel):
+class Flg(MetadataModel):
     """Flag model"""
 
     # Table id
-    flag_id = AutoField(primary_key=True)
+    flg_id = AutoField(primary_key=True)
 
     # Bit position
     bit_pos = IntegerField(
@@ -146,15 +146,15 @@ class Flag(MetadataModel):
         constraints=[Check("bit_pos >= 0")])
 
     # Flag name
-    flag_name = TextField(
+    flg_name = TextField(
         null=False, unique=True,
-        constraints=[Check(f"str_len_max(flag_name, 64)")]
+        constraints=[Check("str_len_max(flg_name, 64)")]
     )
 
     # Flag description
-    flag_desc = TextField(
+    flg_desc = TextField(
         null=False, default='',
-        constraints=[Check(f"str_len_max(flag_desc, 256)")]
+        constraints=[Check("str_len_max(flg_desc, 256)")]
     )
 
 
@@ -172,13 +172,13 @@ class Tag(MetadataModel):
     # Tag name
     tag_name = TextField(
         null=False, unique=True,
-        constraints = [Check(f"str_len_max(tag_name, 64)")]
+        constraints = [Check("str_len_max(tag_name, 64)")]
     )
 
     # Tag description
     tag_desc = TextField(
         null=True, unique=False, default='',
-        constraints=[Check(f"str_len_max(tag_desc, 256)")]
+        constraints=[Check("str_len_max(tag_desc, 256)")]
     )
 
 
@@ -187,7 +187,7 @@ class DataSource(MetadataModel):
     id = AutoField(primary_key=True)
     src = TextField(
         null=False,
-        constraints=[Check(f"str_len_max(src, 2048)")]
+        constraints=[Check("str_len_max(src, 2048)")]
     )
 
 
@@ -205,7 +205,7 @@ class Info(MetadataModel):
     )
     evt_hash = TextField(
         null=False,
-        constraints=[Check(f"str_len_max(evt_hash, 64)")]
+        constraints=[Check("str_len_max(evt_hash, 64)")]
     )
     """str: Hash of the info attributes. Using a hash allows you to manage
     identical info with varying degrees of work steps."""
@@ -246,13 +246,13 @@ class MetaData(MetadataModel):
     #: str: Metadata key name
     key_name = TextField(
         null=False,
-        constraints=[Check(f"str_len_max(key_name, 64)")]
+        constraints=[Check("str_len_max(key_name, 64)")]
     )
 
     #: str: Metadata key string value
     value_str = TextField(
         null=True,
-        constraints=[Check(f"str_len_max(value_str, 256)")]
+        constraints=[Check("str_len_max(value_str, 256)")]
     )
 
     #: float: Metadata key float value

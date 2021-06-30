@@ -14,7 +14,8 @@ Module contents: IO management
 # Import from current package
 from .linker import LocalDBLinker
 from .linker import CSVHandler, GDPHandler
-from .linker import FlagCSVHandler, FlagGDPHandler
+from .linker import FlgCSVHandler, FlgGDPHandler
+from ..config.config import OrigData
 from ..database.database import DatabaseManager
 from ..database.model import Parameter as TableParameter
 from ..logger import localdb, rawcsv
@@ -50,16 +51,20 @@ def update_db(search, strict=False):
 
     """
 
+    # Init orig data config
+    origdata_config_mngr = OrigData()
+    origdata_config_mngr.read()
+
     # Init linkers
     db_mngr = DatabaseManager()
     db_linker = LocalDBLinker()
 
     # Define chain of responsibility for loading from raw
-    handler = CSVHandler()
+    handler = CSVHandler(origdata_config_mngr)
     handler.\
-        set_next(GDPHandler()).\
-        set_next(FlagCSVHandler()).\
-        set_next(FlagGDPHandler())
+        set_next(GDPHandler(origdata_config_mngr)).\
+        set_next(FlgCSVHandler(origdata_config_mngr)).\
+        set_next(FlgGDPHandler(origdata_config_mngr))
 
     # Search prm_name
     if strict is True:

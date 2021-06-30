@@ -83,6 +83,7 @@ def fancy_nansum(vals, axis=None):
         return np.nansum(vals.values)
 
     # TODO
+    #print(pd.__version__, np.__version__)
     # When #122 is fixed in pandas, all that will be required is to uncomment the following line
     #return vals.sum(axis=axis, skipna=True).mask(vals.isna().all(axis=axis))
     # ... and get rid of what follows

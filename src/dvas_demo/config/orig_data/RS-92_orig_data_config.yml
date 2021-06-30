@@ -1,0 +1,111 @@
+# ----------------------------------------------------
+# RS-92 type (NOT THE GDP!)
+# ----------------------------------------------------
+_RS92:
+
+    # -- META DATA ----------------------------------
+    edt: "get('event_dt')"
+    srn: "get('srn')"
+    pid: "get('product_id')"
+    tags:
+        - "cat('e:', get('event_id'))"
+        - "cat('r:', get('rig'))"
+        - "get('day_night')"
+    metadata:
+        key_str: '1'
+        key_num: 1
+
+    # -- ORIG DATA ----------------------------------
+    csv_delimiter:
+    csv_skip_blank_lines: True
+    csv_delim_whitespace: True
+    csv_skiprows: 2
+
+    _time:
+        value: get(0, 's2ns')
+
+    _gph:
+        value: get(1)
+
+    _temp:
+        value: get(3, 'd2k')
+
+    _temp_flag:
+        value: get(0)
+        csv_use_default: True
+
+    _pres:
+        value: get(2)
+
+    _rh:
+        value: get(4)
+
+    _wdir:
+        value: get(6)
+
+    _wspeed:
+        value: get(5)
+
+# ----------------------------------------------------
+# RS92-GDP, version 2
+# ----------------------------------------------------
+_RS92-GDP_002:
+
+    # -- META DATA ----------------------------------
+    edt: "cat(get('g.Ascent.StandardTime'),'Z')"
+    srn: "get('g.Instrument.SerialNumber')"
+    pid: "get('g.Product.ID')"
+    tags:
+        - "cat('e:', get('g.Ascent.ID'))"
+        - "cat('r:', get('g.Ascent.BalloonNumber'))"
+
+    # -- ORIG DATA ----------------------------------
+    _time:
+        value: get('time', 's2ns')
+
+    _gph:
+        value: get('geopot')
+
+    _temp:
+        value: get('temp')
+
+    _temp_ucr:
+        # In v2 of the GDP, this value is wrong. It must be reconstructed from:
+        # value: sqrt('u_temp'**2 - 'u_cor_temp'**2)
+        # See GRUAN TD4, section 5.1 for details.
+        value: >-
+            sqrt(sub(pow(get('u_temp'), 2), pow(get('u_cor_temp'), 2)))
+
+    _temp_uct:
+        value: get('u_cor_temp')
+
+    _pres:
+        value: get('press')
+
+    _pres_uct:
+        value: get('u_press')
+
+    _rh:
+        value: get('rh')
+
+    _rh_ucr:
+        # In v2 of the GDP, this value is wrong. It must be reconstructed from:
+        # value: sqrt('u_rh'**2 - 'u_cor_rh'**2)
+        # See GRUAN TD4, section 5.1 for details.
+        value: >-
+            sqrt(sub(pow(get('u_rh'), 2), pow(get('u_cor_rh'), 2)))
+
+    _rh_uct:
+        value: get('u_cor_rh')
+
+    _wdir:
+        value: get('wdir')
+
+    _wdir_ucu:
+        value: get('u_wdir')
+
+    _wspeed:
+        value: get('wspeed')
+
+    _wspeed_ucu:
+        value: get('u_wspeed')

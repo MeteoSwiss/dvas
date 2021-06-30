@@ -7,6 +7,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 """
 
+# Import from python packages
 from pathlib import Path
 from setuptools import setup, find_packages  # Always prefer setuptools over distutils
 
@@ -56,7 +57,9 @@ setup(
     ],
 
     # Setup entry points to use dvas from a terminal
-    entry_points={'console_scripts': ['dvas_init=dvas_recipes.__main__:dvas_init']},
+    entry_points={'console_scripts': ['dvas_init_arena=dvas_recipes.__main__:dvas_init_arena',
+                                      'dvas_optimize=dvas_recipes.__main__:dvas_optimize',
+                                      'dvas_run_recipe=dvas_recipes.__main__:dvas_run_recipe']},
 
     classifiers=[
 

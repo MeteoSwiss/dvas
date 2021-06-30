@@ -13,28 +13,26 @@ _AR-GDP_001:
         - "cat('r:', get('g.Measurement.BalloonNumber'))"
 
     # -- ORIG DATA ----------------------------------
-    _tdtpros1:
-        value_col: 'time'
-        lambda: 'lambda x: x * 1E9'
+    _time:
+        value: get('time', 's2ns')
 
-    _trepros1:
-        value_col: 'temp'
-        lambda: 'lambda x: x - 273.15'
+    _temp:
+        value: get('temp')
 
-    _treprosu_e:
-        value_col: 'temp_uec'
+    _temp_ucr:
+        value: get('temp_uec')
 
-    _treprosu_s:
-        value_col: 'temp_usc'
+    _temp_ucs:
+        value: get('temp_usc')
 
-    _treprosu_t:
-        value_col: 'temp_utc'
+    _temp_uct:
+        value: get('temp_utc')
 
-    _altpros1:
-        value_col: 'alt'
+    _gph:
+        value: get('alt')
 
-    _prepros1:
-        value_col: 'press'
+    _pres:
+        value: get('press')
 
 # ----------------------------------------------------
 # BR GDP, version 1
@@ -50,25 +48,23 @@ _BR-GDP_001:
         - "cat('r:', get('g.Measurement.BalloonNumber'))"
 
     # -- ORIG DATA ----------------------------------
-    _tdtpros1:
-        value_col: 'time'
-        lambda: 'lambda x: x * 1E9'
+    _time:
+        value: get('time', 's2ns')
 
-    _trepros1:
-        value_col: 'temp'
-        lambda: 'lambda x: x - 273.15'
+    _temp:
+        value: get('temp', 'k2d')
 
-    _treprosu_e:
-        value_col: 'temp_uec'
+    _temp_ucr:
+        value: get('temp_uec')
 
-    _treprosu_t:
-        value_col: 'temp_utc'
+    _temo_uct:
+        value: get('temp_utc')
 
-    _altpros1:
-        value_col: 'alt'
+    _gph:
+        value: get('alt')
 
-    _prepros1:
-        value_col: 'press'
+    _pres:
+        value: get('press')
 
 # ----------------------------------------------------
 # RS-41 GDP, version beta-1
@@ -84,27 +80,26 @@ _RS41-GDP-BETA_001:
         - "cat('r:', get('g.Measurement.BalloonNumber'))"
 
     # -- ORIG DATA ----------------------------------
-    _tdtpros1:
-        value_col: 'time'
-        lambda: 'lambda x: x * 1E9'
+    _time:
+        value: get('time', 's2ns')
 
-    _trepros1:
-        value_col: 'temp'
+    _temp:
+        value: get('temp')
 
-    _treprosu_r:
-        value_col: 'temp_uc_ncor'
+    _temp_ucr:
+        value: get('temp_uc_ncor')
 
-    _treprosu_s:
-        value_col: 'temp_uc_scor'
+    _temp_ucs:
+        value: get('temp_uc_scor')
 
-    _treprosu_t:
-        value_col: 'temp_uc_tcor'
+    _temp_uct:
+        value: get('temp_uc_tcor')
 
-    _altpros1:
-        value_col: 'alt'
+    _gph:
+        value: get('alt')
 
-    _prepros1:
-        value_col: 'press'
+    _pres:
+        value: get('press')
 
-    _preprosu_u:
-        value_col: 'press_uc'
+    _pres_ucu:
+        value: get('press_uc')

@@ -1,0 +1,37 @@
+# ----------------------------------------------------
+# SRS-C50 type (NOT THE GDP!)
+# ----------------------------------------------------
+_C50:
+
+    # -- META DATA ----------------------------------
+    edt: "get('event_dt')"
+    srn: "get('srn')"
+    pid: "get('product_id')"
+    tags:
+        - "cat('e:', get('event_id'))"
+        - "cat('r:', get('rig'))"
+        - "get('day_night')"
+
+    # -- ORIG DATA ----------------------------------
+    csv_delimiter: ';'
+    csv_skip_blank_lines: True
+    csv_skiprows: 40
+    csv_skipfooter: 1
+
+    _time:
+        value: get(0, 's2ns')
+
+    _gph:
+        value: get(1)
+
+    _temp:
+        value: get(5)
+
+    _pres:
+        value: get(4)
+
+    _wdir:
+        value: get(2)
+
+    _wspeed:
+        value: get(3)

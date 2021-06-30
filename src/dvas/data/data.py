@@ -11,6 +11,7 @@ Module contents: Data management
 
 # Import from external packages
 from abc import abstractmethod
+import numpy as np
 import pandas as pd
 
 # Import from current package
@@ -283,9 +284,9 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
         if data:
 
             # Check input value type
-            assert all(
-                [isinstance(arg, self._DATA_TYPES) for arg in data]
-            ), f"Wrong data type: I need {self._DATA_TYPES} but you gave me {[type(arg) for arg in data]}"
+            assert all([isinstance(arg, self._DATA_TYPES) for arg in data]),\
+                f"Wrong data type: I need {self._DATA_TYPES} but you gave me " +\
+                f"{[type(arg) for arg in data]}"
 
             # Check db keys
             assert (
@@ -312,24 +313,22 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
 
         self.update(db_df_keys, self.profiles + [val])
 
-    def get_prms(self, prm_list=None):
+    def get_prms(self, prm_list=None, mask_flgs=None):
         """ Convenience getter to extract specific columns from the DataFrames and/or class
         properties of all the Profile instances.
 
-        Only column/property names are allowed. Specifying only index names will raise a DvasError.
-
         Args:
             prm_list (str|list of str, optional): names of the columns(s) to extract from all the
-                Profile DataFrames. Defaults to None (=return all the columns from the DataFrame).
+                Profile DataFrames. Defaults to None (=returns all the columns from the DataFrame).
+            mask_flgs (str|list of str, optional): name(s) of the flag(s) to NaN-ify in the
+                extraction process. Defaults to None.
 
         Returns:
-            dict of list of DataFrame: idem to self.profiles, but with only the requested data.
-
-        Raises:
-            DvasError: if prm_list only contains the names of Indices.
+            pd.DataFrame: the requested data as a MultiIndex pandas DataFrame.
 
         """
 
+        # Begin with some sanity checks
         if prm_list is None:
             prm_list = list(self.var_info.keys())
 
@@ -337,9 +336,21 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
             # Be nice/foolish and assume the user forgot to put the key into a list.
             prm_list = [prm_list]
 
+        if mask_flgs is not None:
+            if isinstance(mask_flgs, str):
+                mask_flgs = [mask_flgs]
+
         # Let's prepare the data. First, put all the DataFrames into a list
         out = [pd.concat([getattr(prf, prm) for prm in prm_list], axis=1, ignore_index=False)
                for prf in self.profiles]
+
+        # If warranted, let's hide the selected flagged elements
+        # Note: here, we also hide the indices of the original DataFrame (i.e. tdt and alt).
+        # This is a choice that will remain a good one, until it isn't.
+        if mask_flgs is not None:
+            for flg in mask_flgs:
+                for (p_ind, prf) in enumerate(self.profiles):
+                    out[p_ind][prf.has_flg(flg)==1] = np.nan
 
         # Drop the superfluous index
         out = [df.reset_index(level=[name for name in df.index.names

@@ -11,9 +11,8 @@ Module contents: Required attributes definition for
 """
 
 # Import from current packages modules
-from ...hardcoded import MODEL_PAT, PRM_AND_FLAG_PRM_PAT
+from ...hardcoded import MODEL_PAT, PRM_AND_FLG_PRM_PAT
 from ...database.model import Info as TableInfo
-from ...database.model import Data
 from ...database.model import MetaData as TableMetaData
 from ...database.model import Tag as TableTag
 from ...database.model import Object as TableObject
@@ -24,19 +23,13 @@ EDT_FLD_NM = TableInfo.edt.name  # Datetime field name
 TAG_FLD_NM = TableTag.__name__.lower() + 's'  # Tag field name
 META_FLD_NM = TableMetaData.__name__.lower()  # Metadata field name
 
-INDEX_FLD_NM = 'index_col'  # Index column field name
-PARAM_FLD_NM = 'value_col'  # Value column field name
-
-UNIT_FLD_NM = 'unit'  # Index unit field name
-
-LAMBDA_FLD_NM = 'lambda'  # Lambda field name
+VALUE_FLD_NM = 'value'  # Value column field name
 
 # Define csv field name
 CSV_USE_DEFAULT_FLD_NM = 'csv_use_default'
 CSV_DELIMITER_FLD_NM = 'csv_delimiter'
 CSV_HEADER_FLD_NM = 'csv_header'
 CSV_INDEX_COL_FLD_NM = 'csv_index_col'
-CSV_NAMES_FLD_NM = 'csv_names'
 CSV_SKIPINITSPACE_FLD_NM = 'csv_skipinitialspace'
 CSV_SKIPROWS_FLD_NM = 'csv_skiprows'
 CSV_SKIP_BLANK_LINES_FLD_NM = 'csv_skip_blank_lines'
@@ -45,9 +38,6 @@ CSV_COMMENT_FLD_NM = 'csv_comment'
 CSV_NA_VALUES_FLD_NM = 'csv_na_values'
 CSV_SKIPFOOTER_FLD_NM = 'csv_skipfooter'
 
-INDEX_NM = Data.index.name
-VALUE_NM = Data.value.name
-
 #: list: Fields keys passed to expression interpreter
 EXPR_FIELD_KEYS = [
     EDT_FLD_NM, TableObject.srn.name,
@@ -55,29 +45,23 @@ EXPR_FIELD_KEYS = [
 ]
 
 #: list: Node pattern
-NODE_PATTERN = [MODEL_PAT, PRM_AND_FLAG_PRM_PAT]
+NODE_PATTERN = [MODEL_PAT, PRM_AND_FLG_PRM_PAT]
 
-#: dict: Node parameters default value
-NODE_PARAMS_DEF = {
+#: dict: Default values of labels
+LABEL_VAL_DEF = {
     TAG_FLD_NM: [],
     META_FLD_NM: {},
-    UNIT_FLD_NM: '1',
-    LAMBDA_FLD_NM: 'lambda x: x',
     CSV_USE_DEFAULT_FLD_NM: False,
     CSV_DELIMITER_FLD_NM: ';',
+    CSV_HEADER_FLD_NM: 0,
+    CSV_INDEX_COL_FLD_NM: None,
     CSV_SKIPINITSPACE_FLD_NM: False,
     CSV_SKIPROWS_FLD_NM: 0,
     CSV_SKIP_BLANK_LINES_FLD_NM: True,
     CSV_DELIM_WHITESPACE_FLD_NM: False,
     CSV_COMMENT_FLD_NM: '#',
     CSV_NA_VALUES_FLD_NM: ['/'],
-    CSV_SKIPFOOTER_FLD_NM: 0
-}
-
-#: dict: Constant nodes
-CONST_NODES = {
-    CSV_HEADER_FLD_NM: 0,
-    CSV_NAMES_FLD_NM: [VALUE_NM],
+    CSV_SKIPFOOTER_FLD_NM: 0,
 }
 
 #: dict: Parameter pattern properties (JSON_SCHEMA)
@@ -96,7 +80,6 @@ PARAMETER_PATTERN_PROP = {
         "items": {
             "type": "string",
         },
-        "minItems": 1,
         "uniqueItems": True
     },
     rf"^{META_FLD_NM}$": {
@@ -116,23 +99,8 @@ PARAMETER_PATTERN_PROP = {
             },
         ]
     },
-    rf"^{PARAM_FLD_NM}$": {
-        "oneOf": [
-            {
-                "type": "integer",
-                "minimum": 0
-            },
-            {
-                "type": "string",
-            }
-        ]
-    },
-    rf"^{UNIT_FLD_NM}$": {
-        "type": "string",
-    },
-    rf"^{LAMBDA_FLD_NM}$": {
-        "type": 'string',
-        "pattern": r"^\s*lambda\s*\w+\s*\:.+"
+    rf"^{VALUE_FLD_NM}$": {
+        type: "string"
     },
     rf"^{CSV_USE_DEFAULT_FLD_NM}$": {
         "type": "boolean"
@@ -141,6 +109,19 @@ PARAMETER_PATTERN_PROP = {
         'anyOf': [
             {"type": "null"},
             {"type": 'string'}
+        ]
+    },
+    rf"^{CSV_HEADER_FLD_NM}$": {
+        'const': 0
+    },
+    rf"^{CSV_INDEX_COL_FLD_NM}$": {
+        "oneOf": [
+          {
+              "type": "null",
+          },
+          {
+              "const": False,
+          }
         ]
     },
     rf"^{CSV_SKIPINITSPACE_FLD_NM}$": {

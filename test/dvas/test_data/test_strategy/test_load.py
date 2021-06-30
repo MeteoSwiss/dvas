@@ -37,7 +37,7 @@ db_data = {
         } for val, dt in [
             (np.array([100, 101, 102]), '20200101T0000Z'),
             (np.array([200, 201, 202]), '20200202T0000Z')
-        ] for prm in ['trepros1', 'altpros1', 'trepros1_flag', 'tdtpros1']
+        ] for prm in ['temp', 'gph', 'temp_flag', 'time']
     ]
 }
 
@@ -53,7 +53,7 @@ class TestLoadProfileStrategy:
 
         # Load entry
         filt = f"tags('load_profile')"
-        res = loader_stgy.execute(filt, 'trepros1', 'altpros1')
+        res = loader_stgy.execute(filt, 'temp', 'gph')
 
         # Compare
         assert isinstance(res[0], list)
@@ -75,7 +75,7 @@ class TestLoadRSProfileStrategy:
         # Load entry
         filt = f"tags('load_profile')"
         res = loader_stgy.execute(
-            filt, 'trepros1', 'tdtpros1', alt_abbr='altpros1'
+            filt, 'temp', 'time', alt_abbr='gph'
         )
 
         # Compare
@@ -98,7 +98,7 @@ class TestLoadGDPProfileStrategy:
         # Load entry
         filt = f"tags('load_profile')"
         res = loader_stgy.execute(
-            filt, 'trepros1', 'tdtpros1', alt_abbr='altpros1'
+            filt, 'temp', 'time', alt_abbr='gph'
         )
 
         # Compare

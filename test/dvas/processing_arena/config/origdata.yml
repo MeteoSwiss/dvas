@@ -17,18 +17,17 @@ _RS92:
     csv_delimiter: ','
     csv_skipinitialspace: True
 
-    _tdtpros1:
-        value_col: 0
-        lambda: 'lambda x: x * 1E9'
+    _time:
+        value: get(0, 's2ns')
 
-    _trepros1:
-        value_col: 2
+    _temp:
+        value: get(2)
 
-    _altpros1:
-        value_col: 9
+    _gph:
+        value: get(9)
 
-    _prepros1:
-        value_col: 1
+    _pres:
+        value: get(1)
 
 # ----------------------------------------------------
 # YT type
@@ -48,21 +47,20 @@ _YT:
     csv_delimiter: ','
     csv_skipinitialspace: True
 
-    _tdtpros1:
-        value_col: 0
-        lambda: 'lambda x: x * 1E9'
+    _time:
+        value: get(0, 's2ns')
 
-    _trepros1:
-        value_col: 1
+    _temp:
+        value: get(1)
 
-    _altpros1:
-        value_col: 2
+    _gph:
+        value: get(2)
 
-    _prepros1:
-        value_col: 3
+    _pres:
+        value: get(3)
 
-    _trepros1_flag:
-        value_col: 0
+    _temp_flag:
+        value: get(0)
         csv_use_default: True
 
 
@@ -84,19 +82,18 @@ _ZT:
     csv_delimiter: ';'
     csv_skip_blank_lines: True
 
-    _tdtpros1:
-        value_col: 0
-        lambda: 'lambda x: x * 1E9'
+    _time:
+        value: get(0, 's2ns')
 
-    _trepros1:
-        value_col: 1
+    _temp:
+        value: get(1)
 
-    _altpros1:
-        value_col: 2
+    _gph:
+        value: get(2)
 
-    _prepros1:
-        value_col: 3
+    _pres:
+        value: get(3)
 
-    _trepros1_flag:
-        value_col: 0
+    _temp_flag:
+        value: get(0)
         csv_use_default: True

@@ -9,16 +9,58 @@ Module contents: Error management
 
 """
 
-# TODO
-#  Modify exceptions using "raise MyCustomExc from my_raised_exc".
 
 class DvasError(Exception):
-    """General error class for dvas."""
+    """General exception class for dvas."""
 
-    ERR_MSG = 'dvas Error'
 
-    def __str__(self):
-        return f"{super().__str__()}\n\n{'*' * 5}{self.ERR_MSG}{'*' * 5}"
+
+class ConfigError(DvasError):
+    """Exception for error in config"""
+
+
+class ConfigPathError(ConfigError):
+    """Exception for error in config file path"""
+
+
+class ConfigReadError(ConfigError):
+    """Error while reading config"""
+
+
+class ConfigReadYAMLError(ConfigReadError):
+    """Exception for error in reading YAML file"""
+
+
+class ConfigCheckJSONError(ConfigReadError):
+    """Exception for error in checking JSON"""
+
+
+class ConfigGenMaxLenError(ConfigReadError):
+    """Exception class for max length config generator error"""
+
+
+class ConfigNodeError(ConfigError):
+    """Error in config node"""
+
+
+class ConfigGetError(ConfigError):
+    """Error in get config value"""
+
+
+class ConfigLabelNameError(ConfigGetError):
+    """Error in config label name"""
+
+
+class ExprInterpreterError(ConfigError):
+    """Error in expression interpreter"""
+
+
+class NonTerminalExprInterpreterError(ExprInterpreterError):
+    """Error in non terminal expression interpreter"""
+
+
+class TerminalExprInterpreterError(ExprInterpreterError):
+    """Error in terminal expression interpreter"""
 
 
 class LogDirError(DvasError):
@@ -31,6 +73,10 @@ class DBError(DvasError):
 
 class DBIOError(DBError):
     """Exception for dvas database IOError"""
+
+
+class SearchError(DBError):
+    """Exception for dvas database search error"""
 
 
 class ProfileError(DvasError):
