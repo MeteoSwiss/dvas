@@ -9,11 +9,17 @@ processing recipes, or create their own.
 .. hint::
 
     If you plan on coding with dvas, we strongly suggest that you begin by taking a look at the
-    `contributing guidelines <https://github.com/MeteoSwiss-MDA/dvas/blob/develop/CONTRIBUTING.md>`_
+    `contributing guidelines <https://github.com/MeteoSwiss/dvas/blob/develop/CONTRIBUTING.md>`_
     on Github. Even if you do not want to share your modifications (which is totally fine !), these
     guidelines contain critical information regarding the structure and spirit of the code.
 
+Assuming that you have initialized a new dvas processing arena using the ``dvas_init_arena`` entry
+point, take a look at ``demo_script.py``. This Python script, which we suggest you run from inside
+a Python shell (using ``run demo_script.py``), illustrates the main functions and tools of the core
+dvas sub-package. It is therefore an excellent place to familiarize yourself with the dvas spirit.
 
+
+** AND NOW FOR A BIG PILE OF IMPORTANT INFO THAT NEEDS TO BE SORTED ...**
 
 Naming conventions
 ------------------

@@ -23,9 +23,10 @@ The most recent release of dvas is also available for download/cloning from its
 `Github repository <https://github.com/MeteoSwiss-MDA/dvas/releases/latest/>`_, in which case the
 install command becomes:
 
-..code-block:: python
+.. code-block:: python
 
-    pip install setup.py
+    cd ./where/you/stored/dvas/
+    pip install -e .
 
 Requirements
 ------------
