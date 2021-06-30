@@ -57,7 +57,9 @@ setup(
     ],
 
     # Setup entry points to use dvas from a terminal
-    entry_points={'console_scripts': ['dvas_init=dvas_recipes.__main__:dvas_init']},
+    entry_points={'console_scripts': ['dvas_init_arena=dvas_recipes.__main__:dvas_init_arena',
+                                      'dvas_optimize=dvas_recipes.__main__:dvas_optimize',
+                                      'dvas_run_recipe=dvas_recipes.__main__:dvas_run_recipe']},
 
     classifiers=[
 

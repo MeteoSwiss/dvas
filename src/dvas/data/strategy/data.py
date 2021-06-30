@@ -16,7 +16,7 @@ import numpy as np
 import pandas as pd
 
 # Import from current package
-from ...database.model import Flag as TableFlag
+from ...database.model import Flg as TableFlg
 from ...database.database import DatabaseManager, InfoManager
 from ...errors import ProfileError, DvasError
 from ...helper import RequiredAttrMetaClass
@@ -265,9 +265,9 @@ class Profile(ProfileAC):
 
     """
 
-    FLAG_BIT_POS_NM = TableFlag.bit_pos.name
-    FLAG_NAME_NM = TableFlag.flag_name.name
-    FLAG_DESC_NM = TableFlag.flag_desc.name
+    FLG_BIT_POS_NM = TableFlg.bit_pos.name
+    FLG_NAME_NM = TableFlg.flg_name.name
+    FLG_DESC_NM = TableFlg.flg_desc.name
 
     # The column names for the pandas DataFrame
     DF_COLS_ATTR = {
@@ -287,9 +287,6 @@ class Profile(ProfileAC):
         """
         super(Profile, self).__init__()
 
-        # Init
-        db_mngr = DatabaseManager()
-
         # Test info
         try:
             assert isinstance(info, InfoManager)
@@ -304,7 +301,10 @@ class Profile(ProfileAC):
                                    for key, val in self.DF_COLS_ATTR.items()], axis=1)
 
         self._info = info
-        self._flags_name = {arg[self.FLAG_NAME_NM]: arg for arg in db_mngr.get_flags()}
+
+        # Init
+        db_mngr = DatabaseManager()
+        self._flg_names = {arg[self.FLG_NAME_NM]: arg for arg in db_mngr.get_flgs()}
 
     @property
     def info(self):
@@ -312,9 +312,9 @@ class Profile(ProfileAC):
         return self._info
 
     @property
-    def flags_name(self):
+    def flg_names(self):
         """dict: Flag name, description and bit position."""
-        return self._flags_name
+        return self._flg_names
 
     @property
     def alt(self):
@@ -354,7 +354,7 @@ class Profile(ProfileAC):
             val (str): Flag name
 
         """
-        return self.flags_name[val][self.FLAG_BIT_POS_NM]
+        return self.flg_names[val][self.FLG_BIT_POS_NM]
 
     def set_flg(self, val, set_val, index=None):
         """ Set flag values to True/False.
@@ -395,7 +395,7 @@ class Profile(ProfileAC):
         else:
             self.flg = self.flg.loc[index].apply(set_to_false)
 
-    def is_flagged(self, val):
+    def has_flg(self, val):
         """Check if a specific flag name is set.
 
         Args:
@@ -406,9 +406,8 @@ class Profile(ProfileAC):
 
         """
         bit_nbr = self._get_flg_bit_nbr(val)
-        # Return 1 if the flag is set, 0 if it isn't, and <NA> if the flag was not set.
-        return self.flg.apply(lambda x: (x >> bit_nbr) & 1 if not pd.isna(x) else x)
-
+        # Return 1 if the flag is set, 0 if it isn't, EVEN if the flag was not set (ie flg is <NA>).
+        return self.flg.apply(lambda x: (x >> bit_nbr) & 1 if not pd.isna(x) else 0)
 
 class RSProfile(Profile):
     """ Child Profile class for *basic radiosonde* atmospheric measurements.

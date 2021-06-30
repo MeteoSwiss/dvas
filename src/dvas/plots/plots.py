@@ -125,13 +125,13 @@ def multiprf(prfs, index='alt', label='mid', uc=None, k_lvl=1, rel_to=None, expo
     # Deal with the axes labels
     xlbl = prfs.var_info[index]['prm_name']
     xlbl += ' [{}]'.format(prfs.var_info[index]['prm_unit'])
-    ax1.set_xlabel(xlbl)
+    ax1.set_xlabel(pu.fix_txt(xlbl))
 
     ylbl = prfs.var_info[PRF_REF_VAL_NAME]['prm_name']
     ylbl += ' [{}]'.format(prfs.var_info[PRF_REF_VAL_NAME]['prm_unit'])
     if rel_to is not None:
         ylbl = r'$\Delta$' + ylbl
-    ax1.set_ylabel(ylbl, labelpad=10)
+    ax1.set_ylabel(pu.fix_txt(ylbl), labelpad=10)
 
     ax1.set_xlim(xmin, xmax)
 

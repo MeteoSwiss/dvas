@@ -11,7 +11,7 @@ Module contents: Required attributes definition for
 """
 
 # Import from current packages modules
-from ...hardcoded import MODEL_PAT, PRM_AND_FLAG_PRM_PAT
+from ...hardcoded import MODEL_PAT, PRM_AND_FLG_PRM_PAT
 from ...database.model import Info as TableInfo
 from ...database.model import MetaData as TableMetaData
 from ...database.model import Tag as TableTag
@@ -45,7 +45,7 @@ EXPR_FIELD_KEYS = [
 ]
 
 #: list: Node pattern
-NODE_PATTERN = [MODEL_PAT, PRM_AND_FLAG_PRM_PAT]
+NODE_PATTERN = [MODEL_PAT, PRM_AND_FLG_PRM_PAT]
 
 #: dict: Default values of labels
 LABEL_VAL_DEF = {

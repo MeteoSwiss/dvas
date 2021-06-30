@@ -26,7 +26,7 @@ import sre_yield
 # Import current package modules
 from .definitions import origdata, csvorigmeta
 from .definitions import model
-from .definitions import parameter, flag
+from .definitions import parameter, flg
 from .definitions import tag
 from ..environ import path_var
 from ..environ import glob_var as env_glob_var
@@ -35,7 +35,7 @@ from ..helper import RequiredAttrMetaClass
 from ..helper import TypedProperty
 from ..helper import camel_to_snake
 from ..database.model import Parameter as TableParameter
-from ..hardcoded import FLAG_PRM_NAME_SUFFIX, FLAG_PRM_DESC_PREFIX
+from ..hardcoded import FLG_PRM_NAME_SUFFIX, FLG_PRM_DESC_PREFIX
 from ..errors import ConfigError
 from ..errors import ConfigPathError, ConfigReadYAMLError, ConfigCheckJSONError
 from ..errors import ConfigReadError, ConfigNodeError
@@ -330,11 +330,13 @@ class OneLayerConfigManager(ConfigManager):
 
         except exceptions.ValidationError as exc:
             p_printer = pprint.PrettyPrinter()
-            raise ConfigCheckJSONError(f"JSON validation error::\n{p_printer.pformat(document)}") from exc
+            raise ConfigCheckJSONError(
+                f"JSON validation error::\n{p_printer.pformat(document)}") from exc
 
         except exceptions.SchemaError as exc:
             p_printer = pprint.PrettyPrinter()
-            raise ConfigCheckJSONError(f"JSON schema error::\n{p_printer.pformat(self.json_schema)}") from exc
+            raise ConfigCheckJSONError(
+                f"JSON schema error::\n{p_printer.pformat(self.json_schema)}") from exc
 
 
 class CSVOrigMeta(OneLayerConfigManager):
@@ -525,12 +527,13 @@ class Parameter(OneDimArrayConfigManager):
         super()._get_document(doc_in=doc_in)
 
         # Duplicate parameters into there flag item
-        # Remark: It's not necessarily the most elegant way to duplicate parameters to get the flag side...
+        # Remark: It's not necessarily the most elegant way to duplicate parameters to get the
+        # flag side...
 
         # Define mapping
         arg_key_to_dict = {
-            TableParameter.prm_name.name: lambda x: f"{x}{FLAG_PRM_NAME_SUFFIX}",
-            TableParameter.prm_desc.name: lambda x: f"{FLAG_PRM_DESC_PREFIX}{x[0].lower()}{x[1:]}",
+            TableParameter.prm_name.name: lambda x: f"{x}{FLG_PRM_NAME_SUFFIX}",
+            TableParameter.prm_desc.name: lambda x: f"{FLG_PRM_DESC_PREFIX}{x[0].lower()}{x[1:]}",
             TableParameter.prm_unit.name: lambda _: '',
         }
 
@@ -546,21 +549,21 @@ class Parameter(OneDimArrayConfigManager):
         self.document += array_prm_flg
 
 
-class Flag(OneDimArrayConfigManager):
-    """Flag config manager """
+class Flg(OneDimArrayConfigManager):
+    """Flg config manager """
 
-    PARAMETER_PATTERN_PROP = flag.PARAMETER_PATTERN_PROP
+    PARAMETER_PATTERN_PROP = flg.PARAMETER_PATTERN_PROP
     LABEL_VAL_DEF = {}
-    CLASS_KEY = flag.KEY
-    CONST_LABELS = flag.CONST_LABELS
-    NODE_GEN = flag.NODE_GEN
+    CLASS_KEY = flg.KEY
+    CONST_LABELS = flg.CONST_LABELS
+    NODE_GEN = flg.NODE_GEN
 
     #: dict: Config document
     document = TypedProperty(OneDimArrayConfigManager.DOC_TYPE)
 
 
 class Tag(OneDimArrayConfigManager):
-    """Flag config manager """
+    """Tag config manager """
 
     PARAMETER_PATTERN_PROP = tag.PARAMETER_PATTERN_PROP
     LABEL_VAL_DEF = {}
@@ -635,8 +638,8 @@ class MultiLayerConfigManager(OneLayerConfigManager):
         """Return single node_labels value
 
         Args:
-            node_labels (list of str): Node keys. If the escape character is missing in the prefix of the node,
-                it is added automatically.
+            node_labels (list of str): Node keys. If the escape character is missing in the prefix
+                of the node, it is added automatically.
             final_label (str): Key parameter
 
         Returns
@@ -668,7 +671,8 @@ class MultiLayerConfigManager(OneLayerConfigManager):
         return out
 
     def get_all(self, node_labels):
-        """Return all values for a given node labels. Only values specified in defaults labels will be returned.
+        """Return all values for a given node labels. Only values specified in defaults labels
+        will be returned.
 
         Args:
             node_labels (list of str): Node keys
@@ -778,7 +782,8 @@ class MultiLayerConfigManager(OneLayerConfigManager):
                     if re.fullmatch(rf"{NODE_ESCAPE_CHAR}{pat[0]}", key) is None:
                         pprinter = pprint.PrettyPrinter()
                         err_msg = (
-                            f"Bad node label.\n'{pprinter.pformat(pat[0])}' didn't match any keys in\n{pprinter.pformat(doc)}"
+                            f"Bad node label.\n'{pprinter.pformat(pat[0])}' "+
+                            "didn't match any keys in\n{pprinter.pformat(doc)}"
                         )
                         raise ConfigNodeError(err_msg)
 

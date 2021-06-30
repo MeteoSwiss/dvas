@@ -19,7 +19,7 @@ from ..linker import LocalDBLinker
 from ...database.database import InfoManager
 from ...database.model import Data
 from ...errors import LoadError
-from ...hardcoded import FLAG_PRM_NAME_SUFFIX
+from ...hardcoded import FLG_PRM_NAME_SUFFIX
 
 
 # Define
@@ -31,13 +31,13 @@ class LoadStrategyAC(MPStrategyAC):
     """Abstract load strategy class"""
 
     @staticmethod
-    def add_flag_prm(db_vs_df_keys):
-        """Add flag parameter to DB vs Dataframe keys
+    def add_flg_prm(db_vs_df_keys):
+        """Add flg parameter to DB vs Dataframe keys
 
         db_vs_df_key (dict): DB vs Dataframe key
 
         """
-        db_vs_df_keys.update({'flg': f"{db_vs_df_keys['val']}{FLAG_PRM_NAME_SUFFIX}"})
+        db_vs_df_keys.update({'flg': f"{db_vs_df_keys['val']}{FLG_PRM_NAME_SUFFIX}"})
         return db_vs_df_keys
 
     @staticmethod
@@ -95,7 +95,8 @@ class LoadStrategyAC(MPStrategyAC):
             ]
         )
         if not ass_tst:
-            err_msg = f'Data with associated metadata {info[tst_tmp.index(False)]} have non unique metadata for a same parameter'
+            err_msg = f'Data with associated metadata {info[tst_tmp.index(False)]} '+\
+                'have non-unique metadata for a same parameter.'
             raise LoadError(err_msg)
 
         # Add missing columns
@@ -122,7 +123,7 @@ class LoadProfileStrategy(LoadStrategyAC):
         """
 
         # Define
-        db_vs_df_keys = self.add_flag_prm(
+        db_vs_df_keys = self.add_flg_prm(
             {'val': val_abbr, 'alt': alt_abbr}
         )
 
@@ -150,7 +151,7 @@ class LoadRSProfileStrategy(LoadProfileStrategy):
         """
 
         # Define
-        db_vs_df_keys = self.add_flag_prm(
+        db_vs_df_keys = self.add_flg_prm(
             {'val': val_abbr, 'tdt': tdt_abbr, 'alt': alt_abbr}
         )
 
@@ -189,7 +190,7 @@ class LoadGDPProfileStrategy(LoadProfileStrategy):
         """
 
         # Define
-        db_vs_df_keys = self.add_flag_prm(
+        db_vs_df_keys = self.add_flg_prm(
             {
                 'val': val_abbr, 'tdt': tdt_abbr, 'alt': alt_abbr,
                 'ucr': ucr_abbr, 'ucs': ucs_abbr, 'uct': uct_abbr, 'ucu': ucu_abbr,

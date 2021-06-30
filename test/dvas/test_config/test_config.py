@@ -17,12 +17,12 @@ import pytest
 from dvas.config.config import instantiate_config_managers
 from dvas.config.config import CSVOrigMeta
 from dvas.config.config import OrigData, Model
-from dvas.config.config import Parameter, Flag, Tag
+from dvas.config.config import Parameter, Flg, Tag
 from dvas.config.config import ConfigReadError, ConfigGetError
 from dvas.config.config import ConfigExprInterpreter
 from dvas.config.config import ExprInterpreterError
 from dvas.environ import glob_var
-from dvas.hardcoded import FLAG_PRM_NAME_SUFFIX
+from dvas.hardcoded import FLG_PRM_NAME_SUFFIX
 
 
 def test_instantiate_config_managers():
@@ -35,7 +35,7 @@ def test_instantiate_config_managers():
     """
 
     # Define
-    cfg_mngrs_class = [OrigData, Model, Parameter, Flag, Tag]
+    cfg_mngrs_class = [OrigData, Model, Parameter, Flg, Tag]
 
     # Instantiate all managers
     cfg_mngrs = instantiate_config_managers(*cfg_mngrs_class, read=False)
@@ -133,7 +133,7 @@ class TestParameter:
 
     # String generator patern
     prm_pat = re.compile(r'dummytst_(param\d)')
-    flg_pat = re.compile(rf'{prm_pat.pattern}{FLAG_PRM_NAME_SUFFIX}')
+    flg_pat = re.compile(rf'{prm_pat.pattern}{FLG_PRM_NAME_SUFFIX}')
 
     # Catched string patern
     desc_pat = re.compile(r'param\d+')

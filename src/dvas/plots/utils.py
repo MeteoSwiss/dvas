@@ -14,8 +14,7 @@ from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-from matplotlib import colors
-from matplotlib import cm
+from matplotlib import colors, cm, rcParams
 from cycler import cycler
 
 # Import from this package
@@ -45,6 +44,7 @@ CLRS = {'set_1': ['#4c88b3', '#b34c88', '#88b34c', '#d15f56', '#7d70b4', '#00a7a
                            ['#000000', '#051729','#4c88b3','#dbd7cc', '#ffffff'])),
         'nan_1': '#7d7d7d',
         'ref_1': 'crimson',
+        'cws_1': '#323232'
         }
 
 #: matplotlib.colors.LinearSegmentedColormap: the default dvas colormap 1
@@ -59,7 +59,8 @@ CMAP_1_R.set_bad(color=CLRS['nan_1'], alpha=1)
 PLOT_FMTS = ['png']
 
 #: bool: A flag to display the plots or not.
-PLOT_SHOW = True
+# WARNING: keep this False by default, else all hell will break loose with Github actions
+PLOT_SHOW = False
 
 #: dict: matches the GDP units name to their (better) plot format
 UNIT_LABELS = {'K': r'K$^{\circ}$',
@@ -114,9 +115,28 @@ def set_mplstyle(style='base'):
     if style != 'base':
         plt.style.use(str(Path(PKG_PATH, 'plots', 'mpl_styles', PLOT_STYLES[style])))
 
+def fix_txt(txt):
+    """ Corrects any string for problematic characters before it gets added to a plot. Fixes vary
+    depending whether on the chosen plotting style's value of `usetex` in `rcparams`.
+
+    Args:
+        txt (str): text to cleanup.
+
+    Returns:
+        str: the corrected string.
+    """
+
+    usetex = rcParams['text.usetex']
+
+    # First deal with the cases when a proper LaTeX is being used
+    if usetex:
+        txt = txt.replace('%', r'\%')
+        txt = txt.replace('_', r'\_')
+
+    return txt
 
 def cmap_discretize(cmap, n_cols):
-    """Return a discrete colormap from the continuous colormap cmap.
+    """Return a discrete colormap from any continuous colormap cmap.
 
     Args:
         cmap (str): colormap name or instance.
@@ -156,22 +176,18 @@ def cmap_discretize(cmap, n_cols):
     return colors.LinearSegmentedColormap(cmap.name + "_%d" % (n_cols), cdict, 1024)
 
 @log_func_call(logger)
-def fancy_legend(ax, label=None):
+def fancy_legend(this_ax, label=None):
     """ A custom legend routine, to take care of all the repetitive aspects for this.
 
     Args:
-        ax (matplotlib.pyplot.axes): the plot axes to add the legend to.
+        this_ax (matplotlib.pyplot.axes): the plot axes to add the legend to.
         label (str, optional): the legend label
 
     """
 
-    # If I am using some fancy LaTeX, let's make sue that I escape all the nasty characters.
-    if plt.rcParams['text.usetex']:
-        label = label.replace('_', '\_')
-
     # Add the legend.
-    leg = ax.legend(loc='upper left', bbox_to_anchor=(1.01, 1),
-                    title=label, ncol=1, handlelength=1, fancybox=True,
+    leg = this_ax.legend(loc='upper left', bbox_to_anchor=(1.01, 1),
+                    title=fix_txt(label), ncol=1, handlelength=1, fancybox=True,
                     fontsize='small', title_fontsize='small', borderaxespad=0)
 
     # Tweak the thickness of the legen lines as well.
@@ -179,13 +195,16 @@ def fancy_legend(ax, label=None):
         line.set_linewidth(2.0)
 
 @log_func_call(logger)
-def add_edt_eid_rid(ax, prfs):
-    """ Add basic edt, eid and rid info to a plot.
+def get_edt_eid_rid(prfs):
+    """ Extract basic edt, eid, and rid info from a MultiProfile, and build a basic string with
+    this info. Intented to be used for adding consistent info to plots.
 
     Args:
-        ax (matplotlib.pyplot.axes): the axes to add the info to.
         prfs (Multiprofile|MultiRSProfile|MultiGDPProfile): the MultiProfile to extract the info
             from.
+
+    Returns:
+        str: a formatted string, ready to b added to a plot or a filename.
 
     """
 
@@ -197,13 +216,29 @@ def add_edt_eid_rid(ax, prfs):
     # Format it all nicely for each Profile.
     info_txt = set(['{} ({}, {})'.format(item, eids[ind], rids[ind])
                                          for ind, item in enumerate(edts)])
-    # Make sure it does not overflow
+    # Stich the different items together in case I have more than one flight in the list
     info_txt = ' / '.join(info_txt)
 
+    return info_txt
+
+@log_func_call(logger)
+def add_edt_eid_rid(this_ax, prfs):
+    """ Add basic edt, eid and rid info to a plot.
+
+    Args:
+        this_ax (matplotlib.pyplot.axes): the axes to add the info to.
+        prfs (Multiprofile|MultiRSProfile|MultiGDPProfile): the MultiProfile to extract the info
+            from.
+
+    """
+
+    # Get the text to display
+    info_txt = get_edt_eid_rid(prfs)
+
     # Add it to the ax
-    ax.text(0, 1.03, info_txt, fontsize='small',
+    this_ax.text(0, 1.03, info_txt, fontsize='small',
             verticalalignment='bottom', horizontalalignment='left',
-            transform=ax.transAxes)
+            transform=this_ax.transAxes)
 
 @log_func_call(logger)
 def add_source(fig):
@@ -215,8 +250,8 @@ def add_source(fig):
     """
     msg = 'Created with dvas v{}'.format(VERSION)
 
-    fig.text(0.99, 0.02, msg, fontsize='xx-small',
-                 horizontalalignment='right', verticalalignment='bottom')
+    fig.text(0.01, 0.02, msg, fontsize='xx-small',
+                 horizontalalignment='left', verticalalignment='bottom')
 
 @log_func_call(logger)
 def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show=None):
@@ -270,7 +305,7 @@ def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show=
 
     # Show the plot, or just close it and move on
     if show:
-        fig.show()
+        plt.show()
     else:
         plt.close(fig.number)
 
@@ -322,10 +357,10 @@ def clr_palette_demo():
     ax0b.text(7.5, 7.5, 'NaN', horizontalalignment='center', verticalalignment='center')
 
     # Clean it up a bit ...
-    for ax in [ax0b, ax0a]:
-        ax.tick_params(which='both', length=0)
-        ax.set_yticklabels([])
-        ax.set_xticklabels([])
+    for this_ax in [ax0b, ax0a]:
+        this_ax.tick_params(which='both', length=0)
+        this_ax.set_yticklabels([])
+        this_ax.set_xticklabels([])
 
     # Then, show an actual colorbar in full ...
     plt.colorbar(cm.ScalarMappable(norm=colors.Normalize(vmin=0, vmax=1),
@@ -341,10 +376,9 @@ def clr_palette_demo():
                                    cmap=cmap_discretize(CMAP_1, 10)), cax=ax4)
 
     # Clean up the ticks ...
-    for ax in [ax1, ax2, ax3, ax4]:
-        ax.set_yticklabels([])
-        ax.tick_params(axis='y', length=0)
-
+    for this_ax in [ax1, ax2, ax3, ax4]:
+        this_ax.set_yticklabels([])
+        this_ax.tick_params(axis='y', length=0)
 
     # Show and save
     plt.show()

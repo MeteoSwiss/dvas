@@ -5,7 +5,10 @@ Distributed under the terms of the GNU General Public License v3.0 or later.
 
 SPDX-License-Identifier: GPL-3.0-or-later
 
-Module content: hardcocded parameters for dvas_recipes
+Module contents: dvas dynamic variables
+
 """
 
-DVAS_RECIPES = ['demo', 'uaii22']
+#: bool: whether the DB should be stored in memory, or not.
+# Placing this here for now ... probably there's a better place for it `/`
+DB_IN_MEMORY = False

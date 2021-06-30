@@ -9,7 +9,6 @@ Module contents: Error management
 
 """
 
-
 class DvasRecipesError(Exception):
     """General error class for dvas_recipes."""
 

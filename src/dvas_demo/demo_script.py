@@ -20,6 +20,7 @@ from dvas.dvas import Database as DB
 import dvas.plots.utils as dpu
 from dvas.data.data import MultiProfile, MultiRSProfile, MultiGDPProfile
 from dvas.environ import path_var
+from dvas.hardcoded import FLG_INCOMPATIBLE_NAME
 from dvas.tools import sync as dts
 from dvas.tools.gdps import gdps as dtgg
 from dvas.tools.gdps import stats as dtgs
@@ -59,8 +60,8 @@ if __name__ == '__main__':
     # ----------------------------------------------------------------------------------------------
     print("\n --- DATABASE SETUP ---")
 
-    # Use this command to clear the DB
-    DB.clear_db()
+    # Use this command to refresh the DB, if it exists
+    DB.refresh_db()
 
     # Init the DB
     DB.init()
@@ -69,7 +70,7 @@ if __name__ == '__main__':
     DB.fetch_raw_data(
         [
             'time', 'gph',
-            'temp', 'temp_flag', 'temp_ucr', 'temp_ucs', 'temp_uct'
+            'temp', 'temp_flg', 'temp_ucr', 'temp_ucs', 'temp_uct'
         ],
         strict=True
     )
@@ -143,14 +144,15 @@ if __name__ == '__main__':
     # Flags can be used to mark specific profile elements. The possible flags, for a given
     # Profile, are accessed as follows:
     print('\nFlag ids and associated meaning:')
-    print(prfs[0].flags_name)
+    for (flg_name, item) in prfs[0].flg_names.items():
+        print(f"  {flg_name}: {item['flg_desc']}")
 
     # To flag specific elements of a given profiles, use the internal methods:
     prfs[0].set_flg('user_qc', True, index=pd.Index([0, 1, 2]))
 
     # Let's check to see that the data was actually flagged
     print('\nDid I flag only the first three steps with "user_qc" ?')
-    print(prfs[0].is_flagged('user_qc'))
+    print(prfs[0].has_flg('user_qc'))
 
     # ----------------------------------------------------------------------------------------------
     print("\n --- BASIC PLOTTING ---")
@@ -158,7 +160,7 @@ if __name__ == '__main__':
     # Let us inspect the (raw) GDP profiles with dedicated plots.
     gdp_prfs.plot(fn_prefix='01') # Defaults behavior, just adding a prefix to the filename.
     # Now with errors. Show the plot but don't save it.
-    gdp_prfs.plot(label='oid', uc='uc_tot', show=True, fmts=[])
+    gdp_prfs.plot(label='oid', uc='uc_tot', show=False, fmts=[])
 
     # ----------------------------------------------------------------------------------------------
     print("\n --- PROFILE RESAMPLING ---")
@@ -211,40 +213,39 @@ if __name__ == '__main__':
 
     # Let us begin by extracting the synchronized GDPs for a specific flight
     filt_gdp_dt_sync = "and_(tags('sync'), {}, {})".format(filt_gdp, filt_dt)
-
     gdp_prfs = MultiGDPProfile()
     gdp_prfs.load_from_db(filt_gdp_dt_sync, 'temp', tdt_abbr='time', alt_abbr='gph',
                           ucr_abbr='temp_ucr', ucs_abbr='temp_ucs', uct_abbr='temp_uct',
                           inplace=True)
 
-    # Before combining the GDPs with each other, let us assess their consistency. The idea here is
-    # to flag any inconsistent measurement, so that they can be ignored during the combination
-    # process.
+    # Before combining the GDPs with each other, let us assess their consistency. This is a two
+    # step process.
+    # First, we derive inconsistencies between GDP pairs, based on a KS-test, possibly for different
+    # binning values "m".
     start_time = datetime.now()
-    out = dtgs.get_incompatibility(gdp_prfs, alpha=0.0027, bin_sizes=[1, 2, 4, 8], do_plot=True,
-                                   n_cpus=4)
+    incompat = dtgs.gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=[1, 6],
+                                           do_plot=True, n_cpus=4)
     print('GDP mismatch derived in: {}s'.format((datetime.now()-start_time).total_seconds()))
 
-    # TODO: set flags based on the incompatibilities derived.
+    # Next, we derive "validities" given a specific strategy to assess the different GDP pair
+    # incompatibilities ...
+    valids = dtgs.gdp_validities(incompat, m_vals=[1], strategy='all-or-none')
 
-    # Let us now create a high-resolution CWS for these synchronized GDPs
+    # ... and set them using the dvas.hardcoded.FLG_INCOMPATIBLE_NAME flag
+    for gdp_prf in gdp_prfs:
+        gdp_prf.set_flg(FLG_INCOMPATIBLE_NAME, True,
+                        index=valids[~valids[str(gdp_prf.info.oid)]].index)
+
+    # Let us now create a high-resolution CWS for these synchronized GDPs, making sure to drop
+    # incompatible elements.
     start_time = datetime.now()
-    cws = dtgg.combine(gdp_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus=4)
+    cws = dtgg.combine(gdp_prfs, binning=1, method='weighted mean',
+                       mask_flgs=FLG_INCOMPATIBLE_NAME,
+                       chunk_size=150, n_cpus=8)
     print('CWS assembled in: {}s'.format((datetime.now()-start_time).total_seconds()))
 
     # We can now inspect the result visually
-    dpg.gdps_vs_cws(gdp_prfs, cws, index_name='_idx', show=True, fn_prefix='03')
+    dpg.gdps_vs_cws(gdp_prfs, cws, index_name='_idx', show=False, fn_prefix='03')
 
-    # --- TODO ---
     # Save the CWS to the database
-    #cws.save_to_db()
-
-    # Let's compare this CWS with the original data
-    # Let us begin by extracting the synchronized GDPs for a specific flight
-    #filt_cws_gdp_dt_sync = "or_({},tags('cws'))".format(filt_gdp_dt_sync)
-
-    #gdp_cws_prfs = MultiGDPProfile()
-    #gdp_cws_prfs.load_from_db(filt_cws_gdp_dt_sync, 'trepros1', alt_abbr='altpros1',
-    #                          tdt_abbr='tdtpros1',
-    #                          ucr_abbr='treprosu_r', ucs_abbr='treprosu_s', uct_abbr='treprosu_t',
-    #                          inplace=True)
+    cws.save_to_db(add_tags=['cws'], rm_tags=['gdp'])

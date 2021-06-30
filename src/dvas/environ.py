@@ -23,7 +23,7 @@ from .helper import get_class_public_attr
 from .errors import DvasError
 from . import __name__ as pkg_name
 from .hardcoded import PKG_PATH, MPL_STYLES_PATH
-from .hardcoded import CSV_FILE_EXT, FLAG_FILE_EXT, CONFIG_FILE_EXT
+from .hardcoded import CSV_FILE_EXT, FLG_FILE_EXT, CONFIG_FILE_EXT
 from .hardcoded import CONFIG_GEN_LIM
 from .hardcoded import EID_PAT, RID_PAT
 
@@ -165,7 +165,7 @@ class GlobalPackageVariableManager(VariableManager):
     #: list of str: CSV file allowed extensions. Default to ['csv', 'txt']
     csv_file_ext = TProp(Iterable[str], lambda x: tuple(x))
     #: list of str: Flag file allowed extensions. Default to ['flg']
-    flag_file_ext = TProp(Iterable[str], lambda x: tuple(x))
+    flg_file_ext = TProp(Iterable[str], lambda x: tuple(x))
     #: list of str: Config file allowed extensions. Default to ['yml', 'yaml']
     config_file_ext = TProp(Iterable[str], lambda x: tuple(x))
     #: str: Event ID pattern use in InfoManager to extract event tag.
@@ -178,7 +178,7 @@ class GlobalPackageVariableManager(VariableManager):
         self.config_gen_max = 0
         self.csv_file_ext = ['']
         self.config_file_ext = ['']
-        self.flag_file_ext = ['']
+        self.flg_file_ext = ['']
         self.eid_pat = ''
         self.rid_pat = ''
 
@@ -190,7 +190,7 @@ class GlobalPackageVariableManager(VariableManager):
         return {
             'config_gen_max': 2000,
             'csv_file_ext': CSV_FILE_EXT,
-            'flag_file_ext': FLAG_FILE_EXT,
+            'flg_file_ext': FLG_FILE_EXT,
             'config_file_ext': CONFIG_FILE_EXT,
             'eid_pat': EID_PAT,
             'rid_pat': RID_PAT,

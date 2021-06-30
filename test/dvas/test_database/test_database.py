@@ -131,13 +131,13 @@ class TestDatabaseManager:
         assert all([isinstance(arg['info'], InfoManager) for arg in res])
         assert all([len(arg['index']) == len(arg['value']) for arg in res])
 
-    def test_get_flags(self, db_init):
-        """Test get_flags"""
+    def test_get_flgs(self, db_init):
+        """Test get_flgs"""
 
         # Define
         db_mngr = db_init.db_mngr
 
-        assert isinstance(db_mngr.get_flags(), list)
+        assert isinstance(db_mngr.get_flgs(), list)
 
 
 class TestInfoManagerMetaData:

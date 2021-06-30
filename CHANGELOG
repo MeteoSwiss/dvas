@@ -10,12 +10,17 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [fpavogt, 2021-04-19] Add config info for variables other than T, and for the M10 raw file
  - [modolol, 2021-04-13] Add DB exploring tool
  - [fpavogt, 2021-05-18] Add pytest fixture to test LaTeX plots using the command line argument "--latex"
+ - [fpavogt, 2021-05-25] Add recipe_config.yml and associated initialization function for recipes
+ - [fpavogt, 2021-06-16] Add `dvas_optimize` entry point to find ideal CHUNK_SIZE value
+ - [fpavogt, 2021-06-23] Add `get_validities()` routine to identify which levels to combine in CWS
 ### Fixed:
  - [modolol, 2021-06-10] Fix missing correction + bugs in PR #147
  - [modolol, 2021-06-08] Cleanup toward v04 (config module)
 ### Changed:
  - [fpavogt, 2021-05-18] Improve looks of plots, and split-up "orig_data_config.yml"
  - [fpavogt, 2021-05-18] Change parameter names in tests, for consistency with main code
+ - [fpavogt, 2021-06-18] Rename `corcoefs()` as `coeffs()`, and move it to new `dvas.tools.gdps.correlations` module
+ - [fpavogt, 2021-06-23] `has_flg()` now returns 0 if flags are <NA>
 ### Deprecated:
 ### Removed:
 ### Security:

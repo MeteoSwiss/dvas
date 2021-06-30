@@ -19,7 +19,7 @@ _M10:
     csv_skiprows: 1
 
     _time:
-        value: get(0, 's2ns')
+        value: get(0, ['rel', 's2ns'])
 
     _gph:
         value: get(1)
@@ -49,7 +49,6 @@ _M10-GDP-ALPHA_001:
     # -- ORIG DATA ----------------------------------
     _time:
         value: get('time', ['rel', 's2ns'])  # this is the number of seconds since 1970-01-01T00:00:00Z
-        value: wcomp(get(1), get(10), 'N')
     _gph:
         value: get('alt_gph')
 

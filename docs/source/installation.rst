@@ -14,13 +14,18 @@ In a terminal, type:
 
 .. code-block:: python
 
-   pip install dvas
+    pip install dvas
 
 And that will take care of things. dvas uses `semantic versioning <https://semver.org/>`_.
 The latest stable version is |version|.
 
-The most recent release of dvas is also available for download from its
-`Github repository <https://github.com/MeteoSwiss-MDA/dvas/releases/latest/>`_.
+The most recent release of dvas is also available for download/cloning from its
+`Github repository <https://github.com/MeteoSwiss-MDA/dvas/releases/latest/>`_, in which case the
+install command becomes:
+
+..code-block:: python
+
+    pip install setup.py
 
 Requirements
 ------------
@@ -28,14 +33,14 @@ dvas is compatible with the following python versions:
 
 .. literalinclude:: ../../setup.py
     :language: python
-    :lines: 40
+    :lines: 41
 
 Furthermore, dvas relies on a few external modules, which will be automatically installed by ``pip``
 if required:
 
 .. literalinclude:: ../../setup.py
     :language: python
-    :lines: 41-56
+    :lines: 42-57
 
 Testing the installation
 ------------------------
@@ -45,7 +50,7 @@ terminal, type:
 
 .. code-block:: none
 
-   dvas_init -h
+   dvas_init_arena -h
 
 This should return the following information:
 

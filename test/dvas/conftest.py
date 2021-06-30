@@ -34,13 +34,24 @@ def pytest_addoption(parser):
     parser.addoption("--latex", action="store_true",
                      help="Test plots also using a full (local) LaTeX installation.")
 
+    parser.addoption("--show-plots", action="store_true",
+                     help="Display the test plots on screen.")
+
 
 @pytest.fixture(scope='session')
 def do_latex(request):
     """ A pytext fixture to identify whether a local LaTeX installation exists, or not.
 
     Adapted from the response of ipetrik on
-    `StackOverflow <https://stackoverflow.com/questions/40880259/how-to-pass-arguments-in-pytest-by-command-line>`__
+    `StackOverflow <https://stackoverflow.com/questions/40880259>`__
+
+    To use this, simply call it as an argument in any of the test function, e.g.:
+
+        def test_some_func(a, b, do_latex):
+            ...
+            if do_latex:
+                dpu.set_mplstyle('latex')
+                some_test_plot(...)
     """
 
     try:
@@ -49,6 +60,28 @@ def do_latex(request):
         # This happens if pytest is being launched from the root directory, in which case it does
         # NOT see conftest.py.
         return False
+
+@pytest.fixture(scope='session')
+def show_plots(request):
+    """ A pytext fixture to decide whether test plots should be shown on-screen, or not.
+
+    This is useful to disable all displays when running automated tests using Github actions,
+    which, on some OS, do not handle the display of plots very well.
+
+    To use this, simply call it as an argument in any of the test function, e.g.:
+
+        def test_some_func(a, b, show_plot):
+            ...
+            some_test_plot(..., show=show_plot, ...)
+    """
+
+    try:
+        return request.config.getoption("--show-plots")
+    except ValueError:
+        # This happens if pytest is being launched from the root directory, in which case it does
+        # NOT see conftest.py.
+        return False
+
 
 
 #TODO
@@ -75,7 +108,7 @@ def db_init(request, tmp_path_factory):
     db_data.update({'db_path': path_var.local_db_path.as_posix()})
 
     # Set db
-    DatabaseManager().clear_db()
+    DatabaseManager().refresh_db()
     db_mngr = DatabaseManager()
 
     # Register db manager
@@ -108,6 +141,9 @@ def db_init(request, tmp_path_factory):
                     model=model
                 ).oid
 
+                #TODO: shouldn't the following line be:
+                # arg.update({'oid': oid})
+                # ? fpavogt, 16.06.2021
                 db_data['data'][i].update({'oid': oid})
 
             data_out.append(arg)
