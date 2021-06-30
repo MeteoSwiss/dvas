@@ -81,7 +81,7 @@ rcp_steps:
     # Simple plotting step of the complete profiles for all the variables.
     uaii22.plots.flight_overview:
         step_id: '02'
-        run: False
+        run: True
         kwargs:
             tags: sync # list of tags to identify profiles in the database
             label: mid # Labelling of plot legend, e.g.: mid, oid, etc ...

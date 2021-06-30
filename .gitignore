@@ -252,6 +252,7 @@ this_file_of_result.txt
 
 # Demo stuff
 src/dvas_demo/output
+src/dvas_demo/db
 src/dvas_demo/demo_script_vof.py
 src/dvas_recipes/uaii22/proc_arena/output
 src/dvas_recipes/uaii22/proc_arena/db

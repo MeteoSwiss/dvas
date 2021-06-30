@@ -29,11 +29,11 @@ from dvas.environ import path_var
 import dvas.plots.utils as dpu
 
 from .errors import DvasRecipesError
-from .utils import default_arena_path, recipe_storage_path
+from .utils import default_arena_path, arena_storage_path, demo_storage_path, recipe_storage_path
 from .recipe import Recipe
 
 def init_arena(arena_path=None):
-    ''' Initializes a new dvas prcoessing arena.
+    ''' Initializes a new dvas processing arena.
 
     Args:
         arena_path (pathlib.Path, optional): relative Path to the processing arena to initialize.
@@ -60,9 +60,14 @@ def init_arena(arena_path=None):
                            ' Please specify a new (relative) path for the dvas arena:')
         arena_path = Path(arena_path)
 
-    # Very well, setup the suitable directory
-    shutil.copytree(recipe_storage_path() / "proc_arena",
-                    arena_path, ignore=None, dirs_exist_ok=False)
+    # Very well, setup the config files for the dvas database initialization
+    shutil.copytree(arena_storage_path(), arena_path, ignore=None, dirs_exist_ok=False)
+
+    # Next, copy the dvas demo script(s) over
+    shutil.copytree(demo_storage_path(), arena_path, ignore=None, dirs_exist_ok=True)
+
+    # And also copy the dvas recipes, in case the user wants to use these
+    shutil.copytree(recipe_storage_path(), arena_path, ignore=None, dirs_exist_ok=True)
 
     # Say goodbye ...
     print('All done in %i s.' % ((datetime.now()-start_time).total_seconds()))
