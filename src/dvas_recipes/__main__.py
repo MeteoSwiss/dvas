@@ -73,7 +73,7 @@ def dvas_optimize():
                         metavar='x',
                         help='Maximum chunk size to test. Defaults to 300.')
 
-    parser.add_argument('--n-chunk', action='store', default=5, type=int,
+    parser.add_argument('--n-chunk', action='store', default=6, type=int,
                         metavar='x',
                         help='Number of chunk samples to take. Defaults to 5.')
 

@@ -29,11 +29,11 @@ from dvas.environ import path_var
 import dvas.plots.utils as dpu
 
 from .errors import DvasRecipesError
-from .utils import default_arena_path, recipe_storage_path
+from .utils import default_arena_path, demo_storage_path, recipe_storage_path
 from .recipe import Recipe
 
 def init_arena(arena_path=None):
-    ''' Initializes a new dvas prcoessing arena.
+    ''' Initializes a new dvas processing arena.
 
     Args:
         arena_path (pathlib.Path, optional): relative Path to the processing arena to initialize.
@@ -60,14 +60,16 @@ def init_arena(arena_path=None):
                            ' Please specify a new (relative) path for the dvas arena:')
         arena_path = Path(arena_path)
 
-    # Very well, setup the suitable directory
-    shutil.copytree(recipe_storage_path() / "proc_arena",
-                    arena_path, ignore=None, dirs_exist_ok=False)
+    # Very well, setup the config files for the dvas database initialization
+    shutil.copytree(demo_storage_path(), arena_path, ignore=None, dirs_exist_ok=False)
+
+    # And also copy the dvas recipes, in case the user wants to use these
+    shutil.copytree(recipe_storage_path(), arena_path, ignore=None, dirs_exist_ok=True)
 
     # Say goodbye ...
     print('All done in %i s.' % ((datetime.now()-start_time).total_seconds()))
 
-def optimize(n_cpus=None, prf_length=7001, chunk_min=50, chunk_max=400, n_chunk=5):
+def optimize(n_cpus=None, prf_length=7001, chunk_min=50, chunk_max=300, n_chunk=6):
     """ Measures which chunk size provides the fastest computation time for the combine() function.
 
     This function is relatively dumb: it will try all requested chunk sizes, and measure which is
@@ -89,8 +91,8 @@ def optimize(n_cpus=None, prf_length=7001, chunk_min=50, chunk_max=400, n_chunk=
         n_cpu (int, optional): number of cpus to use for the test. Defaults to None = all available.
         prf_length (int, optional): length of the test profiles. Default to 7001 elements.
         chunk_min (int, optional): minimum chunk size to test. Defaults to 50.
-        chunk_max (int, optional): maximum chunk size to test. Defaults to 400.
-        n_chunk (int, optional): number of chunk samples to take. Defaults to 5.
+        chunk_max (int, optional): maximum chunk size to test. Defaults to 300.
+        n_chunk (int, optional): number of chunk samples to take. Defaults to 6.
 
     """
 
@@ -106,9 +108,8 @@ def optimize(n_cpus=None, prf_length=7001, chunk_min=50, chunk_max=400, n_chunk=
     print('\n Setting-up a temporary in-memory dvas database ...')
 
     # Set the config file path, so that we can have a DB initialize with proper parameters.
-    # Warning: this very much assumes that the users will be messing (too much) with the default
-    # config files. AT the very least, the RS model "RS-41-GDP-BETA_002" should be defined.
-    setattr(path_var, 'config_dir_path', Path('.', 'config'))
+    # Point towards the core dvas file, so that this can be run from anywhere.
+    setattr(path_var, 'config_dir_path', demo_storage_path() / 'config')
 
     # Actually create the database
     db_mngr = DatabaseManager()

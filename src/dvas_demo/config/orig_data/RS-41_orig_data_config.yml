@@ -33,6 +33,12 @@ _RS41-PRE2018:
     _rh:
         value: get(5)
 
+    _wdir:
+        value: get(6)
+
+    _wspeed:
+        value: get(7)
+
 # ----------------------------------------------------
 # RS-41 type (NOT THE GDP!), latest file format
 # ----------------------------------------------------
@@ -67,6 +73,12 @@ _RS41:
 
     _rh:
         value: get(5)
+
+    _wdir:
+        value: get(7)
+
+    _wspeed:
+        value: get(8)
 
 # ----------------------------------------------------
 # RS-41 GDP, version beta-1

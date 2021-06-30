@@ -27,27 +27,28 @@ The code is composed of two sub-packages:
 There are therefore two distinct ways to use dvas:
 
   1. :ref:`running_recipes:Running dvas recipes`: users interested to reproduce the UAII 2022
-     analysis (either for the original dataset, or for a different-but-similar one) need only to use
-     the ``dvas_recipes`` sub-package to do so.
+     analysis (either for the original dataset, or for a different-but-similar one) need only to
+     interacte with the ``dvas_recipes`` sub-package to do so.
 
   2. :ref:`creating_recipes:Creating dvas recipes`: users interesting to adjust/alter/expand the
      default analysis recipes, or even to write their own recipe from scratch, must use the core
      ``dvas`` package to do so.
 
 .. note::
-    The processing routines inside dvas are intimately linked the specific `Profile` dvas classes.
-    These, in turn, are best populated from the dvas database. This implies that using the
-    processing routines while by-passing the use of the dvas database (e.g. for custom applications)
-    is neither straightforward, nor supported.
+    The scientific processing routines inside dvas are intimately linked the specific
+    ``dvas.data.strategy.data.Profile`` & ``dvas.data.data.MultiProfile`` classes
+    (and their children). Instances of theses classes are best initialized from the dvas database.
+    **This implies that using the scientific processing routines while by-passing the use of the
+    dvas database (e.g. for custom applications) is neither straightforward, nor supported.**
 
 dvas is being developed on Github, where you can submit all your
 `questions <https://github.com/MeteoSwiss/dvas/discussions>`_ and
 `bug reports <https://github.com/MeteoSwiss/dvas/issues>`_. Contributions via pull requests are also
 welcome. See :ref:`troubleshooting:Troubleshooting` for more details.
 
+**Table of contents:**
 
 .. toctree::
-    :caption: Table of contents
     :maxdepth: 1
 
     Home <self>
@@ -62,8 +63,3 @@ welcome. See :ref:`troubleshooting:Troubleshooting` for more details.
     Github repository <https://github.com/MeteoSwiss-MDA/dvas>
     modules
     doc_todo
-
-.. note::
-
-    These pages are very much a work in progress. If you feel like helping, we have a list of
-    missing items on the :ref:`doc_todo:Documentation todos` page.

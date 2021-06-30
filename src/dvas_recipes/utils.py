@@ -10,12 +10,19 @@ This module contains general dvas_recipe utilities.
 
 from pathlib import Path
 
+def demo_storage_path():
+    """ Returns the absolute path to the stored dvas demo locations, from where the dvas demo
+    scripts can be copied locally.
+
+    """
+    return Path(__file__).resolve(strict=True).parent / '..' / 'dvas_demo'
+
 def recipe_storage_path():
-    """ Returns the absolute path to the stored dvas_recipes location, from where they can be
+    """ Returns the absolute path to the stored dvas recipes location, from where they can be
     copied locally.
 
     """
-    return Path(__file__).resolve(strict=True).parent
+    return Path(__file__).resolve(strict=True).parent / 'recipes'
 
 def default_arena_path():
     """ Returns the default **relative** location and name of the dvas processing arena for a

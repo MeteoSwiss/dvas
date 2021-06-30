@@ -30,3 +30,9 @@ _C34:
 
     _pres:
         value: get(4)
+
+    _wdir:
+        value: get(2)
+
+    _wspeed:
+        value: get(3)
