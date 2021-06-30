@@ -251,6 +251,8 @@ this_file_of_result.txt
 *.DS_Store
 
 # Demo stuff
+src/dvas_arena/output
+src/dvas_arena/db
 src/dvas_demo/output
 src/dvas_demo/db
 src/dvas_demo/demo_script_vof.py

@@ -10,13 +10,6 @@ This module contains general dvas_recipe utilities.
 
 from pathlib import Path
 
-def arena_storage_path():
-    """ Returns the absolute path to the demo dvas arena, from where the default db config files
-    can be copied locally.
-
-    """
-    return Path(__file__).resolve(strict=True).parent / '..' / 'dvas_arena'
-
 def demo_storage_path():
     """ Returns the absolute path to the stored dvas demo locations, from where the dvas demo
     scripts can be copied locally.

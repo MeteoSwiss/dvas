@@ -29,7 +29,7 @@ from dvas.environ import path_var
 import dvas.plots.utils as dpu
 
 from .errors import DvasRecipesError
-from .utils import default_arena_path, arena_storage_path, demo_storage_path, recipe_storage_path
+from .utils import default_arena_path, demo_storage_path, recipe_storage_path
 from .recipe import Recipe
 
 def init_arena(arena_path=None):
@@ -61,10 +61,7 @@ def init_arena(arena_path=None):
         arena_path = Path(arena_path)
 
     # Very well, setup the config files for the dvas database initialization
-    shutil.copytree(arena_storage_path(), arena_path, ignore=None, dirs_exist_ok=False)
-
-    # Next, copy the dvas demo script(s) over
-    shutil.copytree(demo_storage_path(), arena_path, ignore=None, dirs_exist_ok=True)
+    shutil.copytree(demo_storage_path(), arena_path, ignore=None, dirs_exist_ok=False)
 
     # And also copy the dvas recipes, in case the user wants to use these
     shutil.copytree(recipe_storage_path(), arena_path, ignore=None, dirs_exist_ok=True)
