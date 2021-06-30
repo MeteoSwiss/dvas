@@ -67,7 +67,7 @@ def init_arena(arena_path=None):
     # Say goodbye ...
     print('All done in %i s.' % ((datetime.now()-start_time).total_seconds()))
 
-def optimize(n_cpus=None, prf_length=7001, chunk_min=50, chunk_max=400, n_chunk=5):
+def optimize(n_cpus=None, prf_length=7001, chunk_min=50, chunk_max=300, n_chunk=6):
     """ Measures which chunk size provides the fastest computation time for the combine() function.
 
     This function is relatively dumb: it will try all requested chunk sizes, and measure which is
@@ -89,8 +89,8 @@ def optimize(n_cpus=None, prf_length=7001, chunk_min=50, chunk_max=400, n_chunk=
         n_cpu (int, optional): number of cpus to use for the test. Defaults to None = all available.
         prf_length (int, optional): length of the test profiles. Default to 7001 elements.
         chunk_min (int, optional): minimum chunk size to test. Defaults to 50.
-        chunk_max (int, optional): maximum chunk size to test. Defaults to 400.
-        n_chunk (int, optional): number of chunk samples to take. Defaults to 5.
+        chunk_max (int, optional): maximum chunk size to test. Defaults to 300.
+        n_chunk (int, optional): number of chunk samples to take. Defaults to 6.
 
     """
 
@@ -106,9 +106,9 @@ def optimize(n_cpus=None, prf_length=7001, chunk_min=50, chunk_max=400, n_chunk=
     print('\n Setting-up a temporary in-memory dvas database ...')
 
     # Set the config file path, so that we can have a DB initialize with proper parameters.
-    # Warning: this very much assumes that the users will be messing (too much) with the default
-    # config files. AT the very least, the RS model "RS-41-GDP-BETA_002" should be defined.
-    setattr(path_var, 'config_dir_path', Path('.', 'config'))
+    # Point towards the core dvas file, so that this can be run from anywhere.
+    setattr(path_var, 'config_dir_path',
+            Path(__file__).parent.resolve() / '..' / 'dvas_demo' / 'config')
 
     # Actually create the database
     db_mngr = DatabaseManager()
