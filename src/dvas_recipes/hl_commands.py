@@ -109,8 +109,7 @@ def optimize(n_cpus=None, prf_length=7001, chunk_min=50, chunk_max=300, n_chunk=
 
     # Set the config file path, so that we can have a DB initialize with proper parameters.
     # Point towards the core dvas file, so that this can be run from anywhere.
-    setattr(path_var, 'config_dir_path',
-            Path(__file__).parent.resolve() / '..' / 'dvas_demo' / 'config')
+    setattr(path_var, 'config_dir_path', demo_storage_path() / 'config')
 
     # Actually create the database
     db_mngr = DatabaseManager()
