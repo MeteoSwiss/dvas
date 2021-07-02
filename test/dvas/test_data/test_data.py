@@ -187,6 +187,10 @@ class TestMutliProfile:
             for prf in mlt_prf_2.profiles
         ])
 
+        # Test the new has_tag method
+        assert all(mlt_prf_1.has_tag('test_add'))
+        assert not any(mlt_prf.has_tag('test_add'))
+
     def test_copy(self, mlt_prf):
         """Test copy method"""
 

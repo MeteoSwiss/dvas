@@ -147,12 +147,23 @@ if __name__ == '__main__':
     for (flg_name, item) in prfs[0].flg_names.items():
         print(f"  {flg_name}: {item['flg_desc']}")
 
-    # To flag specific elements of a given profiles, use the internal methods:
+    # To flag specific elements of a given profile, use the internal methods:
     prfs[0].set_flg('user_qc', True, index=pd.Index([0, 1, 2]))
 
     # Let's check to see that the data was actually flagged
     print('\nDid I flag only the first three steps with "user_qc" ?')
     print(prfs[0].has_flg('user_qc'))
+
+    # FLags are used that characterize individual measurments. Tags, on the other hand, are used to
+    # characterize entire Profiles. They are useful, for example, to identify if a Profile has been
+    # synchronized (tags: 'sync'), if the data is still raw (tag:'raw'), or if it belongs to a GDP
+    # (tag: 'gdp'). As an example, let's figure out which Profile in rs_prfs belongs to a GDP:
+    print('\nChecking Profile tags:')
+    print(rs_prfs.has_tag('gdp'))
+
+    # We can see that the different GDP profiles that were extracted and loaded (without their
+    # uncertainties!) into rs_prfs were indeed correctly tagged:
+    print(rs_prfs.get_info('mid'))
 
     # ----------------------------------------------------------------------------------------------
     print("\n --- BASIC PLOTTING ---")

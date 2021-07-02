@@ -110,7 +110,7 @@ def sync_flight(first_guess_var='temp'):
     sync_length = np.max(np.array(sync_shifts) + np.array(raw_lengths)) - np.min(sync_shifts)
 
     # Which of these profiles is a GDP ?
-    is_gdp = ['gdp' in item for item in prfs.get_info('tags')]
+    is_gdp = prfs.has_tag('gdp')
 
     # Keep track of the important info
     logger.info('oids: %s', oids)

@@ -391,6 +391,18 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
 
         return out
 
+    def has_tag(self, tag):
+        """ Convenience method to check if the different Profile each have a specific tag, or not.
+
+        Args:
+            tag (str): tag to search for.
+
+        Returns:
+            list of bool: one bool for each Profile.
+        """
+
+        return [item.has_tag(tag) for item in self]
+
     def plot(self, **kwargs):
         """ Plot method
 
