@@ -409,6 +409,18 @@ class Profile(ProfileAC):
         # Return 1 if the flag is set, 0 if it isn't, EVEN if the flag was not set (ie flg is <NA>).
         return self.flg.apply(lambda x: (x >> bit_nbr) & 1 if not pd.isna(x) else 0)
 
+    def has_tag(self, val):
+        """ Check if a specific tag name is set for the Profile.
+
+        Args:
+            val (str): Tag name
+
+        Returns:
+            bool: True or False
+        """
+
+        return val in self.info.tags
+
 class RSProfile(Profile):
     """ Child Profile class for *basic radiosonde* atmospheric measurements.
     Requires some measured values, together with their corresponding measurement times since launch,
