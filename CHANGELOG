@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 ### Added:
+ - [fpavogt, 2021-07-02] Add `has_tag()` convenience method to `Profile` and `MultiProfile` classes
 ### Fixed:
 ### Changed:
 ### Deprecated:
