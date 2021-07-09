@@ -326,6 +326,12 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
         Returns:
             pd.DataFrame: the requested data as a MultiIndex pandas DataFrame.
 
+        Warning:
+            The resulting DataFrame has only ``dvas.hardcoded.PRF_REF_INDEX_NAME`` (='_idx') as
+            an index. Since the values of ``dvas.hardcoded.PRF_REF_TDT_NAME`` (='tdt') and
+            ``dvas.hardcoded.PRF_REF_ALT_NAME`` (='alt') are not necessarily the sames for all
+            the Profiles, these cannot be used as common indexes here.
+
         """
 
         # Begin with some sanity checks
