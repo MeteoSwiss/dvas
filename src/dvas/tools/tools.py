@@ -82,18 +82,7 @@ def fancy_nansum(vals, axis=None):
 
         return np.nansum(vals.values)
 
-    # TODO
-    #print(pd.__version__, np.__version__)
-    # When #122 is fixed in pandas, all that will be required is to uncomment the following line
-    #return vals.sum(axis=axis, skipna=True).mask(vals.isna().all(axis=axis))
-    # ... and get rid of what follows
-
-    tmp = vals.sum(axis=axis, skipna=True)
-    if tmp.dtype == 'timedelta64[ns]':
-        return vals.sum(axis=axis, skipna=True).mask(vals.isna().all(axis=axis), pd.NaT)
-    else:
-        return vals.sum(axis=axis, skipna=True).mask(vals.isna().all(axis=axis))
-
+    return vals.sum(axis=axis, skipna=True).mask(vals.isna().all(axis=axis))
 
 @log_func_call(logger)
 def df_to_chunks(df, chunk_size):
