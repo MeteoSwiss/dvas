@@ -150,6 +150,7 @@ class ProfileAC(metaclass=RequiredAttrMetaClass):
 
     def __setattr__(self, item, val):
         try:
+
             if item == 'data':
 
                 # Check that I have all the columns I need in the input, with the proper format.
@@ -168,7 +169,7 @@ class ProfileAC(metaclass=RequiredAttrMetaClass):
                 if any([ind not in self.data.index for ind in val.index]):
                     raise DvasError('Ouch ! Bad index {}. Should be {}'.format(val.index,
                                                                                self.data.index))
-                value = self._prepare_df(pd.DataFrame(val, columns=[item,]), cols_key=[item])
+                value = self._prepare_df(val.to_frame(), cols_key=[item])
 
                 # Update value
                 self._data[item].update(value[item])
