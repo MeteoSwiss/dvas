@@ -45,12 +45,12 @@ db_data = {
     ]
 }
 
-def test_error160():
-    """ Test dedicated to error 160, when inspect.getfullargspec() could no longer extract the
+def test_pandas_csv_read_args():
+    """ Test dedicated to error 160, when pandas inspect package could no longer extract the
     arguments of pandas.read_csv(). This is used to define the content of PD_CSV_READ_ARGS in
     linker.py """
 
-    assert len(inspect.getfullargspec(pd.read_csv).args) > 0
+    assert len(list(inspect.signature(pd.read_csv).parameters.keys())[1:]) > 0
 
 class TestFileHandle:
     """Test FileHandle class"""

@@ -42,7 +42,8 @@ from ..hardcoded import TAG_RAW_NAME, TAG_GDP_NAME, TAG_EMPTY_NAME
 
 # Pandas csv_read method arguments
 PD_CSV_READ_ARGS = [
-    ('csv_' + arg) for arg in inspect.getfullargspec(pd.read_csv).args[1:]
+    ('csv_' + arg) for arg in
+    list(inspect.signature(pd.read_csv).parameters.keys())[1:]
 ]
 
 
@@ -1093,6 +1094,7 @@ class GetExpr(TerminalLoadExprInterpreter):
     def interpret(self):
         """Implement fct method"""
         out = self._FCT(self._expression, *self._ARGS, **self._KWARGS)  # noqa pylint: disable=E1102
+
         for op in self._op:
             out = op(out)
 
