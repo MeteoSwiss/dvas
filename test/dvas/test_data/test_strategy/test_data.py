@@ -23,7 +23,7 @@ from dvas.database.database import InfoManager
 class TestProfile:
     """Test Profile class"""
 
-    info = InfoManager('20200202T0000Z', 1)
+    info = InfoManager('20200202T0000Z', 1, tags=['raw'])
     ok_data = pd.DataFrame({'alt': [10., 15., 20.], 'val': [1., 2., 3.], 'flg': [0, 0, 0]})
     ko_index_data = ok_data[['val', 'flg']].copy()
 
@@ -63,6 +63,10 @@ class TestProfile:
 
         # Test alt
         assert np.array_equal(inst.alt.values, self.ok_data['alt'].values)
+
+        # Test tag getter
+        assert inst.has_tag('raw')
+        assert not inst.has_tag('gdp')
 
     def test_setter(self):
         """Test setter method"""

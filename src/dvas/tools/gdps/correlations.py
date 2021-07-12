@@ -13,7 +13,7 @@ correlation coefficients.
 """
 
 # WARNING: this module should NOT import anything from dvas.data (because it itself is being
-# import there ...), and used in some of the MultiProfile Strategies.
+# imported there ...), and used in some of the MultiProfile Strategies.
 
 # Import from Python
 import numpy as np
@@ -77,7 +77,7 @@ def coeffs(i, j, sigma_name, oid_i=None, oid_j=None, mid_i=None, mid_j=None,
     '''
 
     # Begin with some safety checks
-    for var in [i, j, oid_i, oid_j, oid_i, oid_j, rid_i, rid_j, eid_i, eid_j]:
+    for var in [i, j, oid_i, oid_j, mid_i, mid_j, rid_i, rid_j, eid_i, eid_j]:
         if var is None:
             continue
         if not isinstance(var, np.ndarray):
@@ -93,13 +93,25 @@ def coeffs(i, j, sigma_name, oid_i=None, oid_j=None, mid_i=None, mid_j=None,
             (rid_i == rid_j) * (eid_i == eid_j)] = 1.0
 
     # Now work in the required level of correlation depending on the uncertainty type.
-    # TODO: confirm that all of those rules are actually correct !
     if sigma_name == 'ucu':
         # Nothing to add in case of uncorrelated uncertainties.
         pass
 
     elif sigma_name == 'ucr':
-        logger.warning('Rig-correlated uncertainties not yet defined.')
+
+        # The so-called "uncorrelated" uncertainties from the GDPs show clear signs of correlations
+        # between radiosondes that fly together.
+        # This is related to the manner through which this uncertainty is being derived, which is
+        # sensitive to short-but-real atmospheric fluctuations, which are common between radiosondes
+        # flying together. This also implies that these uncertainties are being underestimated.
+        #
+        # Here, we choose to entirely ignore any correlation between the ucr components. This helps
+        # reduce the impact of this "additional" uncertainty, related to real atmospheric
+        # fluctuations, that should not have been present in the first place. In other words, we
+        # (partially) correct a wrong with a wrong.
+        #
+        # See the scientific dvas documentation for details on this aspect.
+        pass
 
     elif sigma_name == 'ucs':
         # 1) Full spatial-correlation between measurements acquired in the same event

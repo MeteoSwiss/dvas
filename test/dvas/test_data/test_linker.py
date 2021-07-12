@@ -10,7 +10,9 @@ Module contents: Testing classes and function for dvas.data.linker module.
 """
 
 # Import external packages and modules
+import inspect
 import numpy as np
+import pandas as pd
 from pytest_data import use_data
 
 # Import from python packages and modules
@@ -43,6 +45,12 @@ db_data = {
     ]
 }
 
+def test_error160():
+    """ Test dedicated to error 160, when inspect.getfullargspec() could no longer extract the
+    arguments of pandas.read_csv(). This is used to define the content of PD_CSV_READ_ARGS in
+    linker.py """
+
+    assert len(inspect.getfullargspec(pd.read_csv).args) > 0
 
 class TestFileHandle:
     """Test FileHandle class"""
