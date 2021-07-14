@@ -13,7 +13,7 @@ rcp_name: uaii22
 # dvas paths: absolute paths begin with '/'.
 rcp_paths:
     config_dir_path: config
-    orig_data_path: /Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/testzone/dvas_devdata/devdata/data
+    orig_data_path: /Users/fvogt/Projects/MCH/UAII2021/dvas/codedev/testzone/procdata
     local_db_path: db
     output_path: output
 

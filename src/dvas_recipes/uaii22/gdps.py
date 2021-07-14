@@ -9,11 +9,12 @@ Module content: high-level GDP recipes for the UAII22 campaign
 """
 
 # Import from dvas
-from dvas.data.data import MultiGDPProfile
+from dvas.data.data import MultiRSProfile, MultiGDPProfile
 from dvas.tools.gdps import stats as dtgs
 from dvas.tools.gdps import gdps as dtgg
 import dvas.plots.gdps as dpg
 from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, FLG_INCOMPATIBLE_NAME
+from dvas.errors import DBIOError
 
 # Import from dvas_recipes
 from ..errors import DvasRecipesError
@@ -55,12 +56,36 @@ def build_cws(tags='sync', m_vals=[1, '2*'], strategy='all-or-none'):
     (eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What search query will let me access the data I need ?
-    filt = "and_(tags('gdp'), tags('e:{}'), tags('r:{}'), {})".format(eid, rid,
+    gdp_filt = "and_(tags('gdp'), tags('e:{}'), tags('r:{}'), {})".format(eid, rid,
         "tags('" + "'), tags('".join(tags) + "')")
+    cws_filt = "and_(tags('cws'), tags('e:{}'), tags('r:{}'), {})".format(eid, rid,
+        "tags('" + "'), tags('".join(tags) + "')")
+
+    # First things first, let's check if we have already computed the 'tdt' profile of the CWS
+    # during a previous pass. If not, create it now. We treat the case of the tdt sepearately,
+    # since we compute it as a normal (unweighted) mean.
+    try:
+        _ = MultiRSProfile().load_from_db(cws_filt, 'time', 'time')
+
+    except DBIOError:
+        # Very well, let us compute the time array of the combined working standard. Since there is
+        # no uncertainty associated to it, we shall simply take it as the arithmetic mean of the
+        # individual GDP times.
+        # First, load the time data
+
+        gdp_prfs = MultiGDPProfile()
+        gdp_prfs.load_from_db(gdp_filt, dynamic.INDEXES[PRF_REF_TDT_NAME],
+                              tdt_abbr=dynamic.INDEXES[PRF_REF_TDT_NAME],
+                              alt_abbr=None, ucr_abbr=None, ucs_abbr=None,
+                              uct_abbr=None, ucu_abbr=None,
+                              inplace=True)
+
+        import pdb
+        pdb.set_trace()
 
     # Load the GDP profiles
     gdp_prfs = MultiGDPProfile()
-    gdp_prfs.load_from_db(filt, dynamic.CURRENT_VAR,
+    gdp_prfs.load_from_db(gdp_filt, dynamic.CURRENT_VAR,
                           tdt_abbr=dynamic.INDEXES[PRF_REF_TDT_NAME],
                           alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME],
                           ucr_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucr'],
@@ -68,6 +93,8 @@ def build_cws(tags='sync', m_vals=[1, '2*'], strategy='all-or-none'):
                           uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
                           ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],
                           inplace=True)
+
+
 
     # Before combining the GDPs with each other, let us assess their consistency.
     # The idea here is to flag any inconsistent measurement, so that they can be ignored during
@@ -102,6 +129,8 @@ def build_cws(tags='sync', m_vals=[1, '2*'], strategy='all-or-none'):
     dpg.gdps_vs_cws(gdp_prfs, cws, index_name='_idx', show=True, fn_prefix=dynamic.CURRENT_STEP_ID,
                     fn_suffix=fn_suffix(eid=eid, rid=rid, tags=tags, var=dynamic.CURRENT_VAR))
 
-    # --- TODO ---
     # Save the CWS to the database
-    #cws.save_to_db()
+    # Here, I only save the information associated to the variable, i.e. the value and its errors.
+    # I do not save the alt column, which is a variable itself and should be derived as such using a
+    # weighted mean. I also do not save the tdt column, which should be assembled from a simple mean
+    cws.save_to_db(add_tags=['cws'], rm_tags=['gdp'], prms=['val', 'ucr', 'ucs', 'uct', 'ucu'])

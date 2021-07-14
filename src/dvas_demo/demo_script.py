@@ -258,5 +258,8 @@ if __name__ == '__main__':
     # We can now inspect the result visually
     dpg.gdps_vs_cws(gdp_prfs, cws, index_name='_idx', show=False, fn_prefix='03')
 
-    # Save the CWS to the database
-    cws.save_to_db(add_tags=['cws'], rm_tags=['gdp'])
+    # Save the CWS to the database.
+    # One should note here that we only save the columns of the CWS DataFrame, and not the 'alt' and
+    # 'tdt' indexes. As a result, if one tries to extract the cws from the DB right away, the 'alt'
+    # and 'tdt' columns will be filled with NaNs.
+    cws.save_to_db(add_tags=['cws'], rm_tags=['gdp'], prms=['val', 'ucr', 'ucs', 'uct', 'ucu'])

@@ -75,7 +75,7 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, index_name='tdt', label='mid', **kwa
             # not being supported by matplotlib.
             x = x.dt.total_seconds()
         else:
-            x=x.values
+            x = x.values
 
     # Very well, let us plot all these things.
     for gdp_ind in range(len(gdps.columns.levels[0])):
