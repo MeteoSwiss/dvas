@@ -13,6 +13,9 @@ _M10:
         - "get('day_night')"
 
     # -- ORIG DATA ----------------------------------
+    # All keywords from the pandas.read_csv() method are accessible here to help extract data from
+    # text files. Simply append 'csv_' in front of them. Leaving one blank will use to the
+    # pandas default values.
     csv_delimiter:
     csv_skip_blank_lines: True
     csv_delim_whitespace: True
