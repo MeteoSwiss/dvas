@@ -14,7 +14,6 @@ class DvasError(Exception):
     """General exception class for dvas."""
 
 
-
 class ConfigError(DvasError):
     """Exception for error in config"""
 
