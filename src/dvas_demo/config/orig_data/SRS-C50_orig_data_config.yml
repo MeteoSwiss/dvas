@@ -17,6 +17,7 @@ _C50:
     csv_skip_blank_lines: True
     csv_skiprows: 40
     csv_skipfooter: 1
+    csv_encoding:
 
     _time:
         value: get(0, 's2ns')

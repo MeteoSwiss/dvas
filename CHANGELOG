@@ -14,6 +14,18 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Removed:
 ### Security:
 
+## [v0.4.1] (2021-07-16)
+### Added:
+ - [fpavogt, 2021-07-02] Add `has_tag()` convenience method to `Profile` and `MultiProfile` classes
+ - [fpavogt, 2021-07-14] Add `csv_encoding` parameter to config files, and set it to 'altin_1' for RS-41 
+### Fixed:
+ - [modolol, 2021-07-12] Fix issue #160
+### Changed:
+### Deprecated:
+ - [fpavogt, 2021-07-14] Make Python 3.9.0 and pandas 1.3.0 minimum required versions for dvas
+### Removed:
+### Security:
+
 ## [v0.4.0] (2021-06-30)
 ### Added:
  - [modolol, 2021-05-11] Add interpreter to mix raw parameter in config file

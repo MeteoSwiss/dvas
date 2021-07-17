@@ -8,12 +8,19 @@ SPDX-License-Identifier: GPL-3.0-or-later
 Module content: high-level GDP recipes for the UAII22 campaign
 """
 
+# Import from python
+import numpy as np
+import pandas as pd
+
 # Import from dvas
-from dvas.data.data import MultiGDPProfile
+from dvas.data.data import MultiRSProfile, MultiGDPProfile
 from dvas.tools.gdps import stats as dtgs
 from dvas.tools.gdps import gdps as dtgg
 import dvas.plots.gdps as dpg
 from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, FLG_INCOMPATIBLE_NAME
+from dvas.hardcoded import PRF_REF_VAL_NAME, PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME
+from dvas.hardcoded import PRF_REF_UCU_NAME
+from dvas.errors import DBIOError
 
 # Import from dvas_recipes
 from ..errors import DvasRecipesError
@@ -55,12 +62,14 @@ def build_cws(tags='sync', m_vals=[1, '2*'], strategy='all-or-none'):
     (eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What search query will let me access the data I need ?
-    filt = "and_(tags('gdp'), tags('e:{}'), tags('r:{}'), {})".format(eid, rid,
+    gdp_filt = "and_(tags('gdp'), tags('e:{}'), tags('r:{}'), {})".format(eid, rid,
+        "tags('" + "'), tags('".join(tags) + "')")
+    cws_filt = "and_(tags('cws'), tags('e:{}'), tags('r:{}'), {})".format(eid, rid,
         "tags('" + "'), tags('".join(tags) + "')")
 
     # Load the GDP profiles
     gdp_prfs = MultiGDPProfile()
-    gdp_prfs.load_from_db(filt, dynamic.CURRENT_VAR,
+    gdp_prfs.load_from_db(gdp_filt, dynamic.CURRENT_VAR,
                           tdt_abbr=dynamic.INDEXES[PRF_REF_TDT_NAME],
                           alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME],
                           ucr_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucr'],
@@ -68,6 +77,37 @@ def build_cws(tags='sync', m_vals=[1, '2*'], strategy='all-or-none'):
                           uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
                           ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],
                           inplace=True)
+
+    # First things first, let's check if we have already computed the 'tdt' profile of the CWS
+    # during a previous pass. If not, create it now. We treat the case of the tdt sepearately,
+    # since we compute it as a normal (unweighted) mean.
+    try:
+        _ = MultiRSProfile().load_from_db(cws_filt, 'time', 'time')
+
+    except DBIOError:
+        # Very well, let us compute the time array of the combined working standard. Since there is
+        # no uncertainty associated to it, we shall simply take it as the arithmetic mean of the
+        # individual GDP times.
+        # First, load the time data
+
+        # Let us now create a high-resolution CWS for these synchronized GDPs
+        tdt_cws = dtgg.combine(gdp_prfs, binning=1, method='mean',
+                               mask_flgs=None, chunk_size=dynamic.CHUNK_SIZE, n_cpus=dynamic.N_CPUS)
+
+        # TODO: doing a mean of the tdt from each radiosonde is a problem, because if they are not
+        # synced, we may end up with jumps backwards, or weird stuff.
+        # What we need is a proper function to identify the start time of the flight, and use this
+        # to build the time delta array of the CWS.
+        # For now, just assume step 0 is the launch (not always TRUE!)
+        tdt_cws[0].data.reset_index(level='tdt', drop=True, inplace=True)
+        tdt_cws[0].data['tdt'] = pd.Series(np.arange(0, len(tdt_cws[0].data), 1)*1e9,
+                                           dtype='timedelta64[ns]').values
+        tdt_cws[0].data.set_index('tdt', inplace=True, drop=True, append=True)
+
+        # And then save the tdt array to the database ... tdt and only tdt !
+        tdt_cws.save_to_db(add_tags=['cws'], rm_tags=['gdp'], prms=[PRF_REF_TDT_NAME])
+
+
 
     # Before combining the GDPs with each other, let us assess their consistency.
     # The idea here is to flag any inconsistent measurement, so that they can be ignored during
@@ -102,6 +142,9 @@ def build_cws(tags='sync', m_vals=[1, '2*'], strategy='all-or-none'):
     dpg.gdps_vs_cws(gdp_prfs, cws, index_name='_idx', show=True, fn_prefix=dynamic.CURRENT_STEP_ID,
                     fn_suffix=fn_suffix(eid=eid, rid=rid, tags=tags, var=dynamic.CURRENT_VAR))
 
-    # --- TODO ---
     # Save the CWS to the database
-    #cws.save_to_db()
+    # Here, I only save the information associated to the variable, i.e. the value and its errors.
+    # I do not save the alt column, which is a variable itself and should be derived as such using a
+    # weighted mean. I also do not save the tdt column, which should be assembled from a simple mean
+    cws.save_to_db(add_tags=['cws'], rm_tags=['gdp'], prms=[PRF_REF_VAL_NAME,
+        PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME])

@@ -17,6 +17,7 @@ _M10:
     csv_skip_blank_lines: True
     csv_delim_whitespace: True
     csv_skiprows: 1
+    csv_encoding:
 
     _time:
         value: get(0, ['rel', 's2ns'])

@@ -69,11 +69,13 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, index_name='tdt', label='mid', **kwa
     if index_name in cws.index.names:
         x = cws.index.get_level_values(index_name).values
     else:
-        x = cws[index_name].values
+        x = cws[index_name]
         if index_name == PRF_REF_TDT_NAME:
-            # I need to do a unit conversion for the time deltas ... having timedelta64 [ns[] is
+            # I need to do a unit conversion for the time deltas ... having timedelta64[ns] is
             # not being supported by matplotlib.
-            x = x.astype('float64')/1e9
+            x = x.dt.total_seconds()
+        else:
+            x = x.values
 
     # Very well, let us plot all these things.
     for gdp_ind in range(len(gdps.columns.levels[0])):
