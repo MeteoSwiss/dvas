@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.4.0
+                0.4.1
               </div>
             
           
@@ -439,6 +439,13 @@ extraction process. Defaults to None.</p></li>
 <dd class="field-even"><p><em>pd.DataFrame</em> – the requested data as a MultiIndex pandas DataFrame.</p>
 </dd>
 </dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The resulting DataFrame has only <code class="docutils literal notranslate"><span class="pre">dvas.hardcoded.PRF_REF_INDEX_NAME</span></code> (=’_idx’) as
+an index. Since the values of <code class="docutils literal notranslate"><span class="pre">dvas.hardcoded.PRF_REF_TDT_NAME</span></code> (=’tdt’) and
+<code class="docutils literal notranslate"><span class="pre">dvas.hardcoded.PRF_REF_ALT_NAME</span></code> (=’alt’) are not necessarily the sames for all
+the Profiles, these cannot be used as common indexes here.</p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -451,6 +458,20 @@ extraction process. Defaults to None.</p></li>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><em>dict of list</em> – idem to self.profiles, but with only the requested metadata.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dvas.data.data.MutliProfileAC.has_tag">
+<span class="sig-name descname"><span class="pre">has_tag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.data.MutliProfileAC.has_tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience method to check if the different Profile each have a specific tag, or not.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tag</strong> (<em>str</em>) – tag to search for.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>list of bool</em> – one bool for each Profile.</p>
 </dd>
 </dl>
 </dd></dl>
