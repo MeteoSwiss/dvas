@@ -263,7 +263,6 @@ class Recipe:
 
         return 0
 
-
     def execute(self, from_step_id=None):
         """ Run the recipe step-by-step, possibly skipping some of the first ones.
 
@@ -276,7 +275,7 @@ class Recipe:
         # First, we setup the dvas database
         self.init_db()
 
-        # If warranted, find all the flights that need tio be processed.
+        # If warranted, find all the flights that need to be processed.
         if rcp_dyn.ALL_FLIGHTS is None:
             rcp_dyn.ALL_FLIGHTS = self.get_all_flights_from_db()
 

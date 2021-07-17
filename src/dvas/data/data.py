@@ -326,6 +326,12 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
         Returns:
             pd.DataFrame: the requested data as a MultiIndex pandas DataFrame.
 
+        Warning:
+            The resulting DataFrame has only ``dvas.hardcoded.PRF_REF_INDEX_NAME`` (='_idx') as
+            an index. Since the values of ``dvas.hardcoded.PRF_REF_TDT_NAME`` (='tdt') and
+            ``dvas.hardcoded.PRF_REF_ALT_NAME`` (='alt') are not necessarily the sames for all
+            the Profiles, these cannot be used as common indexes here.
+
         """
 
         # Begin with some sanity checks
@@ -390,6 +396,18 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
             out = [get_class_public_attr(info) for info in self.info]
 
         return out
+
+    def has_tag(self, tag):
+        """ Convenience method to check if the different Profile each have a specific tag, or not.
+
+        Args:
+            tag (str): tag to search for.
+
+        Returns:
+            list of bool: one bool for each Profile.
+        """
+
+        return [item.has_tag(tag) for item in self]
 
     def plot(self, **kwargs):
         """ Plot method

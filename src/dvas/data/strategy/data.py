@@ -150,6 +150,7 @@ class ProfileAC(metaclass=RequiredAttrMetaClass):
 
     def __setattr__(self, item, val):
         try:
+
             if item == 'data':
 
                 # Check that I have all the columns I need in the input, with the proper format.
@@ -168,7 +169,7 @@ class ProfileAC(metaclass=RequiredAttrMetaClass):
                 if any([ind not in self.data.index for ind in val.index]):
                     raise DvasError('Ouch ! Bad index {}. Should be {}'.format(val.index,
                                                                                self.data.index))
-                value = self._prepare_df(pd.DataFrame(val, columns=[item,]), cols_key=[item])
+                value = self._prepare_df(val.to_frame(), cols_key=[item])
 
                 # Update value
                 self._data[item].update(value[item])
@@ -408,6 +409,18 @@ class Profile(ProfileAC):
         bit_nbr = self._get_flg_bit_nbr(val)
         # Return 1 if the flag is set, 0 if it isn't, EVEN if the flag was not set (ie flg is <NA>).
         return self.flg.apply(lambda x: (x >> bit_nbr) & 1 if not pd.isna(x) else 0)
+
+    def has_tag(self, val):
+        """ Check if a specific tag name is set for the Profile.
+
+        Args:
+            val (str): Tag name
+
+        Returns:
+            bool: True or False
+        """
+
+        return val in self.info.tags
 
 class RSProfile(Profile):
     """ Child Profile class for *basic radiosonde* atmospheric measurements.

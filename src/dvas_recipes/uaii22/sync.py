@@ -41,8 +41,9 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
     # First the GDPs
     gdp_shifts = [item for (ind, item) in enumerate(sync_shifts) if is_gdp[ind]]
     gdps = MultiGDPProfile()
-    gdps.load_from_db("and_({filt}, tags('gdp'))".format(filt=filt), var_name, 'time',
-                      alt_abbr='gph',
+    gdps.load_from_db("and_({filt}, tags('gdp'))".format(filt=filt), var_name,
+                      dynamic.INDEXES[PRF_REF_TDT_NAME],
+                      alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME],
                       ucr_abbr=dynamic.ALL_VARS[var_name]['ucr'],
                       ucs_abbr=dynamic.ALL_VARS[var_name]['ucs'],
                       uct_abbr=dynamic.ALL_VARS[var_name]['uct'],
@@ -55,7 +56,8 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
     non_gdp_shifts = [item for (ind, item) in enumerate(sync_shifts) if not is_gdp[ind]]
     non_gdps = MultiRSProfile()
     non_gdps.load_from_db("and_({filt}, not_(tags('gdp')))".format(filt=filt), var_name,
-                          'time', alt_abbr='gph')
+                          dynamic.INDEXES[PRF_REF_TDT_NAME],
+                          alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME])
     non_gdps.sort()
     non_gdps.rebase(sync_length, shifts=non_gdp_shifts, inplace=True)
     non_gdps.save_to_db(add_tags=['sync'])
@@ -110,7 +112,7 @@ def sync_flight(first_guess_var='temp'):
     sync_length = np.max(np.array(sync_shifts) + np.array(raw_lengths)) - np.min(sync_shifts)
 
     # Which of these profiles is a GDP ?
-    is_gdp = ['gdp' in item for item in prfs.get_info('tags')]
+    is_gdp = prfs.has_tag('gdp')
 
     # Keep track of the important info
     logger.info('oids: %s', oids)

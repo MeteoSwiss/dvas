@@ -37,6 +37,7 @@ CSV_DELIM_WHITESPACE_FLD_NM = 'csv_delim_whitespace'
 CSV_COMMENT_FLD_NM = 'csv_comment'
 CSV_NA_VALUES_FLD_NM = 'csv_na_values'
 CSV_SKIPFOOTER_FLD_NM = 'csv_skipfooter'
+CSV_ENCODING_FLD_NM = 'csv_encoding'
 
 #: list: Fields keys passed to expression interpreter
 EXPR_FIELD_KEYS = [
@@ -62,6 +63,7 @@ LABEL_VAL_DEF = {
     CSV_COMMENT_FLD_NM: '#',
     CSV_NA_VALUES_FLD_NM: ['/'],
     CSV_SKIPFOOTER_FLD_NM: 0,
+    CSV_ENCODING_FLD_NM: 'utf_8',
 }
 
 #: dict: Parameter pattern properties (JSON_SCHEMA)
@@ -100,7 +102,7 @@ PARAMETER_PATTERN_PROP = {
         ]
     },
     rf"^{VALUE_FLD_NM}$": {
-        type: "string"
+        "type": "string"
     },
     rf"^{CSV_USE_DEFAULT_FLD_NM}$": {
         "type": "boolean"
@@ -152,6 +154,12 @@ PARAMETER_PATTERN_PROP = {
         },
         "minItems": 1,
         "uniqueItems": True
+    },
+    rf"^{CSV_ENCODING_FLD_NM}$": {
+        'anyOf': [
+            {"type": "null"},
+            {"type": 'string'}
+        ]
     },
 }
 

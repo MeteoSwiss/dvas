@@ -19,7 +19,8 @@ import matplotlib.gridspec as gridspec
 from ..errors import  DvasError
 from ..logger import log_func_call
 from ..logger import plots_logger as logger
-from ..hardcoded import PRF_REF_VAL_NAME, PRF_REF_ALT_NAME, PRF_REF_TDT_NAME
+from ..hardcoded import PRF_REF_INDEX_NAME, PRF_REF_VAL_NAME, PRF_REF_ALT_NAME, PRF_REF_TDT_NAME
+from ..hardcoded import PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME
 from . import utils as pu
 
 @log_func_call(logger)
@@ -56,24 +57,39 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, index_name='tdt', label='mid', **kwa
     ax1 = fig.add_subplot(gs_info[1, 0], sharex=ax0)
 
     # Extract the DataFrames from the MultiGDPProfile instances
-    cws = cws_prf.get_prms(['val', 'ucr', 'ucs', 'uct', 'ucu', 'uc_tot'])[0]
-    gdps = gdp_prfs.get_prms(['val', 'ucr', 'ucs', 'uct', 'ucu', 'uc_tot'])
+    cws = cws_prf.get_prms([PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME,
+                            PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME,
+                            'uc_tot'])[0]
+    gdps = gdp_prfs.get_prms([PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME,
+                            PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME,
+                            'uc_tot'])
 
-    # What is my reference values.
-    x = cws.index.get_level_values(index_name)
+    # What are my reference values ? Here I need to differentiate two cases if the user asks for
+    # 'tdt' or 'alt'. These two index are put into regular columns by the get_prms() method !
+    if index_name in cws.index.names:
+        x = cws.index.get_level_values(index_name).values
+    else:
+        x = cws[index_name]
+        if index_name == PRF_REF_TDT_NAME:
+            # I need to do a unit conversion for the time deltas ... having timedelta64[ns] is
+            # not being supported by matplotlib.
+            x = x.dt.total_seconds()
+        else:
+            x = x.values
 
     # Very well, let us plot all these things.
     for gdp_ind in range(len(gdps.columns.levels[0])):
 
         gdp = gdps[gdp_ind]
 
-        # Let us make sure that all the profiles are synchronized
-        gdp_x = gdp.index.get_level_values(index_name)
-        if np.any(gdp_x != x):
+        # Let us make sure that all the profiles are synchronized by checking the profile lengths
+        # This is not fool proof, but it is a start. I could also check for the sync tag, but it
+        # would be less strict as a check.
+        if len(cws) != len(gdps):
             raise DvasError('Ouch! GDPS and CWS are not synchronized. I cannot plot this.')
 
         # First, plot the profiles themselves
-        ax0.plot(x, gdp['val'], lw=1, ls='-', drawstyle='steps-mid',
+        ax0.plot(x, gdp[PRF_REF_VAL_NAME], lw=1, ls='-', drawstyle='steps-mid',
                  label=gdp_prfs.get_info(label)[gdp_ind])
         ax0.fill_between(x, gdp[PRF_REF_VAL_NAME]-k_lvl*gdp['uc_tot'],
                          gdp[PRF_REF_VAL_NAME]+k_lvl*gdp['uc_tot'], alpha=0.3, step='mid')
@@ -98,12 +114,19 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, index_name='tdt', label='mid', **kwa
     ylbl = cws_prf.var_info[PRF_REF_VAL_NAME]['prm_name']
     ylbl += ' [{}]'.format(cws_prf.var_info[PRF_REF_VAL_NAME]['prm_unit'])
 
+    if index_name == PRF_REF_INDEX_NAME:
+        xlbl = r'$i$'
+    else:
+        xlbl = cws_prf.var_info[index_name]['prm_name']
+        xlbl += ' [{}]'.format(cws_prf.var_info[index_name]['prm_unit'])
+
+
     ax0.set_ylabel(pu.fix_txt(ylbl))
     plt.setp(ax0.get_xticklabels(), visible=False)
-    ax1.set_xlabel(pu.fix_txt(index_name))
+    ax1.set_xlabel(pu.fix_txt(xlbl))
     ax1.set_ylabel(pu.fix_txt(r'$\Delta$' + ylbl))
 
-    ax0.set_xlim((np.min(x), np.max(x)))
+    ax0.set_xlim((np.nanmin(x), np.nanmax(x)))
 
     # Add the legend
     pu.fancy_legend(ax0, label)

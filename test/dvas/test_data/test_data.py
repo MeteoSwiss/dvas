@@ -16,7 +16,7 @@ import pytest
 
 # Import from python packages and modules
 from dvas.data.strategy.load import LoadRSProfileStrategy, LoadGDPProfileStrategy
-from dvas.data.data import MultiRSProfile, MultiGDPProfile
+from dvas.data.data import MultiProfile, MultiRSProfile, MultiGDPProfile
 
 @pytest.fixture
 def mlt_prf():
@@ -186,6 +186,12 @@ class TestMutliProfile:
             tag_nm in prf.info.tags
             for prf in mlt_prf_2.profiles
         ])
+
+        # Test the new has_tag method
+        assert all(mlt_prf_1.has_tag('test_add'))
+        assert not any(mlt_prf.has_tag('test_add'))
+        # Make sure I always get a list no matter what
+        assert isinstance(MultiProfile().has_tag('hurray'), list)
 
     def test_copy(self, mlt_prf):
         """Test copy method"""
