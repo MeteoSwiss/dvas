@@ -12,6 +12,7 @@ This file contains specific recipe classes and utilities.
 # Import generic packages
 from importlib import import_module
 from multiprocessing import cpu_count
+from pathlib import Path
 from ruamel.yaml import YAML
 import numpy as np
 
@@ -167,6 +168,15 @@ class Recipe:
                 setattr(path_var, item[0], item[1])
             else:
                 setattr(path_var, item[0], rcp_fn.parent / item[1])
+
+        # Of all the paths, it is essential to make sure that orig_data_path exists.
+        # Else, en empty database will be created (without complaints), and it will be hard for the
+        # user to understand that it is empty because no data was found (because the path was off).
+        # Fixes #165.
+        if not Path(path_var.orig_data_path).exists():
+            raise DvasRecipesError(f'Ouch ! the following orig_data_path (defined in {rcp_fn}) '+
+                                   'does not exist:' +
+                                   f' {path_var.orig_data_path}')
 
         # Start the dvas logging
         Log.start_log(rcp_data['rcp_params']['general']['log_mode'],
