@@ -21,6 +21,7 @@ _RS92:
     csv_delim_whitespace: True
     csv_skiprows: 2
     csv_encoding:
+    csv_na_values:
 
     _time:
         value: get(0, 's2ns')

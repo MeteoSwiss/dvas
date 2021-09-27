@@ -18,6 +18,7 @@ _RS41-PRE2018:
     csv_delim_whitespace: True
     csv_skiprows: 1
     csv_encoding: 'utf_8'
+    csv_na_values:
 
     _time:
         value: get(0, 's2ns')

@@ -19,6 +19,7 @@ _C34:
     csv_skiprows: 48
     csv_skipfooter: 1
     csv_encoding:
+    csv_na_values:
 
     _time:
         value: get(0, 's2ns')
