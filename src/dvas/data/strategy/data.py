@@ -136,7 +136,7 @@ class ProfileAC(metaclass=RequiredAttrMetaClass):
 
             if item in self.get_index_attr():
                 # For index, I cannot extract them directly.
-                # Instead, let's create a Series instead, and make sure it comes with the same index
+                # Instead, let's create a Series, and make sure it comes with the same index
                 # This is a bit of data duplication, but is critical to get coherent/consistent
                 # output.
 
@@ -450,7 +450,6 @@ class RSProfile(Profile):
         """pd.Series: Corresponding data time delta since launch"""
         return super().__getattr__('tdt')
 
-
 class GDPProfile(RSProfile):
     """ Child RSProfile class for *GDP-like* radiosonde atmospheric measurements.
     Requires some measured values, together with their corresponding measurement times since launch,
@@ -538,3 +537,7 @@ class GDPProfile(RSProfile):
         out[self.data[['ucr', 'ucs', 'uct', 'ucu']].isna().all(axis=1)] = np.nan
         # Make sure to give a proper name to the Series
         return out.rename('uc_tot')
+
+
+class DeltaProfile(GDPProfile):
+    """ Child GDPProfile class intended for profile *deltas* between candidate and CWS profiles. """

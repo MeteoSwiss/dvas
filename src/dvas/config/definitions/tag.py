@@ -17,6 +17,7 @@ from ...hardcoded import TAG_RAW_NAME, TAG_RAW_DESC
 from ...hardcoded import TAG_GDP_NAME, TAG_GDP_DESC
 from ...hardcoded import TAG_1S_NAME, TAG_1S_DESC
 from ...hardcoded import TAG_CWS_NAME, TAG_CWS_DESC
+from ...hardcoded import TAG_DELTA_NAME, TAG_DELTA_DESC
 from ...hardcoded import TAG_SYNC_NAME, TAG_SYNC_DESC
 from ...hardcoded import TAG_EMPTY_NAME, TAG_EMPTY_DESC
 
@@ -53,6 +54,10 @@ CONST_LABELS = [
         TableTag.tag_desc.name: TAG_CWS_DESC
     },
     {
+        TableTag.tag_name.name: TAG_DELTA_NAME,
+        TableTag.tag_desc.name: TAG_DELTA_DESC
+    },
+    {
         TableTag.tag_name.name: TAG_SYNC_NAME,
         TableTag.tag_desc.name: TAG_SYNC_DESC
     },
@@ -60,6 +65,7 @@ CONST_LABELS = [
         TableTag.tag_name.name: TAG_EMPTY_NAME,
         TableTag.tag_desc.name: TAG_EMPTY_DESC
     },
+
 ]
 
 #: str: Config manager key name
