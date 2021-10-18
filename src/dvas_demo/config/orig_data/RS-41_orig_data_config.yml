@@ -17,6 +17,7 @@ _RS41-PRE2018:
     csv_skip_blank_lines: True
     csv_delim_whitespace: True
     csv_skiprows: 1
+    csv_skipfooter: 0
     csv_encoding: 'utf_8'
     csv_na_values:
 
@@ -60,7 +61,9 @@ _RS41:
     csv_skip_blank_lines: True
     csv_delim_whitespace: False
     csv_skiprows: 47
+    csv_skipfooter: 0
     csv_encoding: 'latin_1'
+    csv_na_values: '/'
 
     _time:
         value: get(0, 's2ns')

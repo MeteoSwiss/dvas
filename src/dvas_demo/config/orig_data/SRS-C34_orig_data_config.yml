@@ -4,7 +4,6 @@
 _C34:
 
     # -- META DATA ----------------------------------
-
     edt: "get('event_dt')"
     srn: "get('srn')"
     pid: "get('product_id')"
@@ -16,6 +15,7 @@ _C34:
     # -- ORIG DATA ----------------------------------
     csv_delimiter: ';'
     csv_skip_blank_lines: True
+    csv_delim_whitespace: False
     csv_skiprows: 48
     csv_skipfooter: 1
     csv_encoding:

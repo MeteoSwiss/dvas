@@ -17,6 +17,7 @@ _M10:
     csv_skip_blank_lines: True
     csv_delim_whitespace: True
     csv_skiprows: 1
+    csv_skipfooter: 0
     csv_encoding:
     csv_na_values:
 
