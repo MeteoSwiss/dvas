@@ -431,7 +431,7 @@ class RSProfile(Profile):
     - 'alt' (float)
     - 'tdt' (timedelta64[ns])
     - 'val' (float)
-    - 'flag' (Int64)
+    - 'flg' (Int64)
 
     The same format is expected as input.
 
@@ -538,6 +538,27 @@ class GDPProfile(RSProfile):
         # Make sure to give a proper name to the Series
         return out.rename('uc_tot')
 
+class CWSProfile(GDPProfile):
+    """ Child GDPProfile class intended for profile *deltas* between candidate and CWS profiles. """
 
 class DeltaProfile(GDPProfile):
-    """ Child GDPProfile class intended for profile *deltas* between candidate and CWS profiles. """
+    """ Child GDPProfile class intended for profile *deltas* between candidate and CWS profiles.
+
+    Unlike GDPs and CWS, this class does no longer contain time delta information.
+    """
+
+    # The column names for the pandas DataFrame
+    DF_COLS_ATTR = dict(
+        **Profile.DF_COLS_ATTR,
+        **{
+            PRF_REF_UCR_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+            PRF_REF_UCS_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+            PRF_REF_UCT_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+            PRF_REF_UCU_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+          }
+    )
+
+    @property
+    def tdt(self):
+        """ DeltaProfile do not store any time delta information. """
+        return None
