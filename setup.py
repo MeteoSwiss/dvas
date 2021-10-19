@@ -42,7 +42,7 @@ setup(
     install_requires=[
         "jsonschema",
         "matplotlib",
-        "netCDF4",
+        "netcdf4",
         'numpy',
         "pampy",
         "pandas>=1.3.0",

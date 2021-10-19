@@ -15,7 +15,7 @@ import pandas as pd
 import numpy as np
 
 # Import from tested package
-from dvas.data.strategy.data import Profile, RSProfile, GDPProfile
+from dvas.data.strategy.data import Profile, RSProfile, GDPProfile, DeltaProfile
 from dvas.errors import ProfileError
 from dvas.database.database import InfoManager
 
@@ -210,3 +210,27 @@ class TestGDPProfile:
 
         # Test tdt
         assert np.array_equal(inst.tdt.values, self.ok_data['tdt'].values)
+
+class TestDeltaProfile:
+    """ Test the DeltaProfile class """
+    info = InfoManager('20211019T0000Z', 1)
+    still_ok_data = pd.DataFrame(
+        {
+            'alt': [10., 15., 20.], 'val': [1., 2., 3.], 'flg': [0, 0, 0], 'tdt': [0, 1e9, 2e9],
+            'ucr': [1, 1, 1], 'ucs': [1, 1, 1], 'uct': [1, 1, 1], 'ucu': [1, 1, 1]}
+    )
+    ok_index_data = still_ok_data[['val', 'alt', 'flg', 'ucr', 'ucs', 'uct', 'ucu']].copy()
+    nok_index_data = still_ok_data[['val', 'alt', 'ucr', 'ucs', 'uct', 'ucu']].copy()
+
+    def test_init(self):
+        """Test init class"""
+
+        # Init
+        DeltaProfile(self.info, self.ok_index_data)
+
+        # Init with tdt
+        DeltaProfile(self.info, self.still_ok_data)
+
+        # Test bad data
+        with pytest.raises(ProfileError):
+            DeltaProfile(self.info, self.nok_index_data)

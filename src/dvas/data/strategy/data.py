@@ -16,6 +16,7 @@ import numpy as np
 import pandas as pd
 
 # Import from current package
+from ...logger import data as logger
 from ...database.model import Flg as TableFlg
 from ...database.database import DatabaseManager, InfoManager
 from ...errors import ProfileError, DvasError
@@ -557,6 +558,28 @@ class DeltaProfile(GDPProfile):
             PRF_REF_UCU_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
           }
     )
+
+    def __init__(self, info, data=None):
+        """ DeltaProfile Constructor.
+
+        Args:
+            info (InfoManager): Data information
+            data (pd.DataFrame, optional): The profile values in a pandas DataFrame.
+                Defaults to None.
+        """
+
+        # Here, I will drop the 'tdt' column, if it was mistakenly provided by the user.
+        # This is to be robust with the fact that this class's Parents do require a 'tdt' info,
+        # but this Child doesn't. So the least I can do is be nice about it.
+        # WARNING: this may not be the best, because the individual data setter will still require
+        # data to contain no 'tdt' column.
+        if PRF_REF_TDT_NAME in data.columns:
+            data = data.drop(PRF_REF_TDT_NAME, axis=1)
+            # Make sur the interested user knows I did this ...
+            logger.info('Dropping %s column from DeltaProfile data.', PRF_REF_TDT_NAME)
+
+        # Run the super init
+        super().__init__(info, data=data)
 
     @property
     def tdt(self):
