@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 
 # Import from current package
-from .strategy.data import Profile, RSProfile, GDPProfile
+from .strategy.data import Profile, RSProfile, GDPProfile, CWSProfile, DeltaProfile
 
 from .strategy.load import LoadProfileStrategy, LoadRSProfileStrategy, LoadGDPProfileStrategy
 from .strategy.sort import SortProfileStrategy
@@ -47,24 +47,22 @@ plt_rsprf_stgy = RSPlotStrategy()
 plt_gdpprf_stgy = GDPPlotStrategy()
 
 # Rebasing strategies
-rebase_stgy = RebaseStrategy()
+rebase_prf_stgy = RebaseStrategy()
 
 # Resampling strategies
-resample_stgy = ResampleStrategy()
+resample_prf_stgy = ResampleStrategy()
 
 # Other strategies
-sort_stgy = SortProfileStrategy()
-save_stgy = SaveDataStrategy()
+sort_prf_stgy = SortProfileStrategy()
+save_prf_stgy = SaveDataStrategy()
 
 
-# TODO
-#  Create a factory (in terms of design patterns) to easily build MultiProfiles
 class MutliProfileAC(metaclass=RequiredAttrMetaClass):
     """Abstract MultiProfile class"""
 
     # Specify required attributes
     # _DATA_TYPES:
-    # - type (Profile|RSProfile|GDPProfile|...)
+    # - type (Profile|RSProfile|GDPProfile|DeltaProfile|...)
     REQUIRED_ATTRIBUTES = {
         '_DATA_TYPES': type
     }
@@ -264,7 +262,7 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
 
     # TODO: implement an "export" function that can export specific DataFrame columns back into
     #  the database under new variable names ?
-    # THis may be confusing. WOuldn't it be sufficient to change the keys in db_variables and then
+    # This may be confusing. Wouldn't it be sufficient to change the keys in db_variables and then
     # use the existing "save_to_db" method ?
 
     def update(self, db_df_keys, data):
@@ -451,10 +449,9 @@ class MultiProfile(MutliProfileAC):
     _DATA_TYPES = Profile
 
     def __init__(self):
-        super().__init__(
-            load_stgy=load_prf_stgy, sort_stgy=sort_stgy,
-            save_stgy=save_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_stgy,
-        )
+        super().__init__(load_stgy=load_prf_stgy, sort_stgy=sort_prf_stgy,
+                         save_stgy=save_prf_stgy, plot_stgy=plt_prf_stgy,
+                         rebase_stgy=rebase_prf_stgy)
 
 
 class MultiRSProfileAC(MutliProfileAC):
@@ -464,7 +461,7 @@ class MultiRSProfileAC(MutliProfileAC):
     def __init__(self, load_stgy=None, sort_stgy=None, save_stgy=None, plot_stgy=None,
                  rebase_stgy=None, resample_stgy=None):
         super().__init__(load_stgy=load_stgy, sort_stgy=sort_stgy, save_stgy=save_stgy,
-                         plot_stgy=plt_prf_stgy, rebase_stgy=rebase_stgy)
+                         plot_stgy=plot_stgy, rebase_stgy=rebase_stgy)
 
         self._resample_stgy = resample_stgy
 
@@ -486,30 +483,57 @@ class MultiRSProfile(MultiRSProfileAC):
     _DATA_TYPES = RSProfile
 
     def __init__(self):
-        super().__init__(load_stgy=load_rsprf_stgy, sort_stgy=sort_stgy,
-                         save_stgy=save_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_stgy,
-                         resample_stgy=resample_stgy)
+        super().__init__(load_stgy=load_rsprf_stgy, sort_stgy=sort_prf_stgy,
+                         save_stgy=save_prf_stgy, plot_stgy=plt_rsprf_stgy,
+                         rebase_stgy=rebase_prf_stgy,
+                         resample_stgy=resample_prf_stgy)
 
+class MultiGDPProfileAC(MultiRSProfileAC):
+    """Abstract MultiGDPProfile class"""
 
-class MultiGDPProfile(MultiRSProfileAC):
-    """Multi GDP profile manager, designed to handle multiple GDPProfile instances."""
-
-    _DATA_TYPES = GDPProfile
-
-    def __init__(self):
-        super().__init__(load_stgy=load_gdpprf_stgy, sort_stgy=sort_stgy,
-                         save_stgy=save_stgy, plot_stgy=plt_prf_stgy, rebase_stgy=rebase_stgy,
-                         resample_stgy=resample_stgy)
-
-        self._resample_stgy = resample_stgy
+    @abstractmethod
+    def __init__(self, load_stgy=None, sort_stgy=None, save_stgy=None, plot_stgy=None,
+                 rebase_stgy=None, resample_stgy=None):
+        super().__init__(load_stgy=load_stgy, sort_stgy=sort_stgy, save_stgy=save_stgy,
+                         plot_stgy=plot_stgy, rebase_stgy=rebase_stgy, resample_stgy=resample_stgy)
 
     @property
     def uc_tot(self):
-        """ Convenience getter to extract the total uncertainty from all the GDPProfile instances.
+        """ Convenience getter to extract the total uncertainty from all the Profile instances.
 
         Returns:
             list of DataFrame: idem to self.profiles, but with only the requested data.
 
         """
-
         return [arg.uc_tot for arg in self.profiles]
+
+class MultiGDPProfile(MultiGDPProfileAC):
+    """Multi GDP profile manager, designed to handle multiple GDPProfile instances."""
+
+    _DATA_TYPES = GDPProfile
+
+    def __init__(self):
+        super().__init__(load_stgy=load_gdpprf_stgy, sort_stgy=sort_prf_stgy,
+                         save_stgy=save_prf_stgy, plot_stgy=plt_gdpprf_stgy,
+                         rebase_stgy=rebase_prf_stgy, resample_stgy=resample_prf_stgy)
+
+class MultiCWSProfile(MultiGDPProfileAC):
+    """Multi CWS profile manager, designed to handle multiple GDPProfile instances."""
+
+    _DATA_TYPES = CWSProfile
+
+    def __init__(self):
+        super().__init__(load_stgy=load_gdpprf_stgy, sort_stgy=sort_prf_stgy,
+                         save_stgy=save_prf_stgy, plot_stgy=plt_gdpprf_stgy,
+                         rebase_stgy=rebase_prf_stgy, resample_stgy=resample_prf_stgy)
+
+
+class MultiDeltaProfile(MultiGDPProfileAC):
+    """ Multi Delta profile manager, designed to handle multiple DeltaProfile instances. """
+
+    _DATA_TYPES = DeltaProfile
+
+    def __init__(self):
+        super().__init__(load_stgy=load_gdpprf_stgy, sort_stgy=sort_prf_stgy,
+                         save_stgy=save_prf_stgy, plot_stgy=plt_gdpprf_stgy,
+                         rebase_stgy=rebase_prf_stgy, resample_stgy=resample_prf_stgy)
