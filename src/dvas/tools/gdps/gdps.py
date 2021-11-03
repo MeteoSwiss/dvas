@@ -107,9 +107,17 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
     if method == 'delta' and n_prf != 2:
         raise DvasError('Ouch! I can only make a delta between 2 GDPs, not %i !' % (n_prf))
 
+    # Make sure that the chunk_size is not smaller than the binning, else I cannot actually
+    # bin the data as required
+    if chunk_size < binning:
+        chunk_size = binning
+        logger.info("Adjusting the chunk size to %i, to match the requested binning level",
+                    chunk_size)
+
     # Fine tune the chunk size to be sure that no bins is being split up if the binning is > 1.
+    # 2021-09-16: fix bug #166 by *subtracting* chunk_size % binning (rather than adding it) !
     if binning > 1:
-        chunk_size += chunk_size % binning
+        chunk_size -= chunk_size % binning
         logger.info("Adjusting the chunk size to %i, given the binning of %i.", chunk_size, binning)
 
     # Let's get started for real

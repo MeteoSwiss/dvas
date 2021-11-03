@@ -9,7 +9,9 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [fpavogt, 2021-07-02] Add `has_tag()` convenience method to `Profile` and `MultiProfile` classes
 ### Fixed:
  - [modolol, 2021-07-12] Fix issue #160
+ - [fpavogt, 2021-09-16] Fix issue #166 and #165
 ### Changed:
+ - [fpavogt, 2021-10-18] Clean-up default csv na values in origdata
 ### Deprecated:
 ### Removed:
 ### Security:
@@ -17,7 +19,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [v0.4.1] (2021-07-16)
 ### Added:
  - [fpavogt, 2021-07-02] Add `has_tag()` convenience method to `Profile` and `MultiProfile` classes
- - [fpavogt, 2021-07-14] Add `csv_encoding` parameter to config files, and set it to 'altin_1' for RS-41 
+ - [fpavogt, 2021-07-14] Add `csv_encoding` parameter to config files, and set it to 'altin_1' for RS-41
 ### Fixed:
  - [modolol, 2021-07-12] Fix issue #160
 ### Changed:

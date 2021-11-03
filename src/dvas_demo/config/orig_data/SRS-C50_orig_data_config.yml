@@ -15,9 +15,11 @@ _C50:
     # -- ORIG DATA ----------------------------------
     csv_delimiter: ';'
     csv_skip_blank_lines: True
+    csv_delim_whitespace: False
     csv_skiprows: 40
     csv_skipfooter: 1
     csv_encoding:
+    csv_na_values:
 
     _time:
         value: get(0, 's2ns')

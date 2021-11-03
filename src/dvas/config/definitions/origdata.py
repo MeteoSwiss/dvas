@@ -61,7 +61,7 @@ LABEL_VAL_DEF = {
     CSV_SKIP_BLANK_LINES_FLD_NM: True,
     CSV_DELIM_WHITESPACE_FLD_NM: False,
     CSV_COMMENT_FLD_NM: '#',
-    CSV_NA_VALUES_FLD_NM: ['/'],
+    CSV_NA_VALUES_FLD_NM: None,
     CSV_SKIPFOOTER_FLD_NM: 0,
     CSV_ENCODING_FLD_NM: 'utf_8',
 }
@@ -148,12 +148,11 @@ PARAMETER_PATTERN_PROP = {
         "enum": ['#']
     },
     rf"^{CSV_NA_VALUES_FLD_NM}$": {
-        "type": 'array',
-        "items": {
-            "type": "string"
-        },
-        "minItems": 1,
-        "uniqueItems": True
+        'anyOf': [
+            {"type": "null"},
+            {"type": 'string'},
+            {"type": 'array', "items": {"type": "string"}, "minItems": 1, "uniqueItems": True}
+        ]
     },
     rf"^{CSV_ENCODING_FLD_NM}$": {
         'anyOf': [
