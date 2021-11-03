@@ -48,7 +48,6 @@ setup(
         "pandas>=1.3.0",
         "peewee",
         "pytest",
-        "pytest-env",
         "pytest-data",
         "pytest-datafiles",
         "ruamel-yaml",
