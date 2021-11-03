@@ -357,6 +357,16 @@ class OIDExpr(TerminalSearchInfoExpr):
         return TableObject.oid == self.expression
 
 
+class MIDExpr(TerminalSearchInfoExpr):
+    """MID filter"""
+
+    expression = TProp(str, lambda x: x)
+
+    def get_filter(self):
+        """Implement get_filter method"""
+        return TableModel.mid == self.expression
+
+
 class SearchStrategyAC(metaclass=ABCMeta):
     """Abstract class (AC) for a search strategy"""
 
@@ -395,6 +405,7 @@ class InfoStrategy(SearchStrategyAC):
                 'serialnumber': SerialNumberExpr, 'srn': SerialNumberExpr,
                 'object_id': OIDExpr, 'oid': OIDExpr,
                 'product_id': ProductExpr, 'pid': ProductExpr,
+                'model_id': MIDExpr, 'mid': MIDExpr,
                 'tags': TagExpr,
                 'prm': ParameterExpr,
                 'raw': RawExpr,
@@ -408,7 +419,7 @@ class InfoStrategy(SearchStrategyAC):
         return (
             TableInfo
             .select().distinct()
-            .join(TableInfosObjects).join(TableObject).switch(TableInfo)
+            .join(TableInfosObjects).join(TableObject).join(TableModel).switch(TableInfo)
             .join(TableParameter).switch(TableInfo)
             .join(InfosTags).join(TableTag).switch(TableInfo)
         )
