@@ -26,7 +26,7 @@ rcp_params:
         plot_fmts:
             - pdf
             #- png
-        plot_show: True
+        plot_show: False
         chunk_size: 150
         n_cpus: # If set, will cap the number of cpus used to run the dvas recipe
 
@@ -93,5 +93,13 @@ rcp_steps:
         run: True
         kwargs:
             tags: sync # list of tags to identify profiles in the database
-            m_vals: 1 8* # list of m values. Those with * are ignored for the cws assembly
-            strategy: 'all-or-none' # Strategy to decide which GDPs to combine, given their incompatibilities.
+            m_vals: [1, -8] # list of m values. The negative ones are ignored for the cws assembly
+            strategy: 'all-or-none' # Strategy to decide which GDPs to combine, in case of incompatibilities.
+
+    # Compute the deltas between the profiles of sondes under test and Combined Working Standards
+    uaii22.dtas.compute_deltas:
+        step_id: '04'
+        run: True
+        kwargs:
+            tags: sync # list of tags to identify profiles in the database
+            mids: 'all' # List of model ids to process

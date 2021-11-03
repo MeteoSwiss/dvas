@@ -8,17 +8,17 @@ SPDX-License-Identifier: GPL-3.0-or-later
 Module content: demo code that illustrates the core dvas functionalities
 """
 
-# Import python package
+# Import from Python
 from pathlib import Path
 from datetime import datetime
 import numpy as np
 import pandas as pd
 
-# Import stuff from dvas
+# Import from dvas
 from dvas.dvas import Log
 from dvas.dvas import Database as DB
 import dvas.plots.utils as dpu
-from dvas.data.data import MultiProfile, MultiRSProfile, MultiGDPProfile
+from dvas.data.data import MultiProfile, MultiRSProfile, MultiGDPProfile, MultiCWSProfile
 from dvas.environ import path_var
 from dvas.hardcoded import FLG_INCOMPATIBLE_NAME
 from dvas.tools import sync as dts
@@ -39,14 +39,15 @@ if __name__ == '__main__':
 
     # Init paths
     # WARNING: to set an "absolute" path, make sure to preface it with "/", e.g.:
-    # path_var.orig_data_path = Path('/Users', 'jode', 'dvas_devdata')
+    # path_var.orig_data_path = Path('/Users', 'jdoe', 'dvas_devdata')
     path_var.config_dir_path = demo_file_path.parent / 'config'
     path_var.orig_data_path = demo_file_path.parent / 'data'
     path_var.local_db_path = demo_file_path.parent / 'db'
     path_var.output_path = demo_file_path.parent / 'output'
 
     # Start the logging
-    Log.start_log(1, level='DEBUG')  # 0 = no logs, 1 = log to file only, 2 = file + screen, 3 = screen only.
+    # Output: 0 = no logs, 1 = log to file only, 2 = file + screen, 3 = screen only.
+    Log.start_log(1, level='DEBUG')
 
     # Fine-tune the plotting behavior of dvas
     dpu.set_mplstyle('nolatex')  # The safe option. Use 'latex' fo prettier plots.
@@ -81,9 +82,13 @@ if __name__ == '__main__':
     # ----------------------------------------------------------------------------------------------
     print("\n --- BASIC DATA EXTRACTION ---")
 
+    # The demo data is comprised of 2 quadruple flights on 2017-07-12 and 2017-10-24, both with:
+    # 1xRS41, 1xRS92, 1xC34, 1xC50
+    # For both the RS41 and the RS92, both the GDP and manufacturer data is provided.
+
     # Define some basic search queries
-    filt_gdp = "tags('gdp')"
-    filt_raw = "tags('raw')"
+    filt_gdp = "tags('gdp')" # Shortcut: 'gdp()'
+    filt_raw = "tags('raw')" # Shortcut: 'raw()'
     filt_raw_not = "not_(tags('raw'))"
     filt_all = "all()"
     filt_dt = "dt('20171024T120000Z', '==')"
@@ -265,4 +270,19 @@ if __name__ == '__main__':
     cws.save_to_db(add_tags=['cws'], rm_tags=['gdp'], prms=['val', 'ucr', 'ucs', 'uct', 'ucu'])
 
     # ----------------------------------------------------------------------------------------------
-    print("\n --- ASSESSMENT OF A CANDIDATE RADIOSONDE ---")
+    print("\n --- ASSESSMENT OF CANDIDATE RADIOSONDES ---")
+
+    # We begin by assembling "delta profiles", i.e. deltas between candidate radiosondes and
+    # associated CWS.
+
+    # First extract all the synchronized candidate radiosonde profiles from a given flight
+    filt_nogdp_dt_sync = "and_(tags('sync'), not_(gdp()), {})".format(filt_dt)
+    can_prfs = MultiRSProfile()
+    can_prfs.load_from_db(filt_nogdp_dt_sync, 'temp', tdt_abbr='time', alt_abbr='gph', inplace=True)
+
+    # And now load the required CWS
+    filt_cws_dt = "and_(tags('cws'), {})".format(filt_dt)
+    cws_prfs = MultiCWSProfile()
+    cws_prfs.load_from_db(filt_cws_dt, 'temp', tdt_abbr='time', alt_abbr='gph',
+                          ucr_abbr='temp_ucr', ucs_abbr='temp_ucs', uct_abbr='temp_uct',
+                          inplace=True)

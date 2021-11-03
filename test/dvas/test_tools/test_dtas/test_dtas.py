@@ -22,7 +22,7 @@ from dvas.database.database import InfoManager
 from dvas.data.data import MultiCWSProfile, MultiRSProfile
 
 # Functions to test
-from dvas.tools.deltas.deltas import single_delta, get_deltas
+from dvas.tools.dtas.dtas import single_delta, compute
 
 # Define db_data. This is some black magic that is directly related to conftest.py
 # This is a temporary db, that is required for get_info() to work properly with mdl_id.
@@ -169,7 +169,7 @@ def test_single_delta(prf_and_cws, rsprf_and_cws):
     # Was the data computed properly ?
     assert np.all(out.val == (prf.val - cws.val).droplevel(PRF_REF_TDT_NAME))
 
-def test_get_deltas(prfs, cwss1, cwss2):
+def test_compute(prfs, cwss1, cwss2):
     """ Function to test the creation of a MultiDeltaProfile instance from MultiRSProfile and
     MultiGDPProfile instances.
 
@@ -178,7 +178,7 @@ def test_get_deltas(prfs, cwss1, cwss2):
     """
 
     # As many CWS as Profiles
-    out = get_deltas(prfs, cwss2)
+    out = compute(prfs, cwss2)
 
     # Correct length ?
     assert len(out) == 2
@@ -187,7 +187,7 @@ def test_get_deltas(prfs, cwss1, cwss2):
     assert np.isnan(out[1].val.values[-1])
 
     # A single CWS for many Profiles
-    out = get_deltas(prfs, cwss1)
+    out = compute(prfs, cwss1)
     # Correct length ?
     assert len(out) == 2
     # Correct values ?

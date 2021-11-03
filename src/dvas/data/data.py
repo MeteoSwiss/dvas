@@ -18,6 +18,7 @@ import pandas as pd
 from .strategy.data import Profile, RSProfile, GDPProfile, CWSProfile, DeltaProfile
 
 from .strategy.load import LoadProfileStrategy, LoadRSProfileStrategy, LoadGDPProfileStrategy
+from .strategy.load import LoadCWSProfileStrategy, LoadDeltaProfileStrategy
 from .strategy.sort import SortProfileStrategy
 from .strategy.plot import PlotStrategy, RSPlotStrategy, GDPPlotStrategy
 
@@ -40,6 +41,8 @@ from ..hardcoded import TAG_RAW_NAME, PRF_REF_INDEX_NAME
 load_prf_stgy = LoadProfileStrategy()
 load_rsprf_stgy = LoadRSProfileStrategy()
 load_gdpprf_stgy = LoadGDPProfileStrategy()
+load_cwsprf_stgy = LoadCWSProfileStrategy()
+load_dtaprf_stgy = LoadDeltaProfileStrategy()
 
 # Plotting strategies
 plt_prf_stgy = PlotStrategy()
@@ -523,7 +526,7 @@ class MultiCWSProfile(MultiGDPProfileAC):
     _DATA_TYPES = CWSProfile
 
     def __init__(self):
-        super().__init__(load_stgy=load_gdpprf_stgy, sort_stgy=sort_prf_stgy,
+        super().__init__(load_stgy=load_cwsprf_stgy, sort_stgy=sort_prf_stgy,
                          save_stgy=save_prf_stgy, plot_stgy=plt_gdpprf_stgy,
                          rebase_stgy=rebase_prf_stgy, resample_stgy=resample_prf_stgy)
 
@@ -534,6 +537,6 @@ class MultiDeltaProfile(MultiGDPProfileAC):
     _DATA_TYPES = DeltaProfile
 
     def __init__(self):
-        super().__init__(load_stgy=load_gdpprf_stgy, sort_stgy=sort_prf_stgy,
+        super().__init__(load_stgy=load_dtaprf_stgy, sort_stgy=sort_prf_stgy,
                          save_stgy=save_prf_stgy, plot_stgy=plt_gdpprf_stgy,
                          rebase_stgy=rebase_prf_stgy, resample_stgy=resample_prf_stgy)

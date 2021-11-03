@@ -12,6 +12,7 @@ This module contains statistical routines and tools for handling GDPs.
 """
 
 # Import from Python packages
+import numbers
 import numpy as np
 import pandas as pd
 from scipy import stats
@@ -92,7 +93,7 @@ def ks_test(gdp_pair, alpha=0.0027, m_val=1, **kwargs):
         0 otherwise. That is: 1 <=> the p-value of the KS test is <= alpha.
     '''
 
-    if not isinstance(m_val, int):
+    if not isinstance(m_val, numbers.Integral):
         raise DvasError('Ouch! binning should be an int, not %s' % (type(m_val)))
 
     if not isinstance(alpha, float):

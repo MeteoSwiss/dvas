@@ -140,9 +140,9 @@ TAG_CWS_NAME = 'cws'
 TAG_CWS_DESC = 'Combined working measurement standard'
 
 #: str: Tag's name for profile deltas with CWS
-TAG_DELTA_NAME = 'delta'
+TAG_DTA_NAME = 'dta'
 #: str: Tag's desc for profile deltas with CWS
-TAG_DELTA_DESC = 'Profile minus CWS'
+TAG_DTA_DESC = 'Profile minus CWS'
 
 #: str: Tag's name for empty values in raw data
 TAG_EMPTY_NAME = 'empty'

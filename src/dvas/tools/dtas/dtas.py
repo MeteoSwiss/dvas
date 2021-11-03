@@ -54,30 +54,27 @@ def single_delta(prf, cws):
 
     # Update the list of oid to keep track of the oid(s) from the cws. To not mix things up, set the
     # cws oid as negative numbers. Is that weird ?
-    dta_info.oid += [-item for item in cws.info.oid]
+    # TODO: once #173 is fixed, deal with it properly here
+    dta_info.oid += [item for item in cws.info.oid]
 
     # For the data, start by deep copying the cws one with all the uncertainties.
     dta_data = deepcopy(cws.data)
 
+    # Next compute the delta itself. Here, let's keep in mind that the index from the cws is
+    # **different** from the index of the profile !
+    dta_data.loc[:,['val']] = prf.data['val'].values - cws.data['val'].values
+
+    #TODO: How do I combine the flags ? Doing nothing means keeping those from the CWS only ...
+
     # Create a new DeltaProfile instance
     dta = DeltaProfile(dta_info, dta_data)
 
-    # Now actually compute the delta, using the nifty setter from the Profile class.
-    # First deal with the possible 'tdt' that will be present in RSProfiles ...
-    if PRF_REF_TDT_NAME in prf.data.index.names:
-        dta.val = prf.data.droplevel(PRF_REF_TDT_NAME).val
-    else:
-        dta.val = prf.data.val
-    # ... and then subtract the cws profile.
-    dta.val -= cws.data.droplevel(PRF_REF_TDT_NAME).val
-
-    #TODO: How do I combine the flags ? Doing nothing means keeping those from the CWS only ...
     # Add the origin of this DeltaProfile
     dta.info.src = 'dvas single_delta() [{}]'.format(Path(__file__).name)
 
     return dta
 
-def get_deltas(prfs, cwss):
+def compute(prfs, cwss):
     """ Compute the deltas between many error-less profiles and error-full cws.
 
     Args:

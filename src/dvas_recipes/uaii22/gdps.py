@@ -19,7 +19,7 @@ from dvas.tools.gdps import gdps as dtgg
 import dvas.plots.gdps as dpg
 from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, FLG_INCOMPATIBLE_NAME
 from dvas.hardcoded import PRF_REF_VAL_NAME, PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME
-from dvas.hardcoded import PRF_REF_UCU_NAME
+from dvas.hardcoded import PRF_REF_UCU_NAME, TAG_CWS_NAME, TAG_GDP_NAME
 from dvas.errors import DBIOError
 
 # Import from dvas_recipes
@@ -30,20 +30,24 @@ from ..utils import fn_suffix
 
 @for_each_var
 @for_each_flight
-def build_cws(tags='sync', m_vals=[1, '2*'], strategy='all-or-none'):
+def build_cws(tags='sync', m_vals=None, strategy='all-or-none'):
     """ Highest-level recipe function responsible for assembling the combined working standard for
     a specific RS flight.
 
-    This function directly builds the profiles and upload them to the db with the 'cws' tag.
+    This function directly builds the profiles and uploads them to the db with the 'cws' tag.
 
     Args:
         tags (str|list of str, optional): tag name(s) for the search query into the database.
             Defaults to 'sync'.
-        m_vals (int|list, optional): list of m-values used for identifiying incompatible and valid
-            regions between GDPs. Any value listed as 'x*' will be ignored when computing the cws.
+        m_vals (int|list of int, optional): list of m-values used for identifiying incompatible and
+            valid regions between GDPs. Any negative value will be ignored when computing the cws.
+            Defaults to None=[1, '-2'].
         strategy (str, optional): name of GDP combination strategy (for deciding which levels/
             measurements are valid or not). Defaults to 'all-or-none'. These ared defined in
             `dvas.tools.gdps.stats.get_validities()`.
+
+    TODO:
+        Give the user the possibility to tag the 'cws' with a custom one ?
 
     """
 
@@ -54,9 +58,10 @@ def build_cws(tags='sync', m_vals=[1, '2*'], strategy='all-or-none'):
         raise DvasRecipesError('Ouch ! tags should be of type str|list. not: {}'.format(type(tags)))
 
     # Deal with the m_vals if warranted
-    if isinstance(m_vals, str):
-        # Here, let's just deconstruct the string into components, but keep everything as str
-        m_vals = m_vals.split(' ')
+    if m_vals is None:
+        m_vals = [1, -2]
+    if not isinstance(m_vals, list):
+        raise DvasRecipesError(f'Ouch ! m_vals should be a list of int, not: {m_vals}')
 
     # Get the event id and rig id
     (eid, rid) = dynamic.CURRENT_FLIGHT
@@ -64,8 +69,7 @@ def build_cws(tags='sync', m_vals=[1, '2*'], strategy='all-or-none'):
     # What search query will let me access the data I need ?
     gdp_filt = "and_(tags('gdp'), tags('e:{}'), tags('r:{}'), {})".format(eid, rid,
         "tags('" + "'), tags('".join(tags) + "')")
-    cws_filt = "and_(tags('cws'), tags('e:{}'), tags('r:{}'), {})".format(eid, rid,
-        "tags('" + "'), tags('".join(tags) + "')")
+    cws_filt = "and_(tags('cws'), tags('e:{}'), tags('r:{}'))".format(eid, rid)
 
     # Load the GDP profiles
     gdp_prfs = MultiGDPProfile()
@@ -107,13 +111,11 @@ def build_cws(tags='sync', m_vals=[1, '2*'], strategy='all-or-none'):
         # And then save the tdt array to the database ... tdt and only tdt !
         tdt_cws.save_to_db(add_tags=['cws'], rm_tags=['gdp'], prms=[PRF_REF_TDT_NAME])
 
-
-
     # Before combining the GDPs with each other, let us assess their consistency.
     # The idea here is to flag any inconsistent measurement, so that they can be ignored during
     # the combination process.
     incompat = dtgs.gdp_incompatibilities(gdp_prfs, alpha=0.0027,
-                                          m_vals=[int(item.replace('*', '')) for item in m_vals],
+                                          m_vals=[np.abs(item) for item in m_vals],
                                           do_plot=True,
                                           n_cpus=dynamic.N_CPUS, fn_prefix=dynamic.CURRENT_STEP_ID,
                                           fn_suffix=fn_suffix(eid=eid, rid=rid, tags=tags,
@@ -125,7 +127,7 @@ def build_cws(tags='sync', m_vals=[1, '2*'], strategy='all-or-none'):
     # incompatibilities. This is intended to let people experiment a bit without affecting the final
     # CWS.
     valids = dtgs.gdp_validities(incompat,
-                                 m_vals=[int(item) for item in m_vals if '*' not in item],
+                                 m_vals=[item for item in m_vals if item>0],
                                  strategy=strategy)
 
     # ... and set them using the dvas.hardcoded.FLG_INCOMPATIBLE_NAME flag
@@ -139,12 +141,14 @@ def build_cws(tags='sync', m_vals=[1, '2*'], strategy='all-or-none'):
                        chunk_size=dynamic.CHUNK_SIZE, n_cpus=dynamic.N_CPUS)
 
     # We can now inspect the result visually
-    dpg.gdps_vs_cws(gdp_prfs, cws, index_name='_idx', show=True, fn_prefix=dynamic.CURRENT_STEP_ID,
+    dpg.gdps_vs_cws(gdp_prfs, cws, index_name='_idx', show=None, fn_prefix=dynamic.CURRENT_STEP_ID,
                     fn_suffix=fn_suffix(eid=eid, rid=rid, tags=tags, var=dynamic.CURRENT_VAR))
 
     # Save the CWS to the database
     # Here, I only save the information associated to the variable, i.e. the value and its errors.
     # I do not save the alt column, which is a variable itself and should be derived as such using a
     # weighted mean. I also do not save the tdt column, which should be assembled from a simple mean
-    cws.save_to_db(add_tags=['cws'], rm_tags=['gdp'], prms=[PRF_REF_VAL_NAME,
+    cws.save_to_db(add_tags=[TAG_CWS_NAME], rm_tags=[TAG_GDP_NAME], prms=[PRF_REF_VAL_NAME,
         PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME])
+
+    #TODO: if the variable is the altitude, save it under a different variable name ...

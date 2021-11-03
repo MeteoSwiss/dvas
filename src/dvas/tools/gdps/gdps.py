@@ -166,7 +166,7 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
         # around. Having this set to anything (=None when run interactively) is crucial to the
         # multiprocessing Pool routine.
         # So for now, use a terribly dangerous workaround that I do not understand.
-        # This should definitely be fixed.
+        # This should definitely be fixed. Or not ?
         # See #121
         import sys
         try:
