@@ -107,11 +107,13 @@ class SearchInfoExpr(metaclass=ABCMeta):
         Returns:
             List of Info.info_id
 
-        Search expression grammar:
+        Search expression grammar for 'info' metthod:
             - all(): Select all
             - [datetime ; dt]('<ISO datetime>', ['=='(default) ; '>=' ; '>' ; '<=' ; '<' ; '!=']): Select by datetime
             - [serialnumber ; srn]('<Serial number>'): Select by serial number
             - [product_id ; pid](<Product>): Select by product
+            - [object_id, oid](<Object id>): Select by object id
+            - [model_id, mid](<Model id>): Select by model id
             - tags(['<Tag>' ; ('<Tag 1>', ...,'<Tag n>')]): Select by tag
             - prm('<Parameter name>'): Select by parameter name
             - and_(<expr 1>, ..., <expr n>): Intersection
