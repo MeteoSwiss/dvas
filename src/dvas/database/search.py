@@ -107,7 +107,7 @@ class SearchInfoExpr(metaclass=ABCMeta):
         Returns:
             List of Info.info_id
 
-        Search expression grammar for 'info' metthod:
+        Search expression grammar for 'info' method:
             - all(): Select all
             - [datetime ; dt]('<ISO datetime>', ['=='(default) ; '>=' ; '>' ; '<=' ; '<' ; '!=']): Select by datetime
             - [serialnumber ; srn]('<Serial number>'): Select by serial number
