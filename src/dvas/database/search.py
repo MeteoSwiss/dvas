@@ -107,11 +107,13 @@ class SearchInfoExpr(metaclass=ABCMeta):
         Returns:
             List of Info.info_id
 
-        Search expression grammar:
+        Search expression grammar for 'info' method:
             - all(): Select all
             - [datetime ; dt]('<ISO datetime>', ['=='(default) ; '>=' ; '>' ; '<=' ; '<' ; '!=']): Select by datetime
             - [serialnumber ; srn]('<Serial number>'): Select by serial number
             - [product_id ; pid](<Product>): Select by product
+            - [object_id, oid](<Object id>): Select by object id
+            - [model_id, mid](<Model id>): Select by model id
             - tags(['<Tag>' ; ('<Tag 1>', ...,'<Tag n>')]): Select by tag
             - prm('<Parameter name>'): Select by parameter name
             - and_(<expr 1>, ..., <expr n>): Intersection
@@ -357,6 +359,16 @@ class OIDExpr(TerminalSearchInfoExpr):
         return TableObject.oid == self.expression
 
 
+class MIDExpr(TerminalSearchInfoExpr):
+    """MID filter"""
+
+    expression = TProp(str, lambda x: x)
+
+    def get_filter(self):
+        """Implement get_filter method"""
+        return TableModel.mid == self.expression
+
+
 class SearchStrategyAC(metaclass=ABCMeta):
     """Abstract class (AC) for a search strategy"""
 
@@ -395,6 +407,7 @@ class InfoStrategy(SearchStrategyAC):
                 'serialnumber': SerialNumberExpr, 'srn': SerialNumberExpr,
                 'object_id': OIDExpr, 'oid': OIDExpr,
                 'product_id': ProductExpr, 'pid': ProductExpr,
+                'model_id': MIDExpr, 'mid': MIDExpr,
                 'tags': TagExpr,
                 'prm': ParameterExpr,
                 'raw': RawExpr,
@@ -408,7 +421,7 @@ class InfoStrategy(SearchStrategyAC):
         return (
             TableInfo
             .select().distinct()
-            .join(TableInfosObjects).join(TableObject).switch(TableInfo)
+            .join(TableInfosObjects).join(TableObject).join(TableModel).switch(TableInfo)
             .join(TableParameter).switch(TableInfo)
             .join(InfosTags).join(TableTag).switch(TableInfo)
         )
