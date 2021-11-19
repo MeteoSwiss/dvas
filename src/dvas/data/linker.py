@@ -529,7 +529,7 @@ class CSVHandler(FileHandler):
         try:
             metadata_file_path = next(
                 arg for arg in data_file_path.parent.glob(
-                    '*' + data_file_path.stem + '*.*'
+                    '*' + data_file_path.stem + '.*'
                 ) if arg.suffix in self.CFG_FILE_SUFFIX
             )
         except StopIteration:
