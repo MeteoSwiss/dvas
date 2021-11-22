@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 
 # Import from dvas
+from dvas.logger import recipes_logger as logger
 from dvas.data.data import MultiRSProfile, MultiGDPProfile
 from dvas.tools.gdps import stats as dtgs
 from dvas.tools.gdps import gdps as dtgg
@@ -86,9 +87,11 @@ def build_cws(tags='sync', m_vals=None, strategy='all-or-none'):
     # during a previous pass. If not, create it now. We treat the case of the tdt sepearately,
     # since we compute it as a normal (unweighted) mean.
     try:
+        logger.info('Looking for a pre-computed CWS time profile ...')
         _ = MultiRSProfile().load_from_db(cws_filt, 'time', 'time')
 
     except DBIOError:
+        logger.info('No pre-existing CWS time profile found. Computing it now.')
         # Very well, let us compute the time array of the combined working standard. Since there is
         # no uncertainty associated to it, we shall simply take it as the arithmetic mean of the
         # individual GDP times.
@@ -115,6 +118,7 @@ def build_cws(tags='sync', m_vals=None, strategy='all-or-none'):
     # Before combining the GDPs with each other, let us assess their consistency.
     # The idea here is to flag any inconsistent measurement, so that they can be ignored during
     # the combination process.
+    logger.info('Identifying incompatibilities between GDPs for variable: %s', dynamic.CURRENT_VAR)
     incompat = dtgs.gdp_incompatibilities(gdp_prfs, alpha=0.0027,
                                           m_vals=[np.abs(item) for item in m_vals],
                                           do_plot=True,
