@@ -196,17 +196,18 @@ class LogManager:
 
 
 def log_func_call(logger, time_it=False):
-    """ Intended as a decorator that logs a function call the the log. The message is at the
-    'DEBUG' level.
+    """ Intended as a decorator that logs a function call the the log.
+    The first part of the message containing the function name is at the 'INFO' level.
+    The second part of the message containing the argument values is at the 'DEBUG' level.
 
     Args:
         logger (str): one of the loggers defined in dvas_logger.py, e.g.: gruan_logger
-        time_it (bool, `optional`): Evaluate decorated function execution time and log it. Default to False.
+        time_it (bool, optional): whether to evaluate the decorated function execution time
+            (and log it), or not. Default to False.
 
     Note:
-        Adapted from
-        `this post <https://stackoverflow.com/questions/218616/how-to-get-method-parameter-names>`__
-        on SO, in particular the reply from Kfir Eisner and Peter Mortensen.
+        Adapted from `this post <https://stackoverflow.com/questions/218616>`__ on SO,
+        in particular the reply from Kfir Eisner and Peter Mortensen.
         See also `this <https://docs.python.org/3/library/inspect.html#inspect.BoundArguments>`__.
 
     """
@@ -222,11 +223,14 @@ def log_func_call(logger, time_it=False):
             bound_args = inspect.signature(func).bind(*args, **kwargs)
             bound_args.apply_defaults()
 
-            # Assemble a proper log message
-            log_msg = 'Executing %s ' % (func.__name__)
-            log_msg += 'with the following input: %s' % (str(dict(bound_args.arguments)))
+            # Assemble a log message witht he function name ...
+            log_msg = 'Executing %s ...' % (func.__name__)
+            # ... and log it at the INFO level.
+            logger.info(log_msg)
 
-            # Log the message
+            # Then get extra information about the arguments ...
+            log_msg = '... with the following input: %s' % (str(dict(bound_args.arguments)))
+            # ... and log it at the DEBUG level.
             logger.debug(log_msg)
 
             # Launch the actual function
