@@ -24,6 +24,9 @@ _C34:
     _time:
         value: get(0, 's2ns')
 
+    _alt_ref:
+        value: get(1)
+
     _gph:
         value: get(1)
 

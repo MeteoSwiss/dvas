@@ -27,6 +27,9 @@ _RS92:
     _time:
         value: get(0, 's2ns')
 
+    _alt_ref:
+        value: get(1)
+
     _gph:
         value: get(1)
 
@@ -65,6 +68,9 @@ _RS92-GDP_002:
     # -- ORIG DATA ----------------------------------
     _time:
         value: get('time', 's2ns')
+
+    _alt_ref:
+        value: get('geopot')
 
     _gph:
         value: get('geopot')

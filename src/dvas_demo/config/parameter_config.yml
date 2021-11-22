@@ -3,8 +3,14 @@
   prm_desc: 'Time'
   prm_unit: 's'
 
-- prm_name: 'gph'
-  prm_desc: 'Geopotential height'
+- prm_name: 'alt_ref'
+  prm_desc: 'Reference altitude'
+  prm_unit: 'm'
+
+- prm_name: 'gph(|(_uct)|(_ucu))'
+  # Generate variables from regex generator for geopotential height.
+  prm_desc: 'cat("Geopotential height", repl({"_uct": " temporal-correlated uncertainty",
+                                              "_ucu": " un-correlated uncertainty"}, get(1)))'
   prm_unit: 'm'
 
 - prm_name: 'temp(|(_ucr)|(_ucs)|(_uct)|(_ucu))'
@@ -20,10 +26,10 @@
   prm_desc: 'cat("Relative humidity", repl({"_ucr": " rig-correlated uncertainty",
                                             "_uct": " temporal-correlated uncertainty",
                                             "_ucu": " un-correlated uncertainty"}, get(1)))'
-  prm_unit: '\%'
+  prm_unit: '%'
 
 - prm_name: '(pres|alt)(|(_uct))'
-  # Generate variables from regex generator for pressure and altitude.
+  # Generate variables from regex generator for pressure, altitude AMSL, and geopotential height.
   prm_desc: 'cat(repl({"pres": "Pressure",
                         "alt": "Altitude a.m.s.l."}, get(1)),
                  repl({"_uct": " temporal-correlated uncertainty"}, get(2)))'

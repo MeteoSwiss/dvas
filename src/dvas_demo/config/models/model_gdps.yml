@@ -1,12 +1,4 @@
 
-- mdl_name: 'RS41-GDP-BETA_001'
-  mdl_desc: 'RS41 GDP, BETA version 1'
-  mid: 'RS41-GDP'
-
-- mdl_name: 'RS41-GDP-BETA_002'
-  mdl_desc: 'RS41 GDP, BETA version 2'
-  mid: 'RS41-GDP'
-
 - mdl_name: 'RS41-GDP-BETA_003'
   mdl_desc: 'RS41 GDP, BETA version 3'
   mid: 'RS41-GDP'
@@ -14,10 +6,6 @@
 - mdl_name: 'RS92-GDP_002'
   mdl_desc: 'RS92 GDP, version 2'
   mid: 'RS92-GDP'
-
-- mdl_name: 'M10-GDP-ALPHA_001'
-  mdl_desc: 'M10, ALPHA version 1'
-  mid: 'M10-GDP'
 
 - mdl_name: 'M10-GDP-ALPHA_002'
   mdl_desc: 'M10, ALPHA version 2'
