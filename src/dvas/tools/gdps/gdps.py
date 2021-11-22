@@ -118,7 +118,9 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
     # 2021-09-16: fix bug #166 by *subtracting* chunk_size % binning (rather than adding it) !
     if binning > 1:
         chunk_size -= chunk_size % binning
-        logger.info("Adjusting the chunk size to %i, given the binning of %i.", chunk_size, binning)
+        if chunk_size % binning > 0:
+            logger.info("Adjusting the chunk size to %i, given the binning of %i.",
+                        chunk_size, binning)
 
     # Let's get started for real
     # First, let's extract all the information I (may) need, i.e. the values, errors, and total
