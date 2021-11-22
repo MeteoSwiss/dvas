@@ -96,7 +96,8 @@ def build_cws(tags='sync', m_vals=None, strategy='all-or-none'):
 
         # Let us now create a high-resolution CWS for these synchronized GDPs
         tdt_cws = dtgg.combine(gdp_prfs, binning=1, method='mean',
-                               mask_flgs=None, chunk_size=dynamic.CHUNK_SIZE, n_cpus=dynamic.N_CPUS)
+                               mask_flgs=None, chunk_size=dynamic.CHUNK_SIZE,
+                               n_cpus=dynamic.N_CPUS)
 
         # TODO: doing a mean of the tdt from each radiosonde is a problem, because if they are not
         # synced, we may end up with jumps backwards, or weird stuff.
@@ -117,7 +118,9 @@ def build_cws(tags='sync', m_vals=None, strategy='all-or-none'):
     incompat = dtgs.gdp_incompatibilities(gdp_prfs, alpha=0.0027,
                                           m_vals=[np.abs(item) for item in m_vals],
                                           do_plot=True,
-                                          n_cpus=dynamic.N_CPUS, fn_prefix=dynamic.CURRENT_STEP_ID,
+                                          n_cpus=dynamic.N_CPUS,
+                                          chunk_size=dynamic.CHUNK_SIZE,
+                                          fn_prefix=dynamic.CURRENT_STEP_ID,
                                           fn_suffix=fn_suffix(eid=eid, rid=rid, tags=tags,
                                                               var=dynamic.CURRENT_VAR))
 
