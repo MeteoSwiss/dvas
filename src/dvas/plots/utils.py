@@ -130,8 +130,8 @@ def fix_txt(txt):
 
     # First deal with the cases when a proper LaTeX is being used
     if usetex:
-        txt = txt.replace('%', r'\%')
-        txt = txt.replace('_', r'\_')
+        txt = txt.replace('%', r'{\%}')
+        txt = txt.replace('_', r'{\_}')
 
     return txt
 
