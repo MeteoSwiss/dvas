@@ -18,6 +18,7 @@ import numpy as np
 
 # Import from dvas
 from dvas.environ import path_var
+from dvas.logger import recipes_logger as logger
 from dvas.dvas import Log
 from dvas.dvas import Database as DB
 from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME
@@ -95,23 +96,26 @@ def for_each_var(func):
 class RecipeStep:
     """ RecipeStep class, to handle individual recipe steps and their execution """
 
-    _step_id = None # str: to identify the recipe
-    _run = None # bool: whether to run the step, or not.
-    _func = None # actual function associated to the recipe. This is what will do the work.
-    _kwargs = None # dict: keywords arguments associated to the recipe.
+    _step_id = None # str: to identify the recipe step
+    _name = None # str: to identify even more easily the recipe step
+    _run = None # bool: whether to run the step, or not
+    _func = None # actual function associated to the recipe. This is what will do the work
+    _kwargs = None # dict: keywords arguments associated to the recipe
 
-    def __init__(self, func, step_id, run, kwargs):
+    def __init__(self, func, step_id, name, run, kwargs):
         """ RecipeStep initialization function.
 
         Args:
             func (function): dvas_recipe function to be launched as part of the step.
             step_id (str|int): id of the recipe step, e.g. '01a'.
+            name (str): name of the recipe step, e.g. 'uaii2022.sync.sync_flight'
             run (bool): if True, the step is supposed to be executed as part of the recipe.
             kwargs (dict): dictionnary of keyword arguments to be fed to func.
         """
 
         self._func = func
         self._step_id = step_id
+        self._name = name
         self._run = run
         self._kwargs = kwargs
 
@@ -119,6 +123,11 @@ class RecipeStep:
     def step_id(self):
         """ I.D. of this recipe step """
         return self._step_id
+
+    @property
+    def name(self):
+        """ name of this recipe step """
+        return self._name
 
     @property
     def run(self):
@@ -133,6 +142,7 @@ class RecipeStep:
         rcp_dyn.CURRENT_STEP_ID = self.step_id
 
         # Actually launch the function, which may be decorated (but I don't need to know that !)
+        logger.info('Executing recipe step %s: %s', self.step_id, self.name)
         self._func(**self._kwargs)
 
 class Recipe:
@@ -217,7 +227,8 @@ class Recipe:
 
             # Initialize the recipe step, and add it to the list
             self._steps += [RecipeStep(getattr(rcp_mod, item[0].split('.')[-1]),
-                                       item[1]['step_id'], item[1]['run'], item[1]['kwargs'])]
+                                       item[1]['step_id'], item[0],
+                                       item[1]['run'], item[1]['kwargs'])]
 
         # Set the flights to be processed, if warranted.
         # These get stored in the dedicated "dynamic" module, for easy access everywhere.
