@@ -106,8 +106,14 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, index_name='tdt', label='mid', **kwa
     ax0.fill_between(x, cws[PRF_REF_VAL_NAME]-k_lvl*cws['uc_tot'],
                      cws[PRF_REF_VAL_NAME]+k_lvl*cws['uc_tot'], alpha=0.3, step='mid',
                      color=pu.CLRS['cws_1'])
-    ax1.fill_between(x, -k_lvl*cws['uc_tot'], +k_lvl*cws['uc_tot'], alpha=0.3, step='mid',
-                     color=pu.CLRS['cws_1'])
+
+    #ax1.fill_between(x, -k_lvl*cws['uc_tot'], +k_lvl*cws['uc_tot'], alpha=0.3, step='mid',
+    #                 color=pu.CLRS['cws_1'])
+
+    ax1.plot(x, -k_lvl*cws['uc_tot'], lw=1, drawstyle='steps-mid',
+             color=pu.CLRS['cws_1'], alpha=0.3)
+    ax1.plot(x, +k_lvl*cws['uc_tot'], lw=1, drawstyle='steps-mid',
+             color=pu.CLRS['cws_1'], alpha=0.3)
 
     # Make it look pretty
 
