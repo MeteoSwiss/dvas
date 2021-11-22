@@ -235,7 +235,7 @@ def log_func_call(logger, time_it=False):
 
             # Launch the actual function
             if time_it:
-                with TimeIt(logger=logger):
+                with TimeIt(header_msg=func.__name__, logger=logger):
                     out = func(*args, **kwargs)
             else:
                 out = func(*args, **kwargs)
