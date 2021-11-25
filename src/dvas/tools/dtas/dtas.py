@@ -14,7 +14,6 @@ This module contains tools and routines related to deltas between profiles and C
 # Import from Python
 from copy import deepcopy
 from pathlib import Path
-import pandas as pd
 
 # Import from this module
 from ...logger import log_func_call
