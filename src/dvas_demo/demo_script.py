@@ -70,7 +70,7 @@ if __name__ == '__main__':
     # Fetch
     DB.fetch_raw_data(
         [
-            'time', 'gph',
+            'time', 'gph', 'gph_uct', 'gph_ucu',
             'temp', 'temp_flg', 'temp_ucr', 'temp_ucs', 'temp_uct'
         ],
         strict=True
@@ -270,8 +270,8 @@ if __name__ == '__main__':
     cws.save_to_db(add_tags=['cws'], rm_tags=['gdp'], prms=['val', 'ucr', 'ucs', 'uct', 'ucu'])
 
     # ----------------------------------------------------------------------------------------------
+    """
     print("\n --- ASSESSMENT OF CANDIDATE RADIOSONDES ---")
-
     # We begin by assembling "delta profiles", i.e. deltas between candidate radiosondes and
     # associated CWS.
 
@@ -286,3 +286,4 @@ if __name__ == '__main__':
     cws_prfs.load_from_db(filt_cws_dt, 'temp', tdt_abbr='time', alt_abbr='gph',
                           ucr_abbr='temp_ucr', ucs_abbr='temp_ucs', uct_abbr='temp_uct',
                           inplace=True)
+    """
