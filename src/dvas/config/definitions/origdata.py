@@ -54,7 +54,7 @@ LABEL_VAL_DEF = {
     META_FLD_NM: {},
     CSV_USE_DEFAULT_FLD_NM: False,
     CSV_DELIMITER_FLD_NM: ';',
-    CSV_HEADER_FLD_NM: 0,
+    CSV_HEADER_FLD_NM: 'infer',
     CSV_INDEX_COL_FLD_NM: None,
     CSV_SKIPINITSPACE_FLD_NM: False,
     CSV_SKIPROWS_FLD_NM: 0,
@@ -114,7 +114,16 @@ PARAMETER_PATTERN_PROP = {
         ]
     },
     rf"^{CSV_HEADER_FLD_NM}$": {
-        'const': 0
+        "oneOf": [
+            {"type": "null"},
+            {
+                "type": "integer",
+                'minimum': 0
+            },
+            {
+                "const": "infer",
+            }
+        ]
     },
     rf"^{CSV_INDEX_COL_FLD_NM}$": {
         "oneOf": [
