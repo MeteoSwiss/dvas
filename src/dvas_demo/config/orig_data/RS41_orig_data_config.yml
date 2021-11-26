@@ -61,36 +61,37 @@ _RS41:
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter: ';'
-    csv_skip_blank_lines: True
+    csv_skip_blank_lines: False
     csv_delim_whitespace: False
-    csv_skiprows: 47
+    csv_skiprows: 'lambda x: ((x<=45) or (x==47))'
     csv_skipfooter: 0
     csv_encoding: 'latin_1'
     csv_na_values: '/'
+    csv_header: 0
 
     _time:
-        value: get(0, 's2ns')
+        value: get('Elapsed time', 's2ns')
 
     _alt_ref:
-        value: get(2)
+        value: get('GpsHeightMSL')
 
     _gph:
-        value: get(2)
+        value: get('GpsHeightMSL')
 
     _temp:
-        value: get(4, 'd2k')
+        value: get('Temp', 'd2k')
 
     _pres:
-        value: get(3)
+        value: get('P')
 
     _rh:
-        value: get(5)
+        value: get('RH')
 
     _wdir:
-        value: get(7)
+        value: get('Dir')
 
     _wspeed:
-        value: get(8)
+        value: get('Speed')
 
 # ----------------------------------------------------
 # RS41 GDP, version 1

@@ -139,8 +139,15 @@ PARAMETER_PATTERN_PROP = {
         "type": "boolean"
     },
     rf"^{CSV_SKIPROWS_FLD_NM}$": {
-        "type": "integer",
-        'minimum': 0,
+        "oneOf": [
+          {
+              "type": "integer",
+              'minimum': 0,
+          },
+          {
+              "type": 'string'
+          }
+        ]
     },
     rf"^{CSV_SKIPFOOTER_FLD_NM}$": {
         "type": "integer",

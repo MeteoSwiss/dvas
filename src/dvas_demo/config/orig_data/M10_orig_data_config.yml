@@ -14,36 +14,37 @@ _M10:
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter:
-    csv_skip_blank_lines: True
+    csv_skip_blank_lines: False
     csv_delim_whitespace: True
-    csv_skiprows: 1
+    csv_skiprows: 0
     csv_skipfooter: 0
     csv_encoding:
     csv_na_values:
+    csv_header: 0
 
     _time:
-        value: get(0, ['rel', 's2ns'])
+        value: get('Time', ['rel', 's2ns'])
 
     _alt_ref:
-        value: get(1)
+        value: get('Altitude')
 
     _gph:
-        value: get(1)
+        value: get('Altitude')
 
     _temp:
-        value: get(10, 'd2k')
+        value: get('T', 'd2k')
 
     _pres:
-        value: get(12)
+        value: get('Press')
 
     _rh:
-        value: get(11)
+        value: get('U')
 
     _wdir:
-        value: get(8)
+        value: get('WindD')
 
     _wspeed:
-        value: get(7)
+        value: get('WindF')
 
 # ----------------------------------------------------
 # M10 GDP, version alpha-2

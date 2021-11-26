@@ -627,6 +627,13 @@ class CSVHandler(FileHandler):
             for key, val in raw_csv_read_args.items()
         }
 
+        # Transform the skiprow argument into a suitable lambda function, if warranted.
+        # That's to deal with side-effects of #182 when the list of column names is not the last
+        # one before the data. fpavogt, 26.11.2021
+        if 'skiprows' in raw_csv_read_args.keys():
+            if isinstance(raw_csv_read_args['skiprows'], str):
+                raw_csv_read_args['skiprows'] = eval(raw_csv_read_args['skiprows'])
+
         # Set read_csv arguments
         # (Add usecols, squeeze and engine arguments)
         raw_csv_read_args.update(
