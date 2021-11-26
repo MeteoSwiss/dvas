@@ -31,10 +31,7 @@ Serial Number;6001
 Sonde Identifier;74
 DTH;0.0
 
-Sensor Parameter
-DTH;0.0
-Ice on mirror (?C);-20.0
-Radiation Correction (yes/no);true
+ECC Cells
 Background Current Ib1 (uA);
 Background Current Ib2 (uA);
 Pump Performance (s/100ml);
