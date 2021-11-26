@@ -1,6 +1,6 @@
 
-- mdl_name: 'RS41-GDP-BETA_003'
-  mdl_desc: 'RS41 GDP, BETA version 3'
+- mdl_name: 'RS41-GDP_001'
+  mdl_desc: 'RS41 GDP, version 1'
   mid: 'RS41-GDP'
 
 - mdl_name: 'RS92-GDP_002'

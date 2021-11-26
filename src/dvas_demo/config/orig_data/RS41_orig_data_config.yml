@@ -93,9 +93,9 @@ _RS41:
         value: get(8)
 
 # ----------------------------------------------------
-# RS41 GDP, version beta-3
+# RS41 GDP, version 1
 # ----------------------------------------------------
-_RS41-GDP-BETA_003:
+_RS41-GDP_001:
 
     # -- META DATA ----------------------------------
 
@@ -160,10 +160,10 @@ _RS41-GDP-BETA_003:
         value: get('wdir')
 
     _wdir_ucu:
-        value: get('wdir_uc', 'div2')  # Go from K=2 to K=1
+        value: get('wdir_uc_ucor', 'div2')  # Go from K=2 to K=1
 
     _wspeed:
         value: get('wspeed')
 
     _wspeed_ucu:
-        value: get('wspeed_uc', 'div2')  # Go from K=2 to K=1
+        value: get('wspeed_uc_ucor', 'div2')  # Go from K=2 to K=1
