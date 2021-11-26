@@ -13,10 +13,13 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [modolol, 2021-07-12] Fix issue #160
  - [fpavogt, 2021-09-16] Fix issue #166 and #165
  - [fpavogt, 2021-11-03] Fix issue #172
+ - [fpavogt, 2021-11-19] Fix issue #178
  - [GonzagueRomanens, 2021-11-26] Fix issue #187
 ### Changed:
  - [modolol, 2021-11-24] Modify 'header' rules in origdata
  - [fpavogt, 2021-10-18] Clean-up default csv na values in origdata
+ - [fpavogt, 2021-11-22] Various logging improvements
+ - [fpavogt, 2021-11-26] Update RS41 GDPs to v1.
 ### Deprecated:
 ### Removed:
 ### Security:
