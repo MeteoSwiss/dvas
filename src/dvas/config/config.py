@@ -881,7 +881,7 @@ class ConfigExprInterpreter(metaclass=ABCMeta):
             # Interpret
             expr_out = expr_out.interpret()
 
-        except (NameError, SyntaxError, AttributeError) as exc:
+        except (NameError, SyntaxError, AttributeError):
             expr_out = expr
 
         except (NonTerminalExprInterpreterError, TerminalExprInterpreterError) as exc:
