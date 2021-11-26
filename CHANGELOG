@@ -9,25 +9,25 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [modolol, 2021-11-03] Add `mid` in DB search options
  - [fpavogt, 2021-07-02] Add `has_tag()` convenience method to `Profile` and `MultiProfile` classes
 ### Fixed:
+ - [GonzagueRomanens, 2021-11-26] Fix issue #187
+ - [fpavogt, 2021-11-19] Fix issue #178
+ - [fpavogt, 2021-11-03] Fix issue #172
+ - [fpavogt, 2021-09-16] Fix issue #166 and #165
  - [modolol, 2021-07-12] Fix issue #185
  - [modolol, 2021-07-12] Fix issue #160
- - [fpavogt, 2021-09-16] Fix issue #166 and #165
- - [fpavogt, 2021-11-03] Fix issue #172
- - [fpavogt, 2021-11-19] Fix issue #178
- - [GonzagueRomanens, 2021-11-26] Fix issue #187
 ### Changed:
- - [modolol, 2021-11-24] Modify 'header' rules in origdata
- - [fpavogt, 2021-10-18] Clean-up default csv na values in origdata
- - [fpavogt, 2021-11-22] Various logging improvements
  - [fpavogt, 2021-11-26] Update RS41 GDPs to v1.
+ - [modolol, 2021-11-24] Modify 'header' rules in origdata
+ - [fpavogt, 2021-11-22] Various logging improvements
+ - [fpavogt, 2021-10-18] Clean-up default csv na values in origdata
 ### Deprecated:
 ### Removed:
 ### Security:
 
 ## [v0.4.1] (2021-07-16)
 ### Added:
- - [fpavogt, 2021-07-02] Add `has_tag()` convenience method to `Profile` and `MultiProfile` classes
  - [fpavogt, 2021-07-14] Add `csv_encoding` parameter to config files, and set it to 'altin_1' for RS-41
+ - [fpavogt, 2021-07-02] Add `has_tag()` convenience method to `Profile` and `MultiProfile` classes
 ### Fixed:
  - [modolol, 2021-07-12] Fix issue #160
 ### Changed:
@@ -38,22 +38,22 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [v0.4.0] (2021-06-30)
 ### Added:
+ - [fpavogt, 2021-06-23] Add `get_validities()` routine to identify which levels to combine in CWS
+ - [fpavogt, 2021-06-16] Add `dvas_optimize` entry point to find ideal CHUNK_SIZE value
+ - [fpavogt, 2021-05-25] Add recipe_config.yml and associated initialization function for recipes
+ - [fpavogt, 2021-05-18] Add pytest fixture to test LaTeX plots using the command line argument "--latex"
  - [modolol, 2021-05-11] Add interpreter to mix raw parameter in config file
  - [fpavogt, 2021-04-19] Add config info for variables other than T, and for the M10 raw file
  - [modolol, 2021-04-13] Add DB exploring tool
- - [fpavogt, 2021-05-18] Add pytest fixture to test LaTeX plots using the command line argument "--latex"
- - [fpavogt, 2021-05-25] Add recipe_config.yml and associated initialization function for recipes
- - [fpavogt, 2021-06-16] Add `dvas_optimize` entry point to find ideal CHUNK_SIZE value
- - [fpavogt, 2021-06-23] Add `get_validities()` routine to identify which levels to combine in CWS
 ### Fixed:
  - [modolol, 2021-06-10] Fix missing correction + bugs in PR #147
  - [modolol, 2021-06-08] Cleanup toward v04 (config module)
 ### Changed:
+ - [fpavogt, 2021-06-30] Ensure that the default db config files are only found in`dvas_demo`
+ - [fpavogt, 2021-06-23] `has_flg()` now returns 0 if flags are <NA>
+ - [fpavogt, 2021-06-18] Rename `corcoefs()` as `coeffs()`, and move it to new `dvas.tools.gdps.correlations` module
  - [fpavogt, 2021-05-18] Improve looks of plots, and split-up "orig_data_config.yml"
  - [fpavogt, 2021-05-18] Change parameter names in tests, for consistency with main code
- - [fpavogt, 2021-06-18] Rename `corcoefs()` as `coeffs()`, and move it to new `dvas.tools.gdps.correlations` module
- - [fpavogt, 2021-06-23] `has_flg()` now returns 0 if flags are <NA>
- - [fpavogt, 2021-06-30] Ensure that the default db config files are only found in`dvas_demo`
 ### Deprecated:
 ### Removed:
 ### Security:
