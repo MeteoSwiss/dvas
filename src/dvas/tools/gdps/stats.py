@@ -198,6 +198,7 @@ def gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=None, rolling=True,
 
         # Get the oids to form the dictionary key
         key = '_vs_'.join([str(item.info.oid) for item in gdp_pair])
+        logger.debug('GPD oids: %s', key)
 
         # First make a high-resolution delta ...
         out = combine(gdp_pair, binning=1, method='delta', **kwargs)

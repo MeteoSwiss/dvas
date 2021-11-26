@@ -31,7 +31,7 @@ from ..utils import fn_suffix
 
 @for_each_var
 @for_each_flight
-def build_cws(tags='sync', m_vals=None, strategy='all-or-none'):
+def build_cws(tags='sync', m_vals=None, strategy='all-or-none', alpha=0.0027):
     """ Highest-level recipe function responsible for assembling the combined working standard for
     a specific RS flight.
 
@@ -46,6 +46,8 @@ def build_cws(tags='sync', m_vals=None, strategy='all-or-none'):
         strategy (str, optional): name of GDP combination strategy (for deciding which levels/
             measurements are valid or not). Defaults to 'all-or-none'. These ared defined in
             `dvas.tools.gdps.stats.get_validities()`.
+        alpha (float, optional): The significance level for the KS test. Defaults to 0.27%.
+            See dvas.tools.gdps.stats.gdp_incompatibilities() for details.
 
     TODO:
         Give the user the possibility to tag the 'cws' with a custom one ?
@@ -119,7 +121,7 @@ def build_cws(tags='sync', m_vals=None, strategy='all-or-none'):
     # The idea here is to flag any inconsistent measurement, so that they can be ignored during
     # the combination process.
     logger.info('Identifying incompatibilities between GDPs for variable: %s', dynamic.CURRENT_VAR)
-    incompat = dtgs.gdp_incompatibilities(gdp_prfs, alpha=0.0027,
+    incompat = dtgs.gdp_incompatibilities(gdp_prfs, alpha=alpha,
                                           m_vals=[np.abs(item) for item in m_vals],
                                           do_plot=True,
                                           n_cpus=dynamic.N_CPUS,

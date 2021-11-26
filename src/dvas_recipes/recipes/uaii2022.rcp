@@ -81,7 +81,8 @@ rcp_steps:
         step_id: '01'
         run: True
         kwargs:
-            first_guess_var: 'time'
+            anchor_alt: 5000 # Initial (single) altitude to anchor all profiles.
+            global_match_var: 'gph' # Variable to match globally
 
     # Simple plotting step of the complete profiles for all the variables.
     uaii2022.plots.flight_overview:

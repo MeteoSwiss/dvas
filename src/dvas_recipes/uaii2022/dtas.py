@@ -9,22 +9,18 @@ Module content: high-level delta recipes for the UAII22 campaign
 """
 
 # Import from python
-import numpy as np
-import pandas as pd
 
 # Import from dvas
 from dvas.data.data import MultiProfile, MultiCWSProfile
 from dvas.tools.dtas import dtas as dtdd
-from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, FLG_INCOMPATIBLE_NAME
+from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME
 from dvas.hardcoded import PRF_REF_VAL_NAME, PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME
 from dvas.hardcoded import PRF_REF_UCU_NAME, TAG_DTA_NAME, TAG_GDP_NAME, TAG_CWS_NAME
-from dvas.errors import DBIOError
 
 # Import from dvas_recipes
 from ..errors import DvasRecipesError
 from ..recipe import for_each_flight, for_each_var
 from .. import dynamic
-from ..utils import fn_suffix
 
 @for_each_var
 @for_each_flight
