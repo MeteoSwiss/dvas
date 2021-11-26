@@ -183,7 +183,7 @@ Until its release, the dvas repository will remain private: branching will thus 
 
 1. Clone the `develop` branch locally:
 
-       git clone -b develop git@github.com:MeteoSwiss-MDA/dvas.git your_branch_name
+       git clone -b develop git@github.com:MCH-MDA/dvas.git your_branch_name
 
    :warning: `develop` is the default branch for dvas that contains all the latest *approved* changes. **Unless you have a good reason to do otherwise**, this is the branch you want to clone and branch-off from.
 
