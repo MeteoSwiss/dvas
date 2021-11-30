@@ -272,6 +272,7 @@ def gdp_validities(incompat, m_vals=None, strategy='all-or-none'):
     Valid strategies include:
         * 'all-or-none': either all GDP measurements from a certain bin are compatible with each
             others, or all of them are dropped.
+        * 'force-all-valid': combine all GDPs, irrespective of the reported incompatibilities.
 
     Args:
         incompat (dict): outcome of dvas.tools.gdps.stats.gdp_incompatibilities().
@@ -320,7 +321,9 @@ def gdp_validities(incompat, m_vals=None, strategy='all-or-none'):
         # Here, all profiles will have the same validities (i.e. either all ok, or None ok).
         for oid in oids:
             valids[oid] = incompat.sum(axis=1, skipna=False)==0 # valid if NO incompatibilities.
-
+    elif strategy == 'force-all-valid':
+        for oid in oids:
+            valids[oid] = True
     else:
         raise DvasError(f'Ouch ! Unknown validation strategy: {strategy}')
 

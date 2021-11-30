@@ -89,19 +89,19 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, index_name='tdt', label='mid', **kwa
             raise DvasError('Ouch! GDPS and CWS are not synchronized. I cannot plot this.')
 
         # First, plot the profiles themselves
-        ax0.plot(x, gdp[PRF_REF_VAL_NAME], lw=1, ls='-', drawstyle='steps-mid',
+        ax0.plot(x, gdp[PRF_REF_VAL_NAME], lw=0.5, ls='-', drawstyle='steps-mid',
                  label=gdp_prfs.get_info(label)[gdp_ind])
         ax0.fill_between(x, gdp[PRF_REF_VAL_NAME]-k_lvl*gdp['uc_tot'],
                          gdp[PRF_REF_VAL_NAME]+k_lvl*gdp['uc_tot'], alpha=0.3, step='mid')
 
         # And below, plot the Deltas with respect to the CWS
         delta = gdp[PRF_REF_VAL_NAME].values-cws[PRF_REF_VAL_NAME].values
-        ax1.plot(x, delta, drawstyle='steps-mid', lw=1, ls='-')
+        ax1.plot(x, delta, drawstyle='steps-mid', lw=0.5, ls='-')
         ax1.fill_between(x, delta-k_lvl*gdp['uc_tot'], delta+k_lvl*gdp['uc_tot'], alpha=0.3,
                          step='mid')
 
     # Then also plot the CWS uncertainty
-    ax0.plot(x, cws['val'], color=pu.CLRS['cws_1'], lw=1, ls='-', drawstyle='steps-mid',
+    ax0.plot(x, cws['val'], color=pu.CLRS['cws_1'], lw=0.5, ls='-', drawstyle='steps-mid',
              label='CWS')
     ax0.fill_between(x, cws[PRF_REF_VAL_NAME]-k_lvl*cws['uc_tot'],
                      cws[PRF_REF_VAL_NAME]+k_lvl*cws['uc_tot'], alpha=0.3, step='mid',
@@ -110,10 +110,10 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, index_name='tdt', label='mid', **kwa
     #ax1.fill_between(x, -k_lvl*cws['uc_tot'], +k_lvl*cws['uc_tot'], alpha=0.3, step='mid',
     #                 color=pu.CLRS['cws_1'])
 
-    ax1.plot(x, -k_lvl*cws['uc_tot'], lw=1, drawstyle='steps-mid',
-             color=pu.CLRS['cws_1'], alpha=0.3)
-    ax1.plot(x, +k_lvl*cws['uc_tot'], lw=1, drawstyle='steps-mid',
-             color=pu.CLRS['cws_1'], alpha=0.3)
+    ax1.plot(x, -k_lvl*cws['uc_tot'], lw=0.5, drawstyle='steps-mid',
+             color='k')
+    ax1.plot(x, +k_lvl*cws['uc_tot'], lw=0.5, drawstyle='steps-mid',
+             color='k')
 
     # Make it look pretty
 
