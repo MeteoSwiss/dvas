@@ -87,10 +87,19 @@ def ks_test(gdp_pair, alpha=0.0027, m_val=1, **kwargs):
             dvas.tools.gdps.gdps.combine().
 
     Returns:
-        pandas DataFrame: a DataFrame containing k_pqi, p_ksi, and f_pqi values. k_pqi contains the
-        (binned) profile delta normalized by the total uncertainty. p_ksi contains the
-        corresponding p-value from the KS test. f_pqi contains 1 where the KS test failed, and
-        0 otherwise. That is: 1 <=> the p-value of the KS test is <= alpha.
+        pandas DataFrame: a DataFrame containing Delta_pqei, sigma_pqei, k_pqei, pks_pqei, and
+        f_pqei values:
+
+            * Delta_pqei is the (binned) profile delta with sigma_pqei its (total) uncertainty,
+
+            * k_pqei=Delta_pqei/sigma_pqei is the (binned) profile delta normalized by the total
+              uncertainty,
+
+            * pks_pqei contains the corresponding p-value from the KS test, and
+
+            * f_pqi contains 1 where the KS test failed, and 0 otherwise.
+              That is: 1 <=> the p-value of the KS test is <= alpha.
+
     '''
 
     if not isinstance(m_val, numbers.Integral):
@@ -103,34 +112,35 @@ def ks_test(gdp_pair, alpha=0.0027, m_val=1, **kwargs):
         raise Exception('Ouch! alpha should be 0<alpha<1, not %.1f.' % (alpha))
 
     # How long are the profiles ?
-    len_prf = len(gdp_pair[0].data)
+    #len_prf = len(gdp_pair[0].data)
 
-    if (tmp := len(gdp_pair[1].data)) != len_prf:
-        raise DvasError("Ouch ! GDP Profiles have inconsistent lengths: {} vs {} ".format(len_prf,
-                                                                                          tmp))
-
-    # Let's create a DataFrame to keep track of incompatibilities.
-    out = pd.DataFrame(np.zeros((len_prf, 3)), columns=['k_pqi', 'f_pqi', 'p_ksi'])
+    if (tmp1 := len(gdp_pair[1])) != (tmp0 := len(gdp_pair[0])):
+        raise DvasError("Ouch ! GDP Profiles have inconsistent lengths: {} vs {} ".format(tmp0,
+                                                                                          tmp1))
 
     # Compute the profile delta with the specified sampling
     gdp_delta = combine(gdp_pair, binning=m_val, method='delta', **kwargs)
 
-    # Compute k_pqi (the normalized profile delta)
-    k_pqi = gdp_delta.get_prms([PRF_REF_VAL_NAME, 'uc_tot'])[0]
-    k_pqi = k_pqi[PRF_REF_VAL_NAME]/k_pqi['uc_tot']
+    # Let's create a DataFrame to keep track of incompatibilities.
+    out = pd.DataFrame(np.full((len(gdp_delta[0]), 5), np.nan),
+                       columns=['Delta_pqei', 'sigma_pqei', 'k_pqei', 'f_pqei', 'pks_pqei'])
 
-    # Setup a DataFrame that will eventually get out of this function
-    out = pd.DataFrame(k_pqi, columns=['k_pqi'])
+    # Assign the first part of the data to it
+    out[['Delta_pqei', 'sigma_pqei']] = gdp_delta.get_prms([PRF_REF_VAL_NAME, 'uc_tot'])[0]
+
+    # Compute k_pqei
+    out['k_pqei'] = out['Delta_pqei']/out['sigma_pqei']
 
     # Loop through each level and run a KS test on it.
-    out['p_ksi'] = [stats.kstest(np.array([k_val]), 'norm', args=(0, 1)).pvalue for k_val in k_pqi]
+    out['pks_pqei'] = [stats.kstest(np.array([k_val]), 'norm', args=(0, 1)).pvalue
+                       for k_val in out['k_pqei'].values]
 
     # Compute the flags.
     # The following two lines may seem redundant, but it'll make sure NaN's get a NaN flag.
-    out.loc[out['p_ksi'] <= alpha, 'f_pqi'] = 1
-    out.loc[out['p_ksi'] > alpha, 'f_pqi'] = 0
+    out.loc[out['pks_pqei'] <= alpha, 'f_pqei'] = 1
+    out.loc[out['pks_pqei'] > alpha, 'f_pqei'] = 0
     # Set the proper dtype
-    out['f_pqi'] = out['f_pqi'].astype('Int64')
+    out['f_pqei'] = out['f_pqei'].astype('Int64')
 
     return out
 
@@ -153,16 +163,20 @@ def gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=None, rolling=True,
         **kwargs: n_cpus and/or chunk_size, that will get fed to dvas.tools.gdps.gdps.combine().
 
     Returns:
-        pd.DataFrame: the values of k_pqi, p_ksi and f_pqi for each pair of GDPs and each m value.
-            GDP pairs are identified using their oids, as: `oid_1_vs_oid_2`.
-            f_pqi==1 indicates that the p-value of the KS test is <= alpha for this measurement,
-            i.e. that the profiles are incompatible.
+        pd.DataFrame: the values of Delta_pqei, sigma_pqei, k_pqei, pks_pqei and f_pqei for each
+        pair of GDPs and each m value.
+
+        GDP pairs are identified using their oids, as: `oid_1_vs_oid_2`.
+
+        f_pqei==1 indicates that the p-value of the KS test is <= alpha for this measurement,
+        i.e. that the profiles are incompatible.
 
     '''
 
     # Some sanity checks to begin with
     if m_vals is None:
         m_vals = [1]
+
     # Be extra courteous if someone gives me an int
     if isinstance(m_vals, int):
         m_vals = [m_vals]
@@ -201,15 +215,14 @@ def gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=None, rolling=True,
         logger.debug('GPD oids: %s', key)
 
         # First make a high-resolution delta ...
-        out = combine(gdp_pair, binning=1, method='delta', **kwargs)
+        out = ks_test(gdp_pair, alpha=alpha, m_val=1, mask_flgs=mask_flgs, **kwargs)
 
-        # ... and extract the DataFrame to compute k_pqi (the normalized profile delta)
-        out = out.get_prms([PRF_REF_VAL_NAME, 'uc_tot'])[0]
-        out = out[PRF_REF_VAL_NAME]/out['uc_tot']
+        # Drop un-necessary info fromthe High-Kes k_pqei profile
+        out = out.drop(labels=['pks_pqei', 'f_pqei'], axis=1)
 
         # Turn this into a DataFrame with MultiIndex to store things that are coming
         # Lots of index swapping here, until I get things right ...
-        out = pd.DataFrame(out, columns=['k_pqi'])
+        #out = pd.DataFrame(out, columns=['k_pqi'])
         out = out.reset_index(drop=True)
         out = pd.DataFrame(out.values,
                            columns=pd.MultiIndex.from_tuples([(0, item) for item in out.columns],
@@ -226,7 +239,7 @@ def gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=None, rolling=True,
 
             # If binning >1, this will have the wrong size.
             # Correct it (i.e. tie the KS results back to the original levels) ...
-            # Inspired from the asnwer of DSM on Stack Overflow:
+            # Inspired from the answer of DSM on Stack Overflow:
             # https://stackoverflow.com/questions/26777832/
             tmp = tmp.reset_index(drop=True)
             tmp = tmp.loc[np.repeat(range(len(tmp)), m_val)]
@@ -239,13 +252,21 @@ def gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=None, rolling=True,
             # If requested, flag the bad levels detected using this binning intensity
             if rolling:
                 for gdp in gdp_pair:
-                    gdp.set_flg('incomp', True, index=out[out[(m_val, 'f_pqi')] == 1].index)
+                    gdp.set_flg('incomp', True, index=out[out[(m_val, 'f_pqei')] == 1].index)
 
         # Assign this pair's outcome to the final storage dictionnary
         incompat[key] = out
 
         # Plot things if needed
         if do_plot:
+
+            # Is there a unit for the data at hand ?
+            try:
+                var_name = gdp_pair.var_info['val']['prm_name']
+                var_unit = gdp_pair.var_info['val']['prm_unit']
+            except KeyError:
+                var_name = None
+                var_unit = None
 
             # Extract the edt eid rid info for the pair
             edt_eid_rid_info = dpu.get_edt_eid_rid(gdp_pair)
@@ -259,6 +280,7 @@ def gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=None, rolling=True,
                 fnsuf = fn_suffix + '_' + fnsuf
 
             dpg.plot_ks_test(out, alpha, left_label=edt_eid_rid_info+'_'+pair_info,
+                             right_label=var_name, unit=var_unit,
                              fn_prefix=fn_prefix, fn_suffix=fnsuf)
 
     # Here, get rid of the dictionnary and group everything under a single DataFrame
@@ -311,7 +333,7 @@ def gdp_validities(incompat, m_vals=None, strategy='all-or-none'):
     # Extract the values that actually matter for checking the validitiy regions, i.e. f_pqi for
     # all the chosen m values.
     incompat = incompat.iloc[:,
-                             (incompat.columns.get_level_values(2)=='f_pqi') *
+                             (incompat.columns.get_level_values(2)=='f_pqei') *
                              (incompat.columns.get_level_values('m').isin(m_vals))]
 
     # The easiest (and most restrictive) validation strategy: a level is valid only if all

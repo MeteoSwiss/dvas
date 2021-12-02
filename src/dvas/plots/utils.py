@@ -307,7 +307,7 @@ def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show=
     if show:
         plt.show()
     else:
-        plt.close(fig.number)
+        plt.close(fig)
 
 def clr_palette_demo():
     """ A simple function to demonstrate the dvas color palette.
