@@ -139,6 +139,10 @@ if __name__ == '__main__':
     print('\nGDP profile dataframe:\n  index.names={}, columns={}'.format(gdp_prf_df.index.names,
                                                                         gdp_prf_df.columns.to_list()))
 
+    # MultiProfiles has a var_info property to link the DataFrame columns to the actual variable
+    print("\n Content of prfs.var_info['val']:\n")
+    print(prfs.var_info['val'])
+
     # Each profile is attributed a unique "Object Identification" (oid) number, which allows to keep
     # track of profiles throughout the dvas analysis.
     # If two profiles have the same oid, it implies that they have been acquired with the same
@@ -174,9 +178,11 @@ if __name__ == '__main__':
     print("\n --- BASIC PLOTTING ---")
 
     # Let us inspect the (raw) GDP profiles with dedicated plots.
-    gdp_prfs.plot(fn_prefix='01') # Defaults behavior, just adding a prefix to the filename.
-    # Now with errors. Show the plot but don't save it.
-    gdp_prfs.plot(label='oid', uc='uc_tot', show=False, fmts=[])
+    gdp_prfs.plot(fn_prefix='01-a', show=True) # Defaults behavior, just adding a prefix to the filename.
+
+    # Repeat the same plot, but this time with the GDP uncertainties.
+    # Set "show" to True to display it on-screen.
+    #gdp_prfs.plot(fn_prefix='01-b', label='oid', uc='uc_tot', show=False, fmts=['png'])
 
     # ----------------------------------------------------------------------------------------------
     print("\n --- PROFILE RESAMPLING ---")
@@ -223,7 +229,7 @@ if __name__ == '__main__':
 
     # ----------------------------------------------------------------------------------------------
     print("\n --- ASSEMBLY OF A COMBINED WORKING STANDARD ---")
-
+    """
     # If GDPs are synchronized, they can be combined into a Combined Working Standard (CWS) using
     # tools located inside dvas.tools.gdps
 
@@ -268,6 +274,7 @@ if __name__ == '__main__':
     # 'tdt' indexes. As a result, if one tries to extract the cws from the DB right away, the 'alt'
     # and 'tdt' columns will be filled with NaNs.
     cws.save_to_db(add_tags=['cws'], rm_tags=['gdp'], prms=['val', 'ucr', 'ucs', 'uct', 'ucu'])
+    """
 
     # ----------------------------------------------------------------------------------------------
     """
