@@ -229,7 +229,7 @@ if __name__ == '__main__':
 
     # ----------------------------------------------------------------------------------------------
     print("\n --- ASSEMBLY OF A COMBINED WORKING STANDARD ---")
-    """
+
     # If GDPs are synchronized, they can be combined into a Combined Working Standard (CWS) using
     # tools located inside dvas.tools.gdps
 
@@ -274,7 +274,6 @@ if __name__ == '__main__':
     # 'tdt' indexes. As a result, if one tries to extract the cws from the DB right away, the 'alt'
     # and 'tdt' columns will be filled with NaNs.
     cws.save_to_db(add_tags=['cws'], rm_tags=['gdp'], prms=['val', 'ucr', 'ucs', 'uct', 'ucu'])
-    """
 
     # ----------------------------------------------------------------------------------------------
     """
