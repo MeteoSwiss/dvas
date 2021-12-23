@@ -184,7 +184,7 @@ class TimeIt(AbstractContextManager):
         if self._head_msg == '':
             self._head_msg = 'Execution time'
         else:
-            self._head_msg += 'execution time'
+            self._head_msg += ' execution time'
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Class __exit__ method"""

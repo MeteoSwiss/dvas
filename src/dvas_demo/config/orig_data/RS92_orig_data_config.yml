@@ -19,35 +19,39 @@ _RS92:
     csv_delimiter:
     csv_skip_blank_lines: True
     csv_delim_whitespace: True
-    csv_skiprows: 2
+    csv_skiprows: 1
     csv_skipfooter: 0
     csv_encoding:
     csv_na_values:
+    csv_header: 0
 
     _time:
-        value: get(0, 's2ns')
+        value: get('Time', 's2ns')
+
+    _alt_ref:
+        value: get('Height')
 
     _gph:
-        value: get(1)
+        value: get('Height')
 
     _temp:
-        value: get(3, 'd2k')
+        value: get('T', 'd2k')
 
     _temp_flag:
         value: get(0)
         csv_use_default: True
 
     _pres:
-        value: get(2)
+        value: get('P')
 
     _rh:
-        value: get(4)
+        value: get('U')
 
     _wdir:
-        value: get(6)
+        value: get('WD')
 
     _wspeed:
-        value: get(5)
+        value: get('WS')
 
 # ----------------------------------------------------
 # RS92-GDP, version 2
@@ -65,6 +69,9 @@ _RS92-GDP_002:
     # -- ORIG DATA ----------------------------------
     _time:
         value: get('time', 's2ns')
+
+    _alt_ref:
+        value: get('geopot')
 
     _gph:
         value: get('geopot')

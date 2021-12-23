@@ -89,25 +89,31 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, index_name='tdt', label='mid', **kwa
             raise DvasError('Ouch! GDPS and CWS are not synchronized. I cannot plot this.')
 
         # First, plot the profiles themselves
-        ax0.plot(x, gdp[PRF_REF_VAL_NAME], lw=1, ls='-', drawstyle='steps-mid',
+        ax0.plot(x, gdp[PRF_REF_VAL_NAME], lw=0.5, ls='-', drawstyle='steps-mid',
                  label=gdp_prfs.get_info(label)[gdp_ind])
         ax0.fill_between(x, gdp[PRF_REF_VAL_NAME]-k_lvl*gdp['uc_tot'],
                          gdp[PRF_REF_VAL_NAME]+k_lvl*gdp['uc_tot'], alpha=0.3, step='mid')
 
         # And below, plot the Deltas with respect to the CWS
         delta = gdp[PRF_REF_VAL_NAME].values-cws[PRF_REF_VAL_NAME].values
-        ax1.plot(x, delta, drawstyle='steps-mid', lw=1, ls='-')
+        ax1.plot(x, delta, drawstyle='steps-mid', lw=0.5, ls='-')
         ax1.fill_between(x, delta-k_lvl*gdp['uc_tot'], delta+k_lvl*gdp['uc_tot'], alpha=0.3,
                          step='mid')
 
     # Then also plot the CWS uncertainty
-    ax0.plot(x, cws['val'], color=pu.CLRS['cws_1'], lw=1, ls='-', drawstyle='steps-mid',
+    ax0.plot(x, cws['val'], color=pu.CLRS['cws_1'], lw=0.5, ls='-', drawstyle='steps-mid',
              label='CWS')
     ax0.fill_between(x, cws[PRF_REF_VAL_NAME]-k_lvl*cws['uc_tot'],
                      cws[PRF_REF_VAL_NAME]+k_lvl*cws['uc_tot'], alpha=0.3, step='mid',
                      color=pu.CLRS['cws_1'])
-    ax1.fill_between(x, -k_lvl*cws['uc_tot'], +k_lvl*cws['uc_tot'], alpha=0.3, step='mid',
-                     color=pu.CLRS['cws_1'])
+
+    #ax1.fill_between(x, -k_lvl*cws['uc_tot'], +k_lvl*cws['uc_tot'], alpha=0.3, step='mid',
+    #                 color=pu.CLRS['cws_1'])
+
+    ax1.plot(x, -k_lvl*cws['uc_tot'], lw=0.5, drawstyle='steps-mid',
+             color='k')
+    ax1.plot(x, +k_lvl*cws['uc_tot'], lw=0.5, drawstyle='steps-mid',
+             color='k')
 
     # Make it look pretty
 
@@ -282,7 +288,7 @@ def plot_gdps(fn_list, ref_var='time', tag=None, save_loc=None):
     #
 
 @log_func_call(logger)
-def plot_ks_test(df, alpha, left_label=None, right_label=None, **kwargs):
+def plot_ks_test(df, alpha, unit=None, left_label=None, right_label=None, **kwargs):
     """ Creates a diagnostic plot for the KS test.
 
     Args:
@@ -290,6 +296,7 @@ def plot_ks_test(df, alpha, left_label=None, right_label=None, **kwargs):
             dvas.tools.gdps.stats.get_incomptibility().
         alpha (float): significance level used for the flags. Must be 0 <= alpha <= 1.
             Required for setting up the colorbar properly.
+        unit (str, optional): the unit of the variable displayed. Defaults to None.
         left_label (str, optional): top-left plot label. Defaults to None.
         right_label (str, optional): top-right plot label. Defaults to None.
         **kwargs: these get fed to the dvas.plots.utils.fancy_savefig() routine.
@@ -312,35 +319,45 @@ def plot_ks_test(df, alpha, left_label=None, right_label=None, **kwargs):
     # The plot will have different number of rows depending on the number of variables.
     # Let's define some hardcoded heights, such that the look is always consistent
     top_gap = 0.4 # inch
-    bottom_gap = 0.6 # inch
+    bottom_gap = 0.7 # inch
     plot_1_height = 0.35*n_bins # inch
-    plot_2_height = 2.2 # inch
+    plot_2_height = 2. # inch
     mid_gap = 0.05 # inch
-    fig_height = top_gap + bottom_gap + plot_1_height + plot_2_height + mid_gap
+    fig_height = top_gap + bottom_gap + plot_1_height + 3*plot_2_height + 3*mid_gap
 
     # Set up the scene ...
     fig = plt.figure(figsize=(pu.WIDTH_TWOCOL, fig_height))
 
-    gs_info = gridspec.GridSpec(2, 1, height_ratios=[plot_1_height/plot_2_height, 1],
+    gs_info = gridspec.GridSpec(4, 1, height_ratios=[plot_1_height/plot_2_height, 1, 1, 1],
                                 width_ratios=[1], left=0.08, right=0.98,
                                 bottom=bottom_gap/fig_height, top=1-top_gap/fig_height,
                                 wspace=0.02, hspace=mid_gap)
 
     ax1 = fig.add_subplot(gs_info[0, 0]) # A 2D plot of the incompatible points as a function of m
-    ax2 = fig.add_subplot(gs_info[1, 0], sharex=ax1) # A scatter plot of k_pq^i
+    ax2 = fig.add_subplot(gs_info[1, 0], sharex=ax1) # A scatter plot of k_pq^ei
+    ax3 = fig.add_subplot(gs_info[2, 0], sharex=ax1) # A scatter plot of Delta_pq^ei
+    ax4 = fig.add_subplot(gs_info[3, 0], sharex=ax1) # A scatter plot of sigma_pq^ei
 
-    # First, let's plot the full-resolution delta.
-    ax2.scatter(df.index.values, df.loc[:, (0, 'k_pqi')], marker='o', facecolor=pu.CLRS['nan_1'],
-                s=1, edgecolor=None, zorder=10)
+    # First, let's plot the full-resolution data.
+    ax2.scatter(df.index.values, df.loc[:, (0, 'k_pqei')], marker='o',
+                facecolor=pu.CLRS['nan_1'], s=1, edgecolor=None, zorder=10)
+    ax3.scatter(df.index.values, df.loc[:, (0, 'Delta_pqei')], marker='o',
+                facecolor=pu.CLRS['nan_1'], s=1, edgecolor=None, zorder=10)
+    ax4.scatter(df.index.values, df.loc[:, (0, 'sigma_pqei')], marker='o',
+                facecolor=pu.CLRS['nan_1'], s=1, edgecolor=None, zorder=10)
 
     # Let's now deal with all the bin levels ...
     for bin_ind in range(n_bins):
 
         # Which levels have been flagged ?
-        flagged = df[(df.columns.levels[0][1+bin_ind], 'f_pqi')] == 1
+        flagged = df[(df.columns.levels[0][1+bin_ind], 'f_pqei')] == 1
 
         # Plot the binned delta profile.
-        ax2.plot(df.index.values, df.loc[:, (df.columns.levels[0][1+bin_ind], 'k_pqi')],
+        ax2.plot(df.index.values, df.loc[:, (df.columns.levels[0][1+bin_ind], 'k_pqei')],
+                 ls='-', color=pu.CLRS['nan_1'], lw=0.5, drawstyle='steps-mid')
+        ax3.plot(df.index.values, df.loc[:, (df.columns.levels[0][1+bin_ind], 'Delta_pqei')],
+                 ls='-', color=pu.CLRS['nan_1'], lw=0.5, drawstyle='steps-mid')
+        ax4.plot(df.index.values, df.loc[:, (df.columns.levels[0][1+bin_ind], 'sigma_pqei')],
                  ls='-', color=pu.CLRS['nan_1'], lw=0.5, drawstyle='steps-mid')
 
         # Clearly mark the bad regions in the top plot
@@ -350,7 +367,7 @@ def plot_ks_test(df, alpha, left_label=None, right_label=None, **kwargs):
 
         # Draw circles around the flagged values in the full-resolution scatter plot.
         ax2.scatter(df[flagged].index.values,
-                    df[flagged].loc[:, (0, 'k_pqi')].values,
+                    df[flagged].loc[:, (df.columns.levels[0][1+bin_ind], 'k_pqei')].values,
                     marker='o',
                     #s=2*(1+bin_ind)**2, # With this, we get circles growing linearly in radius
                     s=20,
@@ -359,19 +376,30 @@ def plot_ks_test(df, alpha, left_label=None, right_label=None, **kwargs):
 
     # Add the 0 line for reference.
     ax2.axhline(0, c='k', ls='-', lw=1)
+    ax3.axhline(0, c='k', ls='-', lw=1)
 
     # Set the proper axis labels, etc ...
-    for this_ax in [ax1, ax2]:
+    for this_ax in [ax1]:
         this_ax.set_xlim((-0.5, len(df)-0.5))
 
+    # Deal with the units, if warranted
+    if unit is None:
+        unit = ''
+    else:
+        unit = ' ['+pu.fix_txt(unit)+']'
+
     ax1.set_ylabel(r'$m$')
-    ax2.set_ylabel(r'$k_{p,q}^i$')
-    ax2.set_xlabel(r'$i$')
+    ax2.set_ylabel(r'$k^{p,q}_{e,i}$')
+    ax3.set_ylabel(r'$\Delta^{p,q}_{e,i}$' + unit)
+    ax4.set_ylabel(r'$\sigma(\Delta^{p,q}_{e,i})$' + unit)
+    ax4.set_xlabel(r'$i$')
 
     ax1.set_ylim((-0.5 + n_bins, -0.5))
     ax1.set_yticks(np.arange(0, n_bins, 1))
     ax1.set_yticklabels([r'%i' % (m_val) for m_val in df.columns.levels[0][1:]])
-    plt.setp(ax1.get_xticklabels(), visible=False)
+    # Hide x tick labels where I don't need them. Mind the fancy way to do it because of sharex.
+    for this_ax in [ax1, ax2, ax3]:
+        plt.setp(this_ax.get_xticklabels(), visible=False)
     ax1.tick_params(which='minor', axis='y', left=False, right=False)
 
     ax2.set_ylim((-6, 6))
@@ -389,6 +417,6 @@ def plot_ks_test(df, alpha, left_label=None, right_label=None, **kwargs):
     pu.add_source(fig)
 
     # Save the figure
-    pu.fancy_savefig(fig, fn_core='k-pqi', **kwargs)
+    pu.fancy_savefig(fig, fn_core='k-pqei', **kwargs)
 
     return fig

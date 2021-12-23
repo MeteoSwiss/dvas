@@ -103,19 +103,24 @@ def test_ks_test(gdp_2_prfs):
 
     out_1 = ks_test(gdp_2_prfs, alpha=0.0027, m_val=1, n_cpus=1)
     assert len(out_1) == len(gdp_2_prfs[0]) # Correct length ?
-    assert round(100*(1-out_1.loc[0, 'p_ksi']), 1) == 68.3 # 1-sigma
-    assert round(100*(1-out_1.loc[1, 'p_ksi']), 1) == 95.4 # 2-sigma
-    assert round(100*(1-out_1.loc[2, 'p_ksi']), 1) == 99.7 # 3-sigma
-    assert out_1.isna().loc[3, 'p_ksi'] # Bad point
-    assert all(out_1.loc[:2, 'f_pqi'].values == [0, 0, 1])  # Correct flags
-    assert out_1.isna().loc[3, 'f_pqi']
+    assert round(100*(1-out_1.loc[0, 'pks_pqei']), 1) == 68.3 # 1-sigma
+    assert round(100*(1-out_1.loc[1, 'pks_pqei']), 1) == 95.4 # 2-sigma
+    assert round(100*(1-out_1.loc[2, 'pks_pqei']), 1) == 99.7 # 3-sigma
+    assert out_1.isna().loc[3, 'pks_pqei'] # Bad point
+    assert all(out_1.loc[:2, 'f_pqei'].values == [0, 0, 1])  # Correct flags
+    assert out_1.isna().loc[3, 'f_pqei'] # NaN flags is no data
+    assert all(out_1.loc[:2, 'Delta_pqei'].values == [2, 4, 6]) # Delta
 
     # Now with some binning
     out_2 = ks_test(gdp_2_prfs, alpha=0.0027, m_val=2, n_cpus=1)
     assert len(out_2) == len(gdp_2_prfs[0])//2 + len(gdp_2_prfs[0])%2 # Correct length ?
 
     # Partial NaN's get ignored completely ?
-    assert out_1.loc[2, 'k_pqi'] == out_2.loc[1, 'k_pqi']
+    assert out_1.loc[2, 'k_pqei'] == out_2.loc[1, 'k_pqei']
+
+    # Try when the length is not compatible with the binning
+    out_3 = ks_test(gdp_2_prfs, alpha=0.0027, m_val=3, n_cpus=1)
+    assert len(out_3) == len(gdp_2_prfs[0])//2 + len(gdp_2_prfs[0])%2 # Correct length ?
 
 
 def test_gdp_incompatibilities(gdp_2_prfs):

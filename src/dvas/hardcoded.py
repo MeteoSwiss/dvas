@@ -107,7 +107,7 @@ PRF_REF_UCU_NAME = 'ucu'
 #: str: Name of the flag column for the pandas DataFrame of Profiles, RSProfile, GDPProfiles
 PRF_REF_FLG_NAME = 'flg'
 
-# Tags
+# Tags (these get set explicitely under ./dvas/config/definitions/tag.py)
 # ----
 #: str: Tag's name for none tag in DB
 TAG_NONE_NAME = ''
@@ -139,11 +139,15 @@ TAG_CWS_NAME = 'cws'
 #: str: Tag's desc for combined working standard profile
 TAG_CWS_DESC = 'Combined working measurement standard'
 
+#: str: Tag's name for profile deltas with CWS
+TAG_DTA_NAME = 'dta'
+#: str: Tag's desc for profile deltas with CWS
+TAG_DTA_DESC = 'Profile minus CWS'
+
 #: str: Tag's name for empty values in raw data
 TAG_EMPTY_NAME = 'empty'
 #: str: Tag's desc for empty values in raw data
 TAG_EMPTY_DESC = 'Empty data'
-
 
 # Flags
 # -----

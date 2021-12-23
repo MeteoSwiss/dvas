@@ -65,15 +65,19 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
 
 @for_each_flight
 @log_func_call(logger, time_it=True)
-def sync_flight(first_guess_var='temp'):
+def sync_flight(anchor_alt, global_match_var):
     """ Highest-level function responsible for synchronizing all the profile from a specific RS
     flight.
 
     This function directly synchronizes the profiles and upload them to the db with the 'sync' tag.
 
     Args:
-        first_guess_var (str, optional): Name of the variable to use for getting a first guess of
-            the synchronization shifts. Defaults to 'temp'.
+        anchor_alt (int|float): (single) altitude around which to anchor all profiles.
+            Used as a first - crude!- guess to get the biggest shifts out of the way.
+            Relies on dvas.tools.sync.get_synch_shifts_from_alt()
+        global_match_var (str): Name of the variable to use for getting the synchronization shifts
+            from a flobal match of the profile.
+            Relies on dvas.tools.sync.get_synch_shifts_from_val()
 
     """
 
@@ -85,7 +89,7 @@ def sync_flight(first_guess_var='temp'):
 
     # First, extract the temperature data from the db
     prfs = MultiRSProfile()
-    prfs.load_from_db(filt, first_guess_var, dynamic.INDEXES[PRF_REF_TDT_NAME],
+    prfs.load_from_db(filt, global_match_var, dynamic.INDEXES[PRF_REF_TDT_NAME],
                       alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME])
     prfs.sort()
 
@@ -99,12 +103,16 @@ def sync_flight(first_guess_var='temp'):
         logger.warning('Not all profiles to be synchronized have the same event_dt.')
         logger.warning('Offsets (w.r.t. first profile) in [s]: %s', dt_offsets)
 
-    # Get the preliminary shifts
-    shifts_alt = dts.get_sync_shifts_from_alt(prfs)
+    # Get the preliminary shifts from the altitude
+    shifts_alt = dts.get_sync_shifts_from_alt(prfs, ref_alt=anchor_alt)
+    logger.debug('sync. shifts from alt (%.1f): %s', anchor_alt, shifts_alt)
 
-    # Use this first guess to get a better set of shifts
-    # TODO
-    sync_shifts = shifts_alt
+    # Use these to get synch shifts from the variable
+    shifts_val = dts.get_sync_shifts_from_val(prfs, max_shift=100, first_guess=shifts_alt)
+    logger.debug('sync. shifts from val (%s): %s', global_match_var, shifts_val)
+
+    # Use these as best synch shifts
+    sync_shifts = shifts_val
 
     # Given these shifts, let's compute the new length of the synchronized Profiles.
     # Do it such that no data is actually cropped out, i.e. add NaN/NaT wherever needed.

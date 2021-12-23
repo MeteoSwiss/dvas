@@ -14,7 +14,7 @@ import pandas as pd
 
 # Import from current package
 from .data import MPStrategyAC
-from .data import Profile, RSProfile, GDPProfile
+from .data import Profile, RSProfile, GDPProfile, CWSProfile, DeltaProfile
 from ..linker import LocalDBLinker
 from ...database.database import InfoManager
 from ...database.model import Data
@@ -165,7 +165,7 @@ class LoadRSProfileStrategy(LoadProfileStrategy):
 
 
 class LoadGDPProfileStrategy(LoadProfileStrategy):
-    """Child class to manage the data loading strategy of GDPProfile instances."""
+    """ Child class to manage the data loading strategy of GDPProfile instances. """
 
     def execute(
         self, search, val_abbr, tdt_abbr, alt_abbr=None,
@@ -202,5 +202,82 @@ class LoadGDPProfileStrategy(LoadProfileStrategy):
 
         # Create profiles
         out = [GDPProfile(arg[0], data=arg[1]) for arg in zip(info, data)]
+
+        return out, db_vs_df_keys
+
+class LoadCWSProfileStrategy(LoadProfileStrategy):
+    """ Child class to manage the data loading strategy of CWSProfile instances. """
+
+    def execute(self, search, val_abbr, tdt_abbr, alt_abbr=None,
+                ucr_abbr=None, ucs_abbr=None, uct_abbr=None, ucu_abbr=None):
+        """ Execute strategy method to fetch data from the database.
+
+        Args:
+            search (str): selection criteria
+            val_abbr (str): name of the parameter values to extract
+            tdt_abbr (str): name of the time delta parameter to extract.
+            alt_abbr (str, optional): name of the altitude parameter to extract. Dafaults to None.
+            ucr_abbr (str, optional): name of the true rig un-correlated uncertainty parameter to
+               extract. Defaults to None.
+            ucs_abbr (str, optional): name of the true spatial-correlated uncertainty parameter to
+               extract. Defaults to None.
+            uct_abbr (str, optional): name of the true time-correlated uncertainty parameter to
+               extract. Defaults to None.
+            ucu_abbr (str, optional): name of the true un-correlated uncertainty parameter to
+               extract. Defaults to None.
+
+        """
+
+        # Define
+        db_vs_df_keys = self.add_flg_prm(
+            {
+                'val': val_abbr, 'tdt': tdt_abbr, 'alt': alt_abbr,
+                'ucr': ucr_abbr, 'ucs': ucs_abbr, 'uct': uct_abbr, 'ucu': ucu_abbr,
+            }
+        )
+
+        # Fetch data
+        info, data = self.fetch(search, **db_vs_df_keys)
+
+        # Create profiles
+        out = [CWSProfile(arg[0], data=arg[1]) for arg in zip(info, data)]
+
+        return out, db_vs_df_keys
+
+class LoadDeltaProfileStrategy(LoadProfileStrategy):
+    """ Child class to manage the data loading strategy of DeltaProfile instances. """
+
+    def execute(self, search, val_abbr, alt_abbr=None,
+                ucr_abbr=None, ucs_abbr=None, uct_abbr=None, ucu_abbr=None):
+        """ Execute strategy method to fetch data from the database.
+
+        Args:
+            search (str): selection criteria
+            val_abbr (str): name of the parameter values to extract
+            alt_abbr (str, optional): name of the altitude parameter to extract. Dafaults to None.
+            ucr_abbr (str, optional): name of the true rig un-correlated uncertainty parameter to
+               extract. Defaults to None.
+            ucs_abbr (str, optional): name of the true spatial-correlated uncertainty parameter to
+               extract. Defaults to None.
+            uct_abbr (str, optional): name of the true time-correlated uncertainty parameter to
+               extract. Defaults to None.
+            ucu_abbr (str, optional): name of the true un-correlated uncertainty parameter to
+               extract. Defaults to None.
+
+        """
+
+        # Define
+        db_vs_df_keys = self.add_flg_prm(
+            {
+                'val': val_abbr, 'alt': alt_abbr,
+                'ucr': ucr_abbr, 'ucs': ucs_abbr, 'uct': uct_abbr, 'ucu': ucu_abbr,
+            }
+        )
+
+        # Fetch data
+        info, data = self.fetch(search, **db_vs_df_keys)
+
+        # Create profiles
+        out = [DeltaProfile(arg[0], data=arg[1]) for arg in zip(info, data)]
 
         return out, db_vs_df_keys

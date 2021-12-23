@@ -116,13 +116,13 @@ def optimize(n_cpus=None, prf_length=7001, chunk_min=50, chunk_max=300, n_chunk=
 
     # Now, let's prepare some data for the DB tables ... We want to simulate 3 profiles from a
     # single flight.
-    db_data = [{'mdl_name': 'RS41-GDP-BETA_002',
+    db_data = [{'mdl_name': 'RS41-GDP_001',
                 'srn': 'prf_1',
                 'pid': '1'},
-               {'mdl_name': 'RS41-GDP-BETA_002',
+               {'mdl_name': 'RS41-GDP_001',
                 'srn': 'prf_2',
                 'pid': '1'},
-               {'mdl_name': 'RS41-GDP-BETA_002',
+               {'mdl_name': 'RS41-GDP_001',
                 'srn': 'prf_3',
                 'pid': '1'},]
 

@@ -54,8 +54,8 @@ def test_fix_txt():
 
     # Set the LateX style
     dpu.set_mplstyle('latex')
-    assert dpu.fix_txt('_idx') == r'\_idx'
-    assert dpu.fix_txt('[%]') == r'[\%]'
+    assert dpu.fix_txt('_idx') == r'{\_}idx'
+    assert dpu.fix_txt('[%]') == r'[{\%}]'
 
     # Undo the style - THIS IS CRUCIAL FOR THE AUTOMATED TESTS in GITHUB. Else, 'latex' remains on,
     # and any subsequent plot crashes.

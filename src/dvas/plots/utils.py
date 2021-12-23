@@ -130,8 +130,8 @@ def fix_txt(txt):
 
     # First deal with the cases when a proper LaTeX is being used
     if usetex:
-        txt = txt.replace('%', r'\%')
-        txt = txt.replace('_', r'\_')
+        txt = txt.replace('%', r'{\%}')
+        txt = txt.replace('_', r'{\_}')
 
     return txt
 
@@ -307,7 +307,7 @@ def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show=
     if show:
         plt.show()
     else:
-        plt.close(fig.number)
+        plt.close(fig)
 
 def clr_palette_demo():
     """ A simple function to demonstrate the dvas color palette.

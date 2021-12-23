@@ -103,7 +103,7 @@ def get_sync_shifts_from_val(prfs, max_shift=100, first_guess=None):
     ind = np.nanargmin(np.array(ind), axis=0)
 
     # Issue some warning if I am at the very edge of the search range
-    if np.any(np.abs(ind)-np.abs(max_shift) < 10):
+    if np.any(max_shift-np.abs(shifts[ind]) < 10):
         logger.warning('sync_shift_from_val values is close from the edge of the search zone')
 
     # Return a list of shifts, resetting it to only have positive shifts.

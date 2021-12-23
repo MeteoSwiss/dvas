@@ -8,7 +8,7 @@
 # --------------------------------------------------------------------------------------------------
 
 # Name of this recipe
-rcp_name: uaii22
+rcp_name: uaii2022
 
 # dvas paths: absolute paths begin with '/'.
 rcp_paths:
@@ -26,19 +26,24 @@ rcp_params:
         plot_fmts:
             - pdf
             #- png
-        plot_show: True
+        plot_show: False
         chunk_size: 150
         n_cpus: # If set, will cap the number of cpus used to run the dvas recipe
 
     # Variables to process using the recipe, and associated uncertainties.
     index:
         tdt: time
-        alt: gph
+        alt: alt_ref
     vars:
         temp:
             ucr: temp_ucr
             ucs: temp_ucs
             uct: temp_uct
+            ucu:
+        gph:
+            ucr:
+            ucs:
+            uct: gph_uct
             ucu:
         #rh:
         #    ucr: rh_ucr
@@ -72,14 +77,15 @@ rcp_steps:
             dummy_arg: test
 
     # Profile synchronization on a per-flight basis.
-    uaii22.sync.sync_flight:
+    uaii2022.sync.sync_flight:
         step_id: '01'
         run: True
         kwargs:
-            first_guess_var: 'time'
+            anchor_alt: 5000 # Initial (single) altitude to anchor all profiles.
+            global_match_var: 'gph' # Variable to match globally
 
     # Simple plotting step of the complete profiles for all the variables.
-    uaii22.plots.flight_overview:
+    uaii2022.plots.flight_overview:
         step_id: '02'
         run: True
         kwargs:
@@ -88,10 +94,18 @@ rcp_steps:
             show: # bool: if set, will override the global plot_show value.
 
     # Assembly of the Combined Working Standard on a per-flight basis.
-    uaii22.gdps.build_cws:
+    uaii2022.gdps.build_cws:
         step_id: '03'
         run: True
         kwargs:
             tags: sync # list of tags to identify profiles in the database
-            m_vals: 1 8* # list of m values. Those with * are ignored for the cws assembly
-            strategy: 'all-or-none' # Strategy to decide which GDPs to combine, given their incompatibilities.
+            m_vals: [1, -10] # list of m values. The negative ones are ignored for the cws assembly
+            strategy: 'all-or-none' # Strategy to decide which GDPs to combine, in case of incompatibilities.
+
+    # Compute the deltas between the profiles of sondes under test and Combined Working Standards
+    uaii2022.dtas.compute_deltas:
+        step_id: '04'
+        run: True
+        kwargs:
+            tags: sync # list of tags to identify profiles in the database
+            mids: 'all' # List of model ids to process

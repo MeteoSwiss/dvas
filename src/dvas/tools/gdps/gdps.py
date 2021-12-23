@@ -26,8 +26,8 @@ from ...hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME, P
 from ...hardcoded import PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME
 from ..tools import df_to_chunks
 from .utils import process_chunk
-from ...data.data import MultiGDPProfile
-from ...data.strategy.data import GDPProfile
+from ...data.data import MultiCWSProfile
+from ...data.strategy.data import CWSProfile
 from ...database.database import InfoManager
 
 @log_func_call(logger)
@@ -52,7 +52,7 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
             disable multiprocessing. Defaults to 1.
 
     Returns:
-        (dvas.data.data.MultiGDPProfile): the combined GDP profile.
+        (dvas.data.data.MultiCWSProfile): the combined working standard profile.
 
     '''
 
@@ -118,7 +118,9 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
     # 2021-09-16: fix bug #166 by *subtracting* chunk_size % binning (rather than adding it) !
     if binning > 1:
         chunk_size -= chunk_size % binning
-        logger.info("Adjusting the chunk size to %i, given the binning of %i.", chunk_size, binning)
+        if chunk_size % binning > 0:
+            logger.info("Adjusting the chunk size to %i, given the binning of %i.",
+                        chunk_size, binning)
 
     # Let's get started for real
     # First, let's extract all the information I (may) need, i.e. the values, errors, and total
@@ -166,7 +168,7 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
         # around. Having this set to anything (=None when run interactively) is crucial to the
         # multiprocessing Pool routine.
         # So for now, use a terribly dangerous workaround that I do not understand.
-        # This should definitely be fixed.
+        # This should definitely be fixed. Or not ?
         # See #121
         import sys
         try:
@@ -202,10 +204,10 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
 
     # Let's create a dedicated Profile for the combined profile.
     # It's no different from a GDP, from the perspective of the errors.
-    new_prf = GDPProfile(new_info, data=proc_chunk)
+    new_prf = CWSProfile(new_info, data=proc_chunk)
 
     # And finally, package this into a MultiGDPProfile entity
-    out = MultiGDPProfile()
+    out = MultiCWSProfile()
     out.update(gdp_prfs.db_variables, data=[new_prf])
 
     return out

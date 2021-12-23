@@ -113,12 +113,12 @@ def update_db(search, strict=False):
                 new_orig_data.append(result)
                 # Log
                 rawcsv.info(
-                    "Files '%s' was treated", file_path
+                    "File '%s' was treated", file_path
                 )
             else:
                 # Log
                 rawcsv.debug(
-                    "Files '%s' was left untouched", file_path
+                    "File '%s' was left untouched", file_path
                 )
 
         # Log

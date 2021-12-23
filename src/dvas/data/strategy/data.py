@@ -16,6 +16,7 @@ import numpy as np
 import pandas as pd
 
 # Import from current package
+from ...logger import data as logger
 from ...database.model import Flg as TableFlg
 from ...database.database import DatabaseManager, InfoManager
 from ...errors import ProfileError, DvasError
@@ -136,7 +137,7 @@ class ProfileAC(metaclass=RequiredAttrMetaClass):
 
             if item in self.get_index_attr():
                 # For index, I cannot extract them directly.
-                # Instead, let's create a Series instead, and make sure it comes with the same index
+                # Instead, let's create a Series, and make sure it comes with the same index
                 # This is a bit of data duplication, but is critical to get coherent/consistent
                 # output.
 
@@ -431,7 +432,7 @@ class RSProfile(Profile):
     - 'alt' (float)
     - 'tdt' (timedelta64[ns])
     - 'val' (float)
-    - 'flag' (Int64)
+    - 'flg' (Int64)
 
     The same format is expected as input.
 
@@ -449,7 +450,6 @@ class RSProfile(Profile):
     def tdt(self):
         """pd.Series: Corresponding data time delta since launch"""
         return super().__getattr__('tdt')
-
 
 class GDPProfile(RSProfile):
     """ Child RSProfile class for *GDP-like* radiosonde atmospheric measurements.
@@ -538,3 +538,50 @@ class GDPProfile(RSProfile):
         out[self.data[['ucr', 'ucs', 'uct', 'ucu']].isna().all(axis=1)] = np.nan
         # Make sure to give a proper name to the Series
         return out.rename('uc_tot')
+
+class CWSProfile(GDPProfile):
+    """ Child GDPProfile class intended for profile *deltas* between candidate and CWS profiles. """
+
+class DeltaProfile(GDPProfile):
+    """ Child GDPProfile class intended for profile *deltas* between candidate and CWS profiles.
+
+    Unlike GDPs and CWS, this class does no longer contain time delta information.
+    """
+
+    # The column names for the pandas DataFrame
+    DF_COLS_ATTR = dict(
+        **Profile.DF_COLS_ATTR,
+        **{
+            PRF_REF_UCR_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+            PRF_REF_UCS_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+            PRF_REF_UCT_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+            PRF_REF_UCU_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+          }
+    )
+
+    def __init__(self, info, data=None):
+        """ DeltaProfile Constructor.
+
+        Args:
+            info (InfoManager): Data information
+            data (pd.DataFrame, optional): The profile values in a pandas DataFrame.
+                Defaults to None.
+        """
+
+        # Here, I will drop the 'tdt' column, if it was mistakenly provided by the user.
+        # This is to be robust with the fact that this class's Parents do require a 'tdt' info,
+        # but this Child doesn't. So the least I can do is be nice about it.
+        # WARNING: this may not be the best, because the individual data setter will still require
+        # data to contain no 'tdt' column.
+        if PRF_REF_TDT_NAME in data.columns:
+            data = data.drop(PRF_REF_TDT_NAME, axis=1)
+            # Make sur the interested user knows I did this ...
+            logger.info('Dropping %s column from DeltaProfile data.', PRF_REF_TDT_NAME)
+
+        # Run the super init
+        super().__init__(info, data=data)
+
+    @property
+    def tdt(self):
+        """ DeltaProfile do not store any time delta information. """
+        return None
