@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -21,7 +21,7 @@ from dvas.tools import sync as dts
 # Import from dvas_recipes
 from .. import dynamic
 from ..recipe import for_each_flight
-
+from ..errors import DvasRecipesError
 
 @log_func_call(logger, time_it=True)
 def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
@@ -40,6 +40,10 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
 
     # First the GDPs
     gdp_shifts = [item for (ind, item) in enumerate(sync_shifts) if is_gdp[ind]]
+    # Let's force users to have GDPs. That's really what dvas is meant for ...
+    if len(gdp_shifts) == 0:
+        raise DvasRecipesError('Ouch ! No GDPs to sync ?!')
+
     gdps = MultiGDPProfile()
     gdps.load_from_db("and_({filt}, tags('gdp'))".format(filt=filt), var_name,
                       dynamic.INDEXES[PRF_REF_TDT_NAME],
@@ -54,14 +58,15 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
 
     # And now idem for the non-GDPs
     non_gdp_shifts = [item for (ind, item) in enumerate(sync_shifts) if not is_gdp[ind]]
-    non_gdps = MultiRSProfile()
-    non_gdps.load_from_db("and_({filt}, not_(tags('gdp')))".format(filt=filt), var_name,
-                          dynamic.INDEXES[PRF_REF_TDT_NAME],
-                          alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME])
-    non_gdps.sort()
-    non_gdps.rebase(sync_length, shifts=non_gdp_shifts, inplace=True)
-    non_gdps.save_to_db(add_tags=['sync'])
-
+    # Only proceed if some non-GDP profiles were found. Pure-GDP flights are allowed.
+    if len(non_gdp_shifts) > 0:
+        non_gdps = MultiRSProfile()
+        non_gdps.load_from_db("and_({filt}, not_(tags('gdp')))".format(filt=filt), var_name,
+                              dynamic.INDEXES[PRF_REF_TDT_NAME],
+                              alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME])
+        non_gdps.sort()
+        non_gdps.rebase(sync_length, shifts=non_gdp_shifts, inplace=True)
+        non_gdps.save_to_db(add_tags=['sync'])
 
 @for_each_flight
 @log_func_call(logger, time_it=True)
