@@ -11,6 +11,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [modolol, 2021-11-03] Add `mid` in DB search options
  - [fpavogt, 2021-07-02] Add `has_tag()` convenience method to `Profile` and `MultiProfile` classes
 ### Fixed:
+ - [fpavogt, 2022-02-21] Fix #192
  - [fpavogt, 2021-12-02] Fix issue #181
  - [GonzagueRomanens, 2021-11-26] Fix issue #187
  - [fpavogt, 2021-11-19] Fix issue #178

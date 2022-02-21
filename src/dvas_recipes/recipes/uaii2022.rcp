@@ -21,7 +21,7 @@ rcp_paths:
 rcp_params:
     general:
         log_mode: 2 # 0 = no logs, 1 = log to file only, 2 = file + screen, 3 = screen only.
-        log_lvl: DEBUG # DEBUG, INFO, WARNING
+        log_lvl: INFO # DEBUG, INFO, WARNING
         do_latex: True # True = slow but pretty plots. Requires a working system-wide LaTeX setup!
         plot_fmts:
             - pdf
