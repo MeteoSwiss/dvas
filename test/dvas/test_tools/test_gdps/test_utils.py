@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -135,7 +135,7 @@ def test_weighted_mean(chunk):
     assert jac_mat[0, 0] == 1/5
 
 def test_delta(chunk):
-    """ Function used to test the weighted_mean combination of profiles."""
+    """ Function used to test the delta combination of profiles."""
 
     # Check that things fail cleanly if more than 1 profile is being fed.
     with pytest.raises(DvasError):
