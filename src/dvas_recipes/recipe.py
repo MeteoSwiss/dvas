@@ -278,9 +278,7 @@ class Recipe:
                     [[12345, 1], [12346, 1]]
         """
 
-        raise Exception()
-
-        # TODO
+        raise Exception('Fix ME !')
 
         return 0
 
