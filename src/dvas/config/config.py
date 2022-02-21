@@ -1011,12 +1011,29 @@ class TerminalConfigExprInterpreter(ConfigExprInterpreter):
 class GetExpr(TerminalConfigExprInterpreter):
     """Get catch value"""
 
+    def __init__(self, arg, totype=None):
+        """ Init function
+
+        Args:
+            arg (?): argument to get.
+            totype (type, optional): if set, will convert the value to that type.
+                Defaults to None = use native type.
+        """
+
+        # Call the super init
+        super().__init__(arg)
+        # Set the new bits
+        self._totype = totype
+
     def interpret(self):
         """Implement fct method"""
         try:
             out = self._FCT(self._expression)
         except (IndexError, AttributeError) as exc:
             raise TerminalExprInterpreterError() from exc
+
+        if self._totype is not None:
+            out = self._totype(out)
 
         return out
 
