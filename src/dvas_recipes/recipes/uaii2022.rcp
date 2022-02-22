@@ -44,7 +44,7 @@ rcp_params:
             ucr:
             ucs:
             uct: gph_uct
-            ucu:
+            ucu: gph_ucu
         #rh:
         #    ucr: rh_ucr
         #    ucs:
@@ -54,7 +54,7 @@ rcp_params:
         #    ucr:
         #    ucs:
         #    uct: pres_uct
-        #    ucu:
+        #    ucu: pres_ucu
         #wdir:
         #    ucr:
         #    ucs:
