@@ -28,13 +28,11 @@
                                             "_ucu": " un-correlated uncertainty"}, get(1)))'
   prm_unit: '%'
 
-- prm_name: '(pres|alt)(|(_uct))'
-  # Generate variables from regex generator for pressure, altitude AMSL, and geopotential height.
-  prm_desc: 'cat(repl({"pres": "Pressure",
-                        "alt": "Altitude a.m.s.l."}, get(1)),
-                 repl({"_uct": " temporal-correlated uncertainty"}, get(2)))'
-  prm_unit: 'repl({"pres": "hPa",
-                    "alt": "m"}, get(1))'
+- prm_name: 'pres(|(_uct)|(_ucu))'
+  # Generate variables from regex generator for pressure.
+  prm_desc: 'cat("Pressure", repl({"_uct": " temporal-correlated uncertainty",
+                                   "_ucu": " un-correlated uncertainty"}, get(1)))'
+  prm_unit: 'hPa'
 
 - prm_name: '(wdir|wspeed)(|(_ucu))'
   # Generate variables from regex generator for wind direction and wind speed.
