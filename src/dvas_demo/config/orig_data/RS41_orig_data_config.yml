@@ -116,55 +116,43 @@ _RS41-GDP_001:
 
     _gph:
         value: get('alt_gph')
-
     _gph_uct:
         value: get('alt_gph_uc_tcor', 'div2')  # Go from K=2 to K=1
-
     _gph_ucu:
         value: get('alt_gph_uc_ucor', 'div2')  # Go from K=2 to K=1
 
     _temp:
         value: get('temp')
-
     _temp_ucr:
         value: get('temp_uc_ucor', 'div2')  # Go from K=2 to K=1
-
     _temp_ucs:
         value: get('temp_uc_scor', 'div2')  # Go from K=2 to K=1
-
     _temp_uct:
         value: get('temp_uc_tcor', 'div2')  # Go from K=2 to K=1
-
     _temp_flag:
         value: get(0)
         csv_use_default: True
 
     _pres:
         value: get('press_gnss')
-
     _pres_uct:
         value: get('press_gnss_uc_tcor', 'div2')  # Go from K=2 to K=1
-
     _pres_ucu:
         value: get('press_gnss_uc_ucor', 'div2')  # Go from K=2 to K=1
 
     _rh:
         value: get('rh')
-
     _rh_ucr:
         value: get('rh_uc_ucor', 'div2')  # Go from K=2 to K=1
-
     _rh_uct:
         value: get('rh_uc_tcor', 'div2')  # Go from K=2 to K=1
 
     _wdir:
         value: get('wdir')
-
     _wdir_ucu:
         value: get('wdir_uc_ucor', 'div2')  # Go from K=2 to K=1
 
     _wspeed:
         value: get('wspeed')
-
     _wspeed_ucu:
         value: get('wspeed_uc_ucor', 'div2')  # Go from K=2 to K=1
