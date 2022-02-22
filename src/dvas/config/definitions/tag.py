@@ -10,6 +10,12 @@ Module contents: Required attributes definition for
 
 """
 
+# Note:
+# Although the tag config file is no longer necessary because the tags are generated
+# if they are missing, this module has been kept for the sake of clarity because
+# the default tags are used in other packages and modules.
+
+
 # Import current packages modules
 from ...database.model import Tag as TableTag
 from ...hardcoded import TAG_NONE_NAME, TAG_NONE_DESC

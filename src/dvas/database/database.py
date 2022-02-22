@@ -368,22 +368,14 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                 raise DBInsertError(err_msg % prm_name)
 
             # Check tag_name existence
-            if len(
-                tags_id_list := [
-                    arg[0] for arg in
-                    self.get_or_none(
-                        TableTag,
-                        search={
-                            'where': TableTag.tag_name.in_(info.tags)
-                        },
-                        attr=[[TableTag.id.name]],
-                        get_first=False
-                    )
-                ]
-            ) != len(info.tags):
-                err_msg = "Many tags in %s are missing in DB"
-                localdb_logger.error(err_msg, info.tags)
-                raise DBInsertError(err_msg % info.tags)
+            tags_id_list = []
+            for tag_name in info.tags:
+                tmp, created = TableTag.get_or_create(tag_name=tag_name)
+                tags_id_list.append(tmp)
+
+                # Warn if new tag
+                if created:
+                    localdb_logger.warn("New tag created: (id=%s, name=%s)", tmp.id, tmp.tag_name)
 
             # Create original data information
             data_src, _ = DataSource.get_or_create(src=info.src)
