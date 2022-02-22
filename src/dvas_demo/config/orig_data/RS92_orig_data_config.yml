@@ -96,17 +96,18 @@ _RS92-GDP_002:
         value: get('u_press')
 
     _rh:
-        value: get('rh')
+        value: mul(get('rh'), 100) # Convert to %
 
     _rh_ucr:
         # In v2 of the GDP, this value is wrong. It must be reconstructed from:
         # value: sqrt('u_rh'**2 - 'u_cor_rh'**2)
         # See GRUAN TD4, section 5.1 for details.
+        # Also, convert this to %
         value: >-
-            sqrt(sub(pow(get('u_rh'), 2), pow(get('u_cor_rh'), 2)))
+            mul(sqrt(sub(pow(get('u_rh'), 2), pow(get('u_cor_rh'), 2))), 100)
 
     _rh_uct:
-        value: get('u_cor_rh')
+        value: mul(get('u_cor_rh'), 100) # Convert to %
 
     _wdir:
         value: get('wdir')
