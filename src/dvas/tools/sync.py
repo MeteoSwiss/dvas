@@ -19,7 +19,7 @@ import numpy as np
 from ..logger import log_func_call
 from ..logger import tools_logger as logger
 from ..errors import DvasError
-from ..hardcoded import PRF_REF_ALT_NAME, PRF_REF_VAL_NAME
+from ..hardcoded import PRF_REF_ALT_NAME, PRF_REF_VAL_NAME, PRF_REF_TDT_NAME
 
 @log_func_call(logger)
 def get_sync_shifts_from_alt(prfs, ref_alt=5000.):
@@ -85,6 +85,18 @@ def get_sync_shifts_from_val(prfs, max_shift=100, first_guess=None):
         first_guess = [first_guess] * len(prfs)
     if len(first_guess) != len(prfs):
         raise DvasError('Ouch ! first guess should be the same length as prfs.')
+
+    # In what follows, we assume that all the profiles are sampled with a fixed, uniform timestep.
+    # Let's raise an error if this is not the case.
+    # To do that, let's compute the differences between the different time steps, and check if it
+    # is unique (or not) and identical for all profiles (or Not)
+    ndts = prfs.get_prms(PRF_REF_TDT_NAME).diff(periods=1, axis=0).nunique(axis=0, dropna=True)
+    if np.any([item == 1 for item in ndts.values]):
+        raise DvasError(f'Ouch ! The profiles do not all have uniform time steps: {ndts.values}')
+    dts = [prfs.get_prms(PRF_REF_TDT_NAME)[item][PRF_REF_TDT_NAME].diff().unique().tolist()
+           for item in range(len(prfs))]
+    if np.any([item == dts[0] for item in dts]):
+        raise DvasError(f'Ouch ! Inconsistent time steps between the different profiles: {dts}')
 
     # Let us first begin by extracting all the value arrays that need to be "cross-correlated".
     vals = prfs.get_prms(PRF_REF_VAL_NAME)
