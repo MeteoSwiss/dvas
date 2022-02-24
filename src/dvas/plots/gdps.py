@@ -48,7 +48,7 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, index_name='tdt', label='mid', **kwa
     fig = plt.figure(figsize=(pu.WIDTH_TWOCOL, 5.0))
 
     # Create a gridspec structure
-    gs_info = gridspec.GridSpec(2, 1, height_ratios=[2, 1], width_ratios=[1],
+    gs_info = gridspec.GridSpec(2, 1, height_ratios=[1, 1], width_ratios=[1],
                                 left=0.09, right=0.87, bottom=0.15, top=0.93,
                                 wspace=0.5, hspace=0.1)
 
@@ -90,7 +90,7 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, index_name='tdt', label='mid', **kwa
 
         # First, plot the profiles themselves
         ax0.plot(x, gdp[PRF_REF_VAL_NAME], lw=0.5, ls='-', drawstyle='steps-mid',
-                 label=gdp_prfs.get_info(label)[gdp_ind])
+                 label='|'.join(gdp_prfs.get_info(label)[gdp_ind]))
         ax0.fill_between(x, gdp[PRF_REF_VAL_NAME]-k_lvl*gdp['uc_tot'],
                          gdp[PRF_REF_VAL_NAME]+k_lvl*gdp['uc_tot'], alpha=0.3, step='mid')
 
@@ -345,6 +345,12 @@ def plot_ks_test(df, alpha, unit=None, left_label=None, right_label=None, **kwar
                 facecolor=pu.CLRS['nan_1'], s=1, edgecolor=None, zorder=10)
     ax4.scatter(df.index.values, df.loc[:, (0, 'sigma_pqei')], marker='o',
                 facecolor=pu.CLRS['nan_1'], s=1, edgecolor=None, zorder=10)
+
+    # For k, show the k=1, 2, 3 zones
+    for k in [1,2,3]:
+        ax2.fill_between([df.index.values[0], df.index.values[-1]], [-k, -k], [k, k],
+                         alpha=0.1+(3-k)*0.1,
+                         facecolor='mediumpurple', edgecolor='none')
 
     # Let's now deal with all the bin levels ...
     for bin_ind in range(n_bins):
