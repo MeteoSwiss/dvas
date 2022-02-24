@@ -22,35 +22,30 @@ from peewee import ForeignKeyField
 # Import from current package
 from ..hardcoded import MODEL_PAT, PRM_AND_FLG_PRM_PAT
 
-
 # Create db instance
 db = SqliteDatabase(None, autoconnect=True)
 
-
 @db.func('re_fullmatch')
 def re_fullmatch(pattern, string):
-    """Database re.fullmatch function. Used it in check constraints"""
+    """ Database re.fullmatch function. Used in check constraints. """
     return (
         re.fullmatch(pattern=pattern, string=string) is not None
     )
 
-
 @db.func('str_len_max')
 def str_len_max(string, n_max):
-    """Database string length max function. Used it in check constraints"""
+    """ Database string length max function. Used in check constraints """
     if string is None:
         out = True
     else:
         out = len(string) <= n_max
     return out
 
-
 class MetadataModel(PeeweeModel):
     """Metadata model class"""
     class Meta:
         """Meta class"""
         database = db
-
 
 class Model(MetadataModel):
     """Model table, intended as object model"""
@@ -114,24 +109,22 @@ class Parameter(MetadataModel):
     prm_name = TextField(
         null=False,
         unique=True,
-        constraints=[
-            Check(f"re_fullmatch('{PRM_AND_FLG_PRM_PAT}', prm_name)"),
-            Check(f"str_len_max(prm_name, 64)")
+        constraints=[Check(f"re_fullmatch('{PRM_AND_FLG_PRM_PAT}', prm_name)"),
+                     Check("str_len_max(prm_name, 64)")
         ]
     )
 
     # Parameter description
     prm_desc = TextField(
         null=False, default='',
-        constraints=[Check(f"str_len_max(prm_desc, 256)")]
+        constraints=[Check("str_len_max(prm_desc, 256)")]
     )
 
     # Parameter units
     prm_unit = TextField(
         null=False, default='',
-        constraints=[Check(f"str_len_max(prm_unit, 64)")]
-)
-
+        constraints=[Check("str_len_max(prm_unit, 64)")]
+    )
 
 class Flg(MetadataModel):
     """Flag model"""

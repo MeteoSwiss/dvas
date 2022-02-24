@@ -21,11 +21,9 @@ from ...database.model import Data
 from ...errors import LoadError
 from ...hardcoded import FLG_PRM_NAME_SUFFIX
 
-
 # Define
 INDEX_NM = Data.index.name
 VALUE_NM = Data.value.name
-
 
 class LoadStrategyAC(MPStrategyAC):
     """Abstract load strategy class"""
@@ -60,7 +58,7 @@ class LoadStrategyAC(MPStrategyAC):
 
         """
 
-        # Init
+        # Then start extracting data from the DB.
         db_linker = LocalDBLinker()
 
         # Loop through the requested parameters and extract them from the database.
@@ -70,9 +68,7 @@ class LoadStrategyAC(MPStrategyAC):
         }
 
         # Create tuple of unique info
-        info, _ = InfoManager.sort(
-            set([arg['info'] for val in res.values() for arg in val])
-        )
+        info, _ = InfoManager.sort(set([arg['info'] for val in res.values() for arg in val]))
 
         # Create DataFrame by concatenation and append
         # TODO
