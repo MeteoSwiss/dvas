@@ -114,17 +114,14 @@ def coeffs(i, j, sigma_name, oid_i=None, oid_j=None, mid_i=None, mid_j=None,
         pass
 
     elif sigma_name == 'ucs':
-        # 1) Full spatial-correlation between measurements acquired in the same event
-        #    irrespective of the rig number, GDP model or serial number.
-        corcoef[(eid_i == eid_j)] = 1.0
+        # 1) Full spatial-correlation between measurements acquired in the same event with the same
+        #    GDP model, irrespective of the rig, or serial number.
+        corcoef[(eid_i == eid_j) * (mid_i == mid_j)] = 1.0
 
     elif sigma_name == 'uct':
-        # 1) Full temporal-correlation between measurements acquired in the same event and at the
-        #    same site.
-        corcoef[(eid_i == eid_j)] = 1.0
-
-        # 2) Full temporal correlation between measurements acquired in distinct events and sites.
-        corcoef = np.ones_like(corcoef)
+        # 1) Full temporal-correlation between measurements acquired with the same GDP model,
+        # irrespective of event, rig, or serial number.
+        corcoef[(mid_i == mid_j)] = 1.0
 
     else:
         raise DvasError("Ouch ! uc_type must be one of ['ucr', 'ucs', 'uct', 'ucu'], not: %s" %
