@@ -41,7 +41,7 @@ class TestResampleStrategy:
         # Prepare some datasets to play with
         info_1 = InfoManager('20201217T0000Z', 1)
         data_1 = pd.DataFrame({'alt': [10., 15., 20., 35], 'val': [11., 12., 13., 14],
-                               'flg': [0]*4, 'tdt': [0e9, 1e9, 1.5e9, 2.1e9]})
+                               'flg': [0]*4, 'tdt': [0, 1, 1.5, 2.1]})
 
         # Let's build a multiprofile so I can test things out.
         multiprf = MultiRSProfile()
@@ -73,7 +73,7 @@ class TestResampleStrategy:
         data_1 = pd.DataFrame({'alt': [10., 15., 20., 35], 'val': [11., 12., 13., 14],
                                'flg': [0]*4, 'ucr': [1, 1, 1, 1], 'ucs': [1, 1, 1, 1],
                                'uct': [1, 1, 1, 1], 'ucu': [1, 1, 1, 1],
-                               'tdt': [0e9, 1e9, 1.5e9, 2.1e9]})
+                               'tdt': [0, 1, 1.5, 2.1]})
         # Let's build a multiprofile so I can test things out.
         multiprf = MultiGDPProfile()
         multiprf.update({'val': None, 'tdt': None, 'alt': None, 'flg': None, 'ucr': None,

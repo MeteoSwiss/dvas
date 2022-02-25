@@ -18,6 +18,7 @@ import pandas as pd
 # Import from current package
 from ...logger import data as logger
 from ...database.model import Flg as TableFlg
+from ...database.model import Parameter as TableParameter
 from ...database.database import DatabaseManager, InfoManager
 from ...errors import ProfileError, DvasError
 from ...helper import RequiredAttrMetaClass
@@ -249,10 +250,18 @@ class ProfileAC(metaclass=RequiredAttrMetaClass):
 
             # Convert
             if key in val.columns and cls.DF_COLS_ATTR[key]['type']:
-                val[key] = val[key].astype(cls.DF_COLS_ATTR[key]['type'])
+                # I need to be cautions for the timedelta, as they cannot be transformed like
+                # any other stuff.
+                if key == PRF_REF_TDT_NAME:
+                    # TODO: for now, there is no way to access the prm_unit information at the
+                    # level of Profile (the link is made only at the level of MultiProfile).
+                    # So for now, let's force-assume that the data was provided in s.
+                    # See #194
+                    val[key] = pd.to_timedelta(val[key], unit='s')
+                else:
+                    val[key] = val[key].astype(cls.DF_COLS_ATTR[key]['type'])
 
         return val
-
 
 class Profile(ProfileAC):
     """Base Profile class for atmospheric measurements. Requires only some measured values,

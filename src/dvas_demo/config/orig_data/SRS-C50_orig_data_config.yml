@@ -23,7 +23,7 @@ _C50:
     csv_header: 0
 
     _time:
-        value: get('Rel. Time', 's2ns')
+        value: get('Rel. Time')
 
     _alt_ref:
         value: get('Altitude (gpm)')

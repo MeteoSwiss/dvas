@@ -11,6 +11,7 @@ Module contents: Database model (ORM uses PeeWee package)
 
 # Import from python packages
 import re
+import pandas as pd
 from peewee import SqliteDatabase, Check
 from peewee import Model as PeeweeModel
 from peewee import AutoField
@@ -21,6 +22,8 @@ from peewee import ForeignKeyField
 
 # Import from current package
 from ..hardcoded import MODEL_PAT, PRM_AND_FLG_PRM_PAT
+from ..logger import localdb as localdb_logger
+from ..errors import DvasError
 
 # Create db instance
 db = SqliteDatabase(None, autoconnect=True)
@@ -40,6 +43,34 @@ def str_len_max(string, n_max):
     else:
         out = len(string) <= n_max
     return out
+
+@db.func('check_unit')
+def check_unit(prm_unit, prm_name):
+    """ Apply verification checks on the units """
+
+    # This check is not robust, in the sense that users have the freedom to choose whatever
+    # parameter name they prefer. But it is better than nothing.
+    # If a time is specified, let's make sure I can use the unit to convert this to timedeltas via
+    # pandas (will be required when creating Profiles).
+    if prm_name in ['time']:
+        try:
+            pd.to_timedelta(pd.Series([0, 1]), prm_unit)
+
+            # For now, we force the use of 's' when extracting data from the db.
+            # Until this changes, let's raise an error if this is not what the user provided.
+            # See #192 and data.startegy.data.py for details.
+            if prm_unit != 's':
+                msg = 'Ouch ! Only "s" is allowed as the unit of time data.'
+                msg += ' See Github error #192 for details.'
+                localdb_logger.error(msg)
+                return False
+            # ---------------------------------
+            return True
+        except ValueError:
+            localdb_logger.error('Unknown unit for parameter %s: %s', prm_name, prm_unit)
+            return False
+
+    return True
 
 class MetadataModel(PeeweeModel):
     """Metadata model class"""
@@ -74,7 +105,6 @@ class Model(MetadataModel):
         constraints=[Check("str_len_max(mdl_desc, 64)")]
     )
 
-
 class Object(MetadataModel):
     """Object table"""
 
@@ -97,7 +127,6 @@ class Object(MetadataModel):
     model = ForeignKeyField(
         Model, backref='objects', on_delete='CASCADE'
     )
-
 
 class Parameter(MetadataModel):
     """Parameter model"""
@@ -123,7 +152,8 @@ class Parameter(MetadataModel):
     # Parameter units
     prm_unit = TextField(
         null=False, default='',
-        constraints=[Check("str_len_max(prm_unit, 64)")]
+        constraints=[Check("str_len_max(prm_unit, 64)"),
+                     Check("check_unit(prm_unit, prm_name)")]
     )
 
 class Flg(MetadataModel):
@@ -150,7 +180,6 @@ class Flg(MetadataModel):
         constraints=[Check("str_len_max(flg_desc, 256)")]
     )
 
-
 class Tag(MetadataModel):
     """Table containing the tags.
 
@@ -174,7 +203,6 @@ class Tag(MetadataModel):
         constraints=[Check("str_len_max(tag_desc, 256)")]
     )
 
-
 class DataSource(MetadataModel):
     """Data source model"""
     id = AutoField(primary_key=True)
@@ -182,7 +210,6 @@ class DataSource(MetadataModel):
         null=False,
         constraints=[Check("str_len_max(src, 2048)")]
     )
-
 
 class Info(MetadataModel):
     """Info table"""
@@ -203,7 +230,6 @@ class Info(MetadataModel):
     """str: Hash of the info attributes. Using a hash allows you to manage
     identical info with varying degrees of work steps."""
 
-
 class InfosTags(MetadataModel):
     """Many-to-Many link between Info and Tag tables"""
     id = AutoField(primary_key=True)
@@ -214,7 +240,6 @@ class InfosTags(MetadataModel):
         Info, backref='infos_tags', on_delete='CASCADE'
     )
 
-
 class InfosObjects(MetadataModel):
     """Many-to-Many link between Info and Instrument tables"""
     id = AutoField(primary_key=True)
@@ -224,7 +249,6 @@ class InfosObjects(MetadataModel):
     info = ForeignKeyField(
         Info, backref='infos_objects', on_delete='CASCADE'
     )
-
 
 class MetaData(MetadataModel):
     """Table containing the profiles metadata.
@@ -255,7 +279,6 @@ class MetaData(MetadataModel):
     info = ForeignKeyField(
         Info, backref='infos_objects', on_delete='CASCADE'
     )
-
 
 class Data(MetadataModel):
     """Table containing the profiles data."""

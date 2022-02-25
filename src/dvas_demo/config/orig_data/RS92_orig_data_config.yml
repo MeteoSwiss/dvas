@@ -26,7 +26,7 @@ _RS92:
     csv_header: 0
 
     _time:
-        value: get('Time', 's2ns')
+        value: get('Time')
 
     _alt_ref:
         value: get('Height')
@@ -68,7 +68,7 @@ _RS92-GDP_002:
 
     # -- ORIG DATA ----------------------------------
     _time:
-        value: get('time', 's2ns')
+        value: get('time')
 
     _alt_ref:
         value: get('geopot')

@@ -108,8 +108,9 @@ class ResampleStrategy(MPStrategyAC):
                     # until then, simply copy the existing flags over.
                     new_data.loc[:, name] = this_data.loc[:, name]
 
-                # Interpolate the data. THat's the easy bit.
+                # Interpolate the data. That's the easy bit.
                 if name in [PRF_REF_ALT_NAME, PRF_REF_VAL_NAME]:
+                    #TODO: This should not be done via .astype, but via to_timedelta('s') !!!
                     func = interp1d(old_tdt.values.astype('int64'),
                                     this_data.loc[:, name].values, kind='linear')
 

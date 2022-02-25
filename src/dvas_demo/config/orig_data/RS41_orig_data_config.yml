@@ -22,7 +22,7 @@ _RS41-PRE2018:
     csv_na_values:
 
     _time:
-        value: get(0, 's2ns')
+        value: get(0)
 
     _alt_ref:
         value: get(2)
@@ -70,7 +70,7 @@ _RS41:
     csv_header: 0
 
     _time:
-        value: get('Elapsed time', 's2ns')
+        value: get('Elapsed time')
 
     _alt_ref:
         value: get('GpsHeightMSL')
@@ -109,7 +109,7 @@ _RS41-GDP_001:
 
     # -- ORIG DATA ----------------------------------
     _time:
-        value: get('time', 's2ns')
+        value: get('time')
 
     _alt_ref:
         value: get('alt_gph')
