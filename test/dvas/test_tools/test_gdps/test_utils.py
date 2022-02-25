@@ -35,8 +35,7 @@ def chunk():
     cols = pd.MultiIndex.from_tuples([(ind, item) for item in lvl_one for ind in range(3)])
 
     # Initialize the DataFrame
-    test_chunk = pd.DataFrame(index=pd.Series(range(10)),
-                              columns=cols).sort_index(axis=1)
+    test_chunk = pd.DataFrame(index=pd.Series(range(10)), columns=cols).sort_index(axis=1)
 
     # Set the proper types for the tdt columns
     test_chunk.loc[:, (slice(None), 'tdt')] = \
@@ -88,7 +87,7 @@ def chunk():
 
     for ind in range(3):
         test_chunk.loc[:, (ind, 'oid')] = ind
-        test_chunk.loc[:, (ind, 'mid')] = ind
+        test_chunk.loc[:, (ind, 'mid')] = 'A' # Force the same mid for all Profiles
 
     return test_chunk
 

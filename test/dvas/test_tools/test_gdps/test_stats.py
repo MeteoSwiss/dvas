@@ -30,10 +30,10 @@ db_data = {
     'data': [{'mdl_name': 'AR-GDP_001',
               'srn': 'AR1',
               'pid': '0',},
-             {'mdl_name': 'BR-GDP_001',
+             {'mdl_name': 'AR-GDP_001',
               'srn': 'BR1',
               'pid': '1',},
-             {'mdl_name': 'BR-GDP_001',
+             {'mdl_name': 'AR-GDP_001',
               'srn': 'BR2',
               'pid': '1',},
             ]}

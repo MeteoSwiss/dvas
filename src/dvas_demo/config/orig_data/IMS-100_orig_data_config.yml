@@ -19,7 +19,7 @@ _IMS-100-BETA_002:
 
     # -- ORIG DATA ----------------------------------
     _time:
-        value: get('time', 's2ns')
+        value: get('time')
 
     _alt_ref:
         value: get('alt_gph')
