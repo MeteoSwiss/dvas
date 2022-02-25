@@ -91,11 +91,11 @@ def get_sync_shifts_from_val(prfs, max_shift=100, first_guess=None):
     # To do that, let's compute the differences between the different time steps, and check if it
     # is unique (or not) and identical for all profiles (or Not)
     ndts = prfs.get_prms(PRF_REF_TDT_NAME).diff(periods=1, axis=0).nunique(axis=0, dropna=True)
-    if np.any([item == 1 for item in ndts.values]):
+    if np.any([item != 1 for item in ndts.values]):
         raise DvasError(f'Ouch ! The profiles do not all have uniform time steps: {ndts.values}')
     dts = [prfs.get_prms(PRF_REF_TDT_NAME)[item][PRF_REF_TDT_NAME].diff().unique().tolist()
            for item in range(len(prfs))]
-    if np.any([item == dts[0] for item in dts]):
+    if np.any([item != dts[0] for item in dts]):
         raise DvasError(f'Ouch ! Inconsistent time steps between the different profiles: {dts}')
 
     # Let us first begin by extracting all the value arrays that need to be "cross-correlated".
