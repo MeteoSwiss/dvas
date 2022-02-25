@@ -23,7 +23,6 @@ from peewee import ForeignKeyField
 # Import from current package
 from ..hardcoded import MODEL_PAT, PRM_AND_FLG_PRM_PAT
 from ..logger import localdb as localdb_logger
-from ..errors import DvasError
 
 # Create db instance
 db = SqliteDatabase(None, autoconnect=True)
