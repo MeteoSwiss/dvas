@@ -79,6 +79,10 @@ if __name__ == '__main__':
     # Use this command to explore the DB
     # DB.explore()
 
+    # Use this commande to extract a global view of the DB
+    res = DB.extract_global_view()
+
+
     # ----------------------------------------------------------------------------------------------
     print("\n --- BASIC DATA EXTRACTION ---")
 

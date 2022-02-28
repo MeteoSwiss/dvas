@@ -17,7 +17,7 @@ from .data.data import MultiRSProfile as DataMultiRSProfile
 from .data.data import MultiGDPProfile as DataMultiGDPProfile
 from .logger import LogManager
 from .database.explorer import DatabasePrompt
-
+from .database.search import SearchInfoExpr
 
 class Log:
     """Facade class for user interactions with log"""
@@ -82,6 +82,17 @@ class Database:
         """Explore DB method"""
         prmt = DatabasePrompt()
         prmt.cmdloop()
+
+    @staticmethod
+    def extract_global_view():
+        """Extract global DB view
+
+        Return:
+            pd.DataFrame
+
+        """
+
+        return SearchInfoExpr.extract_global_view()
 
 
 class MultiProfile(DataMultiProfile):

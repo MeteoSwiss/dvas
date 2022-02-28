@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 ### Added:
+ - [modolol, 2022-02-28] Global DB extract
  - [fpavogt, 2021-11-30] Add new "force-all-valid" strategy to combine GDPs
  - [fpavogt, 2021-11-26] Add ability to feed lambda fcts to csv_skiprows
  - [modolol, 2021-11-03] Add `mid` in DB search options
@@ -19,6 +20,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [modolol, 2021-07-12] Fix issue #185
  - [modolol, 2021-07-12] Fix issue #160
 ### Changed:
+ - [modolol, 2022-02-28] Remove mandatory tag creation in config
  - [fpavogt, 2021-11-26] Update RS41 GDPs to v1.
  - [modolol, 2021-11-24] Modify 'header' rules in origdata
  - [fpavogt, 2021-11-22] Various logging improvements

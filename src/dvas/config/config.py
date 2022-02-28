@@ -219,7 +219,6 @@ class OneLayerConfigManager(ConfigManager):
         except ConfigReadError as exc:
             raise ConfigReadError('Error in hard coded config') from exc
 
-
     def _get_document(self, doc_in=None):
         """Get YAML document as python dict
 
