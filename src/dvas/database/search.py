@@ -533,7 +533,7 @@ class InfoStrategy(SearchStrategyAC):
     @property
     def exclude(self):
         """list: Field instances which should be excluded from the result dictionary."""
-        return [TableInfo.datas]
+        return [TableInfo.datas]  # noqa pylint: disable=E1101
 
 
 class PrmStrategy(SearchStrategyAC):
@@ -567,7 +567,7 @@ class PrmStrategy(SearchStrategyAC):
     @property
     def exclude(self):
         """list: Field instances which should be excluded from the result dictionary."""
-        return [TableInfo.datas]
+        return [TableInfo.datas]  # noqa pylint: disable=E1101
 
 
 class ObjectStrategy(SearchStrategyAC):
@@ -608,4 +608,4 @@ class ObjectStrategy(SearchStrategyAC):
     @property
     def exclude(self):
         """list: Field instances which should be excluded from the result dictionary."""
-        return [TableInfo.datas]
+        return [TableInfo.datas]  # noqa pylint: disable=E1101
