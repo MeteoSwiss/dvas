@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -41,11 +41,12 @@ from ..errors import ConfigPathError, ConfigReadYAMLError, ConfigCheckJSONError
 from ..errors import ConfigReadError, ConfigNodeError
 from ..errors import ConfigGetError, ConfigLabelNameError
 from ..errors import ConfigGenMaxLenError
-from ..errors import ExprInterpreterError, NonTerminalExprInterpreterError, TerminalExprInterpreterError
-
+from ..errors import ExprInterpreterError, NonTerminalExprInterpreterError
+from ..errors import TerminalExprInterpreterError
 
 # Define
 NODE_ESCAPE_CHAR = '_'
+
 
 def instantiate_config_managers(*args, read=True):
     """Generate a dictionary with instances of all specified ConfigManagers
@@ -75,6 +76,7 @@ def instantiate_config_managers(*args, read=True):
                 raise ConfigError(f"Error in reading instance of '{inst.CLASS_KEY}'") from exc
 
     return {arg.CLASS_KEY: arg for arg in instances}
+
 
 class ConfigManager(metaclass=RequiredAttrMetaClass):
     """Abstract class for managing YAML config"""
@@ -346,6 +348,7 @@ class CSVOrigMeta(OneLayerConfigManager):
     #: dict: Config document
     document = TypedProperty(OneLayerConfigManager.DOC_TYPE)
 
+
 class OneDimArrayConfigManager(OneLayerConfigManager):
     """Abstract class for managing 'one-dim-array' YAML config.
 
@@ -489,6 +492,7 @@ class OneDimArrayConfigManager(OneLayerConfigManager):
             # Copy now doc
             self.document = document_new.copy()
 
+
 class Model(OneDimArrayConfigManager):
     """Instrument type config manager"""
 
@@ -500,6 +504,7 @@ class Model(OneDimArrayConfigManager):
 
     #: dict: Config document
     document = TypedProperty(OneDimArrayConfigManager.DOC_TYPE)
+
 
 class Parameter(OneDimArrayConfigManager):
     """Parameter config manager """
@@ -541,6 +546,7 @@ class Parameter(OneDimArrayConfigManager):
         # Append
         self.document += array_prm_flg
 
+
 class Flg(OneDimArrayConfigManager):
     """Flg config manager """
 
@@ -552,6 +558,7 @@ class Flg(OneDimArrayConfigManager):
 
     #: dict: Config document
     document = TypedProperty(OneDimArrayConfigManager.DOC_TYPE)
+
 
 class Tag(OneDimArrayConfigManager):
     """Tag config manager """
@@ -718,7 +725,6 @@ class MultiLayerConfigManager(OneLayerConfigManager):
             ]
         }
 
-
     def _get_document(self, doc_in=None):
         """Get YAML document as python dict
 
@@ -773,7 +779,7 @@ class MultiLayerConfigManager(OneLayerConfigManager):
                     if re.fullmatch(rf"{NODE_ESCAPE_CHAR}{pat[0]}", key) is None:
                         pprinter = pprint.PrettyPrinter()
                         err_msg = (
-                            f"Bad node label.\n'{pprinter.pformat(pat[0])}' "+
+                            f"Bad node label.\n'{pprinter.pformat(pat[0])}' " +
                             "didn't match any keys in\n{pprinter.pformat(doc)}"
                         )
                         raise ConfigNodeError(err_msg)
@@ -901,8 +907,8 @@ class NonTerminalConfigExprInterpreter(ConfigExprInterpreter):
 
         if len(self._expression) > 1:
             return reduce(self.fct, res_interp)
-        else:
-            return self.fct(res_interp[0])
+
+        return self.fct(res_interp[0])
 
     @abstractmethod
     def fct(self, *args):
@@ -989,6 +995,7 @@ class SmallUpperExpr(NonTerminalConfigExprInterpreter):
             raise NonTerminalExprInterpreterError() from exc
 
         return out
+
 
 class TerminalConfigExprInterpreter(ConfigExprInterpreter):
     """Implement an interpreter operation for terminal symbols in the

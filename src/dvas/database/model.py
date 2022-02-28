@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -27,12 +27,14 @@ from ..logger import localdb as localdb_logger
 # Create db instance
 db = SqliteDatabase(None, autoconnect=True)
 
+
 @db.func('re_fullmatch')
 def re_fullmatch(pattern, string):
     """ Database re.fullmatch function. Used in check constraints. """
     return (
         re.fullmatch(pattern=pattern, string=string) is not None
     )
+
 
 @db.func('str_len_max')
 def str_len_max(string, n_max):
@@ -42,6 +44,7 @@ def str_len_max(string, n_max):
     else:
         out = len(string) <= n_max
     return out
+
 
 @db.func('check_unit')
 def check_unit(prm_unit, prm_name):
@@ -71,11 +74,13 @@ def check_unit(prm_unit, prm_name):
 
     return True
 
+
 class MetadataModel(PeeweeModel):
     """Metadata model class"""
     class Meta:
         """Meta class"""
         database = db
+
 
 class Model(MetadataModel):
     """Model table, intended as object model"""
@@ -104,6 +109,7 @@ class Model(MetadataModel):
         constraints=[Check("str_len_max(mdl_desc, 64)")]
     )
 
+
 class Object(MetadataModel):
     """Object table"""
 
@@ -127,6 +133,7 @@ class Object(MetadataModel):
         Model, backref='objects', on_delete='CASCADE'
     )
 
+
 class Parameter(MetadataModel):
     """Parameter model"""
 
@@ -138,8 +145,7 @@ class Parameter(MetadataModel):
         null=False,
         unique=True,
         constraints=[Check(f"re_fullmatch('{PRM_AND_FLG_PRM_PAT}', prm_name)"),
-                     Check("str_len_max(prm_name, 64)")
-        ]
+                     Check("str_len_max(prm_name, 64)")]
     )
 
     # Parameter description
@@ -154,6 +160,7 @@ class Parameter(MetadataModel):
         constraints=[Check("str_len_max(prm_unit, 64)"),
                      Check("check_unit(prm_unit, prm_name)")]
     )
+
 
 class Flg(MetadataModel):
     """Flag model"""
@@ -179,6 +186,7 @@ class Flg(MetadataModel):
         constraints=[Check("str_len_max(flg_desc, 256)")]
     )
 
+
 class Tag(MetadataModel):
     """Table containing the tags.
 
@@ -193,7 +201,7 @@ class Tag(MetadataModel):
     # Tag name
     tag_name = TextField(
         null=False, unique=True,
-        constraints = [Check("str_len_max(tag_name, 64)")]
+        constraints=[Check("str_len_max(tag_name, 64)")]
     )
 
     # Tag description
@@ -202,6 +210,7 @@ class Tag(MetadataModel):
         constraints=[Check("str_len_max(tag_desc, 256)")]
     )
 
+
 class DataSource(MetadataModel):
     """Data source model"""
     id = AutoField(primary_key=True)
@@ -209,6 +218,7 @@ class DataSource(MetadataModel):
         null=False,
         constraints=[Check("str_len_max(src, 2048)")]
     )
+
 
 class Info(MetadataModel):
     """Info table"""
@@ -229,6 +239,7 @@ class Info(MetadataModel):
     """str: Hash of the info attributes. Using a hash allows you to manage
     identical info with varying degrees of work steps."""
 
+
 class InfosTags(MetadataModel):
     """Many-to-Many link between Info and Tag tables"""
     id = AutoField(primary_key=True)
@@ -239,6 +250,7 @@ class InfosTags(MetadataModel):
         Info, backref='infos_tags', on_delete='CASCADE'
     )
 
+
 class InfosObjects(MetadataModel):
     """Many-to-Many link between Info and Instrument tables"""
     id = AutoField(primary_key=True)
@@ -248,6 +260,7 @@ class InfosObjects(MetadataModel):
     info = ForeignKeyField(
         Info, backref='infos_objects', on_delete='CASCADE'
     )
+
 
 class MetaData(MetadataModel):
     """Table containing the profiles metadata.
@@ -278,6 +291,7 @@ class MetaData(MetadataModel):
     info = ForeignKeyField(
         Info, backref='infos_objects', on_delete='CASCADE'
     )
+
 
 class Data(MetadataModel):
     """Table containing the profiles data."""
