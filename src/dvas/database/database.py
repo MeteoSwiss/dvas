@@ -375,6 +375,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
                 # Warn if new tag
                 if created:
+                    # TODO: Determine if 'warn' level is appropriate. Maybe 'info' seems better!
                     localdb_logger.warn("New tag created: (id=%s, name=%s)", tmp.id, tmp.tag_name)
 
             # Create original data information
