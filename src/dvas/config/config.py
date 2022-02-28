@@ -1006,7 +1006,7 @@ class GetExpr(TerminalConfigExprInterpreter):
         """ Init function
 
         Args:
-            arg (?): argument to get.
+            arg (object): argument to get.
             totype (type, optional): if set, will convert the value to that type.
                 Defaults to None = use native type.
         """
