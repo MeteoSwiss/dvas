@@ -21,6 +21,7 @@ import os
 import re
 from pylint import epylint as lint
 
+
 def main():
     ''' The main function. '''
 
@@ -56,7 +57,7 @@ def main():
         error_codes = ','.join(args.exclude)
         pylint_command = '--disable='+error_codes
 
-    else: # just run pylint without tweaks
+    else:  # just run pylint without tweaks
 
         pylint_command = ''
 
@@ -106,6 +107,7 @@ def main():
         if score < args.min_score:
             raise Exception('''Ouch! pylint final score of %.2f is smaller than the specified
                                threshold of %.2f !''' % (float(score), args.min_score))
+
 
 if __name__ == '__main__':
 

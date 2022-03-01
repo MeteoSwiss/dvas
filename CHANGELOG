@@ -23,6 +23,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [modolol, 2021-07-12] Fix issue #185
  - [modolol, 2021-07-12] Fix issue #160
 ### Changed:
+ - [fpavogt, 2022-03-01] Add dev option to setup.py
  - [modolol, 2022-02-28] Remove mandatory tag creation in config
  - [fpavogt, 2022-02-25] Remove all correlations between distinct GDP models
  - [fpavogt, 2021-11-26] Update RS41 GDPs to v1.
