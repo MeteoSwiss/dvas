@@ -76,6 +76,14 @@ rcp_steps:
         kwargs:
             dummy_arg: test
 
+    # Profile cleanup (cropping after burst, resampling, floating point rounding)
+    uaii2022.basic.cleanup:
+        step_id: '00'
+        run: True
+        kwargs:
+            dt: 1 # Time step to resample onto, in seconds
+            prec: 0.1 # Precision to round the time steps onto, in s
+
     # Profile synchronization on a per-flight basis.
     uaii2022.sync.sync_flight:
         step_id: '01'

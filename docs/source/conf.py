@@ -28,7 +28,7 @@ with version_file.open() as fid:
 # -- Project information -----------------------------------------------------
 
 project = 'dvas'
-copyright = '2020-2021, MeteoSwiss'
+copyright = '2020-2022, MeteoSwiss'
 author = 'Luca Modolo, Frédéric P.A. Vogt'
 version = vers
 
@@ -43,16 +43,16 @@ extensions = [
     'sphinx.ext.autosectionlabel',  # So we can link directly to the section header names
     'sphinx.ext.autodoc',  # To get the automatic documentation of functions
     'plantweb.directive',  # To create UML diagrams (need plantweb PyPI package)
-    #'recommonmark', # To include .md files
+    # 'recommonmark', # To include .md files
 ]
 
 # Specify the parameters of the autodoc, in order to
 autodoc_default_options = {
-#    'members': 'var1, var2',
+    # 'members': 'var1, var2',
     'member-order': 'bysource',
-#    'special-members': '__init__',
-#    'undoc-members': False,
-#    'exclude-members': '__weakref__'
+    # 'special-members': '__init__',
+    # 'undoc-members': False,
+    # 'exclude-members': '__weakref__'
 }
 
 # To use this nice feature, but still avoid wreaking havoc with sphinx-apidoc
@@ -100,8 +100,7 @@ html_theme = 'sphinx_rtd_theme'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-#html_static_path = ['_static']
-
+# html_static_path = ['_static']
 
 # -- Specify UML generator ---------------------------------------------------
 plantweb_defaults = {
