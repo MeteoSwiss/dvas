@@ -10,15 +10,14 @@ Module contents: Data manager classes used in dvas.data.data.ProfileManager
 """
 
 # Import from external packages
+import logging
 from abc import ABCMeta, abstractmethod
 from copy import deepcopy
 import numpy as np
 import pandas as pd
 
 # Import from current package
-from ...logger import data as logger
 from ...database.model import Flg as TableFlg
-from ...database.model import Parameter as TableParameter
 from ...database.database import DatabaseManager, InfoManager
 from ...errors import ProfileError, DvasError
 from ...helper import RequiredAttrMetaClass
@@ -26,7 +25,10 @@ from ...hardcoded import PRF_REF_INDEX_NAME, PRF_REF_TDT_NAME, PRF_REF_ALT_NAME,
 from ...hardcoded import PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME
 from ...hardcoded import PRF_REF_FLG_NAME
 
-# Define
+# Setup the logger
+logger = logging.getLogger(__name__)
+
+# Define some generic stuff
 INT_TEST = (np.int64, np.int, int, type(pd.NA))
 FLOAT_TEST = (np.float, float) + INT_TEST
 TIME_TEST = FLOAT_TEST + (pd.Timedelta, type(pd.NaT))
@@ -187,7 +189,7 @@ class ProfileAC(metaclass=RequiredAttrMetaClass):
 
         except (KeyError, ProfileError):
             raise ProfileError(
-                f"Valid keys are: {list(self.DF_COLS_ATTR.keys())}. " +\
+                f"Valid keys are: {list(self.DF_COLS_ATTR.keys())}. " +
                 f"You gave {val.name if isinstance(val, pd.Series) else val.columns}"
             )
         except AssertionError:
@@ -262,6 +264,7 @@ class ProfileAC(metaclass=RequiredAttrMetaClass):
                     val[key] = val[key].astype(cls.DF_COLS_ATTR[key]['type'])
 
         return val
+
 
 class Profile(ProfileAC):
     """Base Profile class for atmospheric measurements. Requires only some measured values,
@@ -432,6 +435,7 @@ class Profile(ProfileAC):
 
         return val in self.info.tags
 
+
 class RSProfile(Profile):
     """ Child Profile class for *basic radiosonde* atmospheric measurements.
     Requires some measured values, together with their corresponding measurement times since launch,
@@ -459,6 +463,7 @@ class RSProfile(Profile):
     def tdt(self):
         """pd.Series: Corresponding data time delta since launch"""
         return super().__getattr__('tdt')
+
 
 class GDPProfile(RSProfile):
     """ Child RSProfile class for *GDP-like* radiosonde atmospheric measurements.
@@ -548,8 +553,10 @@ class GDPProfile(RSProfile):
         # Make sure to give a proper name to the Series
         return out.rename('uc_tot')
 
+
 class CWSProfile(GDPProfile):
-    """ Child GDPProfile class intended for profile *deltas* between candidate and CWS profiles. """
+    """ Child GDPProfile class intended for CWS profiles. """
+
 
 class DeltaProfile(GDPProfile):
     """ Child GDPProfile class intended for profile *deltas* between candidate and CWS profiles.

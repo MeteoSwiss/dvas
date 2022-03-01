@@ -16,12 +16,15 @@ correlation coefficients.
 # imported there ...), and used in some of the MultiProfile Strategies.
 
 # Import from Python
+import logging
 import numpy as np
 
 # Import from current package
 from ...logger import log_func_call
-from ...logger import tools_logger as logger
 from ...errors import DvasError
+
+# Setup local logger
+logger = logging.getLogger(__name__)
 
 
 @log_func_call(logger)

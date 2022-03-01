@@ -166,7 +166,8 @@ class TimeIt(AbstractContextManager):
 
         Args:
             header_msg (str): User defined elapsed time header. Default to ''.
-            logger (logging.Logger, `optional`): Print output to log (debug level only). Default to None.
+            logger (logging.Logger, `optional`): Print output to log (debug level only).
+                Defaults to None.
 
         """
         super().__init__()
@@ -270,18 +271,22 @@ class TypedProperty:
         understanding-a-python-descriptors-example-typedproperty>`__
 
     """
-    def __init__(self, pampy_match, setter_fct=None, args=None, kwargs=None, getter_fct=None, allow_none=False):
+    def __init__(self, pampy_match, setter_fct=None, args=None, kwargs=None, getter_fct=None,
+                 allow_none=False):
         """Constructor
 
         Args:
             pampy_match (type or tuple of type): Data type
-            setter_fct (callable, `optional`): Function applied before assign value in setter method.
-                The function can include special check and raises -
+            setter_fct (callable, `optional`): Function applied before assign value in setter
+                method. The function can include special check and raises -
                 use TypeError to raise appropriate exception. Default to lambda x: x
             args (tuple, `optional`): setter function args. Default to None.
             kwargs (dict, `optional`): setter function kwargs. Default to None.
-            getter_fct (callable, `optional`): Function applied before returning attributes in getter method. Default to lambda x: x
-            allow_none (bool, `optional`): Allow none value (bypass pampy match and setter fct). Default to False.
+            getter_fct (callable, `optional`): Function applied before returning attributes in
+                getter method. Default to lambda x: x
+            allow_none (bool, `optional`): Allow none value (bypass pampy match and setter fct).
+                Defaults to False.
+
         """
         # Set attributes
         self._pampy_match = pampy_match
@@ -308,7 +313,9 @@ class TypedProperty:
                 match_tuple = pmatch(val, self._pampy_match, lambda *x: x)
 
             except (MatchError, TypeError) as first_error:
-                raise TypeError(f'Bad type while assignment of {val}. Expected {self._pampy_match}. Received {type(val)}') from first_error
+                raise TypeError(
+                    f'Bad type while assignment of {val}. ' +
+                    f'Expected {self._pampy_match}. Received {type(val)}') from first_error
 
             # Untuple
             if len(match_tuple) == 1:
@@ -320,7 +327,7 @@ class TypedProperty:
                         match_tuple, *self._setter_fct_args, **self._setter_fct_kwargs
                 )
             except (KeyError, AttributeError) as second_error:
-                raise TypeError(f'Error while apply setter function') from second_error
+                raise TypeError('Error while apply setter function') from second_error
 
     def __set_name__(self, instance, name):
         """Attribute name setter"""

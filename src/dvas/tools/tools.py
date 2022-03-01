@@ -12,13 +12,17 @@ This module contains low-level, stand-alone, dvas tools.
 """
 
 # Import from Python packages
+import logging
 import numpy as np
 import pandas as pd
 
 # Import from this package
 from ..errors import DvasError
 from ..logger import log_func_call
-from ..logger import tools_logger as logger
+
+# Setup local logger
+logger = logging.getLogger(__name__)
+
 
 @log_func_call(logger)
 def fancy_nansum(vals, axis=None):
@@ -83,6 +87,7 @@ def fancy_nansum(vals, axis=None):
         return np.nansum(vals.values)
 
     return vals.sum(axis=axis, skipna=True).mask(vals.isna().all(axis=axis))
+
 
 @log_func_call(logger)
 def df_to_chunks(df, chunk_size):

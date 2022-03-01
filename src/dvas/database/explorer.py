@@ -25,6 +25,7 @@ from .search import SearchInfoExpr, AllExpr
 class ParserExit(Exception):
     """Exception for parser exiting"""
 
+
 class Parser(ArgumentParser):
     """Parser class"""
 
@@ -97,7 +98,6 @@ class DatabasePrompt(Cmd):
 
         else:
             pprint(getattr(self._db_reader, cmd_name)('?'))
-
 
     def do_exit(self, _):
         """Exit command"""

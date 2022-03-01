@@ -12,17 +12,21 @@ This module contains GRUAN-related utilities.
 """
 
 # Import from Python
+import logging
 import numpy as np
 import pandas as pd
 
 # Import from current package
 from ...logger import log_func_call
-from ...logger import tools_logger as logger
 from ...errors import DvasError
 from ...hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME, PRF_REF_FLG_NAME
 from ...hardcoded import PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME
 from ..tools import fancy_nansum
 from .correlations import coeffs
+
+# Setup local logger
+logger = logging.getLogger(__name__)
+
 
 @log_func_call(logger)
 def weighted_mean(df_chunk, binning=1):
@@ -131,14 +135,14 @@ def weighted_mean(df_chunk, binning=1):
 
     # --- Kept for legacy purposes ---
     # This is slow
-    #in_lvl = np.array([vals.shape[1]*[1 if j//binning == i else 0 for j in range(len(vals))]
+    # in_lvl = np.array([vals.shape[1]*[1 if j//binning == i else 0 for j in range(len(vals))]
     #                   for i in range(len(x_ms))])
     # This is better
-    #in_lvl = np.array([vals.shape[1]*([0]*i*binning + [1]*binning + [0]*(len(vals)-1-i)*binning)
+    # in_lvl = np.array([vals.shape[1]*([0]*i*binning + [1]*binning + [0]*(len(vals)-1-i)*binning)
     #                   for i in range(len(x_ms))])
     # Apply the selection to the weight matrix. We avoid the multiplication to properly deal with
     # NaNs.
-    #w_mat[in_lvl == 0] = 0
+    # w_mat[in_lvl == 0] = 0
     # --------------------------------
 
     # This is the fastest way to do so I could come up with so far. Re-compute which layer goes
@@ -157,6 +161,7 @@ def weighted_mean(df_chunk, binning=1):
                                  fill_value=np.nan)
 
     return chunk_out, jac_mat
+
 
 @log_func_call(logger)
 def delta(df_chunk, binning=1):
@@ -281,6 +286,7 @@ def delta(df_chunk, binning=1):
 
     return chunk_out, jac_mat
 
+
 def process_chunk(df_chunk, binning=1, method='weighted mean'):
     """ Process a DataFrame chunk and propagate the errors.
 
@@ -369,26 +375,27 @@ def process_chunk(df_chunk, binning=1, method='weighted mean'):
     # Let us now assemble the U matrices, filling all the cross-correlations for the different
     # types of uncertainties
     for sigma_name in [PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME]:
-        U_mat = coeffs(np.tile(df_chunk.index.values, (n_prf*len(df_chunk), n_prf)), # i
-                       np.tile(df_chunk.index.values, (n_prf*len(df_chunk), n_prf)).T, # j
-                       sigma_name,
-                       oid_i=np.tile(df_chunk.xs('oid', level=1, axis=1).T.values.ravel(),
-                                     (n_prf*len(df_chunk), 1)),
-                       oid_j=np.tile(df_chunk.xs('oid', level=1, axis=1).T.values.ravel(),
-                                     (n_prf*len(df_chunk), 1)).T,
-                       mid_i=np.tile(df_chunk.xs('mid', level=1, axis=1).T.values.ravel(),
-                                     (n_prf*len(df_chunk), 1)),
-                       mid_j=np.tile(df_chunk.xs('mid', level=1, axis=1).T.values.ravel(),
-                                     (n_prf*len(df_chunk), 1)).T,
-                       rid_i=np.tile(df_chunk.xs('rid', level=1, axis=1).T.values.ravel(),
-                                     (n_prf*len(df_chunk), 1)),
-                       rid_j=np.tile(df_chunk.xs('rid', level=1, axis=1).T.values.ravel(),
-                                     (n_prf*len(df_chunk), 1)).T,
-                       eid_i=np.tile(df_chunk.xs('eid', level=1, axis=1).T.values.ravel(),
-                                     (n_prf*len(df_chunk), 1)),
-                       eid_j=np.tile(df_chunk.xs('eid', level=1, axis=1).T.values.ravel(),
-                                     (n_prf*len(df_chunk), 1)).T,
-                        )
+        U_mat = coeffs(
+            np.tile(df_chunk.index.values, (n_prf*len(df_chunk), n_prf)),  # i
+            np.tile(df_chunk.index.values, (n_prf*len(df_chunk), n_prf)).T,  # j
+            sigma_name,
+            oid_i=np.tile(df_chunk.xs('oid', level=1, axis=1).T.values.ravel(),
+                          (n_prf*len(df_chunk), 1)),
+            oid_j=np.tile(df_chunk.xs('oid', level=1, axis=1).T.values.ravel(),
+                          (n_prf*len(df_chunk), 1)).T,
+            mid_i=np.tile(df_chunk.xs('mid', level=1, axis=1).T.values.ravel(),
+                          (n_prf*len(df_chunk), 1)),
+            mid_j=np.tile(df_chunk.xs('mid', level=1, axis=1).T.values.ravel(),
+                          (n_prf*len(df_chunk), 1)).T,
+            rid_i=np.tile(df_chunk.xs('rid', level=1, axis=1).T.values.ravel(),
+                          (n_prf*len(df_chunk), 1)),
+            rid_j=np.tile(df_chunk.xs('rid', level=1, axis=1).T.values.ravel(),
+                          (n_prf*len(df_chunk), 1)).T,
+            eid_i=np.tile(df_chunk.xs('eid', level=1, axis=1).T.values.ravel(),
+                          (n_prf*len(df_chunk), 1)),
+            eid_j=np.tile(df_chunk.xs('eid', level=1, axis=1).T.values.ravel(),
+                          (n_prf*len(df_chunk), 1)).T,
+        )
 
         # Implement the multiplication. First get the uncertainties ...
         raveled_sigmas = np.array([df_chunk.xs(sigma_name, level=1, axis=1).T.values.ravel()])

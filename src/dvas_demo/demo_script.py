@@ -18,7 +18,7 @@ import pandas as pd
 from dvas.dvas import Log
 from dvas.dvas import Database as DB
 import dvas.plots.utils as dpu
-from dvas.data.data import MultiProfile, MultiRSProfile, MultiGDPProfile, MultiCWSProfile
+from dvas.data.data import MultiProfile, MultiRSProfile, MultiGDPProfile
 from dvas.environ import path_var
 from dvas.hardcoded import FLG_INCOMPATIBLE_NAME
 from dvas.tools import sync as dts

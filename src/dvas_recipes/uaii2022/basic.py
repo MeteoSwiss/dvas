@@ -9,21 +9,22 @@ Module content: basic high-level recipes for the UAII2022 campaign
 """
 
 # Import general Python packages
-
+import logging
 # Import dvas modules and classes
-from dvas.logger import recipes_logger as logger
+# from dvas.logger import recipes_logger as logger
 from dvas.logger import log_func_call
-
 # Import from dvas_recipes
 # from .. import dynamic
 from ..recipe import for_each_flight, for_each_var
 # from ..errors import DvasRecipesError
 
+logger = logging.getLogger(__name__)
+
 
 @for_each_var
 @for_each_flight
 @log_func_call(logger, time_it=True)
-def cleanup(dt, prec):
+def cleanup(dt):
     """ Highest-level function responsible for doing an initial cleanup of the data.
 
     Args:

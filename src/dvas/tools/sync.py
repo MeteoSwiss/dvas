@@ -12,14 +12,18 @@ This module contains tools to synchronize profiles.
 """
 
 # Import from other Python packages
+import logging
 import warnings
 import numpy as np
 
 # Import from this package
 from ..logger import log_func_call
-from ..logger import tools_logger as logger
 from ..errors import DvasError
 from ..hardcoded import PRF_REF_ALT_NAME, PRF_REF_VAL_NAME, PRF_REF_TDT_NAME
+
+# Setup the local logger
+logger = logging.getLogger(__name__)
+
 
 @log_func_call(logger)
 def get_sync_shifts_from_alt(prfs, ref_alt=5000.):

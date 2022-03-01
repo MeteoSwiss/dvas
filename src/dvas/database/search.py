@@ -120,7 +120,8 @@ class SearchInfoExpr(metaclass=ABCMeta):
 
         Search expression grammar for 'info' method:
             - all(): Select all
-            - [datetime ; dt]('<ISO datetime>', ['=='(default) ; '>=' ; '>' ; '<=' ; '<' ; '!=']): Select by datetime
+            - [datetime ; dt]('<ISO datetime>', ['=='(default) ; '>=' ; '>' ; '<=' ; '<' ; '!=']):
+                Select by datetime
             - [serialnumber ; srn]('<Serial number>'): Select by serial number
             - [product_id ; pid](<Product>): Select by product
             - [object_id, oid](<Object id>): Select by object id
@@ -158,7 +159,8 @@ class SearchInfoExpr(metaclass=ABCMeta):
                     expr = eval(expr, SearchInfoExpr._str_expr_dict)
 
                 # Test
-                assert isinstance(expr, SearchInfoExpr), "eval(expr) must return a 'SearchInfoExpr' type"
+                assert isinstance(expr, SearchInfoExpr), \
+                    "eval(expr) must return a 'SearchInfoExpr' type"
 
             # Add empty tag if False
             if filter_empty is True:
@@ -179,7 +181,8 @@ class SearchInfoExpr(metaclass=ABCMeta):
                 out = [arg for arg in qry.iterator()]
 
             else:
-                out = [model_to_dict(arg, recurse=recurse, backrefs=True, exclude=SearchInfoExpr._exclude) for arg in qry]
+                out = [model_to_dict(arg, recurse=recurse, backrefs=True,
+                                     exclude=SearchInfoExpr._exclude) for arg in qry]
 
         except (Exception, AssertionError) as exc:
             # TODO
@@ -207,22 +210,29 @@ class SearchInfoExpr(metaclass=ABCMeta):
         res = DataFrame.from_dict(res)
 
         # Go through 'model' column
-        res[TableModel.mid.name] = res[TableObject.model.name].apply(lambda x: x[TableModel.mid.name])
-        res[TableModel.mdl_name.name] = res[TableObject.model.name].apply(lambda x: x[TableModel.mdl_name.name])
-        res[TableModel.mdl_desc.name] = res[TableObject.model.name].apply(lambda x: x[TableModel.mdl_desc.name])
+        res[TableModel.mid.name] = \
+            res[TableObject.model.name].apply(lambda x: x[TableModel.mid.name])
+        res[TableModel.mdl_name.name] = \
+            res[TableObject.model.name].apply(lambda x: x[TableModel.mdl_name.name])
+        res[TableModel.mdl_desc.name] = \
+            res[TableObject.model.name].apply(lambda x: x[TableModel.mdl_desc.name])
         res.drop(columns=[TableObject.model.name], inplace=True)
 
         # Go through 'infos_objects'
         # TODO: Fix this ugly hardcoded ref to 'infos_objects' and 'infos_tags'
         res[TablDataSource.src.name] = res['infos_objects'].apply(
-            lambda x: x[0][TableInfosObjects.info.name][TableInfo.data_src.name][TablDataSource.src.name]
+            lambda x:
+            x[0][TableInfosObjects.info.name][TableInfo.data_src.name][TablDataSource.src.name]
         )
         res[TableInfo.edt.name] = res['infos_objects'].apply(
             lambda x: x[0][TableInfosObjects.info.name][TableInfo.edt.name]
         )
-        res['eid'] = res['infos_objects'].apply(lambda x: SearchInfoExpr.get_eid(x[0][TableInfosObjects.info.name]['infos_tags']))
-        res['rid'] = res['infos_objects'].apply(lambda x: SearchInfoExpr.get_rid(x[0][TableInfosObjects.info.name]['infos_tags']))
-        res['is_gdp'] = res['infos_objects'].apply(lambda x: SearchInfoExpr.get_isgdp(x[0][TableInfosObjects.info.name]['infos_tags']))
+        res['eid'] = res['infos_objects'].apply(
+            lambda x: SearchInfoExpr.get_eid(x[0][TableInfosObjects.info.name]['infos_tags']))
+        res['rid'] = res['infos_objects'].apply(
+            lambda x: SearchInfoExpr.get_rid(x[0][TableInfosObjects.info.name]['infos_tags']))
+        res['is_gdp'] = res['infos_objects'].apply(
+            lambda x: SearchInfoExpr.get_isgdp(x[0][TableInfosObjects.info.name]['infos_tags']))
         res.drop(columns=['infos_objects'], inplace=True)
 
         # TODO: @fpvogt I leave it to you to put the columns in the order you prefer ;-)
@@ -235,7 +245,10 @@ class SearchInfoExpr(metaclass=ABCMeta):
 
         try:
             out = next(
-                arg[TableInfosTags.tag.name][TableTag.tag_name.name] for arg in infos_tags if (EID_PAT_COMPILED.match(arg[TableInfosTags.tag.name][TableTag.tag_name.name]) is not None)
+                arg[TableInfosTags.tag.name][TableTag.tag_name.name]
+                for arg in infos_tags
+                if EID_PAT_COMPILED.match(arg[TableInfosTags.tag.name][TableTag.tag_name.name])
+                is not None
             )
 
         except StopIteration:
@@ -249,7 +262,10 @@ class SearchInfoExpr(metaclass=ABCMeta):
 
         try:
             out = next(
-                arg[TableInfosTags.tag.name][TableTag.tag_name.name] for arg in infos_tags if (RID_PAT_COMPILED.match(arg[TableInfosTags.tag.name][TableTag.tag_name.name]) is not None)
+                arg[TableInfosTags.tag.name][TableTag.tag_name.name]
+                for arg in infos_tags
+                if RID_PAT_COMPILED.match(arg[TableInfosTags.tag.name][TableTag.tag_name.name])
+                is not None
             )
 
         except StopIteration:
@@ -263,7 +279,9 @@ class SearchInfoExpr(metaclass=ABCMeta):
 
         try:
             next(
-                arg[TableInfosTags.tag.name][TableTag.tag_name.name] for arg in infos_tags if (arg[TableInfosTags.tag.name][TableTag.tag_name.name] == TAG_GDP_NAME)
+                arg[TableInfosTags.tag.name][TableTag.tag_name.name]
+                for arg in infos_tags
+                if arg[TableInfosTags.tag.name][TableTag.tag_name.name] == TAG_GDP_NAME
             )
             out = True
 
@@ -271,6 +289,7 @@ class SearchInfoExpr(metaclass=ABCMeta):
             out = False
 
         return out
+
 
 class LogicalSearchInfoExpr(SearchInfoExpr):
     """

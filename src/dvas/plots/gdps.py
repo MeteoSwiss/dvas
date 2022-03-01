@@ -10,18 +10,21 @@ Module contents: Plotting functions related to the gruan submodule.
 """
 
 # Import from Python packages
+import logging
 import numpy as np
-
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
 # Import from this package
-from ..errors import  DvasError
 from ..logger import log_func_call
-from ..logger import plots_logger as logger
+from ..errors import DvasError
 from ..hardcoded import PRF_REF_INDEX_NAME, PRF_REF_VAL_NAME, PRF_REF_ALT_NAME, PRF_REF_TDT_NAME
 from ..hardcoded import PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME
 from . import utils as pu
+
+# Setup the local logger
+logger = logging.getLogger(__name__)
+
 
 @log_func_call(logger)
 def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, index_name='tdt', label='mid', **kwargs):
@@ -61,8 +64,8 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, index_name='tdt', label='mid', **kwa
                             PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME,
                             'uc_tot'])[0]
     gdps = gdp_prfs.get_prms([PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME,
-                            PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME,
-                            'uc_tot'])
+                             PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME,
+                             'uc_tot'])
 
     # What are my reference values ? Here I need to differentiate two cases if the user asks for
     # 'tdt' or 'alt'. These two index are put into regular columns by the get_prms() method !
@@ -107,7 +110,7 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, index_name='tdt', label='mid', **kwa
                      cws[PRF_REF_VAL_NAME]+k_lvl*cws['uc_tot'], alpha=0.3, step='mid',
                      color=pu.CLRS['cws_1'])
 
-    #ax1.fill_between(x, -k_lvl*cws['uc_tot'], +k_lvl*cws['uc_tot'], alpha=0.3, step='mid',
+    # ax1.fill_between(x, -k_lvl*cws['uc_tot'], +k_lvl*cws['uc_tot'], alpha=0.3, step='mid',
     #                 color=pu.CLRS['cws_1'])
 
     ax1.plot(x, -k_lvl*cws['uc_tot'], lw=0.5, drawstyle='steps-mid',
@@ -125,7 +128,6 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, index_name='tdt', label='mid', **kwa
     else:
         xlbl = cws_prf.var_info[index_name]['prm_name']
         xlbl += ' [{}]'.format(cws_prf.var_info[index_name]['prm_unit'])
-
 
     ax0.set_ylabel(pu.fix_txt(ylbl))
     plt.setp(ax0.get_xticklabels(), visible=False)
@@ -150,6 +152,7 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, index_name='tdt', label='mid', **kwa
 
     pu.fancy_savefig(fig, fn_core='gdps-vs-cws', **kwargs)
 
+
 @log_func_call(logger)
 def plot_gdps(fn_list, ref_var='time', tag=None, save_loc=None):
     """ Make a basic plot to compare all GDP variables at a glance.
@@ -171,121 +174,124 @@ def plot_gdps(fn_list, ref_var='time', tag=None, save_loc=None):
 
     raise Exception("Ouch ! This function needs to be brought back from the dead.")
 
-    ## Extract the data from the nc files
-    #full_data = [nc.Dataset(this_fn, 'r') for this_fn in fn_list]
-    #
-    ## One issue with raw nc files is that different profiles may have different lengths.
-    ## This is a real issue for the plotting, so let's find the minimum common length.
-    ## This should be avoided through the use of TimeProfileManager, that should all have a common
-    ## length for profiles of a given multi-flight.
-    #n_steps_min = np.min([len(data.variables['time'][:]) for data in full_data])
-    #
-    ## Some sanity checks first
-    #if tag is None:
-    #    tag = ''
-    #elif tag[0] != '_': # To keep the filename good looking.
-    #    tag = '_' + tag
-    #
-    #if save_loc is None:
-    #    if (save_loc := path_var.plot_output_path) is None:
-    #        raise Exception()
-    #elif isinstance(save_loc, str): # The user fed a string ... be nice and assume this is a path.
-    #    save_loc = Path(save_loc)
-    #elif not isinstance(save_loc, PurePath):
-    #    raise Exception('Ouch ! I was expecting a pathlib.Path type for save_loc, not: %s' %
-    #                    (type(save_loc)))
-    #
-    ## Start the plotting
-    #plt.close(51)
-    #plt.figure(51, figsize=(pu.WIDTH_TWOCOL, 9.5))
-    #
-    ## Create a gridspec structure for what will be a busy multi-panel plot.
-    #gs_info = gridspec.GridSpec(9, 4,
-    #                            height_ratios=[1, 0.5, 0.12, 1, 0.5, 0.12, 1, 0.5, 0.12],
-    #                            width_ratios=[1, 1, 1, 1],
-    #                            left=0.08, right=0.98, bottom=0.05, top=0.93,
-    #                            wspace=0.5, hspace=0.1)
-    #
-    ## First, create the axes for the main variables: temp, rh, press, wspeed
-    ## Good luck to anyone trying to understand (let alone adjust!) this terrifingly-awesome
-    ## gridpec structure ...
-    #var_axs = [plt.subplot(gs_info[i%6 + (i%6)//2 + (i//6)*3,
-    #                               2*(i//6):2*(i//6)+2]) for i in range(10)]
-    ## Then,  create the axes for the somewhat different wdir and lat-lon plots
-    #wdir_ax = plt.subplot(gs_info[0:2, 2], projection='polar')
-    #wdir_ax.set_theta_offset(np.pi/2) # Puts North up
-    #wdir_ax.set_theta_direction(-1) #Puts 270deg = West to the left
-    #gps_ax = plt.subplot(gs_info[0:2, 3])
-    #
-    ## Extract the primary variables I care about
-    #for (n_ind, name) in enumerate(['temp', 'rh', 'press', 'wspeed', 'alt']):
-    #    # Now loop through all the data files
-    #    for (_, data) in enumerate(full_data):
-    #
-    #        # Plot the error zone
-    #        with np.errstate(invalid='ignore'):
-    #            # The previous line is needed to hide RunTimeWarnings caused by NaNs wreaking havoc
-    #            # with fill_between.
-    #            var_axs[2*n_ind].fill_between(data.variables[ref_var][:n_steps_min],
-    #                                          data.variables[name][:n_steps_min] -
-    #                                          data.variables[name + '_uc'][:n_steps_min],
-    #                                          data.variables[name][:n_steps_min] +
-    #                                          data.variables[name + '_uc'][:n_steps_min],
-    #                                          step='mid', alpha=0.2)
-    #        # Plot the measured profile
-    #        var_axs[2*n_ind].plot(data.variables[ref_var][:n_steps_min],
-    #                              data.variables[name][:n_steps_min],
-    #                              marker='None', linestyle='-', drawstyle='steps-mid',
-    #                              lw=0.7, markersize=1)
-    #
-    #        # And also plot the differences with the first profile of the group
-    #        # This makes sense only if ref_var == 'time'. Else, some interpolation is needed ...
-    #        # but this may not always work (e.g. if balloon goes up and down and up again).
-    #        if ref_var == 'time':
-    #            var_axs[2*n_ind+1].plot(data.variables[ref_var][:n_steps_min],
-    #                                    data.variables[name][:n_steps_min] -
-    #                                    full_data[0].variables[name][:n_steps_min],
-    #                                    marker='None', linestyle='-', drawstyle='steps-mid',
-    #                                    lw=0.7)
-    #
-    #        # Add the labels, and set some limits
-    #        var_axs[2*n_ind].set_ylabel(name+'[%s]' % (pu.UNIT_LABELS[data.variables[name].units]))
-    #        if ref_var == 'time':
-    #            var_axs[2*n_ind+1].set_ylabel(r'$\Delta$ [%s]' %
-    #                                          (pu.UNIT_LABELS[data.variables[name].units]))
-    #        var_axs[2*n_ind].set_xlim((0, np.max(data.variables[ref_var][:n_steps_min])))
-    #        var_axs[2*n_ind+1].set_xlim((0, np.max(data.variables[ref_var][:n_steps_min])))
-    #
-    #        # Hide the x-tick labels when needed
-    #        var_axs[2*n_ind].set_xticklabels([])
-    #        if name not in ['press', 'alt']:
-    #            var_axs[2*n_ind+1].set_xticklabels([])
-    #        else:
-    #            if ref_var == 'time':
-    #                var_axs[2*n_ind+1].set_xlabel(r'Time [s]')
-    #            else:
-    #                var_axs[2*n_ind+1].set_xlabel(ref_var+' [%s]' %
-    #                                              (pu.UNIT_LABELS[data.variables[ref_var].units]))
-    #
-    ## Now deal with the non-standard plots
-    #for (_, data) in enumerate(full_data):
-    #    # Make a polar plot for the wind direction
-    #    wdir_ax.plot(np.radians(data.variables['wdir'][:n_steps_min]),
-    #                 data.variables[ref_var][:n_steps_min])
-    #    wdir_ax.set_yticklabels([])
-    #
-    #    # Plot the GPS tracks
-    #    # At some point, it could be nice to make this prettier ... with an underlying map ?
-    #    gps_ax.plot(data.variables['lon'][:n_steps_min], data.variables['lat'][:n_steps_min])
-    #    # Also show the starting point
-    #    gps_ax.plot(data.variables['lon'][:][0], data.variables['lat'][:][0], marker='x', c='k')
-    #
-    ## Fine tune some of the look
-    #wdir_ax.set_title(r'wdir', pad=20)
-    #gps_ax.set_title(r'Lon. - Lat. [$^{\circ}$]')
-    #
-    #plt.savefig(save_loc / ('GDPs_%s%s.png' % (ref_var, tag)))
-    #
+    """
+    # Extract the data from the nc files
+    full_data = [nc.Dataset(this_fn, 'r') for this_fn in fn_list]
+
+    # One issue with raw nc files is that different profiles may have different lengths.
+    # This is a real issue for the plotting, so let's find the minimum common length.
+    # This should be avoided through the use of TimeProfileManager, that should all have a common
+    # length for profiles of a given multi-flight.
+    n_steps_min = np.min([len(data.variables['time'][:]) for data in full_data])
+
+    # Some sanity checks first
+    if tag is None:
+        tag = ''
+    elif tag[0] != '_': # To keep the filename good looking.
+        tag = '_' + tag
+
+    if save_loc is None:
+        if (save_loc := path_var.plot_output_path) is None:
+            raise Exception()
+    elif isinstance(save_loc, str): # The user fed a string ... be nice and assume this is a path.
+        save_loc = Path(save_loc)
+    elif not isinstance(save_loc, PurePath):
+        raise Exception('Ouch ! I was expecting a pathlib.Path type for save_loc, not: %s' %
+                        (type(save_loc)))
+
+    # Start the plotting
+    plt.close(51)
+    plt.figure(51, figsize=(pu.WIDTH_TWOCOL, 9.5))
+
+    # Create a gridspec structure for what will be a busy multi-panel plot.
+    gs_info = gridspec.GridSpec(9, 4,
+                                height_ratios=[1, 0.5, 0.12, 1, 0.5, 0.12, 1, 0.5, 0.12],
+                                width_ratios=[1, 1, 1, 1],
+                                left=0.08, right=0.98, bottom=0.05, top=0.93,
+                                wspace=0.5, hspace=0.1)
+
+    # First, create the axes for the main variables: temp, rh, press, wspeed
+    # Good luck to anyone trying to understand (let alone adjust!) this terrifingly-awesome
+    # gridpec structure ...
+    var_axs = [plt.subplot(gs_info[i%6 + (i%6)//2 + (i//6)*3,
+                                   2*(i//6):2*(i//6)+2]) for i in range(10)]
+    # Then,  create the axes for the somewhat different wdir and lat-lon plots
+    wdir_ax = plt.subplot(gs_info[0:2, 2], projection='polar')
+    wdir_ax.set_theta_offset(np.pi/2) # Puts North up
+    wdir_ax.set_theta_direction(-1) #Puts 270deg = West to the left
+    gps_ax = plt.subplot(gs_info[0:2, 3])
+
+    # Extract the primary variables I care about
+    for (n_ind, name) in enumerate(['temp', 'rh', 'press', 'wspeed', 'alt']):
+        # Now loop through all the data files
+        for (_, data) in enumerate(full_data):
+
+            # Plot the error zone
+            with np.errstate(invalid='ignore'):
+                # The previous line is needed to hide RunTimeWarnings caused by NaNs wreaking havoc
+                # with fill_between.
+                var_axs[2*n_ind].fill_between(data.variables[ref_var][:n_steps_min],
+                                              data.variables[name][:n_steps_min] -
+                                              data.variables[name + '_uc'][:n_steps_min],
+                                              data.variables[name][:n_steps_min] +
+                                              data.variables[name + '_uc'][:n_steps_min],
+                                              step='mid', alpha=0.2)
+            # Plot the measured profile
+            var_axs[2*n_ind].plot(data.variables[ref_var][:n_steps_min],
+                                  data.variables[name][:n_steps_min],
+                                  marker='None', linestyle='-', drawstyle='steps-mid',
+                                  lw=0.7, markersize=1)
+
+            # And also plot the differences with the first profile of the group
+            # This makes sense only if ref_var == 'time'. Else, some interpolation is needed ...
+            # but this may not always work (e.g. if balloon goes up and down and up again).
+            if ref_var == 'time':
+                var_axs[2*n_ind+1].plot(data.variables[ref_var][:n_steps_min],
+                                        data.variables[name][:n_steps_min] -
+                                        full_data[0].variables[name][:n_steps_min],
+                                        marker='None', linestyle='-', drawstyle='steps-mid',
+                                        lw=0.7)
+
+            # Add the labels, and set some limits
+            var_axs[2*n_ind].set_ylabel(name+'[%s]' % (pu.UNIT_LABELS[data.variables[name].units]))
+            if ref_var == 'time':
+                var_axs[2*n_ind+1].set_ylabel(r'$\Delta$ [%s]' %
+                                              (pu.UNIT_LABELS[data.variables[name].units]))
+            var_axs[2*n_ind].set_xlim((0, np.max(data.variables[ref_var][:n_steps_min])))
+            var_axs[2*n_ind+1].set_xlim((0, np.max(data.variables[ref_var][:n_steps_min])))
+
+            # Hide the x-tick labels when needed
+            var_axs[2*n_ind].set_xticklabels([])
+            if name not in ['press', 'alt']:
+                var_axs[2*n_ind+1].set_xticklabels([])
+            else:
+                if ref_var == 'time':
+                    var_axs[2*n_ind+1].set_xlabel(r'Time [s]')
+                else:
+                    var_axs[2*n_ind+1].set_xlabel(ref_var+' [%s]' %
+                                                  (pu.UNIT_LABELS[data.variables[ref_var].units]))
+
+    # Now deal with the non-standard plots
+    for (_, data) in enumerate(full_data):
+        # Make a polar plot for the wind direction
+        wdir_ax.plot(np.radians(data.variables['wdir'][:n_steps_min]),
+                     data.variables[ref_var][:n_steps_min])
+        wdir_ax.set_yticklabels([])
+
+        # Plot the GPS tracks
+        # At some point, it could be nice to make this prettier ... with an underlying map ?
+        gps_ax.plot(data.variables['lon'][:n_steps_min], data.variables['lat'][:n_steps_min])
+        # Also show the starting point
+        gps_ax.plot(data.variables['lon'][:][0], data.variables['lat'][:][0], marker='x', c='k')
+
+    # Fine tune some of the look
+    wdir_ax.set_title(r'wdir', pad=20)
+    gps_ax.set_title(r'Lon. - Lat. [$^{\circ}$]')
+
+    plt.savefig(save_loc / ('GDPs_%s%s.png' % (ref_var, tag)))
+
+    """
+
 
 @log_func_call(logger)
 def plot_ks_test(df, alpha, unit=None, left_label=None, right_label=None, **kwargs):
@@ -318,11 +324,11 @@ def plot_ks_test(df, alpha, unit=None, left_label=None, right_label=None, **kwar
 
     # The plot will have different number of rows depending on the number of variables.
     # Let's define some hardcoded heights, such that the look is always consistent
-    top_gap = 0.4 # inch
-    bottom_gap = 0.7 # inch
-    plot_1_height = 0.35*n_bins # inch
-    plot_2_height = 2. # inch
-    mid_gap = 0.05 # inch
+    top_gap = 0.4  # inch
+    bottom_gap = 0.7  # inch
+    plot_1_height = 0.35*n_bins  # inch
+    plot_2_height = 2.  # inch
+    mid_gap = 0.05  # inch
     fig_height = top_gap + bottom_gap + plot_1_height + 3*plot_2_height + 3*mid_gap
 
     # Set up the scene ...
@@ -333,10 +339,10 @@ def plot_ks_test(df, alpha, unit=None, left_label=None, right_label=None, **kwar
                                 bottom=bottom_gap/fig_height, top=1-top_gap/fig_height,
                                 wspace=0.02, hspace=mid_gap)
 
-    ax1 = fig.add_subplot(gs_info[0, 0]) # A 2D plot of the incompatible points as a function of m
-    ax2 = fig.add_subplot(gs_info[1, 0], sharex=ax1) # A scatter plot of k_pq^ei
-    ax3 = fig.add_subplot(gs_info[2, 0], sharex=ax1) # A scatter plot of Delta_pq^ei
-    ax4 = fig.add_subplot(gs_info[3, 0], sharex=ax1) # A scatter plot of sigma_pq^ei
+    ax1 = fig.add_subplot(gs_info[0, 0])  # A 2D plot of the incompatible points as a function of m
+    ax2 = fig.add_subplot(gs_info[1, 0], sharex=ax1)  # A scatter plot of k_pq^ei
+    ax3 = fig.add_subplot(gs_info[2, 0], sharex=ax1)  # A scatter plot of Delta_pq^ei
+    ax4 = fig.add_subplot(gs_info[3, 0], sharex=ax1)  # A scatter plot of sigma_pq^ei
 
     # First, let's plot the full-resolution data.
     ax2.scatter(df.index.values, df.loc[:, (0, 'k_pqei')], marker='o',
@@ -347,7 +353,7 @@ def plot_ks_test(df, alpha, unit=None, left_label=None, right_label=None, **kwar
                 facecolor=pu.CLRS['nan_1'], s=1, edgecolor=None, zorder=10)
 
     # For k, show the k=1, 2, 3 zones
-    for k in [1,2,3]:
+    for k in [1, 2, 3]:
         ax2.fill_between([df.index.values[0], df.index.values[-1]], [-k, -k], [k, k],
                          alpha=0.1+(3-k)*0.1,
                          facecolor='mediumpurple', edgecolor='none')
@@ -375,9 +381,9 @@ def plot_ks_test(df, alpha, unit=None, left_label=None, right_label=None, **kwar
         ax2.scatter(df[flagged].index.values,
                     df[flagged].loc[:, (df.columns.levels[0][1+bin_ind], 'k_pqei')].values,
                     marker='o',
-                    #s=2*(1+bin_ind)**2, # With this, we get circles growing linearly in radius
+                    # s=2*(1+bin_ind)**2, # With this, we get circles growing linearly in radius
                     s=20,
-                    edgecolors=pu.CLRS['ref_1'], # We color each circle manually. No cmap !!!
+                    edgecolors=pu.CLRS['ref_1'],  # We color each circle manually. No cmap !!!
                     linewidth=0.5, facecolor='none', zorder=0)
 
     # Add the 0 line for reference.

@@ -17,7 +17,6 @@ from ...database.model import MetaData as TableMetaData
 from ...database.model import Tag as TableTag
 from ...database.model import Object as TableObject
 
-
 # Define global field name
 EDT_FLD_NM = TableInfo.edt.name  # Datetime field name
 TAG_FLD_NM = TableTag.__name__.lower() + 's'  # Tag field name

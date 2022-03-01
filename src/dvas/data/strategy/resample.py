@@ -10,18 +10,22 @@ Module contents: Resample strategies
 """
 
 # Import from external packages
+import logging
 from scipy.interpolate import interp1d
 import numpy as np
 import pandas as pd
 
 # Import from current package
-from ...logger import data as logger
 from ...errors import DvasError
 from .data import MPStrategyAC
 from ...tools.gdps.correlations import coeffs
 from ...hardcoded import PRF_REF_INDEX_NAME, PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_FLG_NAME
 from ...hardcoded import PRF_REF_VAL_NAME, PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME
 from ...hardcoded import PRF_REF_UCU_NAME
+
+# Steup the logger
+logger = logging.getLogger(__name__)
+
 
 class ResampleStrategy(MPStrategyAC):
     """ Class to handle the resample strategy for RS and GDPs Profiles. """
@@ -84,7 +88,7 @@ class ResampleStrategy(MPStrategyAC):
 
             # ---- This is useful only for GDP Profiles ----
             # Compute the Jacobian matrix
-            omega_vals = [(item-old_tdt.values[x_ip1_ind[ind]-1])/
+            omega_vals = [(item-old_tdt.values[x_ip1_ind[ind]-1]) /
                           np.diff(old_tdt.values)[x_ip1_ind[ind]-1]
                           for (ind, item) in enumerate(new_tdt.values)]
 
@@ -110,7 +114,7 @@ class ResampleStrategy(MPStrategyAC):
 
                 # Interpolate the data. That's the easy bit.
                 if name in [PRF_REF_ALT_NAME, PRF_REF_VAL_NAME]:
-                    #WARNING&TODO This should not be done via .astype, but via to_timedelta('s') !!!
+                    # WARNING & TODO This should not be done via .astype, but to_timedelta('s') !!!
                     func = interp1d(old_tdt.values.astype('int64'),
                                     this_data.loc[:, name].values, kind='linear')
 
@@ -122,18 +126,19 @@ class ResampleStrategy(MPStrategyAC):
                     # Let's compute the covariance matrix
                     # Here it doesn't matter what the oid, rid, eid, mid actually are. It's just
                     # one profile so it's the same for all the points.
-                    U_mat = coeffs(np.tile(range(len(old_tdt)), (len(old_tdt), 1)), # i
-                                   np.tile(range(len(old_tdt)), (len(old_tdt), 1)).T, # j
-                                   name,
-                                   oid_i=np.ones((len(old_tdt), len(old_tdt))),
-                                   oid_j=np.ones((len(old_tdt), len(old_tdt))),
-                                   mid_i=np.ones((len(old_tdt), len(old_tdt))),
-                                   mid_j=np.ones((len(old_tdt), len(old_tdt))),
-                                   rid_i=np.ones((len(old_tdt), len(old_tdt))),
-                                   rid_j=np.ones((len(old_tdt), len(old_tdt))),
-                                   eid_i=np.ones((len(old_tdt), len(old_tdt))),
-                                   eid_j=np.ones((len(old_tdt), len(old_tdt))),
-                                  )
+                    U_mat = coeffs(
+                        np.tile(range(len(old_tdt)), (len(old_tdt), 1)),  # i
+                        np.tile(range(len(old_tdt)), (len(old_tdt), 1)).T,  # j
+                        name,
+                        oid_i=np.ones((len(old_tdt), len(old_tdt))),
+                        oid_j=np.ones((len(old_tdt), len(old_tdt))),
+                        mid_i=np.ones((len(old_tdt), len(old_tdt))),
+                        mid_j=np.ones((len(old_tdt), len(old_tdt))),
+                        rid_i=np.ones((len(old_tdt), len(old_tdt))),
+                        rid_j=np.ones((len(old_tdt), len(old_tdt))),
+                        eid_i=np.ones((len(old_tdt), len(old_tdt))),
+                        eid_j=np.ones((len(old_tdt), len(old_tdt))),
+                    )
 
                     # Multiply with the errors. Mind the structure of these arrays to get the
                     # correct mix of Hadamard and dot products where I need them !
@@ -154,7 +159,7 @@ class ResampleStrategy(MPStrategyAC):
                     # issue a warning.
                     # TODO: could one do better and account for this "somehow" ? This would most
                     # likely not be an easy update.
-                    if not np.array_equal(V_mat[(V_mat != 0)|(np.isnan(V_mat))],
+                    if not np.array_equal(V_mat[(V_mat != 0) | (np.isnan(V_mat))],
                                           V_mat.diagonal(), equal_nan=True):
                         logger.warning("Correlation between resampled profile elements " +
                                        " is being ignored. This is bad !")

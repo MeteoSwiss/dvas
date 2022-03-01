@@ -17,16 +17,16 @@ from pathlib import Path
 from dvas import VERSION
 from .hl_commands import init_arena, run_recipe, optimize
 
+
 def dvas_init_arena():
     """ The dvas_init_arena entry point, wrapping around the actual init_arena function. """
 
     # Use argparse to make dvas user friendly
-    parser = argparse.ArgumentParser(description=
-                                     'DVAS {}'.format(VERSION) +
-                                     ' - Data Visualization and Analysis Software:' +
-                                     ' Initialization entry point.',
-                                     epilog='For more info: https://MeteoSwiss.github.io/dvas\n ',
-                                     formatter_class=argparse.RawTextHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description='DVAS {}'.format(VERSION) + ' - Data Visualization and Analysis Software:' +
+        ' Initialization entry point.',
+        epilog='For more info: https://MeteoSwiss.github.io/dvas\n ',
+        formatter_class=argparse.RawTextHelpFormatter)
 
     parser.add_argument('--path', action='store', default=None,
                         metavar='./a/new/folder/',
@@ -43,6 +43,7 @@ def dvas_init_arena():
     # Launch the initialization of a new processing arena
     init_arena(arena_path=args.path)
 
+
 def dvas_optimize():
     """ The dvas_optimize entry point, wrapping around the optimize function designed to find the
     optimum chunk_size given a certain number of cpus (and memory).
@@ -50,12 +51,10 @@ def dvas_optimize():
     """
 
     # Use argparse to make dvas user friendly
-    parser = argparse.ArgumentParser(description=
-                                     'DVAS {}'.format(VERSION) +
-                                     ' - Data Visualization and Analysis Software:' +
-                                     ' Optimization entry point.',
-                                     epilog='For more info: https://MeteoSwiss.github.io/dvas\n ',
-                                     formatter_class=argparse.RawTextHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description='DVAS {}'.format(VERSION) + ' - Data Visualization and Analysis Software:' +
+        ' Optimization entry point.', epilog='For more info: https://MeteoSwiss.github.io/dvas\n ',
+        formatter_class=argparse.RawTextHelpFormatter)
 
     parser.add_argument('--n-cpus', action='store', default=None, type=int,
                         metavar='x',
@@ -82,16 +81,16 @@ def dvas_optimize():
     optimize(n_cpus=args.n_cpus, prf_length=args.prf_length, chunk_min=args.chunk_min,
              chunk_max=args.chunk_max, n_chunk=args.n_chunk)
 
+
 def dvas_run_recipe():
     """ The dvas_run_recipe entry point, wrapping around the actual run_recipe function. """
 
     # Use argparse to make dvas user friendly
-    parser = argparse.ArgumentParser(description=
-                                     'DVAS {}'.format(VERSION) +
-                                     ' - Data Visualization and Analysis Software:' +
-                                     ' Recipe initialization & execution entry point.',
-                                     epilog='For more info: https://MeteoSwiss.github.io/dvas\n ',
-                                     formatter_class=argparse.RawTextHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description='DVAS {}'.format(VERSION) + ' - Data Visualization and Analysis Software:' +
+        ' Recipe initialization & execution entry point.',
+        epilog='For more info: https://MeteoSwiss.github.io/dvas\n ',
+        formatter_class=argparse.RawTextHelpFormatter)
 
     parser.add_argument('rcp_fn', action='store',
                         help=' (Path +) Name of the dvas recipe file (.rcp) to use.')

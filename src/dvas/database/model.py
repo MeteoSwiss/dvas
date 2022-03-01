@@ -10,6 +10,7 @@ Module contents: Database model (ORM uses PeeWee package)
 """
 
 # Import from python packages
+import logging
 import re
 import pandas as pd
 from peewee import SqliteDatabase, Check
@@ -19,10 +20,11 @@ from peewee import IntegerField, FloatField
 from peewee import DateTimeField, TextField
 from peewee import ForeignKeyField
 
-
 # Import from current package
 from ..hardcoded import MODEL_PAT, PRM_AND_FLG_PRM_PAT
-from ..logger import localdb as localdb_logger
+
+# Setup local logger
+logger = logging.getLogger(__name__)
 
 # Create db instance
 db = SqliteDatabase(None, autoconnect=True)
@@ -64,12 +66,12 @@ def check_unit(prm_unit, prm_name):
             if prm_unit != 's':
                 msg = 'Ouch ! Only "s" is allowed as the unit of time data.'
                 msg += ' See Github error #192 for details.'
-                localdb_logger.error(msg)
+                logger.error(msg)
                 return False
             # ---------------------------------
             return True
         except ValueError:
-            localdb_logger.error('Unknown unit for parameter %s: %s', prm_name, prm_unit)
+            logger.error('Unknown unit for parameter %s: %s', prm_name, prm_unit)
             return False
 
     return True

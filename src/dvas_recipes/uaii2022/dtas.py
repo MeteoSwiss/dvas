@@ -22,6 +22,7 @@ from ..errors import DvasRecipesError
 from ..recipe import for_each_flight, for_each_var
 from .. import dynamic
 
+
 @for_each_var
 @for_each_flight
 def compute_deltas(tags='sync', mids='all'):
@@ -56,15 +57,15 @@ def compute_deltas(tags='sync', mids='all'):
     (eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What search query will let me access the data I need ?
-    nongdp_filt = "and_(not_(tags('gdp')), tags('e:{}'), tags('r:{}'), {})".format(eid, rid,
-        "tags('" + "'), tags('".join(tags) + "')")
+    nongdp_filt = "and_(not_(tags('gdp')), tags('e:{}'), tags('r:{}'), {})".format(
+        eid, rid, "tags('" + "'), tags('".join(tags) + "')")
     cws_filt = "and_(tags('cws'), tags('e:{}'), tags('r:{}'))".format(eid, rid)
 
     # Load the non GDP profiles as Profiles (and not RSProfiles) since we're about to drop the
     # time axis anyway.
     nongdp_prfs = MultiProfile()
     nongdp_prfs.load_from_db(nongdp_filt, dynamic.CURRENT_VAR,
-                             #tdt_abbr=dynamic.INDEXES[PRF_REF_TDT_NAME],
+                             # tdt_abbr=dynamic.INDEXES[PRF_REF_TDT_NAME],
                              alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME],
                              inplace=True)
 
@@ -81,7 +82,7 @@ def compute_deltas(tags='sync', mids='all'):
 
     # Safety check for the CWS
     if len(cws_prfs) != 1:
-        raise DvasRecipesError('Ouch ! I need 1 CWS, but I got %i instead.', len(cws_prfs))
+        raise DvasRecipesError(f'Ouch ! I need 1 CWS, but I got {len(cws_prfs)} instead.')
 
     # Compute the Delta Profiles
     dta_prfs = dtdd.compute(nongdp_prfs, cws_prfs)

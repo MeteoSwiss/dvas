@@ -16,26 +16,20 @@ import pandas as pd
 
 # Import from current package
 from .strategy.data import Profile, RSProfile, GDPProfile, CWSProfile, DeltaProfile
-
 from .strategy.load import LoadProfileStrategy, LoadRSProfileStrategy, LoadGDPProfileStrategy
 from .strategy.load import LoadCWSProfileStrategy, LoadDeltaProfileStrategy
 from .strategy.sort import SortProfileStrategy
 from .strategy.plot import PlotStrategy, RSPlotStrategy, GDPPlotStrategy
-
 from .strategy.rebase import RebaseStrategy
 from .strategy.resample import ResampleStrategy
 from .strategy.save import SaveDataStrategy
-
 from ..database.database import DatabaseManager
 from ..database.model import Parameter as TableParameter
 from ..helper import RequiredAttrMetaClass
 from ..helper import deepcopy
 from ..helper import get_class_public_attr
-
 from ..errors import DBIOError
-
 from ..hardcoded import TAG_RAW_NAME, PRF_REF_INDEX_NAME
-
 
 # Loading strategies
 load_prf_stgy = LoadProfileStrategy()
@@ -357,7 +351,7 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
         if mask_flgs is not None:
             for flg in mask_flgs:
                 for (p_ind, prf) in enumerate(self.profiles):
-                    out[p_ind][prf.has_flg(flg)==1] = np.nan
+                    out[p_ind][prf.has_flg(flg) == 1] = np.nan
 
         # Drop the superfluous index
         out = [df.reset_index(level=[name for name in df.index.names
@@ -480,6 +474,7 @@ class MultiRSProfileAC(MutliProfileAC):
         data = self._resample_stgy.execute(self.profiles, freq=freq)
         self.update(self.db_variables, data)
 
+
 class MultiRSProfile(MultiRSProfileAC):
     """Multi RS profile manager, designed to handle multiple RSProfile instances."""
 
@@ -490,6 +485,7 @@ class MultiRSProfile(MultiRSProfileAC):
                          save_stgy=save_prf_stgy, plot_stgy=plt_rsprf_stgy,
                          rebase_stgy=rebase_prf_stgy,
                          resample_stgy=resample_prf_stgy)
+
 
 class MultiGDPProfileAC(MultiRSProfileAC):
     """Abstract MultiGDPProfile class"""
@@ -510,6 +506,7 @@ class MultiGDPProfileAC(MultiRSProfileAC):
         """
         return [arg.uc_tot for arg in self.profiles]
 
+
 class MultiGDPProfile(MultiGDPProfileAC):
     """Multi GDP profile manager, designed to handle multiple GDPProfile instances."""
 
@@ -519,6 +516,7 @@ class MultiGDPProfile(MultiGDPProfileAC):
         super().__init__(load_stgy=load_gdpprf_stgy, sort_stgy=sort_prf_stgy,
                          save_stgy=save_prf_stgy, plot_stgy=plt_gdpprf_stgy,
                          rebase_stgy=rebase_prf_stgy, resample_stgy=resample_prf_stgy)
+
 
 class MultiCWSProfile(MultiGDPProfileAC):
     """Multi CWS profile manager, designed to handle multiple GDPProfile instances."""

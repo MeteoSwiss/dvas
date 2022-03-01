@@ -9,11 +9,11 @@ Module content: high-level synchronization recipes for the UAII2022 campaign
 """
 
 # Import general Python packages
+import logging
 import numpy as np
 
 # Import dvas modules and classes
 from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME
-from dvas.logger import recipes_logger as logger
 from dvas.logger import log_func_call
 from dvas.data.data import MultiRSProfile, MultiGDPProfile
 from dvas.tools import sync as dts
@@ -22,6 +22,10 @@ from dvas.tools import sync as dts
 from .. import dynamic
 from ..recipe import for_each_flight
 from ..errors import DvasRecipesError
+
+# Setup local logger
+logger = logging.getLogger(__name__)
+
 
 @log_func_call(logger, time_it=True)
 def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
@@ -67,6 +71,7 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
         non_gdps.sort()
         non_gdps.rebase(sync_length, shifts=non_gdp_shifts, inplace=True)
         non_gdps.save_to_db(add_tags=['sync'])
+
 
 @for_each_flight
 @log_func_call(logger, time_it=True)

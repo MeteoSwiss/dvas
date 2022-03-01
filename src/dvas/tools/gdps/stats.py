@@ -12,6 +12,7 @@ This module contains statistical routines and tools for handling GDPs.
 """
 
 # Import from Python packages
+import logging
 import numbers
 import numpy as np
 import pandas as pd
@@ -19,15 +20,18 @@ from scipy import stats
 
 # Import from this package
 from ...logger import log_func_call
-from ...logger import tools_logger as logger
 from ...errors import DvasError
 from .gdps import combine
 from ...plots import gdps as dpg
 from ...plots import utils as dpu
 from ...hardcoded import PRF_REF_VAL_NAME, FLG_INCOMPATIBLE_NAME
 
-#@log_func_call(logger, time_it=True)
-#def chi_square(gdp_prfs, cws_prf):
+# Setup local logger
+logger = logging.getLogger(__name__)
+
+
+# @log_func_call(logger, time_it=True)
+# def chi_square(gdp_prfs, cws_prf):
 #    ''' Computes a chi-square given a series of individual profiles, and a merged one.
 #
 #    This function does not work with resampled profiles: a chi-square is meaningless when computed
@@ -112,7 +116,7 @@ def ks_test(gdp_pair, alpha=0.0027, m_val=1, **kwargs):
         raise Exception('Ouch! alpha should be 0<alpha<1, not %.1f.' % (alpha))
 
     # How long are the profiles ?
-    #len_prf = len(gdp_pair[0].data)
+    # len_prf = len(gdp_pair[0].data)
 
     if (tmp1 := len(gdp_pair[1])) != (tmp0 := len(gdp_pair[0])):
         raise DvasError("Ouch ! GDP Profiles have inconsistent lengths: {} vs {} ".format(tmp0,
@@ -143,6 +147,7 @@ def ks_test(gdp_pair, alpha=0.0027, m_val=1, **kwargs):
     out['f_pqei'] = out['f_pqei'].astype('Int64')
 
     return out
+
 
 @log_func_call(logger, time_it=True)
 def gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=None, rolling=True,
@@ -222,7 +227,7 @@ def gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=None, rolling=True,
 
         # Turn this into a DataFrame with MultiIndex to store things that are coming
         # Lots of index swapping here, until I get things right ...
-        #out = pd.DataFrame(out, columns=['k_pqi'])
+        # out = pd.DataFrame(out, columns=['k_pqi'])
         out = out.reset_index(drop=True)
         out = pd.DataFrame(out.values,
                            columns=pd.MultiIndex.from_tuples([(0, item) for item in out.columns],
@@ -272,8 +277,8 @@ def gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=None, rolling=True,
             edt_eid_rid_info = dpu.get_edt_eid_rid(gdp_pair)
 
             # Get the specific pair details
-            pair_info= '{}-{}_vs_{}-{}'.format(gdp_pair[0].info.oid, gdp_pair[0].info.mid,
-                                               gdp_pair[1].info.oid, gdp_pair[1].info.mid)
+            pair_info = '{}-{}_vs_{}-{}'.format(gdp_pair[0].info.oid, gdp_pair[0].info.mid,
+                                                gdp_pair[1].info.oid, gdp_pair[1].info.mid)
 
             fnsuf = pair_info
             if fn_suffix is not None:
@@ -285,6 +290,7 @@ def gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=None, rolling=True,
 
     # Here, get rid of the dictionnary and group everything under a single DataFrame
     return pd.concat(incompat, axis=1, names=['gdp_pair', 'm', None])
+
 
 @log_func_call(logger, time_it=True)
 def gdp_validities(incompat, m_vals=None, strategy='all-or-none'):
@@ -333,7 +339,7 @@ def gdp_validities(incompat, m_vals=None, strategy='all-or-none'):
     # Extract the values that actually matter for checking the validitiy regions, i.e. f_pqi for
     # all the chosen m values.
     incompat = incompat.iloc[:,
-                             (incompat.columns.get_level_values(2)=='f_pqei') *
+                             (incompat.columns.get_level_values(2) == 'f_pqei') *
                              (incompat.columns.get_level_values('m').isin(m_vals))]
 
     # The easiest (and most restrictive) validation strategy: a level is valid only if all
@@ -342,7 +348,7 @@ def gdp_validities(incompat, m_vals=None, strategy='all-or-none'):
 
         # Here, all profiles will have the same validities (i.e. either all ok, or None ok).
         for oid in oids:
-            valids[oid] = incompat.sum(axis=1, skipna=False)==0 # valid if NO incompatibilities.
+            valids[oid] = incompat.sum(axis=1, skipna=False) == 0  # valid if NO incompatibilities.
     elif strategy == 'force-all-valid':
         for oid in oids:
             valids[oid] = True

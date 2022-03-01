@@ -12,6 +12,7 @@ This module contains GRUAN-related routines, including correlation rules for GDP
 """
 
 # Import from Python packages
+import logging
 import functools
 from pathlib import Path
 import multiprocessing as mp
@@ -20,7 +21,6 @@ import pandas as pd
 
 # Import from current package
 from ...logger import log_func_call
-from ...logger import tools_logger as logger
 from ...errors import DvasError
 from ...hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME, PRF_REF_FLG_NAME
 from ...hardcoded import PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME
@@ -29,6 +29,10 @@ from .utils import process_chunk
 from ...data.data import MultiCWSProfile
 from ...data.strategy.data import CWSProfile
 from ...database.database import InfoManager
+
+# Setup local logger
+logger = logging.getLogger(__name__)
+
 
 @log_func_call(logger)
 def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_size=150, n_cpus=1):
@@ -97,7 +101,7 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
 
     # Trigger an error if they do not have the same lengths.
     if len(len_gdps) > 1:
-        raise DvasError('Ouch ! GDPs must have the same length to be combined. '+
+        raise DvasError('Ouch ! GDPs must have the same length to be combined. ' +
                         'Have these been synchronized ?')
 
     # Turn the set back into an int.
@@ -128,14 +132,14 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
     x_dx = gdp_prfs.get_prms([PRF_REF_ALT_NAME, PRF_REF_TDT_NAME, PRF_REF_VAL_NAME,
                               PRF_REF_FLG_NAME, PRF_REF_UCR_NAME, PRF_REF_UCS_NAME,
                               PRF_REF_UCT_NAME, PRF_REF_UCU_NAME, 'uc_tot'],
-                              mask_flgs=mask_flgs)
+                             mask_flgs=mask_flgs)
 
     # I also need to extract some of the metadata required for computing cross-correlations.
     # Let's add it to the common DataFrame so I can carry it all in one go.
     for metadata in ['oid', 'mid', 'eid', 'rid']:
         vals = gdp_prfs.get_info(metadata)
 
-        #Loop through it and assign the values where appropriate
+        # Loop through it and assign the values where appropriate
         for (prf_id, val) in enumerate(vals):
 
             # If I am being given a list, make sure it has only 1 element. Else complain about it.
@@ -197,7 +201,7 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
     new_evt_tag = 'e:'+','.join([item.split(':')[1]
                                  for item in np.unique(gdp_prfs.get_info('eid')).tolist()])
 
-    new_info = InfoManager(np.unique(gdp_prfs.get_info('edt'))[0], # dt
+    new_info = InfoManager(np.unique(gdp_prfs.get_info('edt'))[0],  # dt
                            np.unique(gdp_prfs.get_info('oid')).tolist(),  # oids
                            tags=[new_rig_tag, new_evt_tag],
                            src='dvas combine() [{}]'.format(Path(__file__).name))
