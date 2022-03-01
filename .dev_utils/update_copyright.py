@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -10,6 +10,7 @@ This module contains: automated tool to update the Copyright notice in the docst
 
 import argparse
 from pathlib import Path
+
 
 def copyright_notice(years):
     """ Return the copyright notice.
@@ -24,6 +25,7 @@ def copyright_notice(years):
     notice = 'Copyright (c) {} MeteoSwiss, contributors listed in AUTHORS.\n'.format(years)
 
     return notice
+
 
 def main():
     """ The main function that updates the Copyright notices of all .py files in the dvas
@@ -40,15 +42,14 @@ def main():
         version = next(line.split("'")[1] for line in fid.readlines() if 'VERSION' in line)
 
     # Use argparse to make dvas user friendly
-    parser = argparse.ArgumentParser(description=
-                                     'DVAS {}'.format(version) +
-                                     ' - Data Visualization and Analysis Software:' +
-                                     ' Copyright update routine for devs.',
-                                     epilog='For more info: https://MeteoSwiss.github.io/dvas\n ',
-                                     formatter_class=argparse.RawTextHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description='DVAS {}'.format(version) +
+        ' - Data Visualization and Analysis Software: Copyright update routine for devs.',
+        epilog='For more info: https://MeteoSwiss.github.io/dvas\n ',
+        formatter_class=argparse.RawTextHelpFormatter)
 
     parser.add_argument('years', action='store', default='2020-2022',
-                        #choices=DVAS_RECIPES,
+                        # choices=DVAS_RECIPES,
                         help='The years during which dvas was modified.')
 
     # Done getting ready. Now start doing stuff.

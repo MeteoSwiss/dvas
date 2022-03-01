@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -110,7 +110,7 @@ class ResampleStrategy(MPStrategyAC):
 
                 # Interpolate the data. That's the easy bit.
                 if name in [PRF_REF_ALT_NAME, PRF_REF_VAL_NAME]:
-                    #TODO: This should not be done via .astype, but via to_timedelta('s') !!!
+                    #WARNING&TODO This should not be done via .astype, but via to_timedelta('s') !!!
                     func = interp1d(old_tdt.values.astype('int64'),
                                     this_data.loc[:, name].values, kind='linear')
 

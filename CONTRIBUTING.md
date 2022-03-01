@@ -198,10 +198,15 @@ Until its release, the dvas repository will remain private: branching will thus 
        git config --list
        git status
 
-4. Install dvas from this local repo, and also the packages that are required for doing dev work :
+4. Install dvas from this local repo:
 
-       pip install -e ./
-       pip install -r ./dev_utils/dev_requirements.txt
+       pip install -e .[dev]
+
+   Note the use of `[dev]` to also install the dependencies required for dev work (i.e. `sphinx`, `pylint`, etc ...).
+
+   :warning: If you encounter the error `zsh: no matches found: .[dev]`, add some quotes as follows:
+
+       pip install -e '.[dev]'
 
 5. Modify the code locally. This could be the source code, or the docs `.rst` source files.
 
