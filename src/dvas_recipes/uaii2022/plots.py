@@ -5,7 +5,7 @@ Distributed under the terms of the GNU General Public License v3.0 or later.
 
 SPDX-License-Identifier: GPL-3.0-or-later
 
-Module content: high-level plotting for the UAII22 recipe
+Module content: high-level plotting for the UAII2022 recipe
 """
 
 # Import general Python packages
@@ -102,7 +102,7 @@ def flight_overview(tags='sync', label='mid', show=None):
             x = x.total_seconds()
             y = getattr(prf, PRF_REF_VAL_NAME).values
 
-            this_ax.plot(x, y, '-', lw=0.7, label=rs_prfs.get_info(label)[prf_ind])
+            this_ax.plot(x, y, '-', lw=0.7, label='|'.join(rs_prfs.get_info(label)[prf_ind]))
 
             xmin = np.min([xmin, np.min(x)])
             xmax = np.max([xmax, np.max(x)])

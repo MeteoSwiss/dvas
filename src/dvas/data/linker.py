@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -1078,7 +1078,6 @@ class GetExpr(TerminalLoadExprInterpreter):
         'nop': lambda x: x,
         'rel': lambda x: x - x.iloc[0],
         'div2': lambda x: x / 2,
-        's2ns': lambda x: x * 1E9,
         'd2k': lambda x: x + 273.15,
         'k2d': lambda x: x - 273.15,
         'd2f': lambda x: (x * 9 / 5) + 32,
@@ -1107,14 +1106,11 @@ class GetExpr(TerminalLoadExprInterpreter):
 
         return out
 
-
 class ConfigInstrIdError(Exception):
     """Error for missing instrument id"""
 
-
 class OutputDirError(Exception):
     """Error for bad output directory path"""
-
 
 class OrigConfigError(Exception):
     """Error for bad orig config"""

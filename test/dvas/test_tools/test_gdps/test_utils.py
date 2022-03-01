@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -35,8 +35,7 @@ def chunk():
     cols = pd.MultiIndex.from_tuples([(ind, item) for item in lvl_one for ind in range(3)])
 
     # Initialize the DataFrame
-    test_chunk = pd.DataFrame(index=pd.Series(range(10)),
-                              columns=cols).sort_index(axis=1)
+    test_chunk = pd.DataFrame(index=pd.Series(range(10)), columns=cols).sort_index(axis=1)
 
     # Set the proper types for the tdt columns
     test_chunk.loc[:, (slice(None), 'tdt')] = \
@@ -88,7 +87,7 @@ def chunk():
 
     for ind in range(3):
         test_chunk.loc[:, (ind, 'oid')] = ind
-        test_chunk.loc[:, (ind, 'mid')] = ind
+        test_chunk.loc[:, (ind, 'mid')] = 'A' # Force the same mid for all Profiles
 
     return test_chunk
 
@@ -135,7 +134,7 @@ def test_weighted_mean(chunk):
     assert jac_mat[0, 0] == 1/5
 
 def test_delta(chunk):
-    """ Function used to test the weighted_mean combination of profiles."""
+    """ Function used to test the delta combination of profiles."""
 
     # Check that things fail cleanly if more than 1 profile is being fed.
     with pytest.raises(DvasError):

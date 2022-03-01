@@ -7,6 +7,10 @@
   mdl_desc: 'RS92 GDP, version 2'
   mid: 'RS92-GDP'
 
+- mdl_name: 'IMS-100-BETA_002'
+  mdl_desc: 'iMS-100 GDP, BETA version 2'
+  mid: 'IMS-100-GDP'
+
 - mdl_name: 'M10-GDP-ALPHA_002'
   mdl_desc: 'M10, ALPHA version 2'
   mid: 'M10-GDP'

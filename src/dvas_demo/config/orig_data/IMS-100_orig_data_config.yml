@@ -1,0 +1,63 @@
+# ----------------------------------------------------
+# iMS-100 type (NOT THE GDP!)
+# ----------------------------------------------------
+
+#TODO
+
+# ----------------------------------------------------
+# iMS-100 GDP, beta version 2
+# ----------------------------------------------------
+_IMS-100-BETA_002:
+
+    # -- META DATA ----------------------------------
+    edt: "get('g.Measurement.StandardTime')"
+    srn: "get('g.MainSonde.SerialNumber')"
+    pid: "get('g.Product.Id')"
+    tags:
+        - "cat('e:', get('g.Measurement.Id'))"
+        - "cat('r:', get('g.Measurement.BalloonNumber', totype=str))"
+
+    # -- ORIG DATA ----------------------------------
+    _time:
+        value: get('time')
+
+    _alt_ref:
+        value: get('alt_gph')
+
+    _gph:
+        value: get('alt_gph')
+    _gph_uct:
+        value: get('alt_gph_uc_cor')
+    _gph_ucu:
+        value: get('alt_gph_uc_ucor')
+
+    _temp:
+        value: get('temp')
+    _temp_ucr:
+        value: get('temp_uc_ucor')
+    _temp_uct:
+        value: get('temp_uc_cor')
+
+    _pres:
+        value: get('press')
+    _pres_uct:
+        value: get('press_uc_cor')
+    _pres_ucu:
+        value: get('press_uc_ucor')
+
+    _rh:
+        value: get('rh')
+    _rh_ucr:
+        value: get('rh_uc_ucor')
+    _rh_uct:
+        value: get('rh_uc_cor')
+
+    _wdir:
+        value: get('wdir')
+    _wdir_ucu:
+        value: get('wdir_uc_ucor')
+
+    _wspeed:
+        value: get('wspeed')
+    _wspeed_ucu:
+        value: get('wspeed_uc_ucor')

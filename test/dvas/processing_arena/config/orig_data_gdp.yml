@@ -14,7 +14,7 @@ _AR-GDP_001:
 
     # -- ORIG DATA ----------------------------------
     _time:
-        value: get('time', 's2ns')
+        value: get('time')
 
     _temp:
         value: get('temp')
@@ -49,7 +49,7 @@ _BR-GDP_001:
 
     # -- ORIG DATA ----------------------------------
     _time:
-        value: get('time', 's2ns')
+        value: get('time')
 
     _temp:
         value: get('temp', 'k2d')
@@ -81,7 +81,7 @@ _RS41-GDP-BETA_001:
 
     # -- ORIG DATA ----------------------------------
     _time:
-        value: get('time', 's2ns')
+        value: get('time')
 
     _temp:
         value: get('temp')
