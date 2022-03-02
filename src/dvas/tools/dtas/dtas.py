@@ -12,16 +12,19 @@ This module contains tools and routines related to deltas between profiles and C
 """
 
 # Import from Python
+import logging
 from copy import deepcopy
 from pathlib import Path
 
 # Import from this module
 from ...logger import log_func_call
-from ...logger import tools_logger as logger
 from ...hardcoded import PRF_REF_TDT_NAME
 from ...data.strategy.data import DeltaProfile
 from ...data.data import MultiDeltaProfile
 from ...errors import DvasError
+
+# Setup local logger
+logger = logging.getLogger(__name__)
 
 
 @log_func_call(logger)
@@ -61,7 +64,7 @@ def single_delta(prf, cws):
 
     # Next compute the delta itself. Here, let's keep in mind that the index from the cws is
     # **different** from the index of the profile !
-    dta_data.loc[:,['val']] = prf.data['val'].values - cws.data['val'].values
+    dta_data.loc[:, ['val']] = prf.data['val'].values - cws.data['val'].values
 
     #TODO: How do I combine the flags ? Doing nothing means keeping those from the CWS only ...
 
@@ -72,6 +75,7 @@ def single_delta(prf, cws):
     dta.info.src = 'dvas single_delta() [{}]'.format(Path(__file__).name)
 
     return dta
+
 
 def compute(prfs, cwss):
     """ Compute the deltas between many error-less profiles and error-full cws.
@@ -109,7 +113,7 @@ def compute(prfs, cwss):
     # To do that, I need the db_variables dict ...
     dta_var = deepcopy(cwss.db_variables)
     # ... bearing in mind I need to get rid of 'tdt' if it exist !
-    dta_var.pop(PRF_REF_TDT_NAME, None) # Return None if it doesn't exists. Better than an error !
+    dta_var.pop(PRF_REF_TDT_NAME, None)  # Return None if it doesn't exists. Better than an error !
     # With this, let's update the MultiDeltaProfile
     out.update(dta_var, data=dtas)
 

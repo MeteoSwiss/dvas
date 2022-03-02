@@ -9,12 +9,12 @@ Module content: high-level plotting for the UAII2022 recipe
 """
 
 # Import general Python packages
+import logging
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
 # Import dvas modules and classes
-from dvas.logger import recipes_logger as logger
 from dvas.logger import log_func_call
 from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME
 from dvas.data.data import MultiRSProfile
@@ -25,6 +25,10 @@ from ..errors import DvasRecipesError
 from .. import dynamic
 from ..recipe import for_each_flight
 from ..utils import fn_suffix
+
+# Setup local logger
+logger = logging.getLogger(__name__)
+
 
 @for_each_flight
 @log_func_call(logger, time_it=True)
@@ -55,11 +59,11 @@ def flight_overview(tags='sync', label='mid', show=None):
 
     # The plot will have different number of rows depending on the number of variables.
     # Let's define some hardcoded heights, such that the look is always consistent
-    top_gap = 0.4 # inch
-    bottom_gap = 0.7 # inch
-    plot_height = 1.3 # inch
-    plot_gap = 0.05 # inch
-    fig_height = (top_gap + bottom_gap + plot_height * len(dynamic.ALL_VARS))/\
+    top_gap = 0.4  # inch
+    bottom_gap = 0.7  # inch
+    plot_height = 1.3  # inch
+    plot_gap = 0.05  # inch
+    fig_height = (top_gap + bottom_gap + plot_height * len(dynamic.ALL_VARS)) /\
         (1 - plot_gap * (len(dynamic.ALL_VARS)-1))
 
     fig = plt.figure(figsize=(dpu.WIDTH_TWOCOL, fig_height))
@@ -88,9 +92,9 @@ def flight_overview(tags='sync', label='mid', show=None):
         rs_prfs = MultiRSProfile()
         rs_prfs.load_from_db(filt, var_name, dynamic.INDEXES[PRF_REF_TDT_NAME],
                              alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME])
-        rs_prfs.sort() # Sorting is important to make sure I have the same colors for each plot
+        rs_prfs.sort()  # Sorting is important to make sure I have the same colors for each plot
 
-        #Setup so dummy limits, to keep track of the actual ones as I go.
+        # Setup so dummy limits, to keep track of the actual ones as I go.
         xmin = np.infty
         xmax = -np.infty
 
@@ -115,8 +119,8 @@ def flight_overview(tags='sync', label='mid', show=None):
             dpu.add_edt_eid_rid(this_ax, rs_prfs)
             dpu.fancy_legend(this_ax, label=label)
             this_ax.text(1, 1.03, 'tags: ' + ' / '.join(tags), fontsize='small',
-                    verticalalignment='bottom', horizontalalignment='right',
-                    transform=this_ax.transAxes)
+                         verticalalignment='bottom', horizontalalignment='right',
+                         transform=this_ax.transAxes)
 
         # Hide the tick labels except for the bottom-most plot
         if var_ind < len(dynamic.ALL_VARS)-1:

@@ -17,8 +17,6 @@ from ...plots import plots as dpp
 class PlotStrategy(MPStrategyAC):
     """ Base class to manage the data plotting strategy for the MultiProfile class. """
 
-    #TODO: interesting pylint suggestion here. It is suggesting to create a simple function
-    # rather than a full class. Any merit to this suggestion ?
     def execute(self, prfs, **kwargs):
         """ Call the proper plotting method for this strategy.
 

@@ -10,6 +10,7 @@ This module contains general dvas_recipe utilities.
 
 from pathlib import Path
 
+
 def demo_storage_path():
     """ Returns the absolute path to the stored dvas demo locations, from where the dvas demo
     scripts can be copied locally.
@@ -17,12 +18,14 @@ def demo_storage_path():
     """
     return Path(__file__).resolve(strict=True).parent / '..' / 'dvas_demo'
 
+
 def recipe_storage_path():
     """ Returns the absolute path to the stored dvas recipes location, from where they can be
     copied locally.
 
     """
     return Path(__file__).resolve(strict=True).parent / 'recipes'
+
 
 def default_arena_path():
     """ Returns the default **relative** location and name of the dvas processing arena for a
@@ -35,6 +38,7 @@ def default_arena_path():
     """
 
     return Path('.', 'dvas_proc_arena')
+
 
 def fn_suffix(eid=None, rid=None, var=None, tags=None):
     """ Returns the default suffix of filenames given a set of info provided by the user.
@@ -57,4 +61,4 @@ def fn_suffix(eid=None, rid=None, var=None, tags=None):
     if tags is not None:
         suffix += '_{}'.format('-'.join(tags))
 
-    return suffix[1:] if len(suffix)>0 else None
+    return suffix[1:] if len(suffix) > 0 else None

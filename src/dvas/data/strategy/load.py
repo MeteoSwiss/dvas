@@ -25,6 +25,7 @@ from ...hardcoded import FLG_PRM_NAME_SUFFIX
 INDEX_NM = Data.index.name
 VALUE_NM = Data.value.name
 
+
 class LoadStrategyAC(MPStrategyAC):
     """Abstract load strategy class"""
 
@@ -91,7 +92,7 @@ class LoadStrategyAC(MPStrategyAC):
             ]
         )
         if not ass_tst:
-            err_msg = f'Data with associated metadata {info[tst_tmp.index(False)]} '+\
+            err_msg = f'Data with associated metadata {info[tst_tmp.index(False)]} ' + \
                 'have non-unique metadata for a same parameter.'
             raise LoadError(err_msg)
 

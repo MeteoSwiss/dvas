@@ -24,17 +24,8 @@ from .environ import path_var
 from .errors import LogDirError
 from . import __name__ as pkg_name
 
-
-# Define logger names
-LOGGER_NAME = [
-    'localdb',  # DB stuff
-    'rawcsv',  # I/O stuff
-    'data',  # Data sub-module
-    'plots',  # Plots sub-module
-    'tools',  # Tools sub-module
-    'general',  # Intended for anything not inside a specific sub-module
-    'recipes',  # For high-level dvas-recipes logging
-]
+# Define logger names. These should be the neame of the different sub-packages.
+LOGGER_NAMES = ['dvas', 'dvas_recipes']
 
 
 class DeltaTimeFormatter(logging.Formatter):
@@ -70,8 +61,9 @@ class LogManager:
 
     log_mode = TProp(
         Union[bool, int],
-        setter_fct=lambda x: int(x) if (0 <= x and x <= 3) or (isinstance(x, bool)) else 0
+        setter_fct=lambda x: int(x) if (0 <= x <= 3) or (isinstance(x, bool)) else 0
     )
+
     """str: Log output mode. Defaults to 1.
         No log: False|0
         Log to file only: True|1
@@ -105,7 +97,7 @@ class LogManager:
         # Set handler
         if self.log_mode == 0:
             return  # Skip init
-        elif self.log_mode == 1:
+        if self.log_mode == 1:
             handlers = [self.get_file_handler()]
         elif self.log_mode == 2:
             handlers = [self.get_file_handler(), self.get_console_handler()]
@@ -120,7 +112,7 @@ class LogManager:
             hdl.setFormatter(formatter)
 
         # Add handler to all logger
-        for name in LOGGER_NAME:
+        for name in LOGGER_NAMES:
             logger = self.get_logger(name)
             logger.setLevel(self.log_level)
             logger.propagate = False
@@ -129,7 +121,7 @@ class LogManager:
             logger.disabled = False
 
         # All done. Let's start logging !
-        logger = self.get_logger('general')
+        logger = logging.getLogger(__name__)
         logger.disabled = False
         logger.info(
             'This %s log was started on %s.',
@@ -148,9 +140,7 @@ class LogManager:
 
         # Test
         if path_var.output_path is None:
-            # TODO
-            #  Detail exception
-            raise Exception()
+            raise LogDirError('Ouch ! output_path is None.')
 
         # Set log path
         log_path = path_var.output_path / 'logs'
@@ -173,7 +163,7 @@ class LogManager:
         """Get logger"""
 
         # Test logger name existence
-        if name not in LOGGER_NAME:
+        if name not in LOGGER_NAMES:
             raise ValueError("Unknown logger name '{}'".format(name))
 
         out = logging.getLogger(name)
@@ -186,7 +176,7 @@ class LogManager:
         """Function used to clear log"""
 
         # Erase handlers
-        for name in LOGGER_NAME:
+        for name in LOGGER_NAMES:
             logger = logging.getLogger(name)
             for hdl in logger.handlers:
                 hdl.flush()
@@ -242,28 +232,3 @@ def log_func_call(logger, time_it=False):
             return out
         return inner_deco
     return deco
-
-
-# Add logger to locals()
-#: logging.logger: Local DB logger
-localdb = LogManager.get_logger('localdb')
-
-#: logging.logger: Raw CSV data logger
-rawcsv = LogManager.get_logger('rawcsv')
-
-#: logging.logger: Data logger
-data = LogManager.get_logger('data')
-
-#: logging.logger: plots logger
-plots_logger = LogManager.get_logger('plots')
-
-#: logging.logger: tools logger
-tools_logger = LogManager.get_logger('tools')
-
-#: logging.logger: general logger
-general_logger = LogManager.get_logger('general')
-
-# TODO: I am here defining a logger for the recipes, which strictly speaking live outside
-# dvas. I think this is ok ... no ?
-#: logging.logger: high-level recipe logger
-recipes_logger = LogManager.get_logger('recipes')

@@ -9,11 +9,11 @@ Module content: high-level GDP recipes for the UAII2022 campaign
 """
 
 # Import from python
+import logging
 import numpy as np
 import pandas as pd
 
 # Import from dvas
-from dvas.logger import recipes_logger as logger
 from dvas.data.data import MultiRSProfile, MultiGDPProfile
 from dvas.tools.gdps import stats as dtgs
 from dvas.tools.gdps import gdps as dtgg
@@ -28,6 +28,10 @@ from ..errors import DvasRecipesError
 from ..recipe import for_each_flight, for_each_var
 from .. import dynamic
 from ..utils import fn_suffix
+
+# Setup local logger
+logger = logging.getLogger(__name__)
+
 
 @for_each_var
 @for_each_flight
@@ -70,8 +74,8 @@ def build_cws(tags='sync', m_vals=None, strategy='all-or-none', alpha=0.0027):
     (eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What search query will let me access the data I need ?
-    gdp_filt = "and_(tags('gdp'), tags('e:{}'), tags('r:{}'), {})".format(eid, rid,
-        "tags('" + "'), tags('".join(tags) + "')")
+    gdp_filt = "and_(tags('gdp'), tags('e:{}'), tags('r:{}'), {})".format(
+        eid, rid, "tags('" + "'), tags('".join(tags) + "')")
     cws_filt = "and_(tags('cws'), tags('e:{}'), tags('r:{}'))".format(eid, rid)
 
     # Load the GDP profiles
@@ -136,7 +140,7 @@ def build_cws(tags='sync', m_vals=None, strategy='all-or-none', alpha=0.0027):
     # incompatibilities. This is intended to let people experiment a bit without affecting the final
     # CWS.
     valids = dtgs.gdp_validities(incompat,
-                                 m_vals=[item for item in m_vals if item>0],
+                                 m_vals=[item for item in m_vals if item > 0],
                                  strategy=strategy)
 
     # ... and set them using the dvas.hardcoded.FLG_INCOMPATIBLE_NAME flag
@@ -157,7 +161,8 @@ def build_cws(tags='sync', m_vals=None, strategy='all-or-none', alpha=0.0027):
     # Here, I only save the information associated to the variable, i.e. the value and its errors.
     # I do not save the alt column, which is a variable itself and should be derived as such using a
     # weighted mean. I also do not save the tdt column, which should be assembled from a simple mean
-    cws.save_to_db(add_tags=[TAG_CWS_NAME], rm_tags=[TAG_GDP_NAME], prms=[PRF_REF_VAL_NAME,
-        PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME])
+    cws.save_to_db(add_tags=[TAG_CWS_NAME], rm_tags=[TAG_GDP_NAME],
+                   prms=[PRF_REF_VAL_NAME,
+                         PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME])
 
     #TODO: if the variable is the altitude, save it under a different variable name ...

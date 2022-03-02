@@ -12,6 +12,7 @@ Module content: demonstration of recipe step function design
 from .. import dynamic
 from ..recipe import for_each_flight, for_each_var
 
+
 @for_each_var
 @for_each_flight
 def sequential_dummy(dummy_arg=0):

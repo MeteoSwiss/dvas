@@ -10,10 +10,9 @@ Module contents: Required attributes definition for
 
 """
 
-
 #: dict: Parameter pattern properties (JSON_SCHEMA)
 PARAMETER_PATTERN_PROP = {
-    rf"^\w+$": {
+    r"^\w+$": {
         'oneOf': [
             {"type": 'string'},
             {"type": 'number'},

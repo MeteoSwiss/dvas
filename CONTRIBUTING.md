@@ -67,14 +67,12 @@ For the sake of clarity, and to facilitate the code maintenance, we list here (s
      [plantuml server](http://www.plantuml.com/plantuml).
 
 4. **Development utilities:**
-   * Dependencies required for *code development* activities are specified in
-     `./.dev_utils/dev_requirements.txt`.
    * On Windows, linter and tests can be run locally from terminal with `sh .\.dev_utils\linter_bash.bat`
      resp. `sh .\.dev_utils\test_bash.bat` commands.
    * There is a script to update the copyright years in all the `.py` files in the repository, that
      can be run as follows:
      ```
-     python update_copyright.py 2020-2021
+     python update_copyright.py 2020-2022
      ```
      :warning: This script comes with no safety net. Running it will auto-update all the `.py` files. Use with caution.
 
@@ -138,22 +136,29 @@ For the sake of clarity, and to facilitate the code maintenance, we list here (s
     [Google Doc Strings](https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html#example-google). But if you do, **please make sure there are no errors upon generating the docs !**
 
 - **logging:**
-    Based on the native ``logging`` module from Python. Specific loggers exists for the different
-    sub-modules of dvas. They are defined in ``dvas_logger.py``. For example, here's how you should log messages in the `plots` submodule:
+    Based on the native ``logging`` module from Python. Local loggers should be instantiated for
+    each module, like so:
     ```
-    from ..dvas_logger import plots_logger as logger
+    import logging
 
+    logger = logging.getLogger(__name__)
+    ```
+    Log messages can then be specified as usual:
+    ```
     logger.debug('Some info useful only for debug purposes.')
     logger.info('Some generic info.')
     logger.warning('Some important info that should not be missed by the user.')
-    logger.warning('This is the way to include the value of items in the msg: %s', some_item)
+    logger.error('This is the way to include the value of items in the msg: %s', some_item)
     ```
 
     In addition, note also the function ``dvas_logger.log_func_call(logger)``, which is meant to be
     used as a decorator to log function calls with their arguments:
     ```
+    import logging
     from ..dvas_logger import log_func_call
-    from ..dvas_logger import plots_logger as logger
+
+    # Setup the local logger
+    logger = logging.getLogger(__name__)
 
     @log_func_call(logger)
     def some_function()

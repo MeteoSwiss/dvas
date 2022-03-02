@@ -10,6 +10,7 @@ This file contains specific recipe classes and utilities.
 """
 
 # Import generic packages
+import logging
 from importlib import import_module
 from multiprocessing import cpu_count
 from pathlib import Path
@@ -18,7 +19,6 @@ import numpy as np
 
 # Import from dvas
 from dvas.environ import path_var
-from dvas.logger import recipes_logger as logger
 from dvas.dvas import Log
 from dvas.dvas import Database as DB
 from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME
@@ -29,8 +29,12 @@ from dvas import dynamic as dyn
 from .errors import DvasRecipesError
 from . import dynamic as rcp_dyn
 
+# Setup the local logger
+logger = logging.getLogger(__name__)
+
 # Setup the YAML loader
 yaml = YAML(typ='safe')
+
 
 def for_each_flight(func):
     """ This function is meant to be used as a decorator around recipe step functions that need to
@@ -62,6 +66,7 @@ def for_each_flight(func):
 
     return wrapper
 
+
 def for_each_var(func):
     """ This function is meant to be used as a decorator around recipe step functions that need to
     be executed sequentially for all the specified variables.
@@ -86,7 +91,7 @@ def for_each_var(func):
 
         # Loop through each flight, and apply func as intended, after updating the value of
         # dynamic.THIS_FLIGHT
-        for  var in rcp_dyn.ALL_VARS:
+        for var in rcp_dyn.ALL_VARS:
             rcp_dyn.CURRENT_VAR = var
             func(**kwargs)
 
@@ -96,11 +101,11 @@ def for_each_var(func):
 class RecipeStep:
     """ RecipeStep class, to handle individual recipe steps and their execution """
 
-    _step_id = None # str: to identify the recipe step
-    _name = None # str: to identify even more easily the recipe step
-    _run = None # bool: whether to run the step, or not
-    _func = None # actual function associated to the recipe. This is what will do the work
-    _kwargs = None # dict: keywords arguments associated to the recipe
+    _step_id = None  # str: to identify the recipe step
+    _name = None  # str: to identify even more easily the recipe step
+    _run = None  # bool: whether to run the step, or not
+    _func = None  # actual function associated to the recipe. This is what will do the work
+    _kwargs = None  # dict: keywords arguments associated to the recipe
 
     def __init__(self, func, step_id, name, run, kwargs):
         """ RecipeStep initialization function.
@@ -145,6 +150,7 @@ class RecipeStep:
         logger.info('Executing recipe step %s: %s', self.step_id, self.name)
         self._func(**self._kwargs)
 
+
 class Recipe:
     """ Recipe class, designed to handle the loading/initialization/execution of dvas recipes from
     dedicated YAML files.
@@ -184,9 +190,8 @@ class Recipe:
         # user to understand that it is empty because no data was found (because the path was off).
         # Fixes #165.
         if not Path(path_var.orig_data_path).exists():
-            raise DvasRecipesError(f'Ouch ! the following orig_data_path (defined in {rcp_fn}) '+
-                                   'does not exist:' +
-                                   f' {path_var.orig_data_path}')
+            raise DvasRecipesError(f'Ouch ! the following orig_data_path (defined in {rcp_fn}) ' +
+                                   'does not exist:' + f' {path_var.orig_data_path}')
 
         # Start the dvas logging
         Log.start_log(rcp_data['rcp_params']['general']['log_mode'],
@@ -233,7 +238,7 @@ class Recipe:
         # Set the flights to be processed, if warranted.
         # These get stored in the dedicated "dynamic" module, for easy access everywhere.
         if flights is not None:
-            if ndim:=np.ndim(flights) != 2:
+            if ndim := np.ndim(flights) != 2:
                 raise DvasRecipesError('Ouch ! np.ndim(flights) should be 2, not: {}'.format(ndim))
 
             rcp_dyn.ALL_FLIGHTS = flights
@@ -248,7 +253,8 @@ class Recipe:
         """ Returns the number of steps inside the Recipe. """
         return len(self._steps)
 
-    def init_db(self):
+    @staticmethod
+    def init_db():
         """ Initialize the dvas database, and fetch the raw data required for the recipe. """
 
         # Here, make sure the DB is stored locally, and not in memory.
@@ -268,7 +274,8 @@ class Recipe:
                            for uc in rcp_dyn.ALL_VARS[var]],
                           strict=True)
 
-    def get_all_flights_from_db(self):
+    @staticmethod
+    def get_all_flights_from_db():
         """ Identifies all the radiosonde flights present in the dvas database.
 
         Returns:
