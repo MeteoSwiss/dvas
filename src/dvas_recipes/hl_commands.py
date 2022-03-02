@@ -8,6 +8,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
 This file contains the very-high-level dvas_recipe commands, to initialize and run them.
 """
 
+# Import from Python
+import logging
 import multiprocessing as mpr
 from datetime import datetime
 import time
@@ -18,6 +20,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from matplotlib import gridspec as gs
 
+# Import from dvas
 from dvas.data.strategy.data import GDPProfile
 from dvas.data.data import MultiGDPProfile
 from dvas.database.database import InfoManager, DatabaseManager
@@ -28,9 +31,13 @@ from dvas import dynamic as dyn
 from dvas.environ import path_var
 import dvas.plots.utils as dpu
 
+# Import from dvas recipes
 from .errors import DvasRecipesError
 from .utils import default_arena_path, demo_storage_path, recipe_storage_path
 from .recipe import Recipe
+
+# Setup the local logger
+logger = logging.getLogger(__name__)
 
 
 def init_arena(arena_path=None):
@@ -218,15 +225,14 @@ def run_recipe(rcp_fn, flights=None):
 
     Args:
         rcp_fn (pathlib.Path): path to the specific dvas recipe to execute.
-        flights (pathlib.Path, optional): path to the text file specifiying specific radiososnde
+        flights (pathlib.Path, optional): path to the text file specifiying specific radiosonde
             flights to process. The file should contain one tuple of evt_id, rig_rid per line,
             e.g.::
 
                 # This is a comment
-                # Each line should contain the event_id, rig_id
-                # These must be integers !
-                12345, 1
-                12346, 1
+                # Each line should contain the tags of an event_id and rig_id
+                e:12345, r:1
+                e:12346, r:1
 
     '''
 
@@ -243,7 +249,7 @@ def run_recipe(rcp_fn, flights=None):
         if not isinstance(flights, Path):
             raise DvasRecipesError('Ouch ! flights should be of type pathlib.Path, not: ' +
                                    '{}'.format(type(flights)))
-        flights = np.atleast_2d(np.genfromtxt(flights, comments='#', delimiter=',', dtype=int))
+        flights = np.atleast_2d(np.genfromtxt(flights, comments='#', delimiter=',', dtype=str))
 
     # Very well, I am now ready to start initializing the recipe.
     rcp = Recipe(rcp_fn, flights=flights)
@@ -253,5 +259,6 @@ def run_recipe(rcp_fn, flights=None):
     # Launch the procesing !
     rcp.execute()
 
-    print('\n\n All done - {} steps of "{}" recipe completed in {}s.'.format(
-        rcp.n_steps, rcp.name, (datetime.now()-starttime).total_seconds()))
+    # All done !
+    logger.info('\n\n All done - %i steps of "%s" recipe completed in %is.',
+                rcp.n_steps, rcp.name, (datetime.now()-starttime).total_seconds())

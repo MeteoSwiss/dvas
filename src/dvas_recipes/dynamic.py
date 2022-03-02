@@ -19,8 +19,7 @@ CURRENT_FLIGHT = None
 # {'temp': {'ucr': 'temp_ucr', 'ucs': 'temp_ucs', 'uct': 'temp_uct', 'ucu': None}, 'rh': {...}, ...}
 ALL_VARS = None
 
-#: dict: current variable name to be processed, and associated uncertainties, e.g.:
-# {'temp': {'ucr': 'temp_ucr', 'ucs': 'temp_ucs', 'uct': 'temp_uct', 'ucu': None}}
+#: dict: current variable name to be processed, and associated uncertainties, e.g.: 'temp'
 CURRENT_VAR = None
 
 #: dict: variable database name associated to the 'tdt' and 'alt' indexes

@@ -122,6 +122,11 @@ class RecipeStep:
         self._step_id = step_id
         self._name = name
         self._run = run
+
+        # Deal with the cases where no kwargs were speficied
+        if kwargs is None:
+            kwargs = {}
+
         self._kwargs = kwargs
 
     @property
@@ -147,7 +152,7 @@ class RecipeStep:
         rcp_dyn.CURRENT_STEP_ID = self.step_id
 
         # Actually launch the function, which may be decorated (but I don't need to know that !)
-        logger.info('Executing recipe step %s: %s', self.step_id, self.name)
+        logger.info('START RECIPE STEP %s: %s', self.step_id, self.name)
         self._func(**self._kwargs)
 
 
@@ -164,11 +169,11 @@ class Recipe:
 
         Args:
             rcp_fn (pathlib.Path): path of the recipe file to initialize.
-            flights (2D ndarray of int, optional): ndarray listing specific flights to be processed,
+            flights (2D ndarray of str, optional): ndarray listing specific flights to be processed,
                 using their event id and rig id for identification.
                 Defaults to None = all available. Array must be 2D, e.g.::
 
-                    [[12345, 1], [12346, 1]]
+                    [['e:12345', 'r:1'], ['e:12346', 'r:1']]
 
         """
 
@@ -196,6 +201,8 @@ class Recipe:
         # Start the dvas logging
         Log.start_log(rcp_data['rcp_params']['general']['log_mode'],
                       level=rcp_data['rcp_params']['general']['log_lvl'])
+
+        logger.info('Launching the %s recipe.', self._name)
 
         # Let us fine-tune the plotting behavior of dvas if warranted
         if rcp_data['rcp_params']['general']['do_latex']:
@@ -279,15 +286,23 @@ class Recipe:
         """ Identifies all the radiosonde flights present in the dvas database.
 
         Returns:
-            2D ndarray of int: the array of event_id and rig_id for each flight, with the following
-                structrure::
+            2D ndarray of str: the array of event_id and rig_id tags for each flight, with the
+                following structrure::
 
-                    [[12345, 1], [12346, 1]]
+                    [['e:12345', 'r:1'], ['e:12346', 'r:1']]
         """
 
-        raise Exception('Fix ME !')
+        # Load the DB, and get the list of all the oids in there
+        global_view = DB.extract_global_view()
 
-        return 0
+        flights = np.array([[item[1]['eid'], item[1]['rid']] for item in global_view.iterrows()])
+
+        # Drop the duplicates
+        flights = np.atleast_2d(np.unique(flights))
+
+        logger.info('Found %i flight(s) in the database.', len(flights))
+
+        return flights
 
     def execute(self, from_step_id=None):
         """ Run the recipe step-by-step, possibly skipping some of the first ones.
@@ -304,6 +319,12 @@ class Recipe:
         # If warranted, find all the flights that need to be processed.
         if rcp_dyn.ALL_FLIGHTS is None:
             rcp_dyn.ALL_FLIGHTS = self.get_all_flights_from_db()
+        else:
+            logger.info('Processing %i flight(s).', len(rcp_dyn.ALL_FLIGHTS))
+
+        # Raise an error if no flights were specified/foudn in the DB
+        if len(rcp_dyn.ALL_FLIGHTS) == 0:
+            raise DvasRecipesError('Ouch ! No flights to process !')
 
         # Now that everything is in place, all that is required at this point is to launch each step
         # one after the other. If warranted, lock the execution of steps until a certain one is
