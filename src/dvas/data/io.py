@@ -87,7 +87,7 @@ def update_db(search, strict=False):
 
     # If no matching parameters were found, issue a warning and stop here.
     if len(prm_name_list) == 0:
-        logger.info("No database parameter found for the query: %s", search)
+        logger.warning("No database parameter found for the query: %s", search)
         return None
 
     # Log
@@ -104,7 +104,7 @@ def update_db(search, strict=False):
     for prm_name in prm_name_list:
 
         # Log
-        logger.info("Start reading files for '%s'", prm_name)
+        logger.debug("Start reading files for '%s'", prm_name)
 
         # Scan files
         new_orig_data = []
@@ -124,7 +124,7 @@ def update_db(search, strict=False):
         logger.debug("Found %d new data while reading files for '%s'", len(new_orig_data), prm_name)
 
         # Log
-        logger.info("Start inserting in local DB new found data for '%s'", prm_name)
+        logger.debug("Start inserting in local DB new found data for '%s'", prm_name)
 
         # Save to DB
         db_linker.save(new_orig_data)

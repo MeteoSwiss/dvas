@@ -18,7 +18,6 @@ from dvas.data.strategy.data import RSProfile, GDPProfile
 from dvas.data.data import MultiRSProfile, MultiGDPProfile
 from dvas.database.database import InfoManager
 
-
 # Define db_data
 db_data = {
     'sub_dir': 'test_strategy_resample',
@@ -49,6 +48,9 @@ class TestResampleStrategy:
                         [RSProfile(info_1, data_1)])
 
         # Let's launch the resampling
+        import warnings
+        warnings.filterwarnings("error")
+
         out = multiprf.resample(freq='1s', inplace=False)
 
         # Can I interpolate properly ?
@@ -74,6 +76,7 @@ class TestResampleStrategy:
                                'flg': [0]*4, 'ucr': [1, 1, 1, 1], 'ucs': [1, 1, 1, 1],
                                'uct': [1, 1, 1, 1], 'ucu': [1, 1, 1, 1],
                                'tdt': [0, 1, 1.5, 2.1]})
+
         # Let's build a multiprofile so I can test things out.
         multiprf = MultiGDPProfile()
         multiprf.update({'val': None, 'tdt': None, 'alt': None, 'flg': None, 'ucr': None,
@@ -85,13 +88,16 @@ class TestResampleStrategy:
 
         # The weight factor for the last item. To save me typing it everywhere
         w = 0.5/0.6
+
         # Proper interpolation
         assert all(out.profiles[0].data.loc[2, 'val'] ==
-                   data_1.loc[2,'val']*(1-w) + data_1.loc[3, 'val']*w)
+                   data_1.loc[2, 'val']*(1-w) + data_1.loc[3, 'val']*w)
         assert out.profiles[0].data.index.get_level_values('alt')[2] == \
-                   data_1.loc[2,'alt']*(1-w) + data_1.loc[3, 'alt']*w
+            data_1.loc[2, 'alt']*(1-w) + data_1.loc[3, 'alt']*w
+
         # Proper error propagation
         assert all(out.profiles[0].data.loc[2, 'ucu'] == np.sqrt((1-w)**2 + w**2))
+        assert all(out.profiles[0].data.loc[2, 'ucr'] == np.sqrt((1-w)**2 + w**2))
         assert all(out.profiles[0].data.loc[2, 'ucs'] == 1)
         assert all(out.profiles[0].data.loc[2, 'uct'] == 1)
 

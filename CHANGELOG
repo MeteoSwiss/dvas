@@ -6,6 +6,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 ### Added:
+ - [fpavogt, 2022-03-03] Enable the resampling of profiles with a new cleanup recipe step
+ - [fpavogt, 2022-03-01] Add prf_summary recipe (fix #177)
  - [modolol, 2022-02-28] Global DB extract
  - [fpavogt, 2022-02-25] Add support for iMS-100 GDP beta 2
  - [fpavogt, 2021-11-30] Add new "force-all-valid" strategy to combine GDPs

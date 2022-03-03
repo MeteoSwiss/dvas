@@ -76,25 +76,32 @@ rcp_steps:
         kwargs:
             dummy_arg: test
 
-    # Profile cleanup (cropping after burst, resampling, floating point rounding)
-    uaii2022.basic.cleanup:
+    # Export summary of profiles ingested in the database
+    uaii2022.basic.prf_summary:
         step_id: '00'
         run: True
         kwargs:
-            dt: 1 # Time step to resample onto, in seconds
-            prec: 0.1 # Precision to round the time steps onto, in s
 
-    # Profile synchronization on a per-flight basis.
-    uaii2022.sync.sync_flight:
+    # Profile cleanup (cropping after burst, resampling)
+    uaii2022.basic.cleanup:
         step_id: '01'
         run: True
         kwargs:
+            tags: raw # list of tags to identify profiles to resample
+            dt: '1s' # Time step to resample onto, in seconds
+
+    # Profile synchronization on a per-flight basis.
+    uaii2022.sync.sync_flight:
+        step_id: '02'
+        run: True
+        kwargs:
+            tags: clean
             anchor_alt: 5000 # Initial (single) altitude to anchor all profiles.
             global_match_var: 'gph' # Variable to match globally
 
     # Simple plotting step of the complete profiles for all the variables.
     uaii2022.plots.flight_overview:
-        step_id: '02'
+        step_id: '03'
         run: True
         kwargs:
             tags: sync # list of tags to identify profiles in the database
@@ -103,7 +110,7 @@ rcp_steps:
 
     # Assembly of the Combined Working Standard on a per-flight basis.
     uaii2022.gdps.build_cws:
-        step_id: '03'
+        step_id: '04'
         run: True
         kwargs:
             tags: sync # list of tags to identify profiles in the database
@@ -112,7 +119,7 @@ rcp_steps:
 
     # Compute the deltas between the profiles of sondes under test and Combined Working Standards
     uaii2022.dtas.compute_deltas:
-        step_id: '04'
+        step_id: '05'
         run: True
         kwargs:
             tags: sync # list of tags to identify profiles in the database

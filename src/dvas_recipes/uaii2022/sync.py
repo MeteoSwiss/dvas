@@ -13,7 +13,7 @@ import logging
 import numpy as np
 
 # Import dvas modules and classes
-from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME
+from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, TAG_SYNC_NAME
 from dvas.logger import log_func_call
 from dvas.data.data import MultiRSProfile, MultiGDPProfile
 from dvas.tools import sync as dts
@@ -22,6 +22,7 @@ from dvas.tools import sync as dts
 from .. import dynamic
 from ..recipe import for_each_flight
 from ..errors import DvasRecipesError
+from . import tools
 
 # Setup local logger
 logger = logging.getLogger(__name__)
@@ -62,7 +63,7 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
 
     # And now idem for the non-GDPs
     non_gdp_shifts = [item for (ind, item) in enumerate(sync_shifts) if not is_gdp[ind]]
-    # Only proceed if some non-GDP profiles were found. Pure-GDP flights are allowed.
+    # Only proceed if some non-GDP profiles were found. This makes pure-GDP flights possible.
     if len(non_gdp_shifts) > 0:
         non_gdps = MultiRSProfile()
         non_gdps.load_from_db("and_({filt}, not_(tags('gdp')))".format(filt=filt), var_name,
@@ -70,18 +71,19 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
                               alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME])
         non_gdps.sort()
         non_gdps.rebase(sync_length, shifts=non_gdp_shifts, inplace=True)
-        non_gdps.save_to_db(add_tags=['sync'])
+        non_gdps.save_to_db(add_tags=[TAG_SYNC_NAME])
 
 
 @for_each_flight
 @log_func_call(logger, time_it=True)
-def sync_flight(anchor_alt, global_match_var):
+def sync_flight(tags, anchor_alt, global_match_var):
     """ Highest-level function responsible for synchronizing all the profile from a specific RS
     flight.
 
     This function directly synchronizes the profiles and upload them to the db with the 'sync' tag.
 
     Args:
+        tags (str|list): list of tags to identify profiles to clean in the db.
         anchor_alt (int|float): (single) altitude around which to anchor all profiles.
             Used as a first - crude!- guess to get the biggest shifts out of the way.
             Relies on dvas.tools.sync.get_synch_shifts_from_alt()
@@ -91,11 +93,17 @@ def sync_flight(anchor_alt, global_match_var):
 
     """
 
+    # Deal with the search tags
+    if isinstance(tags, str):
+        tags = [tags]
+    if not isinstance(tags, list):
+        raise DvasRecipesError('Ouch ! tags should be of type str|list. not: {}'.format(type(tags)))
+
     # Extract the flight info
     (eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What search query will let me access the data I need ?
-    filt = "and_(tags('e:{}'), tags('r:{}'), tags('raw'))".format(eid, rid)
+    filt = tools.get_query_filter(tags_in=tags+[eid, rid], tags_out=[TAG_SYNC_NAME])
 
     # First, extract the temperature data from the db
     prfs = MultiRSProfile()

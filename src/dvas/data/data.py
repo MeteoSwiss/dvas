@@ -463,7 +463,7 @@ class MultiRSProfileAC(MutliProfileAC):
         self._resample_stgy = resample_stgy
 
     @deepcopy
-    def resample(self, freq='1s'):
+    def resample(self, freq='1s', chunk_size=150, n_cpus=1):
         """Resample the profiles (one-by-one) onto regular timesteps using linear interpolation.
 
         Args:
@@ -471,7 +471,8 @@ class MultiRSProfileAC(MutliProfileAC):
 
         """
 
-        data = self._resample_stgy.execute(self.profiles, freq=freq)
+        data = self._resample_stgy.execute(self.profiles, freq=freq,
+                                           chunk_size=chunk_size, n_cpus=n_cpus)
         self.update(self.db_variables, data)
 
 

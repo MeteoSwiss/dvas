@@ -107,7 +107,7 @@ PRF_REF_UCU_NAME = 'ucu'
 #: str: Name of the flag column for the pandas DataFrame of Profiles, RSProfile, GDPProfiles
 PRF_REF_FLG_NAME = 'flg'
 
-# Tags (these get set explicitely under ./dvas/config/definitions/tag.py)
+# Tags
 # ----
 #: str: Tag's name for none tag in DB
 TAG_NONE_NAME = ''
@@ -118,6 +118,11 @@ TAG_NONE_DESC = 'None'
 TAG_RAW_NAME = 'raw'
 #: str: Tag's desc for raw profiles
 TAG_RAW_DESC = 'Raw profile'
+
+#: str: Tag's name for raw profiles
+TAG_CLN_NAME = 'clean'
+#: str: Tag's desc for raw profiles
+TAG_CLN_DESC = 'Cleaned-up profile'
 
 #: str: Tag's name for GDP profiles
 TAG_GDP_NAME = 'gdp'

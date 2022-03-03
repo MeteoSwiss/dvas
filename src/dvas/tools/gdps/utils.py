@@ -188,7 +188,7 @@ def delta(df_chunk, binning=1):
         binning (int, optional): binning size. Defaults to 1 (=no binning).
 
     Returns:
-        (pandas.DataFrame, np.ma.masked_array): delta profile (0 - 1), and associated Jacobian
+        (pandas.DataFrame, np.ma.masked_array): delta profile (1 - 0), and associated Jacobian
         matrix. The matrix has a size of m * n, with m = len(df_chunk)/binning, and
         n = len(df_chunk) * 2.
 
@@ -256,7 +256,7 @@ def delta(df_chunk, binning=1):
                                      mask=False,
                                      fill_value=np.nan)
 
-        # We're doing 0 - 1, so let's already set the second half of the matrix accordingly.
+        # We're doing 1 - 0, so let's already set the second half of the matrix accordingly.
         jac_mat[:, len(df_chunk):] = -1
 
         # Next we need to know which elements are being combined in each level of the final
@@ -305,7 +305,7 @@ def process_chunk(df_chunk, binning=1, method='weighted mean'):
             ...
 
     Args:
-        df_chunk (pandas.DataFrame): data conatining the Profiles to merge.
+        df_chunk (pandas.DataFrame): data containing the Profiles to merge.
         binning (int, optional): binning size. Defaults to 1 (=no binning).
         method (str, optional): the processing method. Can be one of
             ['mean', 'weighted mean', delta']. Defaults to 'weighted mean'.
@@ -328,6 +328,10 @@ def process_chunk(df_chunk, binning=1, method='weighted mean'):
                 'uc_tot', 'oid', 'mid', 'eid', 'rid']:
         if col not in df_chunk.columns.unique(level=1):
             raise DvasError('Ouch ! column "{}" is missing from the DataFrame'.format(col))
+
+    # Also check that the level 0 starts from 0 onwards
+    if 0 not in df_chunk.columns.unique(level=0):
+        raise DvasError('Ouch ! Profile "0" is missing ...')
 
     # How many profiles do I want to combine ?
     n_prf = len(df_chunk.columns.unique(level=0))
@@ -418,7 +422,7 @@ def process_chunk(df_chunk, binning=1, method='weighted mean'):
         rows, cols = np.indices((len(x_ms), len(x_ms)))
         off_diag_elmts = V_mat[rows != cols]
         if any(off_diag_elmts[~off_diag_elmts.mask] != 0):
-            logger.warning("Non-0 off-diagonal elements of CWS correlation matrix [%s].",
+            logger.warning("Non-0 off-diagonal elements of correlation matrix [%s].",
                            sigma_name)
 
         # TODO: what could we do with the off-diagonal elements of V_mat ? Nothing for now.

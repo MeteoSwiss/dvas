@@ -28,6 +28,7 @@ from ..errors import DvasRecipesError
 from ..recipe import for_each_flight, for_each_var
 from .. import dynamic
 from ..utils import fn_suffix
+from . import tools
 
 # Setup local logger
 logger = logging.getLogger(__name__)
@@ -74,9 +75,8 @@ def build_cws(tags='sync', m_vals=None, strategy='all-or-none', alpha=0.0027):
     (eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What search query will let me access the data I need ?
-    gdp_filt = "and_(tags('gdp'), tags('e:{}'), tags('r:{}'), {})".format(
-        eid, rid, "tags('" + "'), tags('".join(tags) + "')")
-    cws_filt = "and_(tags('cws'), tags('e:{}'), tags('r:{}'))".format(eid, rid)
+    gdp_filt = tools.get_query_filter(tags_in=tags+[eid, rid, 'gdp'], tags_out=None)
+    cws_filt = tools.get_query_filter(tags_in=tags+[eid, rid, 'cws'], tags_out=None)
 
     # Load the GDP profiles
     gdp_prfs = MultiGDPProfile()
@@ -98,9 +98,11 @@ def build_cws(tags='sync', m_vals=None, strategy='all-or-none', alpha=0.0027):
 
     except DBIOError:
         logger.info('No pre-existing CWS time profile found. Computing it now.')
+
         # Very well, let us compute the time array of the combined working standard. Since there is
         # no uncertainty associated to it, we shall simply take it as the arithmetic mean of the
         # individual GDP times.
+
         # First, load the time data
 
         # Let us now create a high-resolution CWS for these synchronized GDPs

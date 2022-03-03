@@ -82,7 +82,6 @@ if __name__ == '__main__':
     # Use this commande to extract a global view of the DB
     res = DB.extract_global_view()
 
-
     # ----------------------------------------------------------------------------------------------
     print("\n --- BASIC DATA EXTRACTION ---")
 
@@ -91,8 +90,8 @@ if __name__ == '__main__':
     # For both the RS41 and the RS92, both the GDP and manufacturer data is provided.
 
     # Define some basic search queries
-    filt_gdp = "tags('gdp')" # Shortcut: 'gdp()'
-    filt_raw = "tags('raw')" # Shortcut: 'raw()'
+    filt_gdp = "tags('gdp')"  # Shortcut: 'gdp()'
+    filt_raw = "tags('raw')"  # Shortcut: 'raw()'
     filt_raw_not = "not_(tags('raw'))"
     filt_all = "all()"
     filt_dt = "dt('20171024T120000Z', '==')"
@@ -182,11 +181,12 @@ if __name__ == '__main__':
     print("\n --- BASIC PLOTTING ---")
 
     # Let us inspect the (raw) GDP profiles with dedicated plots.
-    gdp_prfs.plot(fn_prefix='01-a', show=True) # Defaults behavior, just adding a prefix to the filename.
+    # Defaults behavior, just adding a prefix to the filename.
+    gdp_prfs.plot(fn_prefix='01-a', show=True)
 
     # Repeat the same plot, but this time with the GDP uncertainties.
     # Set "show" to True to display it on-screen.
-    #gdp_prfs.plot(fn_prefix='01-b', label='oid', uc='uc_tot', show=False, fmts=['png'])
+    # gdp_prfs.plot(fn_prefix='01-b', label='oid', uc='uc_tot', show=False, fmts=['png'])
 
     # ----------------------------------------------------------------------------------------------
     print("\n --- PROFILE RESAMPLING ---")

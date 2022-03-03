@@ -282,7 +282,7 @@ class FileHandler(AbstractHandler):
             metadata[TAG_FLD_NM] += self.data_ok_tags
 
             # Log
-            logger.info("Successful reading of '%s' in file '%s'", prm_name, data_file_path)
+            logger.debug("Successful reading of '%s' in file '%s'", prm_name, data_file_path)
 
         except ConfigGetError:
 
