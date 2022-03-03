@@ -48,9 +48,6 @@ class TestResampleStrategy:
                         [RSProfile(info_1, data_1)])
 
         # Let's launch the resampling
-        import warnings
-        warnings.filterwarnings("error")
-
         out = multiprf.resample(freq='1s', inplace=False)
 
         # Can I interpolate properly ?
