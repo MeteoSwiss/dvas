@@ -272,7 +272,7 @@ def delta(df_chunk, binning=1):
         # Next, I need to mask any level that is completely a NaN, because it does not get used in
         # the computation. This is important, when binning, if e.g. 1/4 of the bin is Nan,
         # To have a correct error propagation.
-        points_to_forget = delta_pqs.append(delta_pqs).isna().values
+        points_to_forget = pd.concat([delta_pqs]*2).isna().values
         jac_mat[:, points_to_forget] = np.ma.masked
 
         # Finally, let us not forget that we may have averaged the delta over the bin ...

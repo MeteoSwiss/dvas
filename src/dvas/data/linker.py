@@ -287,7 +287,7 @@ class FileHandler(AbstractHandler):
         except ConfigGetError:
 
             # Create empty data set
-            data = pd.Series([])
+            data = pd.Series([], dtype='float')
 
             # Add empty tag
             metadata[TAG_FLD_NM] += [TAG_EMPTY_NAME]
@@ -614,13 +614,12 @@ class CSVHandler(FileHandler):
         raw_csv_read_args.update(
             {
                 'usecols': [field_id],
-                'squeeze': True,
                 'engine': 'python',
             }
         )
 
         # Read raw csv
-        data = pd.read_csv(data_file_path, **raw_csv_read_args)
+        data = pd.read_csv(data_file_path, **raw_csv_read_args).squeeze("columns")
 
         return data
 
