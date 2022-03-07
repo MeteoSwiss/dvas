@@ -193,7 +193,7 @@ class SearchInfoExpr(metaclass=ABCMeta):
 
     @staticmethod
     def extract_global_view():
-        """Extract global view from DB
+        """ Extract global view from DB
 
         Return:
             pd.DataFrame

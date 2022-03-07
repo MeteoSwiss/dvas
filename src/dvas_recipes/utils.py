@@ -56,7 +56,7 @@ def fn_suffix(eid=None, rid=None, var=None, tags=None):
     suffix = ''
     for item in [eid, rid, var]:
         if item is not None:
-            suffix += '_{}'.format(item)
+            suffix += '_{}'.format(item.replace(':', ''))
 
     if tags is not None:
         suffix += '_{}'.format('-'.join(tags))

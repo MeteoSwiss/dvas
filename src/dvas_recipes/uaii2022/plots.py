@@ -25,6 +25,7 @@ from ..errors import DvasRecipesError
 from .. import dynamic
 from ..recipe import for_each_flight
 from ..utils import fn_suffix
+from . import tools
 
 # Setup local logger
 logger = logging.getLogger(__name__)
@@ -54,8 +55,7 @@ def flight_overview(tags='sync', label='mid', show=None):
     (eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What search query will let me access the data I need ?
-    filt = "and_(tags('e:{}'), tags('r:{}'), {})".format(eid, rid,
-                                                         "tags('" + "'), tags('".join(tags) + "')")
+    filt = tools.get_query_filter(tags_in=tags+[eid, rid], tags_out=None)
 
     # The plot will have different number of rows depending on the number of variables.
     # Let's define some hardcoded heights, such that the look is always consistent
