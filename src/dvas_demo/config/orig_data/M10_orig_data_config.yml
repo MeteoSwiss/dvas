@@ -11,6 +11,8 @@ _M10:
         - "cat('e:', get('event_id'))"
         - "cat('r:', get('rig'))"
         - "get('day_night')"
+    metadata:
+        has_descent:
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter:
@@ -58,6 +60,8 @@ _M10-GDP-ALPHA_002:
     tags:
         - "cat('e:', get('g.Measurement.Id'))"
         - "cat('r:', get('g.Measurement.BalloonNumber'))"
+    metadata:
+        has_descent:
 
     # -- ORIG DATA ----------------------------------
     _time:

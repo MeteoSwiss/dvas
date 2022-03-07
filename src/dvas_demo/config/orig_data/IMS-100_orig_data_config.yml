@@ -17,6 +17,7 @@ _IMS-100-BETA_002:
         - "cat('e:', get('g.Measurement.Id'))"
         - "cat('r:', get('g.Measurement.BalloonNumber', totype=str))"
     metadata:
+        has_descent: "get('g.Product.DescentIncluded')"
         bpt_time: "get('g.Measurement.BurstpointTime')"
         bpt_alt: "get('g.Measurement.BurstpointAltitude')"
         bpt_gph: "get('g.Measurement.BurstpointGeopotHeight')"

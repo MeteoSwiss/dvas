@@ -11,6 +11,8 @@ _C34:
         - "cat('e:', get('event_id'))"
         - "cat('r:', get('rig'))"
         - "get('day_night')"
+    metadata:
+        has_descent:
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter: ';'

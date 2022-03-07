@@ -12,8 +12,7 @@ _RS92:
         - "cat('r:', get('rig'))"
         - "get('day_night')"
     metadata:
-        key_str: '1'
-        key_num: 1
+        has_descent:
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter:
@@ -65,6 +64,8 @@ _RS92-GDP_002:
     tags:
         - "cat('e:', get('g.Ascent.ID'))"
         - "cat('r:', get('g.Ascent.BalloonNumber'))"
+    metadata:
+        has_descent: "get('g.Ascent.IncludeDescent')"
 
     # -- ORIG DATA ----------------------------------
     _time:
