@@ -313,7 +313,7 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
         properties of all the Profile instances.
 
         Args:
-            prm_list (str|list of str, optional): names of the columns(s) to extract from all the
+            prm_list (str|list of str, optional): names of the column(s) to extract from all the
                 Profile DataFrames. Defaults to None (=returns all the columns from the DataFrame).
             mask_flgs (str|list of str, optional): name(s) of the flag(s) to NaN-ify in the
                 extraction process. Defaults to None.
@@ -440,7 +440,7 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
 
 
 class MultiProfile(MutliProfileAC):
-    """Multi profile base class, designed to handle multiple Profile."""
+    """ Multi profile base class, designed to handle multiple Profile."""
 
     #: type: supported Profile Types
     _DATA_TYPES = Profile
@@ -452,7 +452,7 @@ class MultiProfile(MutliProfileAC):
 
 
 class MultiRSProfileAC(MutliProfileAC):
-    """Abstract MultiRSProfile class"""
+    """ Abstract MultiRSProfile class"""
 
     @abstractmethod
     def __init__(self, load_stgy=None, sort_stgy=None, save_stgy=None, plot_stgy=None,
@@ -464,7 +464,7 @@ class MultiRSProfileAC(MutliProfileAC):
 
     @deepcopy
     def resample(self, freq='1s', chunk_size=150, n_cpus=1):
-        """Resample the profiles (one-by-one) onto regular timesteps using linear interpolation.
+        """ Resample the profiles (one-by-one) onto regular timesteps using linear interpolation.
 
         Args:
             freq (str): see pandas.timedelta_range(). Defaults to '1s'.
@@ -477,7 +477,7 @@ class MultiRSProfileAC(MutliProfileAC):
 
 
 class MultiRSProfile(MultiRSProfileAC):
-    """Multi RS profile manager, designed to handle multiple RSProfile instances."""
+    """ Multi RS profile manager, designed to handle multiple RSProfile instances. """
 
     _DATA_TYPES = RSProfile
 
@@ -489,7 +489,7 @@ class MultiRSProfile(MultiRSProfileAC):
 
 
 class MultiGDPProfileAC(MultiRSProfileAC):
-    """Abstract MultiGDPProfile class"""
+    """ Abstract MultiGDPProfile class """
 
     @abstractmethod
     def __init__(self, load_stgy=None, sort_stgy=None, save_stgy=None, plot_stgy=None,
@@ -509,7 +509,7 @@ class MultiGDPProfileAC(MultiRSProfileAC):
 
 
 class MultiGDPProfile(MultiGDPProfileAC):
-    """Multi GDP profile manager, designed to handle multiple GDPProfile instances."""
+    """ Multi GDP profile manager, designed to handle multiple GDPProfile instances. """
 
     _DATA_TYPES = GDPProfile
 
@@ -520,7 +520,7 @@ class MultiGDPProfile(MultiGDPProfileAC):
 
 
 class MultiCWSProfile(MultiGDPProfileAC):
-    """Multi CWS profile manager, designed to handle multiple GDPProfile instances."""
+    """ Multi CWS profile manager, designed to handle multiple GDPProfile instances. """
 
     _DATA_TYPES = CWSProfile
 

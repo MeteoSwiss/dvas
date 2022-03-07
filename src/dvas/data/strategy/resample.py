@@ -11,7 +11,6 @@ Module contents: Resample strategies
 
 # Import from external packages
 import logging
-import sys
 import functools
 import multiprocessing as mp
 import numpy as np
