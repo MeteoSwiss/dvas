@@ -91,6 +91,7 @@ PARAMETER_PATTERN_PROP = {
                 "patternProperties": {
                     r"^[\w\.]+$": {
                         'oneOf': [
+                            {"type": 'null'},
                             {"type": 'string'},
                             {"type": 'number'},
                         ]
