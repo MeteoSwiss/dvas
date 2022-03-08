@@ -223,6 +223,9 @@ class Recipe:
         if rcp_dyn.N_CPUS is None or rcp_dyn.N_CPUS > cpu_count():
             rcp_dyn.N_CPUS = cpu_count()
 
+        # Store the variables to be processed and their associated uncertainties.
+        rcp_dyn.DROP_FLGS = rcp_data['rcp_params']['general']['drop_flgs']
+
         # Store the index names
         rcp_dyn.INDEXES = rcp_data['rcp_params']['index']
 

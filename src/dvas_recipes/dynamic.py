@@ -34,3 +34,6 @@ CHUNK_SIZE = 150
 
 #: int: number of cpus to use to run the dvas recipe
 N_CPUS = 1
+
+#: list: flags to drop during the analysis
+DROP_FLGS = []

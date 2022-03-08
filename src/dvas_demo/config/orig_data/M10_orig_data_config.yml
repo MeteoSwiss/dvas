@@ -12,7 +12,7 @@ _M10:
         - "cat('r:', get('rig'))"
         - "get('day_night')"
     metadata:
-        has_descent:
+        bpt_time: "get('bpt_time')"
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter:
@@ -61,7 +61,7 @@ _M10-GDP-ALPHA_002:
         - "cat('e:', get('g.Measurement.Id'))"
         - "cat('r:', get('g.Measurement.BalloonNumber'))"
     metadata:
-        has_descent:
+        bpt_time:
 
     # -- ORIG DATA ----------------------------------
     _time:

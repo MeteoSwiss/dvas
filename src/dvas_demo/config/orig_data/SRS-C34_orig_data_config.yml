@@ -12,7 +12,7 @@ _C34:
         - "cat('r:', get('rig'))"
         - "get('day_night')"
     metadata:
-        has_descent:
+        bpt_time: "get('bpt_time')"
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter: ';'

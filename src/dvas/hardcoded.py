@@ -170,3 +170,8 @@ FLG_INTERP_DESC = "Interpolated values"
 FLG_INCOMPATIBLE_NAME = 'incomp'
 #: str: Flag's desc for resampled values
 FLG_INCOMPATIBLE_DESC = 'Incompatible GDP measurements'
+
+#: str: Flag's name for resampled values
+FLG_DESCENT_NAME = 'descent'
+#: str: Flag's desc for resampled values
+FLG_DESCENT_DESC = 'Descent data'
