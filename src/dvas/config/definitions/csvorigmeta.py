@@ -14,6 +14,7 @@ Module contents: Required attributes definition for
 PARAMETER_PATTERN_PROP = {
     r"^\w+$": {
         'oneOf': [
+            {"type": 'null'},
             {"type": 'string'},
             {"type": 'number'},
             {"type": 'boolean'},
