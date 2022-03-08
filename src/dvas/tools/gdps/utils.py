@@ -73,7 +73,7 @@ def weighted_mean(df_chunk, binning=1):
 
     # Let's make sure their ID is what I expect them to be.
     if not np.array_equal(df_chunk.columns.unique(level=0), range(n_prf)):
-        raise DvasError('Ouch ! Profile values must be grouped usign MultiIndex with ids 0,1, ...')
+        raise DvasError('Ouch ! Profile values must be grouped using MultiIndex with ids 0,1, ...')
 
     # Force the weights to be NaNs if the data is a NaN. Else, the normalization will be off.
     mask = df_chunk.xs(PRF_REF_VAL_NAME, level=1, axis=1).isna()
