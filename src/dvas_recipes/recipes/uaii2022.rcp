@@ -29,6 +29,8 @@ rcp_params:
         plot_show: False
         chunk_size: 150
         n_cpus: # If set, will cap the number of cpus used to run the dvas recipe
+        drop_flgs:
+            - descent
 
     # Variables to process using the recipe, and associated uncertainties.
     index:
@@ -82,7 +84,7 @@ rcp_steps:
         run: True
         kwargs:
 
-    # Profile cleanup (cropping after burst, resampling)
+    # Profile cleanup (flag descent data, resample)
     uaii2022.basic.cleanup:
         step_id: '01'
         run: True

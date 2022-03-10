@@ -11,7 +11,6 @@ Module contents: Resample strategies
 
 # Import from external packages
 import logging
-import sys
 import functools
 import multiprocessing as mp
 import numpy as np
@@ -107,6 +106,13 @@ class ResampleStrategy(MPStrategyAC):
             # Let's drop the original integer index, to avoid type conversion issues
             this_data.drop(columns=PRF_REF_INDEX_NAME, inplace=True)
 
+            # Duplicate the last point as a "pseudo" new time step.
+            # This is to ensure proper interpolation all the way to the very edge of the raw data
+            this_data = pd.concat([this_data, this_data.iloc[-1:]], axis=0, ignore_index=True)
+            this_data.iloc[-1, this_data.columns.get_loc('tdt')] += pd.Timedelta(1, 's')
+            # Re-extract the old_tdt with this extra row
+            old_tdt = this_data['tdt'].values
+
             # What are the indices of the closest (upper) points for each (new) step ?
             x_ip1_ind = np.array([this_data[PRF_REF_TDT_NAME].searchsorted(xi_star,
                                   side='right') for xi_star in new_tdt])
@@ -117,8 +123,8 @@ class ResampleStrategy(MPStrategyAC):
 
             # What are the linear interpolation weights ?
             # Here, we have x_- * (1-omega) + x_+ * (omega)
-            omega_vals = np.array([(item-old_tdt.values[x_ip1_ind[ind]-1]) /
-                                   np.diff(old_tdt.values)[x_ip1_ind[ind]-1]
+            omega_vals = np.array([(item-old_tdt[x_ip1_ind[ind]-1]) /
+                                   np.diff(old_tdt)[x_ip1_ind[ind]-1]
                                    for (ind, item) in enumerate(new_tdt.values)])
 
             # All these weights should be comprised between 0 and 1 ... else something is reall bad.

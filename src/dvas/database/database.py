@@ -681,8 +681,8 @@ class InfoManagerMetaData(dict):
         # Check
         try:
             assert isinstance(dict_args, dict)
-            assert all([isinstance(key, str) for key in dict_args.keys()])
-            assert all([isinstance(val, (str, float, int)) for val in dict_args.values()])
+            assert all(isinstance(key, str) for key in dict_args.keys())
+            assert all(isinstance(val, (type(None), str, float, int)) for val in dict_args.values())
         except AssertionError:
             raise TypeError()
 

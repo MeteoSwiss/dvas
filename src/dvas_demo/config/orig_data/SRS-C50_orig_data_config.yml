@@ -11,6 +11,8 @@ _C50:
         - "cat('e:', get('event_id'))"
         - "cat('r:', get('rig'))"
         - "get('day_night')"
+    metadata:
+        bpt_time: "get('bpt_time')"
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter: ';'

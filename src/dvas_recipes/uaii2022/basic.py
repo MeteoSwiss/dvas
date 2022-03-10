@@ -10,13 +10,14 @@ Module content: basic high-level recipes for the UAII2022 campaign
 
 # Import general Python packages
 import logging
+import pandas as pd
 
 # Import dvas modules and classes
 # from dvas.logger import recipes_logger as logger
 from dvas.environ import path_var
 from dvas.logger import log_func_call
 from dvas.data.data import MultiRSProfile, MultiGDPProfile
-from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, TAG_CLN_NAME
+from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, TAG_CLN_NAME, FLG_DESCENT_NAME
 from dvas.dvas import Database as DB
 
 # Import from dvas_recipes
@@ -38,6 +39,48 @@ def prf_summary():
     fn_out = path_var.output_path / (dynamic.CURRENT_STEP_ID + '_profile_list.csv')
     view.to_csv(fn_out, index=False)
     logger.info('Created profile list: %s', fn_out)
+
+
+@log_func_call(logger, time_it=False)
+def flag_descent(prfs):
+    """ Set a dedicated flag for any point beyond the burst point.
+
+    Note:
+        This function simply uses the metadata info to set the flags. It indirectly assumes that
+        the profiles have not been shifted in any way (yet).
+
+    Args:
+        prfs (MultiRSProfile|MultiGDPProfile): the profiles to flag (individually).
+
+    Returns:
+        MultiRSProfile|MultiGDPProfile: the flagged profiles.
+
+    """
+
+    # Loop through each profile, and figure out if I need to flag anything
+    for prf in prfs:
+
+        # Begin with some sanity checks
+        if 'bpt_time' not in prf.info.metadata.keys():
+            logger.error("'bpt_time' not found in metadata for: %s", prf.info.src)
+            logger.error("Descent data could not be flagged !")
+            continue
+        if prf.info.metadata['bpt_time'] is None:
+            logger.warning('"bpt_time" is not set for: %s', prf.info.src)
+            continue
+
+        # Extract the burst point, and try to convert it into a time delta
+        bpt_time = (prf.info.metadata['bpt_time']).split(' ')
+        if len(bpt_time) != 2:
+            raise DvasRecipesError('Ouch ! bpt_time is weird: %s' % (prf.info.metadata['bpt_time']))
+
+        bpt_time = pd.Timedelta(float(bpt_time[0]), bpt_time[1])
+
+        # Set the flag for anything beyond the burst point
+        which = prf.data.index.get_level_values('tdt') >= bpt_time
+        prf.set_flg(FLG_DESCENT_NAME, True, index=which)
+
+    return prfs
 
 
 @for_each_var
@@ -86,6 +129,9 @@ def cleanup(tags, dt):
                               ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],
                               inplace=True)
 
+        # Flag descent data
+        gdp_prfs = flag_descent(gdp_prfs)
+
         # Resample the profiles as required
         gdp_prfs.resample(freq=dt, inplace=True,
                           chunk_size=dynamic.CHUNK_SIZE, n_cpus=dynamic.N_CPUS)
@@ -101,8 +147,12 @@ def cleanup(tags, dt):
 
         # Extract the data from the db
         rs_prfs = MultiRSProfile()
-        rs_prfs.load_from_db(filt, dynamic.CURRENT_VAR, dynamic.INDEXES[PRF_REF_TDT_NAME],
+        rs_prfs.load_from_db(f'and_({filt}, not_(tags("gdp")))',
+                             dynamic.CURRENT_VAR, dynamic.INDEXES[PRF_REF_TDT_NAME],
                              alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME])
+
+        # Flag descent data
+        rs_prfs = flag_descent(rs_prfs)
 
         rs_prfs.resample(freq=dt, inplace=True,
                          chunk_size=dynamic.CHUNK_SIZE, n_cpus=dynamic.N_CPUS)

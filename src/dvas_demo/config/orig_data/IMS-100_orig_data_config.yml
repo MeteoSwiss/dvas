@@ -16,6 +16,8 @@ _IMS-100-BETA_002:
     tags:
         - "cat('e:', get('g.Measurement.Id'))"
         - "cat('r:', get('g.Measurement.BalloonNumber', totype=str))"
+    metadata:
+        bpt_time: "get('g.Measurement.BurstpointTime')"
 
     # -- ORIG DATA ----------------------------------
     _time:
