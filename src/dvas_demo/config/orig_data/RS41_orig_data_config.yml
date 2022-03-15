@@ -70,7 +70,7 @@ _RS41:
     csv_skiprows: 'lambda x: ((x<=45) or (x==47))'
     csv_skipfooter: 0
     csv_encoding: 'latin_1'
-    csv_na_values: '/'
+    csv_na_values: '//////'
     csv_header: 0
 
     _time:
