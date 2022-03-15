@@ -21,7 +21,7 @@ from ...logger import log_func_call
 from ...errors import DvasError
 from ...hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME, PRF_REF_FLG_NAME
 from ...hardcoded import PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME
-from ..tools import fancy_nansum
+from ..tools import fancy_nansum, fancy_bitwise_or
 from .correlations import coeffs
 
 # Setup local logger
@@ -160,6 +160,19 @@ def weighted_mean(df_chunk, binning=1):
                                  mask=(np.isnan(wtot_mat) | np.isnan(w_mat)),
                                  fill_value=np.nan)
 
+    # Before we end, let us compute the flags. We apply a general bitwise OR to them, such that
+    # they do not cancel each other or disappear: they get propagated all the way
+    # First, we assemble them at high resolution. Note here that the flag for any weight that is
+    # NaN or 0 is set to 0 (but not pd.NA). THis is on purpose, to show that the resulting point
+    # is not inheriting "no" flags.
+    flgs = pd.DataFrame(fancy_bitwise_or(
+        df_chunk.loc[:, (slice(None), 'flg')].mask((w_ps.isna() | (w_ps == 0)).values), axis=1))
+
+    # Then, only if warranted, apply the binning too
+    if binning > 1:
+        flgs = flgs.groupby(flgs.index//binning).aggregate(fancy_bitwise_or)
+    chunk_out[PRF_REF_FLG_NAME] = flgs
+
     return chunk_out, jac_mat
 
 
@@ -227,8 +240,8 @@ def delta(df_chunk, binning=1):
             # Keep track of how many valid rows I am summing in each bin.
             # It would seem logical to store these as int. However, I will soon divide by those
             # numbers, and will need NaN's to avoid RunTime Warnings. 'int' does not support these,
-            # and 'Int64' cannot be used to divide TiemDeltas ... so float it is ... sigh.
-            # WARNING: here, i look at the number of valid rows **for that specific column**.
+            # and 'Int64' cannot be used to divide TimeDeltas ... so float it is ... sigh.
+            # WARNING: here, I look at the number of valid rows **for that specific column**.
             # This implies that, potentially, the delta action may combine different rows for
             # different columns.
             # TODO: fix this ... by using flags to select valid rows ?
@@ -284,6 +297,19 @@ def delta(df_chunk, binning=1):
         # Adjust the mask accordingly.
         jac_mat[valid_rows == 0, :] = np.ma.masked
 
+    # Before we end, let us compute the flags. We apply a general bitwise OR to them, such that
+    # they do not cancel each other or disappear: they get propagated all the way
+    # First, we assemble them at high resolution. Note that we here mask any flags that belongs to
+    # a NaN value, because this is not actually used in the delta.
+    flgs = pd.DataFrame(fancy_bitwise_or(
+        df_chunk.loc[:, (slice(None), 'flg')].mask(df_chunk.loc[:, (slice(None),
+                                                                    'val')].isna().values), axis=1))
+
+    # Then, only if warranted, apply the binning too
+    if binning > 1:
+        flgs = flgs.groupby(flgs.index//binning).aggregate(fancy_bitwise_or)
+    chunk_out[PRF_REF_FLG_NAME] = flgs
+
     return chunk_out, jac_mat
 
 
@@ -337,25 +363,38 @@ def process_chunk(df_chunk, binning=1, method='weighted mean'):
     n_prf = len(df_chunk.columns.unique(level=0))
 
     # Data consistency check & cleanup: if val is NaN, all the errors should be NaNs
-    # (and vice-versa).
+    # (and vice-versa). Also, if val is NaN, then we should ignore its flags, because as a NaN
+    # it will not be taken into account (but this should not trigger a warning).
     for prf_ind in range(n_prf):
-        if all(df_chunk.loc[:, (prf_ind, 'uc_tot')].isna() ==
-               df_chunk.loc[:, (prf_ind, 'val')].isna()):
-            continue
+        if not all(df_chunk.loc[:, (prf_ind, 'uc_tot')].isna() ==
+                   df_chunk.loc[:, (prf_ind, PRF_REF_VAL_NAME)].isna()):
+            # If I reach this point, then the data is not making sense.
+            # Warn the user and clean it up.
+            logger.warning("GDP Profile %i: NaN mismatch for 'val' and 'uc_tot'", prf_ind)
+            df_chunk.loc[df_chunk.loc[:, (prf_ind, 'uc_tot')].isna().values,
+                         (prf_ind, 'val')] = np.nan
+            for col in [PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME,
+                        'uc_tot']:
+                df_chunk.loc[df_chunk.loc[:, (prf_ind, 'val')].isna().values,
+                             (prf_ind, col)] = np.nan
 
-        # If I reach this point, then the data is not making sense. Warn the user and clean it up.
-        logger.warning("GDP Profile %i: NaN mismatch for 'val' and 'uc_tot'", prf_ind)
-        df_chunk.loc[df_chunk.loc[:, (prf_ind, 'uc_tot')].isna().values, (prf_ind, 'val')] = np.nan
-        for col in [PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME,
-                    'uc_tot']:
-            df_chunk.loc[df_chunk.loc[:, (prf_ind, 'val')].isna().values,
-                         (prf_ind, col)] = np.nan
+        if not all(df_chunk.loc[:, (prf_ind, PRF_REF_FLG_NAME)].isna() ==
+                   df_chunk.loc[:, (prf_ind, PRF_REF_VAL_NAME)].isna()):
+            logger.debug("GDP profile %i: hiding some flags for the NaN data values.")
+            df_chunk.loc[df_chunk.loc[:, (prf_ind, PRF_REF_VAL_NAME)].isna().values,
+                         (prf_ind, PRF_REF_FLG_NAME)] = np.nan
 
     # Compute the weights for each point, if applicable
     # First I need to add the new columns (one for each Profile).
-    df_chunk = df_chunk.stack(level=0)
-    df_chunk.loc[:, 'w_ps'] = np.nan
-    df_chunk = df_chunk.unstack().swaplevel(0, 1, axis=1).sort_index(axis=1)
+    # ----- What follows is prblematic because .stack looses the dtype of the flg, which
+    # wreaks havoc down the line ---
+    # df_chunk = df_chunk.stack(level=0)
+    # df_chunk.loc[:, 'w_ps'] = np.nan
+    # df_chunk = df_chunk.unstack().swaplevel(0, 1, axis=1).sort_index(axis=1)
+    # ------------------------------
+    # Crappier (?) alternative, but that doesn't mess up with the column dtypes
+    for ind in range(n_prf):
+        df_chunk.loc[:, (ind, 'w_ps')] = np.nan
 
     # Then I can fill it with the appropriate values
     if method == 'weighted mean':
