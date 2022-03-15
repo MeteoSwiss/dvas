@@ -106,8 +106,8 @@ def fancy_bitwise_or(vals, axis=None):
     """
 
     # Let's make sure I have been given integers, in order to run bitwise operations
-    if not all(dtps := [pd.api.types.is_integer_dtype(item) for item in vals.dtypes]):
-        raise DvasError('Ouch ! I need ints to perform a bitwise OR, but I got:', dtps)
+    if not all([pd.api.types.is_integer_dtype(item) for item in vals.dtypes]):
+        raise DvasError('Ouch ! I need ints to perform a bitwise OR, but I got:', vals.dtypes)
 
     # Easy if all is nan and axis is None
     if axis is None and vals.isna().all(axis=axis):
