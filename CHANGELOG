@@ -6,6 +6,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 ### Added:
+ - [fpavogt, 2022-03-16] Enable the cropping of descent data in the "cleanup" recipe step
+ - [fpavogt, 2022-03-15] Propagate flags through process_chunk(), weighted_means(), and delta()
  - [fpavogt, 2022-03-08] Flag descent data in basic cleanup step. Add new 'descent' flag
  - [fpavogt, 2022-03-03] Enable the resampling of profiles with a new cleanup recipe step
  - [fpavogt, 2022-03-01] Add prf_summary recipe (fix #177)

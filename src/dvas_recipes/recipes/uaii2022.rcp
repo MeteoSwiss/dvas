@@ -29,8 +29,6 @@ rcp_params:
         plot_show: False
         chunk_size: 150
         n_cpus: # If set, will cap the number of cpus used to run the dvas recipe
-        drop_flgs:
-            - descent
 
     # Variables to process using the recipe, and associated uncertainties.
     index:
@@ -90,7 +88,8 @@ rcp_steps:
         run: True
         kwargs:
             tags: raw # list of tags to identify profiles to resample
-            dt: '1s' # Time step to resample onto, in seconds
+            resampling_freq: '1s' # Time step to resample onto, in seconds
+            crop_descent: True # If True, descent data will be cropped for good
 
     # Profile synchronization on a per-flight basis.
     uaii2022.sync.sync_flight:

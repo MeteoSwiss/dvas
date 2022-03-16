@@ -189,11 +189,6 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
     # Re-assemble all the chunks into one DataFrame.
     proc_chunk = pd.concat(proc_chunks, axis=0)
 
-    # Set the intiial flags of the combined profile.
-    # Should I actually be setting any ? E.g. to make the difference between True NaN's and
-    # Compatibility NaN's ? Can I even do that in here ?
-    proc_chunk.loc[:, 'flg'] = 0
-
     # Almost there. Now we just need to package this into a clean MultiGDPProfile
     # Let's first prepare the info dict
     new_rig_tag = 'r:'+','.join([item.split(':')[1]

@@ -66,6 +66,10 @@ class ResampleStrategy(MPStrategyAC):
         # Very well, let's start looping and resampling each Profile
         for (prf_ind, prf) in enumerate(prfs):
 
+            # Here, do something only if I actually have data to resample
+            if len(prf.data) <= 1:
+                continue
+
             # Let's identify the min and max integer values, rounded to the nearest second.
             t_0 = min(prf.data.index.get_level_values(PRF_REF_TDT_NAME)).ceil('1s')
             t_1 = max(prf.data.index.get_level_values(PRF_REF_TDT_NAME)).floor('1s')
