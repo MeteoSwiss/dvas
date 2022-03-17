@@ -205,7 +205,7 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
     # It's no different from a GDP, from the perspective of the errors.
     new_prf = CWSProfile(new_info, data=proc_chunk)
 
-    # And finally, package this into a MultiGDPProfile entity
+    # And finally, package this into a MultiCWSProfile entity
     out = MultiCWSProfile()
     out.update(gdp_prfs.db_variables, data=[new_prf])
 
