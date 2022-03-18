@@ -137,10 +137,10 @@ if __name__ == '__main__':
                                                                             prf_df.columns.to_list()))
     rs_prf_df = rs_prfs[0].data
     print('\nRS profile dataframe:\n  index.names={}, columns={}'.format(rs_prf_df.index.names,
-                                                                       rs_prf_df.columns.to_list()))
+                                                                         rs_prf_df.columns.to_list()))
     gdp_prf_df = gdp_prfs[0].data
     print('\nGDP profile dataframe:\n  index.names={}, columns={}'.format(gdp_prf_df.index.names,
-                                                                        gdp_prf_df.columns.to_list()))
+                                                                          gdp_prf_df.columns.to_list()))
 
     # MultiProfiles has a var_info property to link the DataFrame columns to the actual variable
     print("\n Content of prfs.var_info['val']:\n")
@@ -271,7 +271,7 @@ if __name__ == '__main__':
     print('CWS assembled in: {}s'.format((datetime.now()-start_time).total_seconds()))
 
     # We can now inspect the result visually
-    dpg.gdps_vs_cws(gdp_prfs, cws, index_name='_idx', show=False, fn_prefix='03')
+    dpg.gdps_vs_cws(gdp_prfs, cws, show=False, fn_prefix='03')
 
     # Save the CWS to the database.
     # One should note here that we only save the columns of the CWS DataFrame, and not the 'alt' and

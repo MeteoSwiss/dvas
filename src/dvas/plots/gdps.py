@@ -87,18 +87,25 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     alts[:min_valid_alt_idx] = np.arange(0, min_valid_alt_idx, 1) - 1e6 + 1
     alts[max_valid_alt_idx+1:] = np.arange(max_valid_alt_idx+1-len(alts), 0, 1) + 1e6
 
-    # TODO: check for holes, or fix them here if needed ?
-    assert not np.any(np.isnan(alts))
-    assert not np.any(np.isnan(tdts))
-
-    # Make sure we are linearly increasing. For the time, this shoudl always be the case
-    assert np.all(np.diff(tdts) > 0)
+    # Check for any holes - if found, forget about showing multiple axes
+    show_tdts = True
+    if np.any(np.isnan(tdts)):
+        logger.error('CWS tdt contains holes. ' +
+                     'Axis will be cropped from gdp_vs_cws.')
+        show_tdts = False
+    # Make sure time is monotically increasing. This should always be true ...
+    elif not np.all(np.diff(tdts) > 0):
+        raise DvasError('Ouch ! CWS tdts not increasing monotically ?!')
 
     # For the altitude, things may not be that easy. Ballons can go down temporarily in gravity
     # waves, for exemple. Do circumvent this, we shall display the alt axis only if it increases
     # monotically
     show_alts = True
-    if np.any(np.diff(alts) <= 0):
+    if np.any(np.isnan(alts)):
+        logger.error('CWS ref_alt contains holes. ' +
+                     'Axis will be cropped from gdp_vs_cws.')
+        show_alts = False
+    elif np.any(np.diff(alts) <= 0):
         logger.error('CWS ref. alt. is not increasing monotically. ' +
                      'Axis will be cropped from gdp_vs_cws')
         show_alts = False
@@ -164,10 +171,11 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     ax1.text(1.02, -0.125, pu.fix_txt(idxlbl), ha='left', va='center', transform=ax1.transAxes)
 
     # tdt axis
-    tdtax = ax1.secondary_xaxis(-0.25, functions=(tdt_forward, tdt_inverse))
-    tdtax.tick_params(labelsize='small')
-    ax1.text(1.02, -0.35, pu.fix_txt(tdtlbl), ha='left', va='center', transform=ax1.transAxes,
-             fontsize='small')
+    if show_tdts:
+        tdtax = ax1.secondary_xaxis(-0.25, functions=(tdt_forward, tdt_inverse))
+        tdtax.tick_params(labelsize='small')
+        ax1.text(1.02, -0.35, pu.fix_txt(tdtlbl), ha='left', va='center', transform=ax1.transAxes,
+                 fontsize='small')
 
     # alt axis
     if show_alts:

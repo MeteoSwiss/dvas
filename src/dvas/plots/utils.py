@@ -144,6 +144,8 @@ def fix_txt(txt):
         txt = txt.replace(r'\smaller', '')
         txt = txt.replace(r'\bf', r'')
         txt = txt.replace(r'\it', r'')
+        txt = txt.replace(r'\flushleft', r'')
+        txt = txt.replace(r'\newline', r'')
 
     return txt
 
@@ -267,7 +269,7 @@ def add_source(fig):
     """
     msg = r'\it\flushleft Created with\newline dvas v{}'.format(VERSION)
 
-    fig.text(0.01, 0.02, msg, fontsize='xx-small',
+    fig.text(0.01, 0.02, fix_txt(msg), fontsize='xx-small',
              horizontalalignment='left', verticalalignment='bottom')
 
 
