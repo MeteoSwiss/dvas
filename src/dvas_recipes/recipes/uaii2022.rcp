@@ -116,11 +116,20 @@ rcp_steps:
         kwargs:
             tags: sync # list of tags to identify profiles in the database
             m_vals: [1, -10] # list of m values. The negative ones are ignored for the cws assembly
-            strategy: 'all-or-none' # Strategy to decide which GDPs to combine, in case of incompatibilities.
+            strategy: all-or-none # Strategy to decide which GDPs to combine, in case of incompatibilities.
+            alpha: 0.0027 # alpha level for the KS test. 0.0027 = 3-sigmas
+            cws_alt_ref: gph # Name of the variable to use in order to populate alt_ref
+
+    # GDP vs CWS plotting
+    uaii2022.plots.gdp_vs_cws:
+        step_id: '05'
+        run: True
+        kwargs:
+            tags: sync # list of tags to identify profiles in the DB
 
     # Compute the deltas between the profiles of sondes under test and Combined Working Standards
     uaii2022.dtas.compute_deltas:
-        step_id: '05'
+        step_id: '06'
         run: True
         kwargs:
             tags: sync # list of tags to identify profiles in the database

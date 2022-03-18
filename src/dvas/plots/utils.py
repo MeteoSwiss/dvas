@@ -136,7 +136,14 @@ def fix_txt(txt):
     # First deal with the cases when a proper LaTeX is being used
     if usetex:
         txt = txt.replace('%', r'{\%}')
-        txt = txt.replace('_', r'{\_}')
+        txt = [item.replace('_', r'\_') if ind % 2 == 0 else item
+               for (ind, item) in enumerate(txt.split('$'))]
+        txt = '$'.join(txt)
+
+    else:
+        txt = txt.replace(r'\smaller', '')
+        txt = txt.replace(r'\bf', r'')
+        txt = txt.replace(r'\it', r'')
 
     return txt
 
@@ -258,7 +265,7 @@ def add_source(fig):
         fig (matplotlib.pyplot.figure): the figure to add the text to.
 
     """
-    msg = 'Created with dvas v{}'.format(VERSION)
+    msg = r'\it\flushleft Created with\newline dvas v{}'.format(VERSION)
 
     fig.text(0.01, 0.02, msg, fontsize='xx-small',
              horizontalalignment='left', verticalalignment='bottom')

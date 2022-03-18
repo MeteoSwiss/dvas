@@ -18,6 +18,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [modolol, 2021-11-03] Add `mid` in DB search options
  - [fpavogt, 2021-07-02] Add `has_tag()` convenience method to `Profile` and `MultiProfile` classes
 ### Fixed:
+ - [fpavogt, 2022-03-18] Fix #163
  - [fpavogt, 2022-02-25] Fix #179
  - [fpavogt, 2022-02-21] Fix #192
  - [fpavogt, 2021-12-02] Fix issue #181
@@ -28,6 +29,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [modolol, 2021-07-12] Fix issue #185
  - [modolol, 2021-07-12] Fix issue #160
 ### Changed:
+ - [fpavogt, 2022-03-18] Modified & imporoved gdp_vs_cws plots into a dedicated recipe step
  - [fpavogt, 2022-03-01] Simplified the logging by removing the specific names
  - [fpavogt, 2022-03-01] Add dev option to setup.py
  - [modolol, 2022-02-28] Remove mandatory tag creation in config
