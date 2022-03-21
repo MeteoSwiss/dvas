@@ -148,8 +148,8 @@ def flight_overview(tags='sync', label='mid', show=None):
 @for_each_var
 @for_each_flight
 @log_func_call(logger, time_it=True)
-def gdp_vs_cws(tags='sync'):
-    """ Create all the GDP-vs-CWS plots.
+def inspect_cws(tags='sync'):
+    """ Create a series of CWS-related plot for inspection purposes.
 
     Args:
         tags (str|list of str, optional): tag names for the search query into the database.
@@ -194,7 +194,11 @@ def gdp_vs_cws(tags='sync'):
                           ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],
                           inplace=True)
 
-    # We can now inspect the result visually
+    # We can now create a GDP vs CWS plot ...
     dpg.gdps_vs_cws(gdp_prfs, cws_prfs, show=None,
                     fn_prefix=dynamic.CURRENT_STEP_ID,
                     fn_suffix=fn_suffix(eid=eid, rid=rid, tags=tags, var=dynamic.CURRENT_VAR))
+    # And a uc_budget plot
+    dpg.uc_budget(gdp_prfs, cws_prfs, show=None,
+                  fn_prefix=dynamic.CURRENT_STEP_ID,
+                  fn_suffix=fn_suffix(eid=eid, rid=rid, tags=tags, var=dynamic.CURRENT_VAR))

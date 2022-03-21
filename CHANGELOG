@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 ### Added:
+ - [fpavogt, 2022-03-21] Add new uc_budget diagnostic plot to dvas
  - [fpavogt, 2022-03-16] Enable the cropping of descent data in the "cleanup" recipe step
  - [fpavogt, 2022-03-15] Propagate flags through process_chunk(), weighted_means(), and delta()
  - [fpavogt, 2022-03-08] Flag descent data in basic cleanup step. Add new 'descent' flag

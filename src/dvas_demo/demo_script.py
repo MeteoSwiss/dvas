@@ -50,7 +50,7 @@ if __name__ == '__main__':
     Log.start_log(1, level='DEBUG')
 
     # Fine-tune the plotting behavior of dvas
-    dpu.set_mplstyle('nolatex')  # The safe option. Use 'latex' fo prettier plots.
+    dpu.set_mplstyle('latex')  # The safe option. Use 'latex' fo prettier plots.
 
     # The generic formats to save the plots in
     dpu.PLOT_FMTS = ['png', 'pdf']
@@ -182,7 +182,7 @@ if __name__ == '__main__':
 
     # Let us inspect the (raw) GDP profiles with dedicated plots.
     # Defaults behavior, just adding a prefix to the filename.
-    gdp_prfs.plot(fn_prefix='01-a', show=True)
+    #gdp_prfs.plot(fn_prefix='01-a', show=True)
 
     # Repeat the same plot, but this time with the GDP uncertainties.
     # Set "show" to True to display it on-screen.
@@ -208,12 +208,12 @@ if __name__ == '__main__':
     # Synchronizing profiles is a 2-step process. First, the shifts must be identified.
     # dvas contains several routines to do that under dvas.tools.sync
     # For example, the most basic one is to compare the altitude arrays
-    gdp_prfs_1s.sort() # <- This helps keep the order of Profiles consistent between runs.
+    gdp_prfs_1s.sort()  # <- This helps keep the order of Profiles consistent between runs.
     sync_shifts = dts.get_sync_shifts_from_alt(gdp_prfs_1s)
 
     # A fancier option is to look at the profile values, and minimize the mean of their absolute
     # difference
-    #sync_shifts = dts.get_sync_shifts_from_val(gdp_prfs, max_shift=50, first_guess=sync_shifts)
+    # sync_shifts = dts.get_sync_shifts_from_val(gdp_prfs, max_shift=50, first_guess=sync_shifts)
 
     # Given these shifts, let's compute the new length of the synchronized Profiles.
     # Do it such that no data is actually cropped out, i.e. add NaN/NaT wherever needed.
@@ -250,7 +250,7 @@ if __name__ == '__main__':
     # binning values "m".
     start_time = datetime.now()
     incompat = dtgs.gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=[1, 6],
-                                           do_plot=True, n_cpus=4)
+                                          do_plot=True, n_cpus=4)
     print('GDP mismatch derived in: {}s'.format((datetime.now()-start_time).total_seconds()))
 
     # Next, we derive "validities" given a specific strategy to assess the different GDP pair
@@ -271,7 +271,10 @@ if __name__ == '__main__':
     print('CWS assembled in: {}s'.format((datetime.now()-start_time).total_seconds()))
 
     # We can now inspect the result visually
-    dpg.gdps_vs_cws(gdp_prfs, cws, show=False, fn_prefix='03')
+    # First by looking at the GDP vs CWs profiles
+    dpg.gdps_vs_cws(gdp_prfs, cws, show=True, fn_prefix='03')
+    # And then also by diving into the uncertainty budget
+    dpg.uc_budget(gdp_prfs, cws, show=True, fn_prefix='03')
 
     # Save the CWS to the database.
     # One should note here that we only save the columns of the CWS DataFrame, and not the 'alt' and
