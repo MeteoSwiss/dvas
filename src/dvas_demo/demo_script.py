@@ -50,7 +50,7 @@ if __name__ == '__main__':
     Log.start_log(1, level='DEBUG')
 
     # Fine-tune the plotting behavior of dvas
-    dpu.set_mplstyle('latex')  # The safe option. Use 'latex' fo prettier plots.
+    dpu.set_mplstyle('nolatex')  # The safe option. Use 'latex' fo prettier plots.
 
     # The generic formats to save the plots in
     dpu.PLOT_FMTS = ['png', 'pdf']
@@ -182,7 +182,7 @@ if __name__ == '__main__':
 
     # Let us inspect the (raw) GDP profiles with dedicated plots.
     # Defaults behavior, just adding a prefix to the filename.
-    #gdp_prfs.plot(fn_prefix='01-a', show=True)
+    gdp_prfs.plot(fn_prefix='01-a', show=True)
 
     # Repeat the same plot, but this time with the GDP uncertainties.
     # Set "show" to True to display it on-screen.
