@@ -120,6 +120,38 @@ def set_mplstyle(style='base'):
         plt.style.use(str(Path(PKG_PATH, 'plots', 'mpl_styles', PLOT_STYLES[style])))
 
 
+def add_sec_axis(ax, xvals, new_xvals, offset=-0.1, which='x'):
+    """ Adds a secondary x-axis to the figure.
+
+    Args:
+        ax (matplotlib axis): the axis to which to add the new x-axis
+        xvals (np.ndarray): current x-axis values, spanning the full range of the plot. Must not
+            contain NaNs.
+        new_xvals (np.ndarray): new x-axis values. Must be able to linearly interpolate with xvals,
+            and contain no NaN's whatsoever.
+        offset (float, optional): offset by which to shift the new axis. Defaults to -0.1.
+        which (str, optional): 'x', or 'y', the axis to duplicate.
+
+    Returns:
+        matplotlib axis: the newly created axis.
+
+    """
+
+    def forward(xxx):
+        return np.interp(xxx, xvals, new_xvals)
+
+    def inverse(xxx):
+        return np.interp(xxx, new_xvals, xvals)
+
+    if which == 'x':
+        new_ax = ax.secondary_xaxis(offset, functions=(forward, inverse))
+    elif which == 'y':
+        new_ax = ax.secondary_yaxis(offset, functions=(forward, inverse))
+    else:
+        raise DvasError('Ouch ! which should be "x" or "y", not: %s' % (which))
+    return new_ax
+
+
 def fix_txt(txt):
     """ Corrects any string for problematic characters before it gets added to a plot. Fixes vary
     depending whether on the chosen plotting style's value of `usetex` in `rcparams`.
@@ -136,7 +168,16 @@ def fix_txt(txt):
     # First deal with the cases when a proper LaTeX is being used
     if usetex:
         txt = txt.replace('%', r'{\%}')
-        txt = txt.replace('_', r'{\_}')
+        txt = [item.replace('_', r'\_') if ind % 2 == 0 else item
+               for (ind, item) in enumerate(txt.split('$'))]
+        txt = '$'.join(txt)
+
+    else:
+        txt = txt.replace(r'\smaller', '')
+        txt = txt.replace(r'\bf', r'')
+        txt = txt.replace(r'\it', r'')
+        txt = txt.replace(r'\flushleft', r'')
+        txt = txt.replace(r'\newline', r'')
 
     return txt
 
@@ -258,9 +299,9 @@ def add_source(fig):
         fig (matplotlib.pyplot.figure): the figure to add the text to.
 
     """
-    msg = 'Created with dvas v{}'.format(VERSION)
+    msg = r'\it\flushleft Created with\newline dvas v{}'.format(VERSION)
 
-    fig.text(0.01, 0.02, msg, fontsize='xx-small',
+    fig.text(0.01, 0.02, fix_txt(msg), fontsize='xx-small',
              horizontalalignment='left', verticalalignment='bottom')
 
 

@@ -16,14 +16,16 @@ import matplotlib.gridspec as gridspec
 
 # Import dvas modules and classes
 from dvas.logger import log_func_call
+from dvas.data.data import MultiGDPProfile, MultiCWSProfile
 from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME
 from dvas.data.data import MultiRSProfile
 from dvas.plots import utils as dpu
+from dvas.plots import gdps as dpg
 
 # Import from dvas_recipes
 from ..errors import DvasRecipesError
 from .. import dynamic
-from ..recipe import for_each_flight
+from ..recipe import for_each_flight, for_each_var
 from ..utils import fn_suffix
 from . import tools
 
@@ -141,3 +143,62 @@ def flight_overview(tags='sync', label='mid', show=None):
     dpu.fancy_savefig(fig, 'flight_overview', fn_prefix=dynamic.CURRENT_STEP_ID,
                       fn_suffix=fn_suffix(eid=eid, rid=rid, tags=tags),
                       fmts=dpu.PLOT_FMTS, show=show)
+
+
+@for_each_var
+@for_each_flight
+@log_func_call(logger, time_it=True)
+def inspect_cws(tags='sync'):
+    """ Create a series of CWS-related plot for inspection purposes.
+
+    Args:
+        tags (str|list of str, optional): tag names for the search query into the database.
+            Defaults to 'sync'.
+
+    """
+
+    # Deal with the search tags
+    if isinstance(tags, str):
+        tags = [tags]
+    if not isinstance(tags, list):
+        raise DvasRecipesError('Ouch ! tags should be of type str|list. not: {}'.format(type(tags)))
+
+    # This recipe step should be straight forward. I first need to extract the GDPs, then the CWS,
+    # and simply call the dedicated plotting routine.
+
+    # Get the event id and rig id
+    (eid, rid) = dynamic.CURRENT_FLIGHT
+
+    # What search query will let me access the data I need ?
+    gdp_filt = tools.get_query_filter(tags_in=tags+[eid, rid, 'gdp'], tags_out=None)
+    cws_filt = tools.get_query_filter(tags_in=tags+[eid, rid, 'cws'], tags_out=None)
+
+    # Load the GDP profiles
+    gdp_prfs = MultiGDPProfile()
+    gdp_prfs.load_from_db(gdp_filt, dynamic.CURRENT_VAR,
+                          tdt_abbr=dynamic.INDEXES[PRF_REF_TDT_NAME],
+                          alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME],
+                          ucr_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucr'],
+                          ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
+                          uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
+                          ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],
+                          inplace=True)
+    # Idem for the CWS
+    cws_prfs = MultiCWSProfile()
+    cws_prfs.load_from_db(cws_filt, dynamic.CURRENT_VAR,
+                          tdt_abbr=dynamic.INDEXES[PRF_REF_TDT_NAME],
+                          alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME],
+                          ucr_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucr'],
+                          ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
+                          uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
+                          ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],
+                          inplace=True)
+
+    # We can now create a GDP vs CWS plot ...
+    dpg.gdps_vs_cws(gdp_prfs, cws_prfs, show=None,
+                    fn_prefix=dynamic.CURRENT_STEP_ID,
+                    fn_suffix=fn_suffix(eid=eid, rid=rid, tags=tags, var=dynamic.CURRENT_VAR))
+    # And a uc_budget plot
+    dpg.uc_budget(gdp_prfs, cws_prfs, show=None,
+                  fn_prefix=dynamic.CURRENT_STEP_ID,
+                  fn_suffix=fn_suffix(eid=eid, rid=rid, tags=tags, var=dynamic.CURRENT_VAR))

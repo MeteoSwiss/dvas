@@ -301,7 +301,11 @@ class Recipe:
         flights = np.array([[item[1]['eid'], item[1]['rid']] for item in global_view.iterrows()])
 
         # Drop the duplicates
-        flights = np.atleast_2d(np.unique(flights))
+        flights = np.unique(flights, axis=0)
+
+        # Make some quick test to make sure I did not mess anyting up
+        assert np.ndim(flights) == 2
+        assert np.shape(flights)[1] == 2
 
         logger.info('Found %i flight(s) in the database.', len(flights))
 

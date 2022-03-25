@@ -22,6 +22,7 @@ from dvas.hardcoded import PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME,
 # Function to test
 from dvas.tools.gdps.utils import weighted_mean, delta, process_chunk
 
+
 @pytest.fixture
 def chunk():
     """ A data chunk to test the GDP utils functions. """
@@ -37,16 +38,17 @@ def chunk():
     # Initialize the DataFrame
     test_chunk = pd.DataFrame(index=pd.Series(range(10)), columns=cols).sort_index(axis=1)
 
-    # Set the proper types for the tdt columns
-    test_chunk.loc[:, (slice(None), 'tdt')] = \
-        test_chunk.loc[:, (slice(None), 'tdt')].astype('timedelta64[ns]')
-
-    # Set the types for the other columns
+    # Set the proper types for the different columns
     for key in lvl_one:
-        if key in ['tdt', PRF_REF_FLG_NAME]:
-            continue
-        test_chunk.loc[:, (slice(None), key)] = \
-            test_chunk.loc[:, (slice(None), key)].astype('float')
+        if key == 'tdt':
+            test_chunk.loc[:, (slice(None), key)] = \
+                test_chunk.loc[:, (slice(None), key)].astype('timedelta64[ns]')
+        elif key == PRF_REF_FLG_NAME:
+            test_chunk.loc[:, (slice(None), key)] = \
+                test_chunk.loc[:, (slice(None), key)].astype('Int64')
+        else:
+            test_chunk.loc[:, (slice(None), key)] = \
+                test_chunk.loc[:, (slice(None), key)].astype('float')
 
     # The time deltas
     test_chunk.loc[:, (0, PRF_REF_TDT_NAME)] = pd.to_timedelta(range(10), unit='s')
@@ -78,6 +80,18 @@ def chunk():
     test_chunk.loc[:, (slice(None), PRF_REF_UCU_NAME)] = 1.
     test_chunk.loc[:, (slice(None), 'uc_tot')] = 2.
 
+    # Some flags
+    test_chunk.loc[0, (0, PRF_REF_FLG_NAME)] = 1
+    test_chunk.loc[0, (1, PRF_REF_FLG_NAME)] = 2
+    test_chunk.loc[0, (2, PRF_REF_FLG_NAME)] = 4
+    test_chunk.loc[1, (1, PRF_REF_FLG_NAME)] = 8
+    test_chunk.loc[2, (1, PRF_REF_FLG_NAME)] = 0
+    test_chunk.loc[2, (2, PRF_REF_FLG_NAME)] = 3
+    test_chunk.loc[9, (0, PRF_REF_FLG_NAME)] = 0
+    test_chunk.loc[8, (0, PRF_REF_FLG_NAME)] = 1
+    test_chunk.loc[8, (1, PRF_REF_FLG_NAME)] = 2
+    test_chunk.loc[8, (2, PRF_REF_FLG_NAME)] = 4
+
     # Errors are NaNs, but values are not.
     test_chunk.loc[9, (slice(None), PRF_REF_UCR_NAME)] = np.nan
 
@@ -87,9 +101,10 @@ def chunk():
 
     for ind in range(3):
         test_chunk.loc[:, (ind, 'oid')] = ind
-        test_chunk.loc[:, (ind, 'mid')] = 'A' # Force the same mid for all Profiles
+        test_chunk.loc[:, (ind, 'mid')] = 'A'  # Force the same mid for all Profiles
 
     return test_chunk
+
 
 def test_weighted_mean(chunk):
     """ Function used to test the weighted_mean combination of profiles."""
@@ -100,12 +115,15 @@ def test_weighted_mean(chunk):
     assert out.loc[0, PRF_REF_TDT_NAME] == 1/3 * pd.to_timedelta(1.01, unit='s')
     assert out.loc[0, PRF_REF_ALT_NAME] == 1.01/3
 
-    # If all the values are NaNs, should be NaN.
-    assert np.isnan(out.loc[1, PRF_REF_VAL_NAME])
-    # If only some of the bins are NaN's, I should return a number
+    # If all the values are NaNs, should be NaN, and so should the flag.
+    assert out.isna().loc[1, PRF_REF_VAL_NAME]
+    assert out.isna().loc[1, PRF_REF_FLG_NAME]
+    # If only some of the bins are NaN's, I should return a number and flag
     assert out.loc[2, PRF_REF_VAL_NAME] == 6/2
+    assert out.loc[2, PRF_REF_FLG_NAME] == 3
     # if all the weights are NaN's, return NaN
-    assert np.isnan(out.loc[9, PRF_REF_VAL_NAME])
+    assert out.isna().loc[9, PRF_REF_VAL_NAME]
+    assert out.isna().loc[9, PRF_REF_FLG_NAME]
     # jac_mat has correct dimensions ?
     assert np.shape(jac_mat) == (int(np.ceil(len(chunk))), len(chunk)*3)
     # Content of jac_mat is as expected
@@ -119,8 +137,9 @@ def test_weighted_mean(chunk):
 
     # Idem but with some binning this time
     out, jac_mat = weighted_mean(chunk, binning=3)
-    # Ignore the NaN values in the bin, and normalize properly
+    # Ignore the NaN values in the bin, and normalize properly. Combine flags just fine.
     assert out.loc[0, PRF_REF_VAL_NAME] == 13/5
+    assert out.loc[0, PRF_REF_FLG_NAME] == 7
     # Only valid values ... the easy stuff
     assert out.loc[1, PRF_REF_VAL_NAME] == 7/3
     # Do I actually have the correct amount of bins ?
@@ -129,9 +148,12 @@ def test_weighted_mean(chunk):
     assert np.isnan(out.loc[3, PRF_REF_VAL_NAME])
     # Did I handle the Nan-weight ok ?
     assert out.loc[2, PRF_REF_VAL_NAME] == 20/8
+    # And the partial flags ?
+    assert out.loc[2, PRF_REF_FLG_NAME] == 6
     # jac_mat has correct dimensions ?
     assert np.shape(jac_mat) == (int(np.ceil(len(chunk)/3)), len(chunk)*3)
     assert jac_mat[0, 0] == 1/5
+
 
 def test_delta(chunk):
     """ Function used to test the delta combination of profiles."""
@@ -144,22 +166,33 @@ def test_delta(chunk):
     chunk_2 = chunk.loc[:, :1]
     binning = 1
     out, jac_out = delta(chunk_2, binning=binning)
+
     assert len(out) == len(chunk)
-    assert out.loc[0, 'val'] == 1 # Can I compute a delta ?
-    assert np.isnan(out.loc[1, 'val']) # What if I have a partial NaN ?
-    assert np.isnan(out.loc[2, 'val']) # What if I have two NaNs ?
+    assert out.loc[0, 'val'] == 1  # Can I compute a delta ?
+    assert np.isnan(out.loc[1, 'val'])  # What if I have two NaNs ?
+    assert np.isnan(out.loc[2, 'val'])  # What if I have partial NaN ?
     # Correct jacobian shape ?
-    assert np.shape(jac_out) == (len(chunk_2)//binning + len(chunk_2)%binning, 2*len(chunk_2))
+    assert np.shape(jac_out) == (len(chunk_2)//binning + len(chunk_2) % binning, 2*len(chunk_2))
+    # Correct flags ?
+    assert out.loc[0, 'flg'] == 3
+    assert out.isna().loc[1, 'flg']
+    assert out.loc[2, 'flg'] == 0
+    assert out.isna().loc[9, 'flg']
 
     # Now do the same with some binning
     binning = 2
     out, jac_out = delta(chunk_2, binning=binning)
     # Correct Jacobian shape ?
-    assert np.shape(jac_out) == (len(chunk_2)//binning + len(chunk_2)%binning, 2*len(chunk_2))
+    assert np.shape(jac_out) == (len(chunk_2)//binning + len(chunk_2) % binning, 2*len(chunk_2))
     # Partial NaN's are ignored ?
     assert out.loc[0, 'val'] == 1
     # Full NaN's are handled properly ?
     assert np.isnan(out.loc[4, 'val'])
+    # Correct flags
+    assert out.loc[0, 'flg'] == 3
+    assert out.loc[1, 'flg'] == 0
+    assert all(out.isna()[2:])
+
 
 def test_process_chunk(chunk):
     """ Function to test the processing of Profile chunks. This is the one responsible for the
@@ -172,12 +205,12 @@ def test_process_chunk(chunk):
     assert out_1.loc[0, PRF_REF_UCS_NAME] == 1
     assert out_1.loc[0, PRF_REF_UCT_NAME] == 1
     assert out_1.loc[0, PRF_REF_UCU_NAME] == np.sqrt(1/3)
-    assert np.isnan(out_1.loc[1, PRF_REF_UCR_NAME]) # Values are all NaNs
-    assert np.isnan(out_1.loc[9, PRF_REF_UCR_NAME]) # Error are all NaNs
+    assert np.isnan(out_1.loc[1, PRF_REF_UCR_NAME])  # Values are all NaNs
+    assert np.isnan(out_1.loc[9, PRF_REF_UCR_NAME])  # Error are all NaNs
 
-    ## With partial NaN's, errors still get computed correctly.
-    assert not(np.isnan(out_1.loc[8, PRF_REF_UCR_NAME]))
-    assert not(np.isnan(out_1.loc[8, PRF_REF_VAL_NAME]))
+    # With partial NaN's, errors still get computed correctly.
+    assert not np.isnan(out_1.loc[8, PRF_REF_UCR_NAME])
+    assert not np.isnan(out_1.loc[8, PRF_REF_VAL_NAME])
 
     # Now with binning
     out_2 = process_chunk(chunk, binning=2, method='mean')

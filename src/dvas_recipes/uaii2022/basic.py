@@ -83,15 +83,45 @@ def flag_descent(prfs):
     return prfs
 
 
+@log_func_call(logger, time_it=False)
+def cleanup_steps(prfs, resampling_freq, crop_descent):
+    """ Execute a series of cleanup-steps common to GDP and non-GDP profiles. This function is here
+    to avoid duplicating code. The cleanup-up profiles are directlyt save to the DB with the tag:
+    TAG_CLN_NAME
+
+    Args:
+        prfs (MultiRSProfile|MultiGDPProfile): the profiles to cleanup.
+        resampling_freq (str): time step frequency, to feed :py:func:`pandas.timedelta_range`, e.g.
+            '1s'.
+        crop_descent (bool): if True, and data with the flag "descent" will be cropped out for good.
+
+    """
+
+    # Flag descent data (do this *after* the resampling so I do not need to worry about it)
+    prfs = flag_descent(prfs)
+
+    # Crop the descent data if warranted
+    if crop_descent:
+        for (ind, prf) in enumerate(prfs):
+            prfs[ind].data = prf.data.loc[prf.has_flg(FLG_DESCENT_NAME) == 0]
+
+    # Resample the profiles as required
+    prfs.resample(freq=resampling_freq, inplace=True, chunk_size=dynamic.CHUNK_SIZE,
+                  n_cpus=dynamic.N_CPUS)
+
+    # Save back to the DB
+    prfs.save_to_db(add_tags=[TAG_CLN_NAME])
+
+
 @for_each_var
 @for_each_flight
 @log_func_call(logger, time_it=True)
-def cleanup(tags, dt):
+def cleanup(tags, **args):
     """ Highest-level function responsible for doing an initial cleanup of the data.
 
     Args:
         tags (str|list): list of tags to identify profiles to clean in the db.
-        dt (int|float): time step frequency, to feed :py:func:`pandas.timedelta_range`.
+        **args: arguments to be fed to :py:func:`.cleanup_steps`.
 
     """
 
@@ -129,15 +159,7 @@ def cleanup(tags, dt):
                               ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],
                               inplace=True)
 
-        # Flag descent data
-        gdp_prfs = flag_descent(gdp_prfs)
-
-        # Resample the profiles as required
-        gdp_prfs.resample(freq=dt, inplace=True,
-                          chunk_size=dynamic.CHUNK_SIZE, n_cpus=dynamic.N_CPUS)
-
-        # Save back to the DB
-        gdp_prfs.save_to_db(add_tags=[TAG_CLN_NAME])
+        cleanup_steps(gdp_prfs, **args)
 
     # Process the non-GDPs, if any
     if not db_view.is_gdp.all():
@@ -151,11 +173,4 @@ def cleanup(tags, dt):
                              dynamic.CURRENT_VAR, dynamic.INDEXES[PRF_REF_TDT_NAME],
                              alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME])
 
-        # Flag descent data
-        rs_prfs = flag_descent(rs_prfs)
-
-        rs_prfs.resample(freq=dt, inplace=True,
-                         chunk_size=dynamic.CHUNK_SIZE, n_cpus=dynamic.N_CPUS)
-
-        # Save back to the DB
-        rs_prfs.save_to_db(add_tags=[TAG_CLN_NAME])
+        cleanup_steps(rs_prfs, **args)
