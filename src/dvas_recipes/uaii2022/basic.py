@@ -144,7 +144,7 @@ def cleanup(tags, **args):
     # need to be cleaned accordingly.
 
     # Start with the GDPs
-    if db_view.is_gdp.any():
+    if db_view.is_gdp[(db_view.rid == rid) & (db_view.eid == eid)].any():
         logger.info('Cleaning GDP profiles for flight %s and variable %s',
                     dynamic.CURRENT_FLIGHT,
                     dynamic.CURRENT_VAR)
@@ -162,7 +162,7 @@ def cleanup(tags, **args):
         cleanup_steps(gdp_prfs, **args)
 
     # Process the non-GDPs, if any
-    if not db_view.is_gdp.all():
+    if not db_view.is_gdp[(db_view.rid == rid) & (db_view.eid == eid)].all():
         logger.info('Cleaning non-GDP profiles for flight %s and variable %s',
                     dynamic.CURRENT_FLIGHT,
                     dynamic.CURRENT_VAR)
