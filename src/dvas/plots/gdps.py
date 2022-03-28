@@ -349,9 +349,10 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     pu.add_edt_eid_rid(ax0, cws_prf)
 
     # Add the k-level if warranted
-    ax0.text(1, 1.03, r'{} [{}], $k={}$'.format(cws_prf.var_info[PRF_REF_VAL_NAME]['prm_name'],
-                                                cws_prf.var_info[PRF_REF_VAL_NAME]['prm_unit'],
-                                                k_lvl), fontsize='small',
+    msg = pu.fix_txt(r'{} [{}], $k={}$'.format(cws_prf.var_info[PRF_REF_VAL_NAME]['prm_name'],
+                                               cws_prf.var_info[PRF_REF_VAL_NAME]['prm_unit'],
+                                               k_lvl))
+    ax0.text(1, 1.03, msg, fontsize='small',
              verticalalignment='bottom', horizontalalignment='right',
              transform=ax0.transAxes)
 
