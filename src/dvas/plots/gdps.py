@@ -160,12 +160,6 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
                  fontsize='small')
 
     if show_alts:
-        altax = pu.add_sec_axis(ax1, idxs, alts, offset=-0.25, which='x')
-        altax.tick_params(labelsize='small')
-        ax1.text(1.02, -0.3, pu.fix_txt(altlbl), ha='left', va='center', transform=ax1.transAxes,
-                 fontsize='small')
-
-    if show_alts:
         altax = pu.add_sec_axis(ax1, idxs, alts, offset=-0.5, which='x')
         altax.tick_params(labelsize='small')
         ax1.text(1.02, -0.55, pu.fix_txt(altlbl), ha='left', va='center', transform=ax1.transAxes,
