@@ -50,7 +50,7 @@ def build_cws(tags='sync', m_vals=None, strategy='all-or-none', alpha=0.0027, cw
             valid regions between GDPs. Any negative value will be ignored when computing the cws.
             Defaults to None=[1, '-2'].
         strategy (str, optional): name of GDP combination strategy (for deciding which levels/
-            measurements are valid or not). Defaults to 'all-or-none'. These ared defined in
+            measurements are valid or not). Defaults to 'all-or-none'. These are defined in
             :py:func:`dvas.tools.gdps.stats.get_validities`.
         alpha (float, optional): The significance level for the KS test. Defaults to 0.27%.
             See :py:func:`dvas.tools.gdps.stats.gdp_incompatibilities` for details.
