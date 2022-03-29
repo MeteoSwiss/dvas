@@ -163,6 +163,7 @@ class Recipe:
 
     _name = None
     _steps = None
+    _reset_db = True
 
     def __init__(self, rcp_fn, flights=None):
         """ Recipe initialization from a suitable YAML recipe file.
@@ -182,6 +183,8 @@ class Recipe:
 
         # Set the recipe name
         self._name = rcp_data['rcp_name']
+        # Set whether we want to reset the DB, or load an existing one
+        self._reset_db = rcp_data['rcp_params']['general']['reset_db']
 
         # Setup the dvas paths
         for item in rcp_data['rcp_paths'].items():
@@ -264,14 +267,21 @@ class Recipe:
         return len(self._steps)
 
     @staticmethod
-    def init_db():
-        """ Initialize the dvas database, and fetch the raw data required for the recipe. """
+    def init_db(reset: bool = True):
+        """ Initialize the dvas database, and fetch the raw data required for the recipe.
+
+        Args:
+            reset (bool, optional): if True, the DB will be filled from scratch. Else, only new
+                raw data will be ingested. Defaults to True.
+        """
 
         # Here, make sure the DB is stored locally, and not in memory.
         dyn.DB_IN_MEMORY = False
 
-        # Use this command to clear the DB
-        DB.refresh_db()
+        if reset:
+            logger.info("Resetting the DB.")
+            # Use this command to clear the DB
+            DB.refresh_db()
 
         # Init the DB
         DB.init()
@@ -321,7 +331,7 @@ class Recipe:
         """
 
         # First, we setup the dvas database
-        self.init_db()
+        self.init_db(reset=self._reset_db)
 
         # If warranted, find all the flights that need to be processed.
         if rcp_dyn.ALL_FLIGHTS is None:
