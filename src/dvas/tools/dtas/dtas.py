@@ -56,11 +56,6 @@ def single_delta(prf, cws):
     # Prepare the InfoManager of the delta Profile. Just get it as a copy of the Profile itself
     dta_info = deepcopy(prf.info)
 
-    # Update the list of oid to keep track of the oid(s) from the cws. To not mix things up, set the
-    # cws oid as negative numbers. Is that weird ?
-    # TODO: once #173 is fixed, deal with it properly here
-    dta_info.oid += cws.info.oid
-
     # For the data, start by deep copying the cws one with all the uncertainties.
     # The ref_alt parameter, in particular, is taken from the CWS.
     dta_data = deepcopy(cws.data)
