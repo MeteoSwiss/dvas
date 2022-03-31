@@ -14,18 +14,18 @@ Module content: high-level delta recipes for the UAII2022 campaign
 from dvas.data.data import MultiProfile, MultiCWSProfile
 from dvas.tools.dtas import dtas as dtdd
 from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME
-from dvas.hardcoded import PRF_REF_VAL_NAME, PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME
-from dvas.hardcoded import PRF_REF_UCU_NAME, TAG_DTA_NAME, TAG_GDP_NAME, TAG_CWS_NAME
+from dvas.hardcoded import TAG_DTA_NAME, TAG_GDP_NAME, TAG_CWS_NAME
 
 # Import from dvas_recipes
 from ..errors import DvasRecipesError
 from ..recipe import for_each_flight, for_each_var
 from .. import dynamic
+from . import tools
 
 
 @for_each_var
 @for_each_flight
-def compute_deltas(tags='sync', mids='all'):
+def compute_deltas(tags='sync'):
     """ Highest-level recipe function responsible for compute differences between profiles under
     test and appropriate combined working standards.
 
@@ -39,8 +39,6 @@ def compute_deltas(tags='sync', mids='all'):
     Args:
         tags (str|list of str, optional): tag name(s) for the search query into the database.
             Defaults to 'sync'.
-        mids (str|list, optional): list of model ids to process. Defaults to 'all'.
-            CURRENTLY HAS NO EFFECT !
 
     """
 
@@ -50,16 +48,14 @@ def compute_deltas(tags='sync', mids='all'):
     if not isinstance(tags, list):
         raise DvasRecipesError('Ouch ! tags should be of type str|list. not: {}'.format(type(tags)))
 
-    # Deal with the mids
-    # TODO: actually allow users to only process specific models. We need to implement #168 first.
-
     # Get the event id and rig id
     (eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What search query will let me access the data I need ?
-    nongdp_filt = "and_(not_(tags('gdp')), tags('e:{}'), tags('r:{}'), {})".format(
-        eid, rid, "tags('" + "'), tags('".join(tags) + "')")
-    cws_filt = "and_(tags('cws'), tags('e:{}'), tags('r:{}'))".format(eid, rid)
+    nongdp_filt = tools.get_query_filter(tags_in=tags+[eid, rid], tags_out=[TAG_GDP_NAME,
+                                                                            TAG_CWS_NAME,
+                                                                            TAG_DTA_NAME])
+    cws_filt = tools.get_query_filter(tags_in=tags+[eid, rid, TAG_CWS_NAME], tags_out=None)
 
     # Load the non GDP profiles as Profiles (and not RSProfiles) since we're about to drop the
     # time axis anyway.
@@ -87,14 +83,5 @@ def compute_deltas(tags='sync', mids='all'):
     # Compute the Delta Profiles
     dta_prfs = dtdd.compute(nongdp_prfs, cws_prfs)
 
-    # TODO: inspect the result visually
-
     # Save the Delta profiles to the database
-    # Here, I only save the information associated to the variable, i.e. the value and its errors.
-    # I do not save the alt column, which is a variable itself and should be derived as such using a
-    # weighted mean. I also do not save the tdt column, which should be assembled from a simple mean
-    dta_prfs.save_to_db(add_tags=[TAG_DTA_NAME], rm_tags=[TAG_GDP_NAME, TAG_CWS_NAME],
-                        prms=[PRF_REF_VAL_NAME, PRF_REF_UCR_NAME, PRF_REF_UCS_NAME,
-                              PRF_REF_UCT_NAME, PRF_REF_UCU_NAME])
-
-    # TODO: export the altitude separately, into a dedicated variable of the DB.
+    dta_prfs.save_to_db(add_tags=[TAG_DTA_NAME], rm_tags=[TAG_GDP_NAME, TAG_CWS_NAME])

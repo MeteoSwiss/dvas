@@ -15,13 +15,15 @@ This module contains tools and routines related to deltas between profiles and C
 import logging
 from copy import deepcopy
 from pathlib import Path
+import pandas as pd
 
 # Import from this module
 from ...logger import log_func_call
-from ...hardcoded import PRF_REF_TDT_NAME
+from ...hardcoded import PRF_REF_TDT_NAME, PRF_REF_FLG_NAME, PRF_REF_VAL_NAME
 from ...data.strategy.data import DeltaProfile
 from ...data.data import MultiDeltaProfile
 from ...errors import DvasError
+from ..tools import fancy_bitwise_or
 
 # Setup local logger
 logger = logging.getLogger(__name__)
@@ -57,16 +59,19 @@ def single_delta(prf, cws):
     # Update the list of oid to keep track of the oid(s) from the cws. To not mix things up, set the
     # cws oid as negative numbers. Is that weird ?
     # TODO: once #173 is fixed, deal with it properly here
-    dta_info.oid += [item for item in cws.info.oid]
+    dta_info.oid += cws.info.oid
 
     # For the data, start by deep copying the cws one with all the uncertainties.
+    # The ref_alt parameter, in particular, is taken from the CWS.
     dta_data = deepcopy(cws.data)
 
     # Next compute the delta itself. Here, let's keep in mind that the index from the cws is
     # **different** from the index of the profile !
-    dta_data.loc[:, ['val']] = prf.data['val'].values - cws.data['val'].values
+    dta_data.loc[:, [PRF_REF_VAL_NAME]] = prf.data['val'].values - cws.data[PRF_REF_VAL_NAME].values
 
-    #TODO: How do I combine the flags ? Doing nothing means keeping those from the CWS only ...
+    # For the flags, let's apply a bitwise_or to combine the prf and cws values
+    flg_pdf = pd.DataFrame([cws.data['flg'].values, prf.data['flg'].values], dtype='Int64').T
+    dta_data.loc[:, [PRF_REF_FLG_NAME]] = fancy_bitwise_or(flg_pdf, axis=1)
 
     # Create a new DeltaProfile instance
     dta = DeltaProfile(dta_info, dta_data)

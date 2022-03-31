@@ -134,4 +134,3 @@ rcp_steps:
         run: True
         kwargs:
             tags: sync # list of tags to identify profiles in the database
-            mids: 'all' # List of model ids to process

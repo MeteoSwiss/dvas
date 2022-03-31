@@ -14,7 +14,6 @@ This module contains low-level, stand-alone, dvas tools.
 # Import from Python packages
 import logging
 import numpy as np
-import numpy.ma as ma
 import pandas as pd
 
 # Import from this package
@@ -101,12 +100,12 @@ def fancy_bitwise_or(vals, axis=None):
             (=sum everything).
 
     Returns:
-        pd.NA|int|pd.array: the result as a scale if axis=None, and a pandas array with dtype Int64
+        pd.NA|int|pd.array: the result as a scalar if axis=None, and a pandas array with dtype Int64
             if not.
     """
 
     # Let's make sure I have been given integers, in order to run bitwise operations
-    if not all([pd.api.types.is_integer_dtype(item) for item in vals.dtypes]):
+    if not all(pd.api.types.is_integer_dtype(item) for item in vals.dtypes):
         raise DvasError('Ouch ! I need ints to perform a bitwise OR, but I got:', vals.dtypes)
 
     # Easy if all is nan and axis is None
