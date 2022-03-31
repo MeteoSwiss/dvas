@@ -71,66 +71,75 @@ rcp_params:
 rcp_steps:
 
     # This is a dummy function used for test/demonstration purposes.
-    demo.demo.sequential_dummy:
-        step_id: '00'
-        run: False
-        kwargs:
-            dummy_arg: test
+    - fct: demo.demo.sequential_dummy
+      step_id: '00'
+      run: False
+      kwargs:
+        dummy_arg: test
 
     # Export summary of profiles ingested in the database
-    uaii2022.basic.prf_summary:
-        step_id: '00'
-        run: True
-        kwargs:
+    - fct: uaii2022.basic.prf_summary
+      step_id: '00'
+      run: False
+      kwargs:
 
-    # Profile cleanup (flag descent data, resample)
-    uaii2022.basic.cleanup:
-        step_id: '01'
-        run: True
-        kwargs:
-            tags: raw # list of tags to identify profiles to resample
-            resampling_freq: '1s' # Time step to resample onto, in seconds
-            crop_descent: True # If True, descent data will be cropped for good
+    # Profile cleanup (cropping after burst, resampling)
+    - fct: uaii2022.basic.cleanup
+      step_id: '01'
+      run: False
+      kwargs:
+        tags: raw
+        resampling_freq: '1s' # Time step to resample onto, in seconds
+        crop_descent: True # If True, descent data will be cropped for good
 
     # Profile synchronization on a per-flight basis.
-    uaii2022.sync.sync_flight:
-        step_id: '02'
-        run: True
-        kwargs:
-            tags: clean
-            anchor_alt: 5000 # Initial (single) altitude to anchor all profiles.
-            global_match_var: 'gph' # Variable to match globally
+    - fct: uaii2022.sync.sync_flight
+      step_id: '02'
+      run: False
+      kwargs:
+        tags: clean
+        anchor_alt: 5000 # Initial (single) altitude to anchor all profiles.
+        global_match_var: 'gph' # Variable to match globally
 
     # Simple plotting step of the complete profiles for all the variables.
-    uaii2022.plots.flight_overview:
-        step_id: '03'
-        run: True
-        kwargs:
-            tags: sync # list of tags to identify profiles in the database
-            label: mid # Labelling of plot legend, e.g.: mid, oid, etc ...
-            show: # bool: if set, will override the global plot_show value.
+    - fct: uaii2022.plots.flight_overview
+      step_id: '03'
+      run: False
+      kwargs:
+        tags: sync # list of tags to identify profiles in the database
+        label: mid # Labelling of plot legend, e.g.: mid, oid, etc ...
+        show: # bool: if set, will override the global plot_show value.
 
     # Assembly of the Combined Working Standard on a per-flight basis.
-    uaii2022.gdps.build_cws:
-        step_id: '04'
-        run: True
-        kwargs:
-            tags: sync # list of tags to identify profiles in the database
-            m_vals: [1, -10] # list of m values. The negative ones are ignored for the cws assembly
-            strategy: all-or-none # Strategy to decide which GDPs to combine, in case of incompatibilities.
-            alpha: 0.0027 # alpha level for the KS test. 0.0027 = 3-sigmas
-            cws_alt_ref: gph # Name of the variable to use in order to populate alt_ref
+    - fct: uaii2022.gdps.build_cws
+      step_id: '04'
+      run: False
+      kwargs:
+        tags: sync # list of tags to identify profiles in the database
+        m_vals: [1, -10] # list of m values. The negative ones are ignored for the cws assembly
+        strategy: force-all-valid # Strategy to decide which GDPs to combine, in case of incompatibilities.
+        alpha: 0.0027 # alpha level for the KS test. 0.0027 = 3-sigmas
+        cws_alt_ref: gph # Name of the variable to use in order to populate alt_ref
 
     # GDP vs CWS plotting
-    uaii2022.plots.inspect_cws:
-        step_id: '05'
-        run: True
-        kwargs:
-            tags: sync # list of tags to identify profiles in the DB
+    - fct: uaii2022.plots.inspect_cws
+      step_id: '05'
+      run: False
+      kwargs:
+        tags: sync # list of tags to identify profiles in the DB
 
     # Compute the deltas between the profiles of sondes under test and Combined Working Standards
-    uaii2022.dtas.compute_deltas:
-        step_id: '06'
-        run: True
-        kwargs:
-            tags: sync # list of tags to identify profiles in the database
+    - fct: uaii2022.dtas.compute_deltas
+      step_id: '06a'
+      run: True
+      kwargs:
+        tags: sync # list of tags to identify profiles in the database
+        incl_gdps: True # if True, will also compute deltas for GDP profiles
+        save_to_db: False # if True, will save the delta profiles to the DB
+    - fct: uaii2022.dtas.compute_deltas
+      step_id: '06b'
+      run: True
+      kwargs:
+        tags: sync # list of tags to identify profiles in the database
+        incl_gdps: False # if True, will also compute deltas for GDP profiles
+        save_to_db: True # if True, will save the delta profiles to the DB

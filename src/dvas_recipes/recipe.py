@@ -237,16 +237,16 @@ class Recipe:
 
         # Get started with the initializations of the different recipe steps
         self._steps = []
-        for item in rcp_data['rcp_steps'].items():
+        for item in rcp_data['rcp_steps']:
 
             # Danger zone: here I access the correct function by importing the corresponding
             # recipe module (from scratch ?)... this seems to work ... until proven otherwise ?
-            rcp_mod = import_module('.'+'.'.join(item[0].split('.')[:-1]), 'dvas_recipes')
+            rcp_mod = import_module('.'+'.'.join(item['fct'].split('.')[:-1]), 'dvas_recipes')
 
             # Initialize the recipe step, and add it to the list
-            self._steps += [RecipeStep(getattr(rcp_mod, item[0].split('.')[-1]),
-                                       item[1]['step_id'], item[0],
-                                       item[1]['run'], item[1]['kwargs'])]
+            self._steps += [RecipeStep(getattr(rcp_mod, item['fct'].split('.')[-1]),
+                                       item['step_id'], item['fct'],
+                                       item['run'], item['kwargs'])]
 
         # Set the flights to be processed, if warranted.
         # These get stored in the dedicated "dynamic" module, for easy access everywhere.
