@@ -98,6 +98,10 @@ def dvas_run_recipe():
     parser.add_argument('-f', '--flights', action='store', default=None,
                         help='(Path +) Name of text file listing specific flights to process.')
 
+    parser.add_argument('-s', '--skip_until', action='store', default=None,
+                        help='Skip recipe steps until this one. ' +
+                        'If set, the DB reset will be disabled !')
+
     # Done getting ready.
     # What did we get from the user ?
     args = parser.parse_args()
@@ -106,4 +110,4 @@ def dvas_run_recipe():
         args.flights = Path(args.flights)
 
     # Feed this to the actual recipe routine
-    run_recipe(Path(args.rcp_fn), flights=args.flights)
+    run_recipe(Path(args.rcp_fn), flights=args.flights, from_step_id=args.skip_until)

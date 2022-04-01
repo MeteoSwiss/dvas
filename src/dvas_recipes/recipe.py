@@ -330,6 +330,12 @@ class Recipe:
 
         """
 
+        # If I am skipping any steps, let's disable the DB reset. Else, it will blow up in my face.
+        if from_step_id is not None:
+            logger.info('Force-disable the DB reset, in order to skip until the recipe step: %s',
+                        from_step_id)
+            self._reset_db = False
+
         # First, we setup the dvas database
         self.init_db(reset=self._reset_db)
 
