@@ -11,14 +11,12 @@ Module contents: Plotting functions related to the delta submodule.
 
 # Import from Python packages
 import logging
-import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
 # Import from this package
 from ..logger import log_func_call
-from ..errors import DvasError
-from ..hardcoded import PRF_REF_INDEX_NAME, PRF_REF_VAL_NAME, PRF_REF_ALT_NAME, PRF_REF_TDT_NAME
+from ..hardcoded import PRF_REF_VAL_NAME, PRF_REF_ALT_NAME
 from ..hardcoded import PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME
 from . import utils as pu
 
