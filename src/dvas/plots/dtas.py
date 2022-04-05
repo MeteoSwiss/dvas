@@ -61,6 +61,34 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
                               PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME,
                               'uc_tot'])
 
+    # Assess whether a single mid was provided, or not. If so, tweak some of the colors, alphas, ...
+    mid = set(tuple(item) for item in dta_prfs.get_info('mid'))
+    if len(mid) == 1:
+
+        def sig_alpha(k):
+            return 0.1+(3-k)*0.1
+
+        def fc(ind):
+            return 'dimgrey'
+
+        lc = 'dimgrey'
+        alpha = 0.2
+        sig_col = 'mediumpurple'
+    else:
+
+        def sig_alpha(k):
+            return 0.05+(3-k)*0.05
+
+        def fc(ind):
+            """ Hack function to get the proper colors from the cycler with fill_between.
+            For reasons unknown (to me), setting the facecolor to None always picks-up the first
+            cycler color. """
+            return 'C%i' % (ind)
+
+        lc = None
+        alpha = 0.3
+        sig_col = 'k'
+
     # What are the limit altitudes ?
     alt_min = dtas.loc[:, (slice(None), 'alt')].min(axis=0).min()
     alt_max = dtas.loc[:, (slice(None), 'alt')].max(axis=0).max()
@@ -68,8 +96,8 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
     # For the bottom plots, show the k=1, 2, 3 zones
     for k in [1, 2, 3]:
         ax1.fill_between([alt_min, alt_max], [-k, -k], [k, k],
-                         alpha=0.05+(3-k)*0.05,
-                         facecolor='k', edgecolor='none')
+                         alpha=sig_alpha(k),
+                         facecolor=sig_col, edgecolor='none')
     for ax in [ax0, ax1]:
         ax.axhline(0, lw=0.5, ls='-', c='k')
 
@@ -80,19 +108,19 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
 
         # First, plot the profiles themselves
         ax0.plot(dta.loc[:, PRF_REF_ALT_NAME].values, dta.loc[:, PRF_REF_VAL_NAME].values,
-                 lw=0.5, ls='-', drawstyle='steps-mid',
+                 lw=0.5, ls='-', drawstyle='steps-mid', c=lc,
                  label='|'.join(dta_prfs.get_info(label)[dta_ind]))
 
         # Next plot the uncertainties
         ax0.fill_between(dta.loc[:, PRF_REF_ALT_NAME],
                          dta.loc[:, PRF_REF_VAL_NAME] - k_lvl * dta.loc[:, 'uc_tot'].values,
                          dta.loc[:, PRF_REF_VAL_NAME] + k_lvl * dta.loc[:, 'uc_tot'].values,
-                         alpha=0.3, step='mid')
+                         alpha=alpha, step='mid', facecolor=fc(dta_ind), edgecolor='none')
 
         # And then, the deltas normalized by the uncertainties
         ax1.plot(dta.loc[:, PRF_REF_ALT_NAME],
                  dta.loc[:, PRF_REF_VAL_NAME] / dta.loc[:, 'uc_tot'].values,
-                 lw=0.5, ls='-', drawstyle='steps-mid')
+                 lw=0.5, ls='-', drawstyle='steps-mid', c=lc)
 
     # Set the axis labels
     ylbl0 = r'$\delta_{e,i}$'
@@ -110,14 +138,25 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
     ax1.set_ylim((-5, +5))
     plt.setp(ax0.get_xticklabels(), visible=False)
 
-    # Add the legend
-    pu.fancy_legend(ax0, label)
-
-    # Add the edt/eid/rid info
-    pu.add_edt_eid_rid(ax0, dta_prfs)
+    if len(mid) > 1:
+        # Add the legend
+        pu.fancy_legend(ax0, label)
+        # Add the edt/eid/rid info
+        pu.add_edt_eid_rid(ax0, dta_prfs)
+    elif len(mid) == 1:
+        # Add the number of flights included in the plot. Will be useful with large numbers
+        flights = [item + ' ' + dta_prfs.get_info('rid')[ind]
+                   for (ind, item) in enumerate(dta_prfs.get_info('eid'))]
+        ax0.text(0, 1.03, rf'\# flights: {len(set(flights))}', fontsize='small',
+                 verticalalignment='bottom', horizontalalignment='left',
+                 transform=ax0.transAxes)
 
     # Add the k-level and variable name
-    ax0.text(1, 1.03, r'{}, $k={}$'.format(dta_prfs.var_info[PRF_REF_VAL_NAME]['prm_name'], k_lvl),
+    msg = r'{}, $k={}$'.format(dta_prfs.var_info[PRF_REF_VAL_NAME]['prm_name'], k_lvl)
+    if len(mid) == 1:
+        msg = '-'.join(list(mid)[0]) + ', ' + msg
+
+    ax0.text(1, 1.03, pu.fix_txt(msg),
              fontsize='small',
              verticalalignment='bottom', horizontalalignment='right',
              transform=ax0.transAxes)
