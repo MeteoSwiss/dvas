@@ -87,7 +87,7 @@ class ResampleStrategy(MPStrategyAC):
                     logger.info('No resampling required for %s', prfs[prf_ind].info.src)
                     continue
 
-            logger.info('Starting resampling for %s', prfs[prf_ind].info.src)
+            logger.warning('Starting resampling for %s', prfs[prf_ind].info.src)
             # Very well, interpolation is required. To avoid duplicating code, we shall rely on
             # the dvas.tools.gdps.utils.process_chunk() function to do so.
             # This implies that we must construct a suitable set of df_chunks to feed that function.
