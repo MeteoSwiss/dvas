@@ -25,7 +25,7 @@ from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME
 import dvas.plots.utils as dpu
 from dvas import dynamic as dyn
 
-# Import from dvas_recipesz
+# Import from dvas_recipes
 from .errors import DvasRecipesError
 from . import dynamic as rcp_dyn
 
@@ -188,10 +188,11 @@ class Recipe:
 
         # Setup the dvas paths
         for item in rcp_data['rcp_paths'].items():
-            if item[1][0] == '/':
-                setattr(path_var, item[0], item[1])
-            else:
-                setattr(path_var, item[0], rcp_fn.parent / item[1])
+            # Path anchors are just used for avoid duplicating stuff in the YAML file
+            if item[0] == 'path_anchors':
+                continue
+            # Set the path
+            setattr(path_var, item[0], Path(item[1]['path']) / item[1]['name'])
 
         # Of all the paths, it is essential to make sure that orig_data_path exists.
         # Else, en empty database will be created (without complaints), and it will be hard for the
@@ -247,6 +248,9 @@ class Recipe:
             self._steps += [RecipeStep(getattr(rcp_mod, item['fct'].split('.')[-1]),
                                        item['step_id'], item['fct'],
                                        item['run'], item['kwargs'])]
+
+        # Keep a list of all the steps ids. WIll be useful for auto-tagging
+        rcp_dyn.ALL_STEP_IDS = [item._step_id for item in self._steps]
 
         # Set the flights to be processed, if warranted.
         # These get stored in the dedicated "dynamic" module, for easy access everywhere.
