@@ -6,6 +6,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 ### Added:
+ - [fpavogt, 2022-04-01] Connect `from_step_id` to recipe HL entry-point, incl. automatic disabling of DB reset
+ - [fpavogt, 2022-03-31] Fix-up assembly of Delta Profiles, and implement dedicated dtas plots
  - [fpavogt, 2022-03-29] Add the `reset_db` recipe parameter to allow not systematically reseting it
  - [fpavogt, 2022-03-21] Add new uc_budget diagnostic plot to dvas
  - [fpavogt, 2022-03-16] Enable the cropping of descent data in the "cleanup" recipe step
@@ -31,6 +33,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [modolol, 2021-07-12] Fix issue #185
  - [modolol, 2021-07-12] Fix issue #160
 ### Changed:
+ - [fpavogt, 2022-04-05] Adjust paths input structure of the dvas recipes, improve recipe tag handling
  - [fpavogt, 2022-03-18] Modified & imporoved gdp_vs_cws plots into a dedicated recipe step
  - [fpavogt, 2022-03-01] Simplified the logging by removing the specific names
  - [fpavogt, 2022-03-01] Add dev option to setup.py
