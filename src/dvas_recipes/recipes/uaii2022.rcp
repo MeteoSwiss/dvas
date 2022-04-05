@@ -18,7 +18,7 @@ rcp_paths:
         name: config
         path: *base_path
     orig_data_path:
-        name: test_flights_MCH/20210520T210000
+        name: test_flights_MCH/20210617T140000
         path: /Users/fvogt/Projects/MCH/UAII2022/dvas/testzone/procdata_full/rs
     local_db_path:
         name: db
