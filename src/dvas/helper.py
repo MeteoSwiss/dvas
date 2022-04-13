@@ -96,7 +96,8 @@ class RequiredAttrMetaClass(ABCMeta):
 
         This corrects this unwanted behavior (see #84 for details).
 
-        Adapted from the reply of johnbaltis on `<SO>https://stackoverflow.com/questions/49740290`_.
+        Adapted from the reply of johnbaltis on
+        `SO <https://stackoverflow.com/questions/49740290>`__ .
         """
 
         # Restore the class init signature
