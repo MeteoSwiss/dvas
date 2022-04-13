@@ -120,7 +120,7 @@ class RequiredAttrMetaClass(ABCMeta):
                 )
                 raise ValueError(errmsg)
 
-            #TODO
+            # TODO
             # Use pampy to check pattern
             obj_attr = getattr(obj, attr_name)
             if not isinstance(obj_attr, dtype):
