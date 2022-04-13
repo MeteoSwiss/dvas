@@ -37,8 +37,8 @@ logger = logging.getLogger(__name__)
 @for_each_var
 @for_each_flight
 @log_func_call(logger, time_it=True)
-def build_cws(start_with_tags, m_vals=None, strategy='all-or-none', alpha=0.0027,
-              cws_alt_ref='gph'):
+def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='weighted mean',
+              alpha=0.0027, cws_alt_ref='gph',):
     """ Highest-level recipe function responsible for assembling the combined working standard for
     a specific RS flight.
 
@@ -52,6 +52,8 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none', alpha=0.0027
         strategy (str, optional): name of GDP combination strategy (for deciding which levels/
             measurements are valid or not). Defaults to 'all-or-none'. These are defined in
             :py:func:`dvas.tools.gdps.stats.get_validities`.
+        method (str, optional): combination method. Can be one of ['mean', 'weighted mean'].
+            Defaults to 'weighted_mean'.
         alpha (float, optional): The significance level for the KS test. Defaults to 0.27%.
             See :py:func:`dvas.tools.gdps.stats.gdp_incompatibilities` for details.
         cws_alt_ref ('str', optional): name of the variable to use in order to generate the CWS
@@ -148,7 +150,7 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none', alpha=0.0027
                         index=valids[~valids[str(gdp_prf.info.oid)]].index)
 
     # Let us now create a high-resolution CWS for these synchronized GDPs
-    cws = dtgg.combine(gdp_prfs, binning=1, method='weighted mean',
+    cws = dtgg.combine(gdp_prfs, binning=1, method=method,
                        mask_flgs=FLG_INCOMPATIBLE_NAME,
                        chunk_size=dynamic.CHUNK_SIZE, n_cpus=dynamic.N_CPUS)
 

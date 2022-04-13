@@ -18,7 +18,8 @@ rcp_paths:
         name: config
         path: *base_path
     orig_data_path:
-        name: test_flights_MCH/20210617T140000
+        #name: test_flights_MCH/20210319T090000
+        name: test_flights_DWD/20220126_1651
         path: /Users/fvogt/Projects/MCH/UAII2022/dvas/testzone/procdata_full/rs
     local_db_path:
         name: db
@@ -58,11 +59,11 @@ rcp_params:
             ucs: temp_ucs
             uct: temp_uct
             ucu:
-        #rh:
-        #    ucr: rh_ucr
-        #    ucs:
-        #    uct: rh_uct
-        #    ucu:
+        rh:
+            ucr: rh_ucr
+            ucs:
+            uct: rh_uct
+            ucu:
         #pres:
         #    ucr:
         #    ucs:
@@ -123,6 +124,7 @@ rcp_steps:
         start_with_tags: '02' # list of tags to identify profiles in the database
         m_vals: [1] # list of m values. The negative ones are ignored for the cws assembly
         strategy: force-all-valid # Strategy to decide which GDPs to combine, in case of incompatibilities.
+        method: 'weighted_mean' # Combination method: mean or weighted mean
         alpha: 0.0027 # alpha level for the KS test. 0.0027 = 3-sigmas
         cws_alt_ref: gph # Name of the variable to use in order to populate alt_ref
 
@@ -146,7 +148,7 @@ rcp_steps:
         save_to_db: True # if True, will save the delta profiles to the DB
     - fct: uaii2022.dtas.compute_deltas
       step_id: '06b'
-      run: True
+      run: False
       kwargs:
         prf_start_with_tags: '02' # List of tags to identify profiles in the database
         cws_start_with_tags: '04' # List of tags to identify CWS in the database
@@ -168,7 +170,7 @@ rcp_steps:
     # Plot the deltas as a function of the model id, rather than as a function of flight.
     - fct: uaii2022.plots.dtas_per_mid
       step_id: '07b'
-      run: True
+      run: False
       kwargs:
         start_with_tags: # list of tags to identify profiles in the database
             - '06b'
