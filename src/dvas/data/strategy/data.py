@@ -296,7 +296,7 @@ class Profile(ProfileAC):
         Args:
             info (InfoManager): Data information
             data (pd.DataFrame, optional): The profile values in a pandas DataFrame.
-               Default to None.
+                Default to None.
 
         """
         super(Profile, self).__init__()
