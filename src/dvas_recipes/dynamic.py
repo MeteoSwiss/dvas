@@ -29,7 +29,7 @@ INDEXES = None
 CURRENT_STEP_ID = None
 
 #: list: all the recipe steps id
-ALL_STEP_IDS = None
+ALL_STEP_IDS = []
 
 #: int: size in which Profiles get sliced when combining them, to speed up computing. Use
 # the dvas_optimize entry point to find the best values for this, depending on the machine.
