@@ -59,6 +59,10 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
                               PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME,
                               'uc_tot'])
 
+    # What flights are present in the data ?
+    flights = set(item + ' ' + dta_prfs.get_info('rid')[ind]
+                  for (ind, item) in enumerate(dta_prfs.get_info('eid')))
+
     # Assess whether a single mid was provided, or not. If so, tweak some of the colors, alphas, ...
     mid = set(tuple(item) for item in dta_prfs.get_info('mid'))
     if len(mid) == 1:
@@ -67,10 +71,10 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
             return 0.1+(3-k)*0.1
 
         def fc(ind):
-            return 'dimgrey'
+            return 'gray'
 
         lc = 'dimgrey'
-        alpha = 0.2
+        alpha = 0.4
         sig_col = 'mediumpurple'
     else:
 
@@ -105,23 +109,24 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
         dta = dtas[dta_ind]
 
         # First, plot the profiles themselves
-        ax0.plot(dta.loc[:, PRF_REF_ALT_NAME].values, dta.loc[:, PRF_REF_VAL_NAME].values,
-                 lw=0.5, ls='-', drawstyle='steps-mid', c=lc,
-                 label='|'.join(dta_prfs.get_info(label)[dta_ind]))
+        #ax0.plot(dta.loc[:, PRF_REF_ALT_NAME].values, dta.loc[:, PRF_REF_VAL_NAME].values,
+        #         lw=0.2, ls='-', drawstyle='steps-mid', c=lc, alpha=0.9**len(flights),
+        #         label='|'.join(dta_prfs.get_info(label)[dta_ind]))
 
         # Next plot the uncertainties
         ax0.fill_between(dta.loc[:, PRF_REF_ALT_NAME],
                          dta.loc[:, PRF_REF_VAL_NAME] - k_lvl * dta.loc[:, 'uc_tot'].values,
                          dta.loc[:, PRF_REF_VAL_NAME] + k_lvl * dta.loc[:, 'uc_tot'].values,
-                         alpha=alpha, step='mid', facecolor=fc(dta_ind), edgecolor='none')
+                         alpha=alpha, step='mid', facecolor=fc(dta_ind), edgecolor='none',
+                         label='|'.join(dta_prfs.get_info(label)[dta_ind]))
 
         # And then, the deltas normalized by the uncertainties
         ax1.plot(dta.loc[:, PRF_REF_ALT_NAME],
                  dta.loc[:, PRF_REF_VAL_NAME] / dta.loc[:, 'uc_tot'].values,
-                 lw=0.5, ls='-', drawstyle='steps-mid', c=lc)
+                 lw=0.5, ls='-', drawstyle='steps-mid', c=lc, alpha=0.9**len(flights))
 
     # Set the axis labels
-    ylbl0 = r'$\delta_{e,i}$'
+    ylbl0 = r'$\delta_{e,i}\pm\sigma_{\Omega_{e,i}}$'
     ylbl0 += ' [{}]'.format(dta_prfs.var_info[PRF_REF_VAL_NAME]['prm_unit'])
     ylbl1 = r'$\delta_{e,i}/\sigma_{\Omega_{e,i}}$'
     altlbl = dta_prfs.var_info[PRF_REF_ALT_NAME]['prm_name']
@@ -143,9 +148,7 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
         pu.add_edt_eid_rid(ax0, dta_prfs)
     elif len(mid) == 1:
         # Add the number of flights included in the plot. Will be useful with large numbers
-        flights = [item + ' ' + dta_prfs.get_info('rid')[ind]
-                   for (ind, item) in enumerate(dta_prfs.get_info('eid'))]
-        ax0.text(0, 1.03, rf'\# flights: {len(set(flights))}', fontsize='small',
+        ax0.text(0, 1.03, rf'\# flights: {len(flights)}', fontsize='small',
                  verticalalignment='bottom', horizontalalignment='left',
                  transform=ax0.transAxes)
 
