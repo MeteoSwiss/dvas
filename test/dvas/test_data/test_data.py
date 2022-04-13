@@ -58,7 +58,7 @@ db_data = {
 }
 
 
-class TestMutliProfile:
+class TestMultiProfile:
     """Test MultiProfile class"""
 
     @staticmethod

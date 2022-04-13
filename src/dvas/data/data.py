@@ -54,7 +54,7 @@ sort_prf_stgy = SortProfileStrategy()
 save_prf_stgy = SaveDataStrategy()
 
 
-class MutliProfileAC(metaclass=RequiredAttrMetaClass):
+class MultiProfileAC(metaclass=RequiredAttrMetaClass):
     """Abstract MultiProfile class"""
 
     # Specify required attributes
@@ -439,7 +439,7 @@ class MutliProfileAC(metaclass=RequiredAttrMetaClass):
         self.update(self.db_variables, data)
 
 
-class MultiProfile(MutliProfileAC):
+class MultiProfile(MultiProfileAC):
     """ Multi profile base class, designed to handle multiple Profile."""
 
     #: type: supported Profile Types
@@ -451,7 +451,7 @@ class MultiProfile(MutliProfileAC):
                          rebase_stgy=rebase_prf_stgy)
 
 
-class MultiRSProfileAC(MutliProfileAC):
+class MultiRSProfileAC(MultiProfileAC):
     """ Abstract MultiRSProfile class"""
 
     @abstractmethod
