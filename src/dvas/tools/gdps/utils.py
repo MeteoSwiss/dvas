@@ -418,7 +418,7 @@ def process_chunk(df_chunk, binning=1, method='weighted mean'):
     # Let us now assemble the U matrices, filling all the cross-correlations for the different
     # types of uncertainties
     for sigma_name in [PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME]:
-        U_mat = coeffs(
+        cc_mat = coeffs(
             np.tile(df_chunk.index.values, (n_prf*len(df_chunk), n_prf)),  # i
             np.tile(df_chunk.index.values, (n_prf*len(df_chunk), n_prf)).T,  # j
             sigma_name,
@@ -446,7 +446,7 @@ def process_chunk(df_chunk, binning=1, method='weighted mean'):
         raveled_sigmas = np.ma.masked_invalid(raveled_sigmas)
         # ... and combine them with the correlation coefficients. Mind the mix of Hadamard and dot
         # products to get the correct mix !
-        U_mat = np.multiply(U_mat, np.ma.dot(raveled_sigmas.T, raveled_sigmas))
+        U_mat = np.multiply(cc_mat, np.ma.dot(raveled_sigmas.T, raveled_sigmas))
 
         # Let's compute the full covariance matrix for the merged profile (for the specific
         # error type).
@@ -458,6 +458,8 @@ def process_chunk(df_chunk, binning=1, method='weighted mean'):
         # As a sanity check let's make sure all the off-diagonal terms are exactly 0.
         # This should be the case since a specific (original) layer can only be used once
         # in the combined profile.
+        # Note: this is only true for uncorrelated uncertainties. Correlated ones will have
+        # non-0 off-diagonal elements.
         rows, cols = np.indices((len(x_ms), len(x_ms)))
         off_diag_elmts = V_mat[rows != cols]
         if any(off_diag_elmts[~off_diag_elmts.mask] != 0):
