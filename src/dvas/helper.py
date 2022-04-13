@@ -90,6 +90,23 @@ class RequiredAttrMetaClass(ABCMeta):
     key: attribute name, value: required attribute type
     """
 
+    def __init__(cls, *args, **kwargs):
+        """ Without this __init__ function, the Child classes all show the init signature of the
+        __call__ method below, when accessing their help.
+
+        This corrects this unwanted behavior (see #84 for details).
+
+        Adapted from the reply of johnbaltis on `<SO>https://stackoverflow.com/questions/49740290`_.
+        """
+
+        # Restore the class init signature
+        sig = inspect.signature(cls.__init__)
+        parameters = tuple(sig.parameters.values())
+        cls.__signature__ = sig.replace(parameters=parameters[1:])
+
+        # Finally, call the real __init__
+        super().__init__(*args, **kwargs)
+
     def __call__(cls, *args, **kwargs):
         """Class __call__ method"""
         obj = super(RequiredAttrMetaClass, cls).__call__(*args, **kwargs)
