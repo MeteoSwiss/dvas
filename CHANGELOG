@@ -4,7 +4,7 @@ The format is inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [Unreleased]
+## [v0.6.0.dev1]
 ### Added:
 ### Fixed:
 ### Changed:
@@ -12,7 +12,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Removed:
 ### Security:
 
-## [v0.5.0] (2022-04-13)
+## [v0.5.0] (2022-04-14)
 ### Added:
  - [fpavogt, 2022-04-13] New CI action to check the code version is incremented for new releases
  - [fpavogt, 2022-04-01] Connect `from_step_id` to recipe HL entry-point, incl. automatic disabling of DB reset
