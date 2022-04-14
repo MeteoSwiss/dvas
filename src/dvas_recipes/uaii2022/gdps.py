@@ -27,7 +27,7 @@ from dvas.errors import DBIOError
 from ..errors import DvasRecipesError
 from ..recipe import for_each_flight, for_each_var
 from .. import dynamic
-from ..utils import fn_suffix
+from .. import utils as dru
 from . import tools
 
 # Setup local logger
@@ -37,21 +37,23 @@ logger = logging.getLogger(__name__)
 @for_each_var
 @for_each_flight
 @log_func_call(logger, time_it=True)
-def build_cws(tags='sync', m_vals=None, strategy='all-or-none', alpha=0.0027, cws_alt_ref='gph'):
+def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='weighted mean',
+              alpha=0.0027, cws_alt_ref='gph',):
     """ Highest-level recipe function responsible for assembling the combined working standard for
     a specific RS flight.
 
     This function directly builds the profiles and uploads them to the db with the 'cws' tag.
 
     Args:
-        tags (str|list of str, optional): tag name(s) for the search query into the database.
-            Defaults to 'sync'.
+        start_with_tags (str|list of str): tag name(s) for the search query into the database.
         m_vals (int|list of int, optional): list of m-values used for identifiying incompatible and
             valid regions between GDPs. Any negative value will be ignored when computing the cws.
             Defaults to None=[1, '-2'].
         strategy (str, optional): name of GDP combination strategy (for deciding which levels/
             measurements are valid or not). Defaults to 'all-or-none'. These are defined in
             :py:func:`dvas.tools.gdps.stats.get_validities`.
+        method (str, optional): combination method. Can be one of ['mean', 'weighted mean'].
+            Defaults to 'weighted_mean'.
         alpha (float, optional): The significance level for the KS test. Defaults to 0.27%.
             See :py:func:`dvas.tools.gdps.stats.gdp_incompatibilities` for details.
         cws_alt_ref ('str', optional): name of the variable to use in order to generate the CWS
@@ -59,15 +61,12 @@ def build_cws(tags='sync', m_vals=None, strategy='all-or-none', alpha=0.0027, cw
 
     """
 
-    # Deal with the search tags
-    if isinstance(tags, str):
-        tags = [tags]
-    if not isinstance(tags, list):
-        raise DvasRecipesError('Ouch ! tags should be of type str|list. not: {}'.format(type(tags)))
+    # Format the tags
+    tags = dru.format_tags(start_with_tags)
 
     # Deal with the m_vals if warranted
     if m_vals is None:
-        m_vals = [1, -2]
+        m_vals = [1]
     if not isinstance(m_vals, list):
         raise DvasRecipesError(f'Ouch ! m_vals should be a list of int, not: {m_vals}')
 
@@ -75,8 +74,10 @@ def build_cws(tags='sync', m_vals=None, strategy='all-or-none', alpha=0.0027, cw
     (eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What search query will let me access the data I need ?
-    gdp_filt = tools.get_query_filter(tags_in=tags+[eid, rid, 'gdp'], tags_out=None)
-    cws_filt = tools.get_query_filter(tags_in=tags+[eid, rid, 'cws'], tags_out=None)
+    gdp_filt = tools.get_query_filter(tags_in=tags+[eid, rid, TAG_GDP_NAME],
+                                      tags_out=dru.rsid_tags(pop=tags))
+    cws_filt = tools.get_query_filter(tags_in=[eid, rid, TAG_CWS_NAME, dynamic.CURRENT_STEP_ID],
+                                      tags_out=dru.rsid_tags(pop=dynamic.CURRENT_STEP_ID))
 
     # Load the GDP profiles
     gdp_prfs = MultiGDPProfile()
@@ -96,6 +97,7 @@ def build_cws(tags='sync', m_vals=None, strategy='all-or-none', alpha=0.0027, cw
         logger.info('Looking for a pre-computed CWS time profile ...')
         _ = MultiRSProfile().load_from_db(cws_filt, 'time', 'time')
         cws_tdt_exists = True
+        logger.info(' ... found one !')
 
     except DBIOError:
         logger.info('No pre-existing CWS time profile found. Computing it now.')
@@ -130,8 +132,8 @@ def build_cws(tags='sync', m_vals=None, strategy='all-or-none', alpha=0.0027, cw
                                           n_cpus=dynamic.N_CPUS,
                                           chunk_size=dynamic.CHUNK_SIZE,
                                           fn_prefix=dynamic.CURRENT_STEP_ID,
-                                          fn_suffix=fn_suffix(eid=eid, rid=rid, tags=tags,
-                                                              var=dynamic.CURRENT_VAR))
+                                          fn_suffix=dru.fn_suffix(eid=eid, rid=rid, tags=tags,
+                                                                  var=dynamic.CURRENT_VAR))
 
     # Next, we derive "validities" given a specific strategy to assess the different GDP pair
     # incompatibilities ...
@@ -148,7 +150,7 @@ def build_cws(tags='sync', m_vals=None, strategy='all-or-none', alpha=0.0027, cw
                         index=valids[~valids[str(gdp_prf.info.oid)]].index)
 
     # Let us now create a high-resolution CWS for these synchronized GDPs
-    cws = dtgg.combine(gdp_prfs, binning=1, method='weighted mean',
+    cws = dtgg.combine(gdp_prfs, binning=1, method=method,
                        mask_flgs=FLG_INCOMPATIBLE_NAME,
                        chunk_size=dynamic.CHUNK_SIZE, n_cpus=dynamic.N_CPUS)
 
@@ -165,15 +167,18 @@ def build_cws(tags='sync', m_vals=None, strategy='all-or-none', alpha=0.0027, cw
         cws[0].data.set_index(PRF_REF_TDT_NAME, inplace=True, drop=True, append=True)
 
         # Having done all that, I can now save 'tdt' (and 'tdt' only, for now !) into the DB
-        cws.save_to_db(add_tags=[TAG_CWS_NAME], rm_tags=[TAG_GDP_NAME], prms=[PRF_REF_TDT_NAME])
+        cws.save_to_db(add_tags=[TAG_CWS_NAME, dynamic.CURRENT_STEP_ID],
+                       rm_tags=[TAG_GDP_NAME] + dru.rsid_tags(pop=dynamic.CURRENT_STEP_ID),
+                       prms=[PRF_REF_TDT_NAME])
 
     # Save variables of CWS to the database
     # Here, I only save the information associated to the variable, i.e. the value and its errors.
     # I do not save the alt column, which is a variable itself and should be derived as such using a
     # weighted mean. I also do not save the tdt column, which is assembled in a distinct manner.
-    cws.save_to_db(add_tags=[TAG_CWS_NAME], rm_tags=[TAG_GDP_NAME],
-                   prms=[PRF_REF_VAL_NAME,
-                         PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME])
+    cws.save_to_db(add_tags=[TAG_CWS_NAME, dynamic.CURRENT_STEP_ID],
+                   rm_tags=[TAG_GDP_NAME] + dru.rsid_tags(pop=dynamic.CURRENT_STEP_ID),
+                   prms=[PRF_REF_VAL_NAME, PRF_REF_UCR_NAME, PRF_REF_UCS_NAME,
+                         PRF_REF_UCT_NAME, PRF_REF_UCU_NAME])
 
     # Deal with 'ref_alt' if warranted
     if dynamic.CURRENT_VAR == cws_alt_ref:
@@ -194,10 +199,12 @@ def build_cws(tags='sync', m_vals=None, strategy='all-or-none', alpha=0.0027, cw
         ref_alts[0].interpolate(method='index', limit_area='inside', axis=0, inplace=True)
 
         # Now assign these new values to the 'alt' index. Since dealing with an index is a huge pain
-        # I'll extract it firs
+        # I'll extract it first
         cws[0].data.reset_index(level=PRF_REF_ALT_NAME, drop=True, inplace=True)
         cws[0].data.loc[:, PRF_REF_ALT_NAME] = ref_alts[0].values
         cws[0].data.set_index(PRF_REF_ALT_NAME, inplace=True, drop=True, append=True)
 
         # Excellent, I can now save this (and only this) to the DB
-        cws.save_to_db(add_tags=[TAG_CWS_NAME], rm_tags=[TAG_GDP_NAME], prms=[PRF_REF_ALT_NAME])
+        cws.save_to_db(add_tags=[TAG_CWS_NAME, dynamic.CURRENT_STEP_ID],
+                       rm_tags=[TAG_GDP_NAME] + dru.rsid_tags(pop=dynamic.CURRENT_STEP_ID),
+                       prms=[PRF_REF_ALT_NAME])

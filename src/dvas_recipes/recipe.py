@@ -25,7 +25,7 @@ from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME
 import dvas.plots.utils as dpu
 from dvas import dynamic as dyn
 
-# Import from dvas_recipesz
+# Import from dvas_recipes
 from .errors import DvasRecipesError
 from . import dynamic as rcp_dyn
 
@@ -163,6 +163,7 @@ class Recipe:
 
     _name = None
     _steps = None
+    _reset_db = True
 
     def __init__(self, rcp_fn, flights=None):
         """ Recipe initialization from a suitable YAML recipe file.
@@ -182,13 +183,16 @@ class Recipe:
 
         # Set the recipe name
         self._name = rcp_data['rcp_name']
+        # Set whether we want to reset the DB, or load an existing one
+        self._reset_db = rcp_data['rcp_params']['general']['reset_db']
 
         # Setup the dvas paths
         for item in rcp_data['rcp_paths'].items():
-            if item[1][0] == '/':
-                setattr(path_var, item[0], item[1])
-            else:
-                setattr(path_var, item[0], rcp_fn.parent / item[1])
+            # Path anchors are just used for avoid duplicating stuff in the YAML file
+            if item[0] == 'path_anchors':
+                continue
+            # Set the path
+            setattr(path_var, item[0], Path(item[1]['path']) / item[1]['name'])
 
         # Of all the paths, it is essential to make sure that orig_data_path exists.
         # Else, en empty database will be created (without complaints), and it will be hard for the
@@ -234,16 +238,19 @@ class Recipe:
 
         # Get started with the initializations of the different recipe steps
         self._steps = []
-        for item in rcp_data['rcp_steps'].items():
+        for item in rcp_data['rcp_steps']:
 
             # Danger zone: here I access the correct function by importing the corresponding
             # recipe module (from scratch ?)... this seems to work ... until proven otherwise ?
-            rcp_mod = import_module('.'+'.'.join(item[0].split('.')[:-1]), 'dvas_recipes')
+            rcp_mod = import_module('.'+'.'.join(item['fct'].split('.')[:-1]), 'dvas_recipes')
 
             # Initialize the recipe step, and add it to the list
-            self._steps += [RecipeStep(getattr(rcp_mod, item[0].split('.')[-1]),
-                                       item[1]['step_id'], item[0],
-                                       item[1]['run'], item[1]['kwargs'])]
+            self._steps += [RecipeStep(getattr(rcp_mod, item['fct'].split('.')[-1]),
+                                       item['step_id'], item['fct'],
+                                       item['run'], item['kwargs'])]
+
+        # Keep a list of all the steps ids. WIll be useful for auto-tagging
+        rcp_dyn.ALL_STEP_IDS = [item._step_id for item in self._steps]
 
         # Set the flights to be processed, if warranted.
         # These get stored in the dedicated "dynamic" module, for easy access everywhere.
@@ -264,14 +271,21 @@ class Recipe:
         return len(self._steps)
 
     @staticmethod
-    def init_db():
-        """ Initialize the dvas database, and fetch the raw data required for the recipe. """
+    def init_db(reset: bool = True):
+        """ Initialize the dvas database, and fetch the raw data required for the recipe.
+
+        Args:
+            reset (bool, optional): if True, the DB will be filled from scratch. Else, only new
+                raw data will be ingested. Defaults to True.
+        """
 
         # Here, make sure the DB is stored locally, and not in memory.
         dyn.DB_IN_MEMORY = False
 
-        # Use this command to clear the DB
-        DB.refresh_db()
+        if reset:
+            logger.info("Resetting the DB.")
+            # Use this command to clear the DB
+            DB.refresh_db()
 
         # Init the DB
         DB.init()
@@ -320,8 +334,14 @@ class Recipe:
 
         """
 
+        # If I am skipping any steps, let's disable the DB reset. Else, it will blow up in my face.
+        if from_step_id is not None:
+            logger.info('Force-disable the DB reset, in order to skip until the recipe step: %s',
+                        from_step_id)
+            self._reset_db = False
+
         # First, we setup the dvas database
-        self.init_db()
+        self.init_db(reset=self._reset_db)
 
         # If warranted, find all the flights that need to be processed.
         if rcp_dyn.ALL_FLIGHTS is None:

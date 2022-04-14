@@ -18,6 +18,7 @@ from dvas.environ import path_var
 from dvas.logger import log_func_call
 from dvas.data.data import MultiRSProfile, MultiGDPProfile
 from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, TAG_CLN_NAME, FLG_DESCENT_NAME
+from dvas.hardcoded import TAG_GDP_NAME
 from dvas.dvas import Database as DB
 
 # Import from dvas_recipes
@@ -25,6 +26,7 @@ from .. import dynamic
 from ..recipe import for_each_flight, for_each_var
 from ..errors import DvasRecipesError
 from . import tools
+from .. import utils as dru
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +88,7 @@ def flag_descent(prfs):
 @log_func_call(logger, time_it=False)
 def cleanup_steps(prfs, resampling_freq, crop_descent):
     """ Execute a series of cleanup-steps common to GDP and non-GDP profiles. This function is here
-    to avoid duplicating code. The cleanup-up profiles are directlyt save to the DB with the tag:
+    to avoid duplicating code. The cleanup-up profiles are directly saved to the DB with the tag:
     TAG_CLN_NAME
 
     Args:
@@ -110,32 +112,33 @@ def cleanup_steps(prfs, resampling_freq, crop_descent):
                   n_cpus=dynamic.N_CPUS)
 
     # Save back to the DB
-    prfs.save_to_db(add_tags=[TAG_CLN_NAME])
+    prfs.save_to_db(
+        add_tags=[TAG_CLN_NAME, dynamic.CURRENT_STEP_ID],
+        rm_tags=dru.rsid_tags(pop=dynamic.CURRENT_STEP_ID)
+        )
 
 
 @for_each_var
 @for_each_flight
 @log_func_call(logger, time_it=True)
-def cleanup(tags, **args):
+def cleanup(start_with_tags, **args):
     """ Highest-level function responsible for doing an initial cleanup of the data.
 
     Args:
-        tags (str|list): list of tags to identify profiles to clean in the db.
+        start_with_tags (str|list): list of tags to identify profiles to clean in the db.
         **args: arguments to be fed to :py:func:`.cleanup_steps`.
 
     """
 
-    # Deal with the search tags
-    if isinstance(tags, str):
-        tags = [tags]
-    if not isinstance(tags, list):
-        raise DvasRecipesError('Ouch ! tags should be of type str|list. not: {}'.format(type(tags)))
+    # Format the tags
+    tags = dru.format_tags(start_with_tags)
 
     # Extract the flight info
     (eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What search query will let me access the data I need ?
-    filt = tools.get_query_filter(tags_in=tags+[eid, rid], tags_out=[TAG_CLN_NAME])
+    filt = tools.get_query_filter(tags_in=tags + [eid, rid],
+                                  tags_out=dru.rsid_tags(pop=tags))
 
     # Let's extract the summary of what the DB contains
     db_view = DB.extract_global_view()
@@ -150,7 +153,7 @@ def cleanup(tags, **args):
                     dynamic.CURRENT_VAR)
 
         gdp_prfs = MultiGDPProfile()
-        gdp_prfs.load_from_db(f'and_({filt}, tags("gdp"))', dynamic.CURRENT_VAR,
+        gdp_prfs.load_from_db(f'and_({filt}, tags("{TAG_GDP_NAME}"))', dynamic.CURRENT_VAR,
                               tdt_abbr=dynamic.INDEXES[PRF_REF_TDT_NAME],
                               alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME],
                               ucr_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucr'],
@@ -158,6 +161,8 @@ def cleanup(tags, **args):
                               uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
                               ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],
                               inplace=True)
+
+        logger.info('Loaded %i GDP profiles from the DB.', len(gdp_prfs))
 
         cleanup_steps(gdp_prfs, **args)
 
@@ -169,8 +174,10 @@ def cleanup(tags, **args):
 
         # Extract the data from the db
         rs_prfs = MultiRSProfile()
-        rs_prfs.load_from_db(f'and_({filt}, not_(tags("gdp")))',
+        rs_prfs.load_from_db(f'and_({filt}, not_(tags("{TAG_GDP_NAME}")))',
                              dynamic.CURRENT_VAR, dynamic.INDEXES[PRF_REF_TDT_NAME],
                              alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME])
+
+        logger.info('Loaded %i RS profiles from the DB.', len(rs_prfs))
 
         cleanup_steps(rs_prfs, **args)

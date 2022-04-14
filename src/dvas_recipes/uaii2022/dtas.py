@@ -9,23 +9,32 @@ Module content: high-level delta recipes for the UAII2022 campaign
 """
 
 # Import from python
+import logging
 
 # Import from dvas
+from dvas.logger import log_func_call
 from dvas.data.data import MultiProfile, MultiCWSProfile
 from dvas.tools.dtas import dtas as dtdd
+from dvas.plots import dtas as dpd
 from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME
-from dvas.hardcoded import PRF_REF_VAL_NAME, PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME
-from dvas.hardcoded import PRF_REF_UCU_NAME, TAG_DTA_NAME, TAG_GDP_NAME, TAG_CWS_NAME
+from dvas.hardcoded import TAG_DTA_NAME, TAG_GDP_NAME, TAG_CWS_NAME
 
 # Import from dvas_recipes
 from ..errors import DvasRecipesError
 from ..recipe import for_each_flight, for_each_var
 from .. import dynamic
+from . import tools
+from .. import utils as dru
+
+# Setup local logger
+logger = logging.getLogger(__name__)
 
 
 @for_each_var
 @for_each_flight
-def compute_deltas(tags='sync', mids='all'):
+@log_func_call(logger)
+def compute_deltas(prf_start_with_tags, cws_start_with_tags, incl_gdps=False, incl_nongdps=True,
+                   save_to_db=False):
     """ Highest-level recipe function responsible for compute differences between profiles under
     test and appropriate combined working standards.
 
@@ -37,29 +46,44 @@ def compute_deltas(tags='sync', mids='all'):
         over using the @for_each_flight decorator to process the entire campaign.
 
     Args:
-        tags (str|list of str, optional): tag name(s) for the search query into the database.
-            Defaults to 'sync'.
-        mids (str|list, optional): list of model ids to process. Defaults to 'all'.
-            CURRENTLY HAS NO EFFECT !
+        prf_start_with_tags (str|list of str): tag name(s) for the search query into the database.
+        cws_start_with_tags (str|list of str): cws tag name(s) for the search into the database.
+        incl_gdps (bool, optional): if True, will also compute the deltas for GDP profiles
+            (ignoring the GDP uncertaintes entirely). Defaults to False.
+        incl_nongdps (bool):  if True, will also compute the deltas for the non-GDP profiles.
+            Default to True.
+        save_to_db (bool optional): if True, the deltas will be saved to the DB with the 'delta'
+            tag.
 
     """
 
-    # Deal with the search tags
-    if isinstance(tags, str):
-        tags = [tags]
-    if not isinstance(tags, list):
-        raise DvasRecipesError('Ouch ! tags should be of type str|list. not: {}'.format(type(tags)))
-
-    # Deal with the mids
-    # TODO: actually allow users to only process specific models. We need to implement #168 first.
+    # Cleanup the tags
+    prf_tags = dru.format_tags(prf_start_with_tags)
+    cws_tags = dru.format_tags(cws_start_with_tags)
 
     # Get the event id and rig id
     (eid, rid) = dynamic.CURRENT_FLIGHT
 
+    # What tags should I exclude from the search ?
+    if not incl_gdps and not incl_nongdps:
+        raise DvasRecipesError('Ouch ! incl_gdps and incl_nongdps cannot both be False.')
+
+    if incl_gdps:
+        tags_out = [TAG_CWS_NAME, TAG_DTA_NAME]
+    else:
+        tags_out = [TAG_GDP_NAME, TAG_CWS_NAME, TAG_DTA_NAME]
+
+    if incl_nongdps:
+        tags_in = prf_tags+[eid, rid]
+    else:
+        tags_in = prf_tags+[eid, rid, TAG_GDP_NAME]
+
     # What search query will let me access the data I need ?
-    nongdp_filt = "and_(not_(tags('gdp')), tags('e:{}'), tags('r:{}'), {})".format(
-        eid, rid, "tags('" + "'), tags('".join(tags) + "')")
-    cws_filt = "and_(tags('cws'), tags('e:{}'), tags('r:{}'))".format(eid, rid)
+    nongdp_filt = tools.get_query_filter(tags_in=tags_in,
+                                         tags_out=dru.rsid_tags(pop=prf_tags) + tags_out)
+    cws_filt = tools.get_query_filter(
+        tags_in=cws_tags+[eid, rid, TAG_CWS_NAME],
+        tags_out=dru.rsid_tags(pop=cws_tags) + [TAG_GDP_NAME, TAG_DTA_NAME])
 
     # Load the non GDP profiles as Profiles (and not RSProfiles) since we're about to drop the
     # time axis anyway.
@@ -87,14 +111,22 @@ def compute_deltas(tags='sync', mids='all'):
     # Compute the Delta Profiles
     dta_prfs = dtdd.compute(nongdp_prfs, cws_prfs)
 
-    # TODO: inspect the result visually
+    # Save the Delta profiles to the database.
+    # WARNING: I will keep the GDP tag, even if the resulting delta profile is not fully correct
+    # in terms of error propagation. This is just to still be able to distinguish between those
+    # GDP and non-GDP profiles down the line.
+    if save_to_db:
+        logger.info('Saving delta profiles to the DB.')
+        dta_prfs.save_to_db(add_tags=[TAG_DTA_NAME, dynamic.CURRENT_STEP_ID],
+                            rm_tags=dru.rsid_tags(pop=dynamic.CURRENT_STEP_ID))
 
-    # Save the Delta profiles to the database
-    # Here, I only save the information associated to the variable, i.e. the value and its errors.
-    # I do not save the alt column, which is a variable itself and should be derived as such using a
-    # weighted mean. I also do not save the tdt column, which should be assembled from a simple mean
-    dta_prfs.save_to_db(add_tags=[TAG_DTA_NAME], rm_tags=[TAG_GDP_NAME, TAG_CWS_NAME],
-                        prms=[PRF_REF_VAL_NAME, PRF_REF_UCR_NAME, PRF_REF_UCS_NAME,
-                              PRF_REF_UCT_NAME, PRF_REF_UCU_NAME])
+    # Let us now also plot these deltas
+    fn_suf = dru.fn_suffix(eid=eid, rid=rid, tags=prf_tags, var=dynamic.CURRENT_VAR)
 
-    # TODO: export the altitude separately, into a dedicated variable of the DB.
+    if incl_gdps:
+        fn_suf += '_gdps'
+    if incl_nongdps:
+        fn_suf += '_non-gdps'
+
+    dpd.dtas(dta_prfs, k_lvl=1, label='mid', show=False,
+             fn_prefix=dynamic.CURRENT_STEP_ID, fn_suffix=fn_suf)

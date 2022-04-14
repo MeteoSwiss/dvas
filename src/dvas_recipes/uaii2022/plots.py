@@ -16,17 +16,20 @@ import matplotlib.gridspec as gridspec
 
 # Import dvas modules and classes
 from dvas.logger import log_func_call
-from dvas.data.data import MultiGDPProfile, MultiCWSProfile
+from dvas.data.data import MultiGDPProfile, MultiCWSProfile, MultiDeltaProfile
 from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME
+from dvas.hardcoded import TAG_DTA_NAME, TAG_GDP_NAME, TAG_CWS_NAME
 from dvas.data.data import MultiRSProfile
 from dvas.plots import utils as dpu
 from dvas.plots import gdps as dpg
+from dvas.plots import dtas as dpd
+from dvas.dvas import Database as DB
 
 # Import from dvas_recipes
 from ..errors import DvasRecipesError
 from .. import dynamic
 from ..recipe import for_each_flight, for_each_var
-from ..utils import fn_suffix
+from .. import utils as dru
 from . import tools
 
 # Setup local logger
@@ -35,29 +38,26 @@ logger = logging.getLogger(__name__)
 
 @for_each_flight
 @log_func_call(logger, time_it=True)
-def flight_overview(tags='sync', label='mid', show=None):
+def flight_overview(start_with_tags, label='mid', show=None):
     """ Create an "overview" plot of all the recipe variables for a given flight.
 
     Args:
-        tags (str|list of str, optional): tag names for the search query into the database.
-            Defaults to 'sync'.
+        start_with_tags (str|list of str): tag names for the search query into the
+            database. Defaults to 'sync'.
         label (str, optional): label of the plot legend. Defaults to 'mid'.
         show (bool, optional): if set, overrides the default dvas rule about whether to show the
             plot, or not. Defaults to None.
 
     """
 
-    # Deal with the search tags
-    if isinstance(tags, str):
-        tags = [tags]
-    if not isinstance(tags, list):
-        raise DvasRecipesError('Ouch ! tags should be of type str|list. not: {}'.format(type(tags)))
+    # Format the tags
+    tags = dru.format_tags(start_with_tags)
 
     # Extract the flight info
     (eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What search query will let me access the data I need ?
-    filt = tools.get_query_filter(tags_in=tags+[eid, rid], tags_out=None)
+    filt = tools.get_query_filter(tags_in=tags+[eid, rid], tags_out=dru.rsid_tags(pop=tags))
 
     # The plot will have different number of rows depending on the number of variables.
     # Let's define some hardcoded heights, such that the look is always consistent
@@ -141,27 +141,24 @@ def flight_overview(tags='sync', label='mid', show=None):
 
     # Save it all
     dpu.fancy_savefig(fig, 'flight_overview', fn_prefix=dynamic.CURRENT_STEP_ID,
-                      fn_suffix=fn_suffix(eid=eid, rid=rid, tags=tags),
+                      fn_suffix=dru.fn_suffix(eid=eid, rid=rid, tags=tags),
                       fmts=dpu.PLOT_FMTS, show=show)
 
 
 @for_each_var
 @for_each_flight
 @log_func_call(logger, time_it=True)
-def inspect_cws(tags='sync'):
+def inspect_cws(gdp_start_with_tags, cws_start_with_tags):
     """ Create a series of CWS-related plot for inspection purposes.
 
     Args:
-        tags (str|list of str, optional): tag names for the search query into the database.
-            Defaults to 'sync'.
-
+        gdp_start_with_tags (str|list of str): gdp tag names for the search query into the database.
+        cws_start_with_tags (str|list of str): cws tag names for the search query into the database.
     """
 
-    # Deal with the search tags
-    if isinstance(tags, str):
-        tags = [tags]
-    if not isinstance(tags, list):
-        raise DvasRecipesError('Ouch ! tags should be of type str|list. not: {}'.format(type(tags)))
+    # Format the tags
+    gdp_tags = dru.format_tags(gdp_start_with_tags)
+    cws_tags = dru.format_tags(cws_start_with_tags)
 
     # This recipe step should be straight forward. I first need to extract the GDPs, then the CWS,
     # and simply call the dedicated plotting routine.
@@ -170,8 +167,10 @@ def inspect_cws(tags='sync'):
     (eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What search query will let me access the data I need ?
-    gdp_filt = tools.get_query_filter(tags_in=tags+[eid, rid, 'gdp'], tags_out=None)
-    cws_filt = tools.get_query_filter(tags_in=tags+[eid, rid, 'cws'], tags_out=None)
+    gdp_filt = tools.get_query_filter(tags_in=gdp_tags+[eid, rid, TAG_GDP_NAME],
+                                      tags_out=dru.rsid_tags(pop=gdp_tags))
+    cws_filt = tools.get_query_filter(tags_in=cws_tags+[eid, rid, TAG_CWS_NAME],
+                                      tags_out=dru.rsid_tags(pop=cws_tags))
 
     # Load the GDP profiles
     gdp_prfs = MultiGDPProfile()
@@ -197,8 +196,71 @@ def inspect_cws(tags='sync'):
     # We can now create a GDP vs CWS plot ...
     dpg.gdps_vs_cws(gdp_prfs, cws_prfs, show=None,
                     fn_prefix=dynamic.CURRENT_STEP_ID,
-                    fn_suffix=fn_suffix(eid=eid, rid=rid, tags=tags, var=dynamic.CURRENT_VAR))
+                    fn_suffix=dru.fn_suffix(eid=eid, rid=rid, tags=gdp_tags,
+                                            var=dynamic.CURRENT_VAR))
     # And a uc_budget plot
     dpg.uc_budget(gdp_prfs, cws_prfs, show=None,
                   fn_prefix=dynamic.CURRENT_STEP_ID,
-                  fn_suffix=fn_suffix(eid=eid, rid=rid, tags=tags, var=dynamic.CURRENT_VAR))
+                  fn_suffix=dru.fn_suffix(eid=eid, rid=rid, tags=gdp_tags,
+                                          var=dynamic.CURRENT_VAR))
+
+
+@for_each_var
+@log_func_call(logger, time_it=True)
+def dtas_per_mid(start_with_tags, mids=None, skip_gdps=False, skip_nongdps=False):
+    """ Create a plot of delta profiles grouped by mid.
+
+    Args:
+        start_with_tags: which tags to look for in the DB.
+        mids (list, optional): list of 'mid' to process. Defaults to None = all
+        skip_gdps (bool, optional): if True, any mid with 'GDP' in it will be skipped.
+            Defaults to False.
+        skip_nongdps (bool, optional): if True, any mid without 'GDP' will be skipped.
+    """
+
+    # Format the tags
+    tags = dru.format_tags(start_with_tags)
+
+    # Very well, let us first extract the 'mid', if they have not been provided
+    db_view = DB.extract_global_view()
+    if mids is None:
+        mids = db_view.mid.unique().tolist()
+
+    # Basic sanity check of mid
+    if not isinstance(mids, list):
+        raise DvasRecipesError('Ouch ! I need a list of mids, not: {}'.format(mids))
+
+    # Very well, let's now loop through these, and generate the plot
+    for mid in mids:
+
+        # Second sanity check - make sure the mid is in the DB
+        if mid not in db_view.mid.unique().tolist():
+            raise DvasRecipesError('Ouch ! mid unknown: {}'.format(mid))
+
+        # If warranted, skip any GDP profile
+        if skip_gdps and 'GDP' in mid:
+            logger.info('Skipping mid: %s', mid)
+            continue
+
+        if skip_nongdps and 'GDP' not in mid:
+            logger.info('Skipping mid: %s', mid)
+            continue
+
+        # Prepare the search query
+        dta_filt = tools.get_query_filter(tags_in=tags+[TAG_DTA_NAME],
+                                          tags_out=dru.rsid_tags(pop=tags), mids=[mid])
+
+        # Query these DeltaProfiles
+        dta_prfs = MultiDeltaProfile()
+        dta_prfs.load_from_db(dta_filt, dynamic.CURRENT_VAR,
+                              alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME],
+                              ucr_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucr'],
+                              ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
+                              uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
+                              ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],
+                              inplace=True)
+
+        # Plot these deltas
+        fn_suf = dru.fn_suffix(eid=None, rid=None, tags=tags, mids=[mid], var=dynamic.CURRENT_VAR)
+        dpd.dtas(dta_prfs, k_lvl=1, label='mid', show=False,
+                 fn_prefix=dynamic.CURRENT_STEP_ID, fn_suffix=fn_suf)

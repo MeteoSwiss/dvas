@@ -6,6 +6,18 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 ### Added:
+### Fixed:
+### Changed:
+### Deprecated:
+### Removed:
+### Security:
+
+## [v0.5.0] (2022-04-13)
+### Added:
+ - [fpavogt, 2022-04-13] New CI action to check the code version is incremented for new releases
+ - [fpavogt, 2022-04-01] Connect `from_step_id` to recipe HL entry-point, incl. automatic disabling of DB reset
+ - [fpavogt, 2022-03-31] Fix-up assembly of Delta Profiles, and implement dedicated dtas plots
+ - [fpavogt, 2022-03-29] Add the `reset_db` recipe parameter to allow not systematically reseting it
  - [fpavogt, 2022-03-21] Add new uc_budget diagnostic plot to dvas
  - [fpavogt, 2022-03-16] Enable the cropping of descent data in the "cleanup" recipe step
  - [fpavogt, 2022-03-15] Propagate flags through process_chunk(), weighted_means(), and delta()
@@ -19,6 +31,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [modolol, 2021-11-03] Add `mid` in DB search options
  - [fpavogt, 2021-07-02] Add `has_tag()` convenience method to `Profile` and `MultiProfile` classes
 ### Fixed:
+ - [fpavogt, 2022-04-13] Fix #84
  - [fpavogt, 2022-03-18] Fix #163
  - [fpavogt, 2022-02-25] Fix #179
  - [fpavogt, 2022-02-21] Fix #192
@@ -30,6 +43,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [modolol, 2021-07-12] Fix issue #185
  - [modolol, 2021-07-12] Fix issue #160
 ### Changed:
+ - [fpavogt, 2022-04-05] Adjust paths input structure of the dvas recipes, improve recipe tag handling
  - [fpavogt, 2022-03-18] Modified & imporoved gdp_vs_cws plots into a dedicated recipe step
  - [fpavogt, 2022-03-01] Simplified the logging by removing the specific names
  - [fpavogt, 2022-03-01] Add dev option to setup.py
@@ -39,9 +53,6 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [modolol, 2021-11-24] Modify 'header' rules in origdata
  - [fpavogt, 2021-11-22] Various logging improvements
  - [fpavogt, 2021-10-18] Clean-up default csv na values in origdata
-### Deprecated:
-### Removed:
-### Security:
 
 ## [v0.4.1] (2021-07-16)
 ### Added:
@@ -49,11 +60,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [fpavogt, 2021-07-02] Add `has_tag()` convenience method to `Profile` and `MultiProfile` classes
 ### Fixed:
  - [modolol, 2021-07-12] Fix issue #160
-### Changed:
 ### Deprecated:
  - [fpavogt, 2021-07-14] Make Python 3.9.0 and pandas 1.3.0 minimum required versions for dvas
-### Removed:
-### Security:
 
 ## [v0.4.0] (2021-06-30)
 ### Added:
@@ -73,9 +81,6 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [fpavogt, 2021-06-18] Rename `corcoefs()` as `coeffs()`, and move it to new `dvas.tools.gdps.correlations` module
  - [fpavogt, 2021-05-18] Improve looks of plots, and split-up "orig_data_config.yml"
  - [fpavogt, 2021-05-18] Change parameter names in tests, for consistency with main code
-### Deprecated:
-### Removed:
-### Security:
 
 ## [v0.3.0] (2021-04-12)
 ### Added:
