@@ -11,4 +11,4 @@ generated-members=nc.*,  # netCDF4
 [BASIC]
 
 # Good variable names which should always be accepted, separated by a comma.
-good-names=_, a, ax, b, c, d, dt, i, j, k, lc, op, u, uc, v, w, x, y, z
+good-names=_, a, ax, b, c, d, f, fc, dt, i, j, k, lc, op, u, uc, v, w, x, y, z
