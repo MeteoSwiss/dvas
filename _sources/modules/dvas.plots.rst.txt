@@ -9,6 +9,14 @@ dvas.plots package
 Submodules
 ----------
 
+dvas.plots.dtas module
+----------------------
+
+.. automodule:: dvas.plots.dtas
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dvas.plots.gdps module
 ----------------------
 

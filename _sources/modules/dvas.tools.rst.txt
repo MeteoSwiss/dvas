@@ -12,6 +12,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   dvas.tools.dtas
    dvas.tools.gdps
 
 Submodules

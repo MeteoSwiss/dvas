@@ -1,77 +1,37 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>Running dvas recipes &mdash; dvas  documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Creating dvas recipes" href="creating_recipes.html" />
     <link rel="prev" title="Installation" href="installation.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="index.html" class="icon icon-home"> dvas
-          
-
-          
           </a>
-
-          
-            
-            
               <div class="version">
-                0.4.1
+                0.5.0
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -79,18 +39,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
@@ -101,7 +50,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#the-recipe-file">The recipe file</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#specifc-recipes">Specifc recipes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#specific-recipes">Specific recipes</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#demo">demo</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#uaii22">uaii22</a></li>
 </ul>
@@ -119,73 +68,32 @@
 <li class="toctree-l1"><a class="reference internal" href="doc_todo.html">Documentation todos</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">dvas</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>Running dvas recipes</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
             <a href="_sources/running_recipes.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="running-dvas-recipes">
-<span id="running"></span><h1>Running dvas recipes<a class="headerlink" href="#running-dvas-recipes" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="running-dvas-recipes">
+<span id="running"></span><h1>Running dvas recipes<a class="headerlink" href="#running-dvas-recipes" title="Permalink to this headline"></a></h1>
 <p>dvas recipes are pre-packaged, pre-configured analysis pipelines, designed to perform
 <strong>specific tasks in a specific order</strong>. Their primary purpose is to allow any official dvas analysis
 to be reproduced by anyone, anywhere.</p>
@@ -206,7 +114,7 @@ UAII 2022 analysis cascade:</p>
 <p>Use <code class="docutils literal notranslate"><span class="pre">dvas_init_arena</span> <span class="pre">--help</span></code> to see what options exist:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>usage: dvas_init_arena [-h] [--path ./a/new/folder/]
 
-DVAS 0.4.1 - Data Visualization and Analysis Software: Initialization entry point.
+DVAS 0.5.0 - Data Visualization and Analysis Software: Initialization entry point.
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -235,14 +143,14 @@ event id and rig id) to be processed. See <code class="docutils literal notransl
 </div></blockquote>
 <p>Launching the recipe was the easy part. But what is actually happening ?  Time to take a
 closer look at the …</p>
-<div class="section" id="anatomy-of-a-dvas-processing-arena">
-<h2>Anatomy of a dvas processing arena<a class="headerlink" href="#anatomy-of-a-dvas-processing-arena" title="Permalink to this headline">¶</a></h2>
+<section id="anatomy-of-a-dvas-processing-arena">
+<h2>Anatomy of a dvas processing arena<a class="headerlink" href="#anatomy-of-a-dvas-processing-arena" title="Permalink to this headline"></a></h2>
 <p>There are 3 main components to a dvas processing arena: the
 <a class="reference internal" href="#raw-data"><span class="std std-ref">raw data</span></a>,
 the <a class="reference internal" href="#config-data"><span class="std std-ref">database config files</span></a>,
 and the <a class="reference internal" href="#recipe-file"><span class="std std-ref">recipe file</span></a>. Let’s take a closer look at each of these.</p>
-<div class="section" id="the-data-folder">
-<span id="raw-data"></span><h3>The data folder<a class="headerlink" href="#the-data-folder" title="Permalink to this headline">¶</a></h3>
+<section id="the-data-folder">
+<span id="raw-data"></span><h3>The data folder<a class="headerlink" href="#the-data-folder" title="Permalink to this headline"></a></h3>
 <p>This folder contains all the raw data to be processed. The actual structuring of subfolders inside
 <cite>./data</cite> does not actually matter to dvas, so feel free to organize your datasets as you please.
 Note, however, the following restrictions:</p>
@@ -258,82 +166,65 @@ present in the raw data files.</p>
 </li>
 </ul>
 </div></blockquote>
-</div>
-<div class="section" id="the-config-folder">
-<span id="config-data"></span><h3>The config folder<a class="headerlink" href="#the-config-folder" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="the-config-folder">
+<span id="config-data"></span><h3>The config folder<a class="headerlink" href="#the-config-folder" title="Permalink to this headline"></a></h3>
 <p>This folder contains all the information required to setup the dvas database, and have it ingest all
 the raw data correctly. Modifying these files is only required if one wishes to include datasets
 that differ from those already supported by dvas.</p>
-</div>
-<div class="section" id="the-recipe-file">
-<span id="recipe-file"></span><h3>The recipe file<a class="headerlink" href="#the-recipe-file" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="the-recipe-file">
+<span id="recipe-file"></span><h3>The recipe file<a class="headerlink" href="#the-recipe-file" title="Permalink to this headline"></a></h3>
 <p>The dvas recipes are described in YAML file with the <cite>.rcp</cite> extension. In there, you will find
 general recipe parameters, including the list of variable names to process, together with the list
 of all the processing steps and their associated parameters. All these steps refer to high-level
 routines and modules from the <code class="docutils literal notranslate"><span class="pre">dvas_recipes</span></code> sub-package, that themselves rely on core <code class="docutils literal notranslate"><span class="pre">dvas</span></code>
 modules and functions.</p>
-</div>
-</div>
-<div class="section" id="specifc-recipes">
-<h2>Specifc recipes<a class="headerlink" href="#specifc-recipes" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="demo">
-<h3>demo<a class="headerlink" href="#demo" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="specific-recipes">
+<h2>Specific recipes<a class="headerlink" href="#specific-recipes" title="Permalink to this headline"></a></h2>
+<section id="demo">
+<h3>demo<a class="headerlink" href="#demo" title="Permalink to this headline"></a></h3>
 <p>Used for test and development purposes. It contains dummy routines to illustrate how recipe
 processing steps can be assembled.</p>
-</div>
-<div class="section" id="uaii22">
-<h3>uaii22<a class="headerlink" href="#uaii22" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="uaii22">
+<h3>uaii22<a class="headerlink" href="#uaii22" title="Permalink to this headline"></a></h3>
 <p>Performs the official UAII 2022 analysis for the field campaign data.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="creating_recipes.html" class="btn btn-neutral float-right" title="Creating dvas recipes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="creating_recipes.html" class="btn btn-neutral float-right" title="Creating dvas recipes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2020-2021, MeteoSwiss.
-
-    </p>
+    <p>&#169; Copyright 2020-2022, MeteoSwiss.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

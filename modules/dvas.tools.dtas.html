@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dvas.tools.dtas package &mdash; dvas  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dvas.tools.gdps package" href="dvas.tools.gdps.html" />
+    <link rel="prev" title="dvas.tools package" href="dvas.tools.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> dvas
+          </a>
+              <div class="version">
+                0.5.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../running_recipes.html">Running dvas recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../creating_recipes.html">Creating dvas recipes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../acknowledge.html">Acknowledging dvas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">License &amp; Copyright</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/MeteoSwiss-MDA/dvas/blob/develop/CONTRIBUTING.md">Contributing</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/MeteoSwiss-MDA/dvas">Github repository</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../modules.html">Modules</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="dvas.html">dvas package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="dvas.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html">dvas.config package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html">dvas.data package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html">dvas.database package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.plots.html">dvas.plots package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="dvas.tools.html">dvas.tools package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.dvas">dvas.dvas module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.dynamic">dvas.dynamic module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.environ">dvas.environ module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.errors">dvas.errors module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.hardcoded">dvas.hardcoded module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.helper">dvas.helper module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.logger">dvas.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.html#module-dvas.version">dvas.version module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dvas_recipes.html">dvas_recipes package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../doc_todo.html">Documentation todos</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">dvas</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../modules.html">Modules</a> &raquo;</li>
+          <li><a href="dvas.html">dvas package</a> &raquo;</li>
+          <li><a href="dvas.tools.html">dvas.tools package</a> &raquo;</li>
+      <li>dvas.tools.dtas package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/dvas.tools.dtas.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-dvas.tools.dtas">
+<span id="dvas-tools-dtas-package"></span><h1>dvas.tools.dtas package<a class="headerlink" href="#module-dvas.tools.dtas" title="Permalink to this headline"></a></h1>
+<p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<p>This sub-package contains profile delta tools.</p>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-dvas.tools.dtas.dtas">
+<span id="dvas-tools-dtas-dtas-module"></span><h2>dvas.tools.dtas.dtas module<a class="headerlink" href="#module-dvas.tools.dtas.dtas" title="Permalink to this headline"></a></h2>
+<p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<p>This module contains tools and routines related to deltas between profiles and CWS.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="dvas.tools.dtas.dtas.single_delta">
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.dtas.dtas.</span></span><span class="sig-name descname"><span class="pre">single_delta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cws</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.dtas.dtas.single_delta" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the delta between a (single) error-less Profile|RSProfile and a (single)
+error-full CWS.</p>
+<p>Errors from the CWS are simply passed over to the Delta. Time information is also dropped in the
+process.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prf</strong> (<em>Profile|RSProfile</em>) – the ‘candidate’ profile.</p></li>
+<li><p><strong>cws</strong> (<em>CWSProfile</em>) – the <cite>reference</cite> Combined Working Standard profile.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>DeltaProfile</em> – the delta profile, i.e. <cite>candidate</cite> - <cite>reference</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dvas.tools.dtas.dtas.compute">
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.dtas.dtas.</span></span><span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwss</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.dtas.dtas.compute" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the deltas between many error-less profiles and error-full cws.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prfs</strong> (<em>MultiProfile|MultiRSProfile</em>) – the <cite>candidate</cite> profiles. Each will be dealt with
+separately,</p></li>
+<li><p><strong>cwss</strong> (<em>MultiGDPProfile</em>) – the <cite>reference</cite> combined working standard profiles. A 1-to-1 pairing
+with prfs is assumed, unless this contains a single profile, in which case the same
+CWS will be subtracted from all the Profiles.
+I.e. len(cwss) == 1 or len(cwss) == len(prfs).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>MultiDeltaProfile</em> – the DeltaProfiles.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="dvas.tools.html" class="btn btn-neutral float-left" title="dvas.tools package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dvas.tools.gdps.html" class="btn btn-neutral float-right" title="dvas.tools.gdps package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2022, MeteoSwiss.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

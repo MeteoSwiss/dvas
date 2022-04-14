@@ -1,0 +1,58 @@
+dvas\_recipes.uaii2022 package
+==============================
+
+.. automodule:: dvas_recipes.uaii2022
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+dvas\_recipes.uaii2022.basic module
+-----------------------------------
+
+.. automodule:: dvas_recipes.uaii2022.basic
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas\_recipes.uaii2022.dtas module
+----------------------------------
+
+.. automodule:: dvas_recipes.uaii2022.dtas
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas\_recipes.uaii2022.gdps module
+----------------------------------
+
+.. automodule:: dvas_recipes.uaii2022.gdps
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas\_recipes.uaii2022.plots module
+-----------------------------------
+
+.. automodule:: dvas_recipes.uaii2022.plots
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas\_recipes.uaii2022.sync module
+----------------------------------
+
+.. automodule:: dvas_recipes.uaii2022.sync
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas\_recipes.uaii2022.tools module
+-----------------------------------
+
+.. automodule:: dvas_recipes.uaii2022.tools
+   :members:
+   :undoc-members:
+   :show-inheritance:

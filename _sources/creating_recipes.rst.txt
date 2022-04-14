@@ -37,6 +37,7 @@ The following tag names are used by dvas, and thus protected. They are defined i
     * ``sync``:
     *  ``1s``:
     * ``resampled``:
+    * ``delta``:
 
 Default database variable names
 ...............................
