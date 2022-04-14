@@ -18,7 +18,7 @@ _RS92:
     csv_skipinitialspace: True
 
     _time:
-        value: get(0, 's2ns')
+        value: get(0)
 
     _temp:
         value: get(2)
@@ -48,7 +48,7 @@ _YT:
     csv_skipinitialspace: True
 
     _time:
-        value: get(0, 's2ns')
+        value: get(0)
 
     _temp:
         value: get(1)
@@ -83,7 +83,7 @@ _ZT:
     csv_skip_blank_lines: True
 
     _time:
-        value: get(0, 's2ns')
+        value: get(0)
 
     _temp:
         value: get(1)

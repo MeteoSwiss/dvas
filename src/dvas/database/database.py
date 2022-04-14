@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -10,6 +10,7 @@ Module contents: Local database management tools
 """
 
 # Import from python packages
+import logging
 import pprint
 from hashlib import blake2b
 from math import floor
@@ -44,12 +45,14 @@ from ..helper import SingleInstanceMetaClass
 from ..helper import TypedProperty as TProp
 from ..helper import get_by_path, check_datetime
 from ..helper import unzip, get_dict_len
-from ..logger import localdb as localdb_logger
 from ..logger import log_func_call
 from ..environ import glob_var
 from ..environ import path_var as env_path_var
 from ..errors import DvasError
 from .. import dynamic as dyn
+
+# Setup the local logger
+logger = logging.getLogger(__name__)
 
 # Define
 SQLITE_MAX_VARIABLE_NUMBER = 999
@@ -121,7 +124,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         # Test if I got a proper path to store the DB (unless I was asked to store it in memory).
         if env_path_var.local_db_path is None and not dyn.DB_IN_MEMORY:
-            raise DvasError("Ouch ! I can't find any value for "+
+            raise DvasError("Ouch ! I can't find any value for " +
                             "`dvas.environ.path_var.local_db_path`. Was it properly defined ?")
 
         # Define the DB parameters
@@ -129,8 +132,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                    'cache_size': -DB_CACHE_SIZE,  # Set cache to 10MB
                    'permanent': True,
                    'synchronous': False,
-                   'journal_mode': 'MEMORY'
-                  }
+                   'journal_mode': 'MEMORY'}
 
         if dyn.DB_IN_MEMORY:
             file_path = ':memory:'
@@ -285,8 +287,9 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         Args:
             table:
-            search (dict, optional): key 'join_order' must be a list of database.database.MetadataModel,
-                `optional`, key 'where' a logical peewee expression
+            search (dict, optional): key 'join_order' must be a list of
+                database.database.MetadataModel, `optional`, key 'where' a logical peewee
+                expression.
 
         Returns:
             dict:
@@ -307,9 +310,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         return out
 
-    def add_data(
-            self, index, value, info, prm_name, force_write=False
-    ):
+    def add_data(self, index, value, info, prm_name, force_write=False):
         """Add profile data to the DB.
 
         Args:
@@ -355,35 +356,25 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     )
                 ])
             ) != info.oid:
-                err_msg = f"Many instrument id in %s are missing in DB"
-                localdb_logger.error(err_msg, info.oid)
-                raise DBInsertError(err_msg % info.oid)
+                err_msg = f"Many instrument id in {info.oid} are missing in DB"
+                logger.error(err_msg)
+                raise DBInsertError(err_msg)
 
             # Get/Check parameter
-            if not (param := TableParameter.get_or_none(
-                TableParameter.prm_name == prm_name)
-            ):
-                err_msg = "prm_name '%s' is missing in DB"
-                localdb_logger.error(err_msg, prm_name)
-                raise DBInsertError(err_msg % prm_name)
+            if not (param := TableParameter.get_or_none(TableParameter.prm_name == prm_name)):
+                err_msg = f"prm_name {prm_name} is missing in DB"
+                logger.error(err_msg)
+                raise DBInsertError(err_msg)
 
             # Check tag_name existence
-            if len(
-                tags_id_list := [
-                    arg[0] for arg in
-                    self.get_or_none(
-                        TableTag,
-                        search={
-                            'where': TableTag.tag_name.in_(info.tags)
-                        },
-                        attr=[[TableTag.id.name]],
-                        get_first=False
-                    )
-                ]
-            ) != len(info.tags):
-                err_msg = "Many tags in %s are missing in DB"
-                localdb_logger.error(err_msg, info.tags)
-                raise DBInsertError(err_msg % info.tags)
+            tags_id_list = []
+            for tag_name in info.tags:
+                tmp, created = TableTag.get_or_create(tag_name=tag_name)
+                tags_id_list.append(tmp)
+
+                # Warn if new tag
+                if created:
+                    logger.info("New tag created: (id=%s, name=%s)", tmp.id, tmp.tag_name)
 
             # Create original data information
             data_src, _ = DataSource.get_or_create(src=info.src)
@@ -530,18 +521,17 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         SearchInfoExpr.set_stgy('info')
 
         try:
-            out = list(SearchInfoExpr.eval(search_expr, prm_name=prm_name, filter_empty=filter_empty))
+            out = list(SearchInfoExpr.eval(
+                search_expr, prm_name=prm_name, filter_empty=filter_empty))
 
-        # TODO Detail exception
         except Exception as exc:
-            print(f'Error in search expression {search_expr} ({exc})')
-
+            logger.error(f'Error in search expression {search_expr} ({exc})')
             # TODO Decide if raise or not
             out = []
 
         return out
 
-    @log_func_call(localdb_logger, time_it=True)
+    @log_func_call(logger, time_it=True)
     def get_data(self, search_expr, prm_name, filter_empty):
         """Get data from DB
 
@@ -558,9 +548,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         info_id_list = self._get_info_id(search_expr, prm_name, filter_empty)
 
         if not info_id_list:
-            localdb_logger.warning(
-                "Empty search '%s' for '%s", search_expr, prm_name
-            )
+            logger.warning("Empty search '%s' for '%s", search_expr, prm_name)
 
         # Query data
         res = []
@@ -569,11 +557,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             # TODO
             #  Consider to implement multithreading in order to speed up data select
             try:
-                qry = (
-                    Data.
-                    select(Data.index, Data.value).
-                    where(Data.info == info_id)
-                )
+                qry = (Data.select(Data.index, Data.value).where(Data.info == info_id))
 
                 # 0: index, 1: value
                 res.append(tuple(unzip(qry.tuples().iterator())))
@@ -590,10 +574,8 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             # Get related instrument id
             oid_list = [
                 arg.oid for arg in
-                TableObject.select().distinct().
-                    join(TableInfosObjects).join(TableInfo).
-                    where(TableInfo.info_id == info_id_list[i].info_id).
-                    iterator()
+                TableObject.select().distinct().join(TableInfosObjects).join(TableInfo).
+                where(TableInfo.info_id == info_id_list[i].info_id).iterator()
             ]
 
             # Get related tags
@@ -699,8 +681,8 @@ class InfoManagerMetaData(dict):
         # Check
         try:
             assert isinstance(dict_args, dict)
-            assert all([isinstance(key, str) for key in dict_args.keys()])
-            assert all([isinstance(val, (str, float, int)) for val in dict_args.values()])
+            assert all(isinstance(key, str) for key in dict_args.keys())
+            assert all(isinstance(val, (type(None), str, float, int)) for val in dict_args.values())
         except AssertionError:
             raise TypeError()
 
@@ -731,7 +713,7 @@ class InfoManager:
     )
 
     #: dict: Metadata
-    metadata = TProp(InfoManagerMetaData, getter_fct= lambda x: x.copy())
+    metadata = TProp(InfoManagerMetaData, getter_fct=lambda x: x.copy())
 
     #: str: Data source
     src = TProp(str)
@@ -1013,9 +995,7 @@ class InfoManager:
                     }
                 )
             ) is None:
-                # TODO
-                #  Detail exception
-                raise Exception(f"{metadata[TableModel.mdl_name.name]} is missing in DB/InstrumentType")
+                raise DvasError(f"{metadata[TableModel.mdl_name.name]} is missing in DB table.")
 
             # Create instrument entry
             oid = TableObject.create(

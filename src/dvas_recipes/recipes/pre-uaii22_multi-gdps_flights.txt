@@ -1,7 +1,0 @@
-# This file contains a list of flights to be processed by a given dvas recipe.
-# Each flight is identified using an (event_id, rig_id) tuple.
-#
-139164, 1 # day, RS-41 x2, M10 x1
-#139165, 1 # day, RS-41 x1, M10 x1
-#139926, 1 # day, RS-41 x2, M10 x2,
-#140075, 1 # night, RS-41 x2, M10 x1

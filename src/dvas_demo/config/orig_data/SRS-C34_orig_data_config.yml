@@ -4,7 +4,6 @@
 _C34:
 
     # -- META DATA ----------------------------------
-
     edt: "get('event_dt')"
     srn: "get('srn')"
     pid: "get('product_id')"
@@ -12,28 +11,39 @@ _C34:
         - "cat('e:', get('event_id'))"
         - "cat('r:', get('rig'))"
         - "get('day_night')"
+    metadata:
+        bpt_time: "get('bpt_time')"
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter: ';'
-    csv_skip_blank_lines: True
-    csv_skiprows: 48
+    csv_skip_blank_lines: False
+    csv_delim_whitespace: False
+    csv_skiprows: 45
     csv_skipfooter: 1
     csv_encoding:
+    csv_na_values:
+    csv_header: 0
 
     _time:
-        value: get(0, 's2ns')
+        value: get('Rel. Time')
+
+    _alt_ref:
+        value: get('Altitude (gpm)')
 
     _gph:
-        value: get(1)
+        value: get('Altitude (gpm)')
 
     _temp:
-        value: get(5)
+        value: get('Temperature (?C)', 'd2k')
+
+    _rh:
+        value: get('Humidity (%)')
 
     _pres:
-        value: get(4)
+        value: get('Pressure (hPa)')
 
     _wdir:
-        value: get(2)
+        value: get('Wind Direction (?)')
 
     _wspeed:
-        value: get(3)
+        value: get('Wind Velocity (m/s)')

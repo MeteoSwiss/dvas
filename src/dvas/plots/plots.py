@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -9,6 +9,7 @@ Module contents: Primary plotting functions of dvas.
 
 """
 # import from python
+import logging
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
@@ -18,8 +19,10 @@ from ..errors import DvasError
 from ..hardcoded import PRF_REF_VAL_NAME, PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME
 from ..hardcoded import PRF_REF_UCU_NAME
 from ..logger import log_func_call
-from ..logger import plots_logger as logger
 from . import utils as pu
+
+# Setup local logger
+logger = logging.getLogger(__name__)
 
 
 @log_func_call(logger)

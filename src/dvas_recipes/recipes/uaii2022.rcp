@@ -1,0 +1,179 @@
+# Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+#
+# Distributed under the terms of the GNU General Public License v3.0 or later.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# This file contains the different parameters and processing steps of the "uaii2022" dvas recipe.
+# --------------------------------------------------------------------------------------------------
+
+# Name of this recipe
+rcp_name: uaii2022
+
+# dvas paths: absolute paths begin with '/'.
+rcp_paths:
+    path_anchors:
+        base_path: &base_path ./
+    config_dir_path:
+        name: config
+        path: *base_path
+    orig_data_path:
+        #name: test_flights_MCH/20210319T090000
+        name: test_flights_DWD/20220126_1651
+        path: /Users/fvogt/Projects/MCH/UAII2022/dvas/testzone/procdata_full/rs
+    local_db_path:
+        name: db
+        path: *base_path
+    output_path:
+        name: output
+        path: *base_path
+
+# Recipe parameters
+rcp_params:
+    general:
+        log_mode: 2 # 0 = no logs, 1 = log to file only, 2 = file + screen, 3 = screen only.
+        log_lvl: INFO # DEBUG, INFO, WARNING.
+        reset_db: True # Whether to reset the DB, or use an existing one.
+        do_latex: True # True = slow but pretty plots. Requires a working system-wide LaTeX setup!
+        plot_fmts:
+            - pdf
+            #- png
+        plot_show: False
+        chunk_size: 150
+        n_cpus: # If set, will cap the number of cpus used to run the dvas recipe
+        drop_flgs: # List of flags to drop from the analysis
+            - descent
+
+    # Variables to process using the recipe, and associated uncertainties.
+    index:
+        tdt: time
+        alt: alt_ref
+    vars:
+        gph:
+            ucr:
+            ucs:
+            uct: gph_uct
+            ucu: gph_ucu
+        temp:
+            ucr: temp_ucr
+            ucs: temp_ucs
+            uct: temp_uct
+            ucu:
+        rh:
+            ucr: rh_ucr
+            ucs:
+            uct: rh_uct
+            ucu:
+        #pres:
+        #    ucr:
+        #    ucs:
+        #    uct: pres_uct
+        #    ucu: pres_ucu
+        #wdir:
+        #    ucr:
+        #    ucs:
+        #    uct:
+        #    ucu: wdir_ucu
+        #wspeed:
+        #    ucr:
+        #    ucs:
+        #    uct:
+        #    ucu: wspeed_ucu
+
+# Recipe steps, and associated arguments/parameters
+rcp_steps:
+
+    # Export summary of profiles ingested in the database
+    - fct: uaii2022.basic.prf_summary
+      step_id: '00'
+      run: True
+      kwargs:
+
+    # Profile cleanup (cropping after burst, resampling)
+    - fct: uaii2022.basic.cleanup
+      step_id: '01'
+      run: True
+      kwargs:
+        start_with_tags: raw
+        resampling_freq: '1s' # Time step to resample onto, in seconds
+        crop_descent: True # If True, descent data will be cropped for good
+
+    # Profile synchronization on a per-flight basis.
+    - fct: uaii2022.sync.sync_flight
+      step_id: '02'
+      run: True
+      kwargs:
+        start_with_tags: '01'
+        anchor_alt: 5000 # Initial (single) altitude to anchor all profiles.
+        global_match_var: 'gph' # Variable to match globally
+
+    # Simple plotting step of the complete profiles for all the variables.
+    - fct: uaii2022.plots.flight_overview
+      step_id: '03'
+      run: True
+      kwargs:
+        start_with_tags: '02' # list of tags to identify profiles in the database
+        label: mid # Labelling of plot legend, e.g.: mid, oid, etc ...
+        show: # bool: if set, will override the global plot_show value.
+
+    # Assembly of the Combined Working Standard on a per-flight basis.
+    - fct: uaii2022.gdps.build_cws
+      step_id: '04'
+      run: True
+      kwargs:
+        start_with_tags: '02' # list of tags to identify profiles in the database
+        m_vals: [1] # list of m values. The negative ones are ignored for the cws assembly
+        strategy: force-all-valid # Strategy to decide which GDPs to combine, in case of incompatibilities.
+        method: 'weighted mean' # Combination method: mean or weighted mean
+        alpha: 0.0027 # alpha level for the KS test. 0.0027 = 3-sigmas
+        cws_alt_ref: gph # Name of the variable to use in order to populate alt_ref
+
+    # GDP vs CWS plotting
+    - fct: uaii2022.plots.inspect_cws
+      step_id: '05'
+      run: True
+      kwargs:
+        gdp_start_with_tags: '02' # list of tags to identify GDP profiles in the DB
+        cws_start_with_tags: '04' # list of tags to identify CWS profiles in the DB
+
+    # Compute the deltas between the profiles of sondes under test and Combined Working Standards
+    - fct: uaii2022.dtas.compute_deltas
+      step_id: '06a'
+      run: True
+      kwargs:
+        prf_start_with_tags: '02' # List of tags to identify profiles in the database
+        cws_start_with_tags: '04' # List of tags to identify CWS in the database
+        incl_gdps: True # if True, will also compute deltas for GDP profiles
+        incl_nongdps: False # if True, will also compute deltas for the non-GDPs
+        save_to_db: True # if True, will save the delta profiles to the DB
+    - fct: uaii2022.dtas.compute_deltas
+      step_id: '06b'
+      run: False
+      kwargs:
+        prf_start_with_tags: '02' # List of tags to identify profiles in the database
+        cws_start_with_tags: '04' # List of tags to identify CWS in the database
+        incl_gdps: False # if True, will also compute deltas for GDP profiles
+        incl_nongdps: True # if True, will also compute deltas for the non-GDPs
+        save_to_db: True # if True, will save the delta profiles to the DB
+
+    # Plot the deltas as a function of the model id, rather than as a function of flight.
+    - fct: uaii2022.plots.dtas_per_mid
+      step_id: '07a'
+      run: True
+      kwargs:
+        start_with_tags: # list of tags to identify profiles in the database
+            - '06a'
+        mids: # List of mid to process. Leave empty to process them all.
+        skip_gdps: False # If True, any 'mid' that contains 'GDP' will be skipped.
+        skip_nongdps: True # If True, any 'mid' that does NOT contain 'GDP' will be skipped.
+
+    # Plot the deltas as a function of the model id, rather than as a function of flight.
+    - fct: uaii2022.plots.dtas_per_mid
+      step_id: '07b'
+      run: False
+      kwargs:
+        start_with_tags: # list of tags to identify profiles in the database
+            - '06b'
+        mids: # List of mid to process. Leave empty to process them all.
+        skip_gdps: True # If True, any 'mid' that contains 'GDP' will be skipped.
+        skip_nongdps: False # If True, any 'mid' that does NOT contain 'GDP' will be skipped.

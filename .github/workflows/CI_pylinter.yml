@@ -1,6 +1,6 @@
 # Inspired from: https://github.com/PyCQA/pylint/pull/2758#issuecomment-561164761
 #
-# Copyright (c) 2020-2021 MeteoSwiss, created by F.P.A. Vogt; frederic.vogt@meteoswiss.ch
+# Copyright (c) 2020-2022 MeteoSwiss, created by F.P.A. Vogt; frederic.vogt@meteoswiss.ch
 
 name: CI_pylinter
 
@@ -41,7 +41,7 @@ jobs:
       # Here, let's install our module to make sure all the dependencies specified in setup.py are
       # also installed
       - name: Install our module
-        run: pip install -e .
+        run: pip install -e .[dev]
         shell: bash
 
       # Launch a home-made python script with in-line arguments split over multiple lines.

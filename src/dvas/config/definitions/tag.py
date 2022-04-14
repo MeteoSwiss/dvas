@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -10,6 +10,11 @@ Module contents: Required attributes definition for
 
 """
 
+# Note:
+# Although the tag config file is no longer necessary because the tags are generated automcatically
+# if they are missing, this module has been kept for the sake of clarity, because
+# the default tags are used in other packages and modules.
+
 # Import current packages modules
 from ...database.model import Tag as TableTag
 from ...hardcoded import TAG_NONE_NAME, TAG_NONE_DESC
@@ -17,6 +22,7 @@ from ...hardcoded import TAG_RAW_NAME, TAG_RAW_DESC
 from ...hardcoded import TAG_GDP_NAME, TAG_GDP_DESC
 from ...hardcoded import TAG_1S_NAME, TAG_1S_DESC
 from ...hardcoded import TAG_CWS_NAME, TAG_CWS_DESC
+from ...hardcoded import TAG_DTA_NAME, TAG_DTA_DESC
 from ...hardcoded import TAG_SYNC_NAME, TAG_SYNC_DESC
 from ...hardcoded import TAG_EMPTY_NAME, TAG_EMPTY_DESC
 
@@ -51,6 +57,10 @@ CONST_LABELS = [
     {
         TableTag.tag_name.name: TAG_CWS_NAME,
         TableTag.tag_desc.name: TAG_CWS_DESC
+    },
+    {
+        TableTag.tag_name.name: TAG_DTA_NAME,
+        TableTag.tag_desc.name: TAG_DTA_DESC
     },
     {
         TableTag.tag_name.name: TAG_SYNC_NAME,

@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -90,6 +90,24 @@ class RequiredAttrMetaClass(ABCMeta):
     key: attribute name, value: required attribute type
     """
 
+    def __init__(cls, *args, **kwargs):
+        """ Without this __init__ function, the Child classes all show the init signature of the
+        __call__ method below, when accessing their help.
+
+        This corrects this unwanted behavior (see #84 for details).
+
+        Adapted from the reply of johnbaltis on
+        `SO <https://stackoverflow.com/questions/49740290>`__ .
+        """
+
+        # Restore the class init signature
+        sig = inspect.signature(cls.__init__)
+        parameters = tuple(sig.parameters.values())
+        cls.__signature__ = sig.replace(parameters=parameters[1:])
+
+        # Finally, call the real __init__
+        super().__init__(*args, **kwargs)
+
     def __call__(cls, *args, **kwargs):
         """Class __call__ method"""
         obj = super(RequiredAttrMetaClass, cls).__call__(*args, **kwargs)
@@ -102,7 +120,7 @@ class RequiredAttrMetaClass(ABCMeta):
                 )
                 raise ValueError(errmsg)
 
-            #TODO
+            # TODO
             # Use pampy to check pattern
             obj_attr = getattr(obj, attr_name)
             if not isinstance(obj_attr, dtype):
@@ -166,7 +184,8 @@ class TimeIt(AbstractContextManager):
 
         Args:
             header_msg (str): User defined elapsed time header. Default to ''.
-            logger (logging.Logger, `optional`): Print output to log (debug level only). Default to None.
+            logger (logging.Logger, `optional`): Print output to log (debug level only).
+                Defaults to None.
 
         """
         super().__init__()
@@ -184,7 +203,7 @@ class TimeIt(AbstractContextManager):
         if self._head_msg == '':
             self._head_msg = 'Execution time'
         else:
-            self._head_msg += 'execution time'
+            self._head_msg += ' execution time'
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Class __exit__ method"""
@@ -270,18 +289,22 @@ class TypedProperty:
         understanding-a-python-descriptors-example-typedproperty>`__
 
     """
-    def __init__(self, pampy_match, setter_fct=None, args=None, kwargs=None, getter_fct=None, allow_none=False):
+    def __init__(self, pampy_match, setter_fct=None, args=None, kwargs=None, getter_fct=None,
+                 allow_none=False):
         """Constructor
 
         Args:
             pampy_match (type or tuple of type): Data type
-            setter_fct (callable, `optional`): Function applied before assign value in setter method.
-                The function can include special check and raises -
+            setter_fct (callable, `optional`): Function applied before assign value in setter
+                method. The function can include special check and raises -
                 use TypeError to raise appropriate exception. Default to lambda x: x
             args (tuple, `optional`): setter function args. Default to None.
             kwargs (dict, `optional`): setter function kwargs. Default to None.
-            getter_fct (callable, `optional`): Function applied before returning attributes in getter method. Default to lambda x: x
-            allow_none (bool, `optional`): Allow none value (bypass pampy match and setter fct). Default to False.
+            getter_fct (callable, `optional`): Function applied before returning attributes in
+                getter method. Default to lambda x: x
+            allow_none (bool, `optional`): Allow none value (bypass pampy match and setter fct).
+                Defaults to False.
+
         """
         # Set attributes
         self._pampy_match = pampy_match
@@ -308,7 +331,9 @@ class TypedProperty:
                 match_tuple = pmatch(val, self._pampy_match, lambda *x: x)
 
             except (MatchError, TypeError) as first_error:
-                raise TypeError(f'Bad type while assignment of {val}. Expected {self._pampy_match}. Received {type(val)}') from first_error
+                raise TypeError(
+                    f'Bad type while assignment of {val}. ' +
+                    f'Expected {self._pampy_match}. Received {type(val)}') from first_error
 
             # Untuple
             if len(match_tuple) == 1:
@@ -320,7 +345,7 @@ class TypedProperty:
                         match_tuple, *self._setter_fct_args, **self._setter_fct_kwargs
                 )
             except (KeyError, AttributeError) as second_error:
-                raise TypeError(f'Error while apply setter function') from second_error
+                raise TypeError('Error while apply setter function') from second_error
 
     def __set_name__(self, instance, name):
         """Attribute name setter"""

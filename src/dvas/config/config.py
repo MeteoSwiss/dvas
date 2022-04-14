@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -41,8 +41,8 @@ from ..errors import ConfigPathError, ConfigReadYAMLError, ConfigCheckJSONError
 from ..errors import ConfigReadError, ConfigNodeError
 from ..errors import ConfigGetError, ConfigLabelNameError
 from ..errors import ConfigGenMaxLenError
-from ..errors import ExprInterpreterError, NonTerminalExprInterpreterError, TerminalExprInterpreterError
-
+from ..errors import ExprInterpreterError, NonTerminalExprInterpreterError
+from ..errors import TerminalExprInterpreterError
 
 # Define
 NODE_ESCAPE_CHAR = '_'
@@ -218,7 +218,6 @@ class OneLayerConfigManager(ConfigManager):
 
         except ConfigReadError as exc:
             raise ConfigReadError('Error in hard coded config') from exc
-
 
     def _get_document(self, doc_in=None):
         """Get YAML document as python dict
@@ -494,7 +493,6 @@ class OneDimArrayConfigManager(OneLayerConfigManager):
             self.document = document_new.copy()
 
 
-
 class Model(OneDimArrayConfigManager):
     """Instrument type config manager"""
 
@@ -727,7 +725,6 @@ class MultiLayerConfigManager(OneLayerConfigManager):
             ]
         }
 
-
     def _get_document(self, doc_in=None):
         """Get YAML document as python dict
 
@@ -782,7 +779,7 @@ class MultiLayerConfigManager(OneLayerConfigManager):
                     if re.fullmatch(rf"{NODE_ESCAPE_CHAR}{pat[0]}", key) is None:
                         pprinter = pprint.PrettyPrinter()
                         err_msg = (
-                            f"Bad node label.\n'{pprinter.pformat(pat[0])}' "+
+                            f"Bad node label.\n'{pprinter.pformat(pat[0])}' " +
                             "didn't match any keys in\n{pprinter.pformat(doc)}"
                         )
                         raise ConfigNodeError(err_msg)
@@ -881,7 +878,7 @@ class ConfigExprInterpreter(metaclass=ABCMeta):
             # Interpret
             expr_out = expr_out.interpret()
 
-        except (NameError, SyntaxError, AttributeError) as exc:
+        except (NameError, SyntaxError, AttributeError):
             expr_out = expr
 
         except (NonTerminalExprInterpreterError, TerminalExprInterpreterError) as exc:
@@ -910,8 +907,8 @@ class NonTerminalConfigExprInterpreter(ConfigExprInterpreter):
 
         if len(self._expression) > 1:
             return reduce(self.fct, res_interp)
-        else:
-            return self.fct(res_interp[0])
+
+        return self.fct(res_interp[0])
 
     @abstractmethod
     def fct(self, *args):
@@ -999,6 +996,7 @@ class SmallUpperExpr(NonTerminalConfigExprInterpreter):
 
         return out
 
+
 class TerminalConfigExprInterpreter(ConfigExprInterpreter):
     """Implement an interpreter operation for terminal symbols in the
     grammar.
@@ -1011,12 +1009,29 @@ class TerminalConfigExprInterpreter(ConfigExprInterpreter):
 class GetExpr(TerminalConfigExprInterpreter):
     """Get catch value"""
 
+    def __init__(self, arg, totype=None):
+        """ Init function
+
+        Args:
+            arg (object): argument to get.
+            totype (type, optional): if set, will convert the value to that type.
+                Defaults to None = use native type.
+        """
+
+        # Call the super init
+        super().__init__(arg)
+        # Set the new bits
+        self._totype = totype
+
     def interpret(self):
         """Implement fct method"""
         try:
             out = self._FCT(self._expression)
         except (IndexError, AttributeError) as exc:
             raise TerminalExprInterpreterError() from exc
+
+        if self._totype is not None:
+            out = self._totype(out)
 
         return out
 

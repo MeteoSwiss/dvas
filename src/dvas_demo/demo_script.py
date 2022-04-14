@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -8,13 +8,13 @@ SPDX-License-Identifier: GPL-3.0-or-later
 Module content: demo code that illustrates the core dvas functionalities
 """
 
-# Import python package
+# Import from Python
 from pathlib import Path
 from datetime import datetime
 import numpy as np
 import pandas as pd
 
-# Import stuff from dvas
+# Import from dvas
 from dvas.dvas import Log
 from dvas.dvas import Database as DB
 import dvas.plots.utils as dpu
@@ -39,14 +39,15 @@ if __name__ == '__main__':
 
     # Init paths
     # WARNING: to set an "absolute" path, make sure to preface it with "/", e.g.:
-    # path_var.orig_data_path = Path('/Users', 'jode', 'dvas_devdata')
+    # path_var.orig_data_path = Path('/Users', 'jdoe', 'dvas_devdata')
     path_var.config_dir_path = demo_file_path.parent / 'config'
     path_var.orig_data_path = demo_file_path.parent / 'data'
     path_var.local_db_path = demo_file_path.parent / 'db'
     path_var.output_path = demo_file_path.parent / 'output'
 
     # Start the logging
-    Log.start_log(1, level='DEBUG')  # 0 = no logs, 1 = log to file only, 2 = file + screen, 3 = screen only.
+    # Output: 0 = no logs, 1 = log to file only, 2 = file + screen, 3 = screen only.
+    Log.start_log(1, level='DEBUG')
 
     # Fine-tune the plotting behavior of dvas
     dpu.set_mplstyle('nolatex')  # The safe option. Use 'latex' fo prettier plots.
@@ -69,7 +70,7 @@ if __name__ == '__main__':
     # Fetch
     DB.fetch_raw_data(
         [
-            'time', 'gph',
+            'time', 'gph', 'gph_uct', 'gph_ucu',
             'temp', 'temp_flg', 'temp_ucr', 'temp_ucs', 'temp_uct'
         ],
         strict=True
@@ -78,12 +79,19 @@ if __name__ == '__main__':
     # Use this command to explore the DB
     # DB.explore()
 
+    # Use this commande to extract a global view of the DB
+    res = DB.extract_global_view()
+
     # ----------------------------------------------------------------------------------------------
     print("\n --- BASIC DATA EXTRACTION ---")
 
+    # The demo data is comprised of 2 quadruple flights on 2017-07-12 and 2017-10-24, both with:
+    # 1xRS41, 1xRS92, 1xC34, 1xC50
+    # For both the RS41 and the RS92, both the GDP and manufacturer data is provided.
+
     # Define some basic search queries
-    filt_gdp = "tags('gdp')"
-    filt_raw = "tags('raw')"
+    filt_gdp = "tags('gdp')"  # Shortcut: 'gdp()'
+    filt_raw = "tags('raw')"  # Shortcut: 'raw()'
     filt_raw_not = "not_(tags('raw'))"
     filt_all = "all()"
     filt_dt = "dt('20171024T120000Z', '==')"
@@ -129,10 +137,14 @@ if __name__ == '__main__':
                                                                             prf_df.columns.to_list()))
     rs_prf_df = rs_prfs[0].data
     print('\nRS profile dataframe:\n  index.names={}, columns={}'.format(rs_prf_df.index.names,
-                                                                       rs_prf_df.columns.to_list()))
+                                                                         rs_prf_df.columns.to_list()))
     gdp_prf_df = gdp_prfs[0].data
     print('\nGDP profile dataframe:\n  index.names={}, columns={}'.format(gdp_prf_df.index.names,
-                                                                        gdp_prf_df.columns.to_list()))
+                                                                          gdp_prf_df.columns.to_list()))
+
+    # MultiProfiles has a var_info property to link the DataFrame columns to the actual variable
+    print("\n Content of prfs.var_info['val']:\n")
+    print(prfs.var_info['val'])
 
     # Each profile is attributed a unique "Object Identification" (oid) number, which allows to keep
     # track of profiles throughout the dvas analysis.
@@ -169,9 +181,12 @@ if __name__ == '__main__':
     print("\n --- BASIC PLOTTING ---")
 
     # Let us inspect the (raw) GDP profiles with dedicated plots.
-    gdp_prfs.plot(fn_prefix='01') # Defaults behavior, just adding a prefix to the filename.
-    # Now with errors. Show the plot but don't save it.
-    gdp_prfs.plot(label='oid', uc='uc_tot', show=False, fmts=[])
+    # Defaults behavior, just adding a prefix to the filename.
+    gdp_prfs.plot(fn_prefix='01-a', show=True)
+
+    # Repeat the same plot, but this time with the GDP uncertainties.
+    # Set "show" to True to display it on-screen.
+    # gdp_prfs.plot(fn_prefix='01-b', label='oid', uc='uc_tot', show=False, fmts=['png'])
 
     # ----------------------------------------------------------------------------------------------
     print("\n --- PROFILE RESAMPLING ---")
@@ -193,12 +208,12 @@ if __name__ == '__main__':
     # Synchronizing profiles is a 2-step process. First, the shifts must be identified.
     # dvas contains several routines to do that under dvas.tools.sync
     # For example, the most basic one is to compare the altitude arrays
-    gdp_prfs_1s.sort() # <- This helps keep the order of Profiles consistent between runs.
+    gdp_prfs_1s.sort()  # <- This helps keep the order of Profiles consistent between runs.
     sync_shifts = dts.get_sync_shifts_from_alt(gdp_prfs_1s)
 
     # A fancier option is to look at the profile values, and minimize the mean of their absolute
     # difference
-    #sync_shifts = dts.get_sync_shifts_from_val(gdp_prfs, max_shift=50, first_guess=sync_shifts)
+    # sync_shifts = dts.get_sync_shifts_from_val(gdp_prfs, max_shift=50, first_guess=sync_shifts)
 
     # Given these shifts, let's compute the new length of the synchronized Profiles.
     # Do it such that no data is actually cropped out, i.e. add NaN/NaT wherever needed.
@@ -235,7 +250,7 @@ if __name__ == '__main__':
     # binning values "m".
     start_time = datetime.now()
     incompat = dtgs.gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=[1, 6],
-                                           do_plot=True, n_cpus=4)
+                                          do_plot=True, n_cpus=4)
     print('GDP mismatch derived in: {}s'.format((datetime.now()-start_time).total_seconds()))
 
     # Next, we derive "validities" given a specific strategy to assess the different GDP pair
@@ -256,10 +271,32 @@ if __name__ == '__main__':
     print('CWS assembled in: {}s'.format((datetime.now()-start_time).total_seconds()))
 
     # We can now inspect the result visually
-    dpg.gdps_vs_cws(gdp_prfs, cws, index_name='_idx', show=False, fn_prefix='03')
+    # First by looking at the GDP vs CWs profiles
+    dpg.gdps_vs_cws(gdp_prfs, cws, show=True, fn_prefix='03')
+    # And then also by diving into the uncertainty budget
+    dpg.uc_budget(gdp_prfs, cws, show=True, fn_prefix='03')
 
     # Save the CWS to the database.
     # One should note here that we only save the columns of the CWS DataFrame, and not the 'alt' and
     # 'tdt' indexes. As a result, if one tries to extract the cws from the DB right away, the 'alt'
     # and 'tdt' columns will be filled with NaNs.
     cws.save_to_db(add_tags=['cws'], rm_tags=['gdp'], prms=['val', 'ucr', 'ucs', 'uct', 'ucu'])
+
+    # ----------------------------------------------------------------------------------------------
+    """
+    print("\n --- ASSESSMENT OF CANDIDATE RADIOSONDES ---")
+    # We begin by assembling "delta profiles", i.e. deltas between candidate radiosondes and
+    # associated CWS.
+
+    # First extract all the synchronized candidate radiosonde profiles from a given flight
+    filt_nogdp_dt_sync = "and_(tags('sync'), not_(gdp()), {})".format(filt_dt)
+    can_prfs = MultiRSProfile()
+    can_prfs.load_from_db(filt_nogdp_dt_sync, 'temp', tdt_abbr='time', alt_abbr='gph', inplace=True)
+
+    # And now load the required CWS
+    filt_cws_dt = "and_(tags('cws'), {})".format(filt_dt)
+    cws_prfs = MultiCWSProfile()
+    cws_prfs.load_from_db(filt_cws_dt, 'temp', tdt_abbr='time', alt_abbr='gph',
+                          ucr_abbr='temp_ucr', ucs_abbr='temp_ucs', uct_abbr='temp_uct',
+                          inplace=True)
+    """

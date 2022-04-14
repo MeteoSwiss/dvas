@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -10,7 +10,9 @@ Module contents: Database model (ORM uses PeeWee package)
 """
 
 # Import from python packages
+import logging
 import re
+import pandas as pd
 from peewee import SqliteDatabase, Check
 from peewee import Model as PeeweeModel
 from peewee import AutoField
@@ -18,10 +20,11 @@ from peewee import IntegerField, FloatField
 from peewee import DateTimeField, TextField
 from peewee import ForeignKeyField
 
-
 # Import from current package
 from ..hardcoded import MODEL_PAT, PRM_AND_FLG_PRM_PAT
 
+# Setup local logger
+logger = logging.getLogger(__name__)
 
 # Create db instance
 db = SqliteDatabase(None, autoconnect=True)
@@ -29,7 +32,7 @@ db = SqliteDatabase(None, autoconnect=True)
 
 @db.func('re_fullmatch')
 def re_fullmatch(pattern, string):
-    """Database re.fullmatch function. Used it in check constraints"""
+    """ Database re.fullmatch function. Used in check constraints. """
     return (
         re.fullmatch(pattern=pattern, string=string) is not None
     )
@@ -37,12 +40,41 @@ def re_fullmatch(pattern, string):
 
 @db.func('str_len_max')
 def str_len_max(string, n_max):
-    """Database string length max function. Used it in check constraints"""
+    """ Database string length max function. Used in check constraints """
     if string is None:
         out = True
     else:
         out = len(string) <= n_max
     return out
+
+
+@db.func('check_unit')
+def check_unit(prm_unit, prm_name):
+    """ Apply verification checks on the units """
+
+    # This check is not robust, in the sense that users have the freedom to choose whatever
+    # parameter name they prefer. But it is better than nothing.
+    # If a time is specified, let's make sure I can use the unit to convert this to timedeltas via
+    # pandas (will be required when creating Profiles).
+    if prm_name in ['time']:
+        try:
+            pd.to_timedelta(pd.Series([0, 1]), prm_unit)
+
+            # For now, we force the use of 's' when extracting data from the db.
+            # Until this changes, let's raise an error if this is not what the user provided.
+            # See #192 and data.startegy.data.py for details.
+            if prm_unit != 's':
+                msg = 'Ouch ! Only "s" is allowed as the unit of time data.'
+                msg += ' See Github error #192 for details.'
+                logger.error(msg)
+                return False
+            # ---------------------------------
+            return True
+        except ValueError:
+            logger.error('Unknown unit for parameter %s: %s', prm_name, prm_unit)
+            return False
+
+    return True
 
 
 class MetadataModel(PeeweeModel):
@@ -114,23 +146,22 @@ class Parameter(MetadataModel):
     prm_name = TextField(
         null=False,
         unique=True,
-        constraints=[
-            Check(f"re_fullmatch('{PRM_AND_FLG_PRM_PAT}', prm_name)"),
-            Check(f"str_len_max(prm_name, 64)")
-        ]
+        constraints=[Check(f"re_fullmatch('{PRM_AND_FLG_PRM_PAT}', prm_name)"),
+                     Check("str_len_max(prm_name, 64)")]
     )
 
     # Parameter description
     prm_desc = TextField(
         null=False, default='',
-        constraints=[Check(f"str_len_max(prm_desc, 256)")]
+        constraints=[Check("str_len_max(prm_desc, 256)")]
     )
 
     # Parameter units
     prm_unit = TextField(
         null=False, default='',
-        constraints=[Check(f"str_len_max(prm_unit, 64)")]
-)
+        constraints=[Check("str_len_max(prm_unit, 64)"),
+                     Check("check_unit(prm_unit, prm_name)")]
+    )
 
 
 class Flg(MetadataModel):
@@ -172,7 +203,7 @@ class Tag(MetadataModel):
     # Tag name
     tag_name = TextField(
         null=False, unique=True,
-        constraints = [Check("str_len_max(tag_name, 64)")]
+        constraints=[Check("str_len_max(tag_name, 64)")]
     )
 
     # Tag description

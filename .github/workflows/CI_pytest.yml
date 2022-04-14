@@ -3,7 +3,7 @@
 # https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 # Adapted from: https://github.com/actions/starter-workflows/blob/master/ci/python-package.yml
 #
-# Copyright (c) 2020-2021 MeteoSwiss, created by F.P.A. Vogt; frederic.vogt@meteoswiss.ch
+# Copyright (c) 2020-2022 MeteoSwiss, created by F.P.A. Vogt; frederic.vogt@meteoswiss.ch
 
 name: CI_pytest
 
@@ -58,7 +58,7 @@ jobs:
     # Here, let's install our module to make sure all the dependencies specified in setup.py are
     # also installed
     - name: Install our module
-      run: pip install -e .
+      run: pip install -e .[dev]
 
     # Read to run all the tests !
     - name: Test dvas with pytest

@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -11,9 +11,11 @@ Module contents: Local database exploring tools
 
 # Import from python packages
 from abc import abstractmethod, ABCMeta
+import re
 import operator
 from functools import reduce
 from datetime import datetime
+from pandas import DataFrame
 from pandas import Timestamp
 from pampy.helpers import Iterable, Union
 from peewee import JOIN
@@ -25,13 +27,20 @@ from .model import Info as TableInfo
 from .model import Parameter as TableParameter
 from .model import Tag as TableTag
 from .model import InfosObjects as TableInfosObjects
-from .model import InfosTags
+from .model import InfosTags as TableInfosTags
+from .model import DataSource as TablDataSource
 from .model import Model as TableModel
 from ..hardcoded import TAG_EMPTY_NAME
 from ..hardcoded import TAG_RAW_NAME, TAG_GDP_NAME
+from ..hardcoded import EID_PAT, RID_PAT
 from ..helper import TypedProperty as TProp
 from ..helper import check_datetime
 from ..errors import SearchError
+
+
+# Global define
+EID_PAT_COMPILED = re.compile(EID_PAT)
+RID_PAT_COMPILED = re.compile(RID_PAT)
 
 
 class SearchInfoExpr(metaclass=ABCMeta):
@@ -70,6 +79,7 @@ class SearchInfoExpr(metaclass=ABCMeta):
     _str_expr_dict = None
     _qry = None
     _id = None
+    _exclude = None
 
     @classmethod
     def set_stgy(cls, method):
@@ -87,6 +97,7 @@ class SearchInfoExpr(metaclass=ABCMeta):
         cls._str_expr_dict = stgy.str_expr_dict
         cls._qry = stgy.qry
         cls._id = stgy.id
+        cls._exclude = stgy.exclude
 
     @abstractmethod
     def interpret(self):
@@ -101,17 +112,20 @@ class SearchInfoExpr(metaclass=ABCMeta):
             prm_name (str, `optional`): Search parameter. Default to None.
             filter_empty (bool, `optional`): Filter for empty data. Default to False.
             out (str, `optional`): 'id' return table element.
-                'dict' return table as dict. Default to 'table'.
+                'dict' return table as dict. Default to 'id'.
             recurse (bool, `optional`): Search recursively DB content. Default to False.
 
         Returns:
             List of Info.info_id
 
-        Search expression grammar:
+        Search expression grammar for 'info' method:
             - all(): Select all
-            - [datetime ; dt]('<ISO datetime>', ['=='(default) ; '>=' ; '>' ; '<=' ; '<' ; '!=']): Select by datetime
+            - [datetime ; dt]('<ISO datetime>', ['=='(default) ; '>=' ; '>' ; '<=' ; '<' ; '!=']):
+                Select by datetime
             - [serialnumber ; srn]('<Serial number>'): Select by serial number
             - [product_id ; pid](<Product>): Select by product
+            - [object_id, oid](<Object id>): Select by object id
+            - [model_id, mid](<Model id>): Select by model id
             - tags(['<Tag>' ; ('<Tag 1>', ...,'<Tag n>')]): Select by tag
             - prm('<Parameter name>'): Select by parameter name
             - and_(<expr 1>, ..., <expr n>): Intersection
@@ -145,7 +159,8 @@ class SearchInfoExpr(metaclass=ABCMeta):
                     expr = eval(expr, SearchInfoExpr._str_expr_dict)
 
                 # Test
-                assert isinstance(expr, SearchInfoExpr), "eval(expr) must return a 'SearchInfoExpr' type"
+                assert isinstance(expr, SearchInfoExpr), \
+                    "eval(expr) must return a 'SearchInfoExpr' type"
 
             # Add empty tag if False
             if filter_empty is True:
@@ -166,12 +181,112 @@ class SearchInfoExpr(metaclass=ABCMeta):
                 out = [arg for arg in qry.iterator()]
 
             else:
-                out = [model_to_dict(arg, recurse=recurse) for arg in qry]
+                out = [model_to_dict(arg, recurse=recurse, backrefs=True,
+                                     exclude=SearchInfoExpr._exclude) for arg in qry]
 
         except (Exception, AssertionError) as exc:
             # TODO
             #  Detail exception
             raise SearchError(exc)
+
+        return out
+
+    @staticmethod
+    def extract_global_view():
+        """ Extract global view from DB
+
+        Return:
+            pd.DataFrame
+
+        """
+
+        # Set strategy
+        SearchInfoExpr.set_stgy('obj')
+
+        # Get DB explore result
+        res = SearchInfoExpr.eval('all()', recurse=True, out='dict')
+
+        # Convert to DataFrame
+        res = DataFrame.from_dict(res)
+
+        # Go through 'model' column
+        res[TableModel.mid.name] = \
+            res[TableObject.model.name].apply(lambda x: x[TableModel.mid.name])
+        res[TableModel.mdl_name.name] = \
+            res[TableObject.model.name].apply(lambda x: x[TableModel.mdl_name.name])
+        res[TableModel.mdl_desc.name] = \
+            res[TableObject.model.name].apply(lambda x: x[TableModel.mdl_desc.name])
+        res.drop(columns=[TableObject.model.name], inplace=True)
+
+        # Go through 'infos_objects'
+        # TODO: Fix this ugly hardcoded ref to 'infos_objects' and 'infos_tags'
+        res[TablDataSource.src.name] = res['infos_objects'].apply(
+            lambda x:
+            x[0][TableInfosObjects.info.name][TableInfo.data_src.name][TablDataSource.src.name]
+        )
+        res[TableInfo.edt.name] = res['infos_objects'].apply(
+            lambda x: x[0][TableInfosObjects.info.name][TableInfo.edt.name]
+        )
+        res['eid'] = res['infos_objects'].apply(
+            lambda x: SearchInfoExpr.get_eid(x[0][TableInfosObjects.info.name]['infos_tags']))
+        res['rid'] = res['infos_objects'].apply(
+            lambda x: SearchInfoExpr.get_rid(x[0][TableInfosObjects.info.name]['infos_tags']))
+        res['is_gdp'] = res['infos_objects'].apply(
+            lambda x: SearchInfoExpr.get_isgdp(x[0][TableInfosObjects.info.name]['infos_tags']))
+        res.drop(columns=['infos_objects'], inplace=True)
+
+        # TODO: @fpvogt I leave it to you to put the columns in the order you prefer ;-)
+
+        return res
+
+    @staticmethod
+    def get_eid(infos_tags):
+        """Return eid"""
+
+        try:
+            out = next(
+                arg[TableInfosTags.tag.name][TableTag.tag_name.name]
+                for arg in infos_tags
+                if EID_PAT_COMPILED.match(arg[TableInfosTags.tag.name][TableTag.tag_name.name])
+                is not None
+            )
+
+        except StopIteration:
+            out = None
+
+        return out
+
+    @staticmethod
+    def get_rid(infos_tags):
+        """Return eid"""
+
+        try:
+            out = next(
+                arg[TableInfosTags.tag.name][TableTag.tag_name.name]
+                for arg in infos_tags
+                if RID_PAT_COMPILED.match(arg[TableInfosTags.tag.name][TableTag.tag_name.name])
+                is not None
+            )
+
+        except StopIteration:
+            out = None
+
+        return out
+
+    @staticmethod
+    def get_isgdp(infos_tags):
+        """Return eid"""
+
+        try:
+            next(
+                arg[TableInfosTags.tag.name][TableTag.tag_name.name]
+                for arg in infos_tags
+                if arg[TableInfosTags.tag.name][TableTag.tag_name.name] == TAG_GDP_NAME
+            )
+            out = True
+
+        except StopIteration:
+            out = False
 
         return out
 
@@ -357,6 +472,16 @@ class OIDExpr(TerminalSearchInfoExpr):
         return TableObject.oid == self.expression
 
 
+class MIDExpr(TerminalSearchInfoExpr):
+    """MID filter"""
+
+    expression = TProp(str, lambda x: x)
+
+    def get_filter(self):
+        """Implement get_filter method"""
+        return TableModel.mid == self.expression
+
+
 class SearchStrategyAC(metaclass=ABCMeta):
     """Abstract class (AC) for a search strategy"""
 
@@ -381,6 +506,11 @@ class SearchStrategyAC(metaclass=ABCMeta):
     def id(self):
         """str: Query main table id name"""
 
+    @property
+    @abstractmethod
+    def exclude(self):
+        """list: Field instances which should be excluded from the result dictionary."""
+
 
 class InfoStrategy(SearchStrategyAC):
     """Search Info strategy"""
@@ -395,6 +525,7 @@ class InfoStrategy(SearchStrategyAC):
                 'serialnumber': SerialNumberExpr, 'srn': SerialNumberExpr,
                 'object_id': OIDExpr, 'oid': OIDExpr,
                 'product_id': ProductExpr, 'pid': ProductExpr,
+                'model_id': MIDExpr, 'mid': MIDExpr,
                 'tags': TagExpr,
                 'prm': ParameterExpr,
                 'raw': RawExpr,
@@ -408,15 +539,20 @@ class InfoStrategy(SearchStrategyAC):
         return (
             TableInfo
             .select().distinct()
-            .join(TableInfosObjects).join(TableObject).switch(TableInfo)
+            .join(TableInfosObjects).join(TableObject).join(TableModel).switch(TableInfo)
             .join(TableParameter).switch(TableInfo)
-            .join(InfosTags).join(TableTag).switch(TableInfo)
+            .join(TableInfosTags).join(TableTag).switch(TableInfo)
         )
 
     @property
     def id(self):
         """str: Query main table id name"""
         return 'info_id'
+
+    @property
+    def exclude(self):
+        """list: Field instances which should be excluded from the result dictionary."""
+        return [TableInfo.datas]  # noqa pylint: disable=E1101
 
 
 class PrmStrategy(SearchStrategyAC):
@@ -447,6 +583,11 @@ class PrmStrategy(SearchStrategyAC):
         """str: Query main table id name"""
         return 'prm_id'
 
+    @property
+    def exclude(self):
+        """list: Field instances which should be excluded from the result dictionary."""
+        return [TableInfo.datas]  # noqa pylint: disable=E1101
+
 
 class ObjectStrategy(SearchStrategyAC):
     """Search Object strategy"""
@@ -475,10 +616,15 @@ class ObjectStrategy(SearchStrategyAC):
             .select().distinct()
             .join(TableModel).switch(TableObject)
             .join(TableInfosObjects, JOIN.LEFT_OUTER).join(TableInfo)
-            .join(InfosTags).join(TableTag).switch(TableInfo)
+            .join(TableInfosTags).join(TableTag).switch(TableInfo)
         )
 
     @property
     def id(self):
         """str: Query main table id name"""
         return 'oid'
+
+    @property
+    def exclude(self):
+        """list: Field instances which should be excluded from the result dictionary."""
+        return [TableInfo.datas]  # noqa pylint: disable=E1101

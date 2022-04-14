@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -17,7 +17,6 @@ import pandas as pd
 from dvas.data.strategy.data import RSProfile, GDPProfile
 from dvas.data.data import MultiRSProfile, MultiGDPProfile
 from dvas.database.database import InfoManager
-
 
 # Define db_data
 db_data = {
@@ -41,7 +40,7 @@ class TestResampleStrategy:
         # Prepare some datasets to play with
         info_1 = InfoManager('20201217T0000Z', 1)
         data_1 = pd.DataFrame({'alt': [10., 15., 20., 35], 'val': [11., 12., 13., 14],
-                               'flg': [0]*4, 'tdt': [0e9, 1e9, 1.5e9, 2.1e9]})
+                               'flg': [0]*4, 'tdt': [0, 1, 1.5, 2.1]})
 
         # Let's build a multiprofile so I can test things out.
         multiprf = MultiRSProfile()
@@ -73,7 +72,8 @@ class TestResampleStrategy:
         data_1 = pd.DataFrame({'alt': [10., 15., 20., 35], 'val': [11., 12., 13., 14],
                                'flg': [0]*4, 'ucr': [1, 1, 1, 1], 'ucs': [1, 1, 1, 1],
                                'uct': [1, 1, 1, 1], 'ucu': [1, 1, 1, 1],
-                               'tdt': [0e9, 1e9, 1.5e9, 2.1e9]})
+                               'tdt': [0, 1, 1.5, 2.1]})
+
         # Let's build a multiprofile so I can test things out.
         multiprf = MultiGDPProfile()
         multiprf.update({'val': None, 'tdt': None, 'alt': None, 'flg': None, 'ucr': None,
@@ -85,13 +85,16 @@ class TestResampleStrategy:
 
         # The weight factor for the last item. To save me typing it everywhere
         w = 0.5/0.6
+
         # Proper interpolation
         assert all(out.profiles[0].data.loc[2, 'val'] ==
-                   data_1.loc[2,'val']*(1-w) + data_1.loc[3, 'val']*w)
+                   data_1.loc[2, 'val']*(1-w) + data_1.loc[3, 'val']*w)
         assert out.profiles[0].data.index.get_level_values('alt')[2] == \
-                   data_1.loc[2,'alt']*(1-w) + data_1.loc[3, 'alt']*w
+            data_1.loc[2, 'alt']*(1-w) + data_1.loc[3, 'alt']*w
+
         # Proper error propagation
         assert all(out.profiles[0].data.loc[2, 'ucu'] == np.sqrt((1-w)**2 + w**2))
+        assert all(out.profiles[0].data.loc[2, 'ucr'] == np.sqrt((1-w)**2 + w**2))
         assert all(out.profiles[0].data.loc[2, 'ucs'] == 1)
         assert all(out.profiles[0].data.loc[2, 'uct'] == 1)
 

@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -15,8 +15,9 @@ from .data.io import update_db
 from .data.data import MultiProfile as DataMultiProfile
 from .data.data import MultiRSProfile as DataMultiRSProfile
 from .data.data import MultiGDPProfile as DataMultiGDPProfile
-from .logger import LogManager
 from .database.explorer import DatabasePrompt
+from .database.search import SearchInfoExpr
+from .logger import LogManager
 
 
 class Log:
@@ -27,9 +28,11 @@ class Log:
         """ Starts the dvas logging.
 
         Args:
-            mode (int): Log output mode. 0 (No log) | 1 (Log to file only) | 2 (Log to file + console) |
+            mode (int): Log output mode.
+                0 (No log) | 1 (Log to file only) | 2 (Log to file + console) |
                 3 (Log to console only). Defaults to 1.
-            level (str): Log level. Allowed: 'DEBUG'|'D'|'INFO'|'I'|'WARNING'|'WARN'|'W'|'ERROR'|'E'.
+            level (str): Log level.
+                Allowed: 'DEBUG'|'D'|'INFO'|'I'|'WARNING'|'WARN'|'W'|'ERROR'|'E'.
                 Defaults to 'INFO'
         """
 
@@ -82,6 +85,17 @@ class Database:
         """Explore DB method"""
         prmt = DatabasePrompt()
         prmt.cmdloop()
+
+    @staticmethod
+    def extract_global_view():
+        """Extract global DB view
+
+        Return:
+            pd.DataFrame
+
+        """
+
+        return SearchInfoExpr.extract_global_view()
 
 
 class MultiProfile(DataMultiProfile):

@@ -86,7 +86,7 @@ of all the processing steps and their associated parameters. All these steps ref
 routines and modules from the ``dvas_recipes`` sub-package, that themselves rely on core ``dvas``
 modules and functions.
 
-Specifc recipes
+Specific recipes
 ----------------
 
 demo

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -16,6 +16,7 @@ import pandas as pd
 
 # Import from this package
 from dvas.tools import tools
+
 
 def test_fancy_nansum():
     """ Function to test if the fancy_nansum works as intended.
@@ -48,3 +49,23 @@ def test_fancy_nansum():
     vals = pd.DataFrame(index=range(10), columns=['tdt'], dtype='timedelta64[ns]')
     assert np.isnan(tools.fancy_nansum(vals))
     assert np.isnan(tools.fancy_nansum(vals, axis=1)).all()
+
+
+def test_fancy_bitwise_or():
+    """ Function ti test if the fancy_bitwise_or fct works as expected. """
+
+    # Create a fake dataset
+    vals = pd.DataFrame(np.array([[np.nan, np.nan, np.nan],
+                                  [np.nan, 1, 2],
+                                  [1, 3, 4],
+                                  [1, 1, 1]])).astype('Int64')
+
+    out = tools.fancy_bitwise_or(vals, axis=None)
+    assert out == 7
+
+    out = tools.fancy_bitwise_or(vals, axis=0)
+    assert all(out == pd.array([1, 3, 7]))
+
+    out = tools.fancy_bitwise_or(vals, axis=1)
+    assert all(out[1:] == pd.array([3, 7, 1]))
+    assert out.isna()[0]

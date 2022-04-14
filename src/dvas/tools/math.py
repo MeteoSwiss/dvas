@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -13,6 +13,7 @@ Module contents: Specialized mathematical operation on data
 import warnings
 import numpy as np
 import pandas as pd
+
 
 def crosscorr(datax, datay, lag=0, wrap=False, method='kendall'):
     """Lag-N cross correlation.
@@ -38,6 +39,7 @@ def crosscorr(datax, datay, lag=0, wrap=False, method='kendall'):
         out = datax.corr(datay.shift(lag), method=method)
 
     return out
+
 
 #TODO
 # Modify into a speedup version (inspiration of newton minimal search)
@@ -133,8 +135,8 @@ def calc_tropopause_old(alti, press, temp):
     indminlevel = np.nan
     indmaxlevel = np.nan
 
-    for i in range(0,len(press)):
-        if (press.iloc[i]< 500):
+    for i in range(0, len(press)):
+        if (press.iloc[i] < 500):
             indminlevel = i
             break
 
@@ -148,11 +150,13 @@ def calc_tropopause_old(alti, press, temp):
                 indmaxlevel = j - 1
                 break
 
-        if indmaxlevel == 0: break
+        if indmaxlevel == 0:
+            break
 
         candidate = True
         while True:
-            if indmaxlevel == i: break
+            if indmaxlevel == i:
+                break
             deltaA = alti.iloc[i] - alti.iloc[indmaxlevel]
             deltaT = temp.iloc[i] - temp.iloc[indmaxlevel]
 
@@ -167,11 +171,11 @@ def calc_tropopause_old(alti, press, temp):
                 break
             indmaxlevel = indmaxlevel - 1
 
-        if candidate == True:
+        if candidate:
             Tropo['Alti'] = alti.iloc[i]
             Tropo['Press'] = press.iloc[i]
             Tropo['Temp'] = temp.iloc[i]
 
             break
 
-    return(Tropo)
+    return Tropo

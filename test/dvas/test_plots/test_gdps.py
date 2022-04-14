@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -29,16 +29,19 @@ from dvas.plots import utils as dpu
 # It all relies on the db config files located in the processing arena
 db_data = {
     'sub_dir': 'test_tool_gdps',
-    'data': [{'mdl_name': 'AR-GDP_001',
-              'srn': 'AR1',
-              'pid': '0',},
-             {'mdl_name': 'BR-GDP_001',
-              'srn': 'BR1',
-              'pid': '1',},
-             {'mdl_name': 'BR-GDP_001',
-              'srn': 'CR1',
-              'pid': '2',},
-            ]}
+    'data': [
+        {'mdl_name': 'AR-GDP_001',
+         'srn': 'AR1',
+         'pid': '0'},
+        {'mdl_name': 'BR-GDP_001',
+         'srn': 'BR1',
+         'pid': '1'},
+        {'mdl_name': 'BR-GDP_001',
+         'srn': 'CR1',
+         'pid': '2'},
+        ]
+    }
+
 
 @pytest.fixture
 def gdp_2_prfs(db_init):
@@ -65,11 +68,12 @@ def gdp_2_prfs(db_init):
 
     return multiprf
 
+
 @pytest.fixture
 def gdp_1_prf(db_init):
     """ Return a MultiGDPProfile with 1 GDPProfile in it. """
 
-    oid=db_init.data[-1]['oid']
+    oid = db_init.data[-1]['oid']
 
     info_3 = InfoManager('20210302T0000Z', oid, tags=['e:1', 'r:1', 'cws'])
     data_3 = pd.DataFrame({'alt': [10.5, 17., 20.], 'val': [11., 21.1, np.nan], 'flg': [1, 1, 1],
@@ -93,10 +97,8 @@ def test_gdp_vs_cws(gdp_2_prfs, gdp_1_prf, do_latex, show_plots):
     "--show-plots".
     """
 
-    dpg.gdps_vs_cws(gdp_2_prfs, gdp_1_prf, index_name='_idx', show=show_plots)
-    dpg.gdps_vs_cws(gdp_2_prfs, gdp_1_prf, index_name='tdt', show=show_plots)
-    dpg.gdps_vs_cws(gdp_2_prfs, gdp_1_prf, index_name='alt', show=show_plots)
+    dpg.gdps_vs_cws(gdp_2_prfs, gdp_1_prf, show=show_plots)
 
     if do_latex:
         dpu.set_mplstyle(style='latex')
-        dpg.gdps_vs_cws(gdp_2_prfs, gdp_1_prf, index_name='alt', show=show_plots, fn_suffix='latex')
+        dpg.gdps_vs_cws(gdp_2_prfs, gdp_1_prf, show=show_plots, fn_suffix='latex')

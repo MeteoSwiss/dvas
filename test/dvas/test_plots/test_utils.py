@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 # Import from current package
 import dvas.plots.utils as dpu
 
+
 def test_plot_fmts():
     """ Function used to test if the default plot formats are supported by the OS
 
@@ -31,7 +32,8 @@ def test_plot_fmts():
     fig = plt.figure()
     ok_exts = fig.canvas.get_supported_filetypes()
 
-    assert all([dvas_ext in ok_exts.keys() for dvas_ext in dpu.PLOT_FMTS])
+    assert all(dvas_ext in ok_exts.keys() for dvas_ext in dpu.PLOT_FMTS)
+
 
 def test_plot_styles():
     """ Function to test if I can properly set the dvas plotting styles.
@@ -48,14 +50,15 @@ def test_plot_styles():
     dpu.set_mplstyle('nolatex')
     assert not mpl.rcParams['text.usetex']
 
+
 def test_fix_txt():
     """ Function to test the correction of strings for plots, depending on the chosen style.
     """
 
     # Set the LateX style
     dpu.set_mplstyle('latex')
-    assert dpu.fix_txt('_idx') == r'\_idx'
-    assert dpu.fix_txt('[%]') == r'[\%]'
+    assert dpu.fix_txt('_idx') == '\_idx'
+    assert dpu.fix_txt('[%]') == r'[{\%}]'
 
     # Undo the style - THIS IS CRUCIAL FOR THE AUTOMATED TESTS in GITHUB. Else, 'latex' remains on,
     # and any subsequent plot crashes.

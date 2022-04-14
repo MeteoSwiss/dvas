@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -24,6 +24,7 @@ from .search import SearchInfoExpr, AllExpr
 
 class ParserExit(Exception):
     """Exception for parser exiting"""
+
 
 class Parser(ArgumentParser):
     """Parser class"""
@@ -97,7 +98,6 @@ class DatabasePrompt(Cmd):
 
         else:
             pprint(getattr(self._db_reader, cmd_name)('?'))
-
 
     def do_exit(self, _):
         """Exit command"""

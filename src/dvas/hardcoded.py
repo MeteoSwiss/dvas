@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -119,6 +119,11 @@ TAG_RAW_NAME = 'raw'
 #: str: Tag's desc for raw profiles
 TAG_RAW_DESC = 'Raw profile'
 
+#: str: Tag's name for raw profiles
+TAG_CLN_NAME = 'clean'
+#: str: Tag's desc for raw profiles
+TAG_CLN_DESC = 'Cleaned-up profile'
+
 #: str: Tag's name for GDP profiles
 TAG_GDP_NAME = 'gdp'
 #: str: Tag's desc for GDP profiles
@@ -139,11 +144,15 @@ TAG_CWS_NAME = 'cws'
 #: str: Tag's desc for combined working standard profile
 TAG_CWS_DESC = 'Combined working measurement standard'
 
+#: str: Tag's name for profile deltas with CWS
+TAG_DTA_NAME = 'dta'
+#: str: Tag's desc for profile deltas with CWS
+TAG_DTA_DESC = 'Profile minus CWS'
+
 #: str: Tag's name for empty values in raw data
 TAG_EMPTY_NAME = 'empty'
 #: str: Tag's desc for empty values in raw data
 TAG_EMPTY_DESC = 'Empty data'
-
 
 # Flags
 # -----
@@ -161,3 +170,8 @@ FLG_INTERP_DESC = "Interpolated values"
 FLG_INCOMPATIBLE_NAME = 'incomp'
 #: str: Flag's desc for resampled values
 FLG_INCOMPATIBLE_DESC = 'Incompatible GDP measurements'
+
+#: str: Flag's name for resampled values
+FLG_DESCENT_NAME = 'descent'
+#: str: Flag's desc for resampled values
+FLG_DESCENT_DESC = 'Descent data'

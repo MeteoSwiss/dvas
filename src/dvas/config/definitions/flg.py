@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -14,6 +14,7 @@ from ...database.model import Flg as TableFlg
 from ...hardcoded import FLG_EMPTY_NAME, FLG_EMPTY_DESC
 from ...hardcoded import FLG_INCOMPATIBLE_NAME, FLG_INCOMPATIBLE_DESC
 from ...hardcoded import FLG_INTERP_NAME, FLG_INTERP_DESC
+from ...hardcoded import FLG_DESCENT_NAME, FLG_DESCENT_DESC
 
 #: dict: Parameter pattern properties (JSON_SCHEMA)
 PARAMETER_PATTERN_PROP = {
@@ -41,6 +42,7 @@ CONST_LABELS = [
             (FLG_EMPTY_NAME, FLG_EMPTY_DESC),
             (FLG_INTERP_NAME, FLG_INTERP_DESC),
             (FLG_INCOMPATIBLE_NAME, FLG_INCOMPATIBLE_DESC),
+            (FLG_DESCENT_NAME, FLG_DESCENT_DESC)
         )
     )
 ]

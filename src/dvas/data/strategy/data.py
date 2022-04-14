@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -10,6 +10,7 @@ Module contents: Data manager classes used in dvas.data.data.ProfileManager
 """
 
 # Import from external packages
+import logging
 from abc import ABCMeta, abstractmethod
 from copy import deepcopy
 import numpy as np
@@ -24,7 +25,10 @@ from ...hardcoded import PRF_REF_INDEX_NAME, PRF_REF_TDT_NAME, PRF_REF_ALT_NAME,
 from ...hardcoded import PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME
 from ...hardcoded import PRF_REF_FLG_NAME
 
-# Define
+# Setup the logger
+logger = logging.getLogger(__name__)
+
+# Define some generic stuff
 INT_TEST = (np.int64, np.int, int, type(pd.NA))
 FLOAT_TEST = (np.float, float) + INT_TEST
 TIME_TEST = FLOAT_TEST + (pd.Timedelta, type(pd.NaT))
@@ -136,7 +140,7 @@ class ProfileAC(metaclass=RequiredAttrMetaClass):
 
             if item in self.get_index_attr():
                 # For index, I cannot extract them directly.
-                # Instead, let's create a Series instead, and make sure it comes with the same index
+                # Instead, let's create a Series, and make sure it comes with the same index
                 # This is a bit of data duplication, but is critical to get coherent/consistent
                 # output.
 
@@ -185,7 +189,7 @@ class ProfileAC(metaclass=RequiredAttrMetaClass):
 
         except (KeyError, ProfileError):
             raise ProfileError(
-                f"Valid keys are: {list(self.DF_COLS_ATTR.keys())}. " +\
+                f"Valid keys are: {list(self.DF_COLS_ATTR.keys())}. " +
                 f"You gave {val.name if isinstance(val, pd.Series) else val.columns}"
             )
         except AssertionError:
@@ -248,7 +252,16 @@ class ProfileAC(metaclass=RequiredAttrMetaClass):
 
             # Convert
             if key in val.columns and cls.DF_COLS_ATTR[key]['type']:
-                val[key] = val[key].astype(cls.DF_COLS_ATTR[key]['type'])
+                # I need to be cautions for the timedelta, as they cannot be transformed like
+                # any other stuff.
+                if key == PRF_REF_TDT_NAME:
+                    # WARNING: for now, there is no way to access the prm_unit information at the
+                    # level of Profile (the link is made only at the level of MultiProfile).
+                    # So for now, let's force-assume that the data was provided in s.
+                    # See #194
+                    val[key] = pd.to_timedelta(val[key], unit='s')
+                else:
+                    val[key] = val[key].astype(cls.DF_COLS_ATTR[key]['type'])
 
         return val
 
@@ -283,7 +296,7 @@ class Profile(ProfileAC):
         Args:
             info (InfoManager): Data information
             data (pd.DataFrame, optional): The profile values in a pandas DataFrame.
-               Default to None.
+                Default to None.
 
         """
         super(Profile, self).__init__()
@@ -422,6 +435,7 @@ class Profile(ProfileAC):
 
         return val in self.info.tags
 
+
 class RSProfile(Profile):
     """ Child Profile class for *basic radiosonde* atmospheric measurements.
     Requires some measured values, together with their corresponding measurement times since launch,
@@ -431,7 +445,7 @@ class RSProfile(Profile):
     - 'alt' (float)
     - 'tdt' (timedelta64[ns])
     - 'val' (float)
-    - 'flag' (Int64)
+    - 'flg' (Int64)
 
     The same format is expected as input.
 
@@ -538,3 +552,30 @@ class GDPProfile(RSProfile):
         out[self.data[['ucr', 'ucs', 'uct', 'ucu']].isna().all(axis=1)] = np.nan
         # Make sure to give a proper name to the Series
         return out.rename('uc_tot')
+
+
+class CWSProfile(GDPProfile):
+    """ Child GDPProfile class intended for CWS profiles. """
+
+
+class DeltaProfile(GDPProfile):
+    """ Child GDPProfile class intended for profile *deltas* between candidate and CWS profiles.
+
+    Unlike GDPs and CWS, this class no longer contains time delta information.
+    """
+
+    # The column names for the pandas DataFrame
+    DF_COLS_ATTR = dict(
+        **Profile.DF_COLS_ATTR,
+        **{
+            PRF_REF_UCR_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+            PRF_REF_UCS_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+            PRF_REF_UCT_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+            PRF_REF_UCU_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+          }
+    )
+
+    @property
+    def tdt(self):
+        """ DeltaProfile do not store any time delta information. """
+        return None

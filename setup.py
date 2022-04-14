@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -13,9 +13,7 @@ from setuptools import setup, find_packages  # Always prefer setuptools over dis
 
 # Run the version file
 with open(Path('.') / 'src' / 'dvas' / 'version.py') as fid:
-    version = next(
-        line.split("'")[1] for line in fid.readlines() if 'VERSION' in line
-    )
+    version = next(line.split("'")[1] for line in fid.readlines() if 'VERSION' in line)
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -28,11 +26,10 @@ setup(
 
     # Include all packages under src
     packages=find_packages("src"),
-
     # Tell setuptools packages are under src
     package_dir={"": "src"},
 
-    url="https://github.com/MeteoSwiss-MDA/dvas",
+    url="https://github.com/MeteoSwiss/dvas",
     author="MeteoSwiss",
     author_email="",
     description="Data Visualisation and Analysis Software for meteorological radiosounding",
@@ -42,46 +39,42 @@ setup(
     install_requires=[
         "jsonschema",
         "matplotlib",
-        "netCDF4",
+        "netcdf4",
         'numpy',
         "pampy",
         "pandas>=1.3.0",
         "peewee",
         "pytest",
-        "pytest-env",
         "pytest-data",
         "pytest-datafiles",
         "ruamel-yaml",
         "scipy",
         "sre_yield",
     ],
-
+    extras_require={
+        'dev': ['sphinx', 'sphinx-rtd-theme', 'plantweb', 'pylint', 'pytest', 'pytest-cov']
+    },
     # Setup entry points to use dvas from a terminal
-    entry_points={'console_scripts': ['dvas_init_arena=dvas_recipes.__main__:dvas_init_arena',
-                                      'dvas_optimize=dvas_recipes.__main__:dvas_optimize',
-                                      'dvas_run_recipe=dvas_recipes.__main__:dvas_run_recipe']},
-
+    entry_points={
+        'console_scripts': ['dvas_init_arena=dvas_recipes.__main__:dvas_init_arena',
+                            'dvas_optimize=dvas_recipes.__main__:dvas_optimize',
+                            'dvas_run_recipe=dvas_recipes.__main__:dvas_run_recipe']
+    },
     classifiers=[
-
         # How mature is this project? Common values are
         #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
         'Development Status :: 3 - Alpha',
-
         # Indicate who your project is intended for
         'Intended Audience :: Science/Research',
-        'Topic :: Scientific/Engineering :: Meteorology',
-
+        'Topic :: Scientific/Engineering :: Atmospheric Science',
         # Pick your license as you wish (should match "license" above)
         'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
-
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
-        'Programming Language :: Python :: 3.8',
-
+        'Programming Language :: Python :: 3.9',
     ],
 
     include_package_data=True,  # So that non .py files make it onto pypi, and then back !
-
 )

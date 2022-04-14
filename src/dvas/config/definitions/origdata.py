@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -16,7 +16,6 @@ from ...database.model import Info as TableInfo
 from ...database.model import MetaData as TableMetaData
 from ...database.model import Tag as TableTag
 from ...database.model import Object as TableObject
-
 
 # Define global field name
 EDT_FLD_NM = TableInfo.edt.name  # Datetime field name
@@ -54,14 +53,14 @@ LABEL_VAL_DEF = {
     META_FLD_NM: {},
     CSV_USE_DEFAULT_FLD_NM: False,
     CSV_DELIMITER_FLD_NM: ';',
-    CSV_HEADER_FLD_NM: 0,
+    CSV_HEADER_FLD_NM: 'infer',
     CSV_INDEX_COL_FLD_NM: None,
     CSV_SKIPINITSPACE_FLD_NM: False,
     CSV_SKIPROWS_FLD_NM: 0,
     CSV_SKIP_BLANK_LINES_FLD_NM: True,
     CSV_DELIM_WHITESPACE_FLD_NM: False,
     CSV_COMMENT_FLD_NM: '#',
-    CSV_NA_VALUES_FLD_NM: ['/'],
+    CSV_NA_VALUES_FLD_NM: None,
     CSV_SKIPFOOTER_FLD_NM: 0,
     CSV_ENCODING_FLD_NM: 'utf_8',
 }
@@ -92,6 +91,7 @@ PARAMETER_PATTERN_PROP = {
                 "patternProperties": {
                     r"^[\w\.]+$": {
                         'oneOf': [
+                            {"type": 'null'},
                             {"type": 'string'},
                             {"type": 'number'},
                         ]
@@ -114,7 +114,16 @@ PARAMETER_PATTERN_PROP = {
         ]
     },
     rf"^{CSV_HEADER_FLD_NM}$": {
-        'const': 0
+        "oneOf": [
+            {"type": "null"},
+            {
+                "type": "integer",
+                'minimum': 0
+            },
+            {
+                "const": "infer",
+            }
+        ]
     },
     rf"^{CSV_INDEX_COL_FLD_NM}$": {
         "oneOf": [
@@ -130,8 +139,15 @@ PARAMETER_PATTERN_PROP = {
         "type": "boolean"
     },
     rf"^{CSV_SKIPROWS_FLD_NM}$": {
-        "type": "integer",
-        'minimum': 0,
+        "oneOf": [
+          {
+              "type": "integer",
+              'minimum': 0,
+          },
+          {
+              "type": 'string'
+          }
+        ]
     },
     rf"^{CSV_SKIPFOOTER_FLD_NM}$": {
         "type": "integer",
@@ -148,12 +164,11 @@ PARAMETER_PATTERN_PROP = {
         "enum": ['#']
     },
     rf"^{CSV_NA_VALUES_FLD_NM}$": {
-        "type": 'array',
-        "items": {
-            "type": "string"
-        },
-        "minItems": 1,
-        "uniqueItems": True
+        'anyOf': [
+            {"type": "null"},
+            {"type": 'string'},
+            {"type": 'array', "items": {"type": "string"}, "minItems": 1, "uniqueItems": True}
+        ]
     },
     rf"^{CSV_ENCODING_FLD_NM}$": {
         'anyOf': [

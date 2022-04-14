@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -12,6 +12,7 @@ This module contains GRUAN-related routines, including correlation rules for GDP
 """
 
 # Import from Python packages
+import logging
 import functools
 from pathlib import Path
 import multiprocessing as mp
@@ -20,15 +21,18 @@ import pandas as pd
 
 # Import from current package
 from ...logger import log_func_call
-from ...logger import tools_logger as logger
 from ...errors import DvasError
 from ...hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME, PRF_REF_FLG_NAME
 from ...hardcoded import PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME
 from ..tools import df_to_chunks
 from .utils import process_chunk
-from ...data.data import MultiGDPProfile
-from ...data.strategy.data import GDPProfile
+from ...data.data import MultiCWSProfile
+from ...data.strategy.data import CWSProfile
 from ...database.database import InfoManager
+
+# Setup local logger
+logger = logging.getLogger(__name__)
+
 
 @log_func_call(logger)
 def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_size=150, n_cpus=1):
@@ -52,7 +56,7 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
             disable multiprocessing. Defaults to 1.
 
     Returns:
-        (dvas.data.data.MultiGDPProfile): the combined GDP profile.
+        (dvas.data.data.MultiCWSProfile): the combined working standard profile.
 
     '''
 
@@ -97,7 +101,7 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
 
     # Trigger an error if they do not have the same lengths.
     if len(len_gdps) > 1:
-        raise DvasError('Ouch ! GDPs must have the same length to be combined. '+
+        raise DvasError('Ouch ! GDPs must have the same length to be combined. ' +
                         'Have these been synchronized ?')
 
     # Turn the set back into an int.
@@ -107,10 +111,20 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
     if method == 'delta' and n_prf != 2:
         raise DvasError('Ouch! I can only make a delta between 2 GDPs, not %i !' % (n_prf))
 
+    # Make sure that the chunk_size is not smaller than the binning, else I cannot actually
+    # bin the data as required
+    if chunk_size < binning:
+        chunk_size = binning
+        logger.info("Adjusting the chunk size to %i, to match the requested binning level",
+                    chunk_size)
+
     # Fine tune the chunk size to be sure that no bins is being split up if the binning is > 1.
+    # 2021-09-16: fix bug #166 by *subtracting* chunk_size % binning (rather than adding it) !
     if binning > 1:
-        chunk_size += chunk_size % binning
-        logger.info("Adjusting the chunk size to %i, given the binning of %i.", chunk_size, binning)
+        chunk_size -= chunk_size % binning
+        if chunk_size % binning > 0:
+            logger.info("Adjusting the chunk size to %i, given the binning of %i.",
+                        chunk_size, binning)
 
     # Let's get started for real
     # First, let's extract all the information I (may) need, i.e. the values, errors, and total
@@ -118,14 +132,14 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
     x_dx = gdp_prfs.get_prms([PRF_REF_ALT_NAME, PRF_REF_TDT_NAME, PRF_REF_VAL_NAME,
                               PRF_REF_FLG_NAME, PRF_REF_UCR_NAME, PRF_REF_UCS_NAME,
                               PRF_REF_UCT_NAME, PRF_REF_UCU_NAME, 'uc_tot'],
-                              mask_flgs=mask_flgs)
+                             mask_flgs=mask_flgs)
 
     # I also need to extract some of the metadata required for computing cross-correlations.
     # Let's add it to the common DataFrame so I can carry it all in one go.
     for metadata in ['oid', 'mid', 'eid', 'rid']:
         vals = gdp_prfs.get_info(metadata)
 
-        #Loop through it and assign the values where appropriate
+        # Loop through it and assign the values where appropriate
         for (prf_id, val) in enumerate(vals):
 
             # If I am being given a list, make sure it has only 1 element. Else complain about it.
@@ -158,7 +172,7 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
         # around. Having this set to anything (=None when run interactively) is crucial to the
         # multiprocessing Pool routine.
         # So for now, use a terribly dangerous workaround that I do not understand.
-        # This should definitely be fixed.
+        # This should definitely be fixed. Or not ?
         # See #121
         import sys
         try:
@@ -175,11 +189,6 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
     # Re-assemble all the chunks into one DataFrame.
     proc_chunk = pd.concat(proc_chunks, axis=0)
 
-    # Set the intiial flags of the combined profile.
-    # Should I actually be setting any ? E.g. to make the difference between True NaN's and
-    # Compatibility NaN's ? Can I even do that in here ?
-    proc_chunk.loc[:, 'flg'] = 0
-
     # Almost there. Now we just need to package this into a clean MultiGDPProfile
     # Let's first prepare the info dict
     new_rig_tag = 'r:'+','.join([item.split(':')[1]
@@ -187,17 +196,17 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
     new_evt_tag = 'e:'+','.join([item.split(':')[1]
                                  for item in np.unique(gdp_prfs.get_info('eid')).tolist()])
 
-    new_info = InfoManager(np.unique(gdp_prfs.get_info('edt'))[0], # dt
+    new_info = InfoManager(np.unique(gdp_prfs.get_info('edt'))[0],  # dt
                            np.unique(gdp_prfs.get_info('oid')).tolist(),  # oids
                            tags=[new_rig_tag, new_evt_tag],
                            src='dvas combine() [{}]'.format(Path(__file__).name))
 
     # Let's create a dedicated Profile for the combined profile.
     # It's no different from a GDP, from the perspective of the errors.
-    new_prf = GDPProfile(new_info, data=proc_chunk)
+    new_prf = CWSProfile(new_info, data=proc_chunk)
 
-    # And finally, package this into a MultiGDPProfile entity
-    out = MultiGDPProfile()
+    # And finally, package this into a MultiCWSProfile entity
+    out = MultiCWSProfile()
     out.update(gdp_prfs.db_variables, data=[new_prf])
 
     return out

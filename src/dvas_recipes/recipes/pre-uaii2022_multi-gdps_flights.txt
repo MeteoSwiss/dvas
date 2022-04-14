@@ -1,0 +1,10 @@
+# This file contains a list of flights to be processed by a given dvas recipe.
+# Each flight is identified using a list of event_id and rig_id tags.
+#
+e:139164,r:1 # day, RS-41 x2, M10 x1, 20210319T090000
+#e:139165,r:1 # day, RS-41 x1, M10 x1, 20210324T130000
+#e:139926,r:1 # day, RS-41 x2, M10 x1, 20210420T120000
+#e:140075,r:1 # night, RS-41 x2, M10 x1, 20210422T210000
+#e:141072,r:1 # night, RS-41 x2, M10 x1, 20210513T190000
+#e:141401,r:1 # night, RS-41 x2, M10 x1, 20210520T210000
+#e:142349,r:1 # day, RS-41 x2, M10 x2, 20210617T140000

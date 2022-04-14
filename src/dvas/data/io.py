@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -10,6 +10,7 @@ Module contents: IO management
 """
 
 # Import from external packages
+import logging
 
 # Import from current package
 from .linker import LocalDBLinker
@@ -18,8 +19,11 @@ from .linker import FlgCSVHandler, FlgGDPHandler
 from ..config.config import OrigData
 from ..database.database import DatabaseManager
 from ..database.model import Parameter as TableParameter
-from ..logger import localdb, rawcsv
 from ..environ import path_var
+from ..errors import DvasError
+
+# Create logger
+logger = logging.getLogger(__name__)
 
 
 def update_db(search, strict=False):
@@ -83,17 +87,15 @@ def update_db(search, strict=False):
 
     # If no matching parameters were found, issue a warning and stop here.
     if len(prm_name_list) == 0:
-        localdb.info("No database parameter found for the query: %s", search)
+        logger.warning("No database parameter found for the query: %s", search)
         return None
 
     # Log
-    localdb.info("Update db for following parameters: %s", prm_name_list)
+    logger.info("Update db for following parameters: %s", prm_name_list)
 
     # Test
     if path_var.orig_data_path is None:
-        # TODO
-        #  Detail exception
-        raise Exception()
+        raise DvasError('Ouch ! path_var.orig_data_path is None')
 
     # Scan data path (entirly)
     origdata_path_scan = list(path_var.orig_data_path.rglob("*.*"))
@@ -102,7 +104,7 @@ def update_db(search, strict=False):
     for prm_name in prm_name_list:
 
         # Log
-        rawcsv.info("Start reading files for '%s'", prm_name)
+        logger.debug("Start reading files for '%s'", prm_name)
 
         # Scan files
         new_orig_data = []
@@ -112,35 +114,23 @@ def update_db(search, strict=False):
             if result:
                 new_orig_data.append(result)
                 # Log
-                rawcsv.info(
-                    "Files '%s' was treated", file_path
-                )
+                logger.debug("File '%s' was treated", file_path)
             else:
                 # Log
-                rawcsv.debug(
-                    "Files '%s' was left untouched", file_path
-                )
+                logger.debug("File '%s' was left untouched", file_path)
 
         # Log
-        rawcsv.info("Finish reading files for '%s'", prm_name)
-        rawcsv.info(
-            "Found %d new data while reading files for '%s'",
-            len(new_orig_data),
-            prm_name
-        )
+        logger.debug("Finish reading files for '%s'", prm_name)
+        logger.debug("Found %d new data while reading files for '%s'", len(new_orig_data), prm_name)
 
         # Log
-        localdb.info(
-            "Start inserting in local DB new found data for '%s'", prm_name
-        )
+        logger.debug("Start inserting in local DB new found data for '%s'", prm_name)
 
         # Save to DB
         db_linker.save(new_orig_data)
 
         # Log
-        localdb.info(
-            "Finish inserting in local DB new found data for '%s'", prm_name
-        )
+        logger.debug("Finish inserting in local DB new found data for '%s'", prm_name)
 
     # Delete
     del db_mngr, db_linker, handler

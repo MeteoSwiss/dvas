@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -11,6 +11,7 @@ Module content: demonstration of recipe step function design
 # Relative imports from the dvas_recipe module
 from .. import dynamic
 from ..recipe import for_each_flight, for_each_var
+
 
 @for_each_var
 @for_each_flight

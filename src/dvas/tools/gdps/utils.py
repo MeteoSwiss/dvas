@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -12,17 +12,21 @@ This module contains GRUAN-related utilities.
 """
 
 # Import from Python
+import logging
 import numpy as np
 import pandas as pd
 
 # Import from current package
 from ...logger import log_func_call
-from ...logger import tools_logger as logger
 from ...errors import DvasError
 from ...hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME, PRF_REF_FLG_NAME
 from ...hardcoded import PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME
-from ..tools import fancy_nansum
+from ..tools import fancy_nansum, fancy_bitwise_or
 from .correlations import coeffs
+
+# Setup local logger
+logger = logging.getLogger(__name__)
+
 
 @log_func_call(logger)
 def weighted_mean(df_chunk, binning=1):
@@ -69,7 +73,7 @@ def weighted_mean(df_chunk, binning=1):
 
     # Let's make sure their ID is what I expect them to be.
     if not np.array_equal(df_chunk.columns.unique(level=0), range(n_prf)):
-        raise DvasError('Ouch ! Profile values must be grouped usign MultiIndex with ids 0,1, ...')
+        raise DvasError('Ouch ! Profile values must be grouped using MultiIndex with ids 0,1, ...')
 
     # Force the weights to be NaNs if the data is a NaN. Else, the normalization will be off.
     mask = df_chunk.xs(PRF_REF_VAL_NAME, level=1, axis=1).isna()
@@ -131,14 +135,14 @@ def weighted_mean(df_chunk, binning=1):
 
     # --- Kept for legacy purposes ---
     # This is slow
-    #in_lvl = np.array([vals.shape[1]*[1 if j//binning == i else 0 for j in range(len(vals))]
+    # in_lvl = np.array([vals.shape[1]*[1 if j//binning == i else 0 for j in range(len(vals))]
     #                   for i in range(len(x_ms))])
     # This is better
-    #in_lvl = np.array([vals.shape[1]*([0]*i*binning + [1]*binning + [0]*(len(vals)-1-i)*binning)
+    # in_lvl = np.array([vals.shape[1]*([0]*i*binning + [1]*binning + [0]*(len(vals)-1-i)*binning)
     #                   for i in range(len(x_ms))])
     # Apply the selection to the weight matrix. We avoid the multiplication to properly deal with
     # NaNs.
-    #w_mat[in_lvl == 0] = 0
+    # w_mat[in_lvl == 0] = 0
     # --------------------------------
 
     # This is the fastest way to do so I could come up with so far. Re-compute which layer goes
@@ -156,7 +160,21 @@ def weighted_mean(df_chunk, binning=1):
                                  mask=(np.isnan(wtot_mat) | np.isnan(w_mat)),
                                  fill_value=np.nan)
 
+    # Before we end, let us compute the flags. We apply a general bitwise OR to them, such that
+    # they do not cancel each other or disappear: they get propagated all the way
+    # First, we assemble them at high resolution. Note here that the flag for any weight that is
+    # NaN or 0 is set to 0 (but not pd.NA). THis is on purpose, to show that the resulting point
+    # is not inheriting "no" flags.
+    flgs = pd.DataFrame(fancy_bitwise_or(
+        df_chunk.loc[:, (slice(None), 'flg')].mask((w_ps.isna() | (w_ps == 0)).values), axis=1))
+
+    # Then, only if warranted, apply the binning too
+    if binning > 1:
+        flgs = flgs.groupby(flgs.index//binning).aggregate(fancy_bitwise_or)
+    chunk_out[PRF_REF_FLG_NAME] = flgs
+
     return chunk_out, jac_mat
+
 
 @log_func_call(logger)
 def delta(df_chunk, binning=1):
@@ -183,7 +201,7 @@ def delta(df_chunk, binning=1):
         binning (int, optional): binning size. Defaults to 1 (=no binning).
 
     Returns:
-        (pandas.DataFrame, np.ma.masked_array): delta profile (0 - 1), and associated Jacobian
+        (pandas.DataFrame, np.ma.masked_array): delta profile (1 - 0), and associated Jacobian
         matrix. The matrix has a size of m * n, with m = len(df_chunk)/binning, and
         n = len(df_chunk) * 2.
 
@@ -222,8 +240,8 @@ def delta(df_chunk, binning=1):
             # Keep track of how many valid rows I am summing in each bin.
             # It would seem logical to store these as int. However, I will soon divide by those
             # numbers, and will need NaN's to avoid RunTime Warnings. 'int' does not support these,
-            # and 'Int64' cannot be used to divide TiemDeltas ... so float it is ... sigh.
-            # WARNING: here, i look at the number of valid rows **for that specific column**.
+            # and 'Int64' cannot be used to divide TimeDeltas ... so float it is ... sigh.
+            # WARNING: here, I look at the number of valid rows **for that specific column**.
             # This implies that, potentially, the delta action may combine different rows for
             # different columns.
             # TODO: fix this ... by using flags to select valid rows ?
@@ -251,7 +269,7 @@ def delta(df_chunk, binning=1):
                                      mask=False,
                                      fill_value=np.nan)
 
-        # We're doing 0 - 1, so let's already set the second half of the matrix accordingly.
+        # We're doing 1 - 0, so let's already set the second half of the matrix accordingly.
         jac_mat[:, len(df_chunk):] = -1
 
         # Next we need to know which elements are being combined in each level of the final
@@ -267,7 +285,7 @@ def delta(df_chunk, binning=1):
         # Next, I need to mask any level that is completely a NaN, because it does not get used in
         # the computation. This is important, when binning, if e.g. 1/4 of the bin is Nan,
         # To have a correct error propagation.
-        points_to_forget = delta_pqs.append(delta_pqs).isna().values
+        points_to_forget = pd.concat([delta_pqs]*2).isna().values
         jac_mat[:, points_to_forget] = np.ma.masked
 
         # Finally, let us not forget that we may have averaged the delta over the bin ...
@@ -279,7 +297,21 @@ def delta(df_chunk, binning=1):
         # Adjust the mask accordingly.
         jac_mat[valid_rows == 0, :] = np.ma.masked
 
+    # Before we end, let us compute the flags. We apply a general bitwise OR to them, such that
+    # they do not cancel each other or disappear: they get propagated all the way
+    # First, we assemble them at high resolution. Note that we here mask any flags that belongs to
+    # a NaN value, because this is not actually used in the delta.
+    flgs = pd.DataFrame(fancy_bitwise_or(
+        df_chunk.loc[:, (slice(None), 'flg')].mask(df_chunk.loc[:, (slice(None),
+                                                                    'val')].isna().values), axis=1))
+
+    # Then, only if warranted, apply the binning too
+    if binning > 1:
+        flgs = flgs.groupby(flgs.index//binning).aggregate(fancy_bitwise_or)
+    chunk_out[PRF_REF_FLG_NAME] = flgs
+
     return chunk_out, jac_mat
+
 
 def process_chunk(df_chunk, binning=1, method='weighted mean'):
     """ Process a DataFrame chunk and propagate the errors.
@@ -299,7 +331,7 @@ def process_chunk(df_chunk, binning=1, method='weighted mean'):
             ...
 
     Args:
-        df_chunk (pandas.DataFrame): data conatining the Profiles to merge.
+        df_chunk (pandas.DataFrame): data containing the Profiles to merge.
         binning (int, optional): binning size. Defaults to 1 (=no binning).
         method (str, optional): the processing method. Can be one of
             ['mean', 'weighted mean', delta']. Defaults to 'weighted mean'.
@@ -323,29 +355,46 @@ def process_chunk(df_chunk, binning=1, method='weighted mean'):
         if col not in df_chunk.columns.unique(level=1):
             raise DvasError('Ouch ! column "{}" is missing from the DataFrame'.format(col))
 
+    # Also check that the level 0 starts from 0 onwards
+    if 0 not in df_chunk.columns.unique(level=0):
+        raise DvasError('Ouch ! Profile "0" is missing ...')
+
     # How many profiles do I want to combine ?
     n_prf = len(df_chunk.columns.unique(level=0))
 
     # Data consistency check & cleanup: if val is NaN, all the errors should be NaNs
-    # (and vice-versa).
+    # (and vice-versa). Also, if val is NaN, then we should ignore its flags, because as a NaN
+    # it will not be taken into account (but this should not trigger a warning).
     for prf_ind in range(n_prf):
-        if all(df_chunk.loc[:, (prf_ind, 'uc_tot')].isna() ==
-               df_chunk.loc[:, (prf_ind, 'val')].isna()):
-            continue
+        if not all(df_chunk.loc[:, (prf_ind, 'uc_tot')].isna() ==
+                   df_chunk.loc[:, (prf_ind, PRF_REF_VAL_NAME)].isna()):
+            # If I reach this point, then the data is not making sense.
+            # Warn the user and clean it up.
+            logger.warning("GDP Profile %i: NaN mismatch for 'val' and 'uc_tot'", prf_ind)
+            df_chunk.loc[df_chunk.loc[:, (prf_ind, 'uc_tot')].isna().values,
+                         (prf_ind, 'val')] = np.nan
+            for col in [PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME,
+                        'uc_tot']:
+                df_chunk.loc[df_chunk.loc[:, (prf_ind, 'val')].isna().values,
+                             (prf_ind, col)] = np.nan
 
-        # If I reach this point, then the data is not making sense. Warn the user and clean it up.
-        logger.warning("GDP Profile %i: NaN mismatch for 'val' and 'uc_tot'", prf_ind)
-        df_chunk.loc[df_chunk.loc[:, (prf_ind, 'uc_tot')].isna().values, (prf_ind, 'val')] = np.nan
-        for col in [PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME,
-                    'uc_tot']:
-            df_chunk.loc[df_chunk.loc[:, (prf_ind, 'val')].isna().values,
-                         (prf_ind, col)] = np.nan
+        if not all(df_chunk.loc[:, (prf_ind, PRF_REF_FLG_NAME)].isna() ==
+                   df_chunk.loc[:, (prf_ind, PRF_REF_VAL_NAME)].isna()):
+            logger.debug("GDP profile %i: hiding some flags for the NaN data values.")
+            df_chunk.loc[df_chunk.loc[:, (prf_ind, PRF_REF_VAL_NAME)].isna().values,
+                         (prf_ind, PRF_REF_FLG_NAME)] = np.nan
 
     # Compute the weights for each point, if applicable
     # First I need to add the new columns (one for each Profile).
-    df_chunk = df_chunk.stack(level=0)
-    df_chunk.loc[:, 'w_ps'] = np.nan
-    df_chunk = df_chunk.unstack().swaplevel(0, 1, axis=1).sort_index(axis=1)
+    # ----- What follows is prblematic because .stack looses the dtype of the flg, which
+    # wreaks havoc down the line ---
+    # df_chunk = df_chunk.stack(level=0)
+    # df_chunk.loc[:, 'w_ps'] = np.nan
+    # df_chunk = df_chunk.unstack().swaplevel(0, 1, axis=1).sort_index(axis=1)
+    # ------------------------------
+    # Crappier (?) alternative, but that doesn't mess up with the column dtypes
+    for ind in range(n_prf):
+        df_chunk.loc[:, (ind, 'w_ps')] = np.nan
 
     # Then I can fill it with the appropriate values
     if method == 'weighted mean':
@@ -369,26 +418,27 @@ def process_chunk(df_chunk, binning=1, method='weighted mean'):
     # Let us now assemble the U matrices, filling all the cross-correlations for the different
     # types of uncertainties
     for sigma_name in [PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME]:
-        U_mat = coeffs(np.tile(df_chunk.index.values, (n_prf*len(df_chunk), n_prf)), # i
-                       np.tile(df_chunk.index.values, (n_prf*len(df_chunk), n_prf)).T, # j
-                       sigma_name,
-                       oid_i=np.tile(df_chunk.xs('oid', level=1, axis=1).T.values.ravel(),
-                                     (n_prf*len(df_chunk), 1)),
-                       oid_j=np.tile(df_chunk.xs('oid', level=1, axis=1).T.values.ravel(),
-                                     (n_prf*len(df_chunk), 1)).T,
-                       mid_i=np.tile(df_chunk.xs('mid', level=1, axis=1).T.values.ravel(),
-                                     (n_prf*len(df_chunk), 1)),
-                       mid_j=np.tile(df_chunk.xs('mid', level=1, axis=1).T.values.ravel(),
-                                     (n_prf*len(df_chunk), 1)).T,
-                       rid_i=np.tile(df_chunk.xs('rid', level=1, axis=1).T.values.ravel(),
-                                     (n_prf*len(df_chunk), 1)),
-                       rid_j=np.tile(df_chunk.xs('rid', level=1, axis=1).T.values.ravel(),
-                                     (n_prf*len(df_chunk), 1)).T,
-                       eid_i=np.tile(df_chunk.xs('eid', level=1, axis=1).T.values.ravel(),
-                                     (n_prf*len(df_chunk), 1)),
-                       eid_j=np.tile(df_chunk.xs('eid', level=1, axis=1).T.values.ravel(),
-                                     (n_prf*len(df_chunk), 1)).T,
-                        )
+        cc_mat = coeffs(
+            np.tile(df_chunk.index.values, (n_prf*len(df_chunk), n_prf)),  # i
+            np.tile(df_chunk.index.values, (n_prf*len(df_chunk), n_prf)).T,  # j
+            sigma_name,
+            oid_i=np.tile(df_chunk.xs('oid', level=1, axis=1).T.values.ravel(),
+                          (n_prf*len(df_chunk), 1)),
+            oid_j=np.tile(df_chunk.xs('oid', level=1, axis=1).T.values.ravel(),
+                          (n_prf*len(df_chunk), 1)).T,
+            mid_i=np.tile(df_chunk.xs('mid', level=1, axis=1).T.values.ravel(),
+                          (n_prf*len(df_chunk), 1)),
+            mid_j=np.tile(df_chunk.xs('mid', level=1, axis=1).T.values.ravel(),
+                          (n_prf*len(df_chunk), 1)).T,
+            rid_i=np.tile(df_chunk.xs('rid', level=1, axis=1).T.values.ravel(),
+                          (n_prf*len(df_chunk), 1)),
+            rid_j=np.tile(df_chunk.xs('rid', level=1, axis=1).T.values.ravel(),
+                          (n_prf*len(df_chunk), 1)).T,
+            eid_i=np.tile(df_chunk.xs('eid', level=1, axis=1).T.values.ravel(),
+                          (n_prf*len(df_chunk), 1)),
+            eid_j=np.tile(df_chunk.xs('eid', level=1, axis=1).T.values.ravel(),
+                          (n_prf*len(df_chunk), 1)).T,
+        )
 
         # Implement the multiplication. First get the uncertainties ...
         raveled_sigmas = np.array([df_chunk.xs(sigma_name, level=1, axis=1).T.values.ravel()])
@@ -396,7 +446,7 @@ def process_chunk(df_chunk, binning=1, method='weighted mean'):
         raveled_sigmas = np.ma.masked_invalid(raveled_sigmas)
         # ... and combine them with the correlation coefficients. Mind the mix of Hadamard and dot
         # products to get the correct mix !
-        U_mat = np.multiply(U_mat, np.ma.dot(raveled_sigmas.T, raveled_sigmas))
+        U_mat = np.multiply(cc_mat, np.ma.dot(raveled_sigmas.T, raveled_sigmas))
 
         # Let's compute the full covariance matrix for the merged profile (for the specific
         # error type).
@@ -408,10 +458,12 @@ def process_chunk(df_chunk, binning=1, method='weighted mean'):
         # As a sanity check let's make sure all the off-diagonal terms are exactly 0.
         # This should be the case since a specific (original) layer can only be used once
         # in the combined profile.
+        # Note: this is only true for uncorrelated uncertainties. Correlated ones will have
+        # non-0 off-diagonal elements.
         rows, cols = np.indices((len(x_ms), len(x_ms)))
         off_diag_elmts = V_mat[rows != cols]
         if any(off_diag_elmts[~off_diag_elmts.mask] != 0):
-            logger.warning("Non-0 off-diagonal elements of CWS correlation matrix [%s].",
+            logger.warning("Non-0 off-diagonal elements of correlation matrix [%s].",
                            sigma_name)
 
         # TODO: what could we do with the off-diagonal elements of V_mat ? Nothing for now.

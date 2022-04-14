@@ -11,39 +11,47 @@ _M10:
         - "cat('e:', get('event_id'))"
         - "cat('r:', get('rig'))"
         - "get('day_night')"
+    metadata:
+        bpt_time: "get('bpt_time')"
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter:
-    csv_skip_blank_lines: True
+    csv_skip_blank_lines: False
     csv_delim_whitespace: True
-    csv_skiprows: 1
+    csv_skiprows: 0
+    csv_skipfooter: 0
     csv_encoding:
+    csv_na_values:
+    csv_header: 0
 
     _time:
-        value: get(0, ['rel', 's2ns'])
+        value: get('Time', 'rel') # this is the number of seconds since 1970-01-01T00:00:00Z
+
+    _alt_ref:
+        value: get('Altitude')
 
     _gph:
-        value: get(1)
+        value: get('Altitude')
 
     _temp:
-        value: get(10, 'd2k')
+        value: get('T', 'd2k')
 
     _pres:
-        value: get(12)
+        value: get('Press')
 
     _rh:
-        value: get(11)
+        value: get('U')
 
     _wdir:
-        value: get(8)
+        value: get('WindD')
 
     _wspeed:
-        value: get(7)
+        value: get('WindF')
 
 # ----------------------------------------------------
-# M10 GDP, version alpha-1
+# M10 GDP, version alpha-2
 # ----------------------------------------------------
-_M10-GDP-ALPHA_001:
+_M10-GDP-ALPHA_002:
 
     # -- META DATA ----------------------------------
     edt: "get('g.Measurement.StandardTime')"
@@ -52,10 +60,16 @@ _M10-GDP-ALPHA_001:
     tags:
         - "cat('e:', get('g.Measurement.Id'))"
         - "cat('r:', get('g.Measurement.BalloonNumber'))"
+    metadata:
+        bpt_time:
 
     # -- ORIG DATA ----------------------------------
     _time:
-        value: get('time', ['rel', 's2ns'])  # this is the number of seconds since 1970-01-01T00:00:00Z
+        value: get('time', 'rel')  # this is the number of seconds since 1970-01-01T00:00:00Z
+
+    _alt_ref:
+        value: get('alt_gph')
+
     _gph:
         value: get('alt_gph')
 
@@ -88,13 +102,13 @@ _M10-GDP-ALPHA_001:
     _pres:
         value: get('press_gnss')
 
-    #TODO: is this assignment correct ?
+    #TODO:
     _pres_uct:
-        value: get('press_gnss_uc_repe', 'div2')  # Go from K=2 to K=1
+        value: get('press_uc', 'div2')  # Go from K=2 to K=1
 
     #TODO: is this assignment correct ?
-    _pres_ucu:
-        value: get('press_gnss_uc_noise', 'div2')  # Go from K=2 to K=1
+    #_pres_ucu:
+    #    value: get('press_gnss_uc_noise', 'div2')  # Go from K=2 to K=1
 
     _rh:
         value: get('rh')

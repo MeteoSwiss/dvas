@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -10,6 +10,7 @@ Module contents: Utility functions and parameters for plotting in dvas.
 """
 
 # Import from Python packages
+import logging
 from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
@@ -22,8 +23,10 @@ from ..hardcoded import PKG_PATH
 from ..errors import DvasError
 from ..environ import path_var as env_path_var
 from ..logger import log_func_call
-from ..logger import plots_logger as logger
 from ..version import VERSION
+
+# Setup local logger
+logger = logging.getLogger(__name__)
 
 # Define some plotting constants
 #: float: Width of a 1-column plot [inches], to fit in scientific articles when scaled by 50%
@@ -39,9 +42,9 @@ PLOT_STYLES = {'base': 'base.mplstyle',
 
 #: dict: dvas core colors for the cmap, the color cycler, and NaNs.
 CLRS = {'set_1': ['#4c88b3', '#b34c88', '#88b34c', '#d15f56', '#7d70b4', '#00a7a0',
-                  '#bf8a31', '#d0d424','#b3b3b3','#575757'],
+                  '#bf8a31', '#d0d424', '#b3b3b3', '#575757'],
         'cmap_1': list(zip([0, 0, 0.5, 1, 1],
-                           ['#000000', '#051729','#4c88b3','#dbd7cc', '#ffffff'])),
+                           ['#000000', '#051729', '#4c88b3', '#dbd7cc', '#ffffff'])),
         'nan_1': '#7d7d7d',
         'ref_1': 'crimson',
         'cws_1': '#323232'
@@ -51,8 +54,8 @@ CLRS = {'set_1': ['#4c88b3', '#b34c88', '#88b34c', '#d15f56', '#7d70b4', '#00a7a
 CMAP_1 = colors.LinearSegmentedColormap.from_list('cmap_1', CLRS['cmap_1'], 1024)
 CMAP_1.set_bad(color=CLRS['nan_1'], alpha=1)
 #: matplotlib.colors.LinearSegmentedColormap: the default dvas colormap 1 reversed
-CMAP_1_R = colors.LinearSegmentedColormap.from_list('cmap_1',
-    [(abs(item[0]-1), item[1]) for item in CLRS['cmap_1'][::-1]], 1024)
+CMAP_1_R = colors.LinearSegmentedColormap.from_list(
+    'cmap_1', [(abs(item[0]-1), item[1]) for item in CLRS['cmap_1'][::-1]], 1024)
 CMAP_1_R.set_bad(color=CLRS['nan_1'], alpha=1)
 
 #: list[str]: The default file extensions to save the plots into.
@@ -70,6 +73,7 @@ UNIT_LABELS = {'K': r'K$^{\circ}$',
                'm s-1': r'm s$^{-1}$',
                'degree': r'$^{\circ}$',
                }
+
 
 @log_func_call(logger)
 def set_mplstyle(style='base'):
@@ -115,6 +119,39 @@ def set_mplstyle(style='base'):
     if style != 'base':
         plt.style.use(str(Path(PKG_PATH, 'plots', 'mpl_styles', PLOT_STYLES[style])))
 
+
+def add_sec_axis(ax, xvals, new_xvals, offset=-0.1, which='x'):
+    """ Adds a secondary x-axis to the figure.
+
+    Args:
+        ax (matplotlib axis): the axis to which to add the new x-axis
+        xvals (np.ndarray): current x-axis values, spanning the full range of the plot. Must not
+            contain NaNs.
+        new_xvals (np.ndarray): new x-axis values. Must be able to linearly interpolate with xvals,
+            and contain no NaN's whatsoever.
+        offset (float, optional): offset by which to shift the new axis. Defaults to -0.1.
+        which (str, optional): 'x', or 'y', the axis to duplicate.
+
+    Returns:
+        matplotlib axis: the newly created axis.
+
+    """
+
+    def forward(xxx):
+        return np.interp(xxx, xvals, new_xvals)
+
+    def inverse(xxx):
+        return np.interp(xxx, new_xvals, xvals)
+
+    if which == 'x':
+        new_ax = ax.secondary_xaxis(offset, functions=(forward, inverse))
+    elif which == 'y':
+        new_ax = ax.secondary_yaxis(offset, functions=(forward, inverse))
+    else:
+        raise DvasError('Ouch ! which should be "x" or "y", not: %s' % (which))
+    return new_ax
+
+
 def fix_txt(txt):
     """ Corrects any string for problematic characters before it gets added to a plot. Fixes vary
     depending whether on the chosen plotting style's value of `usetex` in `rcparams`.
@@ -130,10 +167,20 @@ def fix_txt(txt):
 
     # First deal with the cases when a proper LaTeX is being used
     if usetex:
-        txt = txt.replace('%', r'\%')
-        txt = txt.replace('_', r'\_')
+        txt = txt.replace('%', r'{\%}')
+        txt = [item.replace('_', r'\_') if ind % 2 == 0 else item
+               for (ind, item) in enumerate(txt.split('$'))]
+        txt = '$'.join(txt)
+
+    else:
+        txt = txt.replace(r'\smaller', '')
+        txt = txt.replace(r'\bf', r'')
+        txt = txt.replace(r'\it', r'')
+        txt = txt.replace(r'\flushleft', r'')
+        txt = txt.replace(r'\newline', r'')
 
     return txt
+
 
 def cmap_discretize(cmap, n_cols):
     """Return a discrete colormap from any continuous colormap cmap.
@@ -160,7 +207,7 @@ def cmap_discretize(cmap, n_cols):
         cmap = cm.get_cmap(cmap)
 
     # Modification: do not start with the colormap edges
-    #colors_i = np.concatenate((np.linspace(0, 1., N), (0.,0.,0.,0.)))
+    # colors_i = np.concatenate((np.linspace(0, 1., N), (0.,0.,0.,0.)))
     colors_i = np.concatenate((np.linspace(1./n_cols*0.5, 1-(1./n_cols*0.5), n_cols), (0., 0., 0.)))
 
     colors_rgba = cmap(colors_i)
@@ -175,6 +222,7 @@ def cmap_discretize(cmap, n_cols):
     # Return colormap object.
     return colors.LinearSegmentedColormap(cmap.name + "_%d" % (n_cols), cdict, 1024)
 
+
 @log_func_call(logger)
 def fancy_legend(this_ax, label=None):
     """ A custom legend routine, to take care of all the repetitive aspects for this.
@@ -187,12 +235,13 @@ def fancy_legend(this_ax, label=None):
 
     # Add the legend.
     leg = this_ax.legend(loc='upper left', bbox_to_anchor=(1.01, 1),
-                    title=fix_txt(label), ncol=1, handlelength=1, fancybox=True,
-                    fontsize='small', title_fontsize='small', borderaxespad=0)
+                         title=fix_txt(label), ncol=1, handlelength=1, fancybox=True,
+                         fontsize='small', title_fontsize='small', borderaxespad=0)
 
     # Tweak the thickness of the legen lines as well.
     for line in leg.get_lines():
         line.set_linewidth(2.0)
+
 
 @log_func_call(logger)
 def get_edt_eid_rid(prfs):
@@ -215,11 +264,12 @@ def get_edt_eid_rid(prfs):
 
     # Format it all nicely for each Profile.
     info_txt = set(['{} ({}, {})'.format(item, eids[ind], rids[ind])
-                                         for ind, item in enumerate(edts)])
+                    for ind, item in enumerate(edts)])
     # Stich the different items together in case I have more than one flight in the list
     info_txt = ' / '.join(info_txt)
 
     return info_txt
+
 
 @log_func_call(logger)
 def add_edt_eid_rid(this_ax, prfs):
@@ -237,8 +287,9 @@ def add_edt_eid_rid(this_ax, prfs):
 
     # Add it to the ax
     this_ax.text(0, 1.03, info_txt, fontsize='small',
-            verticalalignment='bottom', horizontalalignment='left',
-            transform=this_ax.transAxes)
+                 verticalalignment='bottom', horizontalalignment='left',
+                 transform=this_ax.transAxes)
+
 
 @log_func_call(logger)
 def add_source(fig):
@@ -248,10 +299,11 @@ def add_source(fig):
         fig (matplotlib.pyplot.figure): the figure to add the text to.
 
     """
-    msg = 'Created with dvas v{}'.format(VERSION)
+    msg = r'\it\flushleft Created with\newline dvas v{}'.format(VERSION)
 
-    fig.text(0.01, 0.02, msg, fontsize='xx-small',
-                 horizontalalignment='left', verticalalignment='bottom')
+    fig.text(0.01, 0.02, fix_txt(msg), fontsize='xx-small',
+             horizontalalignment='left', verticalalignment='bottom')
+
 
 @log_func_call(logger)
 def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show=None):
@@ -307,7 +359,8 @@ def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show=
     if show:
         plt.show()
     else:
-        plt.close(fig.number)
+        plt.close(fig)
+
 
 def clr_palette_demo():
     """ A simple function to demonstrate the dvas color palette.
@@ -346,11 +399,11 @@ def clr_palette_demo():
     ax0a.legend(fontsize='xx-small')
 
     # Second, show a 2D image with the defasult colormap ...
-    x, y = np.meshgrid(np.linspace(-3,3,30), np.linspace(-3,3,30))
+    x, y = np.meshgrid(np.linspace(-3, 3, 30), np.linspace(-3, 3, 30))
     d = np.sqrt(x**2 + y**2)
-    g = np.exp(-( (d)**2 / ( 2.0 * 1**2 ))) + (2*np.random.rand(30,30)-1)/10
+    g = np.exp(-((d)**2 / (2.0 * 1**2))) + (2*np.random.rand(30, 30)-1)/10
     # Add some NaN's to show their specific color
-    g[0:15,0:15] = np.nan
+    g[0:15, 0:15] = np.nan
 
     # Actually plot it ...
     ax0b.imshow(g, cmap=CMAP_1, origin='lower', vmin=0, vmax=1)

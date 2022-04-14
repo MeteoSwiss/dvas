@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -10,6 +10,7 @@ Module contents: Data linker classes
 """
 
 # Import external python packages and modules
+import logging
 from abc import ABC, abstractmethod
 import re
 from functools import reduce
@@ -21,6 +22,7 @@ import pandas as pd
 
 # Import from current package
 from ..environ import path_var as env_path_var
+from ..errors import DvasError
 from ..database.model import Model as TableModel
 from ..database.model import Info as TableInfo
 from ..database.model import DataSource
@@ -33,12 +35,14 @@ from ..config.definitions.origdata import EXPR_FIELD_KEYS
 from ..config.definitions.origdata import TAG_FLD_NM
 from ..config.definitions.origdata import VALUE_FLD_NM
 from ..config.definitions.origdata import CSV_USE_DEFAULT_FLD_NM
-from ..logger import rawcsv
 from ..environ import glob_var
 from ..hardcoded import GDP_FILE_EXT
 from ..hardcoded import PRM_PAT, FLG_PRM_PAT
 from ..hardcoded import CSV_FILE_MDL_PAT, GDP_FILE_MDL_PAT
 from ..hardcoded import TAG_RAW_NAME, TAG_GDP_NAME, TAG_EMPTY_NAME
+
+# Setup local logger
+logger = logging.getLogger(__name__)
 
 # Pandas csv_read method arguments
 PD_CSV_READ_ARGS = [
@@ -133,8 +137,8 @@ class AbstractHandler(Handler):
         """Super handler behavior"""
         if self._next_handler:
             return self._next_handler.handle(*args)
-        else:
-            return
+
+        return
 
 
 class FileHandler(AbstractHandler):
@@ -190,8 +194,8 @@ class FileHandler(AbstractHandler):
         """
         if self.file_suffix_re.fullmatch(file.suffix) is None:
             return False
-        else:
-            return True
+
+        return True
 
     def check_prm(self, prm_name):
         """Check if parameter as correct parameter pattern
@@ -205,8 +209,8 @@ class FileHandler(AbstractHandler):
         """
         if self.prm_re.fullmatch(prm_name) is None:
             return False
-        else:
-            return True
+
+        return True
 
     @property
     def data_ok_tags(self):
@@ -225,8 +229,8 @@ class FileHandler(AbstractHandler):
         """
         if self.file_model_pat.match(file.name) is None:
             return False
-        else:
-            return True
+
+        return True
 
     def handle(self, data_file_path, prm_name):
         """Handle method
@@ -241,9 +245,9 @@ class FileHandler(AbstractHandler):
         """
 
         if (
-                self.check_file(data_file_path) and
-                self.check_prm(prm_name) and
-                self.check_file_mdl(data_file_path)
+            self.check_file(data_file_path) and
+            self.check_prm(prm_name) and
+            self.check_file_mdl(data_file_path)
         ):
             return self._get_main(data_file_path, prm_name)
 
@@ -258,11 +262,7 @@ class FileHandler(AbstractHandler):
 
         # Get metadata
         # (need mdl_name to read config file)
-        if (
-                metadata := self.get_metadata(
-                    data_file_path, mdl_name, prm_name
-                )
-        ) is None:
+        if (metadata := self.get_metadata(data_file_path, mdl_name, prm_name)) is None:
             # TODO
             #  Check this return
             return
@@ -282,24 +282,18 @@ class FileHandler(AbstractHandler):
             metadata[TAG_FLD_NM] += self.data_ok_tags
 
             # Log
-            rawcsv.info(
-                "Successful reading of '%s' in file '%s'",
-                prm_name, data_file_path,
-            )
+            logger.debug("Successful reading of '%s' in file '%s'", prm_name, data_file_path)
 
         except ConfigGetError:
 
             # Create empty data set
-            data = pd.Series([])
+            data = pd.Series([], dtype='float')
 
             # Add empty tag
             metadata[TAG_FLD_NM] += [TAG_EMPTY_NAME]
 
             # Log
-            rawcsv.warn(
-                "No data for '%s' in file '%s'",
-                prm_name, data_file_path,
-            )
+            logger.warning("No data for '%s' in file '%s'", prm_name, data_file_path)
 
         except ValueError as exc:
             raise OrigConfigError(
@@ -357,10 +351,7 @@ class FileHandler(AbstractHandler):
 
         # Test
         if (grp := re.search(self.file_model_pat, file_path.name)) is None:
-            # TODO Detail exception
-            raise Exception(
-                f"Bad model syntax in data file '{file_path}'"
-            )
+            raise DvasError(f"Bad model syntax in data file '{file_path}'")
 
         # Get from group
         mdl_name = grp.group(1)
@@ -368,16 +359,11 @@ class FileHandler(AbstractHandler):
         # Check model name existence in DB
         if db_mngr.get_or_none(
                 TableModel,
-                search={
-                    'where': TableModel.mdl_name == mdl_name
-                },
+                search={'where': TableModel.mdl_name == mdl_name},
                 attr=[[TableModel.mdl_name.name]]
         ) is None:
-            # TODO Detail exception
-            raise Exception(
-                f"Missing model '{mdl_name}' in DB while reading " +
-                f"data file '{file_path}'"
-            )
+            raise DvasError(f"Missing model '{mdl_name}' in DB while reading " +
+                            f"data file '{file_path}'")
 
         return mdl_name
 
@@ -457,13 +443,13 @@ class FileHandler(AbstractHandler):
                     }
 
                 else:
-                    raise OrigConfigError(f"Field value '{field_val}' must be a of type (str, list, dict)")
+                    raise OrigConfigError(
+                        f"Field value '{field_val}' must be a of type (str, list, dict)")
 
                 out.update({key: meta_val})
 
-            #TODO Details exceptions
             except Exception as exc:
-                raise Exception(f"{exc} / {key}")
+                raise DvasError(f"{exc} / {key}")
 
         return out
 
@@ -529,7 +515,7 @@ class CSVHandler(FileHandler):
         try:
             metadata_file_path = next(
                 arg for arg in data_file_path.parent.glob(
-                    '*' + data_file_path.stem + '*.*'
+                    data_file_path.stem + '.*'
                 ) if arg.suffix in self.CFG_FILE_SUFFIX
             )
         except StopIteration:
@@ -570,27 +556,16 @@ class CSVHandler(FileHandler):
             assert self.origmeta_mngr.document is not None
 
         except ConfigReadError as exc:
-            #TODO raise exception
-            rawcsv.error(
-                "Error in reading file '%s' (%s)",
-                metadata_file_path,
-                exc
-            )
+            logger.error("Error in reading file '%s' (%s)", metadata_file_path, exc)
             return
 
         except AssertionError:
-            # TODO raise exception
-            rawcsv.error(
-                "No meta data found in file '%s'",
-                metadata_file_path
-            )
+            logger.error("No meta data found in file '%s'", metadata_file_path)
             return
 
         # Read metadata fields
         try:
-            out.update(
-                self.read_metaconfig_fields(mdl_name, prm_name)
-            )
+            out.update(self.read_metaconfig_fields(mdl_name, prm_name))
 
         except Exception as exc:
             raise Exception(exc)
@@ -627,18 +602,24 @@ class CSVHandler(FileHandler):
             for key, val in raw_csv_read_args.items()
         }
 
+        # Transform the skiprow argument into a suitable lambda function, if warranted.
+        # That's to deal with side-effects of #182 when the list of column names is not the last
+        # one before the data. fpavogt, 26.11.2021
+        if 'skiprows' in raw_csv_read_args.keys():
+            if isinstance(raw_csv_read_args['skiprows'], str):
+                raw_csv_read_args['skiprows'] = eval(raw_csv_read_args['skiprows'])
+
         # Set read_csv arguments
         # (Add usecols, squeeze and engine arguments)
         raw_csv_read_args.update(
             {
                 'usecols': [field_id],
-                'squeeze': True,
                 'engine': 'python',
             }
         )
 
         # Read raw csv
-        data = pd.read_csv(data_file_path, **raw_csv_read_args)
+        data = pd.read_csv(data_file_path, **raw_csv_read_args).squeeze("columns")
 
         return data
 
@@ -690,7 +671,7 @@ class GDPHandler(FileHandler):
 
             #TODO Detail exception
             except Exception as exc:
-                raise Exception(f"{exc} / {mdl_name} / {prm_name}")
+                raise DvasError(f"{exc} / {mdl_name} / {prm_name}")
 
         return out
 
@@ -952,7 +933,6 @@ class LoadExprInterpreter(ABC):
             'sqrt': SqrtExpr,
         }
 
-
         # Init
         LoadExprInterpreter.set_callable(get_fct, *args, **kwargs)
 
@@ -992,8 +972,8 @@ class NonTerminalLoadExprInterpreter(LoadExprInterpreter):
 
         if len(self._expression) > 1:
             return reduce(self.fct, res_interp)
-        else:
-            return self.fct(res_interp[0])
+
+        return self.fct(res_interp[0])
 
     @abstractmethod
     def fct(self, *args):
@@ -1071,7 +1051,6 @@ class GetExpr(TerminalLoadExprInterpreter):
         'nop': lambda x: x,
         'rel': lambda x: x - x.iloc[0],
         'div2': lambda x: x / 2,
-        's2ns': lambda x: x * 1E9,
         'd2k': lambda x: x + 273.15,
         'k2d': lambda x: x - 273.15,
         'd2f': lambda x: (x * 9 / 5) + 32,

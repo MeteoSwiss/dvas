@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 
-Copyright (c) 2020-2021 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -12,14 +12,18 @@ This module contains tools to synchronize profiles.
 """
 
 # Import from other Python packages
+import logging
 import warnings
 import numpy as np
 
 # Import from this package
 from ..logger import log_func_call
-from ..logger import tools_logger as logger
 from ..errors import DvasError
-from ..hardcoded import PRF_REF_ALT_NAME, PRF_REF_VAL_NAME
+from ..hardcoded import PRF_REF_ALT_NAME, PRF_REF_VAL_NAME, PRF_REF_TDT_NAME
+
+# Setup the local logger
+logger = logging.getLogger(__name__)
+
 
 @log_func_call(logger)
 def get_sync_shifts_from_alt(prfs, ref_alt=5000.):
@@ -86,6 +90,18 @@ def get_sync_shifts_from_val(prfs, max_shift=100, first_guess=None):
     if len(first_guess) != len(prfs):
         raise DvasError('Ouch ! first guess should be the same length as prfs.')
 
+    # In what follows, we assume that all the profiles are sampled with a fixed, uniform timestep.
+    # Let's raise an error if this is not the case.
+    # To do that, let's compute the differences between the different time steps, and check if it
+    # is unique (or not) and identical for all profiles (or Not)
+    ndts = prfs.get_prms(PRF_REF_TDT_NAME).diff(periods=1, axis=0).nunique(axis=0, dropna=True)
+    if np.any([item != 1 for item in ndts.values]):
+        raise DvasError(f'Ouch ! The profiles do not all have uniform time steps: {ndts.values}')
+    dts = [prfs.get_prms(PRF_REF_TDT_NAME)[item][PRF_REF_TDT_NAME].diff().unique().tolist()
+           for item in range(len(prfs))]
+    if np.any([item != dts[0] for item in dts]):
+        raise DvasError(f'Ouch ! Inconsistent time steps between the different profiles: {dts}')
+
     # Let us first begin by extracting all the value arrays that need to be "cross-correlated".
     vals = prfs.get_prms(PRF_REF_VAL_NAME)
 
@@ -103,7 +119,7 @@ def get_sync_shifts_from_val(prfs, max_shift=100, first_guess=None):
     ind = np.nanargmin(np.array(ind), axis=0)
 
     # Issue some warning if I am at the very edge of the search range
-    if np.any(np.abs(ind)-np.abs(max_shift) < 10):
+    if np.any(max_shift-np.abs(shifts[ind]) < 10):
         logger.warning('sync_shift_from_val values is close from the edge of the search zone')
 
     # Return a list of shifts, resetting it to only have positive shifts.
