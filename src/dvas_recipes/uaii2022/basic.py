@@ -121,11 +121,13 @@ def cleanup_steps(prfs, resampling_freq, crop_descent):
 @for_each_var
 @for_each_flight
 @log_func_call(logger, time_it=True)
-def cleanup(start_with_tags, **args):
+def cleanup(start_with_tags, fix_gph_uct=None, **args):
     """ Highest-level function responsible for doing an initial cleanup of the data.
 
     Args:
         start_with_tags (str|list): list of tags to identify profiles to clean in the db.
+        fix_gph_uct (list): list of mid values for which to correct NaN values (see #205).
+            Defaults to None.
         **args: arguments to be fed to :py:func:`.cleanup_steps`.
 
     """
@@ -164,6 +166,27 @@ def cleanup(start_with_tags, **args):
 
         logger.info('Loaded %i GDP profiles from the DB.', len(gdp_prfs))
 
+        # Deal with the faulty RS41 gph_uc_tcor values (NaNs when they should not be, see #205)
+        if dynamic.CURRENT_VAR == 'gph' and fix_gph_uct is not None:
+            # Safety check
+            if not isinstance(fix_gph_uct, list):
+                raise DvasRecipesError(f'Ouch ! fix_gph_uct should be a list, not: {fix_gph_uct}')
+
+            # Start looping through the profiles, to identify the ones I need.
+            for gdp in gdp_prfs:
+                if gdp.info.mid[0] in fix_gph_uct:  # Here we assume that each GDP has a single mid
+
+                    # What are the bug conditions ?
+                    cond1 = gdp.data.loc[:, 'uct'].isna()
+                    cond2 = ~gdp.data.loc[:, 'val'].isna()
+
+                    if (n_bad := (cond1 & cond2).sum()) > 0:  # True = 1
+                        logger.info('Fixing %i bad gph_uct values for mid: %s',
+                                    n_bad, gdp.info.mid[0])
+                        # Fix the bug
+                        gdp.data.loc[cond1 & cond2, 'uct'] = gdp.data.loc[:, 'uct'].max(skipna=True)
+
+        # Now launch more generic cleanup steps
         cleanup_steps(gdp_prfs, **args)
 
     # Process the non-GDPs, if any

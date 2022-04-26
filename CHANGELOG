@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [v0.6.0.dev1]
 ### Added:
 ### Fixed:
+- [fpavogt, 2022-04-26] Fix #205 with a dedicated fix in the uaii2022.basic.cleanup recipe step.
 - [fpavogt, 2022-04-14] Fix #208 by improving dvas plots
 ### Changed:
 ### Deprecated:
