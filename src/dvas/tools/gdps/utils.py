@@ -337,7 +337,8 @@ def process_chunk(df_chunk, binning=1, method='weighted mean'):
             ['mean', 'weighted mean', delta']. Defaults to 'weighted mean'.
 
     Returns:
-        pandas.DataFrame: the processing outcome, including all the errors.
+        pandas.DataFrame, dict: the processing outcome, including all the errors,
+            and the full correlation matrices (one per uncertainty type) as a dict.
 
     Note:
         The function will ignore NaNs in a given bin, unless *all* the values in the bin are NaNs.
@@ -415,6 +416,7 @@ def process_chunk(df_chunk, binning=1, method='weighted mean'):
         x_ms, G_mat = delta(df_chunk, binning=binning)
 
     # Let's get started with the computation of the errors.
+    V_mats = {}  # Will store the covariance matrices in this dict
     # Let us now assemble the U matrices, filling all the cross-correlations for the different
     # types of uncertainties
     for sigma_name in [PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME]:
@@ -455,22 +457,12 @@ def process_chunk(df_chunk, binning=1, method='weighted mean'):
         # correctly ignored .... unless that is all we have for a given bin.
         V_mat = np.ma.dot(G_mat, np.ma.dot(U_mat, G_mat.T))
 
-        # As a sanity check let's make sure all the off-diagonal terms are exactly 0.
-        # This should be the case since a specific (original) layer can only be used once
-        # in the combined profile.
-        # Note: this is only true for uncorrelated uncertainties. Correlated ones will have
-        # non-0 off-diagonal elements.
-        rows, cols = np.indices((len(x_ms), len(x_ms)))
-        off_diag_elmts = V_mat[rows != cols]
-        if any(off_diag_elmts[~off_diag_elmts.mask] != 0):
-            logger.warning("Non-0 off-diagonal elements of correlation matrix [%s].",
-                           sigma_name)
-
-        # TODO: what could we do with the off-diagonal elements of V_mat ? Nothing for now.
-
         # Assign the propagated uncertainty values to the combined df_chunk, taking care of
         # replacing any masked element with NaNs.
         x_ms.loc[:, sigma_name] = np.sqrt(V_mat.diagonal().filled(np.nan))
 
+        # Keep track of the covariance matrix, in order to return them all to the user.
+        V_mats[sigma_name] = V_mat
+
     # All done
-    return x_ms
+    return x_ms, V_mats

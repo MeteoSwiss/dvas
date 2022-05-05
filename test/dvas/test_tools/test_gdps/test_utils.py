@@ -200,7 +200,7 @@ def test_process_chunk(chunk):
     """
 
     # First test the mean
-    out_1 = process_chunk(chunk, binning=1, method='weighted mean')
+    out_1, _ = process_chunk(chunk, binning=1, method='weighted mean')
     assert out_1.loc[0, PRF_REF_UCR_NAME] == np.sqrt(1/3)
     assert out_1.loc[0, PRF_REF_UCS_NAME] == 1
     assert out_1.loc[0, PRF_REF_UCT_NAME] == 1
@@ -213,18 +213,18 @@ def test_process_chunk(chunk):
     assert not np.isnan(out_1.loc[8, PRF_REF_VAL_NAME])
 
     # Now with binning
-    out_2 = process_chunk(chunk, binning=2, method='mean')
+    out_2, _ = process_chunk(chunk, binning=2, method='mean')
     # Correct length ?
     assert len(out_2) == len(out_1)//2 + len(out_1) % 2
 
     # Then assess the delta
-    out_1 = process_chunk(chunk.loc[:, :1], binning=1, method='delta')
+    out_1, _ = process_chunk(chunk.loc[:, :1], binning=1, method='delta')
 
     # If some crazy users has NaN's for values but non-NaN errors, make sure I fully ignore these.
     assert np.isnan(out_1.loc[1, 'ucr'])
 
     # What happens with binning ?
-    out_2 = process_chunk(chunk.loc[:, :1], binning=2, method='delta')
+    out_2, _ = process_chunk(chunk.loc[:, :1], binning=2, method='delta')
 
     # In case of partial binning things get ignored accordingly.
     assert all(out_1.iloc[0].values == out_2.iloc[0].values)

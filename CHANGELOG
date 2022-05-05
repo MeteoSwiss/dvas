@@ -6,9 +6,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [v0.6.0.dev1]
 ### Added:
+ - [fpavogt, 2022-05-05] Fix #209 by returning full covariance matrices and plotting them
 ### Fixed:
-- [fpavogt, 2022-04-26] Fix #205 with a dedicated fix in the uaii2022.basic.cleanup recipe step.
-- [fpavogt, 2022-04-14] Fix #208 by improving dvas plots
+ - [fpavogt, 2022-04-26] Fix #205 with a dedicated fix in the uaii2022.basic.cleanup recipe step
+ - [fpavogt, 2022-04-14] Fix #208 by improving dvas plots
 ### Changed:
 ### Deprecated:
 ### Removed:
@@ -51,7 +52,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [fpavogt, 2022-03-01] Add dev option to setup.py
  - [modolol, 2022-02-28] Remove mandatory tag creation in config
  - [fpavogt, 2022-02-25] Remove all correlations between distinct GDP models
- - [fpavogt, 2021-11-26] Update RS41 GDPs to v1.
+ - [fpavogt, 2021-11-26] Update RS41 GDPs to v1
  - [modolol, 2021-11-24] Modify 'header' rules in origdata
  - [fpavogt, 2021-11-22] Various logging improvements
  - [fpavogt, 2021-10-18] Clean-up default csv na values in origdata

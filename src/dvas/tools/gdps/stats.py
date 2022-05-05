@@ -123,7 +123,7 @@ def ks_test(gdp_pair, alpha=0.0027, m_val=1, **kwargs):
                                                                                           tmp1))
 
     # Compute the profile delta with the specified sampling
-    gdp_delta = combine(gdp_pair, binning=m_val, method='delta', **kwargs)
+    gdp_delta, _ = combine(gdp_pair, binning=m_val, method='delta', **kwargs)
 
     # Let's create a DataFrame to keep track of incompatibilities.
     out = pd.DataFrame(np.full((len(gdp_delta[0]), 5), np.nan),
