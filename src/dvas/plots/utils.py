@@ -263,8 +263,8 @@ def get_edt_eid_rid(prfs):
     rids = prfs.get_info('rid')
 
     # Format it all nicely for each Profile.
-    info_txt = set(['{} ({}, {})'.format(item, eids[ind], rids[ind])
-                    for ind, item in enumerate(edts)])
+    info_txt = set('{} ({}, {})'.format(item, eids[ind], rids[ind])
+                   for ind, item in enumerate(edts))
     # Stich the different items together in case I have more than one flight in the list
     info_txt = ' / '.join(info_txt)
 
@@ -289,6 +289,38 @@ def add_edt_eid_rid(this_ax, prfs):
     this_ax.text(0, 1.03, info_txt, fontsize='small',
                  verticalalignment='bottom', horizontalalignment='left',
                  transform=this_ax.transAxes)
+
+
+@log_func_call(logger)
+def add_var_and_k(ax, mid=None, var_name=None, k=None, offset=1.03):
+    """ Adds the name of the variable to the plot.
+
+    Args:
+        ax (matplotlib.pyplot.axis): the axis to which the var name should be added.
+        mid (str, optional): model id name. Defaults to None.
+        var_name (str, optional): the variable name. Defaults to None.
+        k (int, float, optional): k-level at which the uncertainties are shown. Defaults to None.
+        offset (float, optional): yoffset for the label. Defaults to 1.03.
+    """
+
+    msg = []
+
+    if mid is not None:
+        msg += [r'{\bf ' + r'{}'.format(mid) + r'}']
+
+    if var_name is not None:
+        msg += [r'{\bf ' + r'{}'.format(var_name) + r'}']
+
+    if k is not None:
+        msg += [r'$k={}$'.format(k)]
+
+    # Combine all the individual messages into one.
+    msg = ', '.join(msg)
+
+    ax.text(1, offset, fix_txt(msg),
+            # fontsize='small',
+            verticalalignment='bottom', horizontalalignment='right',
+            transform=ax.transAxes)
 
 
 @log_func_call(logger)

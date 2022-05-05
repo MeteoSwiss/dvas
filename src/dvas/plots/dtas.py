@@ -55,9 +55,9 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
     ax1 = fig.add_subplot(gs_info[1, 0], sharex=ax0)
 
     # Extract the DataFrames from the MultiGDPProfile instances
-    dtas = dta_prfs.get_prms([PRF_REF_ALT_NAME, PRF_REF_VAL_NAME, PRF_REF_UCR_NAME,
-                              PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME,
-                              'uc_tot'])
+    deltas = dta_prfs.get_prms([PRF_REF_ALT_NAME, PRF_REF_VAL_NAME, PRF_REF_UCR_NAME,
+                                PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME,
+                                'uc_tot'])
 
     # What flights are present in the data ?
     flights = set(item + ' ' + dta_prfs.get_info('rid')[ind]
@@ -92,8 +92,8 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
         sig_col = 'k'
 
     # What are the limit altitudes ?
-    alt_min = dtas.loc[:, (slice(None), 'alt')].min(axis=0).min()
-    alt_max = dtas.loc[:, (slice(None), 'alt')].max(axis=0).max()
+    alt_min = deltas.loc[:, (slice(None), 'alt')].min(axis=0).min()
+    alt_max = deltas.loc[:, (slice(None), 'alt')].max(axis=0).max()
 
     # For the bottom plots, show the k=1, 2, 3 zones
     for k in [1, 2, 3]:
@@ -104,12 +104,12 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
         ax.axhline(0, lw=0.5, ls='-', c='k')
 
     # Very well, let us plot all these things.
-    for dta_ind in dtas.columns.levels[0]:
+    for dta_ind in deltas.columns.levels[0]:
 
-        dta = dtas[dta_ind]
+        dta = deltas[dta_ind]
 
         # First, plot the profiles themselves
-        #ax0.plot(dta.loc[:, PRF_REF_ALT_NAME].values, dta.loc[:, PRF_REF_VAL_NAME].values,
+        # ax0.plot(dta.loc[:, PRF_REF_ALT_NAME].values, dta.loc[:, PRF_REF_VAL_NAME].values,
         #         lw=0.2, ls='-', drawstyle='steps-mid', c=lc, alpha=0.9**len(flights),
         #         label='|'.join(dta_prfs.get_info(label)[dta_ind]))
 
@@ -152,18 +152,16 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
                  verticalalignment='bottom', horizontalalignment='left',
                  transform=ax0.transAxes)
 
-    # Add the k-level and variable name
-    msg = r'{}, $k={}$'.format(dta_prfs.var_info[PRF_REF_VAL_NAME]['prm_name'], k_lvl)
-    if len(mid) == 1:
-        msg = '-'.join(list(mid)[0]) + ', ' + msg
-
-    ax0.text(1, 1.03, pu.fix_txt(msg),
-             fontsize='small',
-             verticalalignment='bottom', horizontalalignment='right',
-             transform=ax0.transAxes)
-
     # Add the source for the plot
     pu.add_source(fig)
+
+    # Add the variable name and k level
+    if len(mid) == 1:
+        mid_msg = '-'.join(list(mid)[0])
+    else:
+        mid_msg = None
+    pu.add_var_and_k(ax0, mid=mid_msg,
+                     var_name=dta_prfs.var_info[PRF_REF_VAL_NAME]['prm_name'], k=k_lvl)
 
     # Save it
     pu.fancy_savefig(fig, fn_core='dtas', **kwargs)

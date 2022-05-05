@@ -179,10 +179,8 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     # Add the edt/eid/rid info
     pu.add_edt_eid_rid(ax0, cws_prf)
 
-    # Add the k-level if warranted
-    ax0.text(1, 1.03, r'$k={}$'.format(k_lvl), fontsize='small',
-             verticalalignment='bottom', horizontalalignment='right',
-             transform=ax0.transAxes)
+    # Add the k-level
+    pu.add_var_and_k(ax0, var_name=cws_prf.var_info[PRF_REF_VAL_NAME]['prm_name'], k=k_lvl)
 
     # Add the source for the plot
     pu.add_source(fig)
@@ -340,17 +338,13 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
 
     # Add the legend
     pu.fancy_legend(ax0, label)
+    # Add the k-level
+    var_msg = r'{} [{}]'.format(cws_prf.var_info[PRF_REF_VAL_NAME]['prm_name'],
+                                cws_prf.var_info[PRF_REF_VAL_NAME]['prm_unit'])
+    pu.add_var_and_k(ax0, var_name=var_msg, k=k_lvl)
 
     # Add the edt/eid/rid info
     pu.add_edt_eid_rid(ax0, cws_prf)
-
-    # Add the k-level if warranted
-    msg = pu.fix_txt(r'{} [{}], $k={}$'.format(cws_prf.var_info[PRF_REF_VAL_NAME]['prm_name'],
-                                               cws_prf.var_info[PRF_REF_VAL_NAME]['prm_unit'],
-                                               k_lvl))
-    ax0.text(1, 1.03, msg, fontsize='small',
-             verticalalignment='bottom', horizontalalignment='right',
-             transform=ax0.transAxes)
 
     # Add the source for the plot
     pu.add_source(fig)
@@ -483,13 +477,11 @@ def plot_ks_test(df, alpha, unit=None, left_label=None, right_label=None, **kwar
     ax2.set_ylim((-6, 6))
     # Add the plot labels, if warranted.
     if left_label is not None:
-        ax1.text(0, 1.03, pu.fix_txt(left_label), fontsize='small',
+        ax1.text(0, 1.1, pu.fix_txt(left_label), fontsize='small',
                  verticalalignment='bottom', horizontalalignment='left',
                  transform=ax1.transAxes)
     if right_label is not None:
-        ax1.text(1, 1.03, pu.fix_txt(right_label), fontsize='small',
-                 verticalalignment='bottom', horizontalalignment='right',
-                 transform=ax1.transAxes)
+        pu.add_var_and_k(ax1, var_name=right_label, offset=1.1)
 
     # Add the source for the plot
     pu.add_source(fig)

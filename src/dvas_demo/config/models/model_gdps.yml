@@ -13,4 +13,12 @@
 
 - mdl_name: 'M10-GDP-ALPHA_002'
   mdl_desc: 'M10, ALPHA version 2'
-  mid: 'M10-GDP'
+  mid: 'M10-GDPv4'
+
+- mdl_name: 'M10-GDP-ALPHA_005'
+  mdl_desc: 'M10, ALPHA version 5'
+  mid: 'M10-GDPv5'
+
+- mdl_name: 'M10-GDP-ALPHA_105'
+  mdl_desc: 'M10, ALPHA version 5.1'
+  mid: 'M10-GDPv5.1'

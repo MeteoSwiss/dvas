@@ -12,14 +12,14 @@ rcp_name: uaii2022
 
 # dvas paths: absolute paths begin with '/'.
 rcp_paths:
-    path_anchors:
+    path_anchors:  # Define useful shortcuts for the other paths
         base_path: &base_path ./
     config_dir_path:
         name: config
-        path: *base_path
+        path: /Users/fvogt/Projects/MCH/UAII2022/dvas/codedev/src/dvas_demo
     orig_data_path:
-        #name: test_flights_MCH/20210319T090000
-        name: test_flights_DWD/20220126_1651
+        name: test_flights_MCH/20211216T170000
+        #name: test_flights_DWD/20220126_1651
         path: /Users/fvogt/Projects/MCH/UAII2022/dvas/testzone/procdata_full/rs
     local_db_path:
         name: db
@@ -95,6 +95,8 @@ rcp_steps:
       run: True
       kwargs:
         start_with_tags: raw
+        fix_gph_uct: # Correct the NaNs present in the gph_uct values for the RS41 GDP v1. See #205.
+            - RS41-GDP # mid value to correct
         resampling_freq: '1s' # Time step to resample onto, in seconds
         crop_descent: True # If True, descent data will be cropped for good
 
