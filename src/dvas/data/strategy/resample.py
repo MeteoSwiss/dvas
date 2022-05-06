@@ -212,7 +212,8 @@ class ResampleStrategy(MPStrategyAC):
                 pool.join()
 
             # Re-assemble all the chunks into one DataFrame.
-            proc_chunk = pd.concat(proc_chunks, axis=0)
+            proc_chunk = [item[0] for item in proc_chunks]
+            proc_chunk = pd.concat(proc_chunk, axis=0)
 
             # Start the interpolation. Since I already applied the weights, I just need to do a
             # delta.

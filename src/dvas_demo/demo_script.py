@@ -133,14 +133,14 @@ if __name__ == '__main__':
     # The data is stored inside Pandas dataframes. Each type of profile contains a different set of
     # columns and indexes.
     prf_df = prfs[0].data
-    print('\nBasic profile dataframe:\n  index.names={}, columns={}'.format(prf_df.index.names,
-                                                                            prf_df.columns.to_list()))
+    print('\nBasic profile dataframe:\n  index.names={}, columns={}'.format(
+        prf_df.index.names, prf_df.columns.to_list()))
     rs_prf_df = rs_prfs[0].data
-    print('\nRS profile dataframe:\n  index.names={}, columns={}'.format(rs_prf_df.index.names,
-                                                                         rs_prf_df.columns.to_list()))
+    print('\nRS profile dataframe:\n  index.names={}, columns={}'.format(
+        rs_prf_df.index.names, rs_prf_df.columns.to_list()))
     gdp_prf_df = gdp_prfs[0].data
-    print('\nGDP profile dataframe:\n  index.names={}, columns={}'.format(gdp_prf_df.index.names,
-                                                                          gdp_prf_df.columns.to_list()))
+    print('\nGDP profile dataframe:\n  index.names={}, columns={}'.format(
+        gdp_prf_df.index.names, gdp_prf_df.columns.to_list()))
 
     # MultiProfiles has a var_info property to link the DataFrame columns to the actual variable
     print("\n Content of prfs.var_info['val']:\n")
@@ -265,9 +265,9 @@ if __name__ == '__main__':
     # Let us now create a high-resolution CWS for these synchronized GDPs, making sure to drop
     # incompatible elements.
     start_time = datetime.now()
-    cws = dtgg.combine(gdp_prfs, binning=1, method='weighted mean',
-                       mask_flgs=FLG_INCOMPATIBLE_NAME,
-                       chunk_size=150, n_cpus=8)
+    cws, _ = dtgg.combine(gdp_prfs, binning=1, method='weighted mean',
+                          mask_flgs=FLG_INCOMPATIBLE_NAME,
+                          chunk_size=150, n_cpus=8)
     print('CWS assembled in: {}s'.format((datetime.now()-start_time).total_seconds()))
 
     # We can now inspect the result visually

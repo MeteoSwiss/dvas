@@ -129,6 +129,7 @@ rcp_steps:
         method: 'weighted mean' # Combination method: mean or weighted mean
         alpha: 0.0027 # alpha level for the KS test. 0.0027 = 3-sigmas
         cws_alt_ref: gph # Name of the variable to use in order to populate alt_ref
+        explore_covmats: True # If True, will generate plots of the content of covariance matrices
 
     # GDP vs CWS plotting
     - fct: uaii2022.plots.inspect_cws

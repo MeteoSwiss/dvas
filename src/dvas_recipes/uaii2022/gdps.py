@@ -28,7 +28,7 @@ from ..errors import DvasRecipesError
 from ..recipe import for_each_flight, for_each_var
 from .. import dynamic
 from .. import utils as dru
-from . import tools
+from . import tools, plots
 
 # Setup local logger
 logger = logging.getLogger(__name__)
@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 @for_each_flight
 @log_func_call(logger, time_it=True)
 def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='weighted mean',
-              alpha=0.0027, cws_alt_ref='gph',):
+              alpha=0.0027, cws_alt_ref='gph', explore_covmats=True):
     """ Highest-level recipe function responsible for assembling the combined working standard for
     a specific RS flight.
 
@@ -58,6 +58,8 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
             See :py:func:`dvas.tools.gdps.stats.gdp_incompatibilities` for details.
         cws_alt_ref ('str', optional): name of the variable to use in order to generate the CWS
             alt_ref array. Holes will be interpolated linearly. Defaults to 'gph'.
+        explore_covmats (bool, optional): if True, will generate plots of the covariance matrices.
+            Defaults to True.
 
     """
 
@@ -150,12 +152,16 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
                         index=valids[~valids[str(gdp_prf.info.oid)]].index)
 
     # Let us now create a high-resolution CWS for these synchronized GDPs
-    cws = dtgg.combine(gdp_prfs, binning=1, method=method,
-                       mask_flgs=FLG_INCOMPATIBLE_NAME,
-                       chunk_size=dynamic.CHUNK_SIZE, n_cpus=dynamic.N_CPUS)
+    cws, covmats = dtgg.combine(gdp_prfs, binning=1, method=method,
+                                mask_flgs=FLG_INCOMPATIBLE_NAME,
+                                chunk_size=dynamic.CHUNK_SIZE, n_cpus=dynamic.N_CPUS)
 
     # Let's tag this CWS in the same way as the GDPs, so I can find them easily together
     cws.add_info_tags(tags)
+
+    # Take a closer look at the covariance matrices, if required
+    if explore_covmats:
+        plots.covmat_stats(covmats)
 
     # Let us now hack into this cws the correct tdt, if I have it. And then save it.
     if not cws_tdt_exists:
