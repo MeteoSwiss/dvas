@@ -241,25 +241,20 @@ _M10-GDP-ALPHA_105:
     _gph:
         value: get('alt_gph')
 
+    _gph_ucu:
+        value: get('alt_gph_uc_noise', 'div2')  # Go from K=2 to K=1
+
+    #TODO: confirm alt_gph_uc_manuf and alt_gph_uc_repe are indeed correlated.
+    # Note: alt_gph_uc_repe and alt_gph_uc_manuf are given as scalars. So I cannot use them
+    # directly, and need to do total-ucu instead ... sigh ...
     _gph_uct:
-        value: get('alt_gph_uc', 'div2')  # Go from K=2 to K=1
-
-    #TODO:
-    # alt_gph_uc_noise -> ucu ?
-    # sqrt(alt_gph_uc_repe**2 + alt_gph_uc_manuf**2) -> uct ?
-
-    #_gph_ucu:
-    #    value: 'alt_gph_uc_ucor'
+        value: >-
+            sqrt(sub(pow(get('alt_gph_uc', 'div2'), 2), pow(get('alt_gph_uc_noise', 'div2'), 2)))
 
     _temp:
         value: get('temp')
 
-    #_temp_ucr:
-    #    value: 'temp_uc_ucor'
-
-    #_temp_ucs:
-    #    value: 'temp_uc_scor'
-
+    #TODO: Not having any ucu is problematic for the KS test.
     _temp_uct:
         value: get('temp_uc', 'div2')  # Go from K=2 to K=1
 
@@ -270,31 +265,30 @@ _M10-GDP-ALPHA_105:
     _pres:
         value: get('press_gnss')
 
-    #TODO:
+    #TODO: this looks full of NaNs
+    #TODO: can I use press_uc_noise/repe for ucu/uct ?
     _pres_uct:
         value: get('press_uc', 'div2')  # Go from K=2 to K=1
-
-    #TODO: is this assignment correct ?
-    #_pres_ucu:
-    #    value: get('press_gnss_uc_noise', 'div2')  # Go from K=2 to K=1
 
     _rh:
         value: get('rh')
 
-    #_rh_ucr:
-    #    value: 'rh_uc_ucor'
-
+    #TODO: Not having any ucu is problematic for the KS test.
     _rh_uct:
         value: get('rh_uc', 'div2')  # Go from K=2 to K=1
 
     _wdir:
         value: get('wdir')
 
+    #TODO: wdir_uc is actually comprised of a manuf source that should be a uct source ... but
+    # it is not accessible as is in v5.1. Assigning the total to ucu, which dominates the budget.
     _wdir_ucu:
         value: get('wdir_uc', 'div2')  # Go from K=2 to K=1
 
     _wspeed:
         value: get('wspeed')
 
+    #TODO: wspeed_uc is actually comprised of a manuf source that should bea  uct source ... but
+    # it is not accessible as is in v5.1. Assigning the total to ucu, which dominates the budget.
     _wspeed_ucu:
         value: get('wspeed_uc', 'div2')  # Go from K=2 to K=1

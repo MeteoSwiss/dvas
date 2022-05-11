@@ -18,7 +18,7 @@ rcp_paths:
         name: config
         path: /Users/fvogt/Projects/MCH/UAII2022/dvas/codedev/src/dvas_demo
     orig_data_path:
-        name: test_flights_MCH/20211216T170000
+        name: test_flights_MCH/20210319T090000
         #name: test_flights_DWD/20220126_1651
         path: /Users/fvogt/Projects/MCH/UAII2022/dvas/testzone/procdata_full/rs
     local_db_path:
@@ -32,7 +32,7 @@ rcp_paths:
 rcp_params:
     general:
         log_mode: 2 # 0 = no logs, 1 = log to file only, 2 = file + screen, 3 = screen only.
-        log_lvl: INFO # DEBUG, INFO, WARNING.
+        log_lvl: DEBUG # DEBUG, INFO, WARNING.
         reset_db: True # Whether to reset the DB, or use an existing one.
         do_latex: True # True = slow but pretty plots. Requires a working system-wide LaTeX setup!
         plot_fmts:
@@ -64,21 +64,21 @@ rcp_params:
             ucs:
             uct: rh_uct
             ucu:
-        #pres:
-        #    ucr:
-        #    ucs:
-        #    uct: pres_uct
-        #    ucu: pres_ucu
-        #wdir:
-        #    ucr:
-        #    ucs:
-        #    uct:
-        #    ucu: wdir_ucu
-        #wspeed:
-        #    ucr:
-        #    ucs:
-        #    uct:
-        #    ucu: wspeed_ucu
+        pres:
+            ucr:
+            ucs:
+            uct: pres_uct
+            ucu: pres_ucu
+        wdir:
+            ucr:
+            ucs:
+            uct:
+            ucu: wdir_ucu
+        wspeed:
+            ucr:
+            ucs:
+            uct:
+            ucu: wspeed_ucu
 
 # Recipe steps, and associated arguments/parameters
 rcp_steps:
@@ -96,11 +96,11 @@ rcp_steps:
       kwargs:
         start_with_tags: raw
         fix_gph_uct: # Correct the NaNs present in the gph_uct values for the RS41 GDP v1. See #205.
-            - RS41-GDP # mid value to correct
-        resampling_freq: '1s' # Time step to resample onto, in seconds
+            - RS41-GDP # Model ids (mid) that require the correction
+        resampling_freq: '1s' # Time step to resample onto, with format 'Xs'
         crop_descent: True # If True, descent data will be cropped for good
 
-    # Profile synchronization on a per-flight basis.
+    # Profile synchronization on a flight-per-flight basis.
     - fct: uaii2022.sync.sync_flight
       step_id: '02'
       run: True
