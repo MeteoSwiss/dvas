@@ -75,19 +75,19 @@ class DvasFormatter(logging.Formatter):
         # Cases when I want some colors
         if self._colors:
             if level == logging.INFO:
-                msg = msg.replace('$COLOR', '\x1b[92;20m')
+                msg = msg.replace('$COLOR', '\x1b[32;20m')
                 msg = msg.replace('$BOLD', '')
                 msg = msg.replace('$RESET', '\033[0m')
             elif level == logging.WARNING:
-                msg = msg.replace('$COLOR', '\x1b[93;20m')
+                msg = msg.replace('$COLOR', '\x1b[33;20m')
                 msg = msg.replace('$BOLD', '')
                 msg = msg.replace('$RESET', '\033[0m')
             elif level == logging.ERROR:
-                msg = msg.replace('$COLOR', '\x1b[91;20m')
+                msg = msg.replace('$COLOR', '\x1b[31;20m')
                 msg = msg.replace('$BOLD', '')
                 msg = msg.replace('$RESET', '\033[0m')
             elif level == logging.CRITICAL:
-                msg = msg.replace('$COLOR', '\x1b[91;20m')
+                msg = msg.replace('$COLOR', '\x1b[31;20m')
                 msg = msg.replace('$BOLD', '\033[1m')
                 msg = msg.replace('$RESET', '\033[0m')
             else:
