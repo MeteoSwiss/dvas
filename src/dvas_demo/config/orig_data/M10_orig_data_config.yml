@@ -263,7 +263,7 @@ _M10-GDP-ALPHA_105:
     #    csv_use_default: True
 
     _pres:
-        value: get('press_gnss')
+        value: get('press')
 
     #TODO: this looks full of NaNs
     #TODO: can I use press_uc_noise/repe for ucu/uct ?
