@@ -10,12 +10,14 @@ Module contents: User configuration management.
 """
 
 # Import python packages and modules
+import logging
 from abc import ABCMeta, abstractmethod
 import re
 import pprint
 from functools import reduce
 import operator
 from pathlib import Path
+import dateutil
 import json
 from jsonschema import validate, exceptions
 from ruamel.yaml import YAML
@@ -43,6 +45,9 @@ from ..errors import ConfigGetError, ConfigLabelNameError
 from ..errors import ConfigGenMaxLenError
 from ..errors import ExprInterpreterError, NonTerminalExprInterpreterError
 from ..errors import TerminalExprInterpreterError
+
+# Setup local logger
+logger = logging.getLogger(__name__)
 
 # Define
 NODE_ESCAPE_CHAR = '_'
@@ -834,7 +839,7 @@ class ConfigExprInterpreter(metaclass=ABCMeta):
 
     @staticmethod
     def eval(expr, get_fct):
-        """Interprete expression.
+        """ Interpret expression.
 
         Args:
             expr (str|ConfigExprInterpreter): Expression to evaluate.
@@ -862,6 +867,7 @@ class ConfigExprInterpreter(metaclass=ABCMeta):
             'get': GetExpr,
             'upper': UpperExpr, 'lower': LowerExpr,
             'supper': SmallUpperExpr, 'small_upper': SmallUpperExpr,
+            'to_datetime': ToDatetime
         }
 
         # Set get_value
@@ -993,6 +999,23 @@ class SmallUpperExpr(NonTerminalConfigExprInterpreter):
             out = a[0].upper() + a[1:].lower()
         except (AttributeError, TypeError) as exc:
             raise NonTerminalExprInterpreterError() from exc
+
+        return out
+
+
+class ToDatetime(NonTerminalConfigExprInterpreter):
+    """ Get str and convert to datetime value """
+
+    def fct(self, a):
+        """ Convert a string to datetime """
+
+        # Use dateutil, because it is very forgiving ...
+        out = dateutil.parser.parse(a)
+
+        # Force the timezone to UTC by default
+        if out.tzinfo is None:
+            out.replace(tzinfo='UTC')
+            logger.error('Setting undefined timezone to UTC for "%s"', out)
 
         return out
 

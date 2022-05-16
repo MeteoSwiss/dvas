@@ -435,6 +435,7 @@ class FileHandler(AbstractHandler):
                     ]
 
                 elif isinstance(field_val, dict):
+
                     meta_val = {
                         field_val_key: ConfigExprInterpreter.eval(
                             field_val_val, self.get_metadata_item
@@ -669,7 +670,7 @@ class GDPHandler(FileHandler):
                     self.read_metaconfig_fields(mdl_name, prm_name)
                 )
 
-            #TODO Detail exception
+            # TODO Detail exception
             except Exception as exc:
                 raise DvasError(f"{exc} / {mdl_name} / {prm_name}")
 

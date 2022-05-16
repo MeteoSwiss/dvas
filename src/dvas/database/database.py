@@ -452,7 +452,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                 # Create batch index
                 fields = [
                     TableMetaData.key_name, TableMetaData.value_str,
-                    TableMetaData.value_num, TableMetaData.info
+                    TableMetaData.value_num, TableMetaData.value_datetime, TableMetaData.info
                 ]
 
                 # Create batch data
@@ -460,6 +460,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     (key,
                      val if isinstance(val, str) else None,
                      val if isinstance(val, float) else None,
+                     val if isinstance(val, datetime) else None,
                      info_id)
                     for key, val in info.metadata.items()
                 ]
@@ -588,8 +589,10 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             ]
 
             # Get related metadata
+            # TODO: is the line below correct ?
             metadata_dict = {
-                arg.key_name: arg.value_num if arg.value_str is None else arg.value_str
+                arg.key_name: arg.value_datetime if arg.value_num is None
+                              else arg.value_num if arg.value_str is None else arg.value_str
                 for arg in
                 TableMetaData.select().distinct().
                 join(TableInfo).
@@ -682,7 +685,8 @@ class InfoManagerMetaData(dict):
         try:
             assert isinstance(dict_args, dict)
             assert all(isinstance(key, str) for key in dict_args.keys())
-            assert all(isinstance(val, (type(None), str, float, int)) for val in dict_args.values())
+            assert all(isinstance(val, (type(None), str, float, int, datetime))
+                       for val in dict_args.values())
         except AssertionError:
             raise TypeError()
 

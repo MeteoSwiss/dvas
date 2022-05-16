@@ -14,6 +14,7 @@ This module contains tools to synchronize profiles.
 # Import from other Python packages
 import logging
 import warnings
+import dateutil
 import numpy as np
 
 # Import from this package
@@ -24,6 +25,35 @@ from ..hardcoded import PRF_REF_ALT_NAME, PRF_REF_VAL_NAME, PRF_REF_TDT_NAME
 # Setup the local logger
 logger = logging.getLogger(__name__)
 
+
+@log_func_call(logger)
+def get_sync_shifts_from_starttime(prfs):
+    """ A routine that estimates the necessary synchronization shifts between profiles based on the
+    GPS start time value.
+
+    Args:
+        prfs (dvas.data.data.MultiRSProfiles): list of Profiles to sync.
+
+    Returns:
+        list of int: list of shifts required to sync the profiles with each other.
+    """
+
+    import pdb
+    pdb.set_trace()
+
+    # Start with some sanity checks
+    for prf in prfs:
+        if 'start_time' not in prf.info.metadata.keys():
+            raise DvasError("'start_time' not found in metadata for: %s", prf.info.src)
+        elif prf.info.metadata['start_time'] is None:
+            raise DvasError("'start_time' is None. GPS start-time sync impossible for: %s",
+                            prf.info.src)
+
+    # Extract all the start times, and convert them to datetimes
+    start_times = [prf.info.metadata['start_time'] for prf in prfs]
+
+    import pdb
+    pdb.set_trace()
 
 @log_func_call(logger)
 def get_sync_shifts_from_alt(prfs, ref_alt=5000.):

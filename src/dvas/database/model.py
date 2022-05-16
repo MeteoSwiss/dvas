@@ -265,7 +265,7 @@ class InfosObjects(MetadataModel):
 
 
 class MetaData(MetadataModel):
-    """Table containing the profiles metadata.
+    """ Table containing the profiles metadata.
 
     Note:
         Metadata table should be used only to save metadata associated
@@ -288,6 +288,9 @@ class MetaData(MetadataModel):
 
     #: float: Metadata key float value
     value_num = FloatField(null=True)
+
+    #: datetime.datetime: Metadata key datetime value
+    value_datetime = DateTimeField(null=True)
 
     #: peewee.Model: Link to Info table
     info = ForeignKeyField(

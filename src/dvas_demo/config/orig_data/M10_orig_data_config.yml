@@ -13,6 +13,7 @@ _M10:
         - "get('day_night')"
     metadata:
         bpt_time: "get('bpt_time')"
+        start_time: "to_datetime(get('start_time'))"
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter:
@@ -230,6 +231,7 @@ _M10-GDP-ALPHA_105:
         - "cat('r:', get('g.Measurement.BalloonNumber'))"
     metadata:
         bpt_time:
+        start_time: "to_datetime(get('time_coverage_start'))"
 
     # -- ORIG DATA ----------------------------------
     _time:
