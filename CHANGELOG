@@ -13,6 +13,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [fpavogt, 2022-04-26] Fix #205 with a dedicated fix in the uaii2022.basic.cleanup recipe step
  - [fpavogt, 2022-04-14] Fix #208 by improving dvas plots
 ### Changed:
+ - [fpavogt, 2022-05-17] The flight overview plot is now using the index i for x (rather than time), to show the synced profiles
 ### Deprecated:
 ### Removed:
 ### Security:

@@ -17,7 +17,7 @@ import matplotlib.gridspec as gridspec
 # Import dvas modules and classes
 from dvas.logger import log_func_call
 from dvas.data.data import MultiGDPProfile, MultiCWSProfile, MultiDeltaProfile
-from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME
+from dvas.hardcoded import PRF_REF_INDEX_NAME, PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME
 from dvas.hardcoded import PRF_REF_UCU_NAME, PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME
 from dvas.hardcoded import TAG_DTA_NAME, TAG_GDP_NAME, TAG_CWS_NAME
 from dvas.data.data import MultiRSProfile
@@ -105,9 +105,9 @@ def flight_overview(start_with_tags, label='mid', show=None):
         # Start looping over all the profiles, and plot them one-by-one.
         for (prf_ind, prf) in enumerate(rs_prfs):
 
-            x = getattr(prf, PRF_REF_VAL_NAME).index.get_level_values(PRF_REF_TDT_NAME)
-            # Transform the timedelta64[ns] in seconds
-            x = x.total_seconds()
+            # Make this plot as a function of the index i, so that synchronized profiles will
+            # show up cleanly.
+            x = getattr(prf, PRF_REF_VAL_NAME).index.get_level_values(PRF_REF_INDEX_NAME)
             y = getattr(prf, PRF_REF_VAL_NAME).values
 
             this_ax.plot(x, y, '-', lw=0.7, label='|'.join(rs_prfs.get_info(label)[prf_ind]))
@@ -136,7 +136,7 @@ def flight_overview(start_with_tags, label='mid', show=None):
         this_ax.set_ylabel(dpu.fix_txt(ylbl), labelpad=10)
 
     # Set the label for the last plot only
-    this_ax.set_xlabel('Time [s]')
+    this_ax.set_xlabel(r'$i$')
 
     # Add the source
     dpu.add_source(fig)
