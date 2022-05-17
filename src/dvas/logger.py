@@ -87,7 +87,7 @@ class DvasFormatter(logging.Formatter):
                 msg = msg.replace('$BOLD', '')
                 msg = msg.replace('$RESET', '\033[0m')
             elif level == logging.CRITICAL:
-                msg = msg.replace('$COLOR', '\x1b[31;20m')
+                msg = msg.replace('$COLOR', '\x1b[95;20m')
                 msg = msg.replace('$BOLD', '\033[1m')
                 msg = msg.replace('$RESET', '\033[0m')
             else:

@@ -38,9 +38,6 @@ def get_sync_shifts_from_starttime(prfs):
         list of int: list of shifts required to sync the profiles with each other.
     """
 
-    import pdb
-    pdb.set_trace()
-
     # Start with some sanity checks
     for prf in prfs:
         if 'start_time' not in prf.info.metadata.keys():
@@ -55,12 +52,13 @@ def get_sync_shifts_from_starttime(prfs):
     import pdb
     pdb.set_trace()
 
+
 @log_func_call(logger)
 def get_sync_shifts_from_alt(prfs, ref_alt=5000.):
     """ A routine that estimates the shifts required to synchronize profiles, based on the
-    different in their altitude index.
+    the altitude index.
 
-    This is a very crude function that does the sync nased on a single altitude, and thus happily
+    This is a very crude function that does the sync based on a single altitude, and thus happily
     ignore any drift/stretch of any kind.
 
     Args:
@@ -69,6 +67,7 @@ def get_sync_shifts_from_alt(prfs, ref_alt=5000.):
 
     Returns:
         list of int: list of shifts required to synchronize profiles in order to match ref_alt
+            Sign convention: profiles are synchronized when row n goes to row n+shift
 
     """
 
@@ -88,7 +87,10 @@ def get_sync_shifts_from_alt(prfs, ref_alt=5000.):
     # Now, find the corresponding index for all the profiles
     out = (alts-ref_alt_mod).abs().idxmin(axis=0).values
 
-    # Turn these all into relative shifts (make sure to keep them all positive)
+    # Convert this to shifts such that profiles are synced if row n goes to row n+shift
+    out = np.max(out) - out
+
+    # Make sure to keep them all positive
     out -= np.min(out)
 
     # Return the corresponding shifts, not forgetting that the first profile stays where it is.
@@ -108,7 +110,8 @@ def get_sync_shifts_from_val(prfs, max_shift=100, first_guess=None):
             Defaults to None.
 
     Returns:
-        list of int: list of shifts required to synchronize profiles
+        list of int: list of shifts required to synchronize profiles.
+            Sign convention: profiles are synchronized when row n goes to row n+shift
 
     """
 
@@ -153,4 +156,10 @@ def get_sync_shifts_from_val(prfs, max_shift=100, first_guess=None):
         logger.warning('sync_shift_from_val values is close from the edge of the search zone')
 
     # Return a list of shifts, resetting it to only have positive shifts.
-    return list(shifts[ind]-np.min(shifts[ind]))
+    out = list(shifts[ind]-np.min(shifts[ind]))
+
+    # Check if we are far from the first_guess ... and if so, raise a warning
+    if any(np.abs(item - first_guess[i]) > 3 for i, item in enumerate(out)):
+        logger.warning('Large offset from first guess: %s vs %s', out, first_guess)
+
+    return out
