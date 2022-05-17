@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [v0.6.0.dev1]
 ### Added:
+ - [fpavogt, 2022-05-17] Add ability to skip recipe steps beyond a certain point
  - [fpavogt, 2022-05-11] Add colors to on-screen logging
  - [fpavogt, 2022-05-05] Fix #209 by returning full covariance matrices and plotting them
 ### Fixed:
