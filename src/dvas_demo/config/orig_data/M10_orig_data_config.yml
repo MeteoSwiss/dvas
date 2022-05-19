@@ -4,7 +4,7 @@
 _M10:
 
     # -- META DATA ----------------------------------
-    edt: "get('event_dt')"
+    edt: "to_datetime(get('event_dt'))"
     srn: "get('srn')"
     pid: "get('product_id')"
     tags:
@@ -55,7 +55,7 @@ _M10:
 _M10-GDP-ALPHA_002:
 
     # -- META DATA ----------------------------------
-    edt: "get('g.Measurement.StandardTime')"
+    edt: "to_datetime(get('g.Measurement.StandardTime'))"
     srn: "get('g.MainSonde.SerialNumber')"
     pid: "get('g.Product.Id')"
     tags:
@@ -63,6 +63,7 @@ _M10-GDP-ALPHA_002:
         - "cat('r:', get('g.Measurement.BalloonNumber'))"
     metadata:
         bpt_time:
+        start_time: "to_datetime(get('time_coverage_start'))"
 
     # -- ORIG DATA ----------------------------------
     _time:
@@ -139,7 +140,7 @@ _M10-GDP-ALPHA_002:
 _M10-GDP-ALPHA_005:
 
     # -- META DATA ----------------------------------
-    edt: "get('g.Measurement.StandardTime')"
+    edt: "to_datetime(get('g.Measurement.StandardTime'))"
     srn: "get('g.MainSonde.SerialNumber')"
     pid: "get('g.Product.Id')"
     tags:
@@ -147,6 +148,7 @@ _M10-GDP-ALPHA_005:
         - "cat('r:', get('g.Measurement.BalloonNumber'))"
     metadata:
         bpt_time:
+        start_time: "to_datetime(get('time_coverage_start'))"
 
     # -- ORIG DATA ----------------------------------
     _time:
@@ -223,7 +225,7 @@ _M10-GDP-ALPHA_005:
 _M10-GDP-ALPHA_105:
 
     # -- META DATA ----------------------------------
-    edt: "get('g.Measurement.StandardTime')"
+    edt: "to_datetime(get('g.Measurement.StandardTime'))"
     srn: "get('g.MainSonde.SerialNumber')"
     pid: "get('g.Product.Id')"
     tags:

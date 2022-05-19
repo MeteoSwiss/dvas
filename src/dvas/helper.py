@@ -26,6 +26,9 @@ from pampy import match as pmatch
 from pampy import MatchError
 from pandas import to_datetime
 
+# Import from this module
+from .errors import DvasError
+
 
 def camel_to_snake(name):
     """Convert camel case to snake case
@@ -467,9 +470,15 @@ def check_datetime(val, utc=True):
     # UTC case
     if utc:
         try:
-            assert (out := to_datetime(val).to_pydatetime()).tzinfo == pytz.UTC
+            out = to_datetime(val).to_pydatetime()
+            if out.tzinfo is None:
+                raise DvasError(f'tzinfo is None for {val}')
+
+            if out.utcoffset().total_seconds() != 0:
+                raise DvasError(f'Non-UTC time zone for {val}')
+
         except (ValueError, AssertionError) as first_error:
-            raise TypeError(f"Not UTC or bad datetime format for '{val}'") from first_error
+            raise TypeError(f"Bad datetime format for '{val}'") from first_error
 
     # Non UTC case
     else:

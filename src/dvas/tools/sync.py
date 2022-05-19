@@ -14,7 +14,6 @@ This module contains tools to synchronize profiles.
 # Import from other Python packages
 import logging
 import warnings
-import dateutil
 import numpy as np
 
 # Import from this package
@@ -37,6 +36,9 @@ def get_sync_shifts_from_starttime(prfs):
     Returns:
         list of int: list of shifts required to sync the profiles with each other.
     """
+
+    import pdb
+    pdb.set_trace()
 
     # Start with some sanity checks
     for prf in prfs:

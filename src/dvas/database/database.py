@@ -589,10 +589,9 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
             ]
 
             # Get related metadata
-            # TODO: is the line below correct ?
             metadata_dict = {
-                arg.key_name: arg.value_datetime if arg.value_num is None
-                              else arg.value_num if arg.value_str is None else arg.value_str
+                arg.key_name: arg.value_str if (arg.value_str is not None) else
+                arg.value_num if (arg.value_num is not None) else arg.value_datetime
                 for arg in
                 TableMetaData.select().distinct().
                 join(TableInfo).
@@ -609,9 +608,8 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     iterator()
                 ]
             ):
-                # TODO
-                #  Detail exception
-                raise Exception(f'Data source is empty')
+
+                raise DvasError('Data source is empty')
 
             # Append
             out.append(
@@ -837,11 +835,13 @@ class InfoManager:
         return f'{self}'
 
     def __str__(self):
-        p_printer = pprint.PrettyPrinter()
+        p_printer = pprint.PrettyPrinter(sort_dicts=False)
         return p_printer.pformat(
-            (f'edt: {self.edt}', f'oid: {self.oid}',
-             f'tags: {self.tags}', f'metadata: {self.metadata}',
-             f'src: {self.src}')
+            {'edt': f'{self.edt}',
+             'oid': f'{self.oid}',
+             'tags': f'{self.tags}',
+             'metadata': f'{self.metadata}',
+             'src': f'{self.src}'}
         )
 
     def get_hash(self):

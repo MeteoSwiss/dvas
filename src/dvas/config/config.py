@@ -17,7 +17,7 @@ import pprint
 from functools import reduce
 import operator
 from pathlib import Path
-import dateutil
+import pytz
 import json
 from jsonschema import validate, exceptions
 from ruamel.yaml import YAML
@@ -32,7 +32,7 @@ from .definitions import parameter, flg
 from .definitions import tag
 from ..environ import path_var
 from ..environ import glob_var as env_glob_var
-from ..helper import get_by_path
+from ..helper import get_by_path, check_datetime
 from ..helper import RequiredAttrMetaClass
 from ..helper import TypedProperty
 from ..helper import camel_to_snake
@@ -1009,12 +1009,21 @@ class ToDatetime(NonTerminalConfigExprInterpreter):
     def fct(self, a):
         """ Convert a string to datetime """
 
-        # Use dateutil, because it is very forgiving ...
-        out = dateutil.parser.parse(a)
+        # If I am given nothing, return nothing
+        if a is None:
+            return None
+
+        # Here, it is important to raise a NonTerminalExprInterpreterError if something fails.
+        # Else, it will not be reported ConfigExprInterpreter.eval()
+        try:
+            # Use the in-built helper function ...
+            out = check_datetime(a, utc=False)
+        except:
+            raise NonTerminalExprInterpreterError()
 
         # Force the timezone to UTC by default
         if out.tzinfo is None:
-            out.replace(tzinfo='UTC')
+            out = out.replace(tzinfo=pytz.UTC)
             logger.error('Setting undefined timezone to UTC for "%s"', out)
 
         return out

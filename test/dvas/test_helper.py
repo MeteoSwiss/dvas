@@ -25,6 +25,8 @@ from dvas.helper import get_by_path
 from dvas.helper import check_path
 from dvas.helper import check_datetime
 from dvas.helper import deepcopy
+from dvas.errors import DvasError
+
 
 def test_single_instance_metaclass():
     """Function used to test the metaclass SingleInstanceMetaClass
@@ -226,12 +228,12 @@ def test_check_datetime():
     """Test dvas_helper.set_datetime"""
 
     assert check_datetime('20200101', utc=False) == datetime(2020, 1, 1)
-    assert check_datetime(datetime(2020, 1, 1), utc=False) ==\
-        datetime(2020, 1, 1)
+    assert check_datetime(datetime(2020, 1, 1), utc=False) == datetime(2020, 1, 1)
     check_datetime('20200101T000000Z')
 
-    with pytest.raises(TypeError):
+    with pytest.raises(DvasError):
         check_datetime('20200101')
+
 
 def test_deepcopy():
     """ Test the helper.deepcopy() decorator"""
@@ -240,7 +242,7 @@ def test_deepcopy():
     class CrashDummy:
         """ A crash dummy class """
 
-        @deepcopy # This is where I actually set up the test !
+        @deepcopy  # This is where I actually set up the test !
         def crash_test(self, a, *args, b='arg2', **kwargs):
             """ A routine to crash-test the dummy """
 

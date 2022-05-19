@@ -38,6 +38,7 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
         filt (str): filtering query for the database.
         sync_length (int): length of the sync'ed profiles.
         sync_shifts (list of int): relative shifts required to sync the profiles.
+            Convention: row n become row n+shift.
         is_gdp (list of bool): to keep track of GDPs, in order to also sync their uncertainties.
     """
 
@@ -133,11 +134,11 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var):
 
     # Get the preliminary shifts from the altitude
     shifts_alt = dts.get_sync_shifts_from_alt(prfs, ref_alt=anchor_alt)
-    logger.debug('sync. shifts from alt (%.1f): %s', anchor_alt, shifts_alt)
+    logger.info('sync. shifts from alt (%.1f): %s', anchor_alt, shifts_alt)
 
     # Use these to get synch shifts from the variable
     shifts_val = dts.get_sync_shifts_from_val(prfs, max_shift=100, first_guess=shifts_alt)
-    logger.info('Sync. shifts from prm "%s": %s', global_match_var, shifts_val)
+    logger.info('Sync. shifts from "%s": %s', global_match_var, shifts_val)
 
     # Use these as best synch shifts
     sync_shifts = shifts_val
