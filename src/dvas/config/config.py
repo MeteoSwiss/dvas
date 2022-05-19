@@ -17,8 +17,8 @@ import pprint
 from functools import reduce
 import operator
 from pathlib import Path
-import pytz
 import json
+import pytz
 from jsonschema import validate, exceptions
 from ruamel.yaml import YAML
 from ruamel.yaml.error import YAMLError

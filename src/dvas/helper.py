@@ -21,7 +21,6 @@ from abc import ABC, ABCMeta, abstractmethod
 from contextlib import AbstractContextManager
 from weakref import WeakValueDictionary
 from operator import getitem
-import pytz
 from pampy import match as pmatch
 from pampy import MatchError
 from pandas import to_datetime

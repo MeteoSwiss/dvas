@@ -43,13 +43,15 @@ def get_sync_shifts_from_starttime(prfs):
     # Start with some sanity checks
     for prf in prfs:
         if 'start_time' not in prf.info.metadata.keys():
-            raise DvasError("'start_time' not found in metadata for: %s", prf.info.src)
-        elif prf.info.metadata['start_time'] is None:
-            raise DvasError("'start_time' is None. GPS start-time sync impossible for: %s",
-                            prf.info.src)
+            raise DvasError(f"'start_time' not found in metadata for: {prf.info.src}")
+        if prf.info.metadata['start_time'] is None:
+            raise DvasError(
+                f"'start_time' is None. GPS start-time sync impossible for: {prf.info.src}")
 
     # Extract all the start times, and convert them to datetimes
     start_times = [prf.info.metadata['start_time'] for prf in prfs]
+
+    print(start_times)
 
     import pdb
     pdb.set_trace()

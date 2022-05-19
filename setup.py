@@ -47,6 +47,7 @@ setup(
         "pytest",
         "pytest-data",
         "pytest-datafiles",
+        "pytz",
         "ruamel-yaml",
         "scipy",
         "sre_yield",
