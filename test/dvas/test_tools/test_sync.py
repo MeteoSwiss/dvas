@@ -29,11 +29,12 @@ db_data = {
     'sub_dir': 'test_tool_stats',
     'data': [{'mdl_name': 'AR-GDP_001',
               'srn': 'AR1',
-              'pid': '0',},
+              'pid': '0'},
              {'mdl_name': 'BR-GDP_001',
               'srn': 'BR1',
-              'pid': '1',},
-            ]}
+              'pid': '1'},
+             ]}
+
 
 @pytest.fixture
 def prfs(db_init):
@@ -64,6 +65,7 @@ def prfs(db_init):
 
     return multiprf
 
+
 def test_get_sync_shifts_from_alt(prfs):
     """ Test get_sync_shifts_from_alt() """
 
@@ -71,7 +73,8 @@ def test_get_sync_shifts_from_alt(prfs):
 
     assert isinstance(out, list)
     assert len(out) == len(prfs)
-    assert out == [1, 0]
+    assert out == [0, 1]
+
 
 def test_get_sync_shifts_from_val(prfs):
     """ Test get_sync_shifts_from_val """

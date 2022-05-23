@@ -325,12 +325,14 @@ class Recipe:
 
         return flights
 
-    def execute(self, from_step_id=None):
+    def execute(self, from_step_id=None, until_step_id=None):
         """ Run the recipe step-by-step, possibly skipping some of the first ones.
 
         Args:
             from_step_id (str|int, optional): if set, will start the processing from this specific
                 step_id. Defaults to None = start at first step.
+            until_step_id (str|int, optional): if set, will end the processing after this specific
+                step_id. Defaults to None = go until the end of the recipe.
 
         """
 
@@ -368,3 +370,7 @@ class Recipe:
             # If warranted, execute the step
             if unlock_steps and step.run:
                 step.execute()
+
+            # If we reached the final step, lock all the subsequent ones
+            if step.step_id == until_step_id:
+                unlock_steps = False

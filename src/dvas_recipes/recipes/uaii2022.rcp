@@ -18,8 +18,8 @@ rcp_paths:
         name: config
         path: /Users/fvogt/Projects/MCH/UAII2022/dvas/codedev/src/dvas_demo
     orig_data_path:
-        name: test_flights_MCH/20211216T170000
-        #name: test_flights_DWD/20220126_1651
+        name: test_flights_MCH/20220412T150000/
+        #name: test_flights_DWD/20220505_1050
         path: /Users/fvogt/Projects/MCH/UAII2022/dvas/testzone/procdata_full/rs
     local_db_path:
         name: db
@@ -96,11 +96,11 @@ rcp_steps:
       kwargs:
         start_with_tags: raw
         fix_gph_uct: # Correct the NaNs present in the gph_uct values for the RS41 GDP v1. See #205.
-            - RS41-GDP # mid value to correct
-        resampling_freq: '1s' # Time step to resample onto, in seconds
+            - RS41-GDP # Model ids (mid) that require the correction
+        resampling_freq: '1s' # Time step to resample onto, with format 'Xs'
         crop_descent: True # If True, descent data will be cropped for good
 
-    # Profile synchronization on a per-flight basis.
+    # Profile synchronization on a flight-per-flight basis.
     - fct: uaii2022.sync.sync_flight
       step_id: '02'
       run: True
@@ -151,7 +151,7 @@ rcp_steps:
         save_to_db: True # if True, will save the delta profiles to the DB
     - fct: uaii2022.dtas.compute_deltas
       step_id: '06b'
-      run: False
+      run: True
       kwargs:
         prf_start_with_tags: '02' # List of tags to identify profiles in the database
         cws_start_with_tags: '04' # List of tags to identify CWS in the database

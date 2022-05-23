@@ -38,6 +38,7 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
         filt (str): filtering query for the database.
         sync_length (int): length of the sync'ed profiles.
         sync_shifts (list of int): relative shifts required to sync the profiles.
+            Convention: row n become row n+shift.
         is_gdp (list of bool): to keep track of GDPs, in order to also sync their uncertainties.
     """
 
@@ -92,7 +93,7 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var):
     This function directly synchronizes the profiles and upload them to the db with the 'sync' tag.
 
     Args:
-        start_with_tags (str|list): list of tags to identify profiles to clean in the db.
+        start_with_tags (str|list): list of tags to identify profiles to sync in the db.
         anchor_alt (int|float): (single) altitude around which to anchor all profiles.
             Used as a first - crude!- guess to get the biggest shifts out of the way.
             Relies on dvas.tools.sync.get_synch_shifts_from_alt()
@@ -111,7 +112,7 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var):
     # What search query will let me access the data I need ?
     filt = tools.get_query_filter(tags_in=tags+[eid, rid], tags_out=dru.rsid_tags(pop=tags))
 
-    # First, extract the temperature data from the db
+    # First, extract the RS profiles from the db, for the requested variable
     prfs = MultiRSProfile()
     prfs.load_from_db(filt, global_match_var, dynamic.INDEXES[PRF_REF_TDT_NAME],
                       alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME])
@@ -124,16 +125,20 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var):
     # synchronize profiles that have flown together.
     dt_offsets = np.array([item.total_seconds() for item in np.diff(prfs.get_info('edt'))])
     if any(dt_offsets > 0):
-        logger.warning('Not all profiles to be synchronized have the same event_dt.')
-        logger.warning('Offsets (w.r.t. first profile) in [s]: %s', dt_offsets)
+        logger.error('Not all profiles to be synchronized have the same event_dt.')
+        logger.error('Offsets (w.r.t. first profile) in [s]: %s', dt_offsets)
+
+    # Get shifts from the GPS times
+    shifts_gps = dts.get_sync_shifts_from_starttime(prfs)
+    logger.debug('Sync. shifts from starttime: %s', shifts_gps)
 
     # Get the preliminary shifts from the altitude
     shifts_alt = dts.get_sync_shifts_from_alt(prfs, ref_alt=anchor_alt)
-    logger.debug('sync. shifts from alt (%.1f): %s', anchor_alt, shifts_alt)
+    logger.info('sync. shifts from alt (%.1f): %s', anchor_alt, shifts_alt)
 
     # Use these to get synch shifts from the variable
     shifts_val = dts.get_sync_shifts_from_val(prfs, max_shift=100, first_guess=shifts_alt)
-    logger.debug('sync. shifts from val (%s): %s', global_match_var, shifts_val)
+    logger.info('Sync. shifts from "%s": %s', global_match_var, shifts_val)
 
     # Use these as best synch shifts
     sync_shifts = shifts_val

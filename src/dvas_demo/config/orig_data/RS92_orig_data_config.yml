@@ -4,7 +4,7 @@
 _RS92:
 
     # -- META DATA ----------------------------------
-    edt: "get('event_dt')"
+    edt: "to_datetime(get('event_dt'))"
     srn: "get('srn')"
     pid: "get('product_id')"
     tags:
@@ -13,6 +13,7 @@ _RS92:
         - "get('day_night')"
     metadata:
         bpt_time: "get('bpt_time')"
+        start_time: "to_datetime(get('start_time'))"
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter:
@@ -58,7 +59,7 @@ _RS92:
 _RS92-GDP_002:
 
     # -- META DATA ----------------------------------
-    edt: "cat(get('g.Ascent.StandardTime'),'Z')"
+    edt: "to_datetime(cat(get('g.Ascent.StandardTime'),'Z'))"
     srn: "get('g.Instrument.SerialNumber')"
     pid: "get('g.Product.ID')"
     tags:
@@ -66,6 +67,7 @@ _RS92-GDP_002:
         - "cat('r:', get('g.Ascent.BalloonNumber'))"
     metadata:
         bpt_time:
+        start_time: "to_datetime(cat(get('g.Ascent.StartTime'),'Z'))"
 
     # -- ORIG DATA ----------------------------------
     _time:

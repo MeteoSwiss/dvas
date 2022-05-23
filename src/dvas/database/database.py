@@ -452,7 +452,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                 # Create batch index
                 fields = [
                     TableMetaData.key_name, TableMetaData.value_str,
-                    TableMetaData.value_num, TableMetaData.info
+                    TableMetaData.value_num, TableMetaData.value_datetime, TableMetaData.info
                 ]
 
                 # Create batch data
@@ -460,6 +460,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     (key,
                      val if isinstance(val, str) else None,
                      val if isinstance(val, float) else None,
+                     val if isinstance(val, datetime) else None,
                      info_id)
                     for key, val in info.metadata.items()
                 ]
@@ -548,7 +549,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         info_id_list = self._get_info_id(search_expr, prm_name, filter_empty)
 
         if not info_id_list:
-            logger.warning("Empty search '%s' for '%s", search_expr, prm_name)
+            logger.warning("Empty search '%s' for parameter '%s'", search_expr, prm_name)
 
         # Query data
         res = []
@@ -589,7 +590,8 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
             # Get related metadata
             metadata_dict = {
-                arg.key_name: arg.value_num if arg.value_str is None else arg.value_str
+                arg.key_name: arg.value_str if (arg.value_str is not None) else
+                arg.value_num if (arg.value_num is not None) else arg.value_datetime
                 for arg in
                 TableMetaData.select().distinct().
                 join(TableInfo).
@@ -606,9 +608,8 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     iterator()
                 ]
             ):
-                # TODO
-                #  Detail exception
-                raise Exception(f'Data source is empty')
+
+                raise DvasError('Data source is empty')
 
             # Append
             out.append(
@@ -682,7 +683,8 @@ class InfoManagerMetaData(dict):
         try:
             assert isinstance(dict_args, dict)
             assert all(isinstance(key, str) for key in dict_args.keys())
-            assert all(isinstance(val, (type(None), str, float, int)) for val in dict_args.values())
+            assert all(isinstance(val, (type(None), str, float, int, datetime))
+                       for val in dict_args.values())
         except AssertionError:
             raise TypeError()
 
@@ -833,11 +835,13 @@ class InfoManager:
         return f'{self}'
 
     def __str__(self):
-        p_printer = pprint.PrettyPrinter()
+        p_printer = pprint.PrettyPrinter(sort_dicts=False)
         return p_printer.pformat(
-            (f'edt: {self.edt}', f'oid: {self.oid}',
-             f'tags: {self.tags}', f'metadata: {self.metadata}',
-             f'src: {self.src}')
+            {'edt': f'{self.edt}',
+             'oid': f'{self.oid}',
+             'tags': f'{self.tags}',
+             'metadata': f'{self.metadata}',
+             'src': f'{self.src}'}
         )
 
     def get_hash(self):

@@ -55,6 +55,11 @@ def update_db(search, strict=False):
 
     """
 
+    # If search is None, there is no need to go much further
+    if search is None:
+        logger.debug("I was asked to search for None ... so that's what I'll return.")
+        return None
+
     # Init orig data config
     origdata_config_mngr = OrigData()
     origdata_config_mngr.read()

@@ -4,7 +4,7 @@
 _RS41-PRE2018:
 
     # -- META DATA ----------------------------------
-    edt: "get('event_dt')"
+    edt: "to_datetime(get('event_dt'))"
     srn: "get('srn')"
     pid: "get('product_id')"
     tags:
@@ -13,6 +13,7 @@ _RS41-PRE2018:
         - "get('day_night')"
     metadata:
         bpt_time: "get('bpt_time')"
+        start_time: "to_datetime(get('start_time'))"
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter:
@@ -53,7 +54,7 @@ _RS41-PRE2018:
 _RS41:
 
     # -- META DATA ----------------------------------
-    edt: "get('event_dt')"
+    edt: "to_datetime(get('event_dt'))"
     srn: "get('srn')"
     pid: "get('product_id')"
     tags:
@@ -62,6 +63,7 @@ _RS41:
         - "get('day_night')"
     metadata:
         bpt_time: "get('bpt_time')"
+        start_time: "to_datetime(get('start_time'))"
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter: ';'
@@ -104,7 +106,7 @@ _RS41-GDP_001:
 
     # -- META DATA ----------------------------------
 
-    edt: "get('g.Measurement.StandardTime')"
+    edt: "to_datetime(get('g.Measurement.StandardTime'))"
     srn: "get('g.MainSonde.SerialNumber')"
     pid: "get('g.Product.Id')"
     tags:
@@ -112,6 +114,7 @@ _RS41-GDP_001:
         - "cat('r:', get('g.Measurement.BalloonNumber'))"
     metadata:
         bpt_time: "get('g.Measurement.BurstpointTime')"
+        start_time: "to_datetime(get('g.Measurement.StartTime'))"
 
     # -- ORIG DATA ----------------------------------
     _time:
