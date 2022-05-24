@@ -148,3 +148,29 @@ def df_to_chunks(df, chunk_size):
     # Note the .copy(), which is essential to avoid SettingWithCopyWarning issues down the line ...
     return [df.iloc[chunk_id * chunk_size: (chunk_id+1) * chunk_size].copy()
             for chunk_id in range(n_chunks)]
+
+
+@log_func_call(logger)
+def wrap_angle(val):
+    """ Given an array of angles (in degrees), wrap them up in the range [-180;180[.
+
+    Args:
+        val (int, float): the array of values to wrap.
+
+    Returns:
+        float: the wrapped values.
+    """
+
+    if val is None:
+        return None
+
+    if np.isnan(val):
+        return np.nan
+
+    while not -180 <= val < 180:
+        if val < -180:
+            val += 360.
+        if val >= 180:
+            val -= 360.
+
+    return val
