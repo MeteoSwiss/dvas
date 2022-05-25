@@ -27,8 +27,7 @@ import sre_yield
 
 # Import current package modules
 from .definitions import origdata, csvorigmeta
-from .definitions import model
-from .definitions import parameter, flg
+from .definitions import prm, flg, model
 from .definitions import tag
 from ..environ import path_var
 from ..environ import glob_var as env_glob_var
@@ -36,9 +35,9 @@ from ..helper import get_by_path, check_datetime
 from ..helper import RequiredAttrMetaClass
 from ..helper import TypedProperty
 from ..helper import camel_to_snake
-from ..database.model import Parameter as TableParameter
+from ..database.model import Prm as TableParameter
 from ..hardcoded import FLG_PRM_NAME_SUFFIX, FLG_PRM_DESC_PREFIX
-from ..errors import ConfigError
+from ..errors import DvasError, ConfigError
 from ..errors import ConfigPathError, ConfigReadYAMLError, ConfigCheckJSONError
 from ..errors import ConfigReadError, ConfigNodeError
 from ..errors import ConfigGetError, ConfigLabelNameError
@@ -222,7 +221,7 @@ class OneLayerConfigManager(ConfigManager):
             self._validate_json(self.document)
 
         except ConfigReadError as exc:
-            raise ConfigReadError('Error in hard coded config') from exc
+            raise ConfigReadError('Error in hardcoded config') from exc
 
     def _get_document(self, doc_in=None):
         """Get YAML document as python dict
@@ -270,6 +269,9 @@ class OneLayerConfigManager(ConfigManager):
 
         # Convert YAML file as JSON dict
         else:
+            if len(doc_in) == 0:
+                logger.debug('No parameter file found for CLASS_KEY: %s', self.CLASS_KEY)
+
             for filepath in doc_in:
                 try:
                     self.append(
@@ -511,14 +513,14 @@ class Model(OneDimArrayConfigManager):
     document = TypedProperty(OneDimArrayConfigManager.DOC_TYPE)
 
 
-class Parameter(OneDimArrayConfigManager):
+class Prm(OneDimArrayConfigManager):
     """Parameter config manager """
 
-    PARAMETER_PATTERN_PROP = parameter.PARAMETER_PATTERN_PROP
-    LABEL_VAL_DEF = parameter.LABEL_VAL_DEF
-    CLASS_KEY = parameter.KEY
+    PARAMETER_PATTERN_PROP = prm.PARAMETER_PATTERN_PROP
+    LABEL_VAL_DEF = prm.LABEL_VAL_DEF
+    CLASS_KEY = prm.KEY
     CONST_LABELS = []
-    NODE_GEN = parameter.NODE_GEN
+    NODE_GEN = prm.NODE_GEN
 
     #: dict: Config document
     document = TypedProperty(OneDimArrayConfigManager.DOC_TYPE)

@@ -1,4 +1,18 @@
+# Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+#
+# Distributed under the terms of the GNU General Public License v3.0 or later.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# This file contains the list of flags defined manually by the user.
+# It must absolutely have the string 'flg' in its name, to match the dvas class names.
+# --------------------------------------------------------------------------------------------------
+
+# Legend:
+# - bit_pos: bit position to store the flag, as int in the range [10, 62]. Some bits may be reserved
+#   flg_name: short-and-sweet flag name for use in dvas
+#   flg_desc: long(er) free text description of the flag
 
 - bit_pos: 10
-  flg_name: 'user_qc'
-  flg_desc: 'User QC flag'
+  flg_name: 'dummy_flg'
+  flg_desc: 'User dummy flag'

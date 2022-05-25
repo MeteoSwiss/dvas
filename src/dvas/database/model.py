@@ -157,7 +157,7 @@ class Object(MetadataModel):
     )
 
 
-class Parameter(MetadataModel):
+class Prm(MetadataModel):
     """Parameter model"""
 
     # Table id
@@ -195,7 +195,7 @@ class Flg(MetadataModel):
     bit_pos = IntegerField(
         null=False,
         unique=True,
-        constraints=[Check("bit_pos >= 0")])
+        constraints=[Check("bit_pos >= 0"), Check("bit_pos < 64")])
 
     # Flag name
     flg_name = TextField(
@@ -250,7 +250,7 @@ class Info(MetadataModel):
     info_id = AutoField(primary_key=True)
     edt = TimestampTZField(null=False)
     param = ForeignKeyField(
-        Parameter, backref='info', on_delete='CASCADE'
+        Prm, backref='info', on_delete='CASCADE'
     )
     data_src = ForeignKeyField(
         DataSource, backref='info', on_delete='CASCADE'

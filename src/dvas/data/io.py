@@ -18,7 +18,7 @@ from .linker import CSVHandler, GDPHandler
 from .linker import FlgCSVHandler, FlgGDPHandler
 from ..config.config import OrigData
 from ..database.database import DatabaseManager
-from ..database.model import Parameter as TableParameter
+from ..database.model import Prm as TableParameter
 from ..environ import path_var
 from ..errors import DvasError
 

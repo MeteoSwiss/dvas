@@ -17,7 +17,7 @@ import pytest
 from dvas.config.config import instantiate_config_managers
 from dvas.config.config import CSVOrigMeta
 from dvas.config.config import OrigData, Model
-from dvas.config.config import Parameter, Flg, Tag
+from dvas.config.config import Prm, Flg, Tag
 from dvas.config.config import ConfigReadError, ConfigGetError
 from dvas.config.config import ConfigExprInterpreter
 from dvas.config.config import ExprInterpreterError
@@ -35,7 +35,7 @@ def test_instantiate_config_managers():
     """
 
     # Define
-    cfg_mngrs_class = [OrigData, Model, Parameter, Flg, Tag]
+    cfg_mngrs_class = [OrigData, Model, Prm, Flg, Tag]
 
     # Instantiate all managers
     cfg_mngrs = instantiate_config_managers(*cfg_mngrs_class, read=False)
@@ -109,7 +109,6 @@ class TestOneDimArrayConfigManager():
         with pytest.raises(ConfigReadError):
             self.cfg.read("mdl_name: 'TEST'\nmdl_desc': 'Test'")
 
-
     def test_get(self):
         """Test get methods (__getitem__)"""
 
@@ -142,7 +141,7 @@ class TestParameter:
         """Test read method"""
 
         # Init
-        cfg = Parameter()
+        cfg = Prm()
         cfg.read(f"- prm_name: {self.prm_pat.pattern}\n  prm_desc: get(1)")
 
         assert sum(

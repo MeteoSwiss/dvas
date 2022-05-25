@@ -24,7 +24,6 @@ from ..logger import log_func_call
 logger = logging.getLogger(__name__)
 
 
-@log_func_call(logger)
 def fancy_nansum(vals, axis=None):
     """ A custom nansum routine that treats NaNs as zeros, unless the data contains *only* NaNs,
     if which case it returns a NaN.
@@ -89,7 +88,6 @@ def fancy_nansum(vals, axis=None):
     return vals.sum(axis=axis, skipna=True).mask(vals.isna().all(axis=axis))
 
 
-@log_func_call(logger)
 def fancy_bitwise_or(vals, axis=None):
     """ A custom bitwise_or routine that ignores NaN unless only NaNs are provided, in which case
     a NaN is returned.
@@ -150,7 +148,6 @@ def df_to_chunks(df, chunk_size):
             for chunk_id in range(n_chunks)]
 
 
-@log_func_call(logger)
 def wrap_angle(val):
     """ Given an array of angles (in degrees), wrap them up in the range [-180;180[.
 

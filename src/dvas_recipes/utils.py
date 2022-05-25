@@ -90,7 +90,7 @@ def format_tags(tags):
 
 
 def rsid_tags(pop=None):
-    """ Returns the list of rsid tags, possibly by removing some of them.
+    """ Returns the list of rsid (recipe step ID) tags, possibly by removing some of them.
 
     Args:
         pop (list, optional): if set, any tags in this list will be removed from the returned list.

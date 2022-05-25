@@ -1,4 +1,18 @@
-# Parameter configuration file
+# Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+#
+# Distributed under the terms of the GNU General Public License v3.0 or later.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# This file contains the list of parameters to be processed by dvas.
+# It must absolutely have the string 'prm' in its name, to match the dvas class names.
+# --------------------------------------------------------------------------------------------------
+
+# Legend:
+# - prm_name: parameter name used throughout dvas.
+#   prm_desc: longer description for plots
+#   prm_unit: the associated unit
+
 - prm_name: 'time'
   prm_desc: 'Time'
   prm_unit: 's'

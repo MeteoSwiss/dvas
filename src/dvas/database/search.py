@@ -24,7 +24,7 @@ from playhouse.shortcuts import model_to_dict
 # Import from current package
 from .model import Object as TableObject
 from .model import Info as TableInfo
-from .model import Parameter as TableParameter
+from .model import Prm as TableParameter
 from .model import Tag as TableTag
 from .model import InfosObjects as TableInfosObjects
 from .model import InfosTags as TableInfosTags

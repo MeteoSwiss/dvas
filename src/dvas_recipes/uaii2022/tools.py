@@ -30,7 +30,7 @@ def get_query_filter(tags_in: list = None, tags_out: list = None, mids: list = N
         filt += ["not_(tags('" + "')), not_(tags('".join(tags_out) + "'))"]
 
     if mids is not None:
-        filt += ["mid('" + "'), mid('".join(mids) + "')"]
+        filt += ["or_(mid('" + "'), mid('".join(mids) + "'))"]
 
     if len(filt) == 0:
         return ''

@@ -26,7 +26,7 @@ from ..errors import DvasError
 from ..database.model import Model as TableModel
 from ..database.model import Info as TableInfo
 from ..database.model import DataSource
-from ..database.model import Parameter as TableParameter
+from ..database.model import Prm as TableParameter
 from ..database.database import DatabaseManager
 from ..config.config import CSVOrigMeta
 from ..config.config import ConfigGetError, ConfigReadError
