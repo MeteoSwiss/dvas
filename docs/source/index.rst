@@ -13,22 +13,22 @@ dvas |version| |stars| |watch|
 
 **Welcome to the dvas documentation !**
 
-This Python package has been written, primarily, to handle the data analysis of the 2022 Upper-Air
+This Python package has been written to handle the data analysis of the 2022 Upper-Air
 Instrument Intercomparison (UAII) campaign, organized under the auspice of World Meteorological
 Organization (WMO). The following pages (should) contain all that you need to know to install and
 run dvas.
 
-The code is composed of two sub-packages:
+The code is composed of two modules:
 
-  - ``dvas``: the core package that contains all the low-level modules and routines, and
-  - ``dvas_recipes``: the high-level package that contains all the *analysis recipes* specific to a
+  - ``dvas``: the core module that contains all the low-level classes and routines, and
+  - ``dvas_recipes``: the higher-level module that contains all the *analysis recipes* specific to a
     given scenario: for example, the UAII 2022 campaign.
 
 There are therefore two distinct ways to use dvas:
 
   1. :ref:`running_recipes:Running dvas recipes`: users interested to reproduce the UAII 2022
      analysis (either for the original dataset, or for a different-but-similar one) need only to
-     interacte with the ``dvas_recipes`` sub-package to do so.
+     interact with the ``dvas_recipes`` module to do so.
 
   2. :ref:`creating_recipes:Creating dvas recipes`: users interesting to adjust/alter/expand the
      default analysis recipes, or even to write their own recipe from scratch, must use the core
