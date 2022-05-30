@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [v0.6.0.dev1]
 ### Added:
+ - [fpavogt, 2022-05-25] Add participant_preview plot and associated recipe step
  - [fpavogt, 2022-05-19] Allow DB to store timezone info with datetime fields
  - [fpavogt, 2022-05-17] Add ability to skip recipe steps beyond a certain point
  - [fpavogt, 2022-05-11] Add colors to on-screen logging
@@ -15,6 +16,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [fpavogt, 2022-04-26] Fix #205 with a dedicated fix in the uaii2022.basic.cleanup recipe step
  - [fpavogt, 2022-04-14] Fix #208 by improving dvas plots
 ### Changed:
+ - [fpavogt, 2022-05-25] Cleaned-up config files
+ - [fpavogt, 2022-05-25] Changed names of Parameter config file and associated db table
  - [fpavogt, 2022-05-17] The flight overview plot is now using the index i for x (rather than time), to show the synced profiles
 ### Deprecated:
 ### Removed:

@@ -26,14 +26,14 @@ from .model import db
 from .model import Model as TableModel
 from .model import Object as TableObject
 from .model import Info as TableInfo
-from .model import Parameter as TableParameter
+from .model import Prm as TableParameter
 from .model import Tag as TableTag
 from .model import MetaData as TableMetaData
 from .model import Flg, DataSource, Data
 from .model import InfosObjects as TableInfosObjects
 from .model import InfosTags
 from .search import SearchInfoExpr
-from ..config.config import Parameter as ParameterCfg
+from ..config.config import Prm as ParameterCfg
 from ..config.config import Model as ModelCfg
 from ..config.config import Flg as FlgCfg
 from ..config.config import Tag as TagCfg
@@ -274,6 +274,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
             # Insert to db
             for batch in chunked(document, n_max):
+                # TODO: check for flags (and other elements) if duplicated ... ?
                 table.insert_many(batch).execute()
 
         else:

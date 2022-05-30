@@ -1,0 +1,38 @@
+# Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+#
+# Distributed under the terms of the GNU General Public License v3.0 or later.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# This file contains a list of the different Manufacturer Data Products (MDPs) supported by dvas.
+# It must absolutely have the string 'model' in its name, to match the dvas class names.
+# --------------------------------------------------------------------------------------------------
+
+# Legend:
+# mdl_name: model name used in the csv filenames
+# mdl_desc: free text description of the model
+# mid: model id used by dvas
+
+- mdl_name: 'C34'
+  mdl_desc: 'Meteolabor SRS-C34'
+  mid: 'C34'
+
+- mdl_name: 'C50'
+  mdl_desc: 'Meteolabor SRS-C50'
+  mid: 'C50'
+
+- mdl_name: 'RS92'
+  mdl_desc: 'Vaisala RS-92'
+  mid: 'RS92'
+
+- mdl_name: 'RS41-PRE2018'
+  mdl_desc: 'Vaisala RS-41 SG (pre-2018 file format)'
+  mid: 'RS41'
+
+- mdl_name: 'RS41'
+  mdl_desc: 'Vaisala RS-41 SG (current file format)'
+  mid: 'RS41'
+
+- mdl_name: 'M10'
+  mdl_desc: 'MétéoModem M10'
+  mid: 'M10'

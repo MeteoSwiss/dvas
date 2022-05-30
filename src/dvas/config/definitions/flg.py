@@ -21,7 +21,7 @@ PARAMETER_PATTERN_PROP = {
     rf"^{TableFlg.bit_pos.name}$": {
         "type": "integer",
         "minimum": 0,
-        "maximum": 63,
+        "maximum": 62,  # Cannot go up to 63, because we need one bit for the sign
     },
     rf"^{TableFlg.flg_name.name}$": {
         "type": "string"

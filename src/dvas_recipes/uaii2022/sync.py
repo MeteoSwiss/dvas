@@ -128,10 +128,6 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var):
         logger.error('Not all profiles to be synchronized have the same event_dt.')
         logger.error('Offsets (w.r.t. first profile) in [s]: %s', dt_offsets)
 
-    # Get shifts from the GPS times
-    shifts_gps = dts.get_sync_shifts_from_starttime(prfs)
-    logger.debug('Sync. shifts from starttime: %s', shifts_gps)
-
     # Get the preliminary shifts from the altitude
     shifts_alt = dts.get_sync_shifts_from_alt(prfs, ref_alt=anchor_alt)
     logger.info('sync. shifts from alt (%.1f): %s', anchor_alt, shifts_alt)
@@ -139,6 +135,10 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var):
     # Use these to get synch shifts from the variable
     shifts_val = dts.get_sync_shifts_from_val(prfs, max_shift=100, first_guess=shifts_alt)
     logger.info('Sync. shifts from "%s": %s', global_match_var, shifts_val)
+
+    # Get shifts from the GPS times
+    shifts_gps = dts.get_sync_shifts_from_starttime(prfs)
+    logger.info('Sync. shifts from starttime: %s', shifts_gps)
 
     # Use these as best synch shifts
     sync_shifts = shifts_val

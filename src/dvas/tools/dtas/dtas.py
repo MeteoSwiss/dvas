@@ -23,14 +23,14 @@ from ...hardcoded import PRF_REF_TDT_NAME, PRF_REF_FLG_NAME, PRF_REF_VAL_NAME
 from ...data.strategy.data import DeltaProfile
 from ...data.data import MultiDeltaProfile
 from ...errors import DvasError
-from ..tools import fancy_bitwise_or
+from ..tools import fancy_bitwise_or, wrap_angle
 
 # Setup local logger
 logger = logging.getLogger(__name__)
 
 
 @log_func_call(logger)
-def single_delta(prf, cws):
+def single_delta(prf, cws, angular_wrap=False):
     """ Compute the delta between a (single) error-less Profile|RSProfile and a (single)
     error-full CWS.
 
@@ -40,6 +40,8 @@ def single_delta(prf, cws):
     Args:
         prf (Profile|RSProfile): the 'candidate' profile.
         cws (CWSProfile): the `reference` Combined Working Standard profile.
+        angular_wrap (bool, optional): if True, will wrap delta values in the range [-180;+180[.
+            Defaults to False.
 
     Returns:
         DeltaProfile: the delta profile, i.e. `candidate` - `reference`.
@@ -64,6 +66,13 @@ def single_delta(prf, cws):
     # **different** from the index of the profile !
     dta_data.loc[:, [PRF_REF_VAL_NAME]] = prf.data['val'].values - cws.data[PRF_REF_VAL_NAME].values
 
+    # Handle the angular_wrap, if warranted. This is used to make sure the wdir delta is never
+    # larger than +-180 deg
+    if angular_wrap:
+        dta_data.loc[:, [PRF_REF_VAL_NAME]] = dta_data.val.map(wrap_angle)
+        if (dta_data.val >= 180).any() or (dta_data.val < -180).any():
+            raise DvasError('Angular wrapping failed ?!')
+
     # For the flags, let's apply a bitwise_or to combine the prf and cws values
     flg_pdf = pd.DataFrame([cws.data['flg'].values, prf.data['flg'].values], dtype='Int64').T
     dta_data.loc[:, [PRF_REF_FLG_NAME]] = fancy_bitwise_or(flg_pdf, axis=1)
@@ -77,7 +86,7 @@ def single_delta(prf, cws):
     return dta
 
 
-def compute(prfs, cwss):
+def compute(prfs, cwss, angular_wrap=False):
     """ Compute the deltas between many error-less profiles and error-full cws.
 
     Args:
@@ -87,6 +96,8 @@ def compute(prfs, cwss):
             with prfs is assumed, unless this contains a single profile, in which case the same
             CWS will be subtracted from all the Profiles.
             I.e. len(cwss) == 1 or len(cwss) == len(prfs).
+        angular_wrap (bool, optional): if True, will wrap delta values in the range [-180;+180[.
+            Defaults to False.
 
     Returns:
         MultiDeltaProfile: the DeltaProfiles.
@@ -105,7 +116,7 @@ def compute(prfs, cwss):
     # Now loop through these, and assemble the DeltaProfile
     dtas = []
     for (prf_ind, prf) in enumerate(prfs):
-        dtas += [single_delta(prf, cws_prfs[prf_ind])]
+        dtas += [single_delta(prf, cws_prfs[prf_ind], angular_wrap=angular_wrap)]
 
     # All done, let's pack it all inside a MultiDeltaProfile instance.
     out = MultiDeltaProfile()

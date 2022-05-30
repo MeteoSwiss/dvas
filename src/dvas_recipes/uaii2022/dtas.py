@@ -109,7 +109,7 @@ def compute_deltas(prf_start_with_tags, cws_start_with_tags, incl_gdps=False, in
         raise DvasRecipesError(f'Ouch ! I need 1 CWS, but I got {len(cws_prfs)} instead.')
 
     # Compute the Delta Profiles
-    dta_prfs = dtdd.compute(nongdp_prfs, cws_prfs)
+    dta_prfs = dtdd.compute(nongdp_prfs, cws_prfs, angular_wrap=dynamic.CURRENT_VAR=='wdir')
 
     # Save the Delta profiles to the database.
     # WARNING: I will keep the GDP tag, even if the resulting delta profile is not fully correct
@@ -123,9 +123,11 @@ def compute_deltas(prf_start_with_tags, cws_start_with_tags, incl_gdps=False, in
     # Let us now also plot these deltas
     fn_suf = dru.fn_suffix(eid=eid, rid=rid, tags=prf_tags, var=dynamic.CURRENT_VAR)
 
-    if incl_gdps:
+    if incl_gdps and incl_nongdps:
+        fn_suf += ''
+    elif incl_gdps:
         fn_suf += '_gdps'
-    if incl_nongdps:
+    elif incl_nongdps:
         fn_suf += '_non-gdps'
 
     dpd.dtas(dta_prfs, k_lvl=1, label='mid', show=False,

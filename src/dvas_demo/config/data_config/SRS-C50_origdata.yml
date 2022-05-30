@@ -1,5 +1,16 @@
+# Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+#
+# Distributed under the terms of the GNU General Public License v3.0 or later.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# This file contains the extraction details for SRS-C50 GDP and MDP files.
+# It must absolutely have the string 'origdata' in its name, to match the dvas class names.
+# --------------------------------------------------------------------------------------------------
+
+
 # ----------------------------------------------------
-# SRS-C50 type (NOT THE GDP!)
+# SRS-C50 MDP
 # ----------------------------------------------------
 _C50:
 

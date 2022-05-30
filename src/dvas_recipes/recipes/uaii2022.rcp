@@ -18,8 +18,8 @@ rcp_paths:
         name: config
         path: /Users/fvogt/Projects/MCH/UAII2022/dvas/codedev/src/dvas_demo
     orig_data_path:
-        name: test_flights_MCH/20220412T150000/
-        #name: test_flights_DWD/20220505_1050
+        #name: test_flights_MCH/20220512T120000/
+        name: test_flights_DWD/20220120_1701
         path: /Users/fvogt/Projects/MCH/UAII2022/dvas/testzone/procdata_full/rs
     local_db_path:
         name: db
@@ -59,11 +59,11 @@ rcp_params:
             ucs: temp_ucs
             uct: temp_uct
             ucu:
-        rh:
-            ucr: rh_ucr
-            ucs:
-            uct: rh_uct
-            ucu:
+        #rh:
+        #    ucr: rh_ucr
+        #    ucs:
+        #    uct: rh_uct
+        #    ucu:
         #pres:
         #    ucr:
         #    ucs:
@@ -141,42 +141,46 @@ rcp_steps:
 
     # Compute the deltas between the profiles of sondes under test and Combined Working Standards
     - fct: uaii2022.dtas.compute_deltas
-      step_id: '06a'
+      step_id: '06'
       run: True
       kwargs:
         prf_start_with_tags: '02' # List of tags to identify profiles in the database
         cws_start_with_tags: '04' # List of tags to identify CWS in the database
         incl_gdps: True # if True, will also compute deltas for GDP profiles
-        incl_nongdps: False # if True, will also compute deltas for the non-GDPs
-        save_to_db: True # if True, will save the delta profiles to the DB
-    - fct: uaii2022.dtas.compute_deltas
-      step_id: '06b'
-      run: True
-      kwargs:
-        prf_start_with_tags: '02' # List of tags to identify profiles in the database
-        cws_start_with_tags: '04' # List of tags to identify CWS in the database
-        incl_gdps: False # if True, will also compute deltas for GDP profiles
         incl_nongdps: True # if True, will also compute deltas for the non-GDPs
         save_to_db: True # if True, will save the delta profiles to the DB
 
+    # Creation of "live" preview plots for constructors
+    - fct: uaii2022.plots.participant_preview
+      step_id: '07'
+      run: True
+      kwargs:
+          prf_tags: '02' # str or list of tags to identify Profiles in the database
+          cws_tags: '04' # str or list of tags to identify Combined Working Standard in the database
+          dta_tags: '06' # str or list of tags to identify Deltas in the database
+          mids: # List of mid to process. Leave empty to process them all.
+            #  - M10
+            #  - M20
+            #  - RS41
+
     # Plot the deltas as a function of the model id, rather than as a function of flight.
     - fct: uaii2022.plots.dtas_per_mid
-      step_id: '07a'
+      step_id: '08a'
       run: True
       kwargs:
         start_with_tags: # list of tags to identify profiles in the database
-            - '06a'
+            - '06'
         mids: # List of mid to process. Leave empty to process them all.
         skip_gdps: False # If True, any 'mid' that contains 'GDP' will be skipped.
         skip_nongdps: True # If True, any 'mid' that does NOT contain 'GDP' will be skipped.
 
     # Plot the deltas as a function of the model id, rather than as a function of flight.
     - fct: uaii2022.plots.dtas_per_mid
-      step_id: '07b'
+      step_id: '08b'
       run: False
       kwargs:
         start_with_tags: # list of tags to identify profiles in the database
-            - '06b'
+            - '06'
         mids: # List of mid to process. Leave empty to process them all.
         skip_gdps: True # If True, any 'mid' that contains 'GDP' will be skipped.
         skip_nongdps: False # If True, any 'mid' that does NOT contain 'GDP' will be skipped.

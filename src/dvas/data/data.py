@@ -24,7 +24,7 @@ from .strategy.rebase import RebaseStrategy
 from .strategy.resample import ResampleStrategy
 from .strategy.save import SaveDataStrategy
 from ..database.database import DatabaseManager
-from ..database.model import Parameter as TableParameter
+from ..database.model import Prm as TableParameter
 from ..helper import RequiredAttrMetaClass
 from ..helper import deepcopy
 from ..helper import get_class_public_attr

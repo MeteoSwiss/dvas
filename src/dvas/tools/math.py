@@ -48,7 +48,7 @@ def calc_tropopause(temp, alt, start_alt=5000, layer=2000, grad_cond=-2):
 
     Note:
         From the WMO definition, the tropopause is defined as the lowest
-        altitude where the vertical thermal gradient becomes less than -2 K per
+        altitude where the vertical thermal gradient becomes (and remains) less than -2 K per
         km in a layer at least 2 km thick.
 
     Source:

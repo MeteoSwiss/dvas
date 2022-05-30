@@ -160,11 +160,12 @@ if __name__ == '__main__':
         print(f"  {flg_name}: {item['flg_desc']}")
 
     # To flag specific elements of a given profile, use the internal methods:
-    prfs[0].set_flg('user_qc', True, index=pd.Index([0, 1, 2]))
+    # Here, 'dummy_flg' is defined in the flg_config.yml parameter file.
+    prfs[0].set_flg('dummy_flg', True, index=pd.Index([0, 1, 2]))
 
     # Let's check to see that the data was actually flagged
-    print('\nDid I flag only the first three steps with "user_qc" ?')
-    print(prfs[0].has_flg('user_qc'))
+    print('\nDid I flag only the first three steps with a "dummy_flg" ?')
+    print(prfs[0].has_flg('dummy_flg'))
 
     # FLags are used that characterize individual measurments. Tags, on the other hand, are used to
     # characterize entire Profiles. They are useful, for example, to identify if a Profile has been

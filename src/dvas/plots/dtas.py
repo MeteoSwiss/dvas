@@ -70,25 +70,14 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
         def sig_alpha(k):
             return 0.1+(3-k)*0.1
 
-        def fc(ind):
-            return 'gray'
-
         lc = 'dimgrey'
-        alpha = 0.4
         sig_col = 'mediumpurple'
     else:
 
         def sig_alpha(k):
             return 0.05+(3-k)*0.05
 
-        def fc(ind):
-            """ Hack function to get the proper colors from the cycler with fill_between.
-            For reasons unknown (to me), setting the facecolor to None always picks-up the first
-            cycler color. """
-            return 'C%i' % (ind)
-
         lc = None
-        alpha = 0.3
         sig_col = 'k'
 
     # What are the limit altitudes ?
@@ -109,16 +98,20 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
         dta = deltas[dta_ind]
 
         # First, plot the profiles themselves
-        # ax0.plot(dta.loc[:, PRF_REF_ALT_NAME].values, dta.loc[:, PRF_REF_VAL_NAME].values,
-        #         lw=0.2, ls='-', drawstyle='steps-mid', c=lc, alpha=0.9**len(flights),
-        #         label='|'.join(dta_prfs.get_info(label)[dta_ind]))
+        ax0.plot(dta.loc[:, PRF_REF_ALT_NAME].values, dta.loc[:, PRF_REF_VAL_NAME].values,
+                 lw=0.4, ls='-', drawstyle='steps-mid', c=lc, alpha=1,
+                 label='|'.join(dta_prfs.get_info(label)[dta_ind]))
 
         # Next plot the uncertainties
-        ax0.fill_between(dta.loc[:, PRF_REF_ALT_NAME],
-                         dta.loc[:, PRF_REF_VAL_NAME] - k_lvl * dta.loc[:, 'uc_tot'].values,
-                         dta.loc[:, PRF_REF_VAL_NAME] + k_lvl * dta.loc[:, 'uc_tot'].values,
-                         alpha=alpha, step='mid', facecolor=fc(dta_ind), edgecolor='none',
-                         label='|'.join(dta_prfs.get_info(label)[dta_ind]))
+        if dta_ind == 0:
+            ax0.fill_between(dta.loc[:, PRF_REF_ALT_NAME],
+                             - k_lvl * dta.loc[:, 'uc_tot'].values,
+                             + k_lvl * dta.loc[:, 'uc_tot'].values,
+                             alpha=0.2, step='mid', facecolor='k', edgecolor='none',
+                             label='CWS')
+        else:
+            if not dta.loc[:, 'uc_tot'].equals(deltas[0].loc[:, 'uc_tot']):
+                logger.error('Inconsistent delta uncertainties will not be reflected in the plot.')
 
         # And then, the deltas normalized by the uncertainties
         ax1.plot(dta.loc[:, PRF_REF_ALT_NAME],
@@ -126,7 +119,7 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
                  lw=0.5, ls='-', drawstyle='steps-mid', c=lc, alpha=0.9**len(flights))
 
     # Set the axis labels
-    ylbl0 = r'$\delta_{e,i}\pm\sigma_{\Omega_{e,i}}$'
+    ylbl0 = r'$\delta_{e,i}$'
     ylbl0 += ' [{}]'.format(dta_prfs.var_info[PRF_REF_VAL_NAME]['prm_unit'])
     ylbl1 = r'$\delta_{e,i}/\sigma_{\Omega_{e,i}}$'
     altlbl = dta_prfs.var_info[PRF_REF_ALT_NAME]['prm_name']
@@ -137,8 +130,7 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
     ax1.set_xlabel(pu.fix_txt(altlbl))
 
     # Hide certain ticks, and set the limits
-    ax0.set_xlim((alt_min, alt_max))
-    ax1.set_ylim((-5, +5))
+    ax1.set_ylim((-6, +6))
     plt.setp(ax0.get_xticklabels(), visible=False)
 
     if len(mid) > 1:

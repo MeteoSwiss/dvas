@@ -202,6 +202,7 @@ class LoadGDPProfileStrategy(LoadProfileStrategy):
 
         return out, db_vs_df_keys
 
+
 class LoadCWSProfileStrategy(LoadProfileStrategy):
     """ Child class to manage the data loading strategy of CWSProfile instances. """
 

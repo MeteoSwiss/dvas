@@ -1,0 +1,38 @@
+# Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+#
+# Distributed under the terms of the GNU General Public License v3.0 or later.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# This file contains a list of the different GRUAN Data Products (GDPs) supported by dvas.
+# It must absolutely have the string 'model' in its name, to match the dvas class names.
+# --------------------------------------------------------------------------------------------------
+
+# Legend:
+# mdl_name: model name used in the netCDF GDP filenames
+# mdl_desc: free text description of the model
+# mid: model id used by dvas
+
+- mdl_name: 'RS41-GDP_001'
+  mdl_desc: 'RS41 GDP, version 1'
+  mid: 'RS41[GDP]'
+
+- mdl_name: 'RS92-GDP_002'
+  mdl_desc: 'RS92 GDP, version 2'
+  mid: 'RS92[GDP]'
+
+- mdl_name: 'IMS-100-BETA_002'
+  mdl_desc: 'iMS-100 GDP, BETA version 2'
+  mid: 'iMS-100[GDP]'
+
+- mdl_name: 'M10-GDP-ALPHA_002'
+  mdl_desc: 'M10, ALPHA version 2'
+  mid: 'M10[GDPv4]'
+
+- mdl_name: 'M10-GDP-ALPHA_005'
+  mdl_desc: 'M10, ALPHA version 5'
+  mid: 'M10[GDPv5]'
+
+- mdl_name: 'M10-GDP-ALPHA_105'
+  mdl_desc: 'M10, ALPHA version 5.1'
+  mid: 'M10[GDPv5.1]'

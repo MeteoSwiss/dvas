@@ -37,9 +37,6 @@ def get_sync_shifts_from_starttime(prfs):
         list of int: list of shifts required to sync the profiles with each other.
     """
 
-    import pdb
-    pdb.set_trace()
-
     # Start with some sanity checks
     for prf in prfs:
         if 'start_time' not in prf.info.metadata.keys():
@@ -51,10 +48,9 @@ def get_sync_shifts_from_starttime(prfs):
     # Extract all the start times, and convert them to datetimes
     start_times = [prf.info.metadata['start_time'] for prf in prfs]
 
-    print(start_times)
+    shifts = [int(np.round((item-np.min(start_times)).total_seconds())) for item in start_times]
 
-    import pdb
-    pdb.set_trace()
+    return shifts
 
 
 @log_func_call(logger)
@@ -96,7 +92,7 @@ def get_sync_shifts_from_alt(prfs, ref_alt=5000.):
 
     # Make sure to keep them all positive
     out -= np.min(out)
-
+    print(prfs.get_info('mid'))
     # Return the corresponding shifts, not forgetting that the first profile stays where it is.
     return list(out)
 
