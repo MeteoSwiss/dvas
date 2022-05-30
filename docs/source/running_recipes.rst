@@ -26,10 +26,13 @@ UAII 2022 analysis cascade:
        .. literalinclude:: dvas_help_msg.txt
           :language: none
 
-  2. The processing arena you just created got pre-filled with 1) a series of configuration files
-  for the dvas database (more on this below), 2) a `dvas_demo.py` script meant for advanced users,
-  and 3) the official dvas recipe files, including `uaii22.rcp`.
-  To execute this recipe, use the `dvas_run_recipe` entry point from the command line:
+  2. The processing arena you just created got pre-filled with:
+
+      a) a series of configuration files for the dvas database (more on this below),
+      b) a ``dvas_demo.py`` script meant for advanced users, and
+      c) the official dvas recipe files, including ``uaii22.rcp``.
+
+  To execute this recipe, use the ``dvas_run_recipe`` entry point from the command line:
 
   .. code-block:: none
 
@@ -57,11 +60,11 @@ and the :ref:`recipe file <recipe_file>`. Let's take a closer look at each of th
 The data folder
 ...............
 This folder contains all the raw data to be processed. The actual structuring of subfolders inside
-`./data` does not actually matter to dvas, so feel free to organize your datasets as you please.
+``./data`` does not actually matter to dvas, so feel free to organize your datasets as you please.
 Note, however, the following restrictions:
 
-  - for non-GDP radiosondes: a `.yml` text file **with the same name** as the raw data file must be
-    specified for all datasets. These `.yml` fiels must contain all the metadata not otherwise
+  - for non-GDP radiosondes: a ``.yml`` text file **with the same name** as the raw data file must be
+    specified for all datasets. These ``.yml`` files must contain all the metadata not otherwise
     present in the raw data files.
 
     .. todo:: Specify what these metadata should be
@@ -80,7 +83,7 @@ that differ from those already supported by dvas.
 The recipe file
 ...............
 
-The dvas recipes are described in YAML file with the `.rcp` extension. In there, you will find
+The dvas recipes are described in YAML file with the ``.rcp`` extension. In there, you will find
 general recipe parameters, including the list of variable names to process, together with the list
 of all the processing steps and their associated parameters. All these steps refer to high-level
 routines and modules from the ``dvas_recipes`` sub-package, that themselves rely on core ``dvas``
