@@ -195,7 +195,8 @@ class Flg(MetadataModel):
     bit_pos = IntegerField(
         null=False,
         unique=True,
-        constraints=[Check("bit_pos >= 0"), Check("bit_pos < 64")])
+        # Can only go up to 62, because we need one bit to store the sign
+        constraints=[Check("bit_pos >= 0"), Check("bit_pos <= 62")])
 
     # Flag name
     flg_name = TextField(

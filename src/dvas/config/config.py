@@ -37,7 +37,7 @@ from ..helper import TypedProperty
 from ..helper import camel_to_snake
 from ..database.model import Prm as TableParameter
 from ..hardcoded import FLG_PRM_NAME_SUFFIX, FLG_PRM_DESC_PREFIX
-from ..errors import DvasError, ConfigError
+from ..errors import ConfigError
 from ..errors import ConfigPathError, ConfigReadYAMLError, ConfigCheckJSONError
 from ..errors import ConfigReadError, ConfigNodeError
 from ..errors import ConfigGetError, ConfigLabelNameError
