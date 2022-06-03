@@ -17,6 +17,7 @@ from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, TAG_SYNC_NAME, TA
 from dvas.logger import log_func_call
 from dvas.data.data import MultiRSProfile, MultiGDPProfile
 from dvas.tools import sync as dts
+from dvas.errors import DvasError
 
 # Import from dvas_recipes
 from .. import dynamic
@@ -29,7 +30,7 @@ from .. import utils as dru
 logger = logging.getLogger(__name__)
 
 
-@log_func_call(logger, time_it=True)
+@log_func_call(logger, time_it=False)
 def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
     """ Apply shifts to GDP and non-GDP profiles from a given flight, and upload them to the db.
 
@@ -137,8 +138,11 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var):
     logger.info('Sync. shifts from "%s": %s', global_match_var, shifts_val)
 
     # Get shifts from the GPS times
-    shifts_gps = dts.get_sync_shifts_from_starttime(prfs)
-    logger.info('Sync. shifts from starttime: %s', shifts_gps)
+    try:
+        shifts_gps = dts.get_sync_shifts_from_starttime(prfs)
+        logger.info('Sync. shifts from starttime: %s', shifts_gps)
+    except DvasError as err:
+        logger.critical(err)
 
     # Use these as best synch shifts
     sync_shifts = shifts_val
