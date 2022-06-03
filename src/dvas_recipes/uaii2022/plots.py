@@ -364,13 +364,15 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None, k_lvl=2):
 
     # Prepare the search queries
     prf_filt = tools.get_query_filter(tags_in=prf_tags+[eid, rid],
-                                      tags_out=dru.rsid_tags(pop=prf_tags), mids=mids)
+                                      tags_out=dru.rsid_tags(pop=prf_tags)+[TAG_CWS_NAME],
+                                      mids=mids)
 
     cws_filt = tools.get_query_filter(tags_in=cws_tags+[eid, rid, TAG_CWS_NAME],
                                       tags_out=dru.rsid_tags(pop=cws_tags))
 
     dta_filt = tools.get_query_filter(tags_in=dta_tags+[eid, rid, TAG_DTA_NAME],
-                                      tags_out=dru.rsid_tags(pop=dta_tags), mids=mids)
+                                      tags_out=dru.rsid_tags(pop=dta_tags),
+                                      mids=mids)
 
     # Query these different Profiles
     prfs = MultiProfile()
@@ -508,7 +510,6 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None, k_lvl=2):
         # are negative. It reproduces the default behavior of autoscale.
         ymin = dta.loc[:, PRF_REF_VAL_NAME].min()
         ymax = dta.loc[:, PRF_REF_VAL_NAME].max()
-        print(dynamic.CURRENT_VAR, ymin, ymax)
         #if mid[0] == 'M10':
         #    import pdb
         #    pdb.set_trace()

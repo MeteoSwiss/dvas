@@ -14,12 +14,14 @@ import logging
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
+import matplotlib.transforms as transforms
 
 # Import from this package
 from ..logger import log_func_call
 from ..errors import DvasError
 from ..hardcoded import PRF_REF_INDEX_NAME, PRF_REF_VAL_NAME, PRF_REF_ALT_NAME, PRF_REF_TDT_NAME
 from ..hardcoded import PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME
+from ..hardcoded import MTDTA_TROPOPAUSE, MTDTA_PBL
 from . import utils as pu
 
 # Setup the local logger
@@ -72,7 +74,7 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
         raise DvasError('Ouch! GDPS and CWS do not have the same lengths. I cannot plot this.')
 
     # Here, I want to make a plot with 3 x-axis: idx, tdt, and alt. To do that requires
-    # all these arrays to be completely filled with stuff, an dhave absolutely no NaNs
+    # all these arrays to be completely filled with stuff, and have absolutely no NaNs
     # (since matplotlib needs to interpolate and go back-and-forth between them)
     idxs = cws.index.get_level_values(PRF_REF_INDEX_NAME).values
     tdts = cws[PRF_REF_TDT_NAME].dt.total_seconds().values
@@ -88,7 +90,7 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     # Check for any holes - if found, forget about showing multiple axes
     show_tdts = True
     if np.any(np.isnan(tdts)):
-        logger.error('CWS tdt contains holes. ' +
+        logger.error('CWS tdt contains holes. %s',
                      'Axis will be cropped from gdp_vs_cws.')
         show_tdts = False
     # Make sure time is monotically increasing. This should always be true ...
@@ -100,11 +102,11 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     # monotically
     show_alts = True
     if np.any(np.isnan(alts)):
-        logger.error('CWS ref_alt contains holes. ' +
+        logger.error('CWS ref_alt contains holes. %s',
                      'Axis will be cropped from gdp_vs_cws.')
         show_alts = False
     elif np.any(np.diff(alts) <= 0):
-        logger.error('CWS ref. alt. is not increasing monotically. ' +
+        logger.error('CWS ref. alt. is not increasing monotically. %s',
                      'Axis will be cropped from gdp_vs_cws')
         show_alts = False
 
@@ -136,6 +138,25 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
              color='k')
     ax1.plot(idxs, +k_lvl*cws['uc_tot'].values, lw=0.5, drawstyle='steps-mid',
              color='k')
+
+    # Display the location of the tropopause and the PBL
+    for (loi, symb) in [(MTDTA_TROPOPAUSE, r'$\succ$'), (MTDTA_PBL, r'$\simeq$')]:
+        if loi not in cws_prf[0].info.metadata.keys():
+            logger.warning('"%s" not found in CWS metadata.', loi)
+            continue
+
+        loi_idx = np.argmin(np.abs(alts-cws_prf[0].info.metadata[loi]))
+        if loi == MTDTA_TROPOPAUSE and alts[loi_idx] != cws_prf[0].info.metadata[loi]:
+            logger.warning('%s stored as metadata does not match any %s',
+                           loi,
+                           'gph values of the CWS profile. Why ?!')
+
+        for ax in [ax0, ax1]:
+            ax.axvline(loi_idx, ls=':', lw=1, c='k')
+            trans = transforms.blended_transform_factory(ax.transData, ax.transAxes)
+            ax0.text(loi_idx, 0.95, symb, transform=trans, ha='center', va='top',
+                     rotation=90,
+                     bbox=dict(boxstyle='square', fc="w", ec="none", pad=0.1))
 
     # Make it look pretty
     ylbl = cws_prf.var_info[PRF_REF_VAL_NAME]['prm_name']
