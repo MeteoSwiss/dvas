@@ -17,8 +17,8 @@ import pandas as pd
 from dvas.environ import path_var
 from dvas.logger import log_func_call
 from dvas.data.data import MultiRSProfile, MultiGDPProfile
-from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, TAG_CLN_NAME, FLG_DESCENT_NAME
-from dvas.hardcoded import TAG_GDP_NAME
+from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_INDEX_NAME
+from dvas.hardcoded import TAG_GDP_NAME, TAG_CLN_NAME, FLG_DESCENT_NAME
 from dvas.dvas import Database as DB
 
 # Import from dvas_recipes
@@ -47,12 +47,15 @@ def prf_summary():
 def flag_descent(prfs):
     """ Set a dedicated flag for any point beyond the burst point.
 
-    Note:
-        This function simply uses the metadata info to set the flags. It indirectly assumes that
-        the profiles have not been shifted in any way (yet).
-
     Args:
         prfs (MultiRSProfile|MultiGDPProfile): the profiles to flag (individually).
+
+    Note:
+        If available, this function will use the metadata info to set the flags. Else, it will
+        simply flag any point beyond the max altitude.
+
+    Important:
+        This function assumes that the profiles have not been shifted in any way (yet) !
 
     Returns:
         MultiRSProfile|MultiGDPProfile: the flagged profiles.
@@ -62,24 +65,34 @@ def flag_descent(prfs):
     # Loop through each profile, and figure out if I need to flag anything
     for prf in prfs:
 
-        # Begin with some sanity checks
+        # Check if a bpt_time is avalaible. Else, look for the max altitude reached.
         if 'bpt_time' not in prf.info.metadata.keys():
-            logger.error("'bpt_time' not found in metadata for: %s", prf.info.src)
-            logger.error("Descent data could not be flagged !")
-            continue
-        if prf.info.metadata['bpt_time'] is None:
-            logger.warning('"bpt_time" is not set for: %s', prf.info.src)
-            continue
+            logger.warning('"bpt_time" not found in metadata for: %s', prf.info.src)
+            use_max = True
+        elif prf.info.metadata['bpt_time'] is None:
+            logger.warning('"bpt_time" is None for: %s', prf.info.src)
+            use_max = True
+        else:
+            logger.info('"bpt_time" ok for: %s', prf.info.src)
+            use_max = False
 
-        # Extract the burst point, and try to convert it into a time delta
-        bpt_time = (prf.info.metadata['bpt_time']).split(' ')
-        if len(bpt_time) != 2:
-            raise DvasRecipesError('Ouch ! bpt_time is weird: %s' % (prf.info.metadata['bpt_time']))
+        if use_max:
+            max_alt_id = prf.data.index.get_level_values(PRF_REF_ALT_NAME).argmax()
+            which = prf.data.index.get_level_values(PRF_REF_INDEX_NAME) > max_alt_id
+            logger.info('Flagging all points beyond max. alt %.1f @ %s as descent.',
+                        prf.data.index[max_alt_id][1], prf.data.index[max_alt_id][2])
 
-        bpt_time = pd.Timedelta(float(bpt_time[0]), bpt_time[1])
+        else:
+            # Extract the burst point, and try to convert it to a time delta
+            bpt_time = (prf.info.metadata['bpt_time']).split(' ')
+            if len(bpt_time) != 2:
+                raise DvasRecipesError(
+                    'Ouch ! bpt_time is weird: %s' % (prf.info.metadata['bpt_time']))
 
-        # Set the flag for anything beyond the burst point
-        which = prf.data.index.get_level_values('tdt') >= bpt_time
+            bpt_time = pd.Timedelta(float(bpt_time[0]), bpt_time[1])
+            which = prf.data.index.get_level_values(PRF_REF_TDT_NAME) >= bpt_time
+            logger.info('Flagging all points after the burst point @ %s as descent.', bpt_time)
+
         prf.set_flg(FLG_DESCENT_NAME, True, index=which)
 
     return prfs

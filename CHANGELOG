@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [v0.6.0.dev1]
 ### Added:
+ - [fpavogt, 2022-06-03] If no burst point is specified, flag any points beyond the max altitude as "descent"
  - [fpavogt, 2022-05-25] Add participant_preview plot and associated recipe step
  - [fpavogt, 2022-05-19] Allow DB to store timezone info with datetime fields
  - [fpavogt, 2022-05-17] Add ability to skip recipe steps beyond a certain point
