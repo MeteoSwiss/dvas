@@ -171,7 +171,21 @@ FLG_INCOMPATIBLE_NAME = 'incomp'
 #: str: Flag's desc for resampled values
 FLG_INCOMPATIBLE_DESC = 'Incompatible GDP measurements'
 
-#: str: Flag's name for resampled values
+#: str: Flag's name for descent datra
 FLG_DESCENT_NAME = 'descent'
-#: str: Flag's desc for resampled values
+#: str: Flag's desc for descent data
 FLG_DESCENT_DESC = 'Descent data'
+
+#: str: Flag's name for regions with valid CWS
+FLG_HASCWS_NAME = 'has_cws'
+#: str: Flag's desc
+FLG_HASCWS_DESC = 'A valid CWS measure exists for this measurement point'
+
+# Metadata special fields
+# -----------------------
+
+#: str: Metadata field to store the tropopause geopotential height
+MTDTA_TROPOPAUSE = 'tropopause-gph'
+
+#: str: Metadata field to store the planetary boundary layer maximum geopotential height
+MTDTA_PBL = 'pbl-gph'

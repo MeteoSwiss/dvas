@@ -14,5 +14,21 @@
 #   flg_desc: long(er) free text description of the flag
 
 - bit_pos: 10
-  flg_name: 'dummy_flg'
-  flg_desc: 'User dummy flag'
+  flg_name: 'planetary_boundary_layer'
+  flg_desc: 'Inside the planetery boundary layer'
+
+- bit_pos: 11
+  flg_name: 'troposphere'
+  flg_desc: 'Below the tropopause (i.e. the PBL is included)'
+
+- bit_pos: 12
+  flg_name: 'free_troposphere'
+  flg_desc: 'Above the PBL and below the tropopause'
+
+- bit_pos: 13
+  flg_name: 'stratosphere'
+  flg_desc: 'Above the tropopause'
+
+- bit_pos: 14
+  flg_name: 'upper_troposphere_lower_startosphere'
+  flg_desc: 'TBD'
