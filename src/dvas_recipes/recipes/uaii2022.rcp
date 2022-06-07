@@ -88,6 +88,7 @@ rcp_steps:
       step_id: '00'
       run: True
       kwargs:
+          create_eid_edt_files: True # If True, will create the eid-edt files used for the UAII preview tool
 
     # Profile cleanup (cropping after burst, resampling)
     - fct: uaii2022.basic.cleanup
