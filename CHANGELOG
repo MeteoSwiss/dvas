@@ -59,7 +59,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [modolol, 2021-07-12] Fix issue #160
 ### Changed:
  - [fpavogt, 2022-04-05] Adjust paths input structure of the dvas recipes, improve recipe tag handling
- - [fpavogt, 2022-03-18] Modified & imporoved gdp_vs_cws plots into a dedicated recipe step
+ - [fpavogt, 2022-03-18] Modified & improved gdp_vs_cws plots into a dedicated recipe step
  - [fpavogt, 2022-03-01] Simplified the logging by removing the specific names
  - [fpavogt, 2022-03-01] Add dev option to setup.py
  - [modolol, 2022-02-28] Remove mandatory tag creation in config
@@ -89,7 +89,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [modolol, 2021-04-13] Add DB exploring tool
 ### Fixed:
  - [modolol, 2021-06-10] Fix missing correction + bugs in PR #147
- - [modolol, 2021-06-08] Cleanup toward v04 (config module)
+ - [modolol, 2021-06-08] Cleanup towards v04 (config module)
 ### Changed:
  - [fpavogt, 2021-06-30] Ensure that the default db config files are only found in`dvas_demo`
  - [fpavogt, 2021-06-23] `has_flg()` now returns 0 if flags are <NA>
