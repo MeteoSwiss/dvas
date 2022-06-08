@@ -22,8 +22,7 @@ import pandas as pd
 # Import from current package
 from ...logger import log_func_call
 from ...errors import DvasError
-from ...hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME, PRF_REF_FLG_NAME
-from ...hardcoded import PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME
+from ...hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
 from ..tools import df_to_chunks
 from .utils import process_chunk
 from ...data.data import MultiCWSProfile
@@ -129,9 +128,8 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
     # Let's get started for real
     # First, let's extract all the information I (may) need, i.e. the values, errors, and total
     # errors.
-    x_dx = gdp_prfs.get_prms([PRF_REF_ALT_NAME, PRF_REF_TDT_NAME, PRF_REF_VAL_NAME,
-                              PRF_REF_FLG_NAME, PRF_REF_UCR_NAME, PRF_REF_UCS_NAME,
-                              PRF_REF_UCT_NAME, PRF_REF_UCU_NAME, 'uc_tot'],
+    x_dx = gdp_prfs.get_prms([PRF_ALT, PRF_TDT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT,
+                              PRF_UCU, 'uc_tot'],
                              mask_flgs=mask_flgs)
 
     # I also need to extract some of the metadata required for computing cross-correlations.
@@ -215,10 +213,10 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
     # To finish, let's piece together the covariance matrices
     # Set them up full of NaNs to start
     cov_mats = {uc_name: np.full((len(x_ms), len(x_ms)), np.nan) for uc_name in
-                [PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME]}
+                [PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU]}
     # Then fill them up chunk by chunk
     for item in proc_chunks:
-        for uc_name in [PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME]:
+        for uc_name in [PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU]:
             cov_mats[uc_name][item[0].index[0]:item[0].index[-1]+1,
                               item[0].index[0]:item[0].index[-1]+1] = \
                 item[1][uc_name].filled(np.nan)

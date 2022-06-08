@@ -30,8 +30,7 @@ from .model import InfosObjects as TableInfosObjects
 from .model import InfosTags as TableInfosTags
 from .model import DataSource as TablDataSource
 from .model import Model as TableModel
-from ..hardcoded import TAG_EMPTY_NAME
-from ..hardcoded import TAG_RAW_NAME, TAG_GDP_NAME
+from ..hardcoded import TAG_EMPTY, TAG_RAW, TAG_GDP
 from ..hardcoded import EID_PAT, RID_PAT
 from ..helper import TypedProperty as TProp
 from ..helper import check_datetime
@@ -164,7 +163,7 @@ class SearchInfoExpr(metaclass=ABCMeta):
 
             # Add empty tag if False
             if filter_empty is True:
-                expr = AndExpr(NotExpr(TagExpr(TAG_EMPTY_NAME)), expr)
+                expr = AndExpr(NotExpr(TagExpr(TAG_EMPTY)), expr)
 
             # Filter parameter
             if prm_name:
@@ -281,7 +280,7 @@ class SearchInfoExpr(metaclass=ABCMeta):
             next(
                 arg[TableInfosTags.tag.name][TableTag.tag_name.name]
                 for arg in infos_tags
-                if arg[TableInfosTags.tag.name][TableTag.tag_name.name] == TAG_GDP_NAME
+                if arg[TableInfosTags.tag.name][TableTag.tag_name.name] == TAG_GDP
             )
             out = True
 
@@ -379,7 +378,7 @@ class DatetimeExpr(TerminalSearchInfoExpr):
         '>': operator.gt,
         '<': operator.lt,
         '>=': operator.ge,
-        '>=': operator.le,
+        '<=': operator.le,
     }
     expression = TProp(Union[str, Timestamp, datetime], check_datetime)
 
@@ -448,7 +447,7 @@ class RawExpr(TerminalSearchInfoExpr):
 
     def get_filter(self):
         """Implement get_filter method"""
-        return TableTag.tag_name.in_([TAG_RAW_NAME])
+        return TableTag.tag_name.in_([TAG_RAW])
 
 
 class GDPExpr(TerminalSearchInfoExpr):
@@ -459,7 +458,7 @@ class GDPExpr(TerminalSearchInfoExpr):
 
     def get_filter(self):
         """Implement get_filter method"""
-        return TableTag.tag_name.in_([TAG_GDP_NAME])
+        return TableTag.tag_name.in_([TAG_GDP])
 
 
 class OIDExpr(TerminalSearchInfoExpr):

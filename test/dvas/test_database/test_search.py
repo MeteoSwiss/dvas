@@ -14,7 +14,7 @@ import numpy as np
 
 # Import from python packages and modules under test
 from dvas.database.search import SearchInfoExpr
-from dvas.hardcoded import TAG_RAW_NAME, TAG_GDP_NAME
+from dvas.hardcoded import TAG_RAW, TAG_GDP
 
 # Define db_data
 db_data = {
@@ -32,7 +32,7 @@ db_data = {
                 'metadata': {'test_key_str': 'one', 'test_key_num': '1'},
                 'src': ''
             },
-        } for arg_tag in [TAG_RAW_NAME, TAG_GDP_NAME]
+        } for arg_tag in [TAG_RAW, TAG_GDP]
     ]
 }
 
@@ -81,7 +81,7 @@ def test_search_event_expr_eval(db_init):
     # Test tag
     assert len(
         SearchInfoExpr.eval(
-            f'tags(("e:1", "r:1"))', *args
+            'tags(("e:1", "r:1"))', *args
         )
     ) > 0
     assert (
@@ -113,7 +113,7 @@ def test_search_event_expr_eval(db_init):
     )
 
     # Test raw()
-    assert SearchInfoExpr.eval(f"tags('raw')", *args) == SearchInfoExpr.eval(f"raw()", *args)
+    assert SearchInfoExpr.eval("tags('raw')", *args) == SearchInfoExpr.eval("raw()", *args)
 
     # Test gdp()
-    assert SearchInfoExpr.eval(f"tags('gdp')", *args) == SearchInfoExpr.eval(f"gdp()", *args)
+    assert SearchInfoExpr.eval("tags('gdp')", *args) == SearchInfoExpr.eval("gdp()", *args)

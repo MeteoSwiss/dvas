@@ -15,8 +15,8 @@ from scipy import interpolate
 
 # Import from dvas
 from dvas.logger import log_func_call
-from dvas.hardcoded import TAG_CWS_NAME, TAG_GDP_NAME, TAG_DTA_NAME, FLG_HASCWS_NAME
-from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME
+from dvas.hardcoded import TAG_CWS, TAG_GDP, TAG_DTA, FLG_HASCWS
+from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_VAL
 from dvas.hardcoded import MTDTA_TROPOPAUSE
 from dvas.data.data import MultiRSProfile, MultiGDPProfile, MultiCWSProfile
 
@@ -74,19 +74,19 @@ def find_tropopause(rs_prf, min_alt=5500):
     # This should (at the very least) be checked for.
 
     # Let us duplicate the alt index as a column ...
-    rs_prf.data.loc[:, PRF_REF_ALT_NAME] = rs_prf.data.index.get_level_values('alt').values
+    rs_prf.data.loc[:, PRF_ALT] = rs_prf.data.index.get_level_values('alt').values
 
     # Holes inside the profile are problematic, as they may lead to erroneous detections
     # To avoid these, let's interpolate linearly over them. No interpolated value can be the
     # tropopause, but at least this will avoid faulty detections.
     # Here, I use scipy for the interpolation to do it as a function of time, as pandas is not
     # great at doing it with a MultiIndex.
-    x = rs_prf.data.index.get_level_values(PRF_REF_TDT_NAME).total_seconds().values
-    y = rs_prf.data.loc[:, PRF_REF_VAL_NAME].values
+    x = rs_prf.data.index.get_level_values(PRF_TDT).total_seconds().values
+    y = rs_prf.data.loc[:, PRF_VAL].values
     rs_prf.data.loc[:, 'temp_interp'] = interpolate.interp1d(x[~np.isnan(y)], y[~np.isnan(y)],
                                                              kind='linear', fill_value=np.nan,
                                                              bounds_error=False)(x)
-    y = rs_prf.data.loc[:, PRF_REF_ALT_NAME].values
+    y = rs_prf.data.loc[:, PRF_ALT].values
     rs_prf.data.loc[:, 'alt_interp'] = interpolate.interp1d(x[~np.isnan(y)], y[~np.isnan(y)],
                                                             kind='linear', fill_value=np.nan,
                                                             bounds_error=False)(x)
@@ -97,7 +97,7 @@ def find_tropopause(rs_prf, min_alt=5500):
 
     # Loop through all altitudes, stopping only were the lapse rate is small enough (and valid)
     for idxmin, row in rs_prf.data[rs_prf.data['alt'] > min_alt].iterrows():
-        if np.isnan(row[PRF_REF_VAL_NAME]):
+        if np.isnan(row[PRF_VAL]):
             # I refuse to detect the tropopause at an interpolated location.
             continue
         if row['lapse_rate'] > 2:
@@ -147,16 +147,16 @@ def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp'):
 
     # Define the DB query filters that will get me what I want
     cws_filt = tools.get_query_filter(
-        tags_in=cws_tags+[eid, rid, TAG_CWS_NAME],
-        tags_out=dru.rsid_tags(pop=cws_tags) + [TAG_GDP_NAME, TAG_DTA_NAME])
+        tags_in=cws_tags+[eid, rid, TAG_CWS],
+        tags_out=dru.rsid_tags(pop=cws_tags) + [TAG_GDP, TAG_DTA])
 
     gdp_filt = tools.get_query_filter(
-        tags_in=prf_tags+[eid, rid, TAG_GDP_NAME],
-        tags_out=dru.rsid_tags(pop=prf_tags) + [TAG_CWS_NAME, TAG_DTA_NAME])
+        tags_in=prf_tags+[eid, rid, TAG_GDP],
+        tags_out=dru.rsid_tags(pop=prf_tags) + [TAG_CWS, TAG_DTA])
 
     nongdp_filt = tools.get_query_filter(
         tags_in=prf_tags+[eid, rid],
-        tags_out=dru.rsid_tags(pop=prf_tags) + [TAG_GDP_NAME, TAG_CWS_NAME, TAG_DTA_NAME])
+        tags_out=dru.rsid_tags(pop=prf_tags) + [TAG_GDP, TAG_CWS, TAG_DTA])
 
     # TODO: get the PBL limit info somehow - fixed value for site, or flight-per-flight basis ?
 
@@ -168,8 +168,8 @@ def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp'):
     # tropopause altitude.
     cws_prfs = MultiRSProfile()
     cws_prfs.load_from_db(cws_filt, temp_var,
-                          tdt_abbr=dynamic.INDEXES[PRF_REF_TDT_NAME],
-                          alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME],
+                          tdt_abbr=dynamic.INDEXES[PRF_TDT],
+                          alt_abbr=dynamic.INDEXES[PRF_ALT],
                           inplace=True)
 
     if (_ := len(cws_prfs)) != 1:
@@ -184,8 +184,8 @@ def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp'):
 
         cws_prfs = MultiCWSProfile()
         cws_prfs.load_from_db(cws_filt, var_name,
-                              tdt_abbr=dynamic.INDEXES[PRF_REF_TDT_NAME],
-                              alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME],
+                              tdt_abbr=dynamic.INDEXES[PRF_TDT],
+                              alt_abbr=dynamic.INDEXES[PRF_ALT],
                               ucr_abbr=dynamic.ALL_VARS[var_name]['ucr'],
                               ucs_abbr=dynamic.ALL_VARS[var_name]['ucs'],
                               uct_abbr=dynamic.ALL_VARS[var_name]['uct'],
@@ -196,12 +196,12 @@ def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp'):
             raise DvasRecipesError('Got more than 1 CWS ... ?!')
 
         # Where do I have a valid CWS ?
-        cws_cond = cws_prfs[0].data[PRF_REF_VAL_NAME].notna().values
+        cws_cond = cws_prfs[0].data[PRF_VAL].notna().values
 
         gdp_prfs = MultiGDPProfile()
         gdp_prfs.load_from_db(gdp_filt, var_name,
-                              tdt_abbr=dynamic.INDEXES[PRF_REF_TDT_NAME],
-                              alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME],
+                              tdt_abbr=dynamic.INDEXES[PRF_TDT],
+                              alt_abbr=dynamic.INDEXES[PRF_ALT],
                               ucr_abbr=dynamic.ALL_VARS[var_name]['ucr'],
                               ucs_abbr=dynamic.ALL_VARS[var_name]['ucs'],
                               uct_abbr=dynamic.ALL_VARS[var_name]['uct'],
@@ -210,8 +210,8 @@ def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp'):
 
         nongdp_prfs = MultiRSProfile()
         nongdp_prfs.load_from_db(nongdp_filt, var_name,
-                                 tdt_abbr=dynamic.INDEXES[PRF_REF_TDT_NAME],
-                                 alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME],
+                                 tdt_abbr=dynamic.INDEXES[PRF_TDT],
+                                 alt_abbr=dynamic.INDEXES[PRF_ALT],
                                  inplace=True)
 
         # Apply the PBL, FT, UTLS, HAS_CWS flags to every profile.
@@ -220,13 +220,13 @@ def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp'):
             for (prf_ind, prf) in enumerate(prfs):
 
                 # Apply the valid CWS flag
-                prfs[prf_ind].set_flg(FLG_HASCWS_NAME, True, index=cws_cond)
+                prfs[prf_ind].set_flg(FLG_HASCWS, True, index=cws_cond)
 
                 # Tropopause, Troposphere & Stratosphere
                 prfs[prf_ind].info.add_metadata(MTDTA_TROPOPAUSE, pbl_alt)  # TODO: deal with units
-                t_cond = prf.data.index.get_level_values(PRF_REF_ALT_NAME).values < pbl_alt
+                t_cond = prf.data.index.get_level_values(PRF_ALT).values < pbl_alt
                 prfs[prf_ind].set_flg('troposphere', True, index=t_cond)
-                s_cond = prf.data.index.get_level_values(PRF_REF_ALT_NAME).values > pbl_alt
+                s_cond = prf.data.index.get_level_values(PRF_ALT).values > pbl_alt
                 prfs[prf_ind].set_flg('stratosphere', True, index=s_cond)
 
             # Save it all back into the DB

@@ -17,9 +17,8 @@ import matplotlib.gridspec as gridspec
 # Import dvas modules and classes
 from dvas.logger import log_func_call
 from dvas.data.data import MultiProfile, MultiGDPProfile, MultiCWSProfile, MultiDeltaProfile
-from dvas.hardcoded import PRF_REF_INDEX_NAME, PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME
-from dvas.hardcoded import PRF_REF_UCU_NAME, PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME
-from dvas.hardcoded import TAG_DTA_NAME, TAG_GDP_NAME, TAG_CWS_NAME
+from dvas.hardcoded import PRF_IDX, PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCU, PRF_UCR, PRF_UCS, PRF_UCT
+from dvas.hardcoded import TAG_DTA, TAG_GDP, TAG_CWS
 from dvas.data.data import MultiRSProfile
 from dvas.tools.gdps import utils as dtgu
 from dvas.plots import utils as dpu
@@ -94,8 +93,8 @@ def flight_overview(start_with_tags, label='mid', show=None):
 
         # Extract the data from the db
         rs_prfs = MultiRSProfile()
-        rs_prfs.load_from_db(filt, var_name, dynamic.INDEXES[PRF_REF_TDT_NAME],
-                             alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME])
+        rs_prfs.load_from_db(filt, var_name, dynamic.INDEXES[PRF_TDT],
+                             alt_abbr=dynamic.INDEXES[PRF_ALT])
         rs_prfs.sort()  # Sorting is important to make sure I have the same colors for each plot
 
         # Setup so dummy limits, to keep track of the actual ones as I go.
@@ -107,8 +106,8 @@ def flight_overview(start_with_tags, label='mid', show=None):
 
             # Make this plot as a function of the index i, so that synchronized profiles will
             # show up cleanly.
-            x = getattr(prf, PRF_REF_VAL_NAME).index.get_level_values(PRF_REF_INDEX_NAME)
-            y = getattr(prf, PRF_REF_VAL_NAME).values
+            x = getattr(prf, PRF_VAL).index.get_level_values(PRF_IDX)
+            y = getattr(prf, PRF_VAL).values
 
             this_ax.plot(x, y, '-', lw=0.7, label='|'.join(rs_prfs.get_info(label)[prf_ind]))
 
@@ -131,8 +130,8 @@ def flight_overview(start_with_tags, label='mid', show=None):
             plt.setp(this_ax.get_xticklabels(), visible=False)
 
         # Set the ylabel:
-        ylbl = rs_prfs.var_info[PRF_REF_VAL_NAME]['prm_name']
-        ylbl += ' [{}]'.format(rs_prfs.var_info[PRF_REF_VAL_NAME]['prm_unit'])
+        ylbl = rs_prfs.var_info[PRF_VAL]['prm_name']
+        ylbl += ' [{}]'.format(rs_prfs.var_info[PRF_VAL]['prm_unit'])
         this_ax.set_ylabel(dpu.fix_txt(ylbl), labelpad=10)
 
     # Set the label for the last plot only
@@ -170,7 +169,7 @@ def covmat_stats(covmats):
         list(np.linspace(1, 10, 10)) + [15, 20, 100]
 
     # Loop through all the uncertainty types
-    for uc_name in [PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME]:
+    for uc_name in [PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU]:
 
         # Build matrices of indexes
         i_inds, j_inds = np.meshgrid(np.arange(0, len(covmats[uc_name][0]), 1),
@@ -183,7 +182,7 @@ def covmat_stats(covmats):
 
         # For the uncorrelated uncertainties, all the off-diagonal elements should always be 0
         # (unless they are NaNs). Let's issue a log-ERROR message if this is not the case.
-        if uc_name in [PRF_REF_UCR_NAME, PRF_REF_UCU_NAME]:
+        if uc_name in [PRF_UCR, PRF_UCU]:
             if np.any(covmats[uc_name][valids] != 0):
                 logger.error("Non-0 off-diagonal elements of covarience matrix [%s].",
                              uc_name)
@@ -294,16 +293,16 @@ def inspect_cws(gdp_start_with_tags, cws_start_with_tags):
     (eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What search query will let me access the data I need ?
-    gdp_filt = tools.get_query_filter(tags_in=gdp_tags+[eid, rid, TAG_GDP_NAME],
+    gdp_filt = tools.get_query_filter(tags_in=gdp_tags+[eid, rid, TAG_GDP],
                                       tags_out=dru.rsid_tags(pop=gdp_tags))
-    cws_filt = tools.get_query_filter(tags_in=cws_tags+[eid, rid, TAG_CWS_NAME],
+    cws_filt = tools.get_query_filter(tags_in=cws_tags+[eid, rid, TAG_CWS],
                                       tags_out=dru.rsid_tags(pop=cws_tags))
 
     # Load the GDP profiles
     gdp_prfs = MultiGDPProfile()
     gdp_prfs.load_from_db(gdp_filt, dynamic.CURRENT_VAR,
-                          tdt_abbr=dynamic.INDEXES[PRF_REF_TDT_NAME],
-                          alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME],
+                          tdt_abbr=dynamic.INDEXES[PRF_TDT],
+                          alt_abbr=dynamic.INDEXES[PRF_ALT],
                           ucr_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucr'],
                           ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
                           uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
@@ -312,8 +311,8 @@ def inspect_cws(gdp_start_with_tags, cws_start_with_tags):
     # Idem for the CWS
     cws_prfs = MultiCWSProfile()
     cws_prfs.load_from_db(cws_filt, dynamic.CURRENT_VAR,
-                          tdt_abbr=dynamic.INDEXES[PRF_REF_TDT_NAME],
-                          alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME],
+                          tdt_abbr=dynamic.INDEXES[PRF_TDT],
+                          alt_abbr=dynamic.INDEXES[PRF_ALT],
                           ucr_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucr'],
                           ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
                           uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
@@ -364,26 +363,26 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None, k_lvl=2):
 
     # Prepare the search queries
     prf_filt = tools.get_query_filter(tags_in=prf_tags+[eid, rid],
-                                      tags_out=dru.rsid_tags(pop=prf_tags)+[TAG_CWS_NAME],
+                                      tags_out=dru.rsid_tags(pop=prf_tags)+[TAG_CWS],
                                       mids=mids)
 
-    cws_filt = tools.get_query_filter(tags_in=cws_tags+[eid, rid, TAG_CWS_NAME],
+    cws_filt = tools.get_query_filter(tags_in=cws_tags+[eid, rid, TAG_CWS],
                                       tags_out=dru.rsid_tags(pop=cws_tags))
 
-    dta_filt = tools.get_query_filter(tags_in=dta_tags+[eid, rid, TAG_DTA_NAME],
+    dta_filt = tools.get_query_filter(tags_in=dta_tags+[eid, rid, TAG_DTA],
                                       tags_out=dru.rsid_tags(pop=dta_tags),
                                       mids=mids)
 
     # Query these different Profiles
     prfs = MultiProfile()
-    prfs.load_from_db(prf_filt, dynamic.CURRENT_VAR, dynamic.INDEXES[PRF_REF_ALT_NAME],
+    prfs.load_from_db(prf_filt, dynamic.CURRENT_VAR, dynamic.INDEXES[PRF_ALT],
                       inplace=True)
 
     logger.info('Loaded %i Profiles for mids: %s', len(prfs), prfs.get_info('mid'))
 
     cws_prfs = MultiCWSProfile()
-    cws_prfs.load_from_db(cws_filt, dynamic.CURRENT_VAR, dynamic.INDEXES[PRF_REF_TDT_NAME],
-                          alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME],
+    cws_prfs.load_from_db(cws_filt, dynamic.CURRENT_VAR, dynamic.INDEXES[PRF_TDT],
+                          alt_abbr=dynamic.INDEXES[PRF_ALT],
                           ucr_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucr'],
                           ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
                           uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
@@ -391,7 +390,7 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None, k_lvl=2):
                           inplace=True)
     dta_prfs = MultiDeltaProfile()
     dta_prfs.load_from_db(dta_filt, dynamic.CURRENT_VAR,
-                          alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME],
+                          alt_abbr=dynamic.INDEXES[PRF_ALT],
                           ucr_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucr'],
                           ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
                           uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
@@ -437,84 +436,57 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None, k_lvl=2):
         # Create the axes - one for the profiles, and one for uctot, ucr, ucs, uct, ucu
         ax0 = fig.add_subplot(gs_info[0, 0])
         ax1 = fig.add_subplot(gs_info[1, 0], sharex=ax0)
-        #ax2 = fig.add_subplot(gs_info[2, 0], sharex=ax0)
 
         # Extract the DataFrames
-        prf = prfs.get_prms([PRF_REF_ALT_NAME, PRF_REF_VAL_NAME])[p_ind]
-        cws = cws_prfs.get_prms([PRF_REF_ALT_NAME, PRF_REF_VAL_NAME, 'uc_tot'])[0]
-        dta = dta_prfs.get_prms([PRF_REF_ALT_NAME, PRF_REF_VAL_NAME, 'uc_tot'])[p_ind]
+        prf = prfs.get_prms([PRF_ALT, PRF_VAL])[p_ind]
+        cws = cws_prfs.get_prms([PRF_ALT, PRF_VAL, 'uc_tot'])[0]
+        dta = dta_prfs.get_prms([PRF_ALT, PRF_VAL, 'uc_tot'])[p_ind]
 
-        # What are the limit altitudes ?
-        alt_min = dta.loc[:, 'alt'].min()
-        alt_max = dta.loc[:, 'alt'].max()
-
-        # For the bottom plots, show the k=1, 2, 3 zones
-        #for k in [1, 2, 3]:
-        #    ax2.fill_between([alt_min, alt_max], [-k, -k], [k, k],
-        #                     alpha=0.1+(3-k)*0.1, facecolor='mediumpurple', edgecolor='none')
         # Show the delta = 0 line
-        #for ax in [ax1]:
-        #    ax.axhline(0, lw=1, ls='-', c='darkorchid')
-        ax1.plot(cws.loc[:, PRF_REF_ALT_NAME].values, cws.loc[:, PRF_REF_VAL_NAME].values*0,
+        ax1.plot(cws.loc[:, PRF_ALT].values, cws.loc[:, PRF_VAL].values*0,
                  lw=0.4, ls='-', c='darkorchid')
 
         # Very well, let us plot all these things.
         # First, plot the profiles themselves
-        ax0.plot(prf.loc[:, PRF_REF_ALT_NAME].values, prf.loc[:, PRF_REF_VAL_NAME].values,
+        ax0.plot(prf.loc[:, PRF_ALT].values, prf.loc[:, PRF_VAL].values,
                  lw=0.4, ls='-', drawstyle='steps-mid', c='k', alpha=1,
                  label=mid[0])
-        ax0.plot(cws.loc[:, PRF_REF_ALT_NAME].values, cws.loc[:, PRF_REF_VAL_NAME].values,
+        ax0.plot(cws.loc[:, PRF_ALT].values, cws.loc[:, PRF_VAL].values,
                  lw=0.4, ls='-', drawstyle='steps-mid', c='darkorchid', alpha=1, label='CWS')
-        ax0.fill_between(prf.loc[:, PRF_REF_ALT_NAME].values,
-                         prfs.get_prms(PRF_REF_VAL_NAME).max(axis=1).values,
-                         prfs.get_prms(PRF_REF_VAL_NAME).min(axis=1).values,
+        ax0.fill_between(prf.loc[:, PRF_ALT].values,
+                         prfs.get_prms(PRF_VAL).max(axis=1).values,
+                         prfs.get_prms(PRF_VAL).min(axis=1).values,
                          facecolor=(0.8, 0.8, 0.8), step='mid', edgecolor='none',
                          label='All sondes')
-        #ax0.fill_between(cws.loc[:, PRF_REF_ALT_NAME].values,
-        #                 cws.loc[:, PRF_REF_VAL_NAME].values - k_lvl * cws.loc[:, 'uc_tot'].values,
-        #                 cws.loc[:, PRF_REF_VAL_NAME].values + k_lvl * cws.loc[:, 'uc_tot'].values,
-        #                 lw=0.2, ls='-', facecolor='mediumpurple',
-        #                 step='mid',
-        #                 edgecolor='none',
-        #                 label=f'CWS ($k={k_lvl}$)')
 
         # Next plot the uncertainties
-        ax1.plot(dta.loc[:, PRF_REF_ALT_NAME], dta.loc[:, PRF_REF_VAL_NAME],
+        ax1.plot(dta.loc[:, PRF_ALT], dta.loc[:, PRF_VAL],
                  alpha=1, drawstyle='steps-mid', color='k', lw=0.4)
-        ax1.fill_between(dta.loc[:, PRF_REF_ALT_NAME].values,
-                         dta_prfs.get_prms(PRF_REF_VAL_NAME).max(axis=1).values,
-                         dta_prfs.get_prms(PRF_REF_VAL_NAME).min(axis=1).values,
+        ax1.fill_between(dta.loc[:, PRF_ALT].values,
+                         dta_prfs.get_prms(PRF_VAL).max(axis=1).values,
+                         dta_prfs.get_prms(PRF_VAL).min(axis=1).values,
                          facecolor=(0.8, 0.8, 0.8), step='mid', edgecolor='none')
-        # And then, the deltas normalized by the uncertainties
-        #ax2.plot(dta.loc[:, PRF_REF_ALT_NAME],
-        #         dta.loc[:, PRF_REF_VAL_NAME] / dta.loc[:, 'uc_tot'].values,
-        #         lw=0.3, ls='-', drawstyle='steps-mid', c='k', alpha=1)
 
         # Set the axis labels
-        ylbl0 = '{} [{}]'.format(prfs.var_info[PRF_REF_VAL_NAME]['prm_name'],
-                                 prfs.var_info[PRF_REF_VAL_NAME]['prm_unit'])
+        ylbl0 = '{} [{}]'.format(prfs.var_info[PRF_VAL]['prm_name'],
+                                 prfs.var_info[PRF_VAL]['prm_unit'])
         ylbl1 = r'$\delta_{e,i}$'
-        ylbl1 += ' [{}]'.format(dta_prfs.var_info[PRF_REF_VAL_NAME]['prm_unit'])
-        #ylbl2 = r'$\delta_{e,i}/\sigma_{\Omega_{e,i}}$'
-        altlbl = dta_prfs.var_info[PRF_REF_ALT_NAME]['prm_name']
-        altlbl += ' [{}]'.format(dta_prfs.var_info[PRF_REF_ALT_NAME]['prm_unit'])
+        ylbl1 += ' [{}]'.format(dta_prfs.var_info[PRF_VAL]['prm_unit'])
+        altlbl = dta_prfs.var_info[PRF_ALT]['prm_name']
+        altlbl += ' [{}]'.format(dta_prfs.var_info[PRF_ALT]['prm_unit'])
 
         ax0.set_ylabel(dpu.fix_txt(ylbl0), labelpad=10)
         ax1.set_ylabel(dpu.fix_txt(ylbl1), labelpad=10)
-        #ax2.set_ylabel(dpu.fix_txt(ylbl2), labelpad=10)
         ax1.set_xlabel(dpu.fix_txt(altlbl))
 
-        # Hide certain ticks, and set the limits
-        #ax0.set_xlim((alt_min, alt_max))
         # For the delta curve, set the scale for this specific mid (in case the rest of the sondes
         # behave very badly). This seems convoluted, but accounts for cases when ymin/ymax
         # are negative. It reproduces the default behavior of autoscale.
-        ymin = dta.loc[:, PRF_REF_VAL_NAME].min()
-        ymax = dta.loc[:, PRF_REF_VAL_NAME].max()
-        if ~np.isnan(ymin) and ~np.isnan(ymax): # If the delta is full or NaN, this may happen ...
+        ymin = dta.loc[:, PRF_VAL].min()
+        ymax = dta.loc[:, PRF_VAL].max()
+        if ~np.isnan(ymin) and ~np.isnan(ymax):  # If the delta is full or NaN, this may happen ...
             ax1.set_ylim((ymin-0.05*np.abs(ymax-ymin),
                           ymax+0.05*np.abs(ymax-ymin)))
-        #ax2.set_ylim((-6, +6))
         for ax in [ax0]:
             plt.setp(ax.get_xticklabels(), visible=False)
 
@@ -527,7 +499,7 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None, k_lvl=2):
         dpu.add_source(fig)
 
         dpu.add_var_and_k(ax0, mid='+'.join(mid)+f' ({srn})',
-                          var_name=dta_prfs.var_info[PRF_REF_VAL_NAME]['prm_name'], k=None)
+                          var_name=dta_prfs.var_info[PRF_VAL]['prm_name'], k=None)
 
         ax0.text(0.5, 0.5, 'PRELIMINARY', ha='center', va='center', c='k',
                  fontsize=100, rotation=0, alpha=0.1, transform=ax0.transAxes)
@@ -579,13 +551,13 @@ def dtas_per_mid(start_with_tags, mids=None, skip_gdps=False, skip_nongdps=False
             continue
 
         # Prepare the search query
-        dta_filt = tools.get_query_filter(tags_in=tags+[TAG_DTA_NAME],
+        dta_filt = tools.get_query_filter(tags_in=tags+[TAG_DTA],
                                           tags_out=dru.rsid_tags(pop=tags), mids=[mid])
 
         # Query these DeltaProfiles
         dta_prfs = MultiDeltaProfile()
         dta_prfs.load_from_db(dta_filt, dynamic.CURRENT_VAR,
-                              alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME],
+                              alt_abbr=dynamic.INDEXES[PRF_ALT],
                               ucr_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucr'],
                               ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
                               uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],

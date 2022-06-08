@@ -16,7 +16,7 @@ import pandas as pd
 # Import from current package
 from .data import MPStrategyAC
 from ...errors import DvasError
-from ...hardcoded import PRF_REF_INDEX_NAME
+from ...hardcoded import PRF_IDX
 
 
 class RebaseStrategy(MPStrategyAC):
@@ -87,7 +87,7 @@ class RebaseStrategy(MPStrategyAC):
             this_data = prf.data.reset_index()
 
             # Let's also drop the original integer index, to avoid type conversion issues
-            this_data.drop(columns=PRF_REF_INDEX_NAME, inplace=True)
+            this_data.drop(columns=PRF_IDX, inplace=True)
 
             # Shift the index of the rows as required
             this_data.index += shifts[prf_ind]

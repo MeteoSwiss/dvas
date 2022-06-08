@@ -19,7 +19,7 @@ import numpy as np
 # Import from this package
 from ..logger import log_func_call
 from ..errors import DvasError
-from ..hardcoded import PRF_REF_ALT_NAME, PRF_REF_VAL_NAME, PRF_REF_TDT_NAME
+from ..hardcoded import PRF_ALT, PRF_VAL, PRF_TDT, MTDTA_START
 
 # Setup the local logger
 logger = logging.getLogger(__name__)
@@ -39,14 +39,14 @@ def get_sync_shifts_from_starttime(prfs):
 
     # Start with some sanity checks
     for prf in prfs:
-        if 'start_time' not in prf.info.metadata.keys():
-            raise DvasError(f"'start_time' not found in metadata for: {prf.info.src}")
-        if prf.info.metadata['start_time'] is None:
+        if MTDTA_START not in prf.info.metadata.keys():
+            raise DvasError(f"'{MTDTA_START}' not found in metadata for: {prf.info.src}")
+        if prf.info.metadata[MTDTA_START] is None:
             raise DvasError(
-                f"'start_time' is None. GPS start-time sync impossible for: {prf.info.src}")
+                f"'{MTDTA_START}' is None. GPS start-time sync impossible for: {prf.info.src}")
 
     # Extract all the start times, and convert them to datetimes
-    start_times = [prf.info.metadata['start_time'] for prf in prfs]
+    start_times = [prf.info.metadata[MTDTA_START] for prf in prfs]
 
     shifts = [int(np.round((item-np.min(start_times)).total_seconds())) for item in start_times]
 
@@ -75,7 +75,7 @@ def get_sync_shifts_from_alt(prfs, ref_alt=5000.):
     # profile. Set this as the reference altitude, to make sure we match a real datapoint.
 
     # Extract the altitudes
-    alts = prfs.get_prms(PRF_REF_ALT_NAME)
+    alts = prfs.get_prms(PRF_ALT)
 
     # What is the index of the first profile that best matches the ref_alt ?
     ref_ind_0 = (alts[0]-ref_alt).abs().idxmin()
@@ -127,16 +127,16 @@ def get_sync_shifts_from_val(prfs, max_shift=100, first_guess=None):
     # Let's raise an error if this is not the case.
     # To do that, let's compute the differences between the different time steps, and check if it
     # is unique (or not) and identical for all profiles (or Not)
-    ndts = prfs.get_prms(PRF_REF_TDT_NAME).diff(periods=1, axis=0).nunique(axis=0, dropna=True)
+    ndts = prfs.get_prms(PRF_TDT).diff(periods=1, axis=0).nunique(axis=0, dropna=True)
     if np.any([item != 1 for item in ndts.values]):
         raise DvasError(f'Ouch ! The profiles do not all have uniform time steps: {ndts.values}')
-    dts = [prfs.get_prms(PRF_REF_TDT_NAME)[item][PRF_REF_TDT_NAME].diff().unique().tolist()
+    dts = [prfs.get_prms(PRF_TDT)[item][PRF_TDT].diff().unique().tolist()
            for item in range(len(prfs))]
     if np.any([item != dts[0] for item in dts]):
         raise DvasError(f'Ouch ! Inconsistent time steps between the different profiles: {dts}')
 
     # Let us first begin by extracting all the value arrays that need to be "cross-correlated".
-    vals = prfs.get_prms(PRF_REF_VAL_NAME)
+    vals = prfs.get_prms(PRF_VAL)
 
     # Let's build an array of shifts to consider
     shifts = np.arange(-np.abs(max_shift), np.abs(max_shift)+1, 1)

@@ -16,8 +16,8 @@ from dvas.logger import log_func_call
 from dvas.data.data import MultiProfile, MultiCWSProfile
 from dvas.tools.dtas import dtas as dtdd
 from dvas.plots import dtas as dpd
-from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME
-from dvas.hardcoded import TAG_DTA_NAME, TAG_GDP_NAME, TAG_CWS_NAME
+from dvas.hardcoded import PRF_TDT, PRF_ALT
+from dvas.hardcoded import TAG_DTA, TAG_GDP, TAG_CWS
 
 # Import from dvas_recipes
 from ..errors import DvasRecipesError
@@ -69,35 +69,34 @@ def compute_deltas(prf_start_with_tags, cws_start_with_tags, do_gdps=False, do_n
         raise DvasRecipesError('incl_gdps and incl_nongdps cannot both be False.')
 
     if do_gdps:
-        tags_out = [TAG_CWS_NAME, TAG_DTA_NAME]
+        tags_out = [TAG_CWS, TAG_DTA]
     else:
-        tags_out = [TAG_GDP_NAME, TAG_CWS_NAME, TAG_DTA_NAME]
+        tags_out = [TAG_GDP, TAG_CWS, TAG_DTA]
 
     if do_nongdps:
         tags_in = prf_tags+[eid, rid]
     else:
-        tags_in = prf_tags+[eid, rid, TAG_GDP_NAME]
+        tags_in = prf_tags+[eid, rid, TAG_GDP]
 
     # What search query will let me access the data I need ?
     prf_filt = tools.get_query_filter(tags_in=tags_in,
                                       tags_out=dru.rsid_tags(pop=prf_tags) + tags_out)
     cws_filt = tools.get_query_filter(
-        tags_in=cws_tags+[eid, rid, TAG_CWS_NAME],
-        tags_out=dru.rsid_tags(pop=cws_tags) + [TAG_GDP_NAME, TAG_DTA_NAME])
+        tags_in=cws_tags+[eid, rid, TAG_CWS],
+        tags_out=dru.rsid_tags(pop=cws_tags) + [TAG_GDP, TAG_DTA])
 
     # Load the non GDP profiles as Profiles (and not RSProfiles) since we're about to drop the
     # time axis anyway.
     prfs = MultiProfile()
     prfs.load_from_db(prf_filt, dynamic.CURRENT_VAR,
-                      # tdt_abbr=dynamic.INDEXES[PRF_REF_TDT_NAME],
-                      alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME],
+                      alt_abbr=dynamic.INDEXES[PRF_ALT],
                       inplace=True)
 
     # Load the CWS
     cws_prfs = MultiCWSProfile()
     cws_prfs.load_from_db(cws_filt, dynamic.CURRENT_VAR,
-                          tdt_abbr=dynamic.INDEXES[PRF_REF_TDT_NAME],
-                          alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME],
+                          tdt_abbr=dynamic.INDEXES[PRF_TDT],
+                          alt_abbr=dynamic.INDEXES[PRF_ALT],
                           ucr_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucr'],
                           ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
                           uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
@@ -117,7 +116,7 @@ def compute_deltas(prf_start_with_tags, cws_start_with_tags, do_gdps=False, do_n
     # GDP and non-GDP profiles down the line.
     if save_to_db:
         logger.info('Saving delta profiles to the DB.')
-        dta_prfs.save_to_db(add_tags=[TAG_DTA_NAME, dynamic.CURRENT_STEP_ID],
+        dta_prfs.save_to_db(add_tags=[TAG_DTA, dynamic.CURRENT_STEP_ID],
                             rm_tags=dru.rsid_tags(pop=dynamic.CURRENT_STEP_ID))
 
     # Let us now also plot these deltas
