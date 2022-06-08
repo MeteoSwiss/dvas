@@ -18,8 +18,8 @@ rcp_paths:
         name: config
         path: /Users/fvogt/Projects/MCH/UAII2022/dvas/codedev/src/dvas_demo
     orig_data_path:
-        #name: test_flights_MCH/20220512T120000/
-        name: test_flights_DWD/20220120_1701
+        #name: test_flights_MCH/20220523T070000/
+        name: test_flights_DWD/20220509_0902
         path: /Users/fvogt/Projects/MCH/UAII2022/dvas/testzone/procdata_full/rs
     local_db_path:
         name: db
@@ -37,7 +37,7 @@ rcp_params:
         do_latex: True # True = slow but pretty plots. Requires a working system-wide LaTeX setup!
         plot_fmts:
             - pdf
-            #- png
+            - png
         plot_show: False
         chunk_size: 150
         n_cpus: # If set, will cap the number of cpus used to run the dvas recipe
@@ -59,26 +59,26 @@ rcp_params:
             ucs: temp_ucs
             uct: temp_uct
             ucu:
-        #rh:
-        #    ucr: rh_ucr
-        #    ucs:
-        #    uct: rh_uct
-        #    ucu:
-        #pres:
-        #    ucr:
-        #    ucs:
-        #    uct: pres_uct
-        #    ucu: pres_ucu
-        #wdir:
-        #    ucr:
-        #    ucs:
-        #    uct:
-        #    ucu: wdir_ucu
-        #wspeed:
-        #    ucr:
-        #    ucs:
-        #    uct:
-        #    ucu: wspeed_ucu
+        rh:
+            ucr: rh_ucr
+            ucs:
+            uct: rh_uct
+            ucu:
+        pres:
+            ucr:
+            ucs:
+            uct: pres_uct
+            ucu: pres_ucu
+        wdir:
+            ucr:
+            ucs:
+            uct:
+            ucu: wdir_ucu
+        wspeed:
+            ucr:
+            ucs:
+            uct:
+            ucu: wspeed_ucu
 
 # Recipe steps, and associated arguments/parameters
 rcp_steps:
@@ -88,6 +88,7 @@ rcp_steps:
       step_id: '00'
       run: True
       kwargs:
+          create_eid_edt_files: True # If True, will create the eid-edt files used for the UAII preview tool
 
     # Profile cleanup (cropping after burst, resampling)
     - fct: uaii2022.basic.cleanup
@@ -98,7 +99,7 @@ rcp_steps:
         fix_gph_uct: # Correct the NaNs present in the gph_uct values for the RS41 GDP v1. See #205.
             - RS41-GDP # Model ids (mid) that require the correction
         resampling_freq: '1s' # Time step to resample onto, with format 'Xs'
-        crop_descent: True # If True, descent data will be cropped for good
+        crop_descent: True # If True, descent data will be cropped for good. Else, it is simply flagged.
 
     # Profile synchronization on a flight-per-flight basis.
     - fct: uaii2022.sync.sync_flight
@@ -125,39 +126,47 @@ rcp_steps:
       kwargs:
         start_with_tags: '02' # list of tags to identify profiles in the database
         m_vals: [1] # list of m values. The negative ones are ignored for the cws assembly
-        strategy: force-all-valid # Strategy to decide which GDPs to combine, in case of incompatibilities.
+        strategy: 'all-or-none' # Strategy to decide which GDPs to combine, in case of incompatibilities. One of [all-or-none, force-all-valid].
         method: 'weighted mean' # Combination method: mean or weighted mean
         alpha: 0.0027 # alpha level for the KS test. 0.0027 = 3-sigmas
         cws_alt_ref: gph # Name of the variable to use in order to populate alt_ref
         explore_covmats: True # If True, will generate plots of the content of covariance matrices
 
-    # GDP vs CWS plotting
-    - fct: uaii2022.plots.inspect_cws
+    # Flag the different regions of interest (descent, PBL, FT, UTLS, ...)
+    - fct: uaii2022.flgs.set_zone_flags
       step_id: '05'
       run: True
       kwargs:
-        gdp_start_with_tags: '02' # list of tags to identify GDP profiles in the DB
-        cws_start_with_tags: '04' # list of tags to identify CWS profiles in the DB
+          prf_tags: '02' # str or list of tags to identify Profiles in the database. If empty, will not touch Profiles
+          cws_tags: '04' # str or list of tags to identify Combined Working Standard in the database
 
-    # Compute the deltas between the profiles of sondes under test and Combined Working Standards
-    - fct: uaii2022.dtas.compute_deltas
+    # GDP vs CWS plotting
+    - fct: uaii2022.plots.inspect_cws
       step_id: '06'
       run: True
       kwargs:
-        prf_start_with_tags: '02' # List of tags to identify profiles in the database
-        cws_start_with_tags: '04' # List of tags to identify CWS in the database
-        incl_gdps: True # if True, will also compute deltas for GDP profiles
-        incl_nongdps: True # if True, will also compute deltas for the non-GDPs
+        gdp_start_with_tags: '05' # list of tags to identify GDP profiles in the DB
+        cws_start_with_tags: '05' # list of tags to identify CWS profiles in the DB
+
+    # Compute the deltas between the profiles of sondes under test and Combined Working Standards
+    - fct: uaii2022.dtas.compute_deltas
+      step_id: '07'
+      run: True
+      kwargs:
+        prf_start_with_tags: '05' # List of tags to identify profiles in the database
+        cws_start_with_tags: '05' # List of tags to identify CWS in the database
+        do_gdps: True # if True, will also compute deltas for GDP profiles
+        do_nongdps: True # if True, will also compute deltas for the non-GDPs
         save_to_db: True # if True, will save the delta profiles to the DB
 
     # Creation of "live" preview plots for constructors
     - fct: uaii2022.plots.participant_preview
-      step_id: '07'
+      step_id: '08'
       run: True
       kwargs:
-          prf_tags: '02' # str or list of tags to identify Profiles in the database
-          cws_tags: '04' # str or list of tags to identify Combined Working Standard in the database
-          dta_tags: '06' # str or list of tags to identify Deltas in the database
+          prf_tags: '05' # str or list of tags to identify Profiles in the database
+          cws_tags: '05' # str or list of tags to identify Combined Working Standard in the database
+          dta_tags: '07' # str or list of tags to identify Deltas in the database
           mids: # List of mid to process. Leave empty to process them all.
             #  - M10
             #  - M20
@@ -165,8 +174,8 @@ rcp_steps:
 
     # Plot the deltas as a function of the model id, rather than as a function of flight.
     - fct: uaii2022.plots.dtas_per_mid
-      step_id: '08a'
-      run: True
+      step_id: '09a'
+      run: False
       kwargs:
         start_with_tags: # list of tags to identify profiles in the database
             - '06'
@@ -176,7 +185,7 @@ rcp_steps:
 
     # Plot the deltas as a function of the model id, rather than as a function of flight.
     - fct: uaii2022.plots.dtas_per_mid
-      step_id: '08b'
+      step_id: '09b'
       run: False
       kwargs:
         start_with_tags: # list of tags to identify profiles in the database

@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 @for_each_var
 @for_each_flight
 @log_func_call(logger)
-def compute_deltas(prf_start_with_tags, cws_start_with_tags, incl_gdps=False, incl_nongdps=True,
+def compute_deltas(prf_start_with_tags, cws_start_with_tags, do_gdps=False, do_nongdps=True,
                    save_to_db=False):
     """ Highest-level recipe function responsible for compute differences between profiles under
     test and appropriate combined working standards.
@@ -48,9 +48,9 @@ def compute_deltas(prf_start_with_tags, cws_start_with_tags, incl_gdps=False, in
     Args:
         prf_start_with_tags (str|list of str): tag name(s) for the search query into the database.
         cws_start_with_tags (str|list of str): cws tag name(s) for the search into the database.
-        incl_gdps (bool, optional): if True, will also compute the deltas for GDP profiles
+        do_gdps (bool, optional): if True, will also compute the deltas for GDP profiles
             (ignoring the GDP uncertaintes entirely). Defaults to False.
-        incl_nongdps (bool):  if True, will also compute the deltas for the non-GDP profiles.
+        do_nongdps (bool):  if True, will also compute the deltas for the non-GDP profiles.
             Default to True.
         save_to_db (bool optional): if True, the deltas will be saved to the DB with the 'delta'
             tag.
@@ -65,33 +65,33 @@ def compute_deltas(prf_start_with_tags, cws_start_with_tags, incl_gdps=False, in
     (eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What tags should I exclude from the search ?
-    if not incl_gdps and not incl_nongdps:
-        raise DvasRecipesError('Ouch ! incl_gdps and incl_nongdps cannot both be False.')
+    if not do_gdps and not do_nongdps:
+        raise DvasRecipesError('incl_gdps and incl_nongdps cannot both be False.')
 
-    if incl_gdps:
+    if do_gdps:
         tags_out = [TAG_CWS_NAME, TAG_DTA_NAME]
     else:
         tags_out = [TAG_GDP_NAME, TAG_CWS_NAME, TAG_DTA_NAME]
 
-    if incl_nongdps:
+    if do_nongdps:
         tags_in = prf_tags+[eid, rid]
     else:
         tags_in = prf_tags+[eid, rid, TAG_GDP_NAME]
 
     # What search query will let me access the data I need ?
-    nongdp_filt = tools.get_query_filter(tags_in=tags_in,
-                                         tags_out=dru.rsid_tags(pop=prf_tags) + tags_out)
+    prf_filt = tools.get_query_filter(tags_in=tags_in,
+                                      tags_out=dru.rsid_tags(pop=prf_tags) + tags_out)
     cws_filt = tools.get_query_filter(
         tags_in=cws_tags+[eid, rid, TAG_CWS_NAME],
         tags_out=dru.rsid_tags(pop=cws_tags) + [TAG_GDP_NAME, TAG_DTA_NAME])
 
     # Load the non GDP profiles as Profiles (and not RSProfiles) since we're about to drop the
     # time axis anyway.
-    nongdp_prfs = MultiProfile()
-    nongdp_prfs.load_from_db(nongdp_filt, dynamic.CURRENT_VAR,
-                             # tdt_abbr=dynamic.INDEXES[PRF_REF_TDT_NAME],
-                             alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME],
-                             inplace=True)
+    prfs = MultiProfile()
+    prfs.load_from_db(prf_filt, dynamic.CURRENT_VAR,
+                      # tdt_abbr=dynamic.INDEXES[PRF_REF_TDT_NAME],
+                      alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME],
+                      inplace=True)
 
     # Load the CWS
     cws_prfs = MultiCWSProfile()
@@ -109,7 +109,7 @@ def compute_deltas(prf_start_with_tags, cws_start_with_tags, incl_gdps=False, in
         raise DvasRecipesError(f'Ouch ! I need 1 CWS, but I got {len(cws_prfs)} instead.')
 
     # Compute the Delta Profiles
-    dta_prfs = dtdd.compute(nongdp_prfs, cws_prfs, angular_wrap=dynamic.CURRENT_VAR=='wdir')
+    dta_prfs = dtdd.compute(prfs, cws_prfs, angular_wrap=dynamic.CURRENT_VAR == 'wdir')
 
     # Save the Delta profiles to the database.
     # WARNING: I will keep the GDP tag, even if the resulting delta profile is not fully correct
@@ -123,11 +123,11 @@ def compute_deltas(prf_start_with_tags, cws_start_with_tags, incl_gdps=False, in
     # Let us now also plot these deltas
     fn_suf = dru.fn_suffix(eid=eid, rid=rid, tags=prf_tags, var=dynamic.CURRENT_VAR)
 
-    if incl_gdps and incl_nongdps:
+    if do_gdps and do_nongdps:
         fn_suf += ''
-    elif incl_gdps:
+    elif do_gdps:
         fn_suf += '_gdps'
-    elif incl_nongdps:
+    elif do_nongdps:
         fn_suf += '_non-gdps'
 
     dpd.dtas(dta_prfs, k_lvl=1, label='mid', show=False,

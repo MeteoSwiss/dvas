@@ -161,13 +161,13 @@ if __name__ == '__main__':
 
     # To flag specific elements of a given profile, use the internal methods:
     # Here, 'dummy_flg' is defined in the flg_config.yml parameter file.
-    prfs[0].set_flg('dummy_flg', True, index=pd.Index([0, 1, 2]))
+    prfs[0].set_flg('troposphere', True, index=pd.Index([0, 1, 2]))
 
     # Let's check to see that the data was actually flagged
-    print('\nDid I flag only the first three steps with a "dummy_flg" ?')
-    print(prfs[0].has_flg('dummy_flg'))
+    print('\nDid I flag only the first three steps with a "troposphere" flag ?')
+    print(prfs[0].has_flg('troposphere'))
 
-    # FLags are used that characterize individual measurments. Tags, on the other hand, are used to
+    # FLags are used to characterize individual measurments. Tags, on the other hand, are used to
     # characterize entire Profiles. They are useful, for example, to identify if a Profile has been
     # synchronized (tags: 'sync'), if the data is still raw (tag:'raw'), or if it belongs to a GDP
     # (tag: 'gdp'). As an example, let's figure out which Profile in rs_prfs belongs to a GDP:
