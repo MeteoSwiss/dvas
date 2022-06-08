@@ -140,7 +140,7 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
              color='k')
 
     # Display the location of the tropopause and the PBL
-    for (loi, symb) in [(MTDTA_TROPOPAUSE, r'$\succ$'), (MTDTA_PBL, r'$\simeq$')]:
+    for (loi, symb) in [(MTDTA_TROPOPAUSE, r'$\prec$'), (MTDTA_PBL, r'$\simeq$')]:
         if loi not in cws_prf[0].info.metadata.keys():
             logger.warning('"%s" not found in CWS metadata.', loi)
             continue

@@ -455,7 +455,8 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None, k_lvl=2):
         # Show the delta = 0 line
         #for ax in [ax1]:
         #    ax.axhline(0, lw=1, ls='-', c='darkorchid')
-        ax1.plot([alt_min, alt_max], [0, 0], lw=0.4, ls='-', c='darkorchid')
+        ax1.plot(cws.loc[:, PRF_REF_ALT_NAME].values, cws.loc[:, PRF_REF_VAL_NAME].values*0,
+                 lw=0.4, ls='-', c='darkorchid')
 
         # Very well, let us plot all these things.
         # First, plot the profiles themselves
@@ -510,11 +511,9 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None, k_lvl=2):
         # are negative. It reproduces the default behavior of autoscale.
         ymin = dta.loc[:, PRF_REF_VAL_NAME].min()
         ymax = dta.loc[:, PRF_REF_VAL_NAME].max()
-        #if mid[0] == 'M10':
-        #    import pdb
-        #    pdb.set_trace()
-        ax1.set_ylim((ymin-0.05*np.abs(ymax-ymin),
-                      ymax+0.05*np.abs(ymax-ymin)))
+        if ~np.isnan(ymin) and ~np.isnan(ymax): # If the delta is full or NaN, this may happen ...
+            ax1.set_ylim((ymin-0.05*np.abs(ymax-ymin),
+                          ymax+0.05*np.abs(ymax-ymin)))
         #ax2.set_ylim((-6, +6))
         for ax in [ax0]:
             plt.setp(ax.get_xticklabels(), visible=False)
