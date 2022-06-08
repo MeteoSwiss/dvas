@@ -20,7 +20,7 @@ from dvas.dvas import Database as DB
 import dvas.plots.utils as dpu
 from dvas.data.data import MultiProfile, MultiRSProfile, MultiGDPProfile
 from dvas.environ import path_var
-from dvas.hardcoded import FLG_INCOMPATIBLE_NAME
+from dvas.hardcoded import FLG_INCOMPATIBLE
 from dvas.tools import sync as dts
 from dvas.tools.gdps import gdps as dtgg
 from dvas.tools.gdps import stats as dtgs
@@ -258,16 +258,16 @@ if __name__ == '__main__':
     # incompatibilities ...
     valids = dtgs.gdp_validities(incompat, m_vals=[1], strategy='all-or-none')
 
-    # ... and set them using the dvas.hardcoded.FLG_INCOMPATIBLE_NAME flag
+    # ... and set them using the dvas.hardcoded.FLG_INCOMPATIBLE flag
     for gdp_prf in gdp_prfs:
-        gdp_prf.set_flg(FLG_INCOMPATIBLE_NAME, True,
+        gdp_prf.set_flg(FLG_INCOMPATIBLE, True,
                         index=valids[~valids[str(gdp_prf.info.oid)]].index)
 
     # Let us now create a high-resolution CWS for these synchronized GDPs, making sure to drop
     # incompatible elements.
     start_time = datetime.now()
     cws, _ = dtgg.combine(gdp_prfs, binning=1, method='weighted mean',
-                          mask_flgs=FLG_INCOMPATIBLE_NAME,
+                          mask_flgs=FLG_INCOMPATIBLE,
                           chunk_size=150, n_cpus=8)
     print('CWS assembled in: {}s'.format((datetime.now()-start_time).total_seconds()))
 

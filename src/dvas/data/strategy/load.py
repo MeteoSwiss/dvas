@@ -242,6 +242,7 @@ class LoadCWSProfileStrategy(LoadProfileStrategy):
 
         return out, db_vs_df_keys
 
+
 class LoadDeltaProfileStrategy(LoadProfileStrategy):
     """ Child class to manage the data loading strategy of DeltaProfile instances. """
 

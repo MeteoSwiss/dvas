@@ -16,8 +16,7 @@ import matplotlib.gridspec as gridspec
 
 # Import from this package
 from ..logger import log_func_call
-from ..hardcoded import PRF_REF_VAL_NAME, PRF_REF_ALT_NAME
-from ..hardcoded import PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME
+from ..hardcoded import PRF_VAL, PRF_ALT, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
 from . import utils as pu
 
 # Setup the local logger
@@ -55,9 +54,7 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
     ax1 = fig.add_subplot(gs_info[1, 0], sharex=ax0)
 
     # Extract the DataFrames from the MultiGDPProfile instances
-    deltas = dta_prfs.get_prms([PRF_REF_ALT_NAME, PRF_REF_VAL_NAME, PRF_REF_UCR_NAME,
-                                PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME,
-                                'uc_tot'])
+    deltas = dta_prfs.get_prms([PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU, 'uc_tot'])
 
     # What flights are present in the data ?
     flights = set(item + ' ' + dta_prfs.get_info('rid')[ind]
@@ -98,13 +95,13 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
         dta = deltas[dta_ind]
 
         # First, plot the profiles themselves
-        ax0.plot(dta.loc[:, PRF_REF_ALT_NAME].values, dta.loc[:, PRF_REF_VAL_NAME].values,
+        ax0.plot(dta.loc[:, PRF_ALT].values, dta.loc[:, PRF_VAL].values,
                  lw=0.4, ls='-', drawstyle='steps-mid', c=lc, alpha=1,
                  label='|'.join(dta_prfs.get_info(label)[dta_ind]))
 
         # Next plot the uncertainties
         if dta_ind == 0:
-            ax0.fill_between(dta.loc[:, PRF_REF_ALT_NAME],
+            ax0.fill_between(dta.loc[:, PRF_ALT],
                              - k_lvl * dta.loc[:, 'uc_tot'].values,
                              + k_lvl * dta.loc[:, 'uc_tot'].values,
                              alpha=0.2, step='mid', facecolor='k', edgecolor='none',
@@ -114,16 +111,15 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
                 logger.error('Inconsistent delta uncertainties will not be reflected in the plot.')
 
         # And then, the deltas normalized by the uncertainties
-        ax1.plot(dta.loc[:, PRF_REF_ALT_NAME],
-                 dta.loc[:, PRF_REF_VAL_NAME] / dta.loc[:, 'uc_tot'].values,
+        ax1.plot(dta.loc[:, PRF_ALT], dta.loc[:, PRF_VAL] / dta.loc[:, 'uc_tot'].values,
                  lw=0.5, ls='-', drawstyle='steps-mid', c=lc, alpha=0.9**len(flights))
 
     # Set the axis labels
     ylbl0 = r'$\delta_{e,i}$'
-    ylbl0 += ' [{}]'.format(dta_prfs.var_info[PRF_REF_VAL_NAME]['prm_unit'])
+    ylbl0 += ' [{}]'.format(dta_prfs.var_info[PRF_VAL]['prm_unit'])
     ylbl1 = r'$\delta_{e,i}/\sigma_{\Omega_{e,i}}$'
-    altlbl = dta_prfs.var_info[PRF_REF_ALT_NAME]['prm_name']
-    altlbl += ' [{}]'.format(dta_prfs.var_info[PRF_REF_ALT_NAME]['prm_unit'])
+    altlbl = dta_prfs.var_info[PRF_ALT]['prm_name']
+    altlbl += ' [{}]'.format(dta_prfs.var_info[PRF_ALT]['prm_unit'])
 
     ax0.set_ylabel(pu.fix_txt(ylbl0), labelpad=10)
     ax1.set_ylabel(pu.fix_txt(ylbl1), labelpad=10)
@@ -152,8 +148,7 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
         mid_msg = '-'.join(list(mid)[0])
     else:
         mid_msg = None
-    pu.add_var_and_k(ax0, mid=mid_msg,
-                     var_name=dta_prfs.var_info[PRF_REF_VAL_NAME]['prm_name'], k=k_lvl)
+    pu.add_var_and_k(ax0, mid=mid_msg, var_name=dta_prfs.var_info[PRF_VAL]['prm_name'], k=k_lvl)
 
     # Save it
     pu.fancy_savefig(fig, fn_core='dtas', **kwargs)

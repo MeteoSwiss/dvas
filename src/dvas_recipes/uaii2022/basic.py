@@ -17,8 +17,8 @@ import pandas as pd
 from dvas.environ import path_var
 from dvas.logger import log_func_call
 from dvas.data.data import MultiRSProfile, MultiGDPProfile
-from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_INDEX_NAME
-from dvas.hardcoded import TAG_GDP_NAME, TAG_CLN_NAME, FLG_DESCENT_NAME
+from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_IDX
+from dvas.hardcoded import TAG_GDP, TAG_CLN, FLG_DESCENT, MTDTA_BPT
 from dvas.dvas import Database as DB
 
 # Import from dvas_recipes
@@ -81,34 +81,38 @@ def flag_descent(prfs):
     for prf in prfs:
 
         # Check if a bpt_time is avalaible. Else, look for the max altitude reached.
-        if 'bpt_time' not in prf.info.metadata.keys():
-            logger.warning('"bpt_time" not found in metadata for: %s', prf.info.src)
+        if MTDTA_BPT not in prf.info.metadata.keys():
+            logger.warning('"%s" not found in metadata for: %s', MTDTA_BPT, prf.info.src)
             use_max = True
-        elif prf.info.metadata['bpt_time'] is None:
-            logger.warning('"bpt_time" is None for: %s', prf.info.src)
+        elif prf.info.metadata[MTDTA_BPT] is None:
+            logger.warning('"%s" is None for: %s', MTDTA_BPT, prf.info.src)
             use_max = True
         else:
-            logger.info('"bpt_time" ok for: %s', prf.info.src)
+            logger.info('"%s" ok for: %s', MTDTA_BPT, prf.info.src)
             use_max = False
 
         if use_max:
-            max_alt_id = prf.data.index.get_level_values(PRF_REF_ALT_NAME).argmax()
-            which = prf.data.index.get_level_values(PRF_REF_INDEX_NAME) > max_alt_id
-            logger.info('Flagging all points beyond max. alt %.1f @ %s as descent.',
-                        prf.data.index[max_alt_id][1], prf.data.index[max_alt_id][2])
+            max_alt_id = prf.data.index.get_level_values(PRF_ALT).argmax()
+            which = prf.data.index.get_level_values(PRF_IDX) > max_alt_id
+            logger.info('Points after max alt %.1f [%s] @ %.1f [s] flagged as "%s".',
+                        prf.data.index[max_alt_id][1],
+                        prfs.var_info[PRF_ALT]['prm_unit'],
+                        prf.data.index[max_alt_id][2].total_seconds(),
+                        FLG_DESCENT)
 
         else:
             # Extract the burst point, and try to convert it to a time delta
-            bpt_time = (prf.info.metadata['bpt_time']).split(' ')
+            bpt_time = (prf.info.metadata[MTDTA_BPT]).split(' ')
             if len(bpt_time) != 2:
                 raise DvasRecipesError(
-                    'Ouch ! bpt_time is weird: %s' % (prf.info.metadata['bpt_time']))
+                    'Ouch ! "%s" is weird: %s' % (MTDTA_BPT, prf.info.metadata['bpt_time']))
 
             bpt_time = pd.Timedelta(float(bpt_time[0]), bpt_time[1])
-            which = prf.data.index.get_level_values(PRF_REF_TDT_NAME) >= bpt_time
-            logger.info('Flagging all points after the burst point @ %s as descent.', bpt_time)
+            which = prf.data.index.get_level_values(PRF_TDT) >= bpt_time
+            logger.info('Points after burst point @ %s [s] flagged as "%s"',
+                        bpt_time.total_seconds(), FLG_DESCENT)
 
-        prf.set_flg(FLG_DESCENT_NAME, True, index=which)
+        prf.set_flg(FLG_DESCENT, True, index=which)
 
     return prfs
 
@@ -117,7 +121,7 @@ def flag_descent(prfs):
 def cleanup_steps(prfs, resampling_freq, crop_descent):
     """ Execute a series of cleanup-steps common to GDP and non-GDP profiles. This function is here
     to avoid duplicating code. The cleanup-up profiles are directly saved to the DB with the tag:
-    TAG_CLN_NAME
+    TAG_CLN
 
     Args:
         prfs (MultiRSProfile|MultiGDPProfile): the profiles to cleanup.
@@ -133,7 +137,7 @@ def cleanup_steps(prfs, resampling_freq, crop_descent):
     # Crop the descent data if warranted
     if crop_descent:
         for (ind, prf) in enumerate(prfs):
-            prfs[ind].data = prf.data.loc[prf.has_flg(FLG_DESCENT_NAME) == 0]
+            prfs[ind].data = prf.data.loc[prf.has_flg(FLG_DESCENT) == 0]
 
     # Resample the profiles as required
     prfs.resample(freq=resampling_freq, inplace=True, chunk_size=dynamic.CHUNK_SIZE,
@@ -141,7 +145,7 @@ def cleanup_steps(prfs, resampling_freq, crop_descent):
 
     # Save back to the DB
     prfs.save_to_db(
-        add_tags=[TAG_CLN_NAME, dynamic.CURRENT_STEP_ID],
+        add_tags=[TAG_CLN, dynamic.CURRENT_STEP_ID],
         rm_tags=dru.rsid_tags(pop=dynamic.CURRENT_STEP_ID)
         )
 
@@ -183,9 +187,9 @@ def cleanup(start_with_tags, fix_gph_uct=None, **args):
                     dynamic.CURRENT_VAR)
 
         gdp_prfs = MultiGDPProfile()
-        gdp_prfs.load_from_db(f'and_({filt}, tags("{TAG_GDP_NAME}"))', dynamic.CURRENT_VAR,
-                              tdt_abbr=dynamic.INDEXES[PRF_REF_TDT_NAME],
-                              alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME],
+        gdp_prfs.load_from_db(f'and_({filt}, tags("{TAG_GDP}"))', dynamic.CURRENT_VAR,
+                              tdt_abbr=dynamic.INDEXES[PRF_TDT],
+                              alt_abbr=dynamic.INDEXES[PRF_ALT],
                               ucr_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucr'],
                               ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
                               uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
@@ -225,9 +229,9 @@ def cleanup(start_with_tags, fix_gph_uct=None, **args):
 
         # Extract the data from the db
         rs_prfs = MultiRSProfile()
-        rs_prfs.load_from_db(f'and_({filt}, not_(tags("{TAG_GDP_NAME}")))',
-                             dynamic.CURRENT_VAR, dynamic.INDEXES[PRF_REF_TDT_NAME],
-                             alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME])
+        rs_prfs.load_from_db(f'and_({filt}, not_(tags("{TAG_GDP}")))',
+                             dynamic.CURRENT_VAR, dynamic.INDEXES[PRF_TDT],
+                             alt_abbr=dynamic.INDEXES[PRF_ALT])
 
         logger.info('Loaded %i RS profiles from the DB.', len(rs_prfs))
 

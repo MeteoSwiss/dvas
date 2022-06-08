@@ -16,8 +16,7 @@ import matplotlib.gridspec as gridspec
 
 # import from dvas
 from ..errors import DvasError
-from ..hardcoded import PRF_REF_VAL_NAME, PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME
-from ..hardcoded import PRF_REF_UCU_NAME
+from ..hardcoded import PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
 from ..logger import log_func_call
 from . import utils as pu
 
@@ -51,8 +50,7 @@ def multiprf(prfs, index='alt', label='mid', uc=None, k_lvl=1, rel_to=None, expo
     """
 
     # Some sanity checks
-    if uc not in [None, 'uc_tot', PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME,
-                  PRF_REF_UCU_NAME]:
+    if uc not in [None, 'uc_tot', PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU]:
         raise DvasError('Ouch ! Unknown uc name: {}'.format(uc))
 
     if not isinstance(k_lvl, (float, int)):
@@ -89,7 +87,7 @@ def multiprf(prfs, index='alt', label='mid', uc=None, k_lvl=1, rel_to=None, expo
     if rel_to is None:
         ref_prfs = [np.zeros(len(item)) for item in prfs]
     else:
-        ref_prfs = [getattr(prfs[rel_to], PRF_REF_VAL_NAME)] * len(prfs)
+        ref_prfs = [getattr(prfs[rel_to], PRF_VAL)] * len(prfs)
 
     # Let's extract the color cycler, so that I can properly expose a specific profile if I have to.
     cycler = plt.rcParams['axes.prop_cycle'].by_key()['color']
@@ -105,8 +103,8 @@ def multiprf(prfs, index='alt', label='mid', uc=None, k_lvl=1, rel_to=None, expo
             clr = pu.CLRS['nan_1']
 
         # Let's extract the data
-        x = getattr(prf, PRF_REF_VAL_NAME).index.get_level_values(index)
-        y = getattr(prf, PRF_REF_VAL_NAME).values - ref_prfs[p_ind]
+        x = getattr(prf, PRF_VAL).index.get_level_values(index)
+        y = getattr(prf, PRF_VAL).values - ref_prfs[p_ind]
         if uc is not None:
             dy = getattr(prf, uc).values * k_lvl
 
@@ -130,8 +128,8 @@ def multiprf(prfs, index='alt', label='mid', uc=None, k_lvl=1, rel_to=None, expo
     xlbl += ' [{}]'.format(prfs.var_info[index]['prm_unit'])
     ax1.set_xlabel(pu.fix_txt(xlbl))
 
-    ylbl = prfs.var_info[PRF_REF_VAL_NAME]['prm_name']
-    ylbl += ' [{}]'.format(prfs.var_info[PRF_REF_VAL_NAME]['prm_unit'])
+    ylbl = prfs.var_info[PRF_VAL]['prm_name']
+    ylbl += ' [{}]'.format(prfs.var_info[PRF_VAL]['prm_unit'])
     if rel_to is not None:
         ylbl = r'$\Delta$' + ylbl
     ax1.set_ylabel(pu.fix_txt(ylbl), labelpad=10)

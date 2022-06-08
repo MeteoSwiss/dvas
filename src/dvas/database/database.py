@@ -40,7 +40,7 @@ from ..config.config import Tag as TagCfg
 from ..config.config import instantiate_config_managers
 from ..config.definitions.origdata import EDT_FLD_NM
 from ..config.definitions.origdata import TAG_FLD_NM, META_FLD_NM
-from ..hardcoded import TAG_NONE_NAME
+from ..hardcoded import TAG_NONE
 from ..helper import SingleInstanceMetaClass
 from ..helper import TypedProperty as TProp
 from ..helper import get_by_path, check_datetime
@@ -721,7 +721,7 @@ class InfoManager:
     #: str: Data source
     src = TProp(str)
 
-    def __init__(self, edt, oid, tags=TAG_NONE_NAME, metadata={}, src=''):
+    def __init__(self, edt, oid, tags=TAG_NONE, metadata={}, src=''):
         """Constructor
 
         Args:

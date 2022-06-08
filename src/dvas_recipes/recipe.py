@@ -21,7 +21,7 @@ import numpy as np
 from dvas.environ import path_var
 from dvas.dvas import Log
 from dvas.dvas import Database as DB
-from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME
+from dvas.hardcoded import PRF_TDT, PRF_ALT
 import dvas.plots.utils as dpu
 from dvas import dynamic as dyn
 
@@ -291,8 +291,8 @@ class Recipe:
         DB.init()
 
         # Fetch the raw data
-        DB.fetch_raw_data([rcp_dyn.INDEXES[PRF_REF_TDT_NAME]] +
-                          [rcp_dyn.INDEXES[PRF_REF_ALT_NAME]] +
+        DB.fetch_raw_data([rcp_dyn.INDEXES[PRF_TDT]] +
+                          [rcp_dyn.INDEXES[PRF_ALT]] +
                           list(rcp_dyn.ALL_VARS) +
                           [rcp_dyn.ALL_VARS[var][uc] for var in rcp_dyn.ALL_VARS
                            for uc in rcp_dyn.ALL_VARS[var]],

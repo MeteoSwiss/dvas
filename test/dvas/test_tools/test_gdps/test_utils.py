@@ -16,8 +16,7 @@ import pytest
 import pandas as pd
 
 from dvas.errors import DvasError
-from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME, PRF_REF_FLG_NAME
-from dvas.hardcoded import PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME
+from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
 
 # Function to test
 from dvas.tools.gdps.utils import weighted_mean, delta, process_chunk
@@ -28,9 +27,8 @@ def chunk():
     """ A data chunk to test the GDP utils functions. """
 
     # First, the level 1 column names
-    lvl_one = [PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME,
-               PRF_REF_FLG_NAME, PRF_REF_UCR_NAME, PRF_REF_UCS_NAME,
-               PRF_REF_UCT_NAME, PRF_REF_UCU_NAME, 'uc_tot', 'w_ps', 'oid', 'mid', 'eid', 'rid']
+    lvl_one = [PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU,
+               'uc_tot', 'w_ps', 'oid', 'mid', 'eid', 'rid']
 
     # Set the proper MultiIndex
     cols = pd.MultiIndex.from_tuples([(ind, item) for item in lvl_one for ind in range(3)])
@@ -43,7 +41,7 @@ def chunk():
         if key == 'tdt':
             test_chunk.loc[:, (slice(None), key)] = \
                 test_chunk.loc[:, (slice(None), key)].astype('timedelta64[ns]')
-        elif key == PRF_REF_FLG_NAME:
+        elif key == PRF_FLG:
             test_chunk.loc[:, (slice(None), key)] = \
                 test_chunk.loc[:, (slice(None), key)].astype('Int64')
         else:
@@ -51,49 +49,49 @@ def chunk():
                 test_chunk.loc[:, (slice(None), key)].astype('float')
 
     # The time deltas
-    test_chunk.loc[:, (0, PRF_REF_TDT_NAME)] = pd.to_timedelta(range(10), unit='s')
-    test_chunk.loc[:, (1, PRF_REF_TDT_NAME)] = pd.to_timedelta(range(1, 11), unit='s')
-    test_chunk.loc[:, (2, PRF_REF_TDT_NAME)] = pd.to_timedelta(np.arange(0.01, 10.01, 1), unit='s')
+    test_chunk.loc[:, (0, PRF_TDT)] = pd.to_timedelta(range(10), unit='s')
+    test_chunk.loc[:, (1, PRF_TDT)] = pd.to_timedelta(range(1, 11), unit='s')
+    test_chunk.loc[:, (2, PRF_TDT)] = pd.to_timedelta(np.arange(0.01, 10.01, 1), unit='s')
 
     # Some altitudes
-    test_chunk.loc[:, (0, PRF_REF_ALT_NAME)] = np.arange(0, 50, 5.)
-    test_chunk.loc[:, (1, PRF_REF_ALT_NAME)] = np.arange(1, 50, 5.)
-    test_chunk.loc[:, (2, PRF_REF_ALT_NAME)] = np.arange(0.01, 50, 5.)
+    test_chunk.loc[:, (0, PRF_ALT)] = np.arange(0, 50, 5.)
+    test_chunk.loc[:, (1, PRF_ALT)] = np.arange(1, 50, 5.)
+    test_chunk.loc[:, (2, PRF_ALT)] = np.arange(0.01, 50, 5.)
 
     # Some values
-    test_chunk.loc[:, (0, PRF_REF_VAL_NAME)] = 1.
-    test_chunk.loc[:, (1, PRF_REF_VAL_NAME)] = 2.
-    test_chunk.loc[:, (2, PRF_REF_VAL_NAME)] = 4.
+    test_chunk.loc[:, (0, PRF_VAL)] = 1.
+    test_chunk.loc[:, (1, PRF_VAL)] = 2.
+    test_chunk.loc[:, (2, PRF_VAL)] = 4.
     test_chunk.loc[:, (slice(None), 'w_ps')] = 1.
 
     # Set some NaN's
-    test_chunk.loc[1, (slice(None), PRF_REF_VAL_NAME)] = np.nan
-    test_chunk.loc[8:9, (0, PRF_REF_VAL_NAME)] = np.nan
-    test_chunk.loc[2, (0, PRF_REF_VAL_NAME)] = np.nan
+    test_chunk.loc[1, (slice(None), PRF_VAL)] = np.nan
+    test_chunk.loc[8:9, (0, PRF_VAL)] = np.nan
+    test_chunk.loc[2, (0, PRF_VAL)] = np.nan
     test_chunk.loc[8, (0, 'w_ps')] = np.nan
     test_chunk.loc[9, (slice(None), 'w_ps')] = np.nan
 
     # Some errors
-    test_chunk.loc[:, (slice(None), PRF_REF_UCR_NAME)] = 1.
-    test_chunk.loc[:, (slice(None), PRF_REF_UCS_NAME)] = 1.
-    test_chunk.loc[:, (slice(None), PRF_REF_UCT_NAME)] = 1.
-    test_chunk.loc[:, (slice(None), PRF_REF_UCU_NAME)] = 1.
+    test_chunk.loc[:, (slice(None), PRF_UCR)] = 1.
+    test_chunk.loc[:, (slice(None), PRF_UCS)] = 1.
+    test_chunk.loc[:, (slice(None), PRF_UCT)] = 1.
+    test_chunk.loc[:, (slice(None), PRF_UCU)] = 1.
     test_chunk.loc[:, (slice(None), 'uc_tot')] = 2.
 
     # Some flags
-    test_chunk.loc[0, (0, PRF_REF_FLG_NAME)] = 1
-    test_chunk.loc[0, (1, PRF_REF_FLG_NAME)] = 2
-    test_chunk.loc[0, (2, PRF_REF_FLG_NAME)] = 4
-    test_chunk.loc[1, (1, PRF_REF_FLG_NAME)] = 8
-    test_chunk.loc[2, (1, PRF_REF_FLG_NAME)] = 0
-    test_chunk.loc[2, (2, PRF_REF_FLG_NAME)] = 3
-    test_chunk.loc[9, (0, PRF_REF_FLG_NAME)] = 0
-    test_chunk.loc[8, (0, PRF_REF_FLG_NAME)] = 1
-    test_chunk.loc[8, (1, PRF_REF_FLG_NAME)] = 2
-    test_chunk.loc[8, (2, PRF_REF_FLG_NAME)] = 4
+    test_chunk.loc[0, (0, PRF_FLG)] = 1
+    test_chunk.loc[0, (1, PRF_FLG)] = 2
+    test_chunk.loc[0, (2, PRF_FLG)] = 4
+    test_chunk.loc[1, (1, PRF_FLG)] = 8
+    test_chunk.loc[2, (1, PRF_FLG)] = 0
+    test_chunk.loc[2, (2, PRF_FLG)] = 3
+    test_chunk.loc[9, (0, PRF_FLG)] = 0
+    test_chunk.loc[8, (0, PRF_FLG)] = 1
+    test_chunk.loc[8, (1, PRF_FLG)] = 2
+    test_chunk.loc[8, (2, PRF_FLG)] = 4
 
     # Errors are NaNs, but values are not.
-    test_chunk.loc[9, (slice(None), PRF_REF_UCR_NAME)] = np.nan
+    test_chunk.loc[9, (slice(None), PRF_UCR)] = np.nan
 
     # THe other stuff
     test_chunk.loc[:, (slice(None), 'eid')] = 'e:1'
@@ -111,19 +109,19 @@ def test_weighted_mean(chunk):
 
     out, jac_mat = weighted_mean(chunk, binning=1)
     # Can I actually compute a weighted mean ?
-    assert out.loc[0, PRF_REF_VAL_NAME] == 7/3
-    assert out.loc[0, PRF_REF_TDT_NAME] == 1/3 * pd.to_timedelta(1.01, unit='s')
-    assert out.loc[0, PRF_REF_ALT_NAME] == 1.01/3
+    assert out.loc[0, PRF_VAL] == 7/3
+    assert out.loc[0, PRF_TDT] == 1/3 * pd.to_timedelta(1.01, unit='s')
+    assert out.loc[0, PRF_ALT] == 1.01/3
 
     # If all the values are NaNs, should be NaN, and so should the flag.
-    assert out.isna().loc[1, PRF_REF_VAL_NAME]
-    assert out.isna().loc[1, PRF_REF_FLG_NAME]
+    assert out.isna().loc[1, PRF_VAL]
+    assert out.isna().loc[1, PRF_FLG]
     # If only some of the bins are NaN's, I should return a number and flag
-    assert out.loc[2, PRF_REF_VAL_NAME] == 6/2
-    assert out.loc[2, PRF_REF_FLG_NAME] == 3
+    assert out.loc[2, PRF_VAL] == 6/2
+    assert out.loc[2, PRF_FLG] == 3
     # if all the weights are NaN's, return NaN
-    assert out.isna().loc[9, PRF_REF_VAL_NAME]
-    assert out.isna().loc[9, PRF_REF_FLG_NAME]
+    assert out.isna().loc[9, PRF_VAL]
+    assert out.isna().loc[9, PRF_FLG]
     # jac_mat has correct dimensions ?
     assert np.shape(jac_mat) == (int(np.ceil(len(chunk))), len(chunk)*3)
     # Content of jac_mat is as expected
@@ -138,18 +136,18 @@ def test_weighted_mean(chunk):
     # Idem but with some binning this time
     out, jac_mat = weighted_mean(chunk, binning=3)
     # Ignore the NaN values in the bin, and normalize properly. Combine flags just fine.
-    assert out.loc[0, PRF_REF_VAL_NAME] == 13/5
-    assert out.loc[0, PRF_REF_FLG_NAME] == 7
+    assert out.loc[0, PRF_VAL] == 13/5
+    assert out.loc[0, PRF_FLG] == 7
     # Only valid values ... the easy stuff
-    assert out.loc[1, PRF_REF_VAL_NAME] == 7/3
+    assert out.loc[1, PRF_VAL] == 7/3
     # Do I actually have the correct amount of bins ?
     assert len(out) == 4
     # Is the last bin correct ?
-    assert np.isnan(out.loc[3, PRF_REF_VAL_NAME])
+    assert np.isnan(out.loc[3, PRF_VAL])
     # Did I handle the Nan-weight ok ?
-    assert out.loc[2, PRF_REF_VAL_NAME] == 20/8
+    assert out.loc[2, PRF_VAL] == 20/8
     # And the partial flags ?
-    assert out.loc[2, PRF_REF_FLG_NAME] == 6
+    assert out.loc[2, PRF_FLG] == 6
     # jac_mat has correct dimensions ?
     assert np.shape(jac_mat) == (int(np.ceil(len(chunk)/3)), len(chunk)*3)
     assert jac_mat[0, 0] == 1/5
@@ -201,16 +199,16 @@ def test_process_chunk(chunk):
 
     # First test the mean
     out_1, _ = process_chunk(chunk, binning=1, method='weighted mean')
-    assert out_1.loc[0, PRF_REF_UCR_NAME] == np.sqrt(1/3)
-    assert out_1.loc[0, PRF_REF_UCS_NAME] == 1
-    assert out_1.loc[0, PRF_REF_UCT_NAME] == 1
-    assert out_1.loc[0, PRF_REF_UCU_NAME] == np.sqrt(1/3)
-    assert np.isnan(out_1.loc[1, PRF_REF_UCR_NAME])  # Values are all NaNs
-    assert np.isnan(out_1.loc[9, PRF_REF_UCR_NAME])  # Error are all NaNs
+    assert out_1.loc[0, PRF_UCR] == np.sqrt(1/3)
+    assert out_1.loc[0, PRF_UCS] == 1
+    assert out_1.loc[0, PRF_UCT] == 1
+    assert out_1.loc[0, PRF_UCU] == np.sqrt(1/3)
+    assert np.isnan(out_1.loc[1, PRF_UCR])  # Values are all NaNs
+    assert np.isnan(out_1.loc[9, PRF_UCR])  # Error are all NaNs
 
     # With partial NaN's, errors still get computed correctly.
-    assert not np.isnan(out_1.loc[8, PRF_REF_UCR_NAME])
-    assert not np.isnan(out_1.loc[8, PRF_REF_VAL_NAME])
+    assert not np.isnan(out_1.loc[8, PRF_UCR])
+    assert not np.isnan(out_1.loc[8, PRF_VAL])
 
     # Now with binning
     out_2, _ = process_chunk(chunk, binning=2, method='mean')

@@ -15,7 +15,7 @@ import pytest
 
 # Import from python packages and modules under test
 from dvas.database.explorer import ReadDatabase
-from dvas.hardcoded import TAG_RAW_NAME, TAG_GDP_NAME
+from dvas.hardcoded import TAG_RAW, TAG_GDP
 from dvas.errors import SearchError
 
 # Define db_data
@@ -34,7 +34,7 @@ db_data = {
                 'metadata': {'test_key_str': 'one', 'test_key_num': '1'},
                 'src': ''
             },
-        } for arg_tag in [TAG_RAW_NAME, TAG_GDP_NAME]
+        } for arg_tag in [TAG_RAW, TAG_GDP]
     ]
 }
 

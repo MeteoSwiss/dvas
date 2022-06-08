@@ -24,7 +24,7 @@ from ...errors import DvasError
 from .gdps import combine
 from ...plots import gdps as dpg
 from ...plots import utils as dpu
-from ...hardcoded import PRF_REF_VAL_NAME, FLG_INCOMPATIBLE_NAME
+from ...hardcoded import PRF_VAL, FLG_INCOMPATIBLE
 
 # Setup local logger
 logger = logging.getLogger(__name__)
@@ -130,7 +130,7 @@ def ks_test(gdp_pair, alpha=0.0027, m_val=1, **kwargs):
                        columns=['Delta_pqei', 'sigma_pqei', 'k_pqei', 'f_pqei', 'pks_pqei'])
 
     # Assign the first part of the data to it
-    out[['Delta_pqei', 'sigma_pqei']] = gdp_delta.get_prms([PRF_REF_VAL_NAME, 'uc_tot'])[0]
+    out[['Delta_pqei', 'sigma_pqei']] = gdp_delta.get_prms([PRF_VAL, 'uc_tot'])[0]
 
     # Compute k_pqei
     out['k_pqei'] = out['Delta_pqei']/out['sigma_pqei']
@@ -191,7 +191,7 @@ def gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=None, rolling=True,
     # If warranted select which flags we want to mask in the rolling process.
     mask_flgs = None
     if rolling:
-        mask_flgs = FLG_INCOMPATIBLE_NAME
+        mask_flgs = FLG_INCOMPATIBLE
 
     # How many gdp Profiles do I have ?
     n_prf = len(gdp_prfs)
