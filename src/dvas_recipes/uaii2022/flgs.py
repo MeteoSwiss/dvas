@@ -10,6 +10,8 @@ Module content: high-level flagging recipes for the UAII2022 campaign
 
 # Import from Python
 import logging
+import numpy as np
+from scipy import interpolate
 
 # Import from dvas
 from dvas.logger import log_func_call
@@ -30,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 
 @log_func_call(logger, time_it=False)
-def find_tropopause(rs_prf, min_alt=5000):
+def find_tropopause(rs_prf, min_alt=5500):
     """ Find the tropopause altitude (following the WMO definition) in a given RSProfile.
 
     Args:
@@ -68,35 +70,54 @@ def find_tropopause(rs_prf, min_alt=5000):
 
     """
 
-    # TODO: here we always assume that we have meters ... this should (at the very least)
-    # be checked for.
+    # TODO: in this function, we always assume that we have meters ...
+    # This should (at the very least) be checked for.
 
-    # Let us duplicate the alt index as a column, so we can compute the lapse rate
+    # Let us duplicate the alt index as a column ...
     rs_prf.data.loc[:, PRF_REF_ALT_NAME] = rs_prf.data.index.get_level_values('alt').values
-    _ = rs_prf.data.diff()
-    rs_prf.data.loc[:, 'lapse_rate'] = - _[PRF_REF_VAL_NAME] / _[PRF_REF_ALT_NAME]*1e3
 
-    # Loop through all altitudes, stopping only were the lapse rate is small enough
+    # Holes inside the profile are problematic, as they may lead to erroneous detections
+    # To avoid these, let's interpolate linearly over them. No interpolated value can be the
+    # tropopause, but at least this will avoid faulty detections.
+    # Here, I use scipy for the interpolation to do it as a function of time, as pandas is not
+    # great at doing it with a MultiIndex.
+    x = rs_prf.data.index.get_level_values(PRF_REF_TDT_NAME).total_seconds().values
+    y = rs_prf.data.loc[:, PRF_REF_VAL_NAME].values
+    rs_prf.data.loc[:, 'temp_interp'] = interpolate.interp1d(x[~np.isnan(y)], y[~np.isnan(y)],
+                                                             kind='linear', fill_value=np.nan,
+                                                             bounds_error=False)(x)
+    y = rs_prf.data.loc[:, PRF_REF_ALT_NAME].values
+    rs_prf.data.loc[:, 'alt_interp'] = interpolate.interp1d(x[~np.isnan(y)], y[~np.isnan(y)],
+                                                            kind='linear', fill_value=np.nan,
+                                                            bounds_error=False)(x)
+
+    # ... so we can compute the lapse rate
+    _ = rs_prf.data.diff()
+    rs_prf.data.loc[:, 'lapse_rate'] = - _['temp_interp'] / _['alt_interp'] * 1e3
+
+    # Loop through all altitudes, stopping only were the lapse rate is small enough (and valid)
     for idxmin, row in rs_prf.data[rs_prf.data['alt'] > min_alt].iterrows():
+        if np.isnan(row[PRF_REF_VAL_NAME]):
+            # I refuse to detect the tropopause at an interpolated location.
+            continue
         if row['lapse_rate'] > 2:
             continue
 
-        # Let's extract the 2km-thick layer
-        cond = ((rs_prf.data.loc[:, PRF_REF_ALT_NAME] - row[PRF_REF_ALT_NAME]) / 1000) <= 2
-        cond *= ((rs_prf.data.loc[:, PRF_REF_ALT_NAME] - row[PRF_REF_ALT_NAME]) / 1000) > 0
+        # Let's extract a 2km-thick layer above ...
+        cond = ((rs_prf.data.loc[:, 'alt_interp'] - row['alt_interp']) / 1000) <= 2
+        cond *= ((rs_prf.data.loc[:, 'alt_interp'] - row['alt_interp']) / 1000) > 0
         layer = rs_prf.data.loc[cond].copy(deep=True)
 
         # ... and compute the lapse rate with respect to its base
-        layer.loc[:, 'lapse_rate'] = - (layer.loc[:, PRF_REF_VAL_NAME]-row[PRF_REF_VAL_NAME]) / \
-            (layer.loc[:, PRF_REF_ALT_NAME]-row[PRF_REF_ALT_NAME]) * 1e3
+        layer.loc[:, 'lapse_rate'] = - (layer.loc[:, 'temp_interp']-row['temp_interp']) / \
+            (layer.loc[:, 'alt_interp']-row['alt_interp']) * 1e3
 
         # Is this the tropopause ?
-        # TODO: carefully handle the presence of holes=nan's in the GDPs.
         # TODO: if I read the WMO text, this should be the criteria ....
         #if layer.lapse_rate.mean(skipna=True) < 2:
         # ... but for reasons unclear, the original MCH codes use the following, which also
         #  better matches the GRUAN values. Why ?
-        if (layer.lapse_rate < 2).all():
+        if (layer.lapse_rate[layer.lapse_rate.notna()] < 2).all():
             return idxmin
 
     raise DvasRecipesError('No tropopause found !')

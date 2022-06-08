@@ -18,8 +18,8 @@ rcp_paths:
         name: config
         path: /Users/fvogt/Projects/MCH/UAII2022/dvas/codedev/src/dvas_demo
     orig_data_path:
-        name: test_flights_MCH/20220523T070000/
-        #name: test_flights_DWD/20220120_1701
+        #name: test_flights_MCH/20220523T070000/
+        name: test_flights_DWD/20220509_0902
         path: /Users/fvogt/Projects/MCH/UAII2022/dvas/testzone/procdata_full/rs
     local_db_path:
         name: db
@@ -36,7 +36,7 @@ rcp_params:
         reset_db: True # Whether to reset the DB, or use an existing one.
         do_latex: True # True = slow but pretty plots. Requires a working system-wide LaTeX setup!
         plot_fmts:
-            #- pdf
+            - pdf
             - png
         plot_show: False
         chunk_size: 150
@@ -59,26 +59,26 @@ rcp_params:
             ucs: temp_ucs
             uct: temp_uct
             ucu:
-        #rh:
-        #    ucr: rh_ucr
-        #    ucs:
-        #    uct: rh_uct
-        #    ucu:
-        #pres:
-        #    ucr:
-        #    ucs:
-        #    uct: pres_uct
-        #    ucu: pres_ucu
-        #wdir:
-        #    ucr:
-        #    ucs:
-        #    uct:
-        #    ucu: wdir_ucu
-        #wspeed:
-        #    ucr:
-        #    ucs:
-        #    uct:
-        #    ucu: wspeed_ucu
+        rh:
+            ucr: rh_ucr
+            ucs:
+            uct: rh_uct
+            ucu:
+        pres:
+            ucr:
+            ucs:
+            uct: pres_uct
+            ucu: pres_ucu
+        wdir:
+            ucr:
+            ucs:
+            uct:
+            ucu: wdir_ucu
+        wspeed:
+            ucr:
+            ucs:
+            uct:
+            ucu: wspeed_ucu
 
 # Recipe steps, and associated arguments/parameters
 rcp_steps:
@@ -99,7 +99,7 @@ rcp_steps:
         fix_gph_uct: # Correct the NaNs present in the gph_uct values for the RS41 GDP v1. See #205.
             - RS41-GDP # Model ids (mid) that require the correction
         resampling_freq: '1s' # Time step to resample onto, with format 'Xs'
-        crop_descent: True # If True, descent data will be cropped for good
+        crop_descent: True # If True, descent data will be cropped for good. Else, it is simply flagged.
 
     # Profile synchronization on a flight-per-flight basis.
     - fct: uaii2022.sync.sync_flight
@@ -126,7 +126,7 @@ rcp_steps:
       kwargs:
         start_with_tags: '02' # list of tags to identify profiles in the database
         m_vals: [1] # list of m values. The negative ones are ignored for the cws assembly
-        strategy: force-all-valid # Strategy to decide which GDPs to combine, in case of incompatibilities.
+        strategy: 'all-or-none' # Strategy to decide which GDPs to combine, in case of incompatibilities. One of [all-or-none, force-all-valid].
         method: 'weighted mean' # Combination method: mean or weighted mean
         alpha: 0.0027 # alpha level for the KS test. 0.0027 = 3-sigmas
         cws_alt_ref: gph # Name of the variable to use in order to populate alt_ref
@@ -175,7 +175,7 @@ rcp_steps:
     # Plot the deltas as a function of the model id, rather than as a function of flight.
     - fct: uaii2022.plots.dtas_per_mid
       step_id: '09a'
-      run: True
+      run: False
       kwargs:
         start_with_tags: # list of tags to identify profiles in the database
             - '06'
