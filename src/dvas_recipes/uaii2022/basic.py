@@ -118,7 +118,7 @@ def flag_descent(prfs):
 
 
 @log_func_call(logger, time_it=False)
-def cleanup_steps(prfs, resampling_freq, crop_descent):
+def cleanup_steps(prfs, resampling_freq, crop_descent, timeofday=None):
     """ Execute a series of cleanup-steps common to GDP and non-GDP profiles. This function is here
     to avoid duplicating code. The cleanup-up profiles are directly saved to the DB with the tag:
     TAG_CLN
@@ -128,6 +128,7 @@ def cleanup_steps(prfs, resampling_freq, crop_descent):
         resampling_freq (str): time step frequency, to feed :py:func:`pandas.timedelta_range`, e.g.
             '1s'.
         crop_descent (bool): if True, and data with the flag "descent" will be cropped out for good.
+        timeofday (str): if set, will tag the Profile with this time of day. Defaults to None.
 
     """
 
@@ -138,6 +139,13 @@ def cleanup_steps(prfs, resampling_freq, crop_descent):
     if crop_descent:
         for (ind, prf) in enumerate(prfs):
             prfs[ind].data = prf.data.loc[prf.has_flg(FLG_DESCENT) == 0]
+
+    # Add the TimeOfDay tag, if warranted
+    if timeofday is not None:
+        for (ind, prf) in enumerate(prfs):
+            if not prf.has_tag(timeofday):
+                prf.info.add_tags(timeofday)
+                logger.warning('Adding missing TimeOfDay tag to %s profile.', prf.info.mid)
 
     # Resample the profiles as required
     prfs.resample(freq=resampling_freq, inplace=True, chunk_size=dynamic.CHUNK_SIZE,
@@ -176,6 +184,18 @@ def cleanup(start_with_tags, fix_gph_uct=None, **args):
 
     # Let's extract the summary of what the DB contains
     db_view = DB.extract_global_view()
+
+    # Check the time of day for the flight, see if it is consistent.
+    timeofday = db_view.tod[db_view.tod.notna()].unique()
+    if len(timeofday) == 1:
+        timeofday = timeofday[0]
+        logger.info('TimeOfDay for flight (%s, %s): %s', eid, rid, timeofday)
+    elif len(timeofday) == 0:
+        logger.error('TimeOfDay unknown for flight: %s, %s', eid, rid)
+        timeofday = None
+    else:
+        raise DvasRecipesError(
+            f'TimeOfDay tags inconsistent for flight ({eid}, {rid}): {timeofday}')
 
     # I need to treat GDPs and non-GDPs separately, since the former have uncertainties that also
     # need to be cleaned accordingly.
@@ -219,7 +239,7 @@ def cleanup(start_with_tags, fix_gph_uct=None, **args):
                         gdp.data.loc[cond1 & cond2, 'uct'] = gdp.data.loc[:, 'uct'].max(skipna=True)
 
         # Now launch more generic cleanup steps
-        cleanup_steps(gdp_prfs, **args)
+        cleanup_steps(gdp_prfs, **args, timeofday=timeofday)
 
     # Process the non-GDPs, if any
     if not db_view.is_gdp[(db_view.rid == rid) & (db_view.eid == eid)].all():
@@ -235,4 +255,4 @@ def cleanup(start_with_tags, fix_gph_uct=None, **args):
 
         logger.info('Loaded %i RS profiles from the DB.', len(rs_prfs))
 
-        cleanup_steps(rs_prfs, **args)
+        cleanup_steps(rs_prfs, **args, timeofday=timeofday)

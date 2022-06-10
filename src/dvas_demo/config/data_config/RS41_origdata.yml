@@ -24,9 +24,8 @@ _RS41-PRE2018:
     tags:
         - "cat('e:', get('event_id'))"
         - "cat('r:', get('rig'))"
-        - "get('day_night')"
     metadata:
-        bpt_time: "get('bpt_time')"
+        bpt_time:
         start_time: "to_datetime(get('start_time'))"
 
     # -- ORIG DATA ----------------------------------
@@ -74,9 +73,8 @@ _RS41:
     tags:
         - "cat('e:', get('event_id'))"
         - "cat('r:', get('rig'))"
-        - "get('day_night')"
     metadata:
-        bpt_time: "get('bpt_time')"
+        bpt_time:
         start_time: "to_datetime(get('start_time'))"
 
     # -- ORIG DATA ----------------------------------
@@ -126,6 +124,7 @@ _RS41-GDP_001:
     tags:
         - "cat('e:', get('g.Measurement.Id'))"
         - "cat('r:', get('g.Measurement.BalloonNumber'))"
+        - "cat('tod:', get('g.Measurement.TimeOfDay'))"
     metadata:
         bpt_time: "get('g.Measurement.BurstpointTime')"
         start_time: "to_datetime(get('g.Measurement.StartTime'))"

@@ -45,8 +45,17 @@ CONFIG_FILE_EXT = ['yml', 'yaml']
 #: str: Event id regexp pattern
 EID_PAT = r'^e:\w+$'
 
+#: int: Len of the eid tag, comprised of 'e:' + 6 GRUAN id digits
+EID_LEN = 2+6
+
 #: str: Rig id regexp pattern
 RID_PAT = r'^r:\w+$'
+
+#: str: TimeOfDay regexp pattern
+TOD_PAT = r'^tod:\w+$'
+
+#: set: possible values for the TimeOfDay
+TOD_VALS = {'tod:daytime', 'tod:nighttime', 'tod:twilight'}
 
 #: str: Suffix used for flag parameter's name or file's name
 FLG_PRM_NAME_SUFFIX = '_flag'

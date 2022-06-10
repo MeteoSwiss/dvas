@@ -36,7 +36,7 @@ rcp_params:
         reset_db: True # Whether to reset the DB, or use an existing one.
         do_latex: True # True = slow but pretty plots. Requires a working system-wide LaTeX setup!
         plot_fmts:
-            - pdf
+            #- pdf
             - png
         plot_show: False
         chunk_size: 150
@@ -59,26 +59,26 @@ rcp_params:
             ucs: temp_ucs
             uct: temp_uct
             ucu:
-        rh:
-            ucr: rh_ucr
-            ucs:
-            uct: rh_uct
-            ucu:
-        pres:
-            ucr:
-            ucs:
-            uct: pres_uct
-            ucu: pres_ucu
-        wdir:
-            ucr:
-            ucs:
-            uct:
-            ucu: wdir_ucu
-        wspeed:
-            ucr:
-            ucs:
-            uct:
-            ucu: wspeed_ucu
+        #rh:
+        #    ucr: rh_ucr
+        #    ucs:
+        #    uct: rh_uct
+        #    ucu:
+        #pres:
+        #    ucr:
+        #    ucs:
+        #    uct: pres_uct
+        #    ucu: pres_ucu
+        #wdir:
+        #    ucr:
+        #    ucs:
+        #    uct:
+        #    ucu: wdir_ucu
+        #wspeed:
+        #    ucr:
+        #    ucs:
+        #    uct:
+        #    ucu: wspeed_ucu
 
 # Recipe steps, and associated arguments/parameters
 rcp_steps:
@@ -159,7 +159,7 @@ rcp_steps:
         do_nongdps: True # if True, will also compute deltas for the non-GDPs
         save_to_db: True # if True, will save the delta profiles to the DB
 
-    # Creation of "live" preview plots for constructors
+    # Creation of preview plots for participants
     - fct: uaii2022.plots.participant_preview
       step_id: '08'
       run: True
@@ -174,22 +174,12 @@ rcp_steps:
 
     # Plot the deltas as a function of the model id, rather than as a function of flight.
     - fct: uaii2022.plots.dtas_per_mid
-      step_id: '09a'
-      run: False
+      step_id: '09'
+      run: True
       kwargs:
         start_with_tags: # list of tags to identify profiles in the database
-            - '06'
+            - '07'
+            #- 'tod:daytime'
         mids: # List of mid to process. Leave empty to process them all.
         skip_gdps: False # If True, any 'mid' that contains 'GDP' will be skipped.
-        skip_nongdps: True # If True, any 'mid' that does NOT contain 'GDP' will be skipped.
-
-    # Plot the deltas as a function of the model id, rather than as a function of flight.
-    - fct: uaii2022.plots.dtas_per_mid
-      step_id: '09b'
-      run: False
-      kwargs:
-        start_with_tags: # list of tags to identify profiles in the database
-            - '06'
-        mids: # List of mid to process. Leave empty to process them all.
-        skip_gdps: True # If True, any 'mid' that contains 'GDP' will be skipped.
         skip_nongdps: False # If True, any 'mid' that does NOT contain 'GDP' will be skipped.

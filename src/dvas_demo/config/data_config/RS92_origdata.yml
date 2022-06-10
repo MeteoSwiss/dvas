@@ -20,9 +20,8 @@ _RS92:
     tags:
         - "cat('e:', get('event_id'))"
         - "cat('r:', get('rig'))"
-        - "get('day_night')"
     metadata:
-        bpt_time: "get('bpt_time')"
+        bpt_time:
         start_time: "to_datetime(get('start_time'))"
 
     # -- ORIG DATA ----------------------------------

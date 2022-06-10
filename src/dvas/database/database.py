@@ -40,7 +40,7 @@ from ..config.config import Tag as TagCfg
 from ..config.config import instantiate_config_managers
 from ..config.definitions.origdata import EDT_FLD_NM
 from ..config.definitions.origdata import TAG_FLD_NM, META_FLD_NM
-from ..hardcoded import TAG_NONE
+from ..hardcoded import TAG_NONE, TOD_VALS, EID_LEN
 from ..helper import SingleInstanceMetaClass
 from ..helper import TypedProperty as TProp
 from ..helper import get_by_path, check_datetime
@@ -376,6 +376,21 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                 # Warn if new tag
                 if created:
                     logger.info("New tag created: (id=%s, name=%s)", tmp.id, tmp.tag_name)
+
+                    # The tags will be created freely - however, for some, let's check if the
+                    # content/format/etc ... matches what I expect. Raise an error if not.
+
+                    # TimeOfDay
+                    if glob_var.tod_pat.match(tmp.tag_name) is not None:
+                        # Check if this is a tod that dvas knows about. Else, log an error.
+                        if tmp.tag_name not in TOD_VALS:
+                            logger.error('Unknown TimeOfDay tag: %s', tmp.tag_name)
+                    # Event ID
+                    if glob_var.eid_pat.match(tmp.tag_name) is not None:
+                        # Does this look like a GRUAN id ?
+                        if len(tmp.tag_name) != EID_LEN:
+                            logger.error('Suspicious eid tag: %s. GRUAN event ids have 6 digits.',
+                                         tmp.tag_name)
 
             # Create original data information
             data_src, _ = DataSource.get_or_create(src=info.src)
@@ -749,24 +764,27 @@ class InfoManager:
 
     @property
     def eid(self):
-        """str: Event ID which match 1st corresponding pattern in tags. Defaults to None."""
+        """ str: Event ID which match 1st corresponding pattern in tags. Defaults to None."""
         try:
-            # TODO: the following line triggers a *very* weird pylint Error 1101.
-            # I disable it for now ... but someone should really confirm whether this ok or not!
-            # fpavogt - 2020.12.09
-            out = next(filter(glob_var.eid_pat.match, self.tags))  # pylint: disable=E1101
+            out = next(filter(glob_var.eid_pat.match, self.tags))
         except StopIteration:
             out = None
         return out
 
     @property
     def rid(self):
-        """str: Rig ID which match 1st corresponding pattern in tags. Defaults to None."""
+        """ str: Rig ID which match 1st corresponding pattern in tags. Defaults to None."""
         try:
-            # TODO: the following line triggers a *very* weird pylint Error 1101.
-            # I disable it for now ... but someone should really confirm whether this ok or not!
-            # fpavogt - 2020.12.09
-            out = next(filter(glob_var.rid_pat.match, self.tags))  # pylint: disable=E1101
+            out = next(filter(glob_var.rid_pat.match, self.tags))
+        except StopIteration:
+            out = None
+        return out
+
+    @property
+    def tod(self):
+        """ str: TimeOfDay tag which match 1st corresponding pattern. Defaults to None. """
+        try:
+            out = next(filter(glob_var.tod_pat.match, self.tags))
         except StopIteration:
             out = None
         return out

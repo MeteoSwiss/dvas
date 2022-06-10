@@ -4,14 +4,8 @@ rig: '1'
 
 event_id: '80611'
 
-station: 'PAY'
-
 srn: 'M1453554'
 
 product_id: '0'
-
-day_night: 'day'
-
-bpt_time:
 
 start_time:
