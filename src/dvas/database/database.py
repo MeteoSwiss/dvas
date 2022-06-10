@@ -548,7 +548,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         return out
 
-    @log_func_call(logger, time_it=True)
+    @log_func_call(logger, time_it=False, level='debug')
     def get_data(self, search_expr, prm_name, filter_empty):
         """Get data from DB
 
@@ -565,7 +565,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         info_id_list = self._get_info_id(search_expr, prm_name, filter_empty)
 
         if not info_id_list:
-            logger.warning("Empty search '%s' for parameter '%s'", search_expr, prm_name)
+            logger.debug("Empty search '%s' for parameter '%s'", search_expr, prm_name)
 
         # Query data
         res = []
