@@ -108,7 +108,15 @@ class DvasFormatter(logging.Formatter):
     def format(self, record):
         """ Format the log message as required """
 
-        return self.log_msg(level=record.levelno).format(record)
+        out = self.log_msg(level=record.levelno).format(record)
+        # Allow users to add colors to the text message only ...
+        if self._colors:
+            out = out.replace('$SFLASH', '\x1b[38;5;208m\033[1m')
+            out = out.replace('$EFLASH', '\033[0m')
+        else:
+            out = out.replace('$SFLASH', '')
+            out = out.replace('$EFLASH', '')
+        return out
 
 
 def apply_dvas_formatter(handler, colors=False):

@@ -152,7 +152,7 @@ class RecipeStep:
         rcp_dyn.CURRENT_STEP_ID = self.step_id
 
         # Actually launch the function, which may be decorated (but I don't need to know that !)
-        logger.info('\x1b[38;5;208m\033[1mSTART RECIPE STEP %s: %s \033[0m',
+        logger.info('$SFLASHSTART RECIPE STEP %s: %s $EFLASH',
                     self.step_id, self.name)
         self._func(**self._kwargs)
 
