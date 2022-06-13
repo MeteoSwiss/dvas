@@ -102,7 +102,7 @@ def update_db(search, strict=False):
     if path_var.orig_data_path is None:
         raise DvasError('Ouch ! path_var.orig_data_path is None')
 
-    # Scan data path (entirly)
+    # Scan data path (entirely)
     origdata_path_scan = list(path_var.orig_data_path.rglob("*.*"))
 
     # Loop loading

@@ -152,7 +152,8 @@ class RecipeStep:
         rcp_dyn.CURRENT_STEP_ID = self.step_id
 
         # Actually launch the function, which may be decorated (but I don't need to know that !)
-        logger.info('START RECIPE STEP %s: %s', self.step_id, self.name)
+        logger.info('$SFLASHSTART RECIPE STEP %s: %s $EFLASH',
+                    self.step_id, self.name)
         self._func(**self._kwargs)
 
 
@@ -338,7 +339,7 @@ class Recipe:
 
         # If I am skipping any steps, let's disable the DB reset. Else, it will blow up in my face.
         if from_step_id is not None:
-            logger.info('Force-disable the DB reset, in order to skip until the recipe step: %s',
+            logger.info('Force-disable the DB reset, and skip until the recipe step: %s',
                         from_step_id)
             self._reset_db = False
 

@@ -19,6 +19,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [fpavogt, 2022-04-26] Fix #205 with a dedicated fix in the uaii2022.basic.cleanup recipe step
  - [fpavogt, 2022-04-14] Fix #208 by improving dvas plots
 ### Changed:
+ - [fpavogt, 2022-06-10] Change day_night tag to timeofday, and make it "optional" by relying on the RS41 GDP to apply if to all
  - [fpavogt, 2022-06-08] Refactor hardcoded variable names
  - [fpavogt, 2022-05-30] Add official support for Python 3.10
  - [fpavogt, 2022-05-25] Cleaned-up config files

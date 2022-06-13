@@ -25,7 +25,7 @@ from . import __name__ as pkg_name
 from .hardcoded import PKG_PATH, MPL_STYLES_PATH
 from .hardcoded import CSV_FILE_EXT, FLG_FILE_EXT, CONFIG_FILE_EXT
 from .hardcoded import CONFIG_GEN_LIM
-from .hardcoded import EID_PAT, RID_PAT
+from .hardcoded import EID_PAT, RID_PAT, TOD_PAT
 
 
 class ABCSingleInstanceMeta(ABCMeta, SingleInstanceMetaClass):
@@ -168,10 +168,12 @@ class GlobalPackageVariableManager(VariableManager):
     flg_file_ext = TProp(Iterable[str], lambda x: tuple(x))
     #: list of str: Config file allowed extensions. Default to ['yml', 'yaml']
     config_file_ext = TProp(Iterable[str], lambda x: tuple(x))
-    #: str: Event ID pattern use in InfoManager to extract event tag.
+    #: str: Event ID pattern used in InfoManager to extract event tag.
     eid_pat = TProp(Union[str, re.Pattern], lambda x: re.compile(x))
-    #: str: Rig ID pattern use in InfoManager to extract rig tag.
+    #: str: Rig ID pattern used in InfoManager to extract rig tag.
     rid_pat = TProp(Union[str, re.Pattern], lambda x: re.compile(x))
+    #: str: TimeOfDay ID pattern used in InfoManager to extract rig tag.
+    tod_pat = TProp(Union[str, re.Pattern], lambda x: re.compile(x))
 
     def __init__(self):
         # Init attributes
@@ -179,8 +181,9 @@ class GlobalPackageVariableManager(VariableManager):
         self.csv_file_ext = ['']
         self.config_file_ext = ['']
         self.flg_file_ext = ['']
-        self.eid_pat = ''
-        self.rid_pat = ''
+        self.eid_pat = re.compile('')
+        self.rid_pat = re.compile('')
+        self.tod_pat = re.compile('')
 
         # Call super constructor
         super().__init__()
@@ -194,6 +197,7 @@ class GlobalPackageVariableManager(VariableManager):
             'config_file_ext': CONFIG_FILE_EXT,
             'eid_pat': EID_PAT,
             'rid_pat': RID_PAT,
+            'tod_pat': TOD_PAT,
         }
 
 

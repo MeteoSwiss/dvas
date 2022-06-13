@@ -293,7 +293,7 @@ class FileHandler(AbstractHandler):
             metadata[TAG_FLD_NM] += [TAG_EMPTY]
 
             # Log
-            logger.warning("No data for '%s' in file '%s'", prm_name, data_file_path)
+            logger.debug("No data for '%s' in file '%s'", prm_name, data_file_path)
 
         except ValueError as exc:
             raise OrigConfigError(

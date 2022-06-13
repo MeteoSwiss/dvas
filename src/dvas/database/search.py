@@ -10,6 +10,7 @@ Module contents: Local database exploring tools
 """
 
 # Import from python packages
+import logging
 from abc import abstractmethod, ABCMeta
 import re
 import operator
@@ -31,15 +32,18 @@ from .model import InfosTags as TableInfosTags
 from .model import DataSource as TablDataSource
 from .model import Model as TableModel
 from ..hardcoded import TAG_EMPTY, TAG_RAW, TAG_GDP
-from ..hardcoded import EID_PAT, RID_PAT
+from ..hardcoded import EID_PAT, RID_PAT, TOD_PAT, TOD_VALS
 from ..helper import TypedProperty as TProp
 from ..helper import check_datetime
 from ..errors import SearchError
 
+# Setup the local logger
+logger = logging.getLogger(__name__)
 
 # Global define
 EID_PAT_COMPILED = re.compile(EID_PAT)
 RID_PAT_COMPILED = re.compile(RID_PAT)
+TOD_PAT_COMPILED = re.compile(TOD_PAT)
 
 
 class SearchInfoExpr(metaclass=ABCMeta):
@@ -230,6 +234,8 @@ class SearchInfoExpr(metaclass=ABCMeta):
             lambda x: SearchInfoExpr.get_eid(x[0][TableInfosObjects.info.name]['infos_tags']))
         res['rid'] = res['infos_objects'].apply(
             lambda x: SearchInfoExpr.get_rid(x[0][TableInfosObjects.info.name]['infos_tags']))
+        res['tod'] = res['infos_objects'].apply(
+            lambda x: SearchInfoExpr.get_tod(x[0][TableInfosObjects.info.name]['infos_tags']))
         res['is_gdp'] = res['infos_objects'].apply(
             lambda x: SearchInfoExpr.get_isgdp(x[0][TableInfosObjects.info.name]['infos_tags']))
         res.drop(columns=['infos_objects'], inplace=True)
@@ -264,6 +270,23 @@ class SearchInfoExpr(metaclass=ABCMeta):
                 arg[TableInfosTags.tag.name][TableTag.tag_name.name]
                 for arg in infos_tags
                 if RID_PAT_COMPILED.match(arg[TableInfosTags.tag.name][TableTag.tag_name.name])
+                is not None
+            )
+
+        except StopIteration:
+            out = None
+
+        return out
+
+    @staticmethod
+    def get_tod(infos_tags):
+        """ Return the TimeOfDay """
+
+        try:
+            out = next(
+                arg[TableInfosTags.tag.name][TableTag.tag_name.name]
+                for arg in infos_tags
+                if TOD_PAT_COMPILED.match(arg[TableInfosTags.tag.name][TableTag.tag_name.name])
                 is not None
             )
 

@@ -70,7 +70,7 @@ class DvasFormatter(logging.Formatter):
             DeltaTimeFormatter: the formatted log message canvas.
         """
 
-        msg = '%(delta)s|$BOLD$COLOR%(levelname)s$RESET|%(name)s|%(message)s'
+        msg = '%(delta)s|$BOLD$COLOR%(levelname)s$RESET|%(name)s| %(message)s'
 
         # Cases when I want some colors
         if self._colors:
@@ -108,7 +108,15 @@ class DvasFormatter(logging.Formatter):
     def format(self, record):
         """ Format the log message as required """
 
-        return self.log_msg(level=record.levelno).format(record)
+        out = self.log_msg(level=record.levelno).format(record)
+        # Allow users to add colors to the text message only ...
+        if self._colors:
+            out = out.replace('$SFLASH', '\x1b[38;5;208m\033[1m')
+            out = out.replace('$EFLASH', '\033[0m')
+        else:
+            out = out.replace('$SFLASH', '')
+            out = out.replace('$EFLASH', '')
+        return out
 
 
 def apply_dvas_formatter(handler, colors=False):
@@ -257,7 +265,7 @@ class LogManager:
             logger.disabled = True
 
 
-def log_func_call(logger, time_it=False):
+def log_func_call(logger, time_it=False, level='info'):
     """ Intended as a decorator that logs a function call the the log.
     The first part of the message containing the function name is at the 'INFO' level.
     The second part of the message containing the argument values is at the 'DEBUG' level.
@@ -287,8 +295,8 @@ def log_func_call(logger, time_it=False):
 
             # Assemble a log message witht he function name ...
             log_msg = 'Executing %s ...' % (func.__name__)
-            # ... and log it at the INFO level.
-            logger.info(log_msg)
+            # ... and log it at the appropriate level
+            getattr(logger, level)(log_msg)
 
             # Then get extra information about the arguments ...
             log_msg = '... with the following input: %s' % (str(dict(bound_args.arguments)))

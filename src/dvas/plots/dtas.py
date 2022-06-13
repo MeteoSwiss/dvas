@@ -16,7 +16,7 @@ import matplotlib.gridspec as gridspec
 
 # Import from this package
 from ..logger import log_func_call
-from ..hardcoded import PRF_VAL, PRF_ALT, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
+from ..hardcoded import PRF_VAL, PRF_ALT, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU, TOD_VALS
 from . import utils as pu
 
 # Setup the local logger
@@ -67,7 +67,7 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
         def sig_alpha(k):
             return 0.1+(3-k)*0.1
 
-        lc = 'dimgrey'
+        lc = 'k'
         sig_col = 'mediumpurple'
     else:
 
@@ -95,24 +95,33 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
         dta = deltas[dta_ind]
 
         # First, plot the profiles themselves
-        ax0.plot(dta.loc[:, PRF_ALT].values, dta.loc[:, PRF_VAL].values,
-                 lw=0.4, ls='-', drawstyle='steps-mid', c=lc, alpha=1,
-                 label='|'.join(dta_prfs.get_info(label)[dta_ind]))
+        if len(mid) == 1:
 
-        # Next plot the uncertainties
-        if dta_ind == 0:
             ax0.fill_between(dta.loc[:, PRF_ALT],
-                             - k_lvl * dta.loc[:, 'uc_tot'].values,
-                             + k_lvl * dta.loc[:, 'uc_tot'].values,
-                             alpha=0.2, step='mid', facecolor='k', edgecolor='none',
-                             label='CWS')
+                             dta.loc[:, PRF_VAL].values - k_lvl * dta.loc[:, 'uc_tot'].values,
+                             dta.loc[:, PRF_VAL].values + k_lvl * dta.loc[:, 'uc_tot'].values,
+                             alpha=1/len(flights), step='mid', facecolor='k', edgecolor='none')
+
         else:
-            if not dta.loc[:, 'uc_tot'].equals(deltas[0].loc[:, 'uc_tot']):
-                logger.error('Inconsistent delta uncertainties will not be reflected in the plot.')
+            ax0.plot(dta.loc[:, PRF_ALT].values, dta.loc[:, PRF_VAL].values,
+                     lw=0.4, ls='-', drawstyle='steps-mid', c=lc, alpha=1,
+                     label='|'.join(dta_prfs.get_info(label)[dta_ind]))
+
+            # Next plot the uncertainties
+            if dta_ind == 0:
+                ax0.fill_between(dta.loc[:, PRF_ALT],
+                                 - k_lvl * dta.loc[:, 'uc_tot'].values,
+                                 + k_lvl * dta.loc[:, 'uc_tot'].values,
+                                 alpha=0.2, step='mid', facecolor='k', edgecolor='none',
+                                 label='CWS')
+            else:
+                if not dta.loc[:, 'uc_tot'].equals(deltas[0].loc[:, 'uc_tot']):
+                    logger.error(
+                        'Inconsistent delta uncertainties will not be reflected in the plot.')
 
         # And then, the deltas normalized by the uncertainties
         ax1.plot(dta.loc[:, PRF_ALT], dta.loc[:, PRF_VAL] / dta.loc[:, 'uc_tot'].values,
-                 lw=0.5, ls='-', drawstyle='steps-mid', c=lc, alpha=0.9**len(flights))
+                 lw=0.5, ls='-', drawstyle='steps-mid', c=lc, alpha=1/len(flights))
 
     # Set the axis labels
     ylbl0 = r'$\delta_{e,i}$'
@@ -135,8 +144,10 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
         # Add the edt/eid/rid info
         pu.add_edt_eid_rid(ax0, dta_prfs)
     elif len(mid) == 1:
-        # Add the number of flights included in the plot. Will be useful with large numbers
-        ax0.text(0, 1.03, rf'\# flights: {len(flights)}', fontsize='small',
+        # Add the number of flights and time of day to the plot. Will be useful with large numbers
+        # TODO: do not assume that I need to drop the first 4 char from tod ... know it !
+        tod = ' + '.join([item[4:] for item in TOD_VALS if any(dta_prfs.has_tag(item))])
+        ax0.text(0, 1.03, rf'\# flights: {len(flights)} [{tod}]', fontsize='small',
                  verticalalignment='bottom', horizontalalignment='left',
                  transform=ax0.transAxes)
 
