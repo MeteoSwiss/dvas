@@ -161,13 +161,15 @@ def cleanup_steps(prfs, resampling_freq, crop_descent, timeofday=None):
 @for_each_var
 @for_each_flight
 @log_func_call(logger, time_it=True)
-def cleanup(start_with_tags, fix_gph_uct=None, **args):
+def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
     """ Highest-level function responsible for doing an initial cleanup of the data.
 
     Args:
         start_with_tags (str|list): list of tags to identify profiles to clean in the db.
-        fix_gph_uct (list): list of mid values for which to correct NaN values (see #205).
+        fix_gph_uct (list, optional): list of mid values for which to correct NaN values (see #205).
             Defaults to None.
+        check_tropopause (bool, optional): if True, will compare the dvas tropopause to the GRUAN
+            one. Defaults to False.
         **args: arguments to be fed to :py:func:`.cleanup_steps`.
 
     """
@@ -237,6 +239,22 @@ def cleanup(start_with_tags, fix_gph_uct=None, **args):
                                     n_bad, gdp.info.mid[0])
                         # Fix the bug
                         gdp.data.loc[cond1 & cond2, 'uct'] = gdp.data.loc[:, 'uct'].max(skipna=True)
+
+        # Validate the GRUAN tropopause calculation
+        if dynamic.CURRENT_VAR == 'temp' and check_tropopause:
+            logger.info('Comparing the GRUAN vs dvas tropopause:')
+
+            for gdp_prf in gdp_prfs:
+                if 'gruan_tropopause' not in gdp_prf.info.metadata.keys():
+                    logger.warning('No GRUAN tropopause found in %s', gdp_prf.info.src)
+                    continue
+
+                # Let's compute the dvas tropopause
+                dvas_trop = tools.find_tropopause(gdp_prf, algo='gruan')
+
+                logger.info('GRUAN tropopause: %s --- %s :dvas tropopause (%s)',
+                            gdp_prf.info.metadata['gruan_tropopause'],
+                            dvas_trop[1], gdp_prf.info.src)
 
         # Now launch more generic cleanup steps
         cleanup_steps(gdp_prfs, **args, timeofday=timeofday)

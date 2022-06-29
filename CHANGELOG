@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [v0.6.0.dev1]
 ### Added:
+ - [fpavogt, 2022-06-29] Cleanup the tropopause function, to support the WMO, MCH and GRUAN algorithm
  - [fpavogt, 2022-06-07] Basic recipe step can now issue eid-edt files for the UAII plot preview software
  - [fpavogt, 2022-06-03] Add new recipe step to flag zones of interest, compute the tropopause, etc ...
  - [fpavogt, 2022-06-03] If no burst point is specified, flag any points beyond the max altitude as "descent"
