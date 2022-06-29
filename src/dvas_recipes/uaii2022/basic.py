@@ -186,9 +186,10 @@ def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
 
     # Let's extract the summary of what the DB contains
     db_view = DB.extract_global_view()
+    this_flight = (db_view.eid == eid) * (db_view.rid == rid)
 
     # Check the time of day for the flight, see if it is consistent.
-    timeofday = db_view.tod[db_view.tod.notna()].unique()
+    timeofday = db_view[this_flight].tod[db_view[this_flight].tod.notna()].unique()
     if len(timeofday) == 1:
         timeofday = timeofday[0]
         logger.info('TimeOfDay for flight (%s, %s): %s', eid, rid, timeofday)
@@ -203,7 +204,7 @@ def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
     # need to be cleaned accordingly.
 
     # Start with the GDPs
-    if db_view.is_gdp[(db_view.rid == rid) & (db_view.eid == eid)].any():
+    if db_view[this_flight].is_gdp.any():
         logger.info('Cleaning GDP profiles for flight %s and variable %s',
                     dynamic.CURRENT_FLIGHT,
                     dynamic.CURRENT_VAR)
@@ -260,7 +261,7 @@ def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
         cleanup_steps(gdp_prfs, **args, timeofday=timeofday)
 
     # Process the non-GDPs, if any
-    if not db_view.is_gdp[(db_view.rid == rid) & (db_view.eid == eid)].all():
+    if not db_view[this_flight].is_gdp.all():
         logger.info('Cleaning non-GDP profiles for flight %s and variable %s',
                     dynamic.CURRENT_FLIGHT,
                     dynamic.CURRENT_VAR)
