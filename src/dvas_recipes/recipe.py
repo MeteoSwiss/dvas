@@ -62,6 +62,7 @@ def for_each_flight(func):
         # dynamic.THIS_FLIGHT
         for flight in rcp_dyn.ALL_FLIGHTS:
             rcp_dyn.CURRENT_FLIGHT = flight
+            logger.info('Processing flight: %s', flight)
             func(**kwargs)
 
     return wrapper
@@ -93,6 +94,7 @@ def for_each_var(func):
         # dynamic.THIS_FLIGHT
         for var in rcp_dyn.ALL_VARS:
             rcp_dyn.CURRENT_VAR = var
+            logger.info('Processing variable: %s', var)
             func(**kwargs)
 
     return wrapper

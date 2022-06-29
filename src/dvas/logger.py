@@ -111,7 +111,7 @@ class DvasFormatter(logging.Formatter):
         out = self.log_msg(level=record.levelno).format(record)
         # Allow users to add colors to the text message only ...
         if self._colors:
-            out = out.replace('$SFLASH', '\x1b[38;5;208m\033[1m')
+            out = out.replace('$SFLASH', '\x1b[35;20m')
             out = out.replace('$EFLASH', '\033[0m')
         else:
             out = out.replace('$SFLASH', '')
