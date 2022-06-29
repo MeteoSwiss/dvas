@@ -92,7 +92,6 @@ def get_sync_shifts_from_alt(prfs, ref_alt=5000.):
 
     # Make sure to keep them all positive
     out -= np.min(out)
-    print(prfs.get_info('mid'))
     # Return the corresponding shifts, not forgetting that the first profile stays where it is.
     return list(out)
 
