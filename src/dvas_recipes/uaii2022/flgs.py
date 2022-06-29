@@ -17,6 +17,7 @@ from dvas.hardcoded import TAG_CWS, TAG_GDP, TAG_DTA, FLG_HASCWS
 from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_VAL
 from dvas.hardcoded import MTDTA_TROPOPAUSE
 from dvas.data.data import MultiRSProfile, MultiGDPProfile, MultiCWSProfile
+from dvas.errors import DBIOError
 
 # Import from dvas_recipes
 from .. import dynamic
@@ -105,20 +106,28 @@ def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp'):
         cws_cond = cws_prfs[0].data[PRF_VAL].notna().values
 
         gdp_prfs = MultiGDPProfile()
-        gdp_prfs.load_from_db(gdp_filt, var_name,
-                              tdt_abbr=dynamic.INDEXES[PRF_TDT],
-                              alt_abbr=dynamic.INDEXES[PRF_ALT],
-                              ucr_abbr=dynamic.ALL_VARS[var_name]['ucr'],
-                              ucs_abbr=dynamic.ALL_VARS[var_name]['ucs'],
-                              uct_abbr=dynamic.ALL_VARS[var_name]['uct'],
-                              ucu_abbr=dynamic.ALL_VARS[var_name]['ucu'],
-                              inplace=True)
+        try:
+            gdp_prfs.load_from_db(gdp_filt, var_name,
+                                  tdt_abbr=dynamic.INDEXES[PRF_TDT],
+                                  alt_abbr=dynamic.INDEXES[PRF_ALT],
+                                  ucr_abbr=dynamic.ALL_VARS[var_name]['ucr'],
+                                  ucs_abbr=dynamic.ALL_VARS[var_name]['ucs'],
+                                  uct_abbr=dynamic.ALL_VARS[var_name]['uct'],
+                                  ucu_abbr=dynamic.ALL_VARS[var_name]['ucu'],
+                                  inplace=True)
+        except DBIOError:
+            logger.debug('No GDP profile found.')
+            gdp_prfs = None
 
         nongdp_prfs = MultiRSProfile()
-        nongdp_prfs.load_from_db(nongdp_filt, var_name,
-                                 tdt_abbr=dynamic.INDEXES[PRF_TDT],
-                                 alt_abbr=dynamic.INDEXES[PRF_ALT],
-                                 inplace=True)
+        try:
+            nongdp_prfs.load_from_db(nongdp_filt, var_name,
+                                     tdt_abbr=dynamic.INDEXES[PRF_TDT],
+                                     alt_abbr=dynamic.INDEXES[PRF_ALT],
+                                     inplace=True)
+        except DBIOError:
+            logger.debug('No non-GDP profile found.')
+            nongdpp_prfs = None
 
         # Apply the PBL, FT, UTLS, HAS_CWS flags to every profile.
         for prfs in [cws_prfs, gdp_prfs, nongdp_prfs]:
