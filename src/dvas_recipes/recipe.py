@@ -168,7 +168,7 @@ class Recipe:
     _steps = None
     _reset_db = True
 
-    def __init__(self, rcp_fn, flights=None):
+    def __init__(self, rcp_fn, flights=None, debug=False):
         """ Recipe initialization from a suitable YAML recipe file.
 
         Args:
@@ -178,6 +178,8 @@ class Recipe:
                 Defaults to None = all available. Array must be 2D, e.g.::
 
                     [['e:12345', 'r:1'], ['e:12346', 'r:1']]
+            debug (bool, optional): if True, will force-set the logging level to DEBUG.
+                Defaults to False.
 
         """
 
@@ -206,8 +208,12 @@ class Recipe:
                                    'does not exist:' + f' {path_var.orig_data_path}')
 
         # Start the dvas logging
+        if debug:
+            loglvl = 'DEBUG'
+        else:
+            loglvl = rcp_data['rcp_params']['general']['log_lvl']
         Log.start_log(rcp_data['rcp_params']['general']['log_mode'],
-                      level=rcp_data['rcp_params']['general']['log_lvl'])
+                      level=loglvl)
 
         logger.info('Launching the %s recipe.', self._name)
 
