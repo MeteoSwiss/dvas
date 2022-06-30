@@ -16,6 +16,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [fpavogt, 2022-05-11] Add colors to on-screen logging
  - [fpavogt, 2022-05-05] Fix #209 by returning full covariance matrices and plotting them
 ### Fixed:
+ - [fpavogt, 2022-06-30] Fix #222 - prf.has_flg() now returns bool instead of int64
+ - [fpavogt, 2022-06-30] Fix #223 - add --debug option to dvas_run_recipe entry point
  - [fpavogt, 2022-05-17] Fix wrong convention in get_shifts_from_alt
  - [fpavogt, 2022-04-26] Fix #205 with a dedicated fix in the uaii2022.basic.cleanup recipe step
  - [fpavogt, 2022-04-14] Fix #208 by improving dvas plots

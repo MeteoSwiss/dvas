@@ -138,7 +138,7 @@ def cleanup_steps(prfs, resampling_freq, crop_descent, timeofday=None):
     # Crop the descent data if warranted
     if crop_descent:
         for (ind, prf) in enumerate(prfs):
-            prfs[ind].data = prf.data.loc[prf.has_flg(FLG_DESCENT) == 0]
+            prfs[ind].data = prf.data.loc[~prf.has_flg(FLG_DESCENT)]
 
     # Add the TimeOfDay tag, if warranted
     if timeofday is not None:

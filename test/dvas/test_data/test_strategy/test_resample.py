@@ -62,7 +62,7 @@ class TestResampleStrategy:
         assert np.unique(np.diff(tdts))[0] == np.timedelta64(1, 's')
 
         # Was the flag applied correctly ?
-        assert all(out.profiles[0].has_flg('interp') == [0, 0, 1])
+        assert all(out.profiles[0].has_flg('interp') == [False, False, True])
 
     def test_resample_gdp(self):
         """Test rebase method"""
@@ -99,4 +99,4 @@ class TestResampleStrategy:
         assert all(out.profiles[0].data.loc[2, 'uct'] == 1)
 
         # Was the flag applied correctly ?
-        assert all(out.profiles[0].has_flg('interp') == [0, 0, 1])
+        assert all(out.profiles[0].has_flg('interp') == [False, False, True])
