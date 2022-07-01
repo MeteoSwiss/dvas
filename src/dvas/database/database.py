@@ -19,7 +19,6 @@ from peewee import chunked, DoesNotExist
 from playhouse.shortcuts import model_to_dict
 import numpy as np
 from pandas import Timestamp
-#from pampy.helpers import Iterable, Union
 from collections.abc import Iterable
 
 # Import from current package
@@ -661,6 +660,10 @@ class InfoManagerMetaData(dict):
     Note:
         This class is used to bypass the missing class Mapping in
         pampy package.
+
+    Todo:
+        We do not use pampy anymore as of v0.6. Do we need to do something about this ?
+        fpavogt, 01.07.2022
 
     """
 

@@ -13,7 +13,6 @@ from pathlib import Path
 import re
 from abc import ABC, ABCMeta, abstractmethod
 from contextlib import contextmanager
-#from pampy.helpers import Union, Iterable
 from collections.abc import Iterable
 
 # Import current package's modules

@@ -19,7 +19,6 @@ from functools import reduce
 from datetime import datetime
 from pandas import DataFrame
 from pandas import Timestamp
-#from pampy.helpers import Iterable, Union
 from peewee import JOIN
 from playhouse.shortcuts import model_to_dict
 

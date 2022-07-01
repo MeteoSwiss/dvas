@@ -21,8 +21,6 @@ from abc import ABC, ABCMeta, abstractmethod
 from contextlib import AbstractContextManager
 from weakref import WeakValueDictionary
 from operator import getitem
-#from pampy import match as pmatch
-#from pampy import MatchError
 from pandas import to_datetime
 
 # Import from this module
@@ -122,8 +120,6 @@ class RequiredAttrMetaClass(ABCMeta):
                 )
                 raise ValueError(errmsg)
 
-            # TODO
-            # Use pampy to check pattern
             obj_attr = getattr(obj, attr_name)
             if not isinstance(obj_attr, dtype):
                 errmsg = (
@@ -307,6 +303,9 @@ class TypedProperty:
             allow_none (bool, `optional`): Allow none value (bypass pampy match and setter fct).
                 Defaults to False.
 
+        Note:
+            pampy no longer used from v0.6 onwards ...
+
         """
         # Set attributes
         self._match = match
@@ -334,20 +333,6 @@ class TypedProperty:
             else:
                 raise DvasError(f'Bad type while assignment of {val}. ' +
                                 f'Expected {self._match}. Received {type(val)}')
-
-            '''
-            try:
-                match_tuple = pmatch(val, self._match, lambda *x: x)
-
-            except (MatchError, TypeError) as first_error:
-                raise TypeError(
-                    f'Bad type while assignment of {val}. ' +
-                    f'Expected {self._pampy_match}. Received {type(val)}') from first_error
-
-            # Untuple
-            if len(match_tuple) == 1:
-                match_tuple = match_tuple[0]
-            '''
 
             # Apply setter function
             try:

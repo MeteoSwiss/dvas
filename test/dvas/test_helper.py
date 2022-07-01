@@ -16,7 +16,6 @@ from datetime import datetime
 from abc import ABC
 from collections.abc import Iterable
 import pytest
-#from pampy import ANY
 
 # Import from current package
 from dvas.helper import SingleInstanceMetaClass

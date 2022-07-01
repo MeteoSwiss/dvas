@@ -15,7 +15,6 @@ from logging import StreamHandler, FileHandler
 from datetime import datetime
 import inspect
 from functools import wraps
-#from pampy.helpers import Union
 
 # Current package import
 from .helper import TypedProperty as TProp
