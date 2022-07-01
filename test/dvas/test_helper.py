@@ -14,8 +14,9 @@ from pathlib import Path
 import inspect
 from datetime import datetime
 from abc import ABC
+from collections.abc import Iterable
 import pytest
-from pampy import ANY
+#from pampy import ANY
 
 # Import from current package
 from dvas.helper import SingleInstanceMetaClass
@@ -101,16 +102,16 @@ class TestTypedProperty:
         """Class used to do checks"""
         my_str = TypedProperty(str)
         my_upper_str = TypedProperty(str, lambda x: x.upper())
-        my_list = TypedProperty([1, ANY])
+        my_list = TypedProperty(Iterable)
         my_truncated_str = TypedProperty(
             str, my_output_fct, args=(2,), kwargs={'start': 3})
-        my_matched_str = TypedProperty(
-            TypedProperty.re_str_choice(['A', 'B']), lambda x: x[0]
-        )
-        my_matched_str_ic = TypedProperty(
-            TypedProperty.re_str_choice(['A', 'B'], ignore_case=True),
-            lambda x: x[0]
-        )
+        #my_matched_str = TypedProperty(
+        #    TypedProperty.re_str_choice(['A', 'B']), lambda x: x[0]
+        #)
+        #my_matched_str_ic = TypedProperty(
+        #    TypedProperty.re_str_choice(['A', 'B'], ignore_case=True),
+        #    lambda x: x[0]
+        #)
         my_allow_none = TypedProperty(str, allow_none=True)
 
     # Create instance
@@ -120,17 +121,17 @@ class TestTypedProperty:
         """Method to test type checking"""
         self.inst.my_str = 'a'
         self.inst.my_list = [1, 2]
-        self.inst.my_matched_str = 'A'
-        self.inst.my_matched_str_ic = 'a'
+        #self.inst.my_matched_str = 'A'
+        #self.inst.my_matched_str_ic = 'a'
 
-        with pytest.raises(TypeError):
+        with pytest.raises(DvasError):
             self.inst.my_str = 1
 
-        with pytest.raises(TypeError):
-            self.inst.my_list = [2, 1]
+        #with pytest.raises(DvasError):
+        #    self.inst.my_list = [2, 1]
 
-        with pytest.raises(TypeError):
-            self.inst.my_matched_str = 'C'
+        #with pytest.raises(TypeError):
+        #    self.inst.my_matched_str = 'C'
 
     def test_setter_fct(self):
         """Method used to test setter function"""
@@ -140,8 +141,8 @@ class TestTypedProperty:
         self.inst.my_truncated_str = 'abcde'
         assert self.inst.my_truncated_str == 'de'
 
-        self.inst.my_matched_str = 'A'
-        assert self.inst.my_matched_str == 'A'
+        #self.inst.my_matched_str = 'A'
+        #assert self.inst.my_matched_str == 'A'
 
     def test_allow_none(self):
         """Method used to test allow None"""

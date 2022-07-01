@@ -19,7 +19,7 @@ rcp_paths:
         path: /Users/fvogt/Projects/MCH/UAII2022/dvas/codedev/src/dvas_demo
     orig_data_path:
         #name: test_flights_MCH/20220523T070000/
-        name: test_flights_DWD/20220506_1103
+        name: test_flights_DWD/20220126_1651
         path: /Users/fvogt/Projects/MCH/UAII2022/dvas/testzone/procdata_full/rs
     local_db_path:
         name: db

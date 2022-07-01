@@ -15,7 +15,7 @@ from logging import StreamHandler, FileHandler
 from datetime import datetime
 import inspect
 from functools import wraps
-from pampy.helpers import Union
+#from pampy.helpers import Union
 
 # Current package import
 from .helper import TypedProperty as TProp
@@ -145,10 +145,8 @@ class LogManager:
         'C': 'CRITICAL'
     }
 
-    log_mode = TProp(
-        Union[bool, int],
-        setter_fct=lambda x: int(x) if (0 <= x <= 3) or (isinstance(x, bool)) else 0
-    )
+    log_mode = TProp(bool | int,
+                     setter_fct=lambda x: int(x) if (0 <= x <= 3) or (isinstance(x, bool)) else 0)
 
     """str: Log output mode. Defaults to 1.
         No log: False|0
@@ -158,11 +156,8 @@ class LogManager:
     """
 
     #: str: Log level. Default to 'INFO'
-    log_level = TProp(
-        TProp.re_str_choice(list(_LEVEL_DICT.keys()), ignore_case=True),
-        setter_fct=lambda x, *args: args[0][x[0].upper()],
-        args=(_LEVEL_DICT,)
-    )
+    log_level = TProp(str, setter_fct=lambda x, *args: args[0][x[0].upper()],
+                      args=(_LEVEL_DICT,))
 
     def __init__(self, mode, level):
         """Args:

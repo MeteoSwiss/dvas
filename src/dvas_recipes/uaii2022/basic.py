@@ -169,7 +169,7 @@ def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
         fix_gph_uct (list, optional): list of mid values for which to correct NaN values (see #205).
             Defaults to None.
         check_tropopause (bool, optional): if True, will compare the dvas tropopause to the GRUAN
-            one. Defaults to False.
+            one. Defaults to False. Raises a log error if the dvas measure is >20m off.
         **args: arguments to be fed to :py:func:`.cleanup_steps`.
 
     """
@@ -253,9 +253,21 @@ def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
                 # Let's compute the dvas tropopause
                 dvas_trop = tools.find_tropopause(gdp_prf, algo='gruan')
 
-                logger.info('GRUAN tropopause: %s --- %s :dvas tropopause (%s)',
-                            gdp_prf.info.metadata['gruan_tropopause'],
-                            dvas_trop[1], gdp_prf.info.src)
+                # Raise a log error if we are more than 20m off, or if the format is not understood.
+                match gdp_prf.info.metadata['gruan_tropopause'].split(' '):
+                    case [val, 'gpm']:
+
+                        msg = 'Tropopause - GRUAN: {} [m] vs {} [m] :dvas ({})'.format(
+                            val, dvas_trop[1], gdp_prf.info.src)
+
+                        if abs(float(val)-dvas_trop[1]) <= 20:
+                            logger.info(msg)
+                        else:
+                            logger.error(msg)
+
+                    case _:
+                        logger.error('Unknown GRUAN tropopause format: %s',
+                            gdp_prf.info.metadata['gruan_tropopause'])
 
         # Now launch more generic cleanup steps
         cleanup_steps(gdp_prfs, **args, timeofday=timeofday)

@@ -12,13 +12,14 @@ Module contents: Local database exploring tools
 # Import from python packages
 import logging
 from abc import abstractmethod, ABCMeta
+from collections.abc import Iterable
 import re
 import operator
 from functools import reduce
 from datetime import datetime
 from pandas import DataFrame
 from pandas import Timestamp
-from pampy.helpers import Iterable, Union
+#from pampy.helpers import Iterable, Union
 from peewee import JOIN
 from playhouse.shortcuts import model_to_dict
 
@@ -32,7 +33,7 @@ from .model import InfosTags as TableInfosTags
 from .model import DataSource as TablDataSource
 from .model import Model as TableModel
 from ..hardcoded import TAG_EMPTY, TAG_RAW, TAG_GDP
-from ..hardcoded import EID_PAT, RID_PAT, TOD_PAT, TOD_VALS
+from ..hardcoded import EID_PAT, RID_PAT, TOD_PAT
 from ..helper import TypedProperty as TProp
 from ..helper import check_datetime
 from ..errors import SearchError
@@ -403,7 +404,7 @@ class DatetimeExpr(TerminalSearchInfoExpr):
         '>=': operator.ge,
         '<=': operator.le,
     }
-    expression = TProp(Union[str, Timestamp, datetime], check_datetime)
+    expression = TProp(str | Timestamp | datetime, check_datetime)
 
     def __init__(self, arg, op='=='):
         self.expression = arg
@@ -417,10 +418,8 @@ class DatetimeExpr(TerminalSearchInfoExpr):
 class SerialNumberExpr(TerminalSearchInfoExpr):
     """Serial number filter"""
 
-    expression = TProp(
-        Union[str, Iterable[str]],
-        setter_fct=lambda x: [x] if isinstance(x, str) else list(x)
-    )
+    expression = TProp(str | Iterable,
+                       setter_fct=lambda x: [x] if isinstance(x, str) else list(x))
 
     def get_filter(self):
         """Implement get_filter method"""
@@ -430,10 +429,8 @@ class SerialNumberExpr(TerminalSearchInfoExpr):
 class ProductExpr(TerminalSearchInfoExpr):
     """Product filter"""
 
-    expression = TProp(
-        Union[int, Iterable[int]],
-        setter_fct=lambda x: [x] if isinstance(x, int) else list(x)
-    )
+    expression = TProp(int | Iterable,
+                       setter_fct=lambda x: [x] if isinstance(x, int) else list(x))
 
     def get_filter(self):
         """Implement get_filter method"""
@@ -443,9 +440,7 @@ class ProductExpr(TerminalSearchInfoExpr):
 class TagExpr(TerminalSearchInfoExpr):
     """Tag filter"""
 
-    expression = TProp(
-        Union[str, Iterable[str]], lambda x: set((x,)) if isinstance(x, str) else set(x)
-    )
+    expression = TProp(str | Iterable, lambda x: set((x,)) if isinstance(x, str) else set(x))
 
     def get_filter(self):
         """Implement get_filter method"""
