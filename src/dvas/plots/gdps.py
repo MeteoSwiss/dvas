@@ -50,13 +50,14 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     fig = plt.figure(figsize=(pu.WIDTH_TWOCOL, 6.5))
 
     # Create a gridspec structure
-    gs_info = gridspec.GridSpec(2, 1, height_ratios=[1, 1], width_ratios=[1],
+    gs_info = gridspec.GridSpec(3, 1, height_ratios=[1, 1, 0.2], width_ratios=[1],
                                 left=0.09, right=0.87, bottom=0.23, top=0.93,
-                                wspace=0.5, hspace=0.1)
+                                wspace=0.5, hspace=0.05)
 
     # Create the axes - one for the profiles, and one for uctot, ucr, ucs, uct, ucu
     ax0 = fig.add_subplot(gs_info[0, 0])
     ax1 = fig.add_subplot(gs_info[1, 0], sharex=ax0)
+    ax2 = fig.add_subplot(gs_info[2, 0], sharex=ax0)
 
     # Extract the DataFrames from the MultiGDPProfile instances
     cws = cws_prf.get_prms([PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU,
@@ -107,6 +108,10 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
                      'Axis will be cropped from gdp_vs_cws')
         show_alts = False
 
+    # What is the sum of the weights of each GDPs (i.e. the sum of 1/uc_tot**2) ?
+    wtot = (1/gdps.loc[:, (slice(None), 'uc_tot')]**2).sum(axis=1).values
+    limlow = np.zeros_like(wtot)
+
     # Very well, let us plot all these things.
     for gdp_ind in range(len(gdps.columns.levels[0])):
 
@@ -123,6 +128,12 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
         ax1.plot(idxs, delta, drawstyle='steps-mid', lw=0.5, ls='-')
         ax1.fill_between(idxs, delta-k_lvl*gdp['uc_tot'], delta+k_lvl*gdp['uc_tot'], alpha=0.3,
                          step='mid')
+        
+        # Plot the relative contribution of each GDP to the CWS
+        limhigh = limlow + (1/gdp.uc_tot**2).values/wtot
+        limhigh[cws.val.isna()] = np.nan
+        ax2.fill_between(idxs, limlow, limhigh, step='mid')
+        limlow = limhigh
 
     # Then also plot the CWS uncertainty
     ax0.plot(idxs, cws['val'], color=pu.CLRS['cws_1'], lw=0.5, ls='-', drawstyle='steps-mid',
@@ -148,7 +159,7 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
                            loi,
                            'gph values of the CWS profile. Why ?!')
 
-        for ax in [ax0, ax1]:
+        for ax in [ax0, ax1, ax2]:
             ax.axvline(loi_idx, ls=':', lw=1, c='k')
             trans = transforms.blended_transform_factory(ax.transData, ax.transAxes)
             ax0.text(loi_idx, 0.95, symb, transform=trans, ha='center', va='top',
@@ -166,27 +177,30 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     altlbl += ' [{}]'.format(cws_prf.var_info[PRF_ALT]['prm_unit'])
 
     # idx axis
-    ax1.text(1.02, -0.11, pu.fix_txt(idxlbl), ha='left', va='center', transform=ax1.transAxes)
+    ax2.text(1.02, -0.4, pu.fix_txt(idxlbl), ha='left', va='center', transform=ax2.transAxes)
 
     # Now deal with the multiple axis I need to show.
     if show_tdts:
-        tdtax = pu.add_sec_axis(ax1, idxs, tdts, offset=-0.25, which='x')
+        tdtax = pu.add_sec_axis(ax2, idxs, tdts, offset=-1.25, which='x')
         tdtax.tick_params(labelsize='small')
-        ax1.text(1.02, -0.34, pu.fix_txt(tdtlbl), ha='left', va='center', transform=ax1.transAxes,
+        ax2.text(1.02, -1.65, pu.fix_txt(tdtlbl), ha='left', va='center', transform=ax2.transAxes,
                  fontsize='small')
 
     if show_alts:
-        altax = pu.add_sec_axis(ax1, idxs, alts, offset=-0.5, which='x')
+        altax = pu.add_sec_axis(ax2, idxs, alts, offset=-2.5, which='x')
         altax.tick_params(labelsize='small')
-        ax1.text(1.02, -0.59, pu.fix_txt(altlbl), ha='left', va='center', transform=ax1.transAxes,
+        ax2.text(1.02, -2.9, pu.fix_txt(altlbl), ha='left', va='center', transform=ax2.transAxes,
                  fontsize='small')
 
     # Legends, labels, etc ...
     ax0.text(-0.1, 0.5, pu.fix_txt(ylbl), ha='left', va='center',
              transform=ax0.transAxes, rotation=90)
     plt.setp(ax0.get_xticklabels(), visible=False)
+    plt.setp(ax1.get_xticklabels(), visible=False)
     ax1.text(-0.1, 0.5, pu.fix_txt(r'$\Delta$' + ylbl), ha='left', va='center',
              transform=ax1.transAxes, rotation=90)
+    ax2.set_ylim((0, 1))
+    ax2.set_yticks([])
 
     # Crop the plot to the regions with valid ref_altitudes
     ax0.set_xlim((min_valid_alt_idx, max_valid_alt_idx))
