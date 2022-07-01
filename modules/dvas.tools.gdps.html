@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -30,7 +31,7 @@
             <a href="../index.html" class="icon icon-home"> dvas
           </a>
               <div class="version">
-                0.5.0
+                0.6.0.dev1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -106,16 +107,16 @@
            <div itemprop="articleBody">
              
   <section id="module-dvas.tools.gdps">
-<span id="dvas-tools-gdps-package"></span><h1>dvas.tools.gdps package<a class="headerlink" href="#module-dvas.tools.gdps" title="Permalink to this headline"></a></h1>
+<span id="dvas-tools-gdps-package"></span><h1>dvas.tools.gdps package<a class="headerlink" href="#module-dvas.tools.gdps" title="Permalink to this heading"></a></h1>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>This sub-package contains GRUAN-related tools.</p>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-dvas.tools.gdps.correlations">
-<span id="dvas-tools-gdps-correlations-module"></span><h2>dvas.tools.gdps.correlations module<a class="headerlink" href="#module-dvas.tools.gdps.correlations" title="Permalink to this headline"></a></h2>
+<span id="dvas-tools-gdps-correlations-module"></span><h2>dvas.tools.gdps.correlations module<a class="headerlink" href="#module-dvas.tools.gdps.correlations" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -200,7 +201,7 @@ events, with distinct radiosondes models and serial numbers.</p>
 
 </section>
 <section id="module-dvas.tools.gdps.gdps">
-<span id="dvas-tools-gdps-gdps-module"></span><h2>dvas.tools.gdps.gdps module<a class="headerlink" href="#module-dvas.tools.gdps.gdps" title="Permalink to this headline"></a></h2>
+<span id="dvas-tools-gdps-gdps-module"></span><h2>dvas.tools.gdps.gdps module<a class="headerlink" href="#module-dvas.tools.gdps.gdps" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -230,14 +231,19 @@ disable multiprocessing. Defaults to 1.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>(dvas.data.data.MultiCWSProfile)</em> – the combined working standard profile.</p>
+<dd class="field-even"><p><p><em>(dvas.data.data.MultiCWSProfile, dict)</em> –</p>
+<dl class="simple">
+<dt>the combined working standard profile, and the</dt><dd><p>a dictionnary with the full covariance matrices for the different uncertainty types.</p>
+</dd>
+</dl>
+</p>
 </dd>
 </dl>
 </dd></dl>
 
 </section>
 <section id="module-dvas.tools.gdps.stats">
-<span id="dvas-tools-gdps-stats-module"></span><h2>dvas.tools.gdps.stats module<a class="headerlink" href="#module-dvas.tools.gdps.stats" title="Permalink to this headline"></a></h2>
+<span id="dvas-tools-gdps-stats-module"></span><h2>dvas.tools.gdps.stats module<a class="headerlink" href="#module-dvas.tools.gdps.stats" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -345,7 +351,7 @@ incompatibilities. Defaults to None = [1].</p></li>
 
 </section>
 <section id="module-dvas.tools.gdps.utils">
-<span id="dvas-tools-gdps-utils-module"></span><h2>dvas.tools.gdps.utils module<a class="headerlink" href="#module-dvas.tools.gdps.utils" title="Permalink to this headline"></a></h2>
+<span id="dvas-tools-gdps-utils-module"></span><h2>dvas.tools.gdps.utils module<a class="headerlink" href="#module-dvas.tools.gdps.utils" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -464,7 +470,12 @@ to the profile number (e.g. 0,1,2…), and the level 1 is the original column na
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>pandas.DataFrame</em> – the processing outcome, including all the errors.</p>
+<dd class="field-even"><p><p><em>pandas.DataFrame, dict</em> –</p>
+<dl class="simple">
+<dt>the processing outcome, including all the errors,</dt><dd><p>and the full correlation matrices (one per uncertainty type) as a dict.</p>
+</dd>
+</dl>
+</p>
 </dd>
 </dl>
 <div class="admonition note">

@@ -41,10 +41,10 @@ dvas.config.definitions.origdata module
    :undoc-members:
    :show-inheritance:
 
-dvas.config.definitions.parameter module
-----------------------------------------
+dvas.config.definitions.prm module
+----------------------------------
 
-.. automodule:: dvas.config.definitions.parameter
+.. automodule:: dvas.config.definitions.prm
    :members:
    :undoc-members:
    :show-inheritance:

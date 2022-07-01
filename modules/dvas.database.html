@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -30,7 +31,7 @@
             <a href="../index.html" class="icon icon-home"> dvas
           </a>
               <div class="version">
-                0.5.0
+                0.6.0.dev1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -105,15 +106,15 @@
            <div itemprop="articleBody">
              
   <section id="module-dvas.database">
-<span id="dvas-database-package"></span><h1>dvas.database package<a class="headerlink" href="#module-dvas.database" title="Permalink to this headline"></a></h1>
+<span id="dvas-database-package"></span><h1>dvas.database package<a class="headerlink" href="#module-dvas.database" title="Permalink to this heading"></a></h1>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-dvas.database.database">
-<span id="dvas-database-database-module"></span><h2>dvas.database.database module<a class="headerlink" href="#module-dvas.database.database" title="Permalink to this headline"></a></h2>
+<span id="dvas-database-database-module"></span><h2>dvas.database.database module<a class="headerlink" href="#module-dvas.database.database" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -151,7 +152,7 @@
 </div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.database.DatabaseManager.DB_TABLES">
-<span class="sig-name descname"><span class="pre">DB_TABLES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[&lt;Model:</span> <span class="pre">Info&gt;,</span> <span class="pre">&lt;Model:</span> <span class="pre">InfosObjects&gt;,</span> <span class="pre">&lt;Model:</span> <span class="pre">Object&gt;,</span> <span class="pre">&lt;Model:</span> <span class="pre">Model&gt;,</span> <span class="pre">&lt;Model:</span> <span class="pre">InfosTags&gt;,</span> <span class="pre">&lt;Model:</span> <span class="pre">Tag&gt;,</span> <span class="pre">&lt;Model:</span> <span class="pre">DataSource&gt;,</span> <span class="pre">&lt;Model:</span> <span class="pre">Data&gt;,</span> <span class="pre">&lt;Model:</span> <span class="pre">MetaData&gt;,</span> <span class="pre">&lt;Model:</span> <span class="pre">Parameter&gt;,</span> <span class="pre">&lt;Model:</span> <span class="pre">Flg&gt;]</span></em><a class="headerlink" href="#dvas.database.database.DatabaseManager.DB_TABLES" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">DB_TABLES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[&lt;Model:</span> <span class="pre">Info&gt;,</span> <span class="pre">&lt;Model:</span> <span class="pre">InfosObjects&gt;,</span> <span class="pre">&lt;Model:</span> <span class="pre">Object&gt;,</span> <span class="pre">&lt;Model:</span> <span class="pre">Model&gt;,</span> <span class="pre">&lt;Model:</span> <span class="pre">InfosTags&gt;,</span> <span class="pre">&lt;Model:</span> <span class="pre">Tag&gt;,</span> <span class="pre">&lt;Model:</span> <span class="pre">DataSource&gt;,</span> <span class="pre">&lt;Model:</span> <span class="pre">Data&gt;,</span> <span class="pre">&lt;Model:</span> <span class="pre">MetaData&gt;,</span> <span class="pre">&lt;Model:</span> <span class="pre">Prm&gt;,</span> <span class="pre">&lt;Model:</span> <span class="pre">Flg&gt;]</span></em><a class="headerlink" href="#dvas.database.database.DatabaseManager.DB_TABLES" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
@@ -280,6 +281,11 @@ InfoManager.from_dict input args requirements.</p></li>
 <p>This class is used to bypass the missing class Mapping in
 pampy package.</p>
 </div>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<p>We do not use pampy anymore as of v0.6. Do we need to do something about this ?
+fpavogt, 01.07.2022</p>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.database.database.InfoManagerMetaData.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.database.InfoManagerMetaData.__init__" title="Permalink to this definition"></a></dt>
@@ -400,6 +406,17 @@ pampy package.</p>
 <dt class="sig sig-object py" id="dvas.database.database.InfoManager.rid">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rid</span></span><a class="headerlink" href="#dvas.database.database.InfoManager.rid" title="Permalink to this definition"></a></dt>
 <dd><p>Rig ID which match 1st corresponding pattern in tags. Defaults to None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="dvas.database.database.InfoManager.tod">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tod</span></span><a class="headerlink" href="#dvas.database.database.InfoManager.tod" title="Permalink to this definition"></a></dt>
+<dd><p>TimeOfDay tag which match 1st corresponding pattern. Defaults to None.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
@@ -555,7 +572,7 @@ tuple: Original list index</p>
 
 </section>
 <section id="module-dvas.database.explorer">
-<span id="dvas-database-explorer-module"></span><h2>dvas.database.explorer module<a class="headerlink" href="#module-dvas.database.explorer" title="Permalink to this headline"></a></h2>
+<span id="dvas-database-explorer-module"></span><h2>dvas.database.explorer module<a class="headerlink" href="#module-dvas.database.explorer" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -570,7 +587,7 @@ tuple: Original list index</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.explorer.Parser">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.explorer.</span></span><span class="sig-name descname"><span class="pre">Parser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prog=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usage=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epilog=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents=[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">formatter_class=&lt;class</span> <span class="pre">'argparse.HelpFormatter'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix_chars='-'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fromfile_prefix_chars=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">argument_default=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conflict_handler='error'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_help=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_abbrev=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exit_on_error=True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.explorer.Parser" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">argparse.ArgumentParser</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ArgumentParser</span></code></p>
 <p>Parser class</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.database.explorer.Parser.exit">
@@ -597,7 +614,7 @@ tuple: Original list index</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.explorer.DatabasePrompt">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.explorer.</span></span><span class="sig-name descname"><span class="pre">DatabasePrompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.explorer.DatabasePrompt" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">cmd.Cmd</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Cmd</span></code></p>
 <p>Class for DB prompt command interface</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.explorer.DatabasePrompt.prompt">
@@ -692,7 +709,7 @@ tuple: Original list index</p>
 
 </section>
 <section id="module-dvas.database.model">
-<span id="dvas-database-model-module"></span><h2>dvas.database.model module<a class="headerlink" href="#module-dvas.database.model" title="Permalink to this headline"></a></h2>
+<span id="dvas-database-model-module"></span><h2>dvas.database.model module<a class="headerlink" href="#module-dvas.database.model" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -716,14 +733,38 @@ tuple: Original list index</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="dvas.database.model.TimestampTZField">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.model.</span></span><span class="sig-name descname"><span class="pre">TimestampTZField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">null</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unique</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constraints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sequence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unindexed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">choices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">help_text</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.model.TimestampTZField" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Field</span></code></p>
+<p>A timestamp field that supports a timezone by serializing the value
+with isoformat.</p>
+<p>Source: Justin Turpin, <a class="reference external" href="https://compileandrun.com/python-peewee-timezone-aware-datetime/">https://compileandrun.com/python-peewee-timezone-aware-datetime/</a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dvas.database.model.TimestampTZField.field_type">
+<span class="sig-name descname"><span class="pre">field_type</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TEXT'</span></em><a class="headerlink" href="#dvas.database.model.TimestampTZField.field_type" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dvas.database.model.TimestampTZField.db_value">
+<span class="sig-name descname"><span class="pre">db_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#dvas.database.model.TimestampTZField.db_value" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dvas.database.model.TimestampTZField.python_value">
+<span class="sig-name descname"><span class="pre">python_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#dvas.database.model.TimestampTZField.python_value" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.model.MetadataModel">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.model.</span></span><span class="sig-name descname"><span class="pre">MetadataModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.model.MetadataModel" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">peewee.Model</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
 <p>Metadata model class</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.model.MetadataModel.DoesNotExist">
 <span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#dvas.database.model.MetadataModel.DoesNotExist" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.model.MetadataModelDoesNotExist</span></code></p>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataModelDoesNotExist</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -736,7 +777,7 @@ tuple: Original list index</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.model.Model">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.model.</span></span><span class="sig-name descname"><span class="pre">Model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.model.Model" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.database.model.MetadataModel" title="dvas.database.model.MetadataModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.model.MetadataModel</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.database.model.MetadataModel" title="dvas.database.model.MetadataModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataModel</span></code></a></p>
 <p>Model table, intended as object model</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.model.Model.mdl_id">
@@ -761,7 +802,7 @@ tuple: Original list index</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.model.Model.DoesNotExist">
 <span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#dvas.database.model.Model.DoesNotExist" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.model.ModelDoesNotExist</span></code></p>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelDoesNotExist</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -774,7 +815,7 @@ tuple: Original list index</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.model.Object">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.model.</span></span><span class="sig-name descname"><span class="pre">Object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.model.Object" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.database.model.MetadataModel" title="dvas.database.model.MetadataModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.model.MetadataModel</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.database.model.MetadataModel" title="dvas.database.model.MetadataModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataModel</span></code></a></p>
 <p>Object table</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.model.Object.oid">
@@ -799,7 +840,7 @@ tuple: Original list index</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.model.Object.DoesNotExist">
 <span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#dvas.database.model.Object.DoesNotExist" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.model.ObjectDoesNotExist</span></code></p>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">ObjectDoesNotExist</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -815,39 +856,39 @@ tuple: Original list index</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="dvas.database.model.Parameter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.model.</span></span><span class="sig-name descname"><span class="pre">Parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.model.Parameter" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.database.model.MetadataModel" title="dvas.database.model.MetadataModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.model.MetadataModel</span></code></a></p>
+<dt class="sig sig-object py" id="dvas.database.model.Prm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.model.</span></span><span class="sig-name descname"><span class="pre">Prm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.model.Prm" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dvas.database.model.MetadataModel" title="dvas.database.model.MetadataModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataModel</span></code></a></p>
 <p>Parameter model</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="dvas.database.model.Parameter.prm_id">
-<span class="sig-name descname"><span class="pre">prm_id</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;AutoField:</span> <span class="pre">Parameter.prm_id&gt;</span></em><a class="headerlink" href="#dvas.database.model.Parameter.prm_id" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.database.model.Prm.prm_id">
+<span class="sig-name descname"><span class="pre">prm_id</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;AutoField:</span> <span class="pre">Prm.prm_id&gt;</span></em><a class="headerlink" href="#dvas.database.model.Prm.prm_id" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="dvas.database.model.Parameter.prm_name">
-<span class="sig-name descname"><span class="pre">prm_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;TextField:</span> <span class="pre">Parameter.prm_name&gt;</span></em><a class="headerlink" href="#dvas.database.model.Parameter.prm_name" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.database.model.Prm.prm_name">
+<span class="sig-name descname"><span class="pre">prm_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;TextField:</span> <span class="pre">Prm.prm_name&gt;</span></em><a class="headerlink" href="#dvas.database.model.Prm.prm_name" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="dvas.database.model.Parameter.prm_desc">
-<span class="sig-name descname"><span class="pre">prm_desc</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;TextField:</span> <span class="pre">Parameter.prm_desc&gt;</span></em><a class="headerlink" href="#dvas.database.model.Parameter.prm_desc" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.database.model.Prm.prm_desc">
+<span class="sig-name descname"><span class="pre">prm_desc</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;TextField:</span> <span class="pre">Prm.prm_desc&gt;</span></em><a class="headerlink" href="#dvas.database.model.Prm.prm_desc" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="dvas.database.model.Parameter.prm_unit">
-<span class="sig-name descname"><span class="pre">prm_unit</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;TextField:</span> <span class="pre">Parameter.prm_unit&gt;</span></em><a class="headerlink" href="#dvas.database.model.Parameter.prm_unit" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.database.model.Prm.prm_unit">
+<span class="sig-name descname"><span class="pre">prm_unit</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;TextField:</span> <span class="pre">Prm.prm_unit&gt;</span></em><a class="headerlink" href="#dvas.database.model.Prm.prm_unit" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="dvas.database.model.Parameter.DoesNotExist">
-<span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#dvas.database.model.Parameter.DoesNotExist" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.model.ParameterDoesNotExist</span></code></p>
+<dt class="sig sig-object py" id="dvas.database.model.Prm.DoesNotExist">
+<span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#dvas.database.model.Prm.DoesNotExist" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">PrmDoesNotExist</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="dvas.database.model.Parameter.info">
-<span class="sig-name descname"><span class="pre">info</span></span><a class="headerlink" href="#dvas.database.model.Parameter.info" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.database.model.Prm.info">
+<span class="sig-name descname"><span class="pre">info</span></span><a class="headerlink" href="#dvas.database.model.Prm.info" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -855,7 +896,7 @@ tuple: Original list index</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.model.Flg">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.model.</span></span><span class="sig-name descname"><span class="pre">Flg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.model.Flg" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.database.model.MetadataModel" title="dvas.database.model.MetadataModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.model.MetadataModel</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.database.model.MetadataModel" title="dvas.database.model.MetadataModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataModel</span></code></a></p>
 <p>Flag model</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.model.Flg.flg_id">
@@ -880,7 +921,7 @@ tuple: Original list index</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.model.Flg.DoesNotExist">
 <span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#dvas.database.model.Flg.DoesNotExist" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.model.FlgDoesNotExist</span></code></p>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">FlgDoesNotExist</span></code></p>
 </dd></dl>
 
 </dd></dl>
@@ -888,7 +929,7 @@ tuple: Original list index</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.model.Tag">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.model.</span></span><span class="sig-name descname"><span class="pre">Tag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.model.Tag" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.database.model.MetadataModel" title="dvas.database.model.MetadataModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.model.MetadataModel</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.database.model.MetadataModel" title="dvas.database.model.MetadataModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataModel</span></code></a></p>
 <p>Table containing the tags.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -912,7 +953,7 @@ tuple: Original list index</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.model.Tag.DoesNotExist">
 <span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#dvas.database.model.Tag.DoesNotExist" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.model.TagDoesNotExist</span></code></p>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">TagDoesNotExist</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -925,7 +966,7 @@ tuple: Original list index</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.model.DataSource">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.model.</span></span><span class="sig-name descname"><span class="pre">DataSource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.model.DataSource" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.database.model.MetadataModel" title="dvas.database.model.MetadataModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.model.MetadataModel</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.database.model.MetadataModel" title="dvas.database.model.MetadataModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataModel</span></code></a></p>
 <p>Data source model</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.model.DataSource.id">
@@ -940,7 +981,7 @@ tuple: Original list index</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.model.DataSource.DoesNotExist">
 <span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#dvas.database.model.DataSource.DoesNotExist" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.model.DataSourceDoesNotExist</span></code></p>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">DataSourceDoesNotExist</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -953,7 +994,7 @@ tuple: Original list index</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.model.Info">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.model.</span></span><span class="sig-name descname"><span class="pre">Info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.model.Info" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.database.model.MetadataModel" title="dvas.database.model.MetadataModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.model.MetadataModel</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.database.model.MetadataModel" title="dvas.database.model.MetadataModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataModel</span></code></a></p>
 <p>Info table</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.model.Info.info_id">
@@ -962,7 +1003,7 @@ tuple: Original list index</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.model.Info.edt">
-<span class="sig-name descname"><span class="pre">edt</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;DateTimeField:</span> <span class="pre">Info.edt&gt;</span></em><a class="headerlink" href="#dvas.database.model.Info.edt" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">edt</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;TimestampTZField:</span> <span class="pre">Info.edt&gt;</span></em><a class="headerlink" href="#dvas.database.model.Info.edt" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -990,7 +1031,7 @@ identical info with varying degrees of work steps.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.model.Info.DoesNotExist">
 <span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#dvas.database.model.Info.DoesNotExist" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.model.InfoDoesNotExist</span></code></p>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">InfoDoesNotExist</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1023,7 +1064,7 @@ identical info with varying degrees of work steps.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.model.InfosTags">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.model.</span></span><span class="sig-name descname"><span class="pre">InfosTags</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.model.InfosTags" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.database.model.MetadataModel" title="dvas.database.model.MetadataModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.model.MetadataModel</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.database.model.MetadataModel" title="dvas.database.model.MetadataModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataModel</span></code></a></p>
 <p>Many-to-Many link between Info and Tag tables</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.model.InfosTags.id">
@@ -1043,7 +1084,7 @@ identical info with varying degrees of work steps.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.model.InfosTags.DoesNotExist">
 <span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#dvas.database.model.InfosTags.DoesNotExist" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.model.InfosTagsDoesNotExist</span></code></p>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">InfosTagsDoesNotExist</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1061,7 +1102,7 @@ identical info with varying degrees of work steps.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.model.InfosObjects">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.model.</span></span><span class="sig-name descname"><span class="pre">InfosObjects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.model.InfosObjects" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.database.model.MetadataModel" title="dvas.database.model.MetadataModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.model.MetadataModel</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.database.model.MetadataModel" title="dvas.database.model.MetadataModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataModel</span></code></a></p>
 <p>Many-to-Many link between Info and Instrument tables</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.model.InfosObjects.id">
@@ -1081,7 +1122,7 @@ identical info with varying degrees of work steps.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.model.InfosObjects.DoesNotExist">
 <span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#dvas.database.model.InfosObjects.DoesNotExist" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.model.InfosObjectsDoesNotExist</span></code></p>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">InfosObjectsDoesNotExist</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1099,7 +1140,7 @@ identical info with varying degrees of work steps.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.model.MetaData">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.model.</span></span><span class="sig-name descname"><span class="pre">MetaData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.model.MetaData" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.database.model.MetadataModel" title="dvas.database.model.MetadataModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.model.MetadataModel</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.database.model.MetadataModel" title="dvas.database.model.MetadataModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataModel</span></code></a></p>
 <p>Table containing the profiles metadata.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1145,6 +1186,17 @@ to a profile.</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="dvas.database.model.MetaData.value_datetime">
+<span class="sig-name descname"><span class="pre">value_datetime</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;TimestampTZField:</span> <span class="pre">MetaData.value_datetime&gt;</span></em><a class="headerlink" href="#dvas.database.model.MetaData.value_datetime" title="Permalink to this definition"></a></dt>
+<dd><p>Metadata key datetime value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>datetime.datetime</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.model.MetaData.info">
 <span class="sig-name descname"><span class="pre">info</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;ForeignKeyField:</span> <span class="pre">MetaData.info&gt;</span></em><a class="headerlink" href="#dvas.database.model.MetaData.info" title="Permalink to this definition"></a></dt>
 <dd><p>Link to Info table</p>
@@ -1158,7 +1210,7 @@ to a profile.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.model.MetaData.DoesNotExist">
 <span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#dvas.database.model.MetaData.DoesNotExist" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.model.MetaDataDoesNotExist</span></code></p>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">MetaDataDoesNotExist</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1171,7 +1223,7 @@ to a profile.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.model.Data">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.model.</span></span><span class="sig-name descname"><span class="pre">Data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.model.Data" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.database.model.MetadataModel" title="dvas.database.model.MetadataModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.model.MetadataModel</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.database.model.MetadataModel" title="dvas.database.model.MetadataModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetadataModel</span></code></a></p>
 <p>Table containing the profiles data.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.model.Data.id">
@@ -1191,7 +1243,7 @@ to a profile.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.model.Data.DoesNotExist">
 <span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#dvas.database.model.Data.DoesNotExist" title="Permalink to this definition"></a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.model.DataDoesNotExist</span></code></p>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">DataDoesNotExist</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1208,7 +1260,7 @@ to a profile.</p>
 
 </section>
 <section id="module-dvas.database.search">
-<span id="dvas-database-search-module"></span><h2>dvas.database.search module<a class="headerlink" href="#module-dvas.database.search" title="Permalink to this headline"></a></h2>
+<span id="dvas-database-search-module"></span><h2>dvas.database.search module<a class="headerlink" href="#module-dvas.database.search" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -1305,6 +1357,12 @@ to a profile.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dvas.database.search.SearchInfoExpr.get_tod">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_tod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infos_tags</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.search.SearchInfoExpr.get_tod" title="Permalink to this definition"></a></dt>
+<dd><p>Return the TimeOfDay</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dvas.database.search.SearchInfoExpr.get_isgdp">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_isgdp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infos_tags</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.search.SearchInfoExpr.get_isgdp" title="Permalink to this definition"></a></dt>
 <dd><p>Return eid</p>
@@ -1315,7 +1373,7 @@ to a profile.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.search.LogicalSearchInfoExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.search.</span></span><span class="sig-name descname"><span class="pre">LogicalSearchInfoExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.search.LogicalSearchInfoExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.SearchInfoExpr" title="dvas.database.search.SearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.search.SearchInfoExpr</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.SearchInfoExpr" title="dvas.database.search.SearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">SearchInfoExpr</span></code></a></p>
 <p>Implement an interpret operation for nonterminal symbols in the grammar.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.database.search.LogicalSearchInfoExpr.interpret">
@@ -1334,7 +1392,7 @@ to a profile.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.search.AndExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.search.</span></span><span class="sig-name descname"><span class="pre">AndExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.search.AndExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.LogicalSearchInfoExpr" title="dvas.database.search.LogicalSearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.search.LogicalSearchInfoExpr</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.LogicalSearchInfoExpr" title="dvas.database.search.LogicalSearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">LogicalSearchInfoExpr</span></code></a></p>
 <p>And operation</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.database.search.AndExpr.fct">
@@ -1347,7 +1405,7 @@ to a profile.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.search.OrExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.search.</span></span><span class="sig-name descname"><span class="pre">OrExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.search.OrExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.LogicalSearchInfoExpr" title="dvas.database.search.LogicalSearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.search.LogicalSearchInfoExpr</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.LogicalSearchInfoExpr" title="dvas.database.search.LogicalSearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">LogicalSearchInfoExpr</span></code></a></p>
 <p>Or operation</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.database.search.OrExpr.fct">
@@ -1360,7 +1418,7 @@ to a profile.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.search.NotExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.search.</span></span><span class="sig-name descname"><span class="pre">NotExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.search.NotExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.LogicalSearchInfoExpr" title="dvas.database.search.LogicalSearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.search.LogicalSearchInfoExpr</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.LogicalSearchInfoExpr" title="dvas.database.search.LogicalSearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">LogicalSearchInfoExpr</span></code></a></p>
 <p>Not operation</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.database.search.NotExpr.fct">
@@ -1373,7 +1431,7 @@ to a profile.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.search.TerminalSearchInfoExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.search.</span></span><span class="sig-name descname"><span class="pre">TerminalSearchInfoExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.search.TerminalSearchInfoExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.SearchInfoExpr" title="dvas.database.search.SearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.search.SearchInfoExpr</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.SearchInfoExpr" title="dvas.database.search.SearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">SearchInfoExpr</span></code></a></p>
 <p>Implement an interpret operation associated with terminal symbols in
 the grammar.</p>
 <dl class="py method">
@@ -1393,7 +1451,7 @@ the grammar.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.search.AllExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.search.</span></span><span class="sig-name descname"><span class="pre">AllExpr</span></span><a class="headerlink" href="#dvas.database.search.AllExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.TerminalSearchInfoExpr" title="dvas.database.search.TerminalSearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.search.TerminalSearchInfoExpr</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.TerminalSearchInfoExpr" title="dvas.database.search.TerminalSearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">TerminalSearchInfoExpr</span></code></a></p>
 <p>All filter</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.database.search.AllExpr.get_filter">
@@ -1406,7 +1464,7 @@ the grammar.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.search.DatetimeExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.search.</span></span><span class="sig-name descname"><span class="pre">DatetimeExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'=='</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.search.DatetimeExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.TerminalSearchInfoExpr" title="dvas.database.search.TerminalSearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.search.TerminalSearchInfoExpr</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.TerminalSearchInfoExpr" title="dvas.database.search.TerminalSearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">TerminalSearchInfoExpr</span></code></a></p>
 <p>Datetime filter</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.search.DatetimeExpr.expression">
@@ -1429,7 +1487,7 @@ the grammar.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.search.SerialNumberExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.search.</span></span><span class="sig-name descname"><span class="pre">SerialNumberExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.search.SerialNumberExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.TerminalSearchInfoExpr" title="dvas.database.search.TerminalSearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.search.TerminalSearchInfoExpr</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.TerminalSearchInfoExpr" title="dvas.database.search.TerminalSearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">TerminalSearchInfoExpr</span></code></a></p>
 <p>Serial number filter</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.search.SerialNumberExpr.expression">
@@ -1452,7 +1510,7 @@ the grammar.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.search.ProductExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.search.</span></span><span class="sig-name descname"><span class="pre">ProductExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.search.ProductExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.TerminalSearchInfoExpr" title="dvas.database.search.TerminalSearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.search.TerminalSearchInfoExpr</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.TerminalSearchInfoExpr" title="dvas.database.search.TerminalSearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">TerminalSearchInfoExpr</span></code></a></p>
 <p>Product filter</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.search.ProductExpr.expression">
@@ -1475,7 +1533,7 @@ the grammar.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.search.TagExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.search.</span></span><span class="sig-name descname"><span class="pre">TagExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.search.TagExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.TerminalSearchInfoExpr" title="dvas.database.search.TerminalSearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.search.TerminalSearchInfoExpr</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.TerminalSearchInfoExpr" title="dvas.database.search.TerminalSearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">TerminalSearchInfoExpr</span></code></a></p>
 <p>Tag filter</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.search.TagExpr.expression">
@@ -1498,7 +1556,7 @@ the grammar.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.search.ParameterExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.search.</span></span><span class="sig-name descname"><span class="pre">ParameterExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.search.ParameterExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.TerminalSearchInfoExpr" title="dvas.database.search.TerminalSearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.search.TerminalSearchInfoExpr</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.TerminalSearchInfoExpr" title="dvas.database.search.TerminalSearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">TerminalSearchInfoExpr</span></code></a></p>
 <p>Parameter filter</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.search.ParameterExpr.expression">
@@ -1521,7 +1579,7 @@ the grammar.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.search.RawExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.search.</span></span><span class="sig-name descname"><span class="pre">RawExpr</span></span><a class="headerlink" href="#dvas.database.search.RawExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.TerminalSearchInfoExpr" title="dvas.database.search.TerminalSearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.search.TerminalSearchInfoExpr</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.TerminalSearchInfoExpr" title="dvas.database.search.TerminalSearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">TerminalSearchInfoExpr</span></code></a></p>
 <p>Raw filter</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.database.search.RawExpr.get_filter">
@@ -1534,7 +1592,7 @@ the grammar.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.search.GDPExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.search.</span></span><span class="sig-name descname"><span class="pre">GDPExpr</span></span><a class="headerlink" href="#dvas.database.search.GDPExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.TerminalSearchInfoExpr" title="dvas.database.search.TerminalSearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.search.TerminalSearchInfoExpr</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.TerminalSearchInfoExpr" title="dvas.database.search.TerminalSearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">TerminalSearchInfoExpr</span></code></a></p>
 <p>GDP filter</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.database.search.GDPExpr.get_filter">
@@ -1547,7 +1605,7 @@ the grammar.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.search.OIDExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.search.</span></span><span class="sig-name descname"><span class="pre">OIDExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.search.OIDExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.TerminalSearchInfoExpr" title="dvas.database.search.TerminalSearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.search.TerminalSearchInfoExpr</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.TerminalSearchInfoExpr" title="dvas.database.search.TerminalSearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">TerminalSearchInfoExpr</span></code></a></p>
 <p>OID filter</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.search.OIDExpr.expression">
@@ -1570,7 +1628,7 @@ the grammar.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.search.MIDExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.search.</span></span><span class="sig-name descname"><span class="pre">MIDExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.search.MIDExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.TerminalSearchInfoExpr" title="dvas.database.search.TerminalSearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.search.TerminalSearchInfoExpr</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.TerminalSearchInfoExpr" title="dvas.database.search.TerminalSearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">TerminalSearchInfoExpr</span></code></a></p>
 <p>MID filter</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.search.MIDExpr.expression">
@@ -1644,7 +1702,7 @@ the grammar.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.search.InfoStrategy">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.search.</span></span><span class="sig-name descname"><span class="pre">InfoStrategy</span></span><a class="headerlink" href="#dvas.database.search.InfoStrategy" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.SearchStrategyAC" title="dvas.database.search.SearchStrategyAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.search.SearchStrategyAC</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.SearchStrategyAC" title="dvas.database.search.SearchStrategyAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">SearchStrategyAC</span></code></a></p>
 <p>Search Info strategy</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="dvas.database.search.InfoStrategy.str_expr_dict">
@@ -1695,7 +1753,7 @@ the grammar.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.search.PrmStrategy">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.search.</span></span><span class="sig-name descname"><span class="pre">PrmStrategy</span></span><a class="headerlink" href="#dvas.database.search.PrmStrategy" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.SearchStrategyAC" title="dvas.database.search.SearchStrategyAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.search.SearchStrategyAC</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.SearchStrategyAC" title="dvas.database.search.SearchStrategyAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">SearchStrategyAC</span></code></a></p>
 <p>Search Parameter strategy</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="dvas.database.search.PrmStrategy.str_expr_dict">
@@ -1746,7 +1804,7 @@ the grammar.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.database.search.ObjectStrategy">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.search.</span></span><span class="sig-name descname"><span class="pre">ObjectStrategy</span></span><a class="headerlink" href="#dvas.database.search.ObjectStrategy" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.SearchStrategyAC" title="dvas.database.search.SearchStrategyAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.database.search.SearchStrategyAC</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.database.search.SearchStrategyAC" title="dvas.database.search.SearchStrategyAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">SearchStrategyAC</span></code></a></p>
 <p>Search Object strategy</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="dvas.database.search.ObjectStrategy.str_expr_dict">

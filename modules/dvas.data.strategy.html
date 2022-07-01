@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -30,7 +31,7 @@
             <a href="../index.html" class="icon icon-home"> dvas
           </a>
               <div class="version">
-                0.5.0
+                0.6.0.dev1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -106,15 +107,15 @@
            <div itemprop="articleBody">
              
   <section id="module-dvas.data.strategy">
-<span id="dvas-data-strategy-package"></span><h1>dvas.data.strategy package<a class="headerlink" href="#module-dvas.data.strategy" title="Permalink to this headline"></a></h1>
+<span id="dvas-data-strategy-package"></span><h1>dvas.data.strategy package<a class="headerlink" href="#module-dvas.data.strategy" title="Permalink to this heading"></a></h1>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-dvas.data.strategy.data">
-<span id="dvas-data-strategy-data-module"></span><h2>dvas.data.strategy.data module<a class="headerlink" href="#module-dvas.data.strategy.data" title="Permalink to this headline"></a></h2>
+<span id="dvas-data-strategy-data-module"></span><h2>dvas.data.strategy.data module<a class="headerlink" href="#module-dvas.data.strategy.data" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -230,7 +231,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.strategy.data.Profile">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.strategy.data.</span></span><span class="sig-name descname"><span class="pre">Profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.data.Profile" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.data.ProfileAC" title="dvas.data.strategy.data.ProfileAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.strategy.data.ProfileAC</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.data.ProfileAC" title="dvas.data.strategy.data.ProfileAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProfileAC</span></code></a></p>
 <p>Base Profile class for atmospheric measurements. Requires only some measured values,
 together with their corresponding altitudes and flags.</p>
 <dl class="simple">
@@ -386,7 +387,7 @@ Default to None.</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.strategy.data.RSProfile">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.strategy.data.</span></span><span class="sig-name descname"><span class="pre">RSProfile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.data.RSProfile" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.data.Profile" title="dvas.data.strategy.data.Profile"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.strategy.data.Profile</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.data.Profile" title="dvas.data.strategy.data.Profile"><code class="xref py py-class docutils literal notranslate"><span class="pre">Profile</span></code></a></p>
 <p>Child Profile class for <em>basic radiosonde</em> atmospheric measurements.
 Requires some measured values, together with their corresponding measurement times since launch,
 altitudes, and flags.</p>
@@ -417,7 +418,7 @@ altitudes, and flags.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.strategy.data.GDPProfile">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.strategy.data.</span></span><span class="sig-name descname"><span class="pre">GDPProfile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.data.GDPProfile" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.data.RSProfile" title="dvas.data.strategy.data.RSProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.strategy.data.RSProfile</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.data.RSProfile" title="dvas.data.strategy.data.RSProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">RSProfile</span></code></a></p>
 <p>Child RSProfile class for <em>GDP-like</em> radiosonde atmospheric measurements.
 Requires some measured values, together with their corresponding measurement times since launch,
 altitudes, flags, as well as 4 distinct types uncertainties:</p>
@@ -505,14 +506,14 @@ altitudes, flags, as well as 4 distinct types uncertainties:</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.strategy.data.CWSProfile">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.strategy.data.</span></span><span class="sig-name descname"><span class="pre">CWSProfile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.data.CWSProfile" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.data.GDPProfile" title="dvas.data.strategy.data.GDPProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.strategy.data.GDPProfile</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.data.GDPProfile" title="dvas.data.strategy.data.GDPProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">GDPProfile</span></code></a></p>
 <p>Child GDPProfile class intended for CWS profiles.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.strategy.data.DeltaProfile">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.strategy.data.</span></span><span class="sig-name descname"><span class="pre">DeltaProfile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.data.DeltaProfile" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.data.GDPProfile" title="dvas.data.strategy.data.GDPProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.strategy.data.GDPProfile</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.data.GDPProfile" title="dvas.data.strategy.data.GDPProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">GDPProfile</span></code></a></p>
 <p>Child GDPProfile class intended for profile <em>deltas</em> between candidate and CWS profiles.</p>
 <p>Unlike GDPs and CWS, this class no longer contains time delta information.</p>
 <dl class="py attribute">
@@ -530,7 +531,7 @@ altitudes, flags, as well as 4 distinct types uncertainties:</p>
 
 </section>
 <section id="module-dvas.data.strategy.load">
-<span id="dvas-data-strategy-load-module"></span><h2>dvas.data.strategy.load module<a class="headerlink" href="#module-dvas.data.strategy.load" title="Permalink to this headline"></a></h2>
+<span id="dvas-data-strategy-load-module"></span><h2>dvas.data.strategy.load module<a class="headerlink" href="#module-dvas.data.strategy.load" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -538,7 +539,7 @@ altitudes, flags, as well as 4 distinct types uncertainties:</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.strategy.load.LoadStrategyAC">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.strategy.load.</span></span><span class="sig-name descname"><span class="pre">LoadStrategyAC</span></span><a class="headerlink" href="#dvas.data.strategy.load.LoadStrategyAC" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.data.MPStrategyAC" title="dvas.data.strategy.data.MPStrategyAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.strategy.data.MPStrategyAC</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.data.MPStrategyAC" title="dvas.data.strategy.data.MPStrategyAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">MPStrategyAC</span></code></a></p>
 <p>Abstract load strategy class</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.strategy.load.LoadStrategyAC.add_flg_prm">
@@ -576,7 +577,7 @@ list of pd.DataFrame: Data</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.strategy.load.LoadProfileStrategy">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.strategy.load.</span></span><span class="sig-name descname"><span class="pre">LoadProfileStrategy</span></span><a class="headerlink" href="#dvas.data.strategy.load.LoadProfileStrategy" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.load.LoadStrategyAC" title="dvas.data.strategy.load.LoadStrategyAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.strategy.load.LoadStrategyAC</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.load.LoadStrategyAC" title="dvas.data.strategy.load.LoadStrategyAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoadStrategyAC</span></code></a></p>
 <p>Class to manage the data loading strategy of Profile instances.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.strategy.load.LoadProfileStrategy.execute">
@@ -599,7 +600,7 @@ list of pd.DataFrame: Data</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.strategy.load.LoadRSProfileStrategy">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.strategy.load.</span></span><span class="sig-name descname"><span class="pre">LoadRSProfileStrategy</span></span><a class="headerlink" href="#dvas.data.strategy.load.LoadRSProfileStrategy" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.load.LoadProfileStrategy" title="dvas.data.strategy.load.LoadProfileStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.strategy.load.LoadProfileStrategy</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.load.LoadProfileStrategy" title="dvas.data.strategy.load.LoadProfileStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoadProfileStrategy</span></code></a></p>
 <p>Child class to manage the data loading strategy of RSProfile instances.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.strategy.load.LoadRSProfileStrategy.execute">
@@ -622,7 +623,7 @@ list of pd.DataFrame: Data</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.strategy.load.LoadGDPProfileStrategy">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.strategy.load.</span></span><span class="sig-name descname"><span class="pre">LoadGDPProfileStrategy</span></span><a class="headerlink" href="#dvas.data.strategy.load.LoadGDPProfileStrategy" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.load.LoadProfileStrategy" title="dvas.data.strategy.load.LoadProfileStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.strategy.load.LoadProfileStrategy</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.load.LoadProfileStrategy" title="dvas.data.strategy.load.LoadProfileStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoadProfileStrategy</span></code></a></p>
 <p>Child class to manage the data loading strategy of GDPProfile instances.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.strategy.load.LoadGDPProfileStrategy.execute">
@@ -653,7 +654,7 @@ extract. Defaults to None.</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.strategy.load.LoadCWSProfileStrategy">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.strategy.load.</span></span><span class="sig-name descname"><span class="pre">LoadCWSProfileStrategy</span></span><a class="headerlink" href="#dvas.data.strategy.load.LoadCWSProfileStrategy" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.load.LoadProfileStrategy" title="dvas.data.strategy.load.LoadProfileStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.strategy.load.LoadProfileStrategy</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.load.LoadProfileStrategy" title="dvas.data.strategy.load.LoadProfileStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoadProfileStrategy</span></code></a></p>
 <p>Child class to manage the data loading strategy of CWSProfile instances.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.strategy.load.LoadCWSProfileStrategy.execute">
@@ -684,7 +685,7 @@ extract. Defaults to None.</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.strategy.load.LoadDeltaProfileStrategy">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.strategy.load.</span></span><span class="sig-name descname"><span class="pre">LoadDeltaProfileStrategy</span></span><a class="headerlink" href="#dvas.data.strategy.load.LoadDeltaProfileStrategy" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.load.LoadProfileStrategy" title="dvas.data.strategy.load.LoadProfileStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.strategy.load.LoadProfileStrategy</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.load.LoadProfileStrategy" title="dvas.data.strategy.load.LoadProfileStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoadProfileStrategy</span></code></a></p>
 <p>Child class to manage the data loading strategy of DeltaProfile instances.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.strategy.load.LoadDeltaProfileStrategy.execute">
@@ -713,7 +714,7 @@ extract. Defaults to None.</p></li>
 
 </section>
 <section id="module-dvas.data.strategy.plot">
-<span id="dvas-data-strategy-plot-module"></span><h2>dvas.data.strategy.plot module<a class="headerlink" href="#module-dvas.data.strategy.plot" title="Permalink to this headline"></a></h2>
+<span id="dvas-data-strategy-plot-module"></span><h2>dvas.data.strategy.plot module<a class="headerlink" href="#module-dvas.data.strategy.plot" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -721,7 +722,7 @@ extract. Defaults to None.</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.strategy.plot.PlotStrategy">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.strategy.plot.</span></span><span class="sig-name descname"><span class="pre">PlotStrategy</span></span><a class="headerlink" href="#dvas.data.strategy.plot.PlotStrategy" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.data.MPStrategyAC" title="dvas.data.strategy.data.MPStrategyAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.strategy.data.MPStrategyAC</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.data.MPStrategyAC" title="dvas.data.strategy.data.MPStrategyAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">MPStrategyAC</span></code></a></p>
 <p>Base class to manage the data plotting strategy for the MultiProfile class.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.strategy.plot.PlotStrategy.execute">
@@ -742,7 +743,7 @@ extract. Defaults to None.</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.strategy.plot.RSPlotStrategy">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.strategy.plot.</span></span><span class="sig-name descname"><span class="pre">RSPlotStrategy</span></span><a class="headerlink" href="#dvas.data.strategy.plot.RSPlotStrategy" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.data.MPStrategyAC" title="dvas.data.strategy.data.MPStrategyAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.strategy.data.MPStrategyAC</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.data.MPStrategyAC" title="dvas.data.strategy.data.MPStrategyAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">MPStrategyAC</span></code></a></p>
 <p>Child class to manage the plotting strategy for the MultiRSProfile class.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.strategy.plot.RSPlotStrategy.execute">
@@ -763,7 +764,7 @@ extract. Defaults to None.</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.strategy.plot.GDPPlotStrategy">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.strategy.plot.</span></span><span class="sig-name descname"><span class="pre">GDPPlotStrategy</span></span><a class="headerlink" href="#dvas.data.strategy.plot.GDPPlotStrategy" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.data.MPStrategyAC" title="dvas.data.strategy.data.MPStrategyAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.strategy.data.MPStrategyAC</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.data.MPStrategyAC" title="dvas.data.strategy.data.MPStrategyAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">MPStrategyAC</span></code></a></p>
 <p>Child class to manage the plotting strategy for the MultiGDPProfile class.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.strategy.plot.GDPPlotStrategy.execute">
@@ -783,7 +784,7 @@ extract. Defaults to None.</p></li>
 
 </section>
 <section id="module-dvas.data.strategy.rebase">
-<span id="dvas-data-strategy-rebase-module"></span><h2>dvas.data.strategy.rebase module<a class="headerlink" href="#module-dvas.data.strategy.rebase" title="Permalink to this headline"></a></h2>
+<span id="dvas-data-strategy-rebase-module"></span><h2>dvas.data.strategy.rebase module<a class="headerlink" href="#module-dvas.data.strategy.rebase" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -791,7 +792,7 @@ extract. Defaults to None.</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.strategy.rebase.RebaseStrategy">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.strategy.rebase.</span></span><span class="sig-name descname"><span class="pre">RebaseStrategy</span></span><a class="headerlink" href="#dvas.data.strategy.rebase.RebaseStrategy" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.data.MPStrategyAC" title="dvas.data.strategy.data.MPStrategyAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.strategy.data.MPStrategyAC</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.data.MPStrategyAC" title="dvas.data.strategy.data.MPStrategyAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">MPStrategyAC</span></code></a></p>
 <p>Class to manage time data synchronization</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.strategy.rebase.RebaseStrategy.execute">
@@ -822,7 +823,7 @@ list should specify a shift for each Profile. Defaults to None.</p></li>
 
 </section>
 <section id="module-dvas.data.strategy.resample">
-<span id="dvas-data-strategy-resample-module"></span><h2>dvas.data.strategy.resample module<a class="headerlink" href="#module-dvas.data.strategy.resample" title="Permalink to this headline"></a></h2>
+<span id="dvas-data-strategy-resample-module"></span><h2>dvas.data.strategy.resample module<a class="headerlink" href="#module-dvas.data.strategy.resample" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -830,7 +831,7 @@ list should specify a shift for each Profile. Defaults to None.</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.strategy.resample.ResampleStrategy">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.strategy.resample.</span></span><span class="sig-name descname"><span class="pre">ResampleStrategy</span></span><a class="headerlink" href="#dvas.data.strategy.resample.ResampleStrategy" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.data.MPStrategyAC" title="dvas.data.strategy.data.MPStrategyAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.strategy.data.MPStrategyAC</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.data.MPStrategyAC" title="dvas.data.strategy.data.MPStrategyAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">MPStrategyAC</span></code></a></p>
 <p>Class to handle the resample strategy for RS and GDPs Profiles.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.strategy.resample.ResampleStrategy.execute">
@@ -864,7 +865,7 @@ to disable multiprocessing. Defaults to 1.</p></li>
 
 </section>
 <section id="module-dvas.data.strategy.save">
-<span id="dvas-data-strategy-save-module"></span><h2>dvas.data.strategy.save module<a class="headerlink" href="#module-dvas.data.strategy.save" title="Permalink to this headline"></a></h2>
+<span id="dvas-data-strategy-save-module"></span><h2>dvas.data.strategy.save module<a class="headerlink" href="#module-dvas.data.strategy.save" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -872,7 +873,7 @@ to disable multiprocessing. Defaults to 1.</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.strategy.save.SaveDataStrategy">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.strategy.save.</span></span><span class="sig-name descname"><span class="pre">SaveDataStrategy</span></span><a class="headerlink" href="#dvas.data.strategy.save.SaveDataStrategy" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.data.MPStrategyAC" title="dvas.data.strategy.data.MPStrategyAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.strategy.data.MPStrategyAC</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.data.MPStrategyAC" title="dvas.data.strategy.data.MPStrategyAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">MPStrategyAC</span></code></a></p>
 <p>Class to manage saving strategy of time data</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.strategy.save.SaveDataStrategy.execute">
@@ -893,7 +894,7 @@ database.</p></li>
 
 </section>
 <section id="module-dvas.data.strategy.sort">
-<span id="dvas-data-strategy-sort-module"></span><h2>dvas.data.strategy.sort module<a class="headerlink" href="#module-dvas.data.strategy.sort" title="Permalink to this headline"></a></h2>
+<span id="dvas-data-strategy-sort-module"></span><h2>dvas.data.strategy.sort module<a class="headerlink" href="#module-dvas.data.strategy.sort" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -901,7 +902,7 @@ database.</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.strategy.sort.SortProfileStrategy">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.strategy.sort.</span></span><span class="sig-name descname"><span class="pre">SortProfileStrategy</span></span><a class="headerlink" href="#dvas.data.strategy.sort.SortProfileStrategy" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.data.MPStrategyAC" title="dvas.data.strategy.data.MPStrategyAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.strategy.data.MPStrategyAC</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.strategy.data.MPStrategyAC" title="dvas.data.strategy.data.MPStrategyAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">MPStrategyAC</span></code></a></p>
 <p>Class to manage sort of time data parameter</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.strategy.sort.SortProfileStrategy.execute">

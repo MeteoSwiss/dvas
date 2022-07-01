@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -30,7 +31,7 @@
             <a href="../index.html" class="icon icon-home"> dvas
           </a>
               <div class="version">
-                0.5.0
+                0.6.0.dev1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -105,12 +106,12 @@
            <div itemprop="articleBody">
              
   <section id="module-dvas.data">
-<span id="dvas-data-package"></span><h1>dvas.data package<a class="headerlink" href="#module-dvas.data" title="Permalink to this headline"></a></h1>
+<span id="dvas-data-package"></span><h1>dvas.data package<a class="headerlink" href="#module-dvas.data" title="Permalink to this heading"></a></h1>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <section id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline"></a></h2>
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dvas.data.strategy.html">dvas.data.strategy package</a><ul>
@@ -128,10 +129,10 @@
 </div>
 </section>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-dvas.data.data">
-<span id="dvas-data-data-module"></span><h2>dvas.data.data module<a class="headerlink" href="#module-dvas.data.data" title="Permalink to this headline"></a></h2>
+<span id="dvas-data-data-module"></span><h2>dvas.data.data module<a class="headerlink" href="#module-dvas.data.data" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -347,9 +348,9 @@ extraction process. Defaults to None.</p></li>
 </dl>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>The resulting DataFrame has only <code class="docutils literal notranslate"><span class="pre">dvas.hardcoded.PRF_REF_INDEX_NAME</span></code> (=’_idx’) as
-an index. Since the values of <code class="docutils literal notranslate"><span class="pre">dvas.hardcoded.PRF_REF_TDT_NAME</span></code> (=’tdt’) and
-<code class="docutils literal notranslate"><span class="pre">dvas.hardcoded.PRF_REF_ALT_NAME</span></code> (=’alt’) are not necessarily the sames for all
+<p>The resulting DataFrame has only <code class="docutils literal notranslate"><span class="pre">dvas.hardcoded.PRF_IDX</span></code> (=’_idx’) as
+an index. Since the values of <code class="docutils literal notranslate"><span class="pre">dvas.hardcoded.PRF_TDT</span></code> (=’tdt’) and
+<code class="docutils literal notranslate"><span class="pre">dvas.hardcoded.PRF_ALT</span></code> (=’alt’) are not necessarily the sames for all
 the Profiles, these cannot be used as common indexes here.</p>
 </div>
 </dd></dl>
@@ -428,14 +429,14 @@ list should specify a shift for each Profile. Defaults to None (=no shift).</p><
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.data.MultiProfile">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.data.</span></span><span class="sig-name descname"><span class="pre">MultiProfile</span></span><a class="headerlink" href="#dvas.data.data.MultiProfile" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.data.MultiProfileAC" title="dvas.data.data.MultiProfileAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.data.MultiProfileAC</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.data.MultiProfileAC" title="dvas.data.data.MultiProfileAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiProfileAC</span></code></a></p>
 <p>Multi profile base class, designed to handle multiple Profile.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.data.MultiRSProfileAC">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.data.</span></span><span class="sig-name descname"><span class="pre">MultiRSProfileAC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">load_stgy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_stgy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_stgy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_stgy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rebase_stgy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resample_stgy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.data.MultiRSProfileAC" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.data.MultiProfileAC" title="dvas.data.data.MultiProfileAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.data.MultiProfileAC</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.data.MultiProfileAC" title="dvas.data.data.MultiProfileAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiProfileAC</span></code></a></p>
 <p>Abstract MultiRSProfile class</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.data.MultiRSProfileAC.resample">
@@ -460,14 +461,14 @@ list should specify a shift for each Profile. Defaults to None (=no shift).</p><
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.data.MultiRSProfile">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.data.</span></span><span class="sig-name descname"><span class="pre">MultiRSProfile</span></span><a class="headerlink" href="#dvas.data.data.MultiRSProfile" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.data.MultiRSProfileAC" title="dvas.data.data.MultiRSProfileAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.data.MultiRSProfileAC</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.data.MultiRSProfileAC" title="dvas.data.data.MultiRSProfileAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiRSProfileAC</span></code></a></p>
 <p>Multi RS profile manager, designed to handle multiple RSProfile instances.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.data.MultiGDPProfileAC">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.data.</span></span><span class="sig-name descname"><span class="pre">MultiGDPProfileAC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">load_stgy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_stgy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_stgy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_stgy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rebase_stgy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resample_stgy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.data.MultiGDPProfileAC" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.data.MultiRSProfileAC" title="dvas.data.data.MultiRSProfileAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.data.MultiRSProfileAC</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.data.MultiRSProfileAC" title="dvas.data.data.MultiRSProfileAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiRSProfileAC</span></code></a></p>
 <p>Abstract MultiGDPProfile class</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="dvas.data.data.MultiGDPProfileAC.uc_tot">
@@ -485,27 +486,27 @@ list should specify a shift for each Profile. Defaults to None (=no shift).</p><
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.data.MultiGDPProfile">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.data.</span></span><span class="sig-name descname"><span class="pre">MultiGDPProfile</span></span><a class="headerlink" href="#dvas.data.data.MultiGDPProfile" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.data.MultiGDPProfileAC" title="dvas.data.data.MultiGDPProfileAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.data.MultiGDPProfileAC</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.data.MultiGDPProfileAC" title="dvas.data.data.MultiGDPProfileAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiGDPProfileAC</span></code></a></p>
 <p>Multi GDP profile manager, designed to handle multiple GDPProfile instances.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.data.MultiCWSProfile">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.data.</span></span><span class="sig-name descname"><span class="pre">MultiCWSProfile</span></span><a class="headerlink" href="#dvas.data.data.MultiCWSProfile" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.data.MultiGDPProfileAC" title="dvas.data.data.MultiGDPProfileAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.data.MultiGDPProfileAC</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.data.MultiGDPProfileAC" title="dvas.data.data.MultiGDPProfileAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiGDPProfileAC</span></code></a></p>
 <p>Multi CWS profile manager, designed to handle multiple GDPProfile instances.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.data.MultiDeltaProfile">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.data.</span></span><span class="sig-name descname"><span class="pre">MultiDeltaProfile</span></span><a class="headerlink" href="#dvas.data.data.MultiDeltaProfile" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.data.MultiGDPProfileAC" title="dvas.data.data.MultiGDPProfileAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.data.MultiGDPProfileAC</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.data.MultiGDPProfileAC" title="dvas.data.data.MultiGDPProfileAC"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiGDPProfileAC</span></code></a></p>
 <p>Multi Delta profile manager, designed to handle multiple DeltaProfile instances.</p>
 </dd></dl>
 
 </section>
 <section id="module-dvas.data.io">
-<span id="dvas-data-io-module"></span><h2>dvas.data.io module<a class="headerlink" href="#module-dvas.data.io" title="Permalink to this headline"></a></h2>
+<span id="dvas-data-io-module"></span><h2>dvas.data.io module<a class="headerlink" href="#module-dvas.data.io" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -527,7 +528,7 @@ If True match for entire string. Default to False.</p></li>
 
 </section>
 <section id="module-dvas.data.linker">
-<span id="dvas-data-linker-module"></span><h2>dvas.data.linker module<a class="headerlink" href="#module-dvas.data.linker" title="Permalink to this headline"></a></h2>
+<span id="dvas-data-linker-module"></span><h2>dvas.data.linker module<a class="headerlink" href="#module-dvas.data.linker" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -535,7 +536,7 @@ If True match for entire string. Default to False.</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.linker.Handler">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.linker.</span></span><span class="sig-name descname"><span class="pre">Handler</span></span><a class="headerlink" href="#dvas.data.linker.Handler" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <p>The Handler interface declares a method for building the chain of handlers.
 It also declares a method for executing a request.</p>
 <div class="admonition note">
@@ -578,7 +579,7 @@ It also declares a method for executing a request.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.linker.AbstractHandler">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.linker.</span></span><span class="sig-name descname"><span class="pre">AbstractHandler</span></span><a class="headerlink" href="#dvas.data.linker.AbstractHandler" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.Handler" title="dvas.data.linker.Handler"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.linker.Handler</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.Handler" title="dvas.data.linker.Handler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Handler</span></code></a></p>
 <p>The default chaining behavior can be implemented inside a base handler
 class.</p>
 <img alt="../_images/ea0888bc860083ce10b5a56196064f4e4f10b0edb90ead5cfbf585e7ccb4c099.svg" class="align-center" src="../_images/ea0888bc860083ce10b5a56196064f4e4f10b0edb90ead5cfbf585e7ccb4c099.svg" /><dl class="py method">
@@ -600,7 +601,7 @@ handler1.set_next(handler2).set_next(handler3)</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.linker.FileHandler">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.linker.</span></span><span class="sig-name descname"><span class="pre">FileHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orig_data_cfg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FileHandler" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.AbstractHandler" title="dvas.data.linker.AbstractHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.linker.AbstractHandler</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.AbstractHandler" title="dvas.data.linker.AbstractHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractHandler</span></code></a></p>
 <p>File handler</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.linker.FileHandler.__init__">
@@ -808,7 +809,7 @@ handler1.set_next(handler2).set_next(handler3)</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.linker.CSVHandler">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.linker.</span></span><span class="sig-name descname"><span class="pre">CSVHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orig_data_cfg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.CSVHandler" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.FileHandler" title="dvas.data.linker.FileHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.linker.FileHandler</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.FileHandler" title="dvas.data.linker.FileHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileHandler</span></code></a></p>
 <p>CSV Handler class</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.data.linker.CSVHandler.CFG_FILE_SUFFIX">
@@ -865,7 +866,7 @@ handler1.set_next(handler2).set_next(handler3)</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.linker.GDPHandler">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.linker.</span></span><span class="sig-name descname"><span class="pre">GDPHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orig_data_cfg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.GDPHandler" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.FileHandler" title="dvas.data.linker.FileHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.linker.FileHandler</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.FileHandler" title="dvas.data.linker.FileHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileHandler</span></code></a></p>
 <p>GDP Handler class</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.linker.GDPHandler.__init__">
@@ -906,7 +907,7 @@ handler1.set_next(handler2).set_next(handler3)</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.linker.FlgCSVHandler">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.linker.</span></span><span class="sig-name descname"><span class="pre">FlgCSVHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orig_data_cfg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FlgCSVHandler" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.CSVHandler" title="dvas.data.linker.CSVHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.linker.CSVHandler</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.CSVHandler" title="dvas.data.linker.CSVHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">CSVHandler</span></code></a></p>
 <p>CSV flag file handler class</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.linker.FlgCSVHandler.__init__">
@@ -923,7 +924,7 @@ handler1.set_next(handler2).set_next(handler3)</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.linker.FlgGDPHandler">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.linker.</span></span><span class="sig-name descname"><span class="pre">FlgGDPHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orig_data_cfg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.FlgGDPHandler" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.GDPHandler" title="dvas.data.linker.GDPHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.linker.GDPHandler</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.GDPHandler" title="dvas.data.linker.GDPHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">GDPHandler</span></code></a></p>
 <p>GDP flag file handler class</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.linker.FlgGDPHandler.__init__">
@@ -952,7 +953,7 @@ handler1.set_next(handler2).set_next(handler3)</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.linker.DataLinker">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.linker.</span></span><span class="sig-name descname"><span class="pre">DataLinker</span></span><a class="headerlink" href="#dvas.data.linker.DataLinker" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <p>Data linker abstract class</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.linker.DataLinker.load">
@@ -971,7 +972,7 @@ handler1.set_next(handler2).set_next(handler3)</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.linker.LocalDBLinker">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.linker.</span></span><span class="sig-name descname"><span class="pre">LocalDBLinker</span></span><a class="headerlink" href="#dvas.data.linker.LocalDBLinker" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.DataLinker" title="dvas.data.linker.DataLinker"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.linker.DataLinker</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.DataLinker" title="dvas.data.linker.DataLinker"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataLinker</span></code></a></p>
 <p>Local DB data linker</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.linker.LocalDBLinker.load">
@@ -1010,7 +1011,7 @@ dict optional key are ‘source_info’ (str), force_write (bool)</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.linker.CSVOutputLinker">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.linker.</span></span><span class="sig-name descname"><span class="pre">CSVOutputLinker</span></span><a class="headerlink" href="#dvas.data.linker.CSVOutputLinker" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.DataLinker" title="dvas.data.linker.DataLinker"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.linker.DataLinker</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.DataLinker" title="dvas.data.linker.DataLinker"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataLinker</span></code></a></p>
 <p>CSV output data linker class</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.linker.CSVOutputLinker.load">
@@ -1034,7 +1035,7 @@ dict optional key are ‘source_info’ (str), force_write (bool)</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.linker.LoadExprInterpreter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.linker.</span></span><span class="sig-name descname"><span class="pre">LoadExprInterpreter</span></span><a class="headerlink" href="#dvas.data.linker.LoadExprInterpreter" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <p>Abstract config expression interpreter class</p>
 <p class="rubric">Notes</p>
 <p>This class and subclasses construction are based on the interpreter
@@ -1078,7 +1079,7 @@ design pattern.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.linker.NonTerminalLoadExprInterpreter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.linker.</span></span><span class="sig-name descname"><span class="pre">NonTerminalLoadExprInterpreter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.NonTerminalLoadExprInterpreter" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.LoadExprInterpreter" title="dvas.data.linker.LoadExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.linker.LoadExprInterpreter</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.LoadExprInterpreter" title="dvas.data.linker.LoadExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoadExprInterpreter</span></code></a></p>
 <p>Implement an interpreter operation for non terminal symbols in the
 grammar.</p>
 <dl class="py method">
@@ -1098,7 +1099,7 @@ grammar.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.linker.AddExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.linker.</span></span><span class="sig-name descname"><span class="pre">AddExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.AddExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.NonTerminalLoadExprInterpreter" title="dvas.data.linker.NonTerminalLoadExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.linker.NonTerminalLoadExprInterpreter</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.NonTerminalLoadExprInterpreter" title="dvas.data.linker.NonTerminalLoadExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">NonTerminalLoadExprInterpreter</span></code></a></p>
 <p>Addition</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.linker.AddExpr.fct">
@@ -1111,7 +1112,7 @@ grammar.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.linker.SubExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.linker.</span></span><span class="sig-name descname"><span class="pre">SubExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.SubExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.NonTerminalLoadExprInterpreter" title="dvas.data.linker.NonTerminalLoadExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.linker.NonTerminalLoadExprInterpreter</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.NonTerminalLoadExprInterpreter" title="dvas.data.linker.NonTerminalLoadExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">NonTerminalLoadExprInterpreter</span></code></a></p>
 <p>Subtractions</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.linker.SubExpr.fct">
@@ -1124,7 +1125,7 @@ grammar.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.linker.MulExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.linker.</span></span><span class="sig-name descname"><span class="pre">MulExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.MulExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.NonTerminalLoadExprInterpreter" title="dvas.data.linker.NonTerminalLoadExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.linker.NonTerminalLoadExprInterpreter</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.NonTerminalLoadExprInterpreter" title="dvas.data.linker.NonTerminalLoadExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">NonTerminalLoadExprInterpreter</span></code></a></p>
 <p>Multiplication</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.linker.MulExpr.fct">
@@ -1137,7 +1138,7 @@ grammar.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.linker.DivExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.linker.</span></span><span class="sig-name descname"><span class="pre">DivExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.DivExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.NonTerminalLoadExprInterpreter" title="dvas.data.linker.NonTerminalLoadExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.linker.NonTerminalLoadExprInterpreter</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.NonTerminalLoadExprInterpreter" title="dvas.data.linker.NonTerminalLoadExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">NonTerminalLoadExprInterpreter</span></code></a></p>
 <p>Division</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.linker.DivExpr.fct">
@@ -1150,7 +1151,7 @@ grammar.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.linker.PowExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.linker.</span></span><span class="sig-name descname"><span class="pre">PowExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.PowExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.NonTerminalLoadExprInterpreter" title="dvas.data.linker.NonTerminalLoadExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.linker.NonTerminalLoadExprInterpreter</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.NonTerminalLoadExprInterpreter" title="dvas.data.linker.NonTerminalLoadExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">NonTerminalLoadExprInterpreter</span></code></a></p>
 <p>Power operator</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.linker.PowExpr.fct">
@@ -1163,14 +1164,14 @@ grammar.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.linker.SqrtExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.linker.</span></span><span class="sig-name descname"><span class="pre">SqrtExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.SqrtExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.PowExpr" title="dvas.data.linker.PowExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.linker.PowExpr</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.PowExpr" title="dvas.data.linker.PowExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">PowExpr</span></code></a></p>
 <p>Square root</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.linker.TerminalLoadExprInterpreter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.linker.</span></span><span class="sig-name descname"><span class="pre">TerminalLoadExprInterpreter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.TerminalLoadExprInterpreter" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.LoadExprInterpreter" title="dvas.data.linker.LoadExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.linker.LoadExprInterpreter</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.LoadExprInterpreter" title="dvas.data.linker.LoadExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoadExprInterpreter</span></code></a></p>
 <p>Implement an interpreter operation for terminal symbols in the
 grammar.</p>
 </dd></dl>
@@ -1178,7 +1179,7 @@ grammar.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.linker.NoneExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.linker.</span></span><span class="sig-name descname"><span class="pre">NoneExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.NoneExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.TerminalLoadExprInterpreter" title="dvas.data.linker.TerminalLoadExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.linker.TerminalLoadExprInterpreter</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.TerminalLoadExprInterpreter" title="dvas.data.linker.TerminalLoadExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">TerminalLoadExprInterpreter</span></code></a></p>
 <p>Apply none interpreter</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.linker.NoneExpr.interpret">
@@ -1191,7 +1192,7 @@ grammar.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.data.linker.GetExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.data.linker.</span></span><span class="sig-name descname"><span class="pre">GetExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nop'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.linker.GetExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.TerminalLoadExprInterpreter" title="dvas.data.linker.TerminalLoadExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.linker.TerminalLoadExprInterpreter</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.data.linker.TerminalLoadExprInterpreter" title="dvas.data.linker.TerminalLoadExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">TerminalLoadExprInterpreter</span></code></a></p>
 <p>Get catch value</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.linker.GetExpr.interpret">

@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -30,7 +31,7 @@
             <a href="../index.html" class="icon icon-home"> dvas
           </a>
               <div class="version">
-                0.5.0
+                0.6.0.dev1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -99,50 +100,62 @@
            <div itemprop="articleBody">
              
   <section id="module-dvas_recipes.uaii2022">
-<span id="dvas-recipes-uaii2022-package"></span><h1>dvas_recipes.uaii2022 package<a class="headerlink" href="#module-dvas_recipes.uaii2022" title="Permalink to this headline"></a></h1>
+<span id="dvas-recipes-uaii2022-package"></span><h1>dvas_recipes.uaii2022 package<a class="headerlink" href="#module-dvas_recipes.uaii2022" title="Permalink to this heading"></a></h1>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-dvas_recipes.uaii2022.basic">
-<span id="dvas-recipes-uaii2022-basic-module"></span><h2>dvas_recipes.uaii2022.basic module<a class="headerlink" href="#module-dvas_recipes.uaii2022.basic" title="Permalink to this headline"></a></h2>
+<span id="dvas-recipes-uaii2022-basic-module"></span><h2>dvas_recipes.uaii2022.basic module<a class="headerlink" href="#module-dvas_recipes.uaii2022.basic" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>Module content: basic high-level recipes for the UAII2022 campaign</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas_recipes.uaii2022.basic.prf_summary">
-<span class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii2022.basic.</span></span><span class="sig-name descname"><span class="pre">prf_summary</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii2022.basic.prf_summary" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii2022.basic.</span></span><span class="sig-name descname"><span class="pre">prf_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">create_eid_edt_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii2022.basic.prf_summary" title="Permalink to this definition"></a></dt>
 <dd><p>Exports a summary of the different profiles in the DB.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>create_eid_edt_files</strong> (<em>bool, optional</em>) – if True, will issue a set of empty files that tie
+eids to edts. Used for the UAII 2022 preview tool. Defaults to False.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas_recipes.uaii2022.basic.flag_descent">
 <span class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii2022.basic.</span></span><span class="sig-name descname"><span class="pre">flag_descent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii2022.basic.flag_descent" title="Permalink to this definition"></a></dt>
 <dd><p>Set a dedicated flag for any point beyond the burst point.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This function simply uses the metadata info to set the flags. It indirectly assumes that
-the profiles have not been shifted in any way (yet).</p>
-</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>prfs</strong> (<em>MultiRSProfile|MultiGDPProfile</em>) – the profiles to flag (individually).</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><em>MultiRSProfile|MultiGDPProfile</em> – the flagged profiles.</p>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If available, this function will use the metadata info to set the flags. Else, it will
+simply flag any point beyond the max altitude.</p>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This function assumes that the profiles have not been shifted in any way (yet) !</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><em>MultiRSProfile|MultiGDPProfile</em> – the flagged profiles.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas_recipes.uaii2022.basic.cleanup_steps">
-<span class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii2022.basic.</span></span><span class="sig-name descname"><span class="pre">cleanup_steps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resampling_freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crop_descent</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii2022.basic.cleanup_steps" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii2022.basic.</span></span><span class="sig-name descname"><span class="pre">cleanup_steps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resampling_freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crop_descent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeofday</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii2022.basic.cleanup_steps" title="Permalink to this definition"></a></dt>
 <dd><p>Execute a series of cleanup-steps common to GDP and non-GDP profiles. This function is here
 to avoid duplicating code. The cleanup-up profiles are directly saved to the DB with the tag:
-TAG_CLN_NAME</p>
+TAG_CLN</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -150,6 +163,7 @@ TAG_CLN_NAME</p>
 <li><p><strong>resampling_freq</strong> (<em>str</em>) – time step frequency, to feed <code class="xref py py-func docutils literal notranslate"><span class="pre">pandas.timedelta_range()</span></code>, e.g.
 ‘1s’.</p></li>
 <li><p><strong>crop_descent</strong> (<em>bool</em>) – if True, and data with the flag “descent” will be cropped out for good.</p></li>
+<li><p><strong>timeofday</strong> (<em>str</em>) – if set, will tag the Profile with this time of day. Defaults to None.</p></li>
 </ul>
 </dd>
 </dl>
@@ -157,28 +171,48 @@ TAG_CLN_NAME</p>
 
 </section>
 <section id="module-dvas_recipes.uaii2022.dtas">
-<span id="dvas-recipes-uaii2022-dtas-module"></span><h2>dvas_recipes.uaii2022.dtas module<a class="headerlink" href="#module-dvas_recipes.uaii2022.dtas" title="Permalink to this headline"></a></h2>
+<span id="dvas-recipes-uaii2022-dtas-module"></span><h2>dvas_recipes.uaii2022.dtas module<a class="headerlink" href="#module-dvas_recipes.uaii2022.dtas" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>Module content: high-level delta recipes for the UAII2022 campaign</p>
 </section>
+<section id="module-dvas_recipes.uaii2022.flgs">
+<span id="dvas-recipes-uaii2022-flgs-module"></span><h2>dvas_recipes.uaii2022.flgs module<a class="headerlink" href="#module-dvas_recipes.uaii2022.flgs" title="Permalink to this heading"></a></h2>
+<p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<p>Module content: high-level flagging recipes for the UAII2022 campaign</p>
+</section>
 <section id="module-dvas_recipes.uaii2022.gdps">
-<span id="dvas-recipes-uaii2022-gdps-module"></span><h2>dvas_recipes.uaii2022.gdps module<a class="headerlink" href="#module-dvas_recipes.uaii2022.gdps" title="Permalink to this headline"></a></h2>
+<span id="dvas-recipes-uaii2022-gdps-module"></span><h2>dvas_recipes.uaii2022.gdps module<a class="headerlink" href="#module-dvas_recipes.uaii2022.gdps" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>Module content: high-level GDP recipes for the UAII2022 campaign</p>
 </section>
 <section id="module-dvas_recipes.uaii2022.plots">
-<span id="dvas-recipes-uaii2022-plots-module"></span><h2>dvas_recipes.uaii2022.plots module<a class="headerlink" href="#module-dvas_recipes.uaii2022.plots" title="Permalink to this headline"></a></h2>
+<span id="dvas-recipes-uaii2022-plots-module"></span><h2>dvas_recipes.uaii2022.plots module<a class="headerlink" href="#module-dvas_recipes.uaii2022.plots" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>Module content: high-level plotting for the UAII2022 recipe</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="dvas_recipes.uaii2022.plots.covmat_stats">
+<span class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii2022.plots.</span></span><span class="sig-name descname"><span class="pre">covmat_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">covmats</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii2022.plots.covmat_stats" title="Permalink to this definition"></a></dt>
+<dd><p>Takes a closer look at the <em>true</em> covariance matrix computed by dvas for a combined profile.</p>
+<p>Looks in particular at the error one does by ignoring it and assuming the combined profile
+uncertainties behave like a ucu, ucr, ucs, or uct types or uncertainties.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>proc_chunks</strong> – the outcome of map(process_chunk, chunks).</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="module-dvas_recipes.uaii2022.sync">
-<span id="dvas-recipes-uaii2022-sync-module"></span><h2>dvas_recipes.uaii2022.sync module<a class="headerlink" href="#module-dvas_recipes.uaii2022.sync" title="Permalink to this headline"></a></h2>
+<span id="dvas-recipes-uaii2022-sync-module"></span><h2>dvas_recipes.uaii2022.sync module<a class="headerlink" href="#module-dvas_recipes.uaii2022.sync" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -193,7 +227,8 @@ TAG_CLN_NAME</p>
 <li><p><strong>var_name</strong> (<em>str</em>) – name of variable to sync, e.g. ‘temp’</p></li>
 <li><p><strong>filt</strong> (<em>str</em>) – filtering query for the database.</p></li>
 <li><p><strong>sync_length</strong> (<em>int</em>) – length of the sync’ed profiles.</p></li>
-<li><p><strong>sync_shifts</strong> (<em>list of int</em>) – relative shifts required to sync the profiles.</p></li>
+<li><p><strong>sync_shifts</strong> (<em>list of int</em>) – relative shifts required to sync the profiles.
+Convention: row n become row n+shift.</p></li>
 <li><p><strong>is_gdp</strong> (<em>list of bool</em>) – to keep track of GDPs, in order to also sync their uncertainties.</p></li>
 </ul>
 </dd>
@@ -202,7 +237,7 @@ TAG_CLN_NAME</p>
 
 </section>
 <section id="module-dvas_recipes.uaii2022.tools">
-<span id="dvas-recipes-uaii2022-tools-module"></span><h2>dvas_recipes.uaii2022.tools module<a class="headerlink" href="#module-dvas_recipes.uaii2022.tools" title="Permalink to this headline"></a></h2>
+<span id="dvas-recipes-uaii2022-tools-module"></span><h2>dvas_recipes.uaii2022.tools module<a class="headerlink" href="#module-dvas_recipes.uaii2022.tools" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -223,6 +258,63 @@ TAG_CLN_NAME</p>
 <dd class="field-even"><p><em>str</em> – the query filter</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dvas_recipes.uaii2022.tools.find_tropopause">
+<span class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii2022.tools.</span></span><span class="sig-name descname"><span class="pre">find_tropopause</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rs_prf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_alt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gruan'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii2022.tools.find_tropopause" title="Permalink to this definition"></a></dt>
+<dd><p>Find the tropopause altitude in a given RSProfile.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rs_prf</strong> (<em>RSProfile</em>) – the temperature profile from which to derive the tropopause height.</p></li>
+<li><p><strong>min_alt</strong> (<em>int| float, optional</em>) – minimum altitude above which to look for the tropopause.
+Defaults to 5000 m.</p></li>
+<li><p><strong>algo</strong> (<em>str, optional</em>) – which algorithm to use, one of [‘wmo1957’, ‘mch’, ‘gruan’].
+Defaults to ‘gruan’. See below for details.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>float, float, float</em> – the troposphere index, altitude, and timestep.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The WMO definition of the tropopause(s) is as follows:</p>
+<p>” (a) The first tropopause is defined as the lowest level at which the lapse rate
+decreases to 2degC/km or less, provided also the average lapse rate between this level
+and all higher levels within 2 km does not exceed 2degC/km</p>
+<p>(b) If above the first tropopause the average lapse rate between any level and all
+higher levels within 1 km exceeds 3degC/km, then a second tropopause is defined by the
+same criterion as under (a). This tropopause may be either within or above the 1 km layer.”</p>
+<p>Source: World Meteorological Organization (1957),
+Meteorology - A three-dimensional science:
+Second session of the Commission for Aerology, WMO Bulletin, vol. IV, no. 4,
+<a class="reference external" href="https://library.wmo.int/doc_num.php?explnum_id=6960">https://library.wmo.int/doc_num.php?explnum_id=6960</a></p>
+<p>The lapse rate is the decrease of an atmospheric variable with height,
+the variable being temperature unless otherwise specified.</p>
+<p>Typically, the lapse rate is the negative of the rate of temperature change with
+altitude change.</p>
+</div>
+<p>The 1957 WMO definition (<cite>algo=’wmo1957’</cite>) of the tropopause is problematic for high resolution
+profile data, as it leads to a detection of the tropopause several hundred meters below the
+“knee” of the profile. This behavior is caused by the averaging of all subsequent levels, which
+allows for a significant number of them to fail the lapse rate criteria if enough others do.</p>
+<p>The <cite>algo=’mch’</cite> alternative defines the first tropopause as the lowest level at which the lapse
+rate decreases to 2deg/km or less, provided also ALL the lapse rateS between this level and all
+higher levels within 2km do not exceed 2deg/km.</p>
+<p>The <cite>algo=’gruan’</cite> alternative is used to compute the tropopause in GRUAN Data Products,
+including the RS41. It defines the first tropopause as the lowest level at which the lapse
+rate decreases to 2deg/km or less, provided also ALL the MEAN lapse rateS (between this level
+and all higher levels, COMPUTED FROM ALL SEQUENTIAL LEVEL PAIRS LOCATED WITHIN A GIVEN LEVEL
+INTERVAL) within 2 km do not exceed 2deg/km.</p>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<ul class="simple">
+<li><p>expand the function to look for the 2nd, 3rd, etc … tropopause(s) ?</p></li>
+<li><p>define which tropopause algorithm is “best”</p></li>
+</ul>
+</div>
 </dd></dl>
 
 </section>

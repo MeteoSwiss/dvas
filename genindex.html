@@ -13,6 +13,7 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="#" />
@@ -27,7 +28,7 @@
             <a href="index.html" class="icon icon-home"> dvas
           </a>
               <div class="version">
-                0.5.0
+                0.6.0.dev1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -135,6 +136,8 @@
 </li>
         <li><a href="modules/dvas.html#dvas.helper.TypedProperty.__init__">(dvas.helper.TypedProperty method)</a>
 </li>
+        <li><a href="modules/dvas.html#dvas.logger.DvasFormatter.__init__">(dvas.logger.DvasFormatter method)</a>
+</li>
         <li><a href="modules/dvas.html#dvas.logger.LogManager.__init__">(dvas.logger.LogManager method)</a>
 </li>
         <li><a href="modules/dvas_recipes.html#dvas_recipes.recipe.Recipe.__init__">(dvas_recipes.recipe.Recipe method)</a>
@@ -166,9 +169,11 @@
 </li>
       <li><a href="modules/dvas.plots.html#dvas.plots.utils.add_source">add_source() (in module dvas.plots.utils)</a>
 </li>
+      <li><a href="modules/dvas.database.html#dvas.database.database.InfoManager.add_tags">add_tags() (dvas.database.database.InfoManager method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/dvas.database.html#dvas.database.database.InfoManager.add_tags">add_tags() (dvas.database.database.InfoManager method)</a>
+      <li><a href="modules/dvas.plots.html#dvas.plots.utils.add_var_and_k">add_var_and_k() (in module dvas.plots.utils)</a>
 </li>
       <li><a href="modules/dvas.data.html#dvas.data.linker.AddExpr">AddExpr (class in dvas.data.linker)</a>
 </li>
@@ -186,6 +191,8 @@
         <li><a href="modules/dvas.data.html#dvas.data.data.MultiProfileAC.append">(dvas.data.data.MultiProfileAC method)</a>
 </li>
       </ul></li>
+      <li><a href="modules/dvas.html#dvas.logger.apply_dvas_formatter">apply_dvas_formatter() (in module dvas.logger)</a>
+</li>
       <li><a href="modules/dvas_recipes.uaii2022.html#dvas_recipes.uaii2022.sync.apply_sync_shifts">apply_sync_shifts() (in module dvas_recipes.uaii2022.sync)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.helper.AttrDict">AttrDict (class in dvas.helper)</a>
@@ -204,10 +211,6 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/dvas.tools.html#dvas.tools.math.calc_tropopause">calc_tropopause() (in module dvas.tools.math)</a>
-</li>
-      <li><a href="modules/dvas.tools.html#dvas.tools.math.calc_tropopause_old">calc_tropopause_old() (in module dvas.tools.math)</a>
-</li>
       <li><a href="modules/dvas.html#dvas.helper.camel_to_snake">camel_to_snake() (in module dvas.helper)</a>
 </li>
       <li><a href="modules/dvas.config.html#dvas.config.config.CatExpr">CatExpr (class in dvas.config.config)</a>
@@ -237,7 +240,7 @@
 </li>
         <li><a href="modules/dvas.config.html#dvas.config.config.OrigData.CLASS_KEY">(dvas.config.config.OrigData attribute)</a>
 </li>
-        <li><a href="modules/dvas.config.html#dvas.config.config.Parameter.CLASS_KEY">(dvas.config.config.Parameter attribute)</a>
+        <li><a href="modules/dvas.config.html#dvas.config.config.Prm.CLASS_KEY">(dvas.config.config.Prm attribute)</a>
 </li>
         <li><a href="modules/dvas.config.html#dvas.config.config.Tag.CLASS_KEY">(dvas.config.config.Tag attribute)</a>
 </li>
@@ -276,10 +279,10 @@
 </li>
       <li><a href="modules/dvas.html#dvas.errors.ConfigCheckJSONError">ConfigCheckJSONError</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/dvas.html#dvas.errors.ConfigError">ConfigError</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/dvas.config.html#dvas.config.config.ConfigExprInterpreter">ConfigExprInterpreter (class in dvas.config.config)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.errors.ConfigGenMaxLenError">ConfigGenMaxLenError</a>
@@ -307,7 +310,7 @@
 </li>
         <li><a href="modules/dvas.config.html#dvas.config.config.OneDimArrayConfigManager.CONST_LABELS">(dvas.config.config.OneDimArrayConfigManager attribute)</a>
 </li>
-        <li><a href="modules/dvas.config.html#dvas.config.config.Parameter.CONST_LABELS">(dvas.config.config.Parameter attribute)</a>
+        <li><a href="modules/dvas.config.html#dvas.config.config.Prm.CONST_LABELS">(dvas.config.config.Prm attribute)</a>
 </li>
         <li><a href="modules/dvas.config.html#dvas.config.config.Tag.CONST_LABELS">(dvas.config.config.Tag attribute)</a>
 </li>
@@ -330,6 +333,8 @@
         <li><a href="modules/dvas.database.html#dvas.database.database.InfoManagerMetaData.copy">(dvas.database.database.InfoManagerMetaData method)</a>
 </li>
       </ul></li>
+      <li><a href="modules/dvas_recipes.uaii2022.html#dvas_recipes.uaii2022.plots.covmat_stats">covmat_stats() (in module dvas_recipes.uaii2022.plots)</a>
+</li>
       <li><a href="modules/dvas.tools.html#dvas.tools.math.crosscorr">crosscorr() (in module dvas.tools.math)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.environ.GlobalPackageVariableManager.csv_file_ext">csv_file_ext (dvas.environ.GlobalPackageVariableManager attribute)</a>
@@ -389,6 +394,8 @@
       <li><a href="modules/dvas.database.html#dvas.database.database.DB_FILE_NM">DB_FILE_NM (in module dvas.database.database)</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.database.DatabaseManager.DB_TABLES">DB_TABLES (dvas.database.database.DatabaseManager attribute)</a>
+</li>
+      <li><a href="modules/dvas.database.html#dvas.database.model.TimestampTZField.db_value">db_value() (dvas.database.model.TimestampTZField method)</a>
 </li>
       <li><a href="modules/dvas.data.html#dvas.data.data.MultiProfileAC.db_variables">db_variables (dvas.data.data.MultiProfileAC property)</a>
 </li>
@@ -461,7 +468,7 @@
 </li>
         <li><a href="modules/dvas.config.html#dvas.config.config.OrigData.document">(dvas.config.config.OrigData attribute)</a>
 </li>
-        <li><a href="modules/dvas.config.html#dvas.config.config.Parameter.document">(dvas.config.config.Parameter attribute)</a>
+        <li><a href="modules/dvas.config.html#dvas.config.config.Prm.document">(dvas.config.config.Prm attribute)</a>
 </li>
         <li><a href="modules/dvas.config.html#dvas.config.config.Tag.document">(dvas.config.config.Tag attribute)</a>
 </li>
@@ -487,7 +494,7 @@
 </li>
         <li><a href="modules/dvas.database.html#dvas.database.model.Object.DoesNotExist">(dvas.database.model.Object attribute)</a>
 </li>
-        <li><a href="modules/dvas.database.html#dvas.database.model.Parameter.DoesNotExist">(dvas.database.model.Parameter attribute)</a>
+        <li><a href="modules/dvas.database.html#dvas.database.model.Prm.DoesNotExist">(dvas.database.model.Prm attribute)</a>
 </li>
         <li><a href="modules/dvas.database.html#dvas.database.model.Tag.DoesNotExist">(dvas.database.model.Tag attribute)</a>
 </li>
@@ -553,10 +560,10 @@
 </li>
       </ul></li>
       <li>
-    dvas.config.definitions.parameter
+    dvas.config.definitions.prm
 
       <ul>
-        <li><a href="modules/dvas.config.definitions.html#module-dvas.config.definitions.parameter">module</a>
+        <li><a href="modules/dvas.config.definitions.html#module-dvas.config.definitions.prm">module</a>
 </li>
       </ul></li>
       <li>
@@ -615,8 +622,6 @@
         <li><a href="modules/dvas.data.strategy.html#module-dvas.data.strategy.load">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     dvas.data.strategy.plot
 
@@ -624,6 +629,8 @@
         <li><a href="modules/dvas.data.strategy.html#module-dvas.data.strategy.plot">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     dvas.data.strategy.rebase
 
@@ -926,6 +933,13 @@
 </li>
       </ul></li>
       <li>
+    dvas_recipes.uaii2022.flgs
+
+      <ul>
+        <li><a href="modules/dvas_recipes.uaii2022.html#module-dvas_recipes.uaii2022.flgs">module</a>
+</li>
+      </ul></li>
+      <li>
     dvas_recipes.uaii2022.gdps
 
       <ul>
@@ -962,6 +976,8 @@
       </ul></li>
       <li><a href="modules/dvas.html#dvas.errors.DvasError">DvasError</a>
 </li>
+      <li><a href="modules/dvas.html#dvas.logger.DvasFormatter">DvasFormatter (class in dvas.logger)</a>
+</li>
       <li><a href="modules/dvas_recipes.html#dvas_recipes.errors.DvasRecipesError">DvasRecipesError</a>
 </li>
   </ul></td>
@@ -977,6 +993,8 @@
 </li>
       </ul></li>
       <li><a href="modules/dvas.database.html#dvas.database.database.InfoManager.eid">eid (dvas.database.database.InfoManager property)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.hardcoded.EID_LEN">EID_LEN (in module dvas.hardcoded)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.environ.GlobalPackageVariableManager.eid_pat">eid_pat (dvas.environ.GlobalPackageVariableManager attribute)</a>
 </li>
@@ -1099,6 +1117,8 @@
 </li>
         <li><a href="modules/dvas.config.html#dvas.config.config.SmallUpperExpr.fct">(dvas.config.config.SmallUpperExpr method)</a>
 </li>
+        <li><a href="modules/dvas.config.html#dvas.config.config.ToDatetime.fct">(dvas.config.config.ToDatetime method)</a>
+</li>
         <li><a href="modules/dvas.config.html#dvas.config.config.UpperExpr.fct">(dvas.config.config.UpperExpr method)</a>
 </li>
         <li><a href="modules/dvas.data.html#dvas.data.linker.AddExpr.fct">(dvas.data.linker.AddExpr method)</a>
@@ -1126,6 +1146,8 @@
 </li>
       <li><a href="modules/dvas.html#dvas.dvas.Database.fetch_raw_data">fetch_raw_data() (dvas.dvas.Database static method)</a>
 </li>
+      <li><a href="modules/dvas.database.html#dvas.database.model.TimestampTZField.field_type">field_type (dvas.database.model.TimestampTZField attribute)</a>
+</li>
       <li><a href="modules/dvas.data.html#dvas.data.linker.FileHandler.file_model_pat">file_model_pat (dvas.data.linker.FileHandler property)</a>
 </li>
       <li><a href="modules/dvas.data.html#dvas.data.linker.FileHandler.file_suffix_re">file_suffix_re (dvas.data.linker.FileHandler property)</a>
@@ -1133,6 +1155,8 @@
       <li><a href="modules/dvas.data.html#dvas.data.linker.FileHandler">FileHandler (class in dvas.data.linker)</a>
 </li>
       <li><a href="modules/dvas.data.html#dvas.data.linker.FileHandler.filter_files">filter_files() (dvas.data.linker.FileHandler method)</a>
+</li>
+      <li><a href="modules/dvas_recipes.uaii2022.html#dvas_recipes.uaii2022.tools.find_tropopause">find_tropopause() (in module dvas_recipes.uaii2022.tools)</a>
 </li>
       <li><a href="modules/dvas.plots.html#dvas.plots.utils.fix_txt">fix_txt() (in module dvas.plots.utils)</a>
 </li>
@@ -1154,27 +1178,31 @@
 </li>
       <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.Profile.FLG_DESC_NM">FLG_DESC_NM (dvas.data.strategy.data.Profile attribute)</a>
 </li>
+      <li><a href="modules/dvas.html#dvas.hardcoded.FLG_DESCENT">FLG_DESCENT (in module dvas.hardcoded)</a>
+</li>
       <li><a href="modules/dvas.html#dvas.hardcoded.FLG_DESCENT_DESC">FLG_DESCENT_DESC (in module dvas.hardcoded)</a>
 </li>
-      <li><a href="modules/dvas.html#dvas.hardcoded.FLG_DESCENT_NAME">FLG_DESCENT_NAME (in module dvas.hardcoded)</a>
+      <li><a href="modules/dvas.html#dvas.hardcoded.FLG_EMPTY">FLG_EMPTY (in module dvas.hardcoded)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.hardcoded.FLG_EMPTY_DESC">FLG_EMPTY_DESC (in module dvas.hardcoded)</a>
-</li>
-      <li><a href="modules/dvas.html#dvas.hardcoded.FLG_EMPTY_NAME">FLG_EMPTY_NAME (in module dvas.hardcoded)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.environ.GlobalPackageVariableManager.flg_file_ext">flg_file_ext (dvas.environ.GlobalPackageVariableManager attribute)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.hardcoded.FLG_FILE_EXT">FLG_FILE_EXT (in module dvas.hardcoded)</a>
 </li>
+      <li><a href="modules/dvas.html#dvas.hardcoded.FLG_HASCWS">FLG_HASCWS (in module dvas.hardcoded)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.hardcoded.FLG_HASCWS_DESC">FLG_HASCWS_DESC (in module dvas.hardcoded)</a>
+</li>
       <li><a href="modules/dvas.database.html#dvas.database.model.Flg.flg_id">flg_id (dvas.database.model.Flg attribute)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.hardcoded.FLG_INCOMPATIBLE">FLG_INCOMPATIBLE (in module dvas.hardcoded)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.hardcoded.FLG_INCOMPATIBLE_DESC">FLG_INCOMPATIBLE_DESC (in module dvas.hardcoded)</a>
 </li>
-      <li><a href="modules/dvas.html#dvas.hardcoded.FLG_INCOMPATIBLE_NAME">FLG_INCOMPATIBLE_NAME (in module dvas.hardcoded)</a>
+      <li><a href="modules/dvas.html#dvas.hardcoded.FLG_INTERP">FLG_INTERP (in module dvas.hardcoded)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.hardcoded.FLG_INTERP_DESC">FLG_INTERP_DESC (in module dvas.hardcoded)</a>
-</li>
-      <li><a href="modules/dvas.html#dvas.hardcoded.FLG_INTERP_NAME">FLG_INTERP_NAME (in module dvas.hardcoded)</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.model.Flg.flg_name">flg_name (dvas.database.model.Flg attribute)</a>
 </li>
@@ -1199,7 +1227,11 @@
       <li><a href="modules/dvas_recipes.html#dvas_recipes.recipe.for_each_var">for_each_var() (in module dvas_recipes.recipe)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.logger.DeltaTimeFormatter.format">format() (dvas.logger.DeltaTimeFormatter method)</a>
+
+      <ul>
+        <li><a href="modules/dvas.html#dvas.logger.DvasFormatter.format">(dvas.logger.DvasFormatter method)</a>
 </li>
+      </ul></li>
       <li><a href="modules/dvas_recipes.html#dvas_recipes.utils.format_tags">format_tags() (in module dvas_recipes.utils)</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.database.InfoManager.from_dict">from_dict() (dvas.database.database.InfoManager static method)</a>
@@ -1344,9 +1376,13 @@
 </li>
       <li><a href="modules/dvas.tools.html#dvas.tools.sync.get_sync_shifts_from_alt">get_sync_shifts_from_alt() (in module dvas.tools.sync)</a>
 </li>
+      <li><a href="modules/dvas.tools.html#dvas.tools.sync.get_sync_shifts_from_starttime">get_sync_shifts_from_starttime() (in module dvas.tools.sync)</a>
+</li>
       <li><a href="modules/dvas.tools.html#dvas.tools.sync.get_sync_shifts_from_val">get_sync_shifts_from_val() (in module dvas.tools.sync)</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.database.DatabaseManager.get_table">get_table() (dvas.database.database.DatabaseManager method)</a>
+</li>
+      <li><a href="modules/dvas.database.html#dvas.database.search.SearchInfoExpr.get_tod">get_tod() (dvas.database.search.SearchInfoExpr static method)</a>
 </li>
       <li><a href="modules/dvas.config.html#dvas.config.config.MultiLayerConfigManager.get_val">get_val() (dvas.config.config.MultiLayerConfigManager method)</a>
 </li>
@@ -1447,7 +1483,7 @@
 </li>
         <li><a href="modules/dvas.database.html#dvas.database.model.MetaData.info">(dvas.database.model.MetaData attribute)</a>
 </li>
-        <li><a href="modules/dvas.database.html#dvas.database.model.Parameter.info">(dvas.database.model.Parameter attribute)</a>
+        <li><a href="modules/dvas.database.html#dvas.database.model.Prm.info">(dvas.database.model.Prm attribute)</a>
 </li>
       </ul></li>
       <li><a href="modules/dvas.database.html#dvas.database.explorer.ReadDatabase.info">info() (dvas.database.explorer.ReadDatabase method)</a>
@@ -1555,7 +1591,7 @@
 </li>
         <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.origdata.KEY">(in module dvas.config.definitions.origdata)</a>
 </li>
-        <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.parameter.KEY">(in module dvas.config.definitions.parameter)</a>
+        <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.prm.KEY">(in module dvas.config.definitions.prm)</a>
 </li>
         <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.tag.KEY">(in module dvas.config.definitions.tag)</a>
 </li>
@@ -1583,7 +1619,7 @@
 </li>
         <li><a href="modules/dvas.config.html#dvas.config.config.OrigData.LABEL_VAL_DEF">(dvas.config.config.OrigData attribute)</a>
 </li>
-        <li><a href="modules/dvas.config.html#dvas.config.config.Parameter.LABEL_VAL_DEF">(dvas.config.config.Parameter attribute)</a>
+        <li><a href="modules/dvas.config.html#dvas.config.config.Prm.LABEL_VAL_DEF">(dvas.config.config.Prm attribute)</a>
 </li>
         <li><a href="modules/dvas.config.html#dvas.config.config.Tag.LABEL_VAL_DEF">(dvas.config.config.Tag attribute)</a>
 </li>
@@ -1591,7 +1627,7 @@
 </li>
         <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.origdata.LABEL_VAL_DEF">(in module dvas.config.definitions.origdata)</a>
 </li>
-        <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.parameter.LABEL_VAL_DEF">(in module dvas.config.definitions.parameter)</a>
+        <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.prm.LABEL_VAL_DEF">(in module dvas.config.definitions.prm)</a>
 </li>
       </ul></li>
       <li><a href="modules/dvas.data.html#dvas.data.linker.CSVOutputLinker.load">load() (dvas.data.linker.CSVOutputLinker method)</a>
@@ -1633,6 +1669,8 @@
       <li><a href="modules/dvas.html#dvas.logger.LogManager.log_level">log_level (dvas.logger.LogManager attribute)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.logger.LogManager.log_mode">log_mode (dvas.logger.LogManager attribute)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.logger.DvasFormatter.log_msg">log_msg() (dvas.logger.DvasFormatter method)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.errors.LogDirError">LogDirError</a>
 </li>
@@ -1704,7 +1742,7 @@
 </li>
         <li><a href="modules/dvas.config.definitions.html#module-dvas.config.definitions.origdata">dvas.config.definitions.origdata</a>
 </li>
-        <li><a href="modules/dvas.config.definitions.html#module-dvas.config.definitions.parameter">dvas.config.definitions.parameter</a>
+        <li><a href="modules/dvas.config.definitions.html#module-dvas.config.definitions.prm">dvas.config.definitions.prm</a>
 </li>
         <li><a href="modules/dvas.config.definitions.html#module-dvas.config.definitions.tag">dvas.config.definitions.tag</a>
 </li>
@@ -1810,6 +1848,8 @@
 </li>
         <li><a href="modules/dvas_recipes.uaii2022.html#module-dvas_recipes.uaii2022.dtas">dvas_recipes.uaii2022.dtas</a>
 </li>
+        <li><a href="modules/dvas_recipes.uaii2022.html#module-dvas_recipes.uaii2022.flgs">dvas_recipes.uaii2022.flgs</a>
+</li>
         <li><a href="modules/dvas_recipes.uaii2022.html#module-dvas_recipes.uaii2022.gdps">dvas_recipes.uaii2022.gdps</a>
 </li>
         <li><a href="modules/dvas_recipes.uaii2022.html#module-dvas_recipes.uaii2022.plots">dvas_recipes.uaii2022.plots</a>
@@ -1826,6 +1866,14 @@
       <li><a href="modules/dvas.html#dvas.hardcoded.MPL_STYLES_PATH">MPL_STYLES_PATH (in module dvas.hardcoded)</a>
 </li>
       <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.MPStrategyAC">MPStrategyAC (class in dvas.data.strategy.data)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.hardcoded.MTDTA_BPT">MTDTA_BPT (in module dvas.hardcoded)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.hardcoded.MTDTA_PBL">MTDTA_PBL (in module dvas.hardcoded)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.hardcoded.MTDTA_START">MTDTA_START (in module dvas.hardcoded)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.hardcoded.MTDTA_TROPOPAUSE">MTDTA_TROPOPAUSE (in module dvas.hardcoded)</a>
 </li>
       <li><a href="modules/dvas.data.html#dvas.data.linker.MulExpr">MulExpr (class in dvas.data.linker)</a>
 </li>
@@ -1884,7 +1932,7 @@
 </li>
         <li><a href="modules/dvas.config.html#dvas.config.config.OneDimArrayConfigManager.NODE_GEN">(dvas.config.config.OneDimArrayConfigManager attribute)</a>
 </li>
-        <li><a href="modules/dvas.config.html#dvas.config.config.Parameter.NODE_GEN">(dvas.config.config.Parameter attribute)</a>
+        <li><a href="modules/dvas.config.html#dvas.config.config.Prm.NODE_GEN">(dvas.config.config.Prm attribute)</a>
 </li>
         <li><a href="modules/dvas.config.html#dvas.config.config.Tag.NODE_GEN">(dvas.config.config.Tag attribute)</a>
 </li>
@@ -1892,7 +1940,7 @@
 </li>
         <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.model.NODE_GEN">(in module dvas.config.definitions.model)</a>
 </li>
-        <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.parameter.NODE_GEN">(in module dvas.config.definitions.parameter)</a>
+        <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.prm.NODE_GEN">(in module dvas.config.definitions.prm)</a>
 </li>
         <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.tag.NODE_GEN">(in module dvas.config.definitions.tag)</a>
 </li>
@@ -1985,12 +2033,6 @@
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.model.Info.param_id">param_id (dvas.database.model.Info attribute)</a>
 </li>
-      <li><a href="modules/dvas.config.html#dvas.config.config.Parameter">Parameter (class in dvas.config.config)</a>
-
-      <ul>
-        <li><a href="modules/dvas.database.html#dvas.database.model.Parameter">(class in dvas.database.model)</a>
-</li>
-      </ul></li>
       <li><a href="modules/dvas.config.html#dvas.config.config.CSVOrigMeta.PARAMETER_PATTERN_PROP">PARAMETER_PATTERN_PROP (dvas.config.config.CSVOrigMeta attribute)</a>
 
       <ul>
@@ -2002,7 +2044,7 @@
 </li>
         <li><a href="modules/dvas.config.html#dvas.config.config.OrigData.PARAMETER_PATTERN_PROP">(dvas.config.config.OrigData attribute)</a>
 </li>
-        <li><a href="modules/dvas.config.html#dvas.config.config.Parameter.PARAMETER_PATTERN_PROP">(dvas.config.config.Parameter attribute)</a>
+        <li><a href="modules/dvas.config.html#dvas.config.config.Prm.PARAMETER_PATTERN_PROP">(dvas.config.config.Prm attribute)</a>
 </li>
         <li><a href="modules/dvas.config.html#dvas.config.config.Tag.PARAMETER_PATTERN_PROP">(dvas.config.config.Tag attribute)</a>
 </li>
@@ -2014,7 +2056,7 @@
 </li>
         <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.origdata.PARAMETER_PATTERN_PROP">(in module dvas.config.definitions.origdata)</a>
 </li>
-        <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.parameter.PARAMETER_PATTERN_PROP">(in module dvas.config.definitions.parameter)</a>
+        <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.prm.PARAMETER_PATTERN_PROP">(in module dvas.config.definitions.prm)</a>
 </li>
         <li><a href="modules/dvas.config.definitions.html#dvas.config.definitions.tag.PARAMETER_PATTERN_PROP">(in module dvas.config.definitions.tag)</a>
 </li>
@@ -2043,47 +2085,53 @@
 </li>
       <li><a href="modules/dvas.plots.html#dvas.plots.utils.PLOT_STYLES">PLOT_STYLES (in module dvas.plots.utils)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.plot.PlotStrategy">PlotStrategy (class in dvas.data.strategy.plot)</a>
 </li>
       <li><a href="modules/dvas.data.html#dvas.data.linker.PowExpr">PowExpr (class in dvas.data.linker)</a>
 </li>
-      <li><a href="modules/dvas.html#dvas.hardcoded.PRF_REF_ALT_NAME">PRF_REF_ALT_NAME (in module dvas.hardcoded)</a>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/dvas.html#dvas.hardcoded.PRF_ALT">PRF_ALT (in module dvas.hardcoded)</a>
 </li>
-      <li><a href="modules/dvas.html#dvas.hardcoded.PRF_REF_FLG_NAME">PRF_REF_FLG_NAME (in module dvas.hardcoded)</a>
+      <li><a href="modules/dvas.html#dvas.hardcoded.PRF_FLG">PRF_FLG (in module dvas.hardcoded)</a>
 </li>
-      <li><a href="modules/dvas.html#dvas.hardcoded.PRF_REF_INDEX_NAME">PRF_REF_INDEX_NAME (in module dvas.hardcoded)</a>
-</li>
-      <li><a href="modules/dvas.html#dvas.hardcoded.PRF_REF_TDT_NAME">PRF_REF_TDT_NAME (in module dvas.hardcoded)</a>
-</li>
-      <li><a href="modules/dvas.html#dvas.hardcoded.PRF_REF_UCR_NAME">PRF_REF_UCR_NAME (in module dvas.hardcoded)</a>
-</li>
-      <li><a href="modules/dvas.html#dvas.hardcoded.PRF_REF_UCS_NAME">PRF_REF_UCS_NAME (in module dvas.hardcoded)</a>
-</li>
-      <li><a href="modules/dvas.html#dvas.hardcoded.PRF_REF_UCT_NAME">PRF_REF_UCT_NAME (in module dvas.hardcoded)</a>
-</li>
-      <li><a href="modules/dvas.html#dvas.hardcoded.PRF_REF_UCU_NAME">PRF_REF_UCU_NAME (in module dvas.hardcoded)</a>
-</li>
-      <li><a href="modules/dvas.html#dvas.hardcoded.PRF_REF_VAL_NAME">PRF_REF_VAL_NAME (in module dvas.hardcoded)</a>
+      <li><a href="modules/dvas.html#dvas.hardcoded.PRF_IDX">PRF_IDX (in module dvas.hardcoded)</a>
 </li>
       <li><a href="modules/dvas_recipes.uaii2022.html#dvas_recipes.uaii2022.basic.prf_summary">prf_summary() (in module dvas_recipes.uaii2022.basic)</a>
 </li>
+      <li><a href="modules/dvas.html#dvas.hardcoded.PRF_TDT">PRF_TDT (in module dvas.hardcoded)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.hardcoded.PRF_UCR">PRF_UCR (in module dvas.hardcoded)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.hardcoded.PRF_UCS">PRF_UCS (in module dvas.hardcoded)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.hardcoded.PRF_UCT">PRF_UCT (in module dvas.hardcoded)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.hardcoded.PRF_UCU">PRF_UCU (in module dvas.hardcoded)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.hardcoded.PRF_VAL">PRF_VAL (in module dvas.hardcoded)</a>
+</li>
+      <li><a href="modules/dvas.config.html#dvas.config.config.Prm">Prm (class in dvas.config.config)</a>
+
+      <ul>
+        <li><a href="modules/dvas.database.html#dvas.database.model.Prm">(class in dvas.database.model)</a>
+</li>
+      </ul></li>
       <li><a href="modules/dvas.database.html#dvas.database.explorer.ReadDatabase.prm">prm() (dvas.database.explorer.ReadDatabase method)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.hardcoded.PRM_AND_FLG_PRM_PAT">PRM_AND_FLG_PRM_PAT (in module dvas.hardcoded)</a>
 </li>
-      <li><a href="modules/dvas.database.html#dvas.database.model.Parameter.prm_desc">prm_desc (dvas.database.model.Parameter attribute)</a>
+      <li><a href="modules/dvas.database.html#dvas.database.model.Prm.prm_desc">prm_desc (dvas.database.model.Prm attribute)</a>
 </li>
-      <li><a href="modules/dvas.database.html#dvas.database.model.Parameter.prm_id">prm_id (dvas.database.model.Parameter attribute)</a>
+      <li><a href="modules/dvas.database.html#dvas.database.model.Prm.prm_id">prm_id (dvas.database.model.Prm attribute)</a>
 </li>
-      <li><a href="modules/dvas.database.html#dvas.database.model.Parameter.prm_name">prm_name (dvas.database.model.Parameter attribute)</a>
+      <li><a href="modules/dvas.database.html#dvas.database.model.Prm.prm_name">prm_name (dvas.database.model.Prm attribute)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.hardcoded.PRM_PAT">PRM_PAT (in module dvas.hardcoded)</a>
 </li>
       <li><a href="modules/dvas.data.html#dvas.data.linker.FileHandler.prm_re">prm_re (dvas.data.linker.FileHandler property)</a>
 </li>
-      <li><a href="modules/dvas.database.html#dvas.database.model.Parameter.prm_unit">prm_unit (dvas.database.model.Parameter attribute)</a>
+      <li><a href="modules/dvas.database.html#dvas.database.model.Prm.prm_unit">prm_unit (dvas.database.model.Prm attribute)</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.search.PrmStrategy">PrmStrategy (class in dvas.database.search)</a>
 </li>
@@ -2102,6 +2150,8 @@
       <li><a href="modules/dvas.database.html#dvas.database.explorer.DatabasePrompt.prompt">prompt (dvas.database.explorer.DatabasePrompt attribute)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.environ.VariableManager.protect">protect() (dvas.environ.VariableManager method)</a>
+</li>
+      <li><a href="modules/dvas.database.html#dvas.database.model.TimestampTZField.python_value">python_value() (dvas.database.model.TimestampTZField method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -2128,8 +2178,6 @@
       <li><a href="modules/dvas.database.html#dvas.database.search.RawExpr">RawExpr (class in dvas.database.search)</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.model.re_fullmatch">re_fullmatch() (in module dvas.database.model)</a>
-</li>
-      <li><a href="modules/dvas.html#dvas.helper.TypedProperty.re_str_choice">re_str_choice() (dvas.helper.TypedProperty static method)</a>
 </li>
       <li><a href="modules/dvas.config.html#dvas.config.config.ConfigManager.read">read() (dvas.config.config.ConfigManager method)</a>
 
@@ -2321,49 +2369,49 @@
       </ul></li>
       <li><a href="modules/dvas.database.html#dvas.database.model.InfosTags.tag">tag (dvas.database.model.InfosTags attribute)</a>
 </li>
+      <li><a href="modules/dvas.html#dvas.hardcoded.TAG_1S">TAG_1S (in module dvas.hardcoded)</a>
+</li>
       <li><a href="modules/dvas.html#dvas.hardcoded.TAG_1S_DESC">TAG_1S_DESC (in module dvas.hardcoded)</a>
 </li>
-      <li><a href="modules/dvas.html#dvas.hardcoded.TAG_1S_NAME">TAG_1S_NAME (in module dvas.hardcoded)</a>
+      <li><a href="modules/dvas.html#dvas.hardcoded.TAG_CLN">TAG_CLN (in module dvas.hardcoded)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.hardcoded.TAG_CLN_DESC">TAG_CLN_DESC (in module dvas.hardcoded)</a>
 </li>
-      <li><a href="modules/dvas.html#dvas.hardcoded.TAG_CLN_NAME">TAG_CLN_NAME (in module dvas.hardcoded)</a>
+      <li><a href="modules/dvas.html#dvas.hardcoded.TAG_CWS">TAG_CWS (in module dvas.hardcoded)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.hardcoded.TAG_CWS_DESC">TAG_CWS_DESC (in module dvas.hardcoded)</a>
 </li>
-      <li><a href="modules/dvas.html#dvas.hardcoded.TAG_CWS_NAME">TAG_CWS_NAME (in module dvas.hardcoded)</a>
-</li>
       <li><a href="modules/dvas.database.html#dvas.database.model.Tag.tag_desc">tag_desc (dvas.database.model.Tag attribute)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.hardcoded.TAG_DTA">TAG_DTA (in module dvas.hardcoded)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.hardcoded.TAG_DTA_DESC">TAG_DTA_DESC (in module dvas.hardcoded)</a>
 </li>
-      <li><a href="modules/dvas.html#dvas.hardcoded.TAG_DTA_NAME">TAG_DTA_NAME (in module dvas.hardcoded)</a>
+      <li><a href="modules/dvas.html#dvas.hardcoded.TAG_EMPTY">TAG_EMPTY (in module dvas.hardcoded)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.hardcoded.TAG_EMPTY_DESC">TAG_EMPTY_DESC (in module dvas.hardcoded)</a>
 </li>
-      <li><a href="modules/dvas.html#dvas.hardcoded.TAG_EMPTY_NAME">TAG_EMPTY_NAME (in module dvas.hardcoded)</a>
+      <li><a href="modules/dvas.html#dvas.hardcoded.TAG_GDP">TAG_GDP (in module dvas.hardcoded)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.hardcoded.TAG_GDP_DESC">TAG_GDP_DESC (in module dvas.hardcoded)</a>
-</li>
-      <li><a href="modules/dvas.html#dvas.hardcoded.TAG_GDP_NAME">TAG_GDP_NAME (in module dvas.hardcoded)</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.model.InfosTags.tag_id">tag_id (dvas.database.model.InfosTags attribute)</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.model.Tag.tag_name">tag_name (dvas.database.model.Tag attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/dvas.html#dvas.hardcoded.TAG_NONE">TAG_NONE (in module dvas.hardcoded)</a>
+</li>
       <li><a href="modules/dvas.html#dvas.hardcoded.TAG_NONE_DESC">TAG_NONE_DESC (in module dvas.hardcoded)</a>
 </li>
-      <li><a href="modules/dvas.html#dvas.hardcoded.TAG_NONE_NAME">TAG_NONE_NAME (in module dvas.hardcoded)</a>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/dvas.html#dvas.hardcoded.TAG_RAW">TAG_RAW (in module dvas.hardcoded)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.hardcoded.TAG_RAW_DESC">TAG_RAW_DESC (in module dvas.hardcoded)</a>
 </li>
-      <li><a href="modules/dvas.html#dvas.hardcoded.TAG_RAW_NAME">TAG_RAW_NAME (in module dvas.hardcoded)</a>
+      <li><a href="modules/dvas.html#dvas.hardcoded.TAG_SYNC">TAG_SYNC (in module dvas.hardcoded)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.hardcoded.TAG_SYNC_DESC">TAG_SYNC_DESC (in module dvas.hardcoded)</a>
-</li>
-      <li><a href="modules/dvas.html#dvas.hardcoded.TAG_SYNC_NAME">TAG_SYNC_NAME (in module dvas.hardcoded)</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.search.TagExpr">TagExpr (class in dvas.database.search)</a>
 </li>
@@ -2387,7 +2435,17 @@
 </li>
       <li><a href="modules/dvas.html#dvas.helper.TimeIt">TimeIt (class in dvas.helper)</a>
 </li>
-      <li><a href="modules/dvas.tools.html#dvas.tools.math.TropopauseError">TropopauseError</a>
+      <li><a href="modules/dvas.database.html#dvas.database.model.TimestampTZField">TimestampTZField (class in dvas.database.model)</a>
+</li>
+      <li><a href="modules/dvas.database.html#dvas.database.database.InfoManager.tod">tod (dvas.database.database.InfoManager property)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.environ.GlobalPackageVariableManager.tod_pat">tod_pat (dvas.environ.GlobalPackageVariableManager attribute)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.hardcoded.TOD_PAT">TOD_PAT (in module dvas.hardcoded)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.hardcoded.TOD_VALS">TOD_VALS (in module dvas.hardcoded)</a>
+</li>
+      <li><a href="modules/dvas.config.html#dvas.config.config.ToDatetime">ToDatetime (class in dvas.config.config)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.helper.TypedProperty">TypedProperty (class in dvas.helper)</a>
 </li>
@@ -2439,10 +2497,12 @@
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.model.Data.value">value (dvas.database.model.Data attribute)</a>
 </li>
-      <li><a href="modules/dvas.database.html#dvas.database.model.MetaData.value_num">value_num (dvas.database.model.MetaData attribute)</a>
+      <li><a href="modules/dvas.database.html#dvas.database.model.MetaData.value_datetime">value_datetime (dvas.database.model.MetaData attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="modules/dvas.database.html#dvas.database.model.MetaData.value_num">value_num (dvas.database.model.MetaData attribute)</a>
+</li>
       <li><a href="modules/dvas.database.html#dvas.database.model.MetaData.value_str">value_str (dvas.database.model.MetaData attribute)</a>
 </li>
       <li><a href="modules/dvas.data.html#dvas.data.data.MultiProfileAC.var_info">var_info (dvas.data.data.MultiProfileAC property)</a>
@@ -2457,11 +2517,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/dvas.tools.gdps.html#dvas.tools.gdps.utils.weighted_mean">weighted_mean() (in module dvas.tools.gdps.utils)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/dvas.plots.html#dvas.plots.utils.WIDTH_ONECOL">WIDTH_ONECOL (in module dvas.plots.utils)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/dvas.plots.html#dvas.plots.utils.WIDTH_TWOCOL">WIDTH_TWOCOL (in module dvas.plots.utils)</a>
+</li>
+      <li><a href="modules/dvas.tools.html#dvas.tools.tools.wrap_angle">wrap_angle() (in module dvas.tools.tools)</a>
 </li>
   </ul></td>
 </tr></table>

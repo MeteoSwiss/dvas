@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -30,7 +31,7 @@
             <a href="../index.html" class="icon icon-home"> dvas
           </a>
               <div class="version">
-                0.5.0
+                0.6.0.dev1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -105,15 +106,15 @@
            <div itemprop="articleBody">
              
   <section id="module-dvas.plots">
-<span id="dvas-plots-package"></span><h1>dvas.plots package<a class="headerlink" href="#module-dvas.plots" title="Permalink to this headline"></a></h1>
+<span id="dvas-plots-package"></span><h1>dvas.plots package<a class="headerlink" href="#module-dvas.plots" title="Permalink to this heading"></a></h1>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-dvas.plots.dtas">
-<span id="dvas-plots-dtas-module"></span><h2>dvas.plots.dtas module<a class="headerlink" href="#module-dvas.plots.dtas" title="Permalink to this headline"></a></h2>
+<span id="dvas-plots-dtas-module"></span><h2>dvas.plots.dtas module<a class="headerlink" href="#module-dvas.plots.dtas" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -142,7 +143,7 @@ been build using the <strong>same</strong> working standard, i.e. they all have 
 
 </section>
 <section id="module-dvas.plots.gdps">
-<span id="dvas-plots-gdps-module"></span><h2>dvas.plots.gdps module<a class="headerlink" href="#module-dvas.plots.gdps" title="Permalink to this headline"></a></h2>
+<span id="dvas-plots-gdps-module"></span><h2>dvas.plots.gdps module<a class="headerlink" href="#module-dvas.plots.gdps" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -217,7 +218,7 @@ Required for setting up the colorbar properly.</p></li>
 
 </section>
 <section id="module-dvas.plots.plots">
-<span id="dvas-plots-plots-module"></span><h2>dvas.plots.plots module<a class="headerlink" href="#module-dvas.plots.plots" title="Permalink to this headline"></a></h2>
+<span id="dvas-plots-plots-module"></span><h2>dvas.plots.plots module<a class="headerlink" href="#module-dvas.plots.plots" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -253,7 +254,7 @@ None. If set, the labels of <em>all</em> the profiles will still appear !</p></l
 
 </section>
 <section id="module-dvas.plots.utils">
-<span id="dvas-plots-utils-module"></span><h2>dvas.plots.utils module<a class="headerlink" href="#module-dvas.plots.utils" title="Permalink to this headline"></a></h2>
+<span id="dvas-plots-utils-module"></span><h2>dvas.plots.utils module<a class="headerlink" href="#module-dvas.plots.utils" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -473,6 +474,23 @@ from.</p>
 <li><p><strong>this_ax</strong> (<em>matplotlib.pyplot.axes</em>) – the axes to add the info to.</p></li>
 <li><p><strong>prfs</strong> (<em>Multiprofile|MultiRSProfile|MultiGDPProfile</em>) – the MultiProfile to extract the info
 from.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dvas.plots.utils.add_var_and_k">
+<span class="sig-prename descclassname"><span class="pre">dvas.plots.utils.</span></span><span class="sig-name descname"><span class="pre">add_var_and_k</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.03</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.plots.utils.add_var_and_k" title="Permalink to this definition"></a></dt>
+<dd><p>Adds the name of the variable to the plot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> (<em>matplotlib.pyplot.axis</em>) – the axis to which the var name should be added.</p></li>
+<li><p><strong>mid</strong> (<em>str, optional</em>) – model id name. Defaults to None.</p></li>
+<li><p><strong>var_name</strong> (<em>str, optional</em>) – the variable name. Defaults to None.</p></li>
+<li><p><strong>k</strong> (<em>int, float, optional</em>) – k-level at which the uncertainties are shown. Defaults to None.</p></li>
+<li><p><strong>offset</strong> (<em>float, optional</em>) – yoffset for the label. Defaults to 1.03.</p></li>
 </ul>
 </dd>
 </dl>

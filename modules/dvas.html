@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -30,7 +31,7 @@
             <a href="../index.html" class="icon icon-home"> dvas
           </a>
               <div class="version">
-                0.5.0
+                0.6.0.dev1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -104,12 +105,12 @@
            <div itemprop="articleBody">
              
   <section id="module-dvas">
-<span id="dvas-package"></span><h1>dvas package<a class="headerlink" href="#module-dvas" title="Permalink to this headline"></a></h1>
+<span id="dvas-package"></span><h1>dvas package<a class="headerlink" href="#module-dvas" title="Permalink to this heading"></a></h1>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <section id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline"></a></h2>
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dvas.config.html">dvas.config package</a><ul>
@@ -120,7 +121,7 @@
 <li class="toctree-l4"><a class="reference internal" href="dvas.config.definitions.html#module-dvas.config.definitions.flg">dvas.config.definitions.flg module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dvas.config.definitions.html#module-dvas.config.definitions.model">dvas.config.definitions.model module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dvas.config.definitions.html#module-dvas.config.definitions.origdata">dvas.config.definitions.origdata module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dvas.config.definitions.html#module-dvas.config.definitions.parameter">dvas.config.definitions.parameter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.definitions.html#module-dvas.config.definitions.prm">dvas.config.definitions.prm module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dvas.config.definitions.html#module-dvas.config.definitions.tag">dvas.config.definitions.tag module</a></li>
 </ul>
 </li>
@@ -194,10 +195,10 @@
 </div>
 </section>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-dvas.dvas">
-<span id="dvas-dvas-module"></span><h2>dvas.dvas module<a class="headerlink" href="#module-dvas.dvas" title="Permalink to this headline"></a></h2>
+<span id="dvas-dvas-module"></span><h2>dvas.dvas module<a class="headerlink" href="#module-dvas.dvas" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -287,48 +288,48 @@ existing metadata.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.dvas.MultiProfile">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.dvas.</span></span><span class="sig-name descname"><span class="pre">MultiProfile</span></span><a class="headerlink" href="#dvas.dvas.MultiProfile" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="dvas.data.html#dvas.data.data.MultiProfile" title="dvas.data.data.MultiProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.data.MultiProfile</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="dvas.data.html#dvas.data.data.MultiProfile" title="dvas.data.data.MultiProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiProfile</span></code></a></p>
 <p>Facade class for user interactions with MultiProfile</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.dvas.MultiRSProfile">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.dvas.</span></span><span class="sig-name descname"><span class="pre">MultiRSProfile</span></span><a class="headerlink" href="#dvas.dvas.MultiRSProfile" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="dvas.data.html#dvas.data.data.MultiRSProfile" title="dvas.data.data.MultiRSProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.data.MultiRSProfile</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="dvas.data.html#dvas.data.data.MultiRSProfile" title="dvas.data.data.MultiRSProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiRSProfile</span></code></a></p>
 <p>Facade class for user interactions with MultiRSProfile</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.dvas.MultiGDPProfile">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.dvas.</span></span><span class="sig-name descname"><span class="pre">MultiGDPProfile</span></span><a class="headerlink" href="#dvas.dvas.MultiGDPProfile" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="dvas.data.html#dvas.data.data.MultiGDPProfile" title="dvas.data.data.MultiGDPProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.data.data.MultiGDPProfile</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="dvas.data.html#dvas.data.data.MultiGDPProfile" title="dvas.data.data.MultiGDPProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiGDPProfile</span></code></a></p>
 <p>Facade class for user interactions with MultiGDPProfile</p>
 </dd></dl>
 
 </section>
 <section id="module-dvas.dynamic">
-<span id="dvas-dynamic-module"></span><h2>dvas.dynamic module<a class="headerlink" href="#module-dvas.dynamic" title="Permalink to this headline"></a></h2>
+<span id="dvas-dynamic-module"></span><h2>dvas.dynamic module<a class="headerlink" href="#module-dvas.dynamic" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>Module contents: dvas dynamic variables</p>
 </section>
 <section id="module-dvas.environ">
-<span id="dvas-environ-module"></span><h2>dvas.environ module<a class="headerlink" href="#module-dvas.environ" title="Permalink to this headline"></a></h2>
+<span id="dvas-environ-module"></span><h2>dvas.environ module<a class="headerlink" href="#module-dvas.environ" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.environ.ABCSingleInstanceMeta">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.environ.</span></span><span class="sig-name descname"><span class="pre">ABCSingleInstanceMeta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.environ.ABCSingleInstanceMeta" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABCMeta</span></code>, <a class="reference internal" href="#dvas.helper.SingleInstanceMetaClass" title="dvas.helper.SingleInstanceMetaClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.helper.SingleInstanceMetaClass</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABCMeta</span></code>, <a class="reference internal" href="#dvas.helper.SingleInstanceMetaClass" title="dvas.helper.SingleInstanceMetaClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">SingleInstanceMetaClass</span></code></a></p>
 <p>Child Meteclass from ABCMeta and SingleInstanceMetaClass</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.environ.VariableManager">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.environ.</span></span><span class="sig-name descname"><span class="pre">VariableManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.environ.VariableManager" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <p>Class to manage variables</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -361,7 +362,7 @@ When existing the context manager, old values are restored.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.environ.GlobalPathVariablesManager">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.environ.</span></span><span class="sig-name descname"><span class="pre">GlobalPathVariablesManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.environ.GlobalPathVariablesManager" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.environ.VariableManager" title="dvas.environ.VariableManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.environ.VariableManager</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.environ.VariableManager" title="dvas.environ.VariableManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariableManager</span></code></a></p>
 <p>Class to manage package’s global directory path variables</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.environ.GlobalPathVariablesManager.orig_data_path">
@@ -434,7 +435,7 @@ When existing the context manager, old values are restored.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.environ.GlobalPackageVariableManager">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.environ.</span></span><span class="sig-name descname"><span class="pre">GlobalPackageVariableManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.environ.GlobalPackageVariableManager" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.environ.VariableManager" title="dvas.environ.VariableManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.environ.VariableManager</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.environ.VariableManager" title="dvas.environ.VariableManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariableManager</span></code></a></p>
 <p>Class used to manage package global variables</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.environ.GlobalPackageVariableManager.config_gen_max">
@@ -483,7 +484,7 @@ When existing the context manager, old values are restored.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.environ.GlobalPackageVariableManager.eid_pat">
 <span class="sig-name descname"><span class="pre">eid_pat</span></span><a class="headerlink" href="#dvas.environ.GlobalPackageVariableManager.eid_pat" title="Permalink to this definition"></a></dt>
-<dd><p>Event ID pattern use in InfoManager to extract event tag.</p>
+<dd><p>Event ID pattern used in InfoManager to extract event tag.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
@@ -494,7 +495,18 @@ When existing the context manager, old values are restored.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.environ.GlobalPackageVariableManager.rid_pat">
 <span class="sig-name descname"><span class="pre">rid_pat</span></span><a class="headerlink" href="#dvas.environ.GlobalPackageVariableManager.rid_pat" title="Permalink to this definition"></a></dt>
-<dd><p>Rig ID pattern use in InfoManager to extract rig tag.</p>
+<dd><p>Rig ID pattern used in InfoManager to extract rig tag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dvas.environ.GlobalPackageVariableManager.tod_pat">
+<span class="sig-name descname"><span class="pre">tod_pat</span></span><a class="headerlink" href="#dvas.environ.GlobalPackageVariableManager.tod_pat" title="Permalink to this definition"></a></dt>
+<dd><p>TimeOfDay ID pattern used in InfoManager to extract rig tag.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
@@ -528,7 +540,7 @@ When existing the context manager, old values are restored.</p>
 
 </section>
 <section id="module-dvas.errors">
-<span id="dvas-errors-module"></span><h2>dvas.errors module<a class="headerlink" href="#module-dvas.errors" title="Permalink to this headline"></a></h2>
+<span id="dvas-errors-module"></span><h2>dvas.errors module<a class="headerlink" href="#module-dvas.errors" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -543,132 +555,132 @@ When existing the context manager, old values are restored.</p>
 <dl class="py exception">
 <dt class="sig sig-object py" id="dvas.errors.ConfigError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.errors.</span></span><span class="sig-name descname"><span class="pre">ConfigError</span></span><a class="headerlink" href="#dvas.errors.ConfigError" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.errors.DvasError" title="dvas.errors.DvasError"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.errors.DvasError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.errors.DvasError" title="dvas.errors.DvasError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DvasError</span></code></a></p>
 <p>Exception for error in config</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="dvas.errors.ConfigPathError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.errors.</span></span><span class="sig-name descname"><span class="pre">ConfigPathError</span></span><a class="headerlink" href="#dvas.errors.ConfigPathError" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.errors.ConfigError" title="dvas.errors.ConfigError"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.errors.ConfigError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.errors.ConfigError" title="dvas.errors.ConfigError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigError</span></code></a></p>
 <p>Exception for error in config file path</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="dvas.errors.ConfigReadError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.errors.</span></span><span class="sig-name descname"><span class="pre">ConfigReadError</span></span><a class="headerlink" href="#dvas.errors.ConfigReadError" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.errors.ConfigError" title="dvas.errors.ConfigError"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.errors.ConfigError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.errors.ConfigError" title="dvas.errors.ConfigError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigError</span></code></a></p>
 <p>Error while reading config</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="dvas.errors.ConfigReadYAMLError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.errors.</span></span><span class="sig-name descname"><span class="pre">ConfigReadYAMLError</span></span><a class="headerlink" href="#dvas.errors.ConfigReadYAMLError" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.errors.ConfigReadError" title="dvas.errors.ConfigReadError"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.errors.ConfigReadError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.errors.ConfigReadError" title="dvas.errors.ConfigReadError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigReadError</span></code></a></p>
 <p>Exception for error in reading YAML file</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="dvas.errors.ConfigCheckJSONError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.errors.</span></span><span class="sig-name descname"><span class="pre">ConfigCheckJSONError</span></span><a class="headerlink" href="#dvas.errors.ConfigCheckJSONError" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.errors.ConfigReadError" title="dvas.errors.ConfigReadError"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.errors.ConfigReadError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.errors.ConfigReadError" title="dvas.errors.ConfigReadError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigReadError</span></code></a></p>
 <p>Exception for error in checking JSON</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="dvas.errors.ConfigGenMaxLenError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.errors.</span></span><span class="sig-name descname"><span class="pre">ConfigGenMaxLenError</span></span><a class="headerlink" href="#dvas.errors.ConfigGenMaxLenError" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.errors.ConfigReadError" title="dvas.errors.ConfigReadError"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.errors.ConfigReadError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.errors.ConfigReadError" title="dvas.errors.ConfigReadError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigReadError</span></code></a></p>
 <p>Exception class for max length config generator error</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="dvas.errors.ConfigNodeError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.errors.</span></span><span class="sig-name descname"><span class="pre">ConfigNodeError</span></span><a class="headerlink" href="#dvas.errors.ConfigNodeError" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.errors.ConfigError" title="dvas.errors.ConfigError"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.errors.ConfigError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.errors.ConfigError" title="dvas.errors.ConfigError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigError</span></code></a></p>
 <p>Error in config node</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="dvas.errors.ConfigGetError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.errors.</span></span><span class="sig-name descname"><span class="pre">ConfigGetError</span></span><a class="headerlink" href="#dvas.errors.ConfigGetError" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.errors.ConfigError" title="dvas.errors.ConfigError"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.errors.ConfigError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.errors.ConfigError" title="dvas.errors.ConfigError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigError</span></code></a></p>
 <p>Error in get config value</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="dvas.errors.ConfigLabelNameError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.errors.</span></span><span class="sig-name descname"><span class="pre">ConfigLabelNameError</span></span><a class="headerlink" href="#dvas.errors.ConfigLabelNameError" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.errors.ConfigGetError" title="dvas.errors.ConfigGetError"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.errors.ConfigGetError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.errors.ConfigGetError" title="dvas.errors.ConfigGetError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigGetError</span></code></a></p>
 <p>Error in config label name</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="dvas.errors.ExprInterpreterError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.errors.</span></span><span class="sig-name descname"><span class="pre">ExprInterpreterError</span></span><a class="headerlink" href="#dvas.errors.ExprInterpreterError" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.errors.ConfigError" title="dvas.errors.ConfigError"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.errors.ConfigError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.errors.ConfigError" title="dvas.errors.ConfigError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigError</span></code></a></p>
 <p>Error in expression interpreter</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="dvas.errors.NonTerminalExprInterpreterError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.errors.</span></span><span class="sig-name descname"><span class="pre">NonTerminalExprInterpreterError</span></span><a class="headerlink" href="#dvas.errors.NonTerminalExprInterpreterError" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.errors.ExprInterpreterError" title="dvas.errors.ExprInterpreterError"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.errors.ExprInterpreterError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.errors.ExprInterpreterError" title="dvas.errors.ExprInterpreterError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExprInterpreterError</span></code></a></p>
 <p>Error in non terminal expression interpreter</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="dvas.errors.TerminalExprInterpreterError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.errors.</span></span><span class="sig-name descname"><span class="pre">TerminalExprInterpreterError</span></span><a class="headerlink" href="#dvas.errors.TerminalExprInterpreterError" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.errors.ExprInterpreterError" title="dvas.errors.ExprInterpreterError"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.errors.ExprInterpreterError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.errors.ExprInterpreterError" title="dvas.errors.ExprInterpreterError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExprInterpreterError</span></code></a></p>
 <p>Error in terminal expression interpreter</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="dvas.errors.LogDirError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.errors.</span></span><span class="sig-name descname"><span class="pre">LogDirError</span></span><a class="headerlink" href="#dvas.errors.LogDirError" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.errors.DvasError" title="dvas.errors.DvasError"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.errors.DvasError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.errors.DvasError" title="dvas.errors.DvasError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DvasError</span></code></a></p>
 <p>Exception for error in creating log directory</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="dvas.errors.DBError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.errors.</span></span><span class="sig-name descname"><span class="pre">DBError</span></span><a class="headerlink" href="#dvas.errors.DBError" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.errors.DvasError" title="dvas.errors.DvasError"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.errors.DvasError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.errors.DvasError" title="dvas.errors.DvasError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DvasError</span></code></a></p>
 <p>Exception for dvas database error</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="dvas.errors.DBIOError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.errors.</span></span><span class="sig-name descname"><span class="pre">DBIOError</span></span><a class="headerlink" href="#dvas.errors.DBIOError" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.errors.DBError" title="dvas.errors.DBError"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.errors.DBError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.errors.DBError" title="dvas.errors.DBError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DBError</span></code></a></p>
 <p>Exception for dvas database IOError</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="dvas.errors.SearchError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.errors.</span></span><span class="sig-name descname"><span class="pre">SearchError</span></span><a class="headerlink" href="#dvas.errors.SearchError" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.errors.DBError" title="dvas.errors.DBError"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.errors.DBError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.errors.DBError" title="dvas.errors.DBError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DBError</span></code></a></p>
 <p>Exception for dvas database search error</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="dvas.errors.ProfileError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.errors.</span></span><span class="sig-name descname"><span class="pre">ProfileError</span></span><a class="headerlink" href="#dvas.errors.ProfileError" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.errors.DvasError" title="dvas.errors.DvasError"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.errors.DvasError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.errors.DvasError" title="dvas.errors.DvasError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DvasError</span></code></a></p>
 <p>Exception for dvas profile error</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="dvas.errors.LoadError">
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.errors.</span></span><span class="sig-name descname"><span class="pre">LoadError</span></span><a class="headerlink" href="#dvas.errors.LoadError" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.errors.DvasError" title="dvas.errors.DvasError"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.errors.DvasError</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.errors.DvasError" title="dvas.errors.DvasError"><code class="xref py py-class docutils literal notranslate"><span class="pre">DvasError</span></code></a></p>
 <p>Exception for dvas load error</p>
 </dd></dl>
 
 </section>
 <section id="module-dvas.hardcoded">
-<span id="dvas-hardcoded-module"></span><h2>dvas.hardcoded module<a class="headerlink" href="#module-dvas.hardcoded" title="Permalink to this headline"></a></h2>
+<span id="dvas-hardcoded-module"></span><h2>dvas.hardcoded module<a class="headerlink" href="#module-dvas.hardcoded" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -762,6 +774,20 @@ When existing the context manager, old values are restored.</p>
 </dd></dl>
 
 <dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.EID_LEN">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">EID_LEN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="headerlink" href="#dvas.hardcoded.EID_LEN" title="Permalink to this definition"></a></dt>
+<dd><p>‘ + 6 GRUAN id digits</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+<dt class="field-even">Type</dt>
+<dd class="field-even"><p>Len of the eid tag, comprised of ‘e</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.RID_PAT">
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">RID_PAT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'^r:\\w+$'</span></em><a class="headerlink" href="#dvas.hardcoded.RID_PAT" title="Permalink to this definition"></a></dt>
 <dd><p>Rig id regexp pattern</p>
@@ -773,12 +799,23 @@ When existing the context manager, old values are restored.</p>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.PRF_REF_INDEX_NAME">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PRF_REF_INDEX_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'_idx'</span></em><a class="headerlink" href="#dvas.hardcoded.PRF_REF_INDEX_NAME" title="Permalink to this definition"></a></dt>
-<dd><p>Name of the integer index for the pandas DataFrame of Profiles, RSProfile, GDPProfiles</p>
+<dt class="sig sig-object py" id="dvas.hardcoded.TOD_PAT">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TOD_PAT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'^tod:\\w+$'</span></em><a class="headerlink" href="#dvas.hardcoded.TOD_PAT" title="Permalink to this definition"></a></dt>
+<dd><p>TimeOfDay regexp pattern</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.TOD_VALS">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TOD_VALS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'tod:daytime',</span> <span class="pre">'tod:nighttime',</span> <span class="pre">'tod:twilight'}</span></em><a class="headerlink" href="#dvas.hardcoded.TOD_VALS" title="Permalink to this definition"></a></dt>
+<dd><p>possible values for the TimeOfDay</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>set</p>
 </dd>
 </dl>
 </dd></dl>
@@ -872,8 +909,19 @@ When existing the context manager, old values are restored.</p>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.PRF_REF_TDT_NAME">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PRF_REF_TDT_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'tdt'</span></em><a class="headerlink" href="#dvas.hardcoded.PRF_REF_TDT_NAME" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.hardcoded.PRF_IDX">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PRF_IDX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'_idx'</span></em><a class="headerlink" href="#dvas.hardcoded.PRF_IDX" title="Permalink to this definition"></a></dt>
+<dd><p>Name of the integer index for the pandas DataFrame of Profiles, RSProfile, GDPProfiles</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.PRF_TDT">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PRF_TDT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'tdt'</span></em><a class="headerlink" href="#dvas.hardcoded.PRF_TDT" title="Permalink to this definition"></a></dt>
 <dd><p>Name of the time delta index for the pandas DataFrame of RSProfile, GDPProfiles</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -883,8 +931,8 @@ When existing the context manager, old values are restored.</p>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.PRF_REF_ALT_NAME">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PRF_REF_ALT_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'alt'</span></em><a class="headerlink" href="#dvas.hardcoded.PRF_REF_ALT_NAME" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.hardcoded.PRF_ALT">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PRF_ALT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'alt'</span></em><a class="headerlink" href="#dvas.hardcoded.PRF_ALT" title="Permalink to this definition"></a></dt>
 <dd><p>Name of the altitude index for the pandas DataFrame of Profiles, RSProfile, GDPProfiles</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -894,8 +942,8 @@ When existing the context manager, old values are restored.</p>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.PRF_REF_VAL_NAME">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PRF_REF_VAL_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'val'</span></em><a class="headerlink" href="#dvas.hardcoded.PRF_REF_VAL_NAME" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.hardcoded.PRF_VAL">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PRF_VAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'val'</span></em><a class="headerlink" href="#dvas.hardcoded.PRF_VAL" title="Permalink to this definition"></a></dt>
 <dd><p>Name of the variable column for the pandas DataFrame of Profiles, RSProfile, GDPProfiles</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -905,8 +953,8 @@ When existing the context manager, old values are restored.</p>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.PRF_REF_UCR_NAME">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PRF_REF_UCR_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ucr'</span></em><a class="headerlink" href="#dvas.hardcoded.PRF_REF_UCR_NAME" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.hardcoded.PRF_UCR">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PRF_UCR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ucr'</span></em><a class="headerlink" href="#dvas.hardcoded.PRF_UCR" title="Permalink to this definition"></a></dt>
 <dd><p>Name of the Rig-correlated uncertainty column for the pandas DataFrame of GDPProfiles</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -916,8 +964,8 @@ When existing the context manager, old values are restored.</p>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.PRF_REF_UCS_NAME">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PRF_REF_UCS_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ucs'</span></em><a class="headerlink" href="#dvas.hardcoded.PRF_REF_UCS_NAME" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.hardcoded.PRF_UCS">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PRF_UCS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ucs'</span></em><a class="headerlink" href="#dvas.hardcoded.PRF_UCS" title="Permalink to this definition"></a></dt>
 <dd><p>Name of the Spatial-correlated uncertainty column for the pandas DataFrame of GDPProfiles</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -927,8 +975,8 @@ When existing the context manager, old values are restored.</p>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.PRF_REF_UCT_NAME">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PRF_REF_UCT_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'uct'</span></em><a class="headerlink" href="#dvas.hardcoded.PRF_REF_UCT_NAME" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.hardcoded.PRF_UCT">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PRF_UCT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'uct'</span></em><a class="headerlink" href="#dvas.hardcoded.PRF_UCT" title="Permalink to this definition"></a></dt>
 <dd><p>Name of the Temporal-correlated uncertainty column for the pandas DataFrame of GDPProfiles</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -938,8 +986,8 @@ When existing the context manager, old values are restored.</p>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.PRF_REF_UCU_NAME">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PRF_REF_UCU_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ucu'</span></em><a class="headerlink" href="#dvas.hardcoded.PRF_REF_UCU_NAME" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.hardcoded.PRF_UCU">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PRF_UCU</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ucu'</span></em><a class="headerlink" href="#dvas.hardcoded.PRF_UCU" title="Permalink to this definition"></a></dt>
 <dd><p>Name of the uncorrelated uncertainty column for the pandas DataFrame of GDPProfiles</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -949,8 +997,8 @@ When existing the context manager, old values are restored.</p>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.PRF_REF_FLG_NAME">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PRF_REF_FLG_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'flg'</span></em><a class="headerlink" href="#dvas.hardcoded.PRF_REF_FLG_NAME" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.hardcoded.PRF_FLG">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PRF_FLG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'flg'</span></em><a class="headerlink" href="#dvas.hardcoded.PRF_FLG" title="Permalink to this definition"></a></dt>
 <dd><p>Name of the flag column for the pandas DataFrame of Profiles, RSProfile, GDPProfiles</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -960,8 +1008,8 @@ When existing the context manager, old values are restored.</p>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.TAG_NONE_NAME">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_NONE_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_NONE_NAME" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.hardcoded.TAG_NONE">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_NONE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_NONE" title="Permalink to this definition"></a></dt>
 <dd><p>Tag’s name for none tag in DB</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -982,8 +1030,8 @@ When existing the context manager, old values are restored.</p>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.TAG_RAW_NAME">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_RAW_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'raw'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_RAW_NAME" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.hardcoded.TAG_RAW">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_RAW</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'raw'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_RAW" title="Permalink to this definition"></a></dt>
 <dd><p>Tag’s name for raw profiles</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1004,8 +1052,8 @@ When existing the context manager, old values are restored.</p>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.TAG_CLN_NAME">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_CLN_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'clean'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_CLN_NAME" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.hardcoded.TAG_CLN">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_CLN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'clean'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_CLN" title="Permalink to this definition"></a></dt>
 <dd><p>Tag’s name for raw profiles</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1026,8 +1074,8 @@ When existing the context manager, old values are restored.</p>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.TAG_GDP_NAME">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_GDP_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'gdp'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_GDP_NAME" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.hardcoded.TAG_GDP">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_GDP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'gdp'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_GDP" title="Permalink to this definition"></a></dt>
 <dd><p>Tag’s name for GDP profiles</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1048,8 +1096,8 @@ When existing the context manager, old values are restored.</p>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.TAG_1S_NAME">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_1S_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'1s'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_1S_NAME" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.hardcoded.TAG_1S">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_1S</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'1s'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_1S" title="Permalink to this definition"></a></dt>
 <dd><p>Tag name for resampled profiles.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1070,8 +1118,8 @@ When existing the context manager, old values are restored.</p>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.TAG_SYNC_NAME">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_SYNC_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sync'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_SYNC_NAME" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.hardcoded.TAG_SYNC">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_SYNC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sync'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_SYNC" title="Permalink to this definition"></a></dt>
 <dd><p>Tag’s name for synchronized profile</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1092,8 +1140,8 @@ When existing the context manager, old values are restored.</p>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.TAG_CWS_NAME">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_CWS_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cws'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_CWS_NAME" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.hardcoded.TAG_CWS">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_CWS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cws'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_CWS" title="Permalink to this definition"></a></dt>
 <dd><p>Tag’s name for combined working standard profile</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1114,8 +1162,8 @@ When existing the context manager, old values are restored.</p>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.TAG_DTA_NAME">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_DTA_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dta'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_DTA_NAME" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.hardcoded.TAG_DTA">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_DTA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dta'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_DTA" title="Permalink to this definition"></a></dt>
 <dd><p>Tag’s name for profile deltas with CWS</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1136,8 +1184,8 @@ When existing the context manager, old values are restored.</p>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.TAG_EMPTY_NAME">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_EMPTY_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'empty'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_EMPTY_NAME" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.hardcoded.TAG_EMPTY">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_EMPTY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'empty'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_EMPTY" title="Permalink to this definition"></a></dt>
 <dd><p>Tag’s name for empty values in raw data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1158,8 +1206,8 @@ When existing the context manager, old values are restored.</p>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.FLG_EMPTY_NAME">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_EMPTY_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'raw_na'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_EMPTY_NAME" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_EMPTY">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_EMPTY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'raw_na'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_EMPTY" title="Permalink to this definition"></a></dt>
 <dd><p>Flag’s name for raw NA values</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1180,8 +1228,8 @@ When existing the context manager, old values are restored.</p>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.FLG_INTERP_NAME">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_INTERP_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'interp'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_INTERP_NAME" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_INTERP">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_INTERP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'interp'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_INTERP" title="Permalink to this definition"></a></dt>
 <dd><p>Flag’s name for interpolated values</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1202,8 +1250,8 @@ When existing the context manager, old values are restored.</p>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.FLG_INCOMPATIBLE_NAME">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_INCOMPATIBLE_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'incomp'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_INCOMPATIBLE_NAME" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_INCOMPATIBLE">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_INCOMPATIBLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'incomp'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_INCOMPATIBLE" title="Permalink to this definition"></a></dt>
 <dd><p>Flag’s name for resampled values</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -1224,9 +1272,9 @@ When existing the context manager, old values are restored.</p>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.FLG_DESCENT_NAME">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_DESCENT_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'descent'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_DESCENT_NAME" title="Permalink to this definition"></a></dt>
-<dd><p>Flag’s name for resampled values</p>
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_DESCENT">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_DESCENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'descent'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_DESCENT" title="Permalink to this definition"></a></dt>
+<dd><p>Flag’s name for descent data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
@@ -1237,7 +1285,73 @@ When existing the context manager, old values are restored.</p>
 <dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.FLG_DESCENT_DESC">
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_DESCENT_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Descent</span> <span class="pre">data'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_DESCENT_DESC" title="Permalink to this definition"></a></dt>
-<dd><p>Flag’s desc for resampled values</p>
+<dd><p>Flag’s desc for descent data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_HASCWS">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_HASCWS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'has_cws'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_HASCWS" title="Permalink to this definition"></a></dt>
+<dd><p>Flag’s name for regions with valid CWS</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_HASCWS_DESC">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_HASCWS_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'A</span> <span class="pre">valid</span> <span class="pre">CWS</span> <span class="pre">measure</span> <span class="pre">exists</span> <span class="pre">for</span> <span class="pre">this</span> <span class="pre">measurement</span> <span class="pre">point'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_HASCWS_DESC" title="Permalink to this definition"></a></dt>
+<dd><p>Flag’s desc</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.MTDTA_BPT">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">MTDTA_BPT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'bpt_time'</span></em><a class="headerlink" href="#dvas.hardcoded.MTDTA_BPT" title="Permalink to this definition"></a></dt>
+<dd><p>Metdata field to store the time of the balloon burst point</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.MTDTA_START">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">MTDTA_START</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'start_time'</span></em><a class="headerlink" href="#dvas.hardcoded.MTDTA_START" title="Permalink to this definition"></a></dt>
+<dd><p>Metadata field to store the GPS time associated to the first profile point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.MTDTA_TROPOPAUSE">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">MTDTA_TROPOPAUSE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'tropopause-gph'</span></em><a class="headerlink" href="#dvas.hardcoded.MTDTA_TROPOPAUSE" title="Permalink to this definition"></a></dt>
+<dd><p>Metadata field to store the tropopause geopotential height</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.MTDTA_PBL">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">MTDTA_PBL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pbl-gph'</span></em><a class="headerlink" href="#dvas.hardcoded.MTDTA_PBL" title="Permalink to this definition"></a></dt>
+<dd><p>Metadata field to store the planetary boundary layer maximum geopotential height</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
@@ -1247,7 +1361,7 @@ When existing the context manager, old values are restored.</p>
 
 </section>
 <section id="module-dvas.helper">
-<span id="dvas-helper-module"></span><h2>dvas.helper module<a class="headerlink" href="#module-dvas.helper" title="Permalink to this headline"></a></h2>
+<span id="dvas-helper-module"></span><h2>dvas.helper module<a class="headerlink" href="#module-dvas.helper" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -1291,7 +1405,7 @@ When existing the context manager, old values are restored.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.helper.RequiredAttrMetaClass">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.helper.</span></span><span class="sig-name descname"><span class="pre">RequiredAttrMetaClass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.RequiredAttrMetaClass" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABCMeta</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABCMeta</span></code></p>
 <p>Meta class for requiring specific attribute to abstract parent class</p>
 <p>Use this meta abstract class to construct a parent abstract class to
 require special attributes into children.</p>
@@ -1322,7 +1436,7 @@ __call__ method below, when accessing their help.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.helper.ContextDecorator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.helper.</span></span><span class="sig-name descname"><span class="pre">ContextDecorator</span></span><a class="headerlink" href="#dvas.helper.ContextDecorator" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <p>Use this class as superclass of a context manager to convert it into a decorator.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1351,7 +1465,7 @@ when class is used as decorated. Default to None.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.helper.TimeIt">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.helper.</span></span><span class="sig-name descname"><span class="pre">TimeIt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">header_msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.TimeIt" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">contextlib.AbstractContextManager</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractContextManager</span></code></p>
 <p>Code elapsed time calculator context manager.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.helper.TimeIt.__init__">
@@ -1392,7 +1506,7 @@ N. Starkman.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.helper.TypedProperty">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.helper.</span></span><span class="sig-name descname"><span class="pre">TypedProperty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pampy_match</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setter_fct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">getter_fct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_none</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.TypedProperty" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.helper.</span></span><span class="sig-name descname"><span class="pre">TypedProperty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">match</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setter_fct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">getter_fct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_none</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.TypedProperty" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Typed property class</p>
 <div class="admonition note">
@@ -1401,12 +1515,12 @@ N. Starkman.</p></li>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.helper.TypedProperty.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pampy_match</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setter_fct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">getter_fct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_none</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.TypedProperty.__init__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">match</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setter_fct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">getter_fct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_none</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.TypedProperty.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Constructor</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pampy_match</strong> (<em>type or tuple of type</em>) – Data type</p></li>
+<li><p><strong>match</strong> (<em>type or types.UnionType</em>) – Data type(s), used in a isinstance check</p></li>
 <li><p><strong>setter_fct</strong> (callable, <cite>optional</cite>) – Function applied before assign value in setter
 method. The function can include special check and raises -
 use TypeError to raise appropriate exception. Default to lambda x: x</p></li>
@@ -1419,27 +1533,10 @@ Defaults to False.</p></li>
 </ul>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dvas.helper.TypedProperty.re_str_choice">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">re_str_choice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">choices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_case</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.TypedProperty.re_str_choice" title="Permalink to this definition"></a></dt>
-<dd><p>Method to create re.compile for a list of str</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Use <cite>lambda x: x[0]</cite> as setter_fct to catch the matched string.</p>
+<p>pampy no longer used from v0.6 onwards …</p>
 </div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>choices</strong> (<em>list of str</em>) – Choice of strings</p></li>
-<li><p><strong>ignore_case</strong> (<em>bool</em>) – Ignore case if True. Default to False.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>re.compile</p>
-</dd>
-</dl>
 </dd></dl>
 
 </dd></dl>
@@ -1564,19 +1661,19 @@ by sep value.</p></li>
 
 </section>
 <section id="module-dvas.logger">
-<span id="dvas-logger-module"></span><h2>dvas.logger module<a class="headerlink" href="#module-dvas.logger" title="Permalink to this headline"></a></h2>
+<span id="dvas-logger-module"></span><h2>dvas.logger module<a class="headerlink" href="#module-dvas.logger" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>Module contents: Logging management</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.logger.DeltaTimeFormatter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.logger.</span></span><span class="sig-name descname"><span class="pre">DeltaTimeFormatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datefmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.logger.DeltaTimeFormatter" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">logging.Formatter</span></code></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.logger.</span></span><span class="sig-name descname"><span class="pre">DeltaTimeFormatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datefmt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'%'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">defaults</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.logger.DeltaTimeFormatter" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Formatter</span></code></p>
 <p>Delta time formatter</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Adapted from <a class="reference external" href="https://stackoverflow.com/questions/25194864/python-logging-time-since-start-of-program">StackOverflow.</a>
+<p>Adapted from <a class="reference external" href="https://stackoverflow.com/questions/25194864">StackOverflow.</a>
 Author: Keith</p>
 </div>
 <dl class="py method">
@@ -1593,6 +1690,51 @@ called to format the event time. If there is exception information,
 it is formatted using formatException() and appended to the message.</p>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dvas.logger.DvasFormatter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.logger.</span></span><span class="sig-name descname"><span class="pre">DvasFormatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.logger.DvasFormatter" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Formatter</span></code></p>
+<p>The custom logging formatter class for dvas. To handle time deltas AND colors.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dvas.logger.DvasFormatter.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.logger.DvasFormatter.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Init function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>colors</strong> (<em>bool, optional</em>) – if True, will add colors to the log message via ANSI codes.
+Defaults to False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dvas.logger.DvasFormatter.log_msg">
+<span class="sig-name descname"><span class="pre">log_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.logger.DvasFormatter.log_msg" title="Permalink to this definition"></a></dt>
+<dd><p>Return the dvas log message canvas, possibly with colors and stuff.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>level</strong> (<em>logging.lvl, optional</em>) – the log level, e.g. logging.INFO, logging.ERROR, …</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>DeltaTimeFormatter</em> – the formatted log message canvas.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dvas.logger.DvasFormatter.format">
+<span class="sig-name descname"><span class="pre">format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">record</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.logger.DvasFormatter.format" title="Permalink to this definition"></a></dt>
+<dd><p>Format the log message as required</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dvas.logger.apply_dvas_formatter">
+<span class="sig-prename descclassname"><span class="pre">dvas.logger.</span></span><span class="sig-name descname"><span class="pre">apply_dvas_formatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.logger.apply_dvas_formatter" title="Permalink to this definition"></a></dt>
+<dd><p>A small routine responsible for apply a custom formatter to a given logging handler.</p>
 </dd></dl>
 
 <dl class="py class">
@@ -1668,7 +1810,7 @@ Log to console only: 3</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas.logger.log_func_call">
-<span class="sig-prename descclassname"><span class="pre">dvas.logger.</span></span><span class="sig-name descname"><span class="pre">log_func_call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_it</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.logger.log_func_call" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas.logger.</span></span><span class="sig-name descname"><span class="pre">log_func_call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_it</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'info'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.logger.log_func_call" title="Permalink to this definition"></a></dt>
 <dd><p>Intended as a decorator that logs a function call the the log.
 The first part of the message containing the function name is at the ‘INFO’ level.
 The second part of the message containing the argument values is at the ‘DEBUG’ level.</p>
@@ -1691,7 +1833,7 @@ See also <a class="reference external" href="https://docs.python.org/3/library/i
 
 </section>
 <section id="module-dvas.version">
-<span id="dvas-version-module"></span><h2>dvas.version module<a class="headerlink" href="#module-dvas.version" title="Permalink to this headline"></a></h2>
+<span id="dvas-version-module"></span><h2>dvas.version module<a class="headerlink" href="#module-dvas.version" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>

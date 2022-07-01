@@ -25,6 +25,14 @@ dvas\_recipes.uaii2022.dtas module
    :undoc-members:
    :show-inheritance:
 
+dvas\_recipes.uaii2022.flgs module
+----------------------------------
+
+.. automodule:: dvas_recipes.uaii2022.flgs
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dvas\_recipes.uaii2022.gdps module
 ----------------------------------
 

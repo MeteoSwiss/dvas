@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -30,7 +31,7 @@
             <a href="../index.html" class="icon icon-home"> dvas
           </a>
               <div class="version">
-                0.5.0
+                0.6.0.dev1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -98,12 +99,12 @@
            <div itemprop="articleBody">
              
   <section id="module-dvas_recipes">
-<span id="dvas-recipes-package"></span><h1>dvas_recipes package<a class="headerlink" href="#module-dvas_recipes" title="Permalink to this headline"></a></h1>
+<span id="dvas-recipes-package"></span><h1>dvas_recipes package<a class="headerlink" href="#module-dvas_recipes" title="Permalink to this heading"></a></h1>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <section id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline"></a></h2>
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dvas_recipes.demo.html">dvas_recipes.demo package</a><ul>
@@ -115,6 +116,7 @@
 <li class="toctree-l2"><a class="reference internal" href="dvas_recipes.uaii2022.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dvas_recipes.uaii2022.html#module-dvas_recipes.uaii2022.basic">dvas_recipes.uaii2022.basic module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dvas_recipes.uaii2022.html#module-dvas_recipes.uaii2022.dtas">dvas_recipes.uaii2022.dtas module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dvas_recipes.uaii2022.html#module-dvas_recipes.uaii2022.flgs">dvas_recipes.uaii2022.flgs module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dvas_recipes.uaii2022.html#module-dvas_recipes.uaii2022.gdps">dvas_recipes.uaii2022.gdps module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dvas_recipes.uaii2022.html#module-dvas_recipes.uaii2022.plots">dvas_recipes.uaii2022.plots module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dvas_recipes.uaii2022.html#module-dvas_recipes.uaii2022.sync">dvas_recipes.uaii2022.sync module</a></li>
@@ -125,10 +127,10 @@
 </div>
 </section>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-dvas_recipes.dynamic">
-<span id="dvas-recipes-dynamic-module"></span><h2>dvas_recipes.dynamic module<a class="headerlink" href="#module-dvas_recipes.dynamic" title="Permalink to this headline"></a></h2>
+<span id="dvas-recipes-dynamic-module"></span><h2>dvas_recipes.dynamic module<a class="headerlink" href="#module-dvas_recipes.dynamic" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -218,7 +220,7 @@
 
 </section>
 <section id="module-dvas_recipes.errors">
-<span id="dvas-recipes-errors-module"></span><h2>dvas_recipes.errors module<a class="headerlink" href="#module-dvas_recipes.errors" title="Permalink to this headline"></a></h2>
+<span id="dvas-recipes-errors-module"></span><h2>dvas_recipes.errors module<a class="headerlink" href="#module-dvas_recipes.errors" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -237,7 +239,7 @@
 
 </section>
 <section id="module-dvas_recipes.hl_commands">
-<span id="dvas-recipes-hl-commands-module"></span><h2>dvas_recipes.hl_commands module<a class="headerlink" href="#module-dvas_recipes.hl_commands" title="Permalink to this headline"></a></h2>
+<span id="dvas-recipes-hl-commands-module"></span><h2>dvas_recipes.hl_commands module<a class="headerlink" href="#module-dvas_recipes.hl_commands" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -289,7 +291,7 @@ also increasing the computing time.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas_recipes.hl_commands.run_recipe">
-<span class="sig-prename descclassname"><span class="pre">dvas_recipes.hl_commands.</span></span><span class="sig-name descname"><span class="pre">run_recipe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rcp_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_step_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.hl_commands.run_recipe" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas_recipes.hl_commands.</span></span><span class="sig-name descname"><span class="pre">run_recipe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rcp_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_step_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">until_step_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.hl_commands.run_recipe" title="Permalink to this definition"></a></dt>
 <dd><p>Loads and execute a dvas recipe.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
@@ -305,7 +307,12 @@ e.g.:</p>
 </pre></div>
 </div>
 </li>
-<li><p><strong>from_step_id</strong> (<em>str, optional</em>) – if set, will skip all processing until this step_id value.</p></li>
+<li><p><strong>from_step_id</strong> (<em>str, optional</em>) – if set, will skip all processing until this step_id value.
+Defaults to None.</p></li>
+<li><p><strong>until_step_id</strong> (<em>str, optional</em>) – if set, will skip all processing step beyond this step_id
+value. Defaults to None.</p></li>
+<li><p><strong>debug</strong> (<em>bool, optional</em>) – if True, will force-set the logging level to DEBUG.
+Defaults to False.</p></li>
 </ul>
 </dd>
 </dl>
@@ -313,7 +320,7 @@ e.g.:</p>
 
 </section>
 <section id="module-dvas_recipes.recipe">
-<span id="dvas-recipes-recipe-module"></span><h2>dvas_recipes.recipe module<a class="headerlink" href="#module-dvas_recipes.recipe" title="Permalink to this headline"></a></h2>
+<span id="dvas-recipes-recipe-module"></span><h2>dvas_recipes.recipe module<a class="headerlink" href="#module-dvas_recipes.recipe" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -392,13 +399,13 @@ be executed sequentially for all the specified variables.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas_recipes.recipe.Recipe">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas_recipes.recipe.</span></span><span class="sig-name descname"><span class="pre">Recipe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rcp_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.recipe.Recipe" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas_recipes.recipe.</span></span><span class="sig-name descname"><span class="pre">Recipe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rcp_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.recipe.Recipe" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Recipe class, designed to handle the loading/initialization/execution of dvas recipes from
 dedicated YAML files.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas_recipes.recipe.Recipe.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rcp_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.recipe.Recipe.__init__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rcp_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.recipe.Recipe.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Recipe initialization from a suitable YAML recipe file.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
@@ -411,6 +418,8 @@ Defaults to None = all available. Array must be 2D, e.g.:</p>
 </pre></div>
 </div>
 </li>
+<li><p><strong>debug</strong> (<em>bool, optional</em>) – if True, will force-set the logging level to DEBUG.
+Defaults to False.</p></li>
 </ul>
 </dd>
 </dl>
@@ -461,12 +470,16 @@ raw data will be ingested. Defaults to True.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas_recipes.recipe.Recipe.execute">
-<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_step_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.recipe.Recipe.execute" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_step_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">until_step_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.recipe.Recipe.execute" title="Permalink to this definition"></a></dt>
 <dd><p>Run the recipe step-by-step, possibly skipping some of the first ones.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>from_step_id</strong> (<em>str|int, optional</em>) – if set, will start the processing from this specific
-step_id. Defaults to None = start at first step.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>from_step_id</strong> (<em>str|int, optional</em>) – if set, will start the processing from this specific
+step_id. Defaults to None = start at first step.</p></li>
+<li><p><strong>until_step_id</strong> (<em>str|int, optional</em>) – if set, will end the processing after this specific
+step_id. Defaults to None = go until the end of the recipe.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -475,7 +488,7 @@ step_id. Defaults to None = start at first step.</p>
 
 </section>
 <section id="module-dvas_recipes.utils">
-<span id="dvas-recipes-utils-module"></span><h2>dvas_recipes.utils module<a class="headerlink" href="#module-dvas_recipes.utils" title="Permalink to this headline"></a></h2>
+<span id="dvas-recipes-utils-module"></span><h2>dvas_recipes.utils module<a class="headerlink" href="#module-dvas_recipes.utils" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -545,7 +558,7 @@ fed to this routine.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas_recipes.utils.rsid_tags">
 <span class="sig-prename descclassname"><span class="pre">dvas_recipes.utils.</span></span><span class="sig-name descname"><span class="pre">rsid_tags</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.utils.rsid_tags" title="Permalink to this definition"></a></dt>
-<dd><p>Returns the list of rsid tags, possibly by removing some of them.</p>
+<dd><p>Returns the list of rsid (recipe step ID) tags, possibly by removing some of them.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>pop</strong> (<em>list, optional</em>) – if set, any tags in this list will be removed from the returned list.</p>

@@ -14,6 +14,7 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -30,7 +31,7 @@
             <a href="../index.html" class="icon icon-home"> dvas
           </a>
               <div class="version">
-                0.5.0
+                0.6.0.dev1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -105,12 +106,12 @@
            <div itemprop="articleBody">
              
   <section id="module-dvas.config">
-<span id="dvas-config-package"></span><h1>dvas.config package<a class="headerlink" href="#module-dvas.config" title="Permalink to this headline"></a></h1>
+<span id="dvas-config-package"></span><h1>dvas.config package<a class="headerlink" href="#module-dvas.config" title="Permalink to this heading"></a></h1>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <section id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline"></a></h2>
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dvas.config.definitions.html">dvas.config.definitions package</a><ul>
@@ -119,7 +120,7 @@
 <li class="toctree-l2"><a class="reference internal" href="dvas.config.definitions.html#module-dvas.config.definitions.flg">dvas.config.definitions.flg module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dvas.config.definitions.html#module-dvas.config.definitions.model">dvas.config.definitions.model module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dvas.config.definitions.html#module-dvas.config.definitions.origdata">dvas.config.definitions.origdata module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dvas.config.definitions.html#module-dvas.config.definitions.parameter">dvas.config.definitions.parameter module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.config.definitions.html#module-dvas.config.definitions.prm">dvas.config.definitions.prm module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dvas.config.definitions.html#module-dvas.config.definitions.tag">dvas.config.definitions.tag module</a></li>
 </ul>
 </li>
@@ -127,10 +128,10 @@
 </div>
 </section>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-dvas.config.config">
-<span id="dvas-config-config-module"></span><h2>dvas.config.config module<a class="headerlink" href="#module-dvas.config.config" title="Permalink to this headline"></a></h2>
+<span id="dvas-config-config-module"></span><h2>dvas.config.config module<a class="headerlink" href="#module-dvas.config.config" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -217,7 +218,7 @@ list/dict reference overlap</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.config.config.OneLayerConfigManager">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.config.config.</span></span><span class="sig-name descname"><span class="pre">OneLayerConfigManager</span></span><a class="headerlink" href="#dvas.config.config.OneLayerConfigManager" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.ConfigManager" title="dvas.config.config.ConfigManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.config.config.ConfigManager</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.ConfigManager" title="dvas.config.config.ConfigManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigManager</span></code></a></p>
 <p>Abstract class for managing ‘one-layer’ YAML config.</p>
 <p>‘one-layer’ means YAML file of such type:</p>
 <div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">label1</span><span class="p">:</span> <span class="n">value_label1</span>
@@ -322,7 +323,7 @@ Else read from doc_in.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.config.config.CSVOrigMeta">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.config.config.</span></span><span class="sig-name descname"><span class="pre">CSVOrigMeta</span></span><a class="headerlink" href="#dvas.config.config.CSVOrigMeta" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.OneLayerConfigManager" title="dvas.config.config.OneLayerConfigManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.config.config.OneLayerConfigManager</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.OneLayerConfigManager" title="dvas.config.config.OneLayerConfigManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">OneLayerConfigManager</span></code></a></p>
 <p>CSV original metadata config manager</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.config.config.CSVOrigMeta.PARAMETER_PATTERN_PROP">
@@ -380,7 +381,7 @@ Else read from doc_in.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.config.config.OneDimArrayConfigManager">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.config.config.</span></span><span class="sig-name descname"><span class="pre">OneDimArrayConfigManager</span></span><a class="headerlink" href="#dvas.config.config.OneDimArrayConfigManager" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.OneLayerConfigManager" title="dvas.config.config.OneLayerConfigManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.config.config.OneLayerConfigManager</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.OneLayerConfigManager" title="dvas.config.config.OneLayerConfigManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">OneLayerConfigManager</span></code></a></p>
 <p>Abstract class for managing ‘one-dim-array’ YAML config.</p>
 <p>‘one-dim-array’ means YAML file of such type:</p>
 <div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">label11</span><span class="p">:</span> <span class="n">value_label11</span>
@@ -459,7 +460,7 @@ Else read from doc_in.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.config.config.Model">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.config.config.</span></span><span class="sig-name descname"><span class="pre">Model</span></span><a class="headerlink" href="#dvas.config.config.Model" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.OneDimArrayConfigManager" title="dvas.config.config.OneDimArrayConfigManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.config.config.OneDimArrayConfigManager</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.OneDimArrayConfigManager" title="dvas.config.config.OneDimArrayConfigManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">OneDimArrayConfigManager</span></code></a></p>
 <p>Instrument type config manager</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.config.config.Model.PARAMETER_PATTERN_PROP">
@@ -538,13 +539,13 @@ none node.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="dvas.config.config.Parameter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.config.config.</span></span><span class="sig-name descname"><span class="pre">Parameter</span></span><a class="headerlink" href="#dvas.config.config.Parameter" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.OneDimArrayConfigManager" title="dvas.config.config.OneDimArrayConfigManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.config.config.OneDimArrayConfigManager</span></code></a></p>
+<dt class="sig sig-object py" id="dvas.config.config.Prm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.config.config.</span></span><span class="sig-name descname"><span class="pre">Prm</span></span><a class="headerlink" href="#dvas.config.config.Prm" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.OneDimArrayConfigManager" title="dvas.config.config.OneDimArrayConfigManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">OneDimArrayConfigManager</span></code></a></p>
 <p>Parameter config manager</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="dvas.config.config.Parameter.PARAMETER_PATTERN_PROP">
-<span class="sig-name descname"><span class="pre">PARAMETER_PATTERN_PROP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'^prm_desc$':</span> <span class="pre">{'type':</span> <span class="pre">'string'},</span> <span class="pre">'^prm_name$':</span> <span class="pre">{'type':</span> <span class="pre">'string'},</span> <span class="pre">'^prm_unit$':</span> <span class="pre">{'type':</span> <span class="pre">'string'}}</span></em><a class="headerlink" href="#dvas.config.config.Parameter.PARAMETER_PATTERN_PROP" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.config.config.Prm.PARAMETER_PATTERN_PROP">
+<span class="sig-name descname"><span class="pre">PARAMETER_PATTERN_PROP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'^prm_desc$':</span> <span class="pre">{'type':</span> <span class="pre">'string'},</span> <span class="pre">'^prm_name$':</span> <span class="pre">{'type':</span> <span class="pre">'string'},</span> <span class="pre">'^prm_unit$':</span> <span class="pre">{'type':</span> <span class="pre">'string'}}</span></em><a class="headerlink" href="#dvas.config.config.Prm.PARAMETER_PATTERN_PROP" title="Permalink to this definition"></a></dt>
 <dd><p>Parameter JSON 7 schema. Constant value.</p>
 <p>Must be a dict like:</p>
 <div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
@@ -561,8 +562,8 @@ none node.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="dvas.config.config.Parameter.LABEL_VAL_DEF">
-<span class="sig-name descname"><span class="pre">LABEL_VAL_DEF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'prm_desc':</span> <span class="pre">'',</span> <span class="pre">'prm_unit':</span> <span class="pre">''}</span></em><a class="headerlink" href="#dvas.config.config.Parameter.LABEL_VAL_DEF" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.config.config.Prm.LABEL_VAL_DEF">
+<span class="sig-name descname"><span class="pre">LABEL_VAL_DEF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'prm_desc':</span> <span class="pre">'',</span> <span class="pre">'prm_unit':</span> <span class="pre">''}</span></em><a class="headerlink" href="#dvas.config.config.Prm.LABEL_VAL_DEF" title="Permalink to this definition"></a></dt>
 <dd><p>Default values of labels</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -572,8 +573,8 @@ none node.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="dvas.config.config.Parameter.CLASS_KEY">
-<span class="sig-name descname"><span class="pre">CLASS_KEY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Parameter'</span></em><a class="headerlink" href="#dvas.config.config.Parameter.CLASS_KEY" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.config.config.Prm.CLASS_KEY">
+<span class="sig-name descname"><span class="pre">CLASS_KEY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Prm'</span></em><a class="headerlink" href="#dvas.config.config.Prm.CLASS_KEY" title="Permalink to this definition"></a></dt>
 <dd><p>Class key denomination</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -583,8 +584,8 @@ none node.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="dvas.config.config.Parameter.CONST_LABELS">
-<span class="sig-name descname"><span class="pre">CONST_LABELS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#dvas.config.config.Parameter.CONST_LABELS" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.config.config.Prm.CONST_LABELS">
+<span class="sig-name descname"><span class="pre">CONST_LABELS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#dvas.config.config.Prm.CONST_LABELS" title="Permalink to this definition"></a></dt>
 <dd><p>Constant labels</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -594,8 +595,8 @@ none node.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="dvas.config.config.Parameter.NODE_GEN">
-<span class="sig-name descname"><span class="pre">NODE_GEN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'prm_name'</span></em><a class="headerlink" href="#dvas.config.config.Parameter.NODE_GEN" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.config.config.Prm.NODE_GEN">
+<span class="sig-name descname"><span class="pre">NODE_GEN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'prm_name'</span></em><a class="headerlink" href="#dvas.config.config.Prm.NODE_GEN" title="Permalink to this definition"></a></dt>
 <dd><p>Node name able to be generated by regexp. Use empty str to assign
 none node.</p>
 <dl class="field-list simple">
@@ -606,8 +607,8 @@ none node.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="dvas.config.config.Parameter.document">
-<span class="sig-name descname"><span class="pre">document</span></span><a class="headerlink" href="#dvas.config.config.Parameter.document" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.config.config.Prm.document">
+<span class="sig-name descname"><span class="pre">document</span></span><a class="headerlink" href="#dvas.config.config.Prm.document" title="Permalink to this definition"></a></dt>
 <dd><p>Config document</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -621,11 +622,11 @@ none node.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.config.config.Flg">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.config.config.</span></span><span class="sig-name descname"><span class="pre">Flg</span></span><a class="headerlink" href="#dvas.config.config.Flg" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.OneDimArrayConfigManager" title="dvas.config.config.OneDimArrayConfigManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.config.config.OneDimArrayConfigManager</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.OneDimArrayConfigManager" title="dvas.config.config.OneDimArrayConfigManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">OneDimArrayConfigManager</span></code></a></p>
 <p>Flg config manager</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.config.config.Flg.PARAMETER_PATTERN_PROP">
-<span class="sig-name descname"><span class="pre">PARAMETER_PATTERN_PROP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'^bit_pos$':</span> <span class="pre">{'maximum':</span> <span class="pre">63,</span> <span class="pre">'minimum':</span> <span class="pre">0,</span> <span class="pre">'type':</span> <span class="pre">'integer'},</span> <span class="pre">'^flg_desc$':</span> <span class="pre">{'type':</span> <span class="pre">'string'},</span> <span class="pre">'^flg_name$':</span> <span class="pre">{'type':</span> <span class="pre">'string'}}</span></em><a class="headerlink" href="#dvas.config.config.Flg.PARAMETER_PATTERN_PROP" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">PARAMETER_PATTERN_PROP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'^bit_pos$':</span> <span class="pre">{'maximum':</span> <span class="pre">62,</span> <span class="pre">'minimum':</span> <span class="pre">0,</span> <span class="pre">'type':</span> <span class="pre">'integer'},</span> <span class="pre">'^flg_desc$':</span> <span class="pre">{'type':</span> <span class="pre">'string'},</span> <span class="pre">'^flg_name$':</span> <span class="pre">{'type':</span> <span class="pre">'string'}}</span></em><a class="headerlink" href="#dvas.config.config.Flg.PARAMETER_PATTERN_PROP" title="Permalink to this definition"></a></dt>
 <dd><p>Parameter JSON 7 schema. Constant value.</p>
 <p>Must be a dict like:</p>
 <div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
@@ -665,7 +666,7 @@ none node.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.config.config.Flg.CONST_LABELS">
-<span class="sig-name descname"><span class="pre">CONST_LABELS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[{'bit_pos':</span> <span class="pre">0,</span> <span class="pre">'flg_name':</span> <span class="pre">'raw_na',</span> <span class="pre">'flg_desc':</span> <span class="pre">'Raw</span> <span class="pre">NA</span> <span class="pre">values'},</span> <span class="pre">{'bit_pos':</span> <span class="pre">1,</span> <span class="pre">'flg_name':</span> <span class="pre">'interp',</span> <span class="pre">'flg_desc':</span> <span class="pre">'Interpolated</span> <span class="pre">values'},</span> <span class="pre">{'bit_pos':</span> <span class="pre">2,</span> <span class="pre">'flg_name':</span> <span class="pre">'incomp',</span> <span class="pre">'flg_desc':</span> <span class="pre">'Incompatible</span> <span class="pre">GDP</span> <span class="pre">measurements'},</span> <span class="pre">{'bit_pos':</span> <span class="pre">3,</span> <span class="pre">'flg_name':</span> <span class="pre">'descent',</span> <span class="pre">'flg_desc':</span> <span class="pre">'Descent</span> <span class="pre">data'}]</span></em><a class="headerlink" href="#dvas.config.config.Flg.CONST_LABELS" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">CONST_LABELS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[{'bit_pos':</span> <span class="pre">0,</span> <span class="pre">'flg_name':</span> <span class="pre">'raw_na',</span> <span class="pre">'flg_desc':</span> <span class="pre">'Raw</span> <span class="pre">NA</span> <span class="pre">values'},</span> <span class="pre">{'bit_pos':</span> <span class="pre">1,</span> <span class="pre">'flg_name':</span> <span class="pre">'interp',</span> <span class="pre">'flg_desc':</span> <span class="pre">'Interpolated</span> <span class="pre">values'},</span> <span class="pre">{'bit_pos':</span> <span class="pre">2,</span> <span class="pre">'flg_name':</span> <span class="pre">'incomp',</span> <span class="pre">'flg_desc':</span> <span class="pre">'Incompatible</span> <span class="pre">GDP</span> <span class="pre">measurements'},</span> <span class="pre">{'bit_pos':</span> <span class="pre">3,</span> <span class="pre">'flg_name':</span> <span class="pre">'descent',</span> <span class="pre">'flg_desc':</span> <span class="pre">'Descent</span> <span class="pre">data'},</span> <span class="pre">{'bit_pos':</span> <span class="pre">4,</span> <span class="pre">'flg_name':</span> <span class="pre">'has_cws',</span> <span class="pre">'flg_desc':</span> <span class="pre">'A</span> <span class="pre">valid</span> <span class="pre">CWS</span> <span class="pre">measure</span> <span class="pre">exists</span> <span class="pre">for</span> <span class="pre">this</span> <span class="pre">measurement</span> <span class="pre">point'}]</span></em><a class="headerlink" href="#dvas.config.config.Flg.CONST_LABELS" title="Permalink to this definition"></a></dt>
 <dd><p>Constant labels</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -702,7 +703,7 @@ none node.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.config.config.Tag">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.config.config.</span></span><span class="sig-name descname"><span class="pre">Tag</span></span><a class="headerlink" href="#dvas.config.config.Tag" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.OneDimArrayConfigManager" title="dvas.config.config.OneDimArrayConfigManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.config.config.OneDimArrayConfigManager</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.OneDimArrayConfigManager" title="dvas.config.config.OneDimArrayConfigManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">OneDimArrayConfigManager</span></code></a></p>
 <p>Tag config manager</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.config.config.Tag.PARAMETER_PATTERN_PROP">
@@ -783,7 +784,7 @@ none node.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.config.config.MultiLayerConfigManager">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.config.config.</span></span><span class="sig-name descname"><span class="pre">MultiLayerConfigManager</span></span><a class="headerlink" href="#dvas.config.config.MultiLayerConfigManager" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.OneLayerConfigManager" title="dvas.config.config.OneLayerConfigManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.config.config.OneLayerConfigManager</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.OneLayerConfigManager" title="dvas.config.config.OneLayerConfigManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">OneLayerConfigManager</span></code></a></p>
 <p>Abstract class for managing ‘multi-layer’ YAML config.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.config.config.MultiLayerConfigManager.REQUIRED_ATTRIBUTES">
@@ -866,7 +867,7 @@ will be returned.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.config.config.OrigData">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.config.config.</span></span><span class="sig-name descname"><span class="pre">OrigData</span></span><a class="headerlink" href="#dvas.config.config.OrigData" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.MultiLayerConfigManager" title="dvas.config.config.MultiLayerConfigManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.config.config.MultiLayerConfigManager</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.MultiLayerConfigManager" title="dvas.config.config.MultiLayerConfigManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiLayerConfigManager</span></code></a></p>
 <p>Original data config manager</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.config.config.OrigData.PARAMETER_PATTERN_PROP">
@@ -956,7 +957,7 @@ design pattern.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.config.config.ConfigExprInterpreter.eval">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_fct</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.config.config.ConfigExprInterpreter.eval" title="Permalink to this definition"></a></dt>
-<dd><p>Interprete expression.</p>
+<dd><p>Interpret expression.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -988,7 +989,7 @@ design pattern.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.config.config.NonTerminalConfigExprInterpreter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.config.config.</span></span><span class="sig-name descname"><span class="pre">NonTerminalConfigExprInterpreter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.config.config.NonTerminalConfigExprInterpreter" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.ConfigExprInterpreter" title="dvas.config.config.ConfigExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.config.config.ConfigExprInterpreter</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.ConfigExprInterpreter" title="dvas.config.config.ConfigExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigExprInterpreter</span></code></a></p>
 <p>Implement an interpreter operation for non terminal symbols in the
 grammar.</p>
 <dl class="py method">
@@ -1008,7 +1009,7 @@ grammar.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.config.config.CatExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.config.config.</span></span><span class="sig-name descname"><span class="pre">CatExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.config.config.CatExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.NonTerminalConfigExprInterpreter" title="dvas.config.config.NonTerminalConfigExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.config.config.NonTerminalConfigExprInterpreter</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.NonTerminalConfigExprInterpreter" title="dvas.config.config.NonTerminalConfigExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">NonTerminalConfigExprInterpreter</span></code></a></p>
 <p>String concatenation</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.config.config.CatExpr.fct">
@@ -1021,7 +1022,7 @@ grammar.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.config.config.ReplExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.config.config.</span></span><span class="sig-name descname"><span class="pre">ReplExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.config.config.ReplExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.NonTerminalConfigExprInterpreter" title="dvas.config.config.NonTerminalConfigExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.config.config.NonTerminalConfigExprInterpreter</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.NonTerminalConfigExprInterpreter" title="dvas.config.config.NonTerminalConfigExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">NonTerminalConfigExprInterpreter</span></code></a></p>
 <p>Replace dict key or list index by its value. If key is missing, return key</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.config.config.ReplExpr.fct">
@@ -1034,7 +1035,7 @@ grammar.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.config.config.ReplStrictExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.config.config.</span></span><span class="sig-name descname"><span class="pre">ReplStrictExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.config.config.ReplStrictExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.NonTerminalConfigExprInterpreter" title="dvas.config.config.NonTerminalConfigExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.config.config.NonTerminalConfigExprInterpreter</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.NonTerminalConfigExprInterpreter" title="dvas.config.config.NonTerminalConfigExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">NonTerminalConfigExprInterpreter</span></code></a></p>
 <p>Replace dict key or list index by its value. If key is missing, return ‘’</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.config.config.ReplStrictExpr.fct">
@@ -1047,7 +1048,7 @@ grammar.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.config.config.LowerExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.config.config.</span></span><span class="sig-name descname"><span class="pre">LowerExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.config.config.LowerExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.NonTerminalConfigExprInterpreter" title="dvas.config.config.NonTerminalConfigExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.config.config.NonTerminalConfigExprInterpreter</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.NonTerminalConfigExprInterpreter" title="dvas.config.config.NonTerminalConfigExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">NonTerminalConfigExprInterpreter</span></code></a></p>
 <p>Lower case</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.config.config.LowerExpr.fct">
@@ -1060,7 +1061,7 @@ grammar.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.config.config.UpperExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.config.config.</span></span><span class="sig-name descname"><span class="pre">UpperExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.config.config.UpperExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.NonTerminalConfigExprInterpreter" title="dvas.config.config.NonTerminalConfigExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.config.config.NonTerminalConfigExprInterpreter</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.NonTerminalConfigExprInterpreter" title="dvas.config.config.NonTerminalConfigExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">NonTerminalConfigExprInterpreter</span></code></a></p>
 <p>Upper case</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.config.config.UpperExpr.fct">
@@ -1073,7 +1074,7 @@ grammar.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.config.config.SmallUpperExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.config.config.</span></span><span class="sig-name descname"><span class="pre">SmallUpperExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.config.config.SmallUpperExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.NonTerminalConfigExprInterpreter" title="dvas.config.config.NonTerminalConfigExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.config.config.NonTerminalConfigExprInterpreter</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.NonTerminalConfigExprInterpreter" title="dvas.config.config.NonTerminalConfigExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">NonTerminalConfigExprInterpreter</span></code></a></p>
 <p>Upper case 1st character</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.config.config.SmallUpperExpr.fct">
@@ -1084,9 +1085,22 @@ grammar.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="dvas.config.config.ToDatetime">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.config.config.</span></span><span class="sig-name descname"><span class="pre">ToDatetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.config.config.ToDatetime" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.NonTerminalConfigExprInterpreter" title="dvas.config.config.NonTerminalConfigExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">NonTerminalConfigExprInterpreter</span></code></a></p>
+<p>Get str and convert to datetime value</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dvas.config.config.ToDatetime.fct">
+<span class="sig-name descname"><span class="pre">fct</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.config.config.ToDatetime.fct" title="Permalink to this definition"></a></dt>
+<dd><p>Convert a string to datetime</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="dvas.config.config.TerminalConfigExprInterpreter">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.config.config.</span></span><span class="sig-name descname"><span class="pre">TerminalConfigExprInterpreter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.config.config.TerminalConfigExprInterpreter" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.ConfigExprInterpreter" title="dvas.config.config.ConfigExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.config.config.ConfigExprInterpreter</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.ConfigExprInterpreter" title="dvas.config.config.ConfigExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConfigExprInterpreter</span></code></a></p>
 <p>Implement an interpreter operation for terminal symbols in the
 grammar.</p>
 </dd></dl>
@@ -1094,7 +1108,7 @@ grammar.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.config.config.GetExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.config.config.</span></span><span class="sig-name descname"><span class="pre">GetExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">totype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.config.config.GetExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.TerminalConfigExprInterpreter" title="dvas.config.config.TerminalConfigExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.config.config.TerminalConfigExprInterpreter</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.TerminalConfigExprInterpreter" title="dvas.config.config.TerminalConfigExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">TerminalConfigExprInterpreter</span></code></a></p>
 <p>Get catch value</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.config.config.GetExpr.__init__">
@@ -1122,7 +1136,7 @@ Defaults to None = use native type.</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas.config.config.NoneExpr">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.config.config.</span></span><span class="sig-name descname"><span class="pre">NoneExpr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.config.config.NoneExpr" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.TerminalConfigExprInterpreter" title="dvas.config.config.TerminalConfigExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">dvas.config.config.TerminalConfigExprInterpreter</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#dvas.config.config.TerminalConfigExprInterpreter" title="dvas.config.config.TerminalConfigExprInterpreter"><code class="xref py py-class docutils literal notranslate"><span class="pre">TerminalConfigExprInterpreter</span></code></a></p>
 <p>Apply none interpreter</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.config.config.NoneExpr.interpret">
