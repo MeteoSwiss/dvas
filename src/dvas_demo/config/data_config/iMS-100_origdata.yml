@@ -27,6 +27,7 @@ _IMS-100-BETA_002:
     metadata:
         bpt_time: "get('g.Measurement.BurstpointTime')"
         start_time: "to_datetime(get('g.Measurement.StartTime'))"
+        gruan_tropopause: "get('g.Measurement.TropopauseGeopotHeight')"
 
     # -- ORIG DATA ----------------------------------
     _time:

@@ -105,6 +105,9 @@ def dvas_run_recipe():
     parser.add_argument('-e', '--end_at', action='store', default=None,
                         help='Skip recipe steps beyond this one. ')
 
+    parser.add_argument('-d', '--debug', action='store_true',
+                        help='Force-set the logging level to DEBUG.')
+
     # Done getting ready.
     # What did we get from the user ?
     args = parser.parse_args()
@@ -114,4 +117,4 @@ def dvas_run_recipe():
 
     # Feed this to the actual recipe routine
     run_recipe(Path(args.rcp_fn), flights=args.flights,
-               from_step_id=args.start_at, until_step_id=args.end_at)
+               from_step_id=args.start_at, until_step_id=args.end_at, debug=args.debug)

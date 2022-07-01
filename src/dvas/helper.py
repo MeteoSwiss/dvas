@@ -21,8 +21,6 @@ from abc import ABC, ABCMeta, abstractmethod
 from contextlib import AbstractContextManager
 from weakref import WeakValueDictionary
 from operator import getitem
-from pampy import match as pmatch
-from pampy import MatchError
 from pandas import to_datetime
 
 # Import from this module
@@ -122,8 +120,6 @@ class RequiredAttrMetaClass(ABCMeta):
                 )
                 raise ValueError(errmsg)
 
-            # TODO
-            # Use pampy to check pattern
             obj_attr = getattr(obj, attr_name)
             if not isinstance(obj_attr, dtype):
                 errmsg = (
@@ -291,12 +287,12 @@ class TypedProperty:
         understanding-a-python-descriptors-example-typedproperty>`__
 
     """
-    def __init__(self, pampy_match, setter_fct=None, args=None, kwargs=None, getter_fct=None,
+    def __init__(self, match, setter_fct=None, args=None, kwargs=None, getter_fct=None,
                  allow_none=False):
         """Constructor
 
         Args:
-            pampy_match (type or tuple of type): Data type
+            match (type or types.UnionType): Data type(s), used in a isinstance check
             setter_fct (callable, `optional`): Function applied before assign value in setter
                 method. The function can include special check and raises -
                 use TypeError to raise appropriate exception. Default to lambda x: x
@@ -307,9 +303,12 @@ class TypedProperty:
             allow_none (bool, `optional`): Allow none value (bypass pampy match and setter fct).
                 Defaults to False.
 
+        Note:
+            pampy no longer used from v0.6 onwards ...
+
         """
         # Set attributes
-        self._pampy_match = pampy_match
+        self._match = match
         self._getter_fct = (lambda x: x) if getter_fct is None else getter_fct
         self._setter_fct = (lambda x: x) if setter_fct is None else setter_fct
         self._setter_fct_args = tuple() if args is None else args
@@ -329,17 +328,11 @@ class TypedProperty:
 
         # Test match
         else:
-            try:
-                match_tuple = pmatch(val, self._pampy_match, lambda *x: x)
-
-            except (MatchError, TypeError) as first_error:
-                raise TypeError(
-                    f'Bad type while assignment of {val}. ' +
-                    f'Expected {self._pampy_match}. Received {type(val)}') from first_error
-
-            # Untuple
-            if len(match_tuple) == 1:
-                match_tuple = match_tuple[0]
+            if isinstance(val, self._match):
+                match_tuple = val
+            else:
+                raise DvasError(f'Bad type while assignment of {val}. ' +
+                                f'Expected {self._match}. Received {type(val)}')
 
             # Apply setter function
             try:
@@ -352,33 +345,6 @@ class TypedProperty:
     def __set_name__(self, instance, name):
         """Attribute name setter"""
         self._name = name
-
-    @staticmethod
-    def re_str_choice(choices, ignore_case=False):
-        """Method to create re.compile for a list of str
-
-        Note:
-            Use `lambda x: x[0]` as setter_fct to catch the matched string.
-
-        Args:
-            choices (list of str): Choice of strings
-            ignore_case (bool): Ignore case if True. Default to False.
-
-        Return:
-            re.compile
-
-        """
-
-        # Create pattern
-        pattern = '^((' + ')|('.join(choices) + '))$'
-
-        # Create re.compile
-        if ignore_case:
-            out = re.compile(pattern, re.IGNORECASE)
-        else:
-            out = re.compile(pattern)
-
-        return out
 
 
 def get_by_path(root, items, sep='.'):

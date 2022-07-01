@@ -19,7 +19,7 @@ from peewee import chunked, DoesNotExist
 from playhouse.shortcuts import model_to_dict
 import numpy as np
 from pandas import Timestamp
-from pampy.helpers import Iterable, Union
+from collections.abc import Iterable
 
 # Import from current package
 from .model import db
@@ -661,6 +661,10 @@ class InfoManagerMetaData(dict):
         This class is used to bypass the missing class Mapping in
         pampy package.
 
+    Todo:
+        We do not use pampy anymore as of v0.6. Do we need to do something about this ?
+        fpavogt, 01.07.2022
+
     """
 
     def __init__(self, dict_args={}):
@@ -714,21 +718,17 @@ class InfoManager:
     """Data info manager"""
 
     #: datetime.datetime: UTC datetime
-    edt = TProp(Union[str, Timestamp, datetime], check_datetime)
+    edt = TProp(str | Timestamp | datetime, check_datetime)
 
     #: int|iterable of int: Object id
-    oid = TProp(
-        Union[int, Iterable[int]],
-        setter_fct=lambda x: (x,) if isinstance(x, int) else tuple(x),
-        getter_fct=lambda x: sorted(x)
-    )
+    oid = TProp(int | Iterable,
+                setter_fct=lambda x: (x,) if isinstance(x, int) else tuple(x),
+                getter_fct=lambda x: sorted(x))
 
     #: str|iterable of str: Tags
-    tags = TProp(
-        Union[str, Iterable[str]],
-        setter_fct=lambda x: set((x,)) if isinstance(x, str) else set(x),
-        getter_fct=lambda x: sorted(x)
-    )
+    tags = TProp(str | Iterable,
+                 setter_fct=lambda x: set((x,)) if isinstance(x, str) else set(x),
+                 getter_fct=lambda x: sorted(x))
 
     #: dict: Metadata
     metadata = TProp(InfoManagerMetaData, getter_fct=lambda x: x.copy())

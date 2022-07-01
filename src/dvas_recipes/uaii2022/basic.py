@@ -138,7 +138,7 @@ def cleanup_steps(prfs, resampling_freq, crop_descent, timeofday=None):
     # Crop the descent data if warranted
     if crop_descent:
         for (ind, prf) in enumerate(prfs):
-            prfs[ind].data = prf.data.loc[prf.has_flg(FLG_DESCENT) == 0]
+            prfs[ind].data = prf.data.loc[~prf.has_flg(FLG_DESCENT)]
 
     # Add the TimeOfDay tag, if warranted
     if timeofday is not None:
@@ -161,13 +161,15 @@ def cleanup_steps(prfs, resampling_freq, crop_descent, timeofday=None):
 @for_each_var
 @for_each_flight
 @log_func_call(logger, time_it=True)
-def cleanup(start_with_tags, fix_gph_uct=None, **args):
+def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
     """ Highest-level function responsible for doing an initial cleanup of the data.
 
     Args:
         start_with_tags (str|list): list of tags to identify profiles to clean in the db.
-        fix_gph_uct (list): list of mid values for which to correct NaN values (see #205).
+        fix_gph_uct (list, optional): list of mid values for which to correct NaN values (see #205).
             Defaults to None.
+        check_tropopause (bool, optional): if True, will compare the dvas tropopause to the GRUAN
+            one. Defaults to False. Raises a log error if the dvas measure is >20m off.
         **args: arguments to be fed to :py:func:`.cleanup_steps`.
 
     """
@@ -184,9 +186,10 @@ def cleanup(start_with_tags, fix_gph_uct=None, **args):
 
     # Let's extract the summary of what the DB contains
     db_view = DB.extract_global_view()
+    this_flight = (db_view.eid == eid) * (db_view.rid == rid)
 
     # Check the time of day for the flight, see if it is consistent.
-    timeofday = db_view.tod[db_view.tod.notna()].unique()
+    timeofday = db_view[this_flight].tod[db_view[this_flight].tod.notna()].unique()
     if len(timeofday) == 1:
         timeofday = timeofday[0]
         logger.info('TimeOfDay for flight (%s, %s): %s', eid, rid, timeofday)
@@ -201,7 +204,7 @@ def cleanup(start_with_tags, fix_gph_uct=None, **args):
     # need to be cleaned accordingly.
 
     # Start with the GDPs
-    if db_view.is_gdp[(db_view.rid == rid) & (db_view.eid == eid)].any():
+    if db_view[this_flight].is_gdp.any():
         logger.info('Cleaning GDP profiles for flight %s and variable %s',
                     dynamic.CURRENT_FLIGHT,
                     dynamic.CURRENT_VAR)
@@ -238,11 +241,39 @@ def cleanup(start_with_tags, fix_gph_uct=None, **args):
                         # Fix the bug
                         gdp.data.loc[cond1 & cond2, 'uct'] = gdp.data.loc[:, 'uct'].max(skipna=True)
 
+        # Validate the GRUAN tropopause calculation
+        if dynamic.CURRENT_VAR == 'temp' and check_tropopause:
+            logger.info('Comparing the GRUAN vs dvas tropopause:')
+
+            for gdp_prf in gdp_prfs:
+                if 'gruan_tropopause' not in gdp_prf.info.metadata.keys():
+                    logger.warning('No GRUAN tropopause found in %s', gdp_prf.info.src)
+                    continue
+
+                # Let's compute the dvas tropopause
+                dvas_trop = tools.find_tropopause(gdp_prf, algo='gruan')
+
+                # Raise a log error if we are more than 20m off, or if the format is not understood.
+                match gdp_prf.info.metadata['gruan_tropopause'].split(' '):
+                    case [val, 'gpm']:
+
+                        msg = 'Tropopause - GRUAN: {} [m] vs {} [m] :dvas ({})'.format(
+                            val, dvas_trop[1], gdp_prf.info.src)
+
+                        if abs(float(val)-dvas_trop[1]) <= 20:
+                            logger.info(msg)
+                        else:
+                            logger.error(msg)
+
+                    case _:
+                        logger.error('Unknown GRUAN tropopause format: %s',
+                            gdp_prf.info.metadata['gruan_tropopause'])
+
         # Now launch more generic cleanup steps
         cleanup_steps(gdp_prfs, **args, timeofday=timeofday)
 
     # Process the non-GDPs, if any
-    if not db_view.is_gdp[(db_view.rid == rid) & (db_view.eid == eid)].all():
+    if not db_view[this_flight].is_gdp.all():
         logger.info('Cleaning non-GDP profiles for flight %s and variable %s',
                     dynamic.CURRENT_FLIGHT,
                     dynamic.CURRENT_VAR)

@@ -86,7 +86,7 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
 
 
 @for_each_flight
-@log_func_call(logger, time_it=True)
+@log_func_call(logger, time_it=False)
 def sync_flight(start_with_tags, anchor_alt, global_match_var):
     """ Highest-level function responsible for synchronizing all the profile from a specific RS
     flight.

@@ -351,7 +351,7 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
         if mask_flgs is not None:
             for flg in mask_flgs:
                 for (p_ind, prf) in enumerate(self.profiles):
-                    out[p_ind][prf.has_flg(flg) == 1] = np.nan
+                    out[p_ind][prf.has_flg(flg)] = np.nan
 
         # Drop the superfluous index
         out = [df.reset_index(level=[name for name in df.index.names

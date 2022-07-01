@@ -220,7 +220,7 @@ def optimize(n_cpus=None, prf_length=7001, chunk_min=50, chunk_max=300, n_chunk=
     print(' If that looks right, please update your favorite dvas recipe accordingly !\n')
 
 
-def run_recipe(rcp_fn, flights=None, from_step_id=None, until_step_id=None):
+def run_recipe(rcp_fn, flights=None, from_step_id=None, until_step_id=None, debug=False):
     ''' Loads and execute a dvas recipe.
 
     Args:
@@ -237,6 +237,8 @@ def run_recipe(rcp_fn, flights=None, from_step_id=None, until_step_id=None):
             Defaults to None.
         until_step_id (str, optional): if set, will skip all processing step beyond this step_id
             value. Defaults to None.
+        debug (bool, optional): if True, will force-set the logging level to DEBUG.
+            Defaults to False.
 
     '''
 
@@ -256,7 +258,7 @@ def run_recipe(rcp_fn, flights=None, from_step_id=None, until_step_id=None):
         flights = np.atleast_2d(np.genfromtxt(flights, comments='#', delimiter=',', dtype=str))
 
     # Very well, I am now ready to start initializing the recipe.
-    rcp = Recipe(rcp_fn, flights=flights)
+    rcp = Recipe(rcp_fn, flights=flights, debug=debug)
 
     starttime = datetime.now()
 

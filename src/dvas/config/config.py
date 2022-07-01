@@ -22,7 +22,6 @@ import pytz
 from jsonschema import validate, exceptions
 from ruamel.yaml import YAML
 from ruamel.yaml.error import YAMLError
-from pampy.helpers import Union
 import sre_yield
 
 # Import current package modules
@@ -92,7 +91,7 @@ class ConfigManager(metaclass=RequiredAttrMetaClass):
     #: type: Type of document. Choices: [dict, list].
     DOC_TYPE = None
 
-    document = TypedProperty(Union[dict, list])
+    document = TypedProperty(dict | list)
     """dict: Config document. Must be redefined as well to avoid
     list/dict reference overlap
     """

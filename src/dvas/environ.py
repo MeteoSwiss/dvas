@@ -13,7 +13,7 @@ from pathlib import Path
 import re
 from abc import ABC, ABCMeta, abstractmethod
 from contextlib import contextmanager
-from pampy.helpers import Union, Iterable
+from collections.abc import Iterable
 
 # Import current package's modules
 from .helper import SingleInstanceMetaClass
@@ -110,27 +110,27 @@ class GlobalPathVariablesManager(VariableManager):
 
     #: pathlib.Path: Original data path. Default to None.
     orig_data_path = TProp(
-        Union[Path, str], check_path, kwargs={'exist_ok': False}, allow_none=True
+        Path | str, check_path, kwargs={'exist_ok': False}, allow_none=True
     )
     #: pathlib.Path: Config dir path. Default to None.
     config_dir_path = TProp(
-        Union[Path, str], check_path, kwargs={'exist_ok': False}, allow_none=True
+        Path | str, check_path, kwargs={'exist_ok': False}, allow_none=True
     )
     #: pathlib.Path: Local db dir path. Default to None.
     local_db_path = TProp(
-        Union[Path, str], check_path, kwargs={'exist_ok': False}, allow_none=True
+        Path | str, check_path, kwargs={'exist_ok': False}, allow_none=True
     )
     #: pathlib.Path: DVAS output dir path. Default to None.
     output_path = TProp(
-        Union[Path, str], check_path, kwargs={'exist_ok': False}, allow_none=True
+        Path | str, check_path, kwargs={'exist_ok': False}, allow_none=True
     )
     #: pathlib.Path: DVAS output dir path for plots. Default to None.
     plot_output_path = TProp(
-        Union[Path, str], check_path, kwargs={'exist_ok': False}, allow_none=True
+        Path | str, check_path, kwargs={'exist_ok': False}, allow_none=True
     )
     #: pathlib.Path: Plot styles dir path. Default to ./plot/mpl_styles.
     plot_style_path = TProp(
-        Union[Path, str], check_path, kwargs={'exist_ok': True}, allow_none=False
+        Path | str, check_path, kwargs={'exist_ok': True}, allow_none=False
     )
 
     def __init__(self):
@@ -163,17 +163,17 @@ class GlobalPackageVariableManager(VariableManager):
     #: int: Config regexp generator limit. Default to 2000.
     config_gen_max = TProp(int, lambda x: min([int(x), CONFIG_GEN_LIM]))
     #: list of str: CSV file allowed extensions. Default to ['csv', 'txt']
-    csv_file_ext = TProp(Iterable[str], lambda x: tuple(x))
+    csv_file_ext = TProp(Iterable, lambda x: tuple(x))
     #: list of str: Flag file allowed extensions. Default to ['flg']
-    flg_file_ext = TProp(Iterable[str], lambda x: tuple(x))
+    flg_file_ext = TProp(Iterable, lambda x: tuple(x))
     #: list of str: Config file allowed extensions. Default to ['yml', 'yaml']
-    config_file_ext = TProp(Iterable[str], lambda x: tuple(x))
+    config_file_ext = TProp(Iterable, lambda x: tuple(x))
     #: str: Event ID pattern used in InfoManager to extract event tag.
-    eid_pat = TProp(Union[str, re.Pattern], lambda x: re.compile(x))
+    eid_pat = TProp(str | re.Pattern, lambda x: re.compile(x))
     #: str: Rig ID pattern used in InfoManager to extract rig tag.
-    rid_pat = TProp(Union[str, re.Pattern], lambda x: re.compile(x))
+    rid_pat = TProp(str | re.Pattern, lambda x: re.compile(x))
     #: str: TimeOfDay ID pattern used in InfoManager to extract rig tag.
-    tod_pat = TProp(Union[str, re.Pattern], lambda x: re.compile(x))
+    tod_pat = TProp(str | re.Pattern, lambda x: re.compile(x))
 
     def __init__(self):
         # Init attributes
