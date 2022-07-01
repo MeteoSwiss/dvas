@@ -11,6 +11,7 @@ Module contents: Local database management tools
 
 # Import from python packages
 import logging
+from collections.abc import Iterable
 import pprint
 from hashlib import blake2b
 from math import floor
@@ -19,7 +20,6 @@ from peewee import chunked, DoesNotExist
 from playhouse.shortcuts import model_to_dict
 import numpy as np
 from pandas import Timestamp
-from collections.abc import Iterable
 
 # Import from current package
 from .model import db

@@ -128,7 +128,7 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
         ax1.plot(idxs, delta, drawstyle='steps-mid', lw=0.5, ls='-')
         ax1.fill_between(idxs, delta-k_lvl*gdp['uc_tot'], delta+k_lvl*gdp['uc_tot'], alpha=0.3,
                          step='mid')
-        
+
         # Plot the relative contribution of each GDP to the CWS
         limhigh = limlow + (1/gdp.uc_tot**2).values/wtot
         limhigh[cws.val.isna()] = np.nan
