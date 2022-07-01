@@ -13,7 +13,7 @@ from pathlib import Path
 import re
 from abc import ABC, ABCMeta, abstractmethod
 from contextlib import contextmanager
-from pampy.helpers import Union, Iterable
+from collections.abc import Iterable
 
 # Import current package's modules
 from .helper import SingleInstanceMetaClass
@@ -25,7 +25,7 @@ from . import __name__ as pkg_name
 from .hardcoded import PKG_PATH, MPL_STYLES_PATH
 from .hardcoded import CSV_FILE_EXT, FLG_FILE_EXT, CONFIG_FILE_EXT
 from .hardcoded import CONFIG_GEN_LIM
-from .hardcoded import EID_PAT, RID_PAT
+from .hardcoded import EID_PAT, RID_PAT, TOD_PAT
 
 
 class ABCSingleInstanceMeta(ABCMeta, SingleInstanceMetaClass):
@@ -110,27 +110,27 @@ class GlobalPathVariablesManager(VariableManager):
 
     #: pathlib.Path: Original data path. Default to None.
     orig_data_path = TProp(
-        Union[Path, str], check_path, kwargs={'exist_ok': False}, allow_none=True
+        Path | str, check_path, kwargs={'exist_ok': False}, allow_none=True
     )
     #: pathlib.Path: Config dir path. Default to None.
     config_dir_path = TProp(
-        Union[Path, str], check_path, kwargs={'exist_ok': False}, allow_none=True
+        Path | str, check_path, kwargs={'exist_ok': False}, allow_none=True
     )
     #: pathlib.Path: Local db dir path. Default to None.
     local_db_path = TProp(
-        Union[Path, str], check_path, kwargs={'exist_ok': False}, allow_none=True
+        Path | str, check_path, kwargs={'exist_ok': False}, allow_none=True
     )
     #: pathlib.Path: DVAS output dir path. Default to None.
     output_path = TProp(
-        Union[Path, str], check_path, kwargs={'exist_ok': False}, allow_none=True
+        Path | str, check_path, kwargs={'exist_ok': False}, allow_none=True
     )
     #: pathlib.Path: DVAS output dir path for plots. Default to None.
     plot_output_path = TProp(
-        Union[Path, str], check_path, kwargs={'exist_ok': False}, allow_none=True
+        Path | str, check_path, kwargs={'exist_ok': False}, allow_none=True
     )
     #: pathlib.Path: Plot styles dir path. Default to ./plot/mpl_styles.
     plot_style_path = TProp(
-        Union[Path, str], check_path, kwargs={'exist_ok': True}, allow_none=False
+        Path | str, check_path, kwargs={'exist_ok': True}, allow_none=False
     )
 
     def __init__(self):
@@ -163,15 +163,17 @@ class GlobalPackageVariableManager(VariableManager):
     #: int: Config regexp generator limit. Default to 2000.
     config_gen_max = TProp(int, lambda x: min([int(x), CONFIG_GEN_LIM]))
     #: list of str: CSV file allowed extensions. Default to ['csv', 'txt']
-    csv_file_ext = TProp(Iterable[str], lambda x: tuple(x))
+    csv_file_ext = TProp(Iterable, lambda x: tuple(x))
     #: list of str: Flag file allowed extensions. Default to ['flg']
-    flg_file_ext = TProp(Iterable[str], lambda x: tuple(x))
+    flg_file_ext = TProp(Iterable, lambda x: tuple(x))
     #: list of str: Config file allowed extensions. Default to ['yml', 'yaml']
-    config_file_ext = TProp(Iterable[str], lambda x: tuple(x))
-    #: str: Event ID pattern use in InfoManager to extract event tag.
-    eid_pat = TProp(Union[str, re.Pattern], lambda x: re.compile(x))
-    #: str: Rig ID pattern use in InfoManager to extract rig tag.
-    rid_pat = TProp(Union[str, re.Pattern], lambda x: re.compile(x))
+    config_file_ext = TProp(Iterable, lambda x: tuple(x))
+    #: str: Event ID pattern used in InfoManager to extract event tag.
+    eid_pat = TProp(str | re.Pattern, lambda x: re.compile(x))
+    #: str: Rig ID pattern used in InfoManager to extract rig tag.
+    rid_pat = TProp(str | re.Pattern, lambda x: re.compile(x))
+    #: str: TimeOfDay ID pattern used in InfoManager to extract rig tag.
+    tod_pat = TProp(str | re.Pattern, lambda x: re.compile(x))
 
     def __init__(self):
         # Init attributes
@@ -179,8 +181,9 @@ class GlobalPackageVariableManager(VariableManager):
         self.csv_file_ext = ['']
         self.config_file_ext = ['']
         self.flg_file_ext = ['']
-        self.eid_pat = ''
-        self.rid_pat = ''
+        self.eid_pat = re.compile('')
+        self.rid_pat = re.compile('')
+        self.tod_pat = re.compile('')
 
         # Call super constructor
         super().__init__()
@@ -194,6 +197,7 @@ class GlobalPackageVariableManager(VariableManager):
             'config_file_ext': CONFIG_FILE_EXT,
             'eid_pat': EID_PAT,
             'rid_pat': RID_PAT,
+            'tod_pat': TOD_PAT,
         }
 
 

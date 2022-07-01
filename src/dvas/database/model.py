@@ -12,12 +12,12 @@ Module contents: Database model (ORM uses PeeWee package)
 # Import from python packages
 import logging
 import re
+from datetime import datetime
 import pandas as pd
 from peewee import SqliteDatabase, Check
 from peewee import Model as PeeweeModel
-from peewee import AutoField
-from peewee import IntegerField, FloatField
-from peewee import DateTimeField, TextField
+from peewee import AutoField, Field
+from peewee import IntegerField, FloatField, TextField
 from peewee import ForeignKeyField
 
 # Import from current package
@@ -75,6 +75,27 @@ def check_unit(prm_unit, prm_name):
             return False
 
     return True
+
+
+class TimestampTZField(Field):
+    """
+    A timestamp field that supports a timezone by serializing the value
+    with isoformat.
+
+    Source: Justin Turpin, https://compileandrun.com/python-peewee-timezone-aware-datetime/
+    """
+
+    field_type = 'TEXT'  # This is how the field appears in Sqlite
+
+    def db_value(self, value: datetime) -> str:
+        if value:
+            return value.isoformat()
+        return None
+
+    def python_value(self, value: str) -> str:
+        if value:
+            return datetime.fromisoformat(value)
+        return None
 
 
 class MetadataModel(PeeweeModel):
@@ -136,7 +157,7 @@ class Object(MetadataModel):
     )
 
 
-class Parameter(MetadataModel):
+class Prm(MetadataModel):
     """Parameter model"""
 
     # Table id
@@ -174,7 +195,8 @@ class Flg(MetadataModel):
     bit_pos = IntegerField(
         null=False,
         unique=True,
-        constraints=[Check("bit_pos >= 0")])
+        # Can only go up to 62, because we need one bit to store the sign
+        constraints=[Check("bit_pos >= 0"), Check("bit_pos <= 62")])
 
     # Flag name
     flg_name = TextField(
@@ -227,9 +249,9 @@ class Info(MetadataModel):
 
     # Info id
     info_id = AutoField(primary_key=True)
-    edt = DateTimeField(null=False)
+    edt = TimestampTZField(null=False)
     param = ForeignKeyField(
-        Parameter, backref='info', on_delete='CASCADE'
+        Prm, backref='info', on_delete='CASCADE'
     )
     data_src = ForeignKeyField(
         DataSource, backref='info', on_delete='CASCADE'
@@ -265,7 +287,7 @@ class InfosObjects(MetadataModel):
 
 
 class MetaData(MetadataModel):
-    """Table containing the profiles metadata.
+    """ Table containing the profiles metadata.
 
     Note:
         Metadata table should be used only to save metadata associated
@@ -288,6 +310,9 @@ class MetaData(MetadataModel):
 
     #: float: Metadata key float value
     value_num = FloatField(null=True)
+
+    #: datetime.datetime: Metadata key datetime value
+    value_datetime = TimestampTZField(null=True)
 
     #: peewee.Model: Link to Info table
     info = ForeignKeyField(

@@ -202,6 +202,7 @@ class LoadGDPProfileStrategy(LoadProfileStrategy):
 
         return out, db_vs_df_keys
 
+
 class LoadCWSProfileStrategy(LoadProfileStrategy):
     """ Child class to manage the data loading strategy of CWSProfile instances. """
 
@@ -240,6 +241,7 @@ class LoadCWSProfileStrategy(LoadProfileStrategy):
         out = [CWSProfile(arg[0], data=arg[1]) for arg in zip(info, data)]
 
         return out, db_vs_df_keys
+
 
 class LoadDeltaProfileStrategy(LoadProfileStrategy):
     """ Child class to manage the data loading strategy of DeltaProfile instances. """

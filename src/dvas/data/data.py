@@ -24,12 +24,12 @@ from .strategy.rebase import RebaseStrategy
 from .strategy.resample import ResampleStrategy
 from .strategy.save import SaveDataStrategy
 from ..database.database import DatabaseManager
-from ..database.model import Parameter as TableParameter
+from ..database.model import Prm as TableParameter
 from ..helper import RequiredAttrMetaClass
 from ..helper import deepcopy
 from ..helper import get_class_public_attr
 from ..errors import DBIOError
-from ..hardcoded import TAG_RAW_NAME, PRF_REF_INDEX_NAME
+from ..hardcoded import TAG_RAW, PRF_IDX
 
 # Loading strategies
 load_prf_stgy = LoadProfileStrategy()
@@ -245,7 +245,7 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
             obj.add_info_tags(add_tags)
 
         # Remove tag RAW
-        rm_tags = [TAG_RAW_NAME] if rm_tags is None else rm_tags + [TAG_RAW_NAME]
+        rm_tags = [TAG_RAW] if rm_tags is None else rm_tags + [TAG_RAW]
 
         # Remove tags
         obj.rm_info_tags(rm_tags)
@@ -322,9 +322,9 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
             pd.DataFrame: the requested data as a MultiIndex pandas DataFrame.
 
         Warning:
-            The resulting DataFrame has only ``dvas.hardcoded.PRF_REF_INDEX_NAME`` (='_idx') as
-            an index. Since the values of ``dvas.hardcoded.PRF_REF_TDT_NAME`` (='tdt') and
-            ``dvas.hardcoded.PRF_REF_ALT_NAME`` (='alt') are not necessarily the sames for all
+            The resulting DataFrame has only ``dvas.hardcoded.PRF_IDX`` (='_idx') as
+            an index. Since the values of ``dvas.hardcoded.PRF_TDT`` (='tdt') and
+            ``dvas.hardcoded.PRF_ALT`` (='alt') are not necessarily the sames for all
             the Profiles, these cannot be used as common indexes here.
 
         """
@@ -351,11 +351,11 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
         if mask_flgs is not None:
             for flg in mask_flgs:
                 for (p_ind, prf) in enumerate(self.profiles):
-                    out[p_ind][prf.has_flg(flg) == 1] = np.nan
+                    out[p_ind][prf.has_flg(flg)] = np.nan
 
         # Drop the superfluous index
         out = [df.reset_index(level=[name for name in df.index.names
-                                     if name not in [PRF_REF_INDEX_NAME]],
+                                     if name not in [PRF_IDX]],
                               drop=True)
                for df in out]
 

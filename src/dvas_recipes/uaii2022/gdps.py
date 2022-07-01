@@ -18,9 +18,8 @@ from dvas.logger import log_func_call
 from dvas.data.data import MultiRSProfile, MultiGDPProfile
 from dvas.tools.gdps import stats as dtgs
 from dvas.tools.gdps import gdps as dtgg
-from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, FLG_INCOMPATIBLE_NAME
-from dvas.hardcoded import PRF_REF_VAL_NAME, PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME
-from dvas.hardcoded import PRF_REF_UCU_NAME, TAG_CWS_NAME, TAG_GDP_NAME
+from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
+from dvas.hardcoded import TAG_CWS, TAG_GDP, FLG_INCOMPATIBLE
 from dvas.errors import DBIOError
 
 # Import from dvas_recipes
@@ -28,7 +27,7 @@ from ..errors import DvasRecipesError
 from ..recipe import for_each_flight, for_each_var
 from .. import dynamic
 from .. import utils as dru
-from . import tools
+from . import tools, plots
 
 # Setup local logger
 logger = logging.getLogger(__name__)
@@ -38,7 +37,7 @@ logger = logging.getLogger(__name__)
 @for_each_flight
 @log_func_call(logger, time_it=True)
 def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='weighted mean',
-              alpha=0.0027, cws_alt_ref='gph',):
+              alpha=0.0027, cws_alt_ref='gph', explore_covmats=True):
     """ Highest-level recipe function responsible for assembling the combined working standard for
     a specific RS flight.
 
@@ -58,6 +57,8 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
             See :py:func:`dvas.tools.gdps.stats.gdp_incompatibilities` for details.
         cws_alt_ref ('str', optional): name of the variable to use in order to generate the CWS
             alt_ref array. Holes will be interpolated linearly. Defaults to 'gph'.
+        explore_covmats (bool, optional): if True, will generate plots of the covariance matrices.
+            Defaults to True.
 
     """
 
@@ -74,16 +75,16 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
     (eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What search query will let me access the data I need ?
-    gdp_filt = tools.get_query_filter(tags_in=tags+[eid, rid, TAG_GDP_NAME],
+    gdp_filt = tools.get_query_filter(tags_in=tags+[eid, rid, TAG_GDP],
                                       tags_out=dru.rsid_tags(pop=tags))
-    cws_filt = tools.get_query_filter(tags_in=[eid, rid, TAG_CWS_NAME, dynamic.CURRENT_STEP_ID],
+    cws_filt = tools.get_query_filter(tags_in=[eid, rid, TAG_CWS, dynamic.CURRENT_STEP_ID],
                                       tags_out=dru.rsid_tags(pop=dynamic.CURRENT_STEP_ID))
 
     # Load the GDP profiles
     gdp_prfs = MultiGDPProfile()
     gdp_prfs.load_from_db(gdp_filt, dynamic.CURRENT_VAR,
-                          tdt_abbr=dynamic.INDEXES[PRF_REF_TDT_NAME],
-                          alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME],
+                          tdt_abbr=dynamic.INDEXES[PRF_TDT],
+                          alt_abbr=dynamic.INDEXES[PRF_ALT],
                           ucr_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucr'],
                           ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
                           uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
@@ -109,7 +110,7 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
         # assume the CWS is flying if *all* the GDPs are flying.
 
         # Extract the tdts
-        tdts = gdp_prfs.get_prms(PRF_REF_TDT_NAME)
+        tdts = gdp_prfs.get_prms(PRF_TDT)
 
         # Extract the row ids that correspond to 'tdt'==0
         id_start = [int(tdts.index[tdts[col] == pd.Timedelta(0, 's')].values)
@@ -144,41 +145,44 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
                                  m_vals=[item for item in m_vals if item > 0],
                                  strategy=strategy)
 
-    # ... and set them using the dvas.hardcoded.FLG_INCOMPATIBLE_NAME flag
+    # ... and set them using the dvas.hardcoded.FLG_INCOMPATIBLE flag
     for gdp_prf in gdp_prfs:
-        gdp_prf.set_flg(FLG_INCOMPATIBLE_NAME, True,
+        gdp_prf.set_flg(FLG_INCOMPATIBLE, True,
                         index=valids[~valids[str(gdp_prf.info.oid)]].index)
 
     # Let us now create a high-resolution CWS for these synchronized GDPs
-    cws = dtgg.combine(gdp_prfs, binning=1, method=method,
-                       mask_flgs=FLG_INCOMPATIBLE_NAME,
-                       chunk_size=dynamic.CHUNK_SIZE, n_cpus=dynamic.N_CPUS)
+    cws, covmats = dtgg.combine(gdp_prfs, binning=1, method=method,
+                                mask_flgs=FLG_INCOMPATIBLE,
+                                chunk_size=dynamic.CHUNK_SIZE, n_cpus=dynamic.N_CPUS)
 
     # Let's tag this CWS in the same way as the GDPs, so I can find them easily together
     cws.add_info_tags(tags)
+
+    # Take a closer look at the covariance matrices, if required
+    if explore_covmats:
+        plots.covmat_stats(covmats)
 
     # Let us now hack into this cws the correct tdt, if I have it. And then save it.
     if not cws_tdt_exists:
         # tdt is an index - and replacing this is a pain. Instead, we pull it out as a column,
         # reset it, and put it back in. before saving it.
-        cws[0].data.reset_index(level=PRF_REF_TDT_NAME, drop=True, inplace=True)
+        cws[0].data.reset_index(level=PRF_TDT, drop=True, inplace=True)
         new_tdt = pd.to_timedelta(np.arange(0, len(cws[0]), 1)-id_start, 's')
-        cws[0].data.loc[:, PRF_REF_TDT_NAME] = pd.Series(new_tdt).values
-        cws[0].data.set_index(PRF_REF_TDT_NAME, inplace=True, drop=True, append=True)
+        cws[0].data.loc[:, PRF_TDT] = pd.Series(new_tdt).values
+        cws[0].data.set_index(PRF_TDT, inplace=True, drop=True, append=True)
 
         # Having done all that, I can now save 'tdt' (and 'tdt' only, for now !) into the DB
-        cws.save_to_db(add_tags=[TAG_CWS_NAME, dynamic.CURRENT_STEP_ID],
-                       rm_tags=[TAG_GDP_NAME] + dru.rsid_tags(pop=dynamic.CURRENT_STEP_ID),
-                       prms=[PRF_REF_TDT_NAME])
+        cws.save_to_db(add_tags=[TAG_CWS, dynamic.CURRENT_STEP_ID],
+                       rm_tags=[TAG_GDP] + dru.rsid_tags(pop=dynamic.CURRENT_STEP_ID),
+                       prms=[PRF_TDT])
 
     # Save variables of CWS to the database
     # Here, I only save the information associated to the variable, i.e. the value and its errors.
     # I do not save the alt column, which is a variable itself and should be derived as such using a
     # weighted mean. I also do not save the tdt column, which is assembled in a distinct manner.
-    cws.save_to_db(add_tags=[TAG_CWS_NAME, dynamic.CURRENT_STEP_ID],
-                   rm_tags=[TAG_GDP_NAME] + dru.rsid_tags(pop=dynamic.CURRENT_STEP_ID),
-                   prms=[PRF_REF_VAL_NAME, PRF_REF_UCR_NAME, PRF_REF_UCS_NAME,
-                         PRF_REF_UCT_NAME, PRF_REF_UCU_NAME])
+    cws.save_to_db(add_tags=[TAG_CWS, dynamic.CURRENT_STEP_ID],
+                   rm_tags=[TAG_GDP] + dru.rsid_tags(pop=dynamic.CURRENT_STEP_ID),
+                   prms=[PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU])
 
     # Deal with 'ref_alt' if warranted
     if dynamic.CURRENT_VAR == cws_alt_ref:
@@ -191,7 +195,7 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
         # that the units will not be changed, nor is the reference name from the DB.
         # This will easily blow up if users don't feed a gph ...
 
-        ref_alts = cws.get_prms(PRF_REF_VAL_NAME)
+        ref_alts = cws.get_prms(PRF_VAL)
         # Quick sanity check to make sure that there is only 1 column here
         assert len(ref_alts.columns) == 1
 
@@ -200,11 +204,11 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
 
         # Now assign these new values to the 'alt' index. Since dealing with an index is a huge pain
         # I'll extract it first
-        cws[0].data.reset_index(level=PRF_REF_ALT_NAME, drop=True, inplace=True)
-        cws[0].data.loc[:, PRF_REF_ALT_NAME] = ref_alts[0].values
-        cws[0].data.set_index(PRF_REF_ALT_NAME, inplace=True, drop=True, append=True)
+        cws[0].data.reset_index(level=PRF_ALT, drop=True, inplace=True)
+        cws[0].data.loc[:, PRF_ALT] = ref_alts[0].values
+        cws[0].data.set_index(PRF_ALT, inplace=True, drop=True, append=True)
 
         # Excellent, I can now save this (and only this) to the DB
-        cws.save_to_db(add_tags=[TAG_CWS_NAME, dynamic.CURRENT_STEP_ID],
-                       rm_tags=[TAG_GDP_NAME] + dru.rsid_tags(pop=dynamic.CURRENT_STEP_ID),
-                       prms=[PRF_REF_ALT_NAME])
+        cws.save_to_db(add_tags=[TAG_CWS, dynamic.CURRENT_STEP_ID],
+                       rm_tags=[TAG_GDP] + dru.rsid_tags(pop=dynamic.CURRENT_STEP_ID),
+                       prms=[PRF_ALT])

@@ -17,11 +17,11 @@ import numpy as np
 import pytest
 
 # Import from python packages and modules under test
-from dvas.database.model import Parameter as TableParameter
+from dvas.database.model import Prm as TableParameter
 from dvas.database.database import InfoManager, InfoManagerMetaData
 from dvas.database.database import DBInsertError
 from dvas.environ import glob_var
-from dvas.hardcoded import TAG_RAW_NAME, TAG_GDP_NAME
+from dvas.hardcoded import TAG_RAW, TAG_GDP
 
 
 # Define db_data
@@ -40,7 +40,7 @@ db_data = {
                 'metadata': {'test_key_str': 'one', 'test_key_num': '1'},
                 'src': ''
             },
-        } for arg_tag in [TAG_RAW_NAME, TAG_GDP_NAME]
+        } for arg_tag in [TAG_RAW, TAG_GDP]
     ]
 }
 

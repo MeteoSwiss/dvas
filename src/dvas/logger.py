@@ -15,7 +15,6 @@ from logging import StreamHandler, FileHandler
 from datetime import datetime
 import inspect
 from functools import wraps
-from pampy.helpers import Union
 
 # Current package import
 from .helper import TypedProperty as TProp
@@ -29,18 +28,102 @@ LOGGER_NAMES = ['dvas', 'dvas_recipes']
 
 
 class DeltaTimeFormatter(logging.Formatter):
-    """Delta time formatter
+    """ Delta time formatter
 
     Note:
        Adapted from `StackOverflow.
-       <https://stackoverflow.com/questions/25194864/python-logging-time-since-start-of-program>`__
+       <https://stackoverflow.com/questions/25194864>`__
        Author: Keith
 
     """
+
     def format(self, record):
         duration = datetime.utcfromtimestamp(record.relativeCreated / 1000)
         record.delta = duration.strftime("%H:%M:%S.%f")[:-3]
         return super().format(record)
+
+
+class DvasFormatter(logging.Formatter):
+    """ The custom logging formatter class for dvas. To handle time deltas AND colors. """
+
+    def __init__(self, colors=False):
+        """ Init function.
+
+        Args:
+            colors (bool, optional): if True, will add colors to the log message via ANSI codes.
+                Defaults to False.
+        """
+
+        self._colors = colors
+
+        # Call the super init
+        super().__init__()
+
+    def log_msg(self, level=logging.INFO):
+        """ Return the dvas log message canvas, possibly with colors and stuff.
+
+        Args:
+            level (logging.lvl, optional): the log level, e.g. logging.INFO, logging.ERROR, ...
+
+        Return:
+            DeltaTimeFormatter: the formatted log message canvas.
+        """
+
+        msg = '%(delta)s|$BOLD$COLOR%(levelname)s$RESET|%(name)s| %(message)s'
+
+        # Cases when I want some colors
+        if self._colors:
+            if level == logging.DEBUG:
+                msg = msg.replace('$COLOR', '\x1b[36;20m')
+                msg = msg.replace('$BOLD', '')
+                msg = msg.replace('$RESET', '\033[0m')
+            elif level == logging.INFO:
+                msg = msg.replace('$COLOR', '\x1b[32;20m')
+                msg = msg.replace('$BOLD', '')
+                msg = msg.replace('$RESET', '\033[0m')
+            elif level == logging.WARNING:
+                msg = msg.replace('$COLOR', '\x1b[33;20m')
+                msg = msg.replace('$BOLD', '')
+                msg = msg.replace('$RESET', '\033[0m')
+            elif level == logging.ERROR:
+                msg = msg.replace('$COLOR', '\x1b[31;20m')
+                msg = msg.replace('$BOLD', '')
+                msg = msg.replace('$RESET', '\033[0m')
+            elif level == logging.CRITICAL:
+                msg = msg.replace('$COLOR', '\x1b[31;20m')
+                msg = msg.replace('$BOLD', '\033[1m')
+                msg = msg.replace('$RESET', '\033[0m')
+            else:
+                msg = msg.replace('$COLOR', '')
+                msg = msg.replace('$BOLD', '')
+                msg = msg.replace('$RESET', '')
+        else:
+            msg = msg.replace('$COLOR', '')
+            msg = msg.replace('$BOLD', '')
+            msg = msg.replace('$RESET', '')
+
+        return DeltaTimeFormatter(msg)
+
+    def format(self, record):
+        """ Format the log message as required """
+
+        out = self.log_msg(level=record.levelno).format(record)
+        # Allow users to add colors to the text message only ...
+        if self._colors:
+            out = out.replace('$SFLASH', '\x1b[35;20m')
+            out = out.replace('$EFLASH', '\033[0m')
+        else:
+            out = out.replace('$SFLASH', '')
+            out = out.replace('$EFLASH', '')
+        return out
+
+
+def apply_dvas_formatter(handler, colors=False):
+    """ A small routine responsible for apply a custom formatter to a given logging handler. """
+
+    handler.setFormatter(DvasFormatter(colors=colors))
+
+    return handler
 
 
 class LogManager:
@@ -57,12 +140,12 @@ class LogManager:
         'W': 'WARNING',
         'ERROR': 'ERROR',
         'E': 'ERROR',
+        'CRITICAL': 'CRITICAL',
+        'C': 'CRITICAL'
     }
 
-    log_mode = TProp(
-        Union[bool, int],
-        setter_fct=lambda x: int(x) if (0 <= x <= 3) or (isinstance(x, bool)) else 0
-    )
+    log_mode = TProp(bool | int,
+                     setter_fct=lambda x: int(x) if (0 <= x <= 3) or (isinstance(x, bool)) else 0)
 
     """str: Log output mode. Defaults to 1.
         No log: False|0
@@ -72,11 +155,8 @@ class LogManager:
     """
 
     #: str: Log level. Default to 'INFO'
-    log_level = TProp(
-        TProp.re_str_choice(list(_LEVEL_DICT.keys()), ignore_case=True),
-        setter_fct=lambda x, *args: args[0][x[0].upper()],
-        args=(_LEVEL_DICT,)
-    )
+    log_level = TProp(str, setter_fct=lambda x, *args: args[0][x[0].upper()],
+                      args=(_LEVEL_DICT,))
 
     def __init__(self, mode, level):
         """Args:
@@ -98,18 +178,12 @@ class LogManager:
         if self.log_mode == 0:
             return  # Skip init
         if self.log_mode == 1:
-            handlers = [self.get_file_handler()]
+            handlers = [apply_dvas_formatter(self.get_file_handler(), colors=False)]
         elif self.log_mode == 2:
-            handlers = [self.get_file_handler(), self.get_console_handler()]
+            handlers = [apply_dvas_formatter(self.get_file_handler(), colors=False),
+                        apply_dvas_formatter(self.get_console_handler(), colors=True)]
         elif self.log_mode == 3:
-            handlers = [self.get_console_handler()]
-
-        # Set datetime formatter
-        formatter = DeltaTimeFormatter(
-            '%(delta)s|%(levelname)s|%(name)s|%(message)s'
-        )
-        for hdl in handlers:
-            hdl.setFormatter(formatter)
+            handlers = [apply_dvas_formatter(self.get_console_handler(), colors=True)]
 
         # Add handler to all logger
         for name in LOGGER_NAMES:
@@ -185,7 +259,7 @@ class LogManager:
             logger.disabled = True
 
 
-def log_func_call(logger, time_it=False):
+def log_func_call(logger, time_it=False, level='info'):
     """ Intended as a decorator that logs a function call the the log.
     The first part of the message containing the function name is at the 'INFO' level.
     The second part of the message containing the argument values is at the 'DEBUG' level.
@@ -215,8 +289,8 @@ def log_func_call(logger, time_it=False):
 
             # Assemble a log message witht he function name ...
             log_msg = 'Executing %s ...' % (func.__name__)
-            # ... and log it at the INFO level.
-            logger.info(log_msg)
+            # ... and log it at the appropriate level
+            getattr(logger, level)(log_msg)
 
             # Then get extra information about the arguments ...
             log_msg = '... with the following input: %s' % (str(dict(bound_args.arguments)))

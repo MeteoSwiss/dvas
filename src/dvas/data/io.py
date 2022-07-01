@@ -18,7 +18,7 @@ from .linker import CSVHandler, GDPHandler
 from .linker import FlgCSVHandler, FlgGDPHandler
 from ..config.config import OrigData
 from ..database.database import DatabaseManager
-from ..database.model import Parameter as TableParameter
+from ..database.model import Prm as TableParameter
 from ..environ import path_var
 from ..errors import DvasError
 
@@ -54,6 +54,11 @@ def update_db(search, strict=False):
         @enduml
 
     """
+
+    # If search is None, there is no need to go much further
+    if search is None:
+        logger.debug("I was asked to search for None ... so that's what I'll return.")
+        return None
 
     # Init orig data config
     origdata_config_mngr = OrigData()
@@ -97,7 +102,7 @@ def update_db(search, strict=False):
     if path_var.orig_data_path is None:
         raise DvasError('Ouch ! path_var.orig_data_path is None')
 
-    # Scan data path (entirly)
+    # Scan data path (entirely)
     origdata_path_scan = list(path_var.orig_data_path.rglob("*.*"))
 
     # Loop loading

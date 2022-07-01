@@ -61,6 +61,7 @@ def do_latex(request):
         # NOT see conftest.py.
         return False
 
+
 @pytest.fixture(scope='session')
 def show_plots(request):
     """ A pytext fixture to decide whether test plots should be shown on-screen, or not.
@@ -81,7 +82,6 @@ def show_plots(request):
         # This happens if pytest is being launched from the root directory, in which case it does
         # NOT see conftest.py.
         return False
-
 
 
 #TODO

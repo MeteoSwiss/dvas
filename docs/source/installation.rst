@@ -34,14 +34,14 @@ dvas is compatible with the following python versions:
 
 .. literalinclude:: ../../setup.py
     :language: python
-    :lines: 41
+    :lines: 38
 
 Furthermore, dvas relies on a few external modules, which will be automatically installed by ``pip``
 if required:
 
 .. literalinclude:: ../../setup.py
     :language: python
-    :lines: 42-57
+    :lines: 39-55
 
 Testing the installation
 ------------------------

@@ -20,7 +20,7 @@ from dvas.dvas import Database as DB
 import dvas.plots.utils as dpu
 from dvas.data.data import MultiProfile, MultiRSProfile, MultiGDPProfile
 from dvas.environ import path_var
-from dvas.hardcoded import FLG_INCOMPATIBLE_NAME
+from dvas.hardcoded import FLG_INCOMPATIBLE
 from dvas.tools import sync as dts
 from dvas.tools.gdps import gdps as dtgg
 from dvas.tools.gdps import stats as dtgs
@@ -133,14 +133,14 @@ if __name__ == '__main__':
     # The data is stored inside Pandas dataframes. Each type of profile contains a different set of
     # columns and indexes.
     prf_df = prfs[0].data
-    print('\nBasic profile dataframe:\n  index.names={}, columns={}'.format(prf_df.index.names,
-                                                                            prf_df.columns.to_list()))
+    print('\nBasic profile dataframe:\n  index.names={}, columns={}'.format(
+        prf_df.index.names, prf_df.columns.to_list()))
     rs_prf_df = rs_prfs[0].data
-    print('\nRS profile dataframe:\n  index.names={}, columns={}'.format(rs_prf_df.index.names,
-                                                                         rs_prf_df.columns.to_list()))
+    print('\nRS profile dataframe:\n  index.names={}, columns={}'.format(
+        rs_prf_df.index.names, rs_prf_df.columns.to_list()))
     gdp_prf_df = gdp_prfs[0].data
-    print('\nGDP profile dataframe:\n  index.names={}, columns={}'.format(gdp_prf_df.index.names,
-                                                                          gdp_prf_df.columns.to_list()))
+    print('\nGDP profile dataframe:\n  index.names={}, columns={}'.format(
+        gdp_prf_df.index.names, gdp_prf_df.columns.to_list()))
 
     # MultiProfiles has a var_info property to link the DataFrame columns to the actual variable
     print("\n Content of prfs.var_info['val']:\n")
@@ -160,13 +160,14 @@ if __name__ == '__main__':
         print(f"  {flg_name}: {item['flg_desc']}")
 
     # To flag specific elements of a given profile, use the internal methods:
-    prfs[0].set_flg('user_qc', True, index=pd.Index([0, 1, 2]))
+    # Here, 'dummy_flg' is defined in the flg_config.yml parameter file.
+    prfs[0].set_flg('troposphere', True, index=pd.Index([0, 1, 2]))
 
     # Let's check to see that the data was actually flagged
-    print('\nDid I flag only the first three steps with "user_qc" ?')
-    print(prfs[0].has_flg('user_qc'))
+    print('\nDid I flag only the first three steps with a "troposphere" flag ?')
+    print(prfs[0].has_flg('troposphere'))
 
-    # FLags are used that characterize individual measurments. Tags, on the other hand, are used to
+    # FLags are used to characterize individual measurments. Tags, on the other hand, are used to
     # characterize entire Profiles. They are useful, for example, to identify if a Profile has been
     # synchronized (tags: 'sync'), if the data is still raw (tag:'raw'), or if it belongs to a GDP
     # (tag: 'gdp'). As an example, let's figure out which Profile in rs_prfs belongs to a GDP:
@@ -257,17 +258,17 @@ if __name__ == '__main__':
     # incompatibilities ...
     valids = dtgs.gdp_validities(incompat, m_vals=[1], strategy='all-or-none')
 
-    # ... and set them using the dvas.hardcoded.FLG_INCOMPATIBLE_NAME flag
+    # ... and set them using the dvas.hardcoded.FLG_INCOMPATIBLE flag
     for gdp_prf in gdp_prfs:
-        gdp_prf.set_flg(FLG_INCOMPATIBLE_NAME, True,
+        gdp_prf.set_flg(FLG_INCOMPATIBLE, True,
                         index=valids[~valids[str(gdp_prf.info.oid)]].index)
 
     # Let us now create a high-resolution CWS for these synchronized GDPs, making sure to drop
     # incompatible elements.
     start_time = datetime.now()
-    cws = dtgg.combine(gdp_prfs, binning=1, method='weighted mean',
-                       mask_flgs=FLG_INCOMPATIBLE_NAME,
-                       chunk_size=150, n_cpus=8)
+    cws, _ = dtgg.combine(gdp_prfs, binning=1, method='weighted mean',
+                          mask_flgs=FLG_INCOMPATIBLE,
+                          chunk_size=150, n_cpus=8)
     print('CWS assembled in: {}s'.format((datetime.now()-start_time).total_seconds()))
 
     # We can now inspect the result visually

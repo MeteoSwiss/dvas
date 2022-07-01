@@ -10,6 +10,7 @@ Module contents: User configuration management.
 """
 
 # Import python packages and modules
+import logging
 from abc import ABCMeta, abstractmethod
 import re
 import pprint
@@ -17,24 +18,23 @@ from functools import reduce
 import operator
 from pathlib import Path
 import json
+import pytz
 from jsonschema import validate, exceptions
 from ruamel.yaml import YAML
 from ruamel.yaml.error import YAMLError
-from pampy.helpers import Union
 import sre_yield
 
 # Import current package modules
 from .definitions import origdata, csvorigmeta
-from .definitions import model
-from .definitions import parameter, flg
+from .definitions import prm, flg, model
 from .definitions import tag
 from ..environ import path_var
 from ..environ import glob_var as env_glob_var
-from ..helper import get_by_path
+from ..helper import get_by_path, check_datetime
 from ..helper import RequiredAttrMetaClass
 from ..helper import TypedProperty
 from ..helper import camel_to_snake
-from ..database.model import Parameter as TableParameter
+from ..database.model import Prm as TableParameter
 from ..hardcoded import FLG_PRM_NAME_SUFFIX, FLG_PRM_DESC_PREFIX
 from ..errors import ConfigError
 from ..errors import ConfigPathError, ConfigReadYAMLError, ConfigCheckJSONError
@@ -43,6 +43,9 @@ from ..errors import ConfigGetError, ConfigLabelNameError
 from ..errors import ConfigGenMaxLenError
 from ..errors import ExprInterpreterError, NonTerminalExprInterpreterError
 from ..errors import TerminalExprInterpreterError
+
+# Setup local logger
+logger = logging.getLogger(__name__)
 
 # Define
 NODE_ESCAPE_CHAR = '_'
@@ -88,7 +91,7 @@ class ConfigManager(metaclass=RequiredAttrMetaClass):
     #: type: Type of document. Choices: [dict, list].
     DOC_TYPE = None
 
-    document = TypedProperty(Union[dict, list])
+    document = TypedProperty(dict | list)
     """dict: Config document. Must be redefined as well to avoid
     list/dict reference overlap
     """
@@ -217,7 +220,7 @@ class OneLayerConfigManager(ConfigManager):
             self._validate_json(self.document)
 
         except ConfigReadError as exc:
-            raise ConfigReadError('Error in hard coded config') from exc
+            raise ConfigReadError('Error in hardcoded config') from exc
 
     def _get_document(self, doc_in=None):
         """Get YAML document as python dict
@@ -265,6 +268,9 @@ class OneLayerConfigManager(ConfigManager):
 
         # Convert YAML file as JSON dict
         else:
+            if len(doc_in) == 0:
+                logger.debug('No parameter file found for CLASS_KEY: %s', self.CLASS_KEY)
+
             for filepath in doc_in:
                 try:
                     self.append(
@@ -506,14 +512,14 @@ class Model(OneDimArrayConfigManager):
     document = TypedProperty(OneDimArrayConfigManager.DOC_TYPE)
 
 
-class Parameter(OneDimArrayConfigManager):
+class Prm(OneDimArrayConfigManager):
     """Parameter config manager """
 
-    PARAMETER_PATTERN_PROP = parameter.PARAMETER_PATTERN_PROP
-    LABEL_VAL_DEF = parameter.LABEL_VAL_DEF
-    CLASS_KEY = parameter.KEY
+    PARAMETER_PATTERN_PROP = prm.PARAMETER_PATTERN_PROP
+    LABEL_VAL_DEF = prm.LABEL_VAL_DEF
+    CLASS_KEY = prm.KEY
     CONST_LABELS = []
-    NODE_GEN = parameter.NODE_GEN
+    NODE_GEN = prm.NODE_GEN
 
     #: dict: Config document
     document = TypedProperty(OneDimArrayConfigManager.DOC_TYPE)
@@ -834,7 +840,7 @@ class ConfigExprInterpreter(metaclass=ABCMeta):
 
     @staticmethod
     def eval(expr, get_fct):
-        """Interprete expression.
+        """ Interpret expression.
 
         Args:
             expr (str|ConfigExprInterpreter): Expression to evaluate.
@@ -862,6 +868,7 @@ class ConfigExprInterpreter(metaclass=ABCMeta):
             'get': GetExpr,
             'upper': UpperExpr, 'lower': LowerExpr,
             'supper': SmallUpperExpr, 'small_upper': SmallUpperExpr,
+            'to_datetime': ToDatetime
         }
 
         # Set get_value
@@ -993,6 +1000,32 @@ class SmallUpperExpr(NonTerminalConfigExprInterpreter):
             out = a[0].upper() + a[1:].lower()
         except (AttributeError, TypeError) as exc:
             raise NonTerminalExprInterpreterError() from exc
+
+        return out
+
+
+class ToDatetime(NonTerminalConfigExprInterpreter):
+    """ Get str and convert to datetime value """
+
+    def fct(self, a):
+        """ Convert a string to datetime """
+
+        # If I am given nothing, return nothing
+        if a is None:
+            return None
+
+        # Here, it is important to raise a NonTerminalExprInterpreterError if something fails.
+        # Else, it will not be reported ConfigExprInterpreter.eval()
+        try:
+            # Use the in-built helper function ...
+            out = check_datetime(a, utc=False)
+        except:
+            raise NonTerminalExprInterpreterError()
+
+        # Force the timezone to UTC by default
+        if out.tzinfo is None:
+            out = out.replace(tzinfo=pytz.UTC)
+            logger.error('Setting undefined timezone to UTC for "%s"', out)
 
         return out
 

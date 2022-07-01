@@ -14,12 +14,13 @@ import logging
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
+import matplotlib.transforms as transforms
 
 # Import from this package
 from ..logger import log_func_call
 from ..errors import DvasError
-from ..hardcoded import PRF_REF_INDEX_NAME, PRF_REF_VAL_NAME, PRF_REF_ALT_NAME, PRF_REF_TDT_NAME
-from ..hardcoded import PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME
+from ..hardcoded import PRF_IDX, PRF_VAL, PRF_ALT, PRF_TDT, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
+from ..hardcoded import MTDTA_TROPOPAUSE, MTDTA_PBL
 from . import utils as pu
 
 # Setup the local logger
@@ -58,12 +59,10 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     ax1 = fig.add_subplot(gs_info[1, 0], sharex=ax0)
 
     # Extract the DataFrames from the MultiGDPProfile instances
-    cws = cws_prf.get_prms([PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME,
-                            PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME,
+    cws = cws_prf.get_prms([PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU,
                             'uc_tot'])[0]
-    gdps = gdp_prfs.get_prms([PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME,
-                             PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME,
-                             'uc_tot'])
+    gdps = gdp_prfs.get_prms([PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU,
+                              'uc_tot'])
 
     # Let us make sure that all the profiles are synchronized by checking the profile lengths
     # This is not fool proof, but it is a start. I could also check for the sync tag, but it
@@ -72,11 +71,11 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
         raise DvasError('Ouch! GDPS and CWS do not have the same lengths. I cannot plot this.')
 
     # Here, I want to make a plot with 3 x-axis: idx, tdt, and alt. To do that requires
-    # all these arrays to be completely filled with stuff, an dhave absolutely no NaNs
+    # all these arrays to be completely filled with stuff, and have absolutely no NaNs
     # (since matplotlib needs to interpolate and go back-and-forth between them)
-    idxs = cws.index.get_level_values(PRF_REF_INDEX_NAME).values
-    tdts = cws[PRF_REF_TDT_NAME].dt.total_seconds().values
-    alts = cws[PRF_REF_ALT_NAME].values
+    idxs = cws.index.get_level_values(PRF_IDX).values
+    tdts = cws[PRF_TDT].dt.total_seconds().values
+    alts = cws[PRF_ALT].values
 
     # For the altitude, I may need to pad the edges with stuff. Holes, on the other hand, should
     # already have been plugged.
@@ -88,7 +87,7 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     # Check for any holes - if found, forget about showing multiple axes
     show_tdts = True
     if np.any(np.isnan(tdts)):
-        logger.error('CWS tdt contains holes. ' +
+        logger.error('CWS tdt contains holes. %s',
                      'Axis will be cropped from gdp_vs_cws.')
         show_tdts = False
     # Make sure time is monotically increasing. This should always be true ...
@@ -100,11 +99,11 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     # monotically
     show_alts = True
     if np.any(np.isnan(alts)):
-        logger.error('CWS ref_alt contains holes. ' +
+        logger.error('CWS ref_alt contains holes. %s',
                      'Axis will be cropped from gdp_vs_cws.')
         show_alts = False
     elif np.any(np.diff(alts) <= 0):
-        logger.error('CWS ref. alt. is not increasing monotically. ' +
+        logger.error('CWS ref. alt. is not increasing monotically. %s',
                      'Axis will be cropped from gdp_vs_cws')
         show_alts = False
 
@@ -114,13 +113,13 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
         gdp = gdps[gdp_ind]
 
         # First, plot the profiles themselves
-        ax0.plot(idxs, gdp[PRF_REF_VAL_NAME].values, lw=0.5, ls='-', drawstyle='steps-mid',
+        ax0.plot(idxs, gdp[PRF_VAL].values, lw=0.5, ls='-', drawstyle='steps-mid',
                  label='|'.join(gdp_prfs.get_info(label)[gdp_ind]))
-        ax0.fill_between(idxs, gdp[PRF_REF_VAL_NAME].values-k_lvl*gdp['uc_tot'].values,
-                         gdp[PRF_REF_VAL_NAME]+k_lvl*gdp['uc_tot'], alpha=0.3, step='mid')
+        ax0.fill_between(idxs, gdp[PRF_VAL].values-k_lvl*gdp['uc_tot'].values,
+                         gdp[PRF_VAL]+k_lvl*gdp['uc_tot'], alpha=0.3, step='mid')
 
         # Then, plot the Deltas with respect to the CWS
-        delta = gdp[PRF_REF_VAL_NAME].values-cws[PRF_REF_VAL_NAME].values
+        delta = gdp[PRF_VAL].values-cws[PRF_VAL].values
         ax1.plot(idxs, delta, drawstyle='steps-mid', lw=0.5, ls='-')
         ax1.fill_between(idxs, delta-k_lvl*gdp['uc_tot'], delta+k_lvl*gdp['uc_tot'], alpha=0.3,
                          step='mid')
@@ -128,8 +127,8 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     # Then also plot the CWS uncertainty
     ax0.plot(idxs, cws['val'], color=pu.CLRS['cws_1'], lw=0.5, ls='-', drawstyle='steps-mid',
              label='CWS')
-    ax0.fill_between(idxs, cws[PRF_REF_VAL_NAME]-k_lvl*cws['uc_tot'],
-                     cws[PRF_REF_VAL_NAME]+k_lvl*cws['uc_tot'], alpha=0.3, step='mid',
+    ax0.fill_between(idxs, cws[PRF_VAL]-k_lvl*cws['uc_tot'],
+                     cws[PRF_VAL]+k_lvl*cws['uc_tot'], alpha=0.3, step='mid',
                      color=pu.CLRS['cws_1'])
 
     ax1.plot(idxs, -k_lvl*cws['uc_tot'].values, lw=0.5, drawstyle='steps-mid',
@@ -137,15 +136,34 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     ax1.plot(idxs, +k_lvl*cws['uc_tot'].values, lw=0.5, drawstyle='steps-mid',
              color='k')
 
+    # Display the location of the tropopause and the PBL
+    for (loi, symb) in [(MTDTA_TROPOPAUSE, r'$\prec$'), (MTDTA_PBL, r'$\simeq$')]:
+        if loi not in cws_prf[0].info.metadata.keys():
+            logger.warning('"%s" not found in CWS metadata.', loi)
+            continue
+
+        loi_idx = np.argmin(np.abs(alts-cws_prf[0].info.metadata[loi]))
+        if loi == MTDTA_TROPOPAUSE and alts[loi_idx] != cws_prf[0].info.metadata[loi]:
+            logger.warning('%s stored as metadata does not match any %s',
+                           loi,
+                           'gph values of the CWS profile. Why ?!')
+
+        for ax in [ax0, ax1]:
+            ax.axvline(loi_idx, ls=':', lw=1, c='k')
+            trans = transforms.blended_transform_factory(ax.transData, ax.transAxes)
+            ax0.text(loi_idx, 0.95, symb, transform=trans, ha='center', va='top',
+                     rotation=90,
+                     bbox=dict(boxstyle='square', fc="w", ec="none", pad=0.1))
+
     # Make it look pretty
-    ylbl = cws_prf.var_info[PRF_REF_VAL_NAME]['prm_name']
-    ylbl += ' [{}]'.format(cws_prf.var_info[PRF_REF_VAL_NAME]['prm_unit'])
+    ylbl = cws_prf.var_info[PRF_VAL]['prm_name']
+    ylbl += ' [{}]'.format(cws_prf.var_info[PRF_VAL]['prm_unit'])
 
     idxlbl = r'$i$'
-    tdtlbl = cws_prf.var_info[PRF_REF_TDT_NAME]['prm_name']
-    tdtlbl += ' [{}]'.format(cws_prf.var_info[PRF_REF_TDT_NAME]['prm_unit'])
-    altlbl = cws_prf.var_info[PRF_REF_ALT_NAME]['prm_name'] + r'$_{\rm CWS}$'
-    altlbl += ' [{}]'.format(cws_prf.var_info[PRF_REF_ALT_NAME]['prm_unit'])
+    tdtlbl = cws_prf.var_info[PRF_TDT]['prm_name']
+    tdtlbl += ' [{}]'.format(cws_prf.var_info[PRF_TDT]['prm_unit'])
+    altlbl = cws_prf.var_info[PRF_ALT]['prm_name'] + r'$_{\rm CWS}$'
+    altlbl += ' [{}]'.format(cws_prf.var_info[PRF_ALT]['prm_unit'])
 
     # idx axis
     ax1.text(1.02, -0.11, pu.fix_txt(idxlbl), ha='left', va='center', transform=ax1.transAxes)
@@ -179,10 +197,8 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     # Add the edt/eid/rid info
     pu.add_edt_eid_rid(ax0, cws_prf)
 
-    # Add the k-level if warranted
-    ax0.text(1, 1.03, r'$k={}$'.format(k_lvl), fontsize='small',
-             verticalalignment='bottom', horizontalalignment='right',
-             transform=ax0.transAxes)
+    # Add the k-level
+    pu.add_var_and_k(ax0, var_name=cws_prf.var_info[PRF_VAL]['prm_name'], k=k_lvl)
 
     # Add the source for the plot
     pu.add_source(fig)
@@ -228,13 +244,11 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     axs = [ax0, ax1, ax2, ax3, ax4]
 
     # Extract the DataFrames from the MultiGDPProfile/MultiCWSProfile instances
-    gdps = gdp_prfs.get_prms([PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME,
-                             PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME,
-                             'uc_tot'])
+    gdps = gdp_prfs.get_prms([PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU,
+                              'uc_tot'])
 
-    cws = cws_prf.get_prms([PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME,
-                            PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME,
-                            PRF_REF_UCU_NAME, 'uc_tot'])[0]
+    cws = cws_prf.get_prms([PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU,
+                            'uc_tot'])[0]
 
     # Let us make sure that all the profiles are synchronized by checking the profile lengths
     # This is not fool proof, but it is a start. I could also check for the sync tag, but it
@@ -245,9 +259,9 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     # Here, I want to make a plot with 3 x-axis: idx, tdt, and alt. To do that requires
     # all these arrays to be completely filled with stuff, and have absolutely no NaNs
     # (since matplotlib needs to interpolate and go back-and-forth between them)
-    idxs = cws.index.get_level_values(PRF_REF_INDEX_NAME).values
-    tdts = cws[PRF_REF_TDT_NAME].dt.total_seconds().values
-    alts = cws[PRF_REF_ALT_NAME].values
+    idxs = cws.index.get_level_values(PRF_IDX).values
+    tdts = cws[PRF_TDT].dt.total_seconds().values
+    alts = cws[PRF_ALT].values
 
     # For the altitude, I may need to pad the edges with stuff. Holes, on the other hand, should
     # already have been plugged.
@@ -259,7 +273,7 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     # Check for any holes - if found, forget about showing multiple axes
     show_tdts = True
     if np.any(np.isnan(tdts)):
-        logger.error('CWS tdt contains holes. ' +
+        logger.error('CWS tdt contains holes. %s',
                      'Axis will be cropped from uc_budget.')
         show_tdts = False
     # Make sure time is monotically increasing. This should always be true ...
@@ -271,11 +285,11 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     # monotically
     show_alts = True
     if np.any(np.isnan(alts)):
-        logger.error('CWS ref_alt contains holes. ' +
+        logger.error('CWS ref_alt contains holes. %s',
                      'Axis will be cropped from uc_budget.')
         show_alts = False
     elif np.any(np.diff(alts) <= 0):
-        logger.error('CWS ref. alt. is not increasing monotically. ' +
+        logger.error('CWS ref. alt. is not increasing monotically. %s',
                      'Axis will be cropped from uc_budget.')
         show_alts = False
 
@@ -284,8 +298,7 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
         gdp = gdps[gdp_ind]
 
         # Finally, plot the individual errors too ...
-        for (uc_ind, uc) in enumerate(['uc_tot', PRF_REF_UCR_NAME, PRF_REF_UCS_NAME,
-                                       PRF_REF_UCT_NAME, PRF_REF_UCU_NAME]):
+        for (uc_ind, uc) in enumerate(['uc_tot', PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU]):
             axs[uc_ind].plot(idxs, k_lvl*gdp[uc].values, drawstyle='steps-mid', lw=0.5,
                              label='|'.join(gdp_prfs.get_info(label)[gdp_ind]))
 
@@ -293,8 +306,7 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
         ax0b.plot(idxs, 1/gdp['uc_tot'].values**2, lw=0.5, drawstyle='steps-mid')
 
     # Then also plot the CWS uncertainty
-    for (uc_ind, uc) in enumerate(['uc_tot', PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME,
-                                   PRF_REF_UCU_NAME]):
+    for (uc_ind, uc) in enumerate(['uc_tot', PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU]):
         axs[uc_ind].plot(idxs, k_lvl*cws[uc].values, drawstyle='steps-mid', lw=0.75, c='k',
                          zorder=0, label='CWS')
         # Add the y-label, while I'm at it ...
@@ -310,10 +322,10 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
 
     # Now make it look pretty
     idxlbl = r'$i$'
-    tdtlbl = cws_prf.var_info[PRF_REF_TDT_NAME]['prm_name']
-    tdtlbl += ' [{}]'.format(cws_prf.var_info[PRF_REF_TDT_NAME]['prm_unit'])
-    altlbl = cws_prf.var_info[PRF_REF_ALT_NAME]['prm_name'] + r'$_{\rm CWS}$'
-    altlbl += ' [{}]'.format(cws_prf.var_info[PRF_REF_ALT_NAME]['prm_unit'])
+    tdtlbl = cws_prf.var_info[PRF_TDT]['prm_name']
+    tdtlbl += ' [{}]'.format(cws_prf.var_info[PRF_TDT]['prm_unit'])
+    altlbl = cws_prf.var_info[PRF_ALT]['prm_name'] + r'$_{\rm CWS}$'
+    altlbl += ' [{}]'.format(cws_prf.var_info[PRF_ALT]['prm_unit'])
 
     # idx axis
     ax4.text(1.02, -0.15, pu.fix_txt(idxlbl), ha='left', va='center', transform=ax4.transAxes)
@@ -340,17 +352,13 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
 
     # Add the legend
     pu.fancy_legend(ax0, label)
+    # Add the k-level
+    var_msg = r'{} [{}]'.format(cws_prf.var_info[PRF_VAL]['prm_name'],
+                                cws_prf.var_info[PRF_VAL]['prm_unit'])
+    pu.add_var_and_k(ax0, var_name=var_msg, k=k_lvl)
 
     # Add the edt/eid/rid info
     pu.add_edt_eid_rid(ax0, cws_prf)
-
-    # Add the k-level if warranted
-    msg = pu.fix_txt(r'{} [{}], $k={}$'.format(cws_prf.var_info[PRF_REF_VAL_NAME]['prm_name'],
-                                               cws_prf.var_info[PRF_REF_VAL_NAME]['prm_unit'],
-                                               k_lvl))
-    ax0.text(1, 1.03, msg, fontsize='small',
-             verticalalignment='bottom', horizontalalignment='right',
-             transform=ax0.transAxes)
 
     # Add the source for the plot
     pu.add_source(fig)
@@ -483,13 +491,11 @@ def plot_ks_test(df, alpha, unit=None, left_label=None, right_label=None, **kwar
     ax2.set_ylim((-6, 6))
     # Add the plot labels, if warranted.
     if left_label is not None:
-        ax1.text(0, 1.03, pu.fix_txt(left_label), fontsize='small',
+        ax1.text(0, 1.1, pu.fix_txt(left_label), fontsize='small',
                  verticalalignment='bottom', horizontalalignment='left',
                  transform=ax1.transAxes)
     if right_label is not None:
-        ax1.text(1, 1.03, pu.fix_txt(right_label), fontsize='small',
-                 verticalalignment='bottom', horizontalalignment='right',
-                 transform=ax1.transAxes)
+        pu.add_var_and_k(ax1, var_name=right_label, offset=1.1)
 
     # Add the source for the plot
     pu.add_source(fig)

@@ -11,17 +11,18 @@ Module contents: Required attributes definition for `.config.ConfigManager.Flag 
 
 # Import current packages modules
 from ...database.model import Flg as TableFlg
-from ...hardcoded import FLG_EMPTY_NAME, FLG_EMPTY_DESC
-from ...hardcoded import FLG_INCOMPATIBLE_NAME, FLG_INCOMPATIBLE_DESC
-from ...hardcoded import FLG_INTERP_NAME, FLG_INTERP_DESC
-from ...hardcoded import FLG_DESCENT_NAME, FLG_DESCENT_DESC
+from ...hardcoded import FLG_EMPTY, FLG_EMPTY_DESC
+from ...hardcoded import FLG_INCOMPATIBLE, FLG_INCOMPATIBLE_DESC
+from ...hardcoded import FLG_INTERP, FLG_INTERP_DESC
+from ...hardcoded import FLG_DESCENT, FLG_DESCENT_DESC
+from ...hardcoded import FLG_HASCWS, FLG_HASCWS_DESC
 
 #: dict: Parameter pattern properties (JSON_SCHEMA)
 PARAMETER_PATTERN_PROP = {
     rf"^{TableFlg.bit_pos.name}$": {
         "type": "integer",
         "minimum": 0,
-        "maximum": 63,
+        "maximum": 62,  # Cannot go up to 63, because we need one bit for the sign
     },
     rf"^{TableFlg.flg_name.name}$": {
         "type": "string"
@@ -39,10 +40,11 @@ CONST_LABELS = [
         TableFlg.flg_desc.name: arg[1]
     } for i, arg in enumerate(
         (
-            (FLG_EMPTY_NAME, FLG_EMPTY_DESC),
-            (FLG_INTERP_NAME, FLG_INTERP_DESC),
-            (FLG_INCOMPATIBLE_NAME, FLG_INCOMPATIBLE_DESC),
-            (FLG_DESCENT_NAME, FLG_DESCENT_DESC)
+            (FLG_EMPTY, FLG_EMPTY_DESC),
+            (FLG_INTERP, FLG_INTERP_DESC),
+            (FLG_INCOMPATIBLE, FLG_INCOMPATIBLE_DESC),
+            (FLG_DESCENT, FLG_DESCENT_DESC),
+            (FLG_HASCWS, FLG_HASCWS_DESC)
         )
     )
 ]

@@ -22,8 +22,7 @@ import pandas as pd
 # Import from current package
 from ...logger import log_func_call
 from ...errors import DvasError
-from ...hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME, PRF_REF_FLG_NAME
-from ...hardcoded import PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME
+from ...hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
 from ..tools import df_to_chunks
 from .utils import process_chunk
 from ...data.data import MultiCWSProfile
@@ -56,8 +55,8 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
             disable multiprocessing. Defaults to 1.
 
     Returns:
-        (dvas.data.data.MultiCWSProfile): the combined working standard profile.
-
+        (dvas.data.data.MultiCWSProfile, dict): the combined working standard profile, and the
+            a dictionnary with the full covariance matrices for the different uncertainty types.
     '''
 
     # Some safety checks first of all
@@ -90,7 +89,7 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
 
     # Have all the profiles been synchronized ? Just trigger a warning for now. Maybe users simply
     # did not add the proper tag.
-    if any(['sync' not in item for item in gdp_prfs.get_info('tags')]):
+    if any('sync' not in item for item in gdp_prfs.get_info('tags')):
         logger.warning('No "sync" tag found. Is this intended ?')
 
     # How many gdps do we have ?
@@ -129,9 +128,8 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
     # Let's get started for real
     # First, let's extract all the information I (may) need, i.e. the values, errors, and total
     # errors.
-    x_dx = gdp_prfs.get_prms([PRF_REF_ALT_NAME, PRF_REF_TDT_NAME, PRF_REF_VAL_NAME,
-                              PRF_REF_FLG_NAME, PRF_REF_UCR_NAME, PRF_REF_UCS_NAME,
-                              PRF_REF_UCT_NAME, PRF_REF_UCU_NAME, 'uc_tot'],
+    x_dx = gdp_prfs.get_prms([PRF_ALT, PRF_TDT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT,
+                              PRF_UCU, 'uc_tot'],
                              mask_flgs=mask_flgs)
 
     # I also need to extract some of the metadata required for computing cross-correlations.
@@ -186,8 +184,11 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
         pool.close()
         pool.join()
 
+    # Extract the profile chunks, in order to stich them up together.
+    x_ms = [item[0] for item in proc_chunks]
+
     # Re-assemble all the chunks into one DataFrame.
-    proc_chunk = pd.concat(proc_chunks, axis=0)
+    x_ms = pd.concat(x_ms, axis=0)
 
     # Almost there. Now we just need to package this into a clean MultiGDPProfile
     # Let's first prepare the info dict
@@ -203,10 +204,21 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
 
     # Let's create a dedicated Profile for the combined profile.
     # It's no different from a GDP, from the perspective of the errors.
-    new_prf = CWSProfile(new_info, data=proc_chunk)
+    new_prf = CWSProfile(new_info, data=x_ms)
 
-    # And finally, package this into a MultiCWSProfile entity
+    # Package this into a MultiCWSProfile entity
     out = MultiCWSProfile()
     out.update(gdp_prfs.db_variables, data=[new_prf])
 
-    return out
+    # To finish, let's piece together the covariance matrices
+    # Set them up full of NaNs to start
+    cov_mats = {uc_name: np.full((len(x_ms), len(x_ms)), np.nan) for uc_name in
+                [PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU]}
+    # Then fill them up chunk by chunk
+    for item in proc_chunks:
+        for uc_name in [PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU]:
+            cov_mats[uc_name][item[0].index[0]:item[0].index[-1]+1,
+                              item[0].index[0]:item[0].index[-1]+1] = \
+                item[1][uc_name].filled(np.nan)
+
+    return out, cov_mats

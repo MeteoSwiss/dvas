@@ -21,9 +21,8 @@ from ...errors import DvasError
 from .data import MPStrategyAC
 from ...tools.gdps.utils import process_chunk
 from ...tools.tools import df_to_chunks
-from ...hardcoded import PRF_REF_INDEX_NAME, PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_FLG_NAME
-from ...hardcoded import PRF_REF_VAL_NAME, PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME
-from ...hardcoded import PRF_REF_UCU_NAME
+from ...hardcoded import PRF_IDX, PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
+from ...hardcoded import PRF_FLG
 
 # Steup the logger
 logger = logging.getLogger(__name__)
@@ -60,7 +59,7 @@ class ResampleStrategy(MPStrategyAC):
             raise DvasError("Ouch ! prfs should be of type list, and not: {}".format(type(prfs)))
         # The following should in principle never happen because the strategy ensures that.
         # If this blows up, then something must have gone really wrong ...
-        if np.any([PRF_REF_TDT_NAME not in prf.get_index_attr() for prf in prfs]):
+        if np.any([PRF_TDT not in prf.get_index_attr() for prf in prfs]):
             raise DvasError("Ouch ! I can only resample profiles with a timedelta array ...")
 
         # Very well, let's start looping and resampling each Profile
@@ -71,19 +70,19 @@ class ResampleStrategy(MPStrategyAC):
                 continue
 
             # Let's identify the min and max integer values, rounded to the nearest second.
-            t_0 = min(prf.data.index.get_level_values(PRF_REF_TDT_NAME)).ceil('1s')
-            t_1 = max(prf.data.index.get_level_values(PRF_REF_TDT_NAME)).floor('1s')
+            t_0 = min(prf.data.index.get_level_values(PRF_TDT)).ceil('1s')
+            t_1 = max(prf.data.index.get_level_values(PRF_TDT)).floor('1s')
 
             # Turn this into a regular grid
-            new_tdt = pd.timedelta_range(t_0, t_1, freq=freq, name=PRF_REF_TDT_NAME)
+            new_tdt = pd.timedelta_range(t_0, t_1, freq=freq, name=PRF_TDT)
 
             # Get the existing time steps
-            old_tdt = prf.data.index.get_level_values(PRF_REF_TDT_NAME)
+            old_tdt = prf.data.index.get_level_values(PRF_TDT)
 
             # Check if the new index is the same as the old. And if so, continue to the next
             # next profile without changing anything
             if len(new_tdt) == len(prf.data):
-                if all(new_tdt == prf.data.index.get_level_values(PRF_REF_TDT_NAME)):
+                if all(new_tdt == prf.data.index.get_level_values(PRF_TDT)):
                     logger.info('No resampling required for %s', prfs[prf_ind].info.src)
                     continue
 
@@ -97,18 +96,17 @@ class ResampleStrategy(MPStrategyAC):
 
             # Let's begin by creating the chunk array
             cols = [[0, 1],
-                    [PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME, PRF_REF_FLG_NAME,
-                     PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME,
+                    [PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU,
                      'uc_tot', 'oid', 'mid', 'eid', 'rid']]
             cols = pd.MultiIndex.from_product(cols)
             x_dx = pd.DataFrame(columns=cols)
-            x_dx.index.name = PRF_REF_INDEX_NAME
+            x_dx.index.name = PRF_IDX
 
             # Next, get the original data out, reseting all the indices to columns.
             this_data = prf.data.reset_index()
 
             # Let's drop the original integer index, to avoid type conversion issues
-            this_data.drop(columns=PRF_REF_INDEX_NAME, inplace=True)
+            this_data.drop(columns=PRF_IDX, inplace=True)
 
             # Duplicate the last point as a "pseudo" new time step.
             # This is to ensure proper interpolation all the way to the very edge of the raw data
@@ -118,7 +116,7 @@ class ResampleStrategy(MPStrategyAC):
             old_tdt = this_data['tdt'].values
 
             # What are the indices of the closest (upper) points for each (new) step ?
-            x_ip1_ind = np.array([this_data[PRF_REF_TDT_NAME].searchsorted(xi_star,
+            x_ip1_ind = np.array([this_data[PRF_TDT].searchsorted(xi_star,
                                   side='right') for xi_star in new_tdt])
 
             # None of these should be smaller than 0 or larger than the length of the original array
@@ -138,7 +136,7 @@ class ResampleStrategy(MPStrategyAC):
             # x_- * (omega-1) and the second will be x_+ * omega. That way, 1-2 =
             # x_- * (1-omega) + x_+ * omega.
             for col in this_data.columns:
-                if col == PRF_REF_FLG_NAME:  # Do nothing to the flags
+                if col == PRF_FLG:  # Do nothing to the flags
                     x_dx.loc[:, (0, col)] = this_data.iloc[x_ip1_ind-1][col].values
                     x_dx.loc[:, (1, col)] = this_data.iloc[x_ip1_ind][col].values
                 else:
@@ -149,7 +147,7 @@ class ResampleStrategy(MPStrategyAC):
                     x_dx.loc[:, (1, col)] = this_data.iloc[x_ip1_ind][col].values * omega_vals
 
             # Deal with the uncertainties, in case I do not have a GDPProfile
-            for col in [PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME]:
+            for col in [PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU]:
                 if col not in this_data.columns:
                     x_dx.loc[:, (0, col)] = 0
                     x_dx.loc[:, (1, col)] = 0
@@ -212,7 +210,8 @@ class ResampleStrategy(MPStrategyAC):
                 pool.join()
 
             # Re-assemble all the chunks into one DataFrame.
-            proc_chunk = pd.concat(proc_chunks, axis=0)
+            proc_chunk = [item[0] for item in proc_chunks]
+            proc_chunk = pd.concat(proc_chunk, axis=0)
 
             # Start the interpolation. Since I already applied the weights, I just need to do a
             # delta.
@@ -226,12 +225,12 @@ class ResampleStrategy(MPStrategyAC):
 
             # Loop through the different columns to assign
             for name in this_data.columns:
-                if name == PRF_REF_TDT_NAME:
+                if name == PRF_TDT:
                     # Here, do nothing to avoid propagating floating point errors caused by the
                     # interpolation of time steps.
                     continue
 
-                if name == PRF_REF_FLG_NAME:
+                if name == PRF_FLG:
                     # For the points that were not interpolated, copy them over
                     # For the others, do nothing as we will set them properly below
                     # Treat the case of omega_vals =0/1 differently, to assign the corret flags

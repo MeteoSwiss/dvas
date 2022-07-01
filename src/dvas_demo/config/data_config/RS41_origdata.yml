@@ -1,18 +1,32 @@
+# Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+#
+# Distributed under the terms of the GNU General Public License v3.0 or later.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# This file contains the extraction details for RS41 GDP and MDP files.
+# It must absolutely have the string 'origdata' in its name, to match the dvas class names.
+# --------------------------------------------------------------------------------------------------
+
 # ----------------------------------------------------
-# RS41 type (NOT THE GDP!), pre-2018 file format
+# RS41 MDP (UAII2022 format)
+# ----------------------------------------------------
+
+# ----------------------------------------------------
+# RS41 MDP (MCH pre-2018 format)
 # ----------------------------------------------------
 _RS41-PRE2018:
 
     # -- META DATA ----------------------------------
-    edt: "get('event_dt')"
+    edt: "to_datetime(get('event_dt'))"
     srn: "get('srn')"
     pid: "get('product_id')"
     tags:
         - "cat('e:', get('event_id'))"
         - "cat('r:', get('rig'))"
-        - "get('day_night')"
     metadata:
-        bpt_time: "get('bpt_time')"
+        bpt_time:
+        start_time: "to_datetime(get('start_time'))"
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter:
@@ -48,20 +62,20 @@ _RS41-PRE2018:
         value: get(7)
 
 # ----------------------------------------------------
-# RS41 type (NOT THE GDP!), latest file format
+# RS41 MDP (MCH current format)
 # ----------------------------------------------------
 _RS41:
 
     # -- META DATA ----------------------------------
-    edt: "get('event_dt')"
+    edt: "to_datetime(get('event_dt'))"
     srn: "get('srn')"
     pid: "get('product_id')"
     tags:
         - "cat('e:', get('event_id'))"
         - "cat('r:', get('rig'))"
-        - "get('day_night')"
     metadata:
-        bpt_time: "get('bpt_time')"
+        bpt_time:
+        start_time: "to_datetime(get('start_time'))"
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter: ';'
@@ -104,14 +118,17 @@ _RS41-GDP_001:
 
     # -- META DATA ----------------------------------
 
-    edt: "get('g.Measurement.StandardTime')"
+    edt: "to_datetime(get('g.Measurement.StandardTime'))"
     srn: "get('g.MainSonde.SerialNumber')"
     pid: "get('g.Product.Id')"
     tags:
         - "cat('e:', get('g.Measurement.Id'))"
         - "cat('r:', get('g.Measurement.BalloonNumber'))"
+        - "cat('tod:', get('g.Measurement.TimeOfDay'))"
     metadata:
         bpt_time: "get('g.Measurement.BurstpointTime')"
+        start_time: "to_datetime(get('g.Measurement.StartTime'))"
+        gruan_tropopause: "get('g.Measurement.TropopauseGeopotHeight')"
 
     # -- ORIG DATA ----------------------------------
     _time:

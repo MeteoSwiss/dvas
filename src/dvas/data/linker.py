@@ -26,7 +26,7 @@ from ..errors import DvasError
 from ..database.model import Model as TableModel
 from ..database.model import Info as TableInfo
 from ..database.model import DataSource
-from ..database.model import Parameter as TableParameter
+from ..database.model import Prm as TableParameter
 from ..database.database import DatabaseManager
 from ..config.config import CSVOrigMeta
 from ..config.config import ConfigGetError, ConfigReadError
@@ -39,7 +39,7 @@ from ..environ import glob_var
 from ..hardcoded import GDP_FILE_EXT
 from ..hardcoded import PRM_PAT, FLG_PRM_PAT
 from ..hardcoded import CSV_FILE_MDL_PAT, GDP_FILE_MDL_PAT
-from ..hardcoded import TAG_RAW_NAME, TAG_GDP_NAME, TAG_EMPTY_NAME
+from ..hardcoded import TAG_RAW, TAG_GDP, TAG_EMPTY
 
 # Setup local logger
 logger = logging.getLogger(__name__)
@@ -290,10 +290,10 @@ class FileHandler(AbstractHandler):
             data = pd.Series([], dtype='float')
 
             # Add empty tag
-            metadata[TAG_FLD_NM] += [TAG_EMPTY_NAME]
+            metadata[TAG_FLD_NM] += [TAG_EMPTY]
 
             # Log
-            logger.warning("No data for '%s' in file '%s'", prm_name, data_file_path)
+            logger.debug("No data for '%s' in file '%s'", prm_name, data_file_path)
 
         except ValueError as exc:
             raise OrigConfigError(
@@ -435,6 +435,7 @@ class FileHandler(AbstractHandler):
                     ]
 
                 elif isinstance(field_val, dict):
+
                     meta_val = {
                         field_val_key: ConfigExprInterpreter.eval(
                             field_val_val, self.get_metadata_item
@@ -497,7 +498,7 @@ class CSVHandler(FileHandler):
         self._file_model_pat = re.compile(CSV_FILE_MDL_PAT)
         self._origmeta_mngr = CSVOrigMeta()
 
-        self._data_ok_tags = [TAG_RAW_NAME]
+        self._data_ok_tags = [TAG_RAW]
 
     @property
     def origmeta_mngr(self):
@@ -642,7 +643,7 @@ class GDPHandler(FileHandler):
         self._file_model_pat = re.compile(GDP_FILE_MDL_PAT)
         self._fid = None
 
-        self._data_ok_tags = [TAG_RAW_NAME, TAG_GDP_NAME]
+        self._data_ok_tags = [TAG_RAW, TAG_GDP]
 
     def get_metadata_item(self, item):
         """Implementation of abstract method"""
@@ -669,7 +670,7 @@ class GDPHandler(FileHandler):
                     self.read_metaconfig_fields(mdl_name, prm_name)
                 )
 
-            #TODO Detail exception
+            # TODO Detail exception
             except Exception as exc:
                 raise DvasError(f"{exc} / {mdl_name} / {prm_name}")
 
@@ -724,7 +725,7 @@ class FlgGDPHandler(GDPHandler):
         )
         self._prm_re = re.compile(FLG_PRM_PAT)
 
-        self._data_ok_tags = [TAG_RAW_NAME, TAG_GDP_NAME]
+        self._data_ok_tags = [TAG_RAW, TAG_GDP]
 
     def get_metadata_filename(self, data_file_path):
         """Implementation of abstract method"""

@@ -12,7 +12,7 @@ Module contents: Strategy used to save data
 # Import from current package
 from .data import MPStrategyAC
 from ..linker import LocalDBLinker
-from ...hardcoded import PRF_REF_TDT_NAME
+from ...hardcoded import PRF_TDT
 
 
 class SaveDataStrategy(MPStrategyAC):
@@ -45,7 +45,7 @@ class SaveDataStrategy(MPStrategyAC):
                   'prm_name': data.db_variables[prm],
                   'force_write': True}
                  for prm in prms
-                 if (data.db_variables[prm] is not None) and (prm is not PRF_REF_TDT_NAME)]
+                 if (data.db_variables[prm] is not None) and (prm is not PRF_TDT)]
             )
 
             local_db_linker.save(
@@ -55,5 +55,5 @@ class SaveDataStrategy(MPStrategyAC):
                   'prm_name': data.db_variables[prm],
                   'force_write': True}
                  for prm in prms
-                 if (data.db_variables[prm] is not None) and (prm is PRF_REF_TDT_NAME)]
+                 if (data.db_variables[prm] is not None) and (prm is PRF_TDT)]
             )

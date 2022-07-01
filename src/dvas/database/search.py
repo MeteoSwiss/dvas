@@ -10,37 +10,40 @@ Module contents: Local database exploring tools
 """
 
 # Import from python packages
+import logging
 from abc import abstractmethod, ABCMeta
+from collections.abc import Iterable
 import re
 import operator
 from functools import reduce
 from datetime import datetime
 from pandas import DataFrame
 from pandas import Timestamp
-from pampy.helpers import Iterable, Union
 from peewee import JOIN
 from playhouse.shortcuts import model_to_dict
 
 # Import from current package
 from .model import Object as TableObject
 from .model import Info as TableInfo
-from .model import Parameter as TableParameter
+from .model import Prm as TableParameter
 from .model import Tag as TableTag
 from .model import InfosObjects as TableInfosObjects
 from .model import InfosTags as TableInfosTags
 from .model import DataSource as TablDataSource
 from .model import Model as TableModel
-from ..hardcoded import TAG_EMPTY_NAME
-from ..hardcoded import TAG_RAW_NAME, TAG_GDP_NAME
-from ..hardcoded import EID_PAT, RID_PAT
+from ..hardcoded import TAG_EMPTY, TAG_RAW, TAG_GDP
+from ..hardcoded import EID_PAT, RID_PAT, TOD_PAT
 from ..helper import TypedProperty as TProp
 from ..helper import check_datetime
 from ..errors import SearchError
 
+# Setup the local logger
+logger = logging.getLogger(__name__)
 
 # Global define
 EID_PAT_COMPILED = re.compile(EID_PAT)
 RID_PAT_COMPILED = re.compile(RID_PAT)
+TOD_PAT_COMPILED = re.compile(TOD_PAT)
 
 
 class SearchInfoExpr(metaclass=ABCMeta):
@@ -164,7 +167,7 @@ class SearchInfoExpr(metaclass=ABCMeta):
 
             # Add empty tag if False
             if filter_empty is True:
-                expr = AndExpr(NotExpr(TagExpr(TAG_EMPTY_NAME)), expr)
+                expr = AndExpr(NotExpr(TagExpr(TAG_EMPTY)), expr)
 
             # Filter parameter
             if prm_name:
@@ -231,6 +234,8 @@ class SearchInfoExpr(metaclass=ABCMeta):
             lambda x: SearchInfoExpr.get_eid(x[0][TableInfosObjects.info.name]['infos_tags']))
         res['rid'] = res['infos_objects'].apply(
             lambda x: SearchInfoExpr.get_rid(x[0][TableInfosObjects.info.name]['infos_tags']))
+        res['tod'] = res['infos_objects'].apply(
+            lambda x: SearchInfoExpr.get_tod(x[0][TableInfosObjects.info.name]['infos_tags']))
         res['is_gdp'] = res['infos_objects'].apply(
             lambda x: SearchInfoExpr.get_isgdp(x[0][TableInfosObjects.info.name]['infos_tags']))
         res.drop(columns=['infos_objects'], inplace=True)
@@ -274,6 +279,23 @@ class SearchInfoExpr(metaclass=ABCMeta):
         return out
 
     @staticmethod
+    def get_tod(infos_tags):
+        """ Return the TimeOfDay """
+
+        try:
+            out = next(
+                arg[TableInfosTags.tag.name][TableTag.tag_name.name]
+                for arg in infos_tags
+                if TOD_PAT_COMPILED.match(arg[TableInfosTags.tag.name][TableTag.tag_name.name])
+                is not None
+            )
+
+        except StopIteration:
+            out = None
+
+        return out
+
+    @staticmethod
     def get_isgdp(infos_tags):
         """Return eid"""
 
@@ -281,7 +303,7 @@ class SearchInfoExpr(metaclass=ABCMeta):
             next(
                 arg[TableInfosTags.tag.name][TableTag.tag_name.name]
                 for arg in infos_tags
-                if arg[TableInfosTags.tag.name][TableTag.tag_name.name] == TAG_GDP_NAME
+                if arg[TableInfosTags.tag.name][TableTag.tag_name.name] == TAG_GDP
             )
             out = True
 
@@ -379,9 +401,9 @@ class DatetimeExpr(TerminalSearchInfoExpr):
         '>': operator.gt,
         '<': operator.lt,
         '>=': operator.ge,
-        '>=': operator.le,
+        '<=': operator.le,
     }
-    expression = TProp(Union[str, Timestamp, datetime], check_datetime)
+    expression = TProp(str | Timestamp | datetime, check_datetime)
 
     def __init__(self, arg, op='=='):
         self.expression = arg
@@ -395,10 +417,8 @@ class DatetimeExpr(TerminalSearchInfoExpr):
 class SerialNumberExpr(TerminalSearchInfoExpr):
     """Serial number filter"""
 
-    expression = TProp(
-        Union[str, Iterable[str]],
-        setter_fct=lambda x: [x] if isinstance(x, str) else list(x)
-    )
+    expression = TProp(str | Iterable,
+                       setter_fct=lambda x: [x] if isinstance(x, str) else list(x))
 
     def get_filter(self):
         """Implement get_filter method"""
@@ -408,10 +428,8 @@ class SerialNumberExpr(TerminalSearchInfoExpr):
 class ProductExpr(TerminalSearchInfoExpr):
     """Product filter"""
 
-    expression = TProp(
-        Union[int, Iterable[int]],
-        setter_fct=lambda x: [x] if isinstance(x, int) else list(x)
-    )
+    expression = TProp(int | Iterable,
+                       setter_fct=lambda x: [x] if isinstance(x, int) else list(x))
 
     def get_filter(self):
         """Implement get_filter method"""
@@ -421,9 +439,7 @@ class ProductExpr(TerminalSearchInfoExpr):
 class TagExpr(TerminalSearchInfoExpr):
     """Tag filter"""
 
-    expression = TProp(
-        Union[str, Iterable[str]], lambda x: set((x,)) if isinstance(x, str) else set(x)
-    )
+    expression = TProp(str | Iterable, lambda x: set((x,)) if isinstance(x, str) else set(x))
 
     def get_filter(self):
         """Implement get_filter method"""
@@ -448,7 +464,7 @@ class RawExpr(TerminalSearchInfoExpr):
 
     def get_filter(self):
         """Implement get_filter method"""
-        return TableTag.tag_name.in_([TAG_RAW_NAME])
+        return TableTag.tag_name.in_([TAG_RAW])
 
 
 class GDPExpr(TerminalSearchInfoExpr):
@@ -459,7 +475,7 @@ class GDPExpr(TerminalSearchInfoExpr):
 
     def get_filter(self):
         """Implement get_filter method"""
-        return TableTag.tag_name.in_([TAG_GDP_NAME])
+        return TableTag.tag_name.in_([TAG_GDP])
 
 
 class OIDExpr(TerminalSearchInfoExpr):

@@ -58,6 +58,9 @@ For the sake of clarity, and to facilitate the code maintenance, we list here (s
      the dvas tests on Windows, macOS and Linux, a linting of the code, a validation
      of the docs, and a check of the `CHANGELOG`. Upon any push to the `master` branch, the docs
      will also be automatically compiled and published onto the `gh-pages` branch.
+
+     :warning: the list of CI/CD actions required for a specific Pull Request are set in the repository settings. This list may require to be updated when (e.g.) the Python version used by
+     the actions is adjusted.
    * The `.pylintrc` file refines the behavior of pylint for dvas.
 
 3. **Documentation:**

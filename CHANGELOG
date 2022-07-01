@@ -4,15 +4,38 @@ The format is inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [Unreleased]
+## [v0.6.0.dev1]
 ### Added:
+ - [fpavogt, 2022-06-29] Cleanup the tropopause function, to support the WMO, MCH and GRUAN algorithm
+ - [fpavogt, 2022-06-07] Basic recipe step can now issue eid-edt files for the UAII plot preview software
+ - [fpavogt, 2022-06-03] Add new recipe step to flag zones of interest, compute the tropopause, etc ...
+ - [fpavogt, 2022-06-03] If no burst point is specified, flag any points beyond the max altitude as "descent"
+ - [fpavogt, 2022-05-25] Add participant_preview plot and associated recipe step
+ - [fpavogt, 2022-05-19] Allow DB to store timezone info with datetime fields
+ - [fpavogt, 2022-05-17] Add ability to skip recipe steps beyond a certain point
+ - [fpavogt, 2022-05-11] Add colors to on-screen logging
+ - [fpavogt, 2022-05-05] Fix #209 by returning full covariance matrices and plotting them
 ### Fixed:
+ - [fpavogt, 2022-06-30] Fix #169 - remove pampy dependancy
+ - [fpavogt, 2022-06-30] Fix #222 - prf.has_flg() now returns bool instead of int64
+ - [fpavogt, 2022-06-30] Fix #223 - add --debug option to dvas_run_recipe entry point
+ - [fpavogt, 2022-05-17] Fix wrong convention in get_shifts_from_alt
+ - [fpavogt, 2022-04-26] Fix #205 with a dedicated fix in the uaii2022.basic.cleanup recipe step
+ - [fpavogt, 2022-04-14] Fix #208 by improving dvas plots
 ### Changed:
+ - [fpavogt, 2022-07-01] Make 3.10 the minimum required Python version
+ - [fpavogt, 2022-07-01] Remove pytest-datafiles dependancy
+ - [fpavogt, 2022-06-10] Change day_night tag to timeofday, and make it "optional" by relying on the RS41 GDP to apply if to all
+ - [fpavogt, 2022-06-08] Refactor hardcoded variable names
+ - [fpavogt, 2022-05-30] Add official support for Python 3.10
+ - [fpavogt, 2022-05-25] Cleaned-up config files
+ - [fpavogt, 2022-05-25] Changed names of Parameter config file and associated db table
+ - [fpavogt, 2022-05-17] The flight overview plot is now using the index i for x (rather than time), to show the synced profiles
 ### Deprecated:
 ### Removed:
 ### Security:
 
-## [v0.5.0] (2022-04-13)
+## [v0.5.0] (2022-04-14)
 ### Added:
  - [fpavogt, 2022-04-13] New CI action to check the code version is incremented for new releases
  - [fpavogt, 2022-04-01] Connect `from_step_id` to recipe HL entry-point, incl. automatic disabling of DB reset
@@ -44,12 +67,12 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [modolol, 2021-07-12] Fix issue #160
 ### Changed:
  - [fpavogt, 2022-04-05] Adjust paths input structure of the dvas recipes, improve recipe tag handling
- - [fpavogt, 2022-03-18] Modified & imporoved gdp_vs_cws plots into a dedicated recipe step
+ - [fpavogt, 2022-03-18] Modified & improved gdp_vs_cws plots into a dedicated recipe step
  - [fpavogt, 2022-03-01] Simplified the logging by removing the specific names
  - [fpavogt, 2022-03-01] Add dev option to setup.py
  - [modolol, 2022-02-28] Remove mandatory tag creation in config
  - [fpavogt, 2022-02-25] Remove all correlations between distinct GDP models
- - [fpavogt, 2021-11-26] Update RS41 GDPs to v1.
+ - [fpavogt, 2021-11-26] Update RS41 GDPs to v1
  - [modolol, 2021-11-24] Modify 'header' rules in origdata
  - [fpavogt, 2021-11-22] Various logging improvements
  - [fpavogt, 2021-10-18] Clean-up default csv na values in origdata
@@ -74,7 +97,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [modolol, 2021-04-13] Add DB exploring tool
 ### Fixed:
  - [modolol, 2021-06-10] Fix missing correction + bugs in PR #147
- - [modolol, 2021-06-08] Cleanup toward v04 (config module)
+ - [modolol, 2021-06-08] Cleanup towards v04 (config module)
 ### Changed:
  - [fpavogt, 2021-06-30] Ensure that the default db config files are only found in`dvas_demo`
  - [fpavogt, 2021-06-23] `has_flg()` now returns 0 if flags are <NA>
@@ -142,7 +165,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [fpavogt & modolol, 2020-12-03] Winter cleanup towards v0.1
  - [fpavogt, 2020-11-05] Refactor ProfileManager class into Profile, grouping 'alt', 'val' , and 'flag' in a pandas DataFrame
  - [modolol, 2020-11-02] Tropopause calculation function
- - [fpavogt, 2020-07-23] Add gruan submodule, with GDP correlation rules
+ - [fpavogt, 2020-07-23] Add GRUAN submodule, with GDP correlation rules
  - [modolol, 2020-07-16] Add dummy examples
  - [modolol, 2020-07-03] .dev_utils directory in package
  - [fpavogt, 2020-06-30] Add docs CI & a basic netCDF4 test

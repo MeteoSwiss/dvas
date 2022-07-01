@@ -13,10 +13,11 @@ import logging
 import numpy as np
 
 # Import dvas modules and classes
-from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, TAG_SYNC_NAME, TAG_GDP_NAME
+from dvas.hardcoded import PRF_TDT, PRF_ALT, TAG_SYNC, TAG_GDP
 from dvas.logger import log_func_call
 from dvas.data.data import MultiRSProfile, MultiGDPProfile
 from dvas.tools import sync as dts
+from dvas.errors import DvasError
 
 # Import from dvas_recipes
 from .. import dynamic
@@ -29,7 +30,7 @@ from .. import utils as dru
 logger = logging.getLogger(__name__)
 
 
-@log_func_call(logger, time_it=True)
+@log_func_call(logger, time_it=False)
 def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
     """ Apply shifts to GDP and non-GDP profiles from a given flight, and upload them to the db.
 
@@ -38,6 +39,7 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
         filt (str): filtering query for the database.
         sync_length (int): length of the sync'ed profiles.
         sync_shifts (list of int): relative shifts required to sync the profiles.
+            Convention: row n become row n+shift.
         is_gdp (list of bool): to keep track of GDPs, in order to also sync their uncertainties.
     """
 
@@ -51,9 +53,9 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
         raise DvasRecipesError('Ouch ! No GDPs to sync ?!')
 
     gdps = MultiGDPProfile()
-    gdps.load_from_db("and_({}, tags('{}'))".format(filt, TAG_GDP_NAME), var_name,
-                      dynamic.INDEXES[PRF_REF_TDT_NAME],
-                      alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME],
+    gdps.load_from_db("and_({}, tags('{}'))".format(filt, TAG_GDP), var_name,
+                      dynamic.INDEXES[PRF_TDT],
+                      alt_abbr=dynamic.INDEXES[PRF_ALT],
                       ucr_abbr=dynamic.ALL_VARS[var_name]['ucr'],
                       ucs_abbr=dynamic.ALL_VARS[var_name]['ucs'],
                       uct_abbr=dynamic.ALL_VARS[var_name]['uct'],
@@ -62,7 +64,7 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
     gdps.sort()
     gdps.rebase(sync_length, shifts=gdp_shifts, inplace=True)
     gdps.save_to_db(
-        add_tags=[TAG_SYNC_NAME, dynamic.CURRENT_STEP_ID],
+        add_tags=[TAG_SYNC, dynamic.CURRENT_STEP_ID],
         rm_tags=dru.rsid_tags(pop=dynamic.CURRENT_STEP_ID)
         )
 
@@ -71,20 +73,20 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
     # Only proceed if some non-GDP profiles were found. This makes pure-GDP flights possible.
     if len(non_gdp_shifts) > 0:
         non_gdps = MultiRSProfile()
-        non_gdps.load_from_db("and_({}, not_(tags('{}')))".format(filt, TAG_GDP_NAME), var_name,
-                              dynamic.INDEXES[PRF_REF_TDT_NAME],
-                              alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME])
+        non_gdps.load_from_db("and_({}, not_(tags('{}')))".format(filt, TAG_GDP), var_name,
+                              dynamic.INDEXES[PRF_TDT],
+                              alt_abbr=dynamic.INDEXES[PRF_ALT])
         logger.info('Loaded %i non-GDP profiles for variable %s.', len(non_gdps), var_name)
         non_gdps.sort()
         non_gdps.rebase(sync_length, shifts=non_gdp_shifts, inplace=True)
         non_gdps.save_to_db(
-            add_tags=[TAG_SYNC_NAME, dynamic.CURRENT_STEP_ID],
+            add_tags=[TAG_SYNC, dynamic.CURRENT_STEP_ID],
             rm_tags=dru.rsid_tags(pop=dynamic.CURRENT_STEP_ID)
             )
 
 
 @for_each_flight
-@log_func_call(logger, time_it=True)
+@log_func_call(logger, time_it=False)
 def sync_flight(start_with_tags, anchor_alt, global_match_var):
     """ Highest-level function responsible for synchronizing all the profile from a specific RS
     flight.
@@ -92,7 +94,7 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var):
     This function directly synchronizes the profiles and upload them to the db with the 'sync' tag.
 
     Args:
-        start_with_tags (str|list): list of tags to identify profiles to clean in the db.
+        start_with_tags (str|list): list of tags to identify profiles to sync in the db.
         anchor_alt (int|float): (single) altitude around which to anchor all profiles.
             Used as a first - crude!- guess to get the biggest shifts out of the way.
             Relies on dvas.tools.sync.get_synch_shifts_from_alt()
@@ -111,10 +113,10 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var):
     # What search query will let me access the data I need ?
     filt = tools.get_query_filter(tags_in=tags+[eid, rid], tags_out=dru.rsid_tags(pop=tags))
 
-    # First, extract the temperature data from the db
+    # First, extract the RS profiles from the db, for the requested variable
     prfs = MultiRSProfile()
-    prfs.load_from_db(filt, global_match_var, dynamic.INDEXES[PRF_REF_TDT_NAME],
-                      alt_abbr=dynamic.INDEXES[PRF_REF_ALT_NAME])
+    prfs.load_from_db(filt, global_match_var, dynamic.INDEXES[PRF_TDT],
+                      alt_abbr=dynamic.INDEXES[PRF_ALT])
     prfs.sort()
 
     # Get the Object IDs, so I can keep track of the different profiles and don't mess things up.
@@ -124,16 +126,23 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var):
     # synchronize profiles that have flown together.
     dt_offsets = np.array([item.total_seconds() for item in np.diff(prfs.get_info('edt'))])
     if any(dt_offsets > 0):
-        logger.warning('Not all profiles to be synchronized have the same event_dt.')
-        logger.warning('Offsets (w.r.t. first profile) in [s]: %s', dt_offsets)
+        logger.error('Not all profiles to be synchronized have the same event_dt.')
+        logger.error('Offsets (w.r.t. first profile) in [s]: %s', dt_offsets)
 
     # Get the preliminary shifts from the altitude
     shifts_alt = dts.get_sync_shifts_from_alt(prfs, ref_alt=anchor_alt)
-    logger.debug('sync. shifts from alt (%.1f): %s', anchor_alt, shifts_alt)
+    logger.info('sync. shifts from alt (%.1f): %s', anchor_alt, shifts_alt)
 
     # Use these to get synch shifts from the variable
     shifts_val = dts.get_sync_shifts_from_val(prfs, max_shift=100, first_guess=shifts_alt)
-    logger.debug('sync. shifts from val (%s): %s', global_match_var, shifts_val)
+    logger.info('Sync. shifts from "%s": %s', global_match_var, shifts_val)
+
+    # Get shifts from the GPS times
+    try:
+        shifts_gps = dts.get_sync_shifts_from_starttime(prfs)
+        logger.info('Sync. shifts from starttime: %s', shifts_gps)
+    except DvasError as err:
+        logger.critical(err)
 
     # Use these as best synch shifts
     sync_shifts = shifts_val
@@ -144,7 +153,7 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var):
     sync_length = np.max(np.array(sync_shifts) + np.array(raw_lengths)) - np.min(sync_shifts)
 
     # Which of these profiles is a GDP ?
-    is_gdp = prfs.has_tag(TAG_GDP_NAME)
+    is_gdp = prfs.has_tag(TAG_GDP)
 
     # Keep track of the important info
     logger.info('oids: %s', oids)

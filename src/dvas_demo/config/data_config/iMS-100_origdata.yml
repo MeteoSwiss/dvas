@@ -1,8 +1,16 @@
-# ----------------------------------------------------
-# iMS-100 type (NOT THE GDP!)
-# ----------------------------------------------------
+# Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+#
+# Distributed under the terms of the GNU General Public License v3.0 or later.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# This file contains the extraction details for iMS-100 GDP and MDP files.
+# It must absolutely have the string 'origdata' in its name, to match the dvas class names.
+# --------------------------------------------------------------------------------------------------
 
-#TODO
+# ----------------------------------------------------
+# iMS-100 MDP (UAII2022 format)
+# ----------------------------------------------------
 
 # ----------------------------------------------------
 # iMS-100 GDP, beta version 2
@@ -10,7 +18,7 @@
 _IMS-100-BETA_002:
 
     # -- META DATA ----------------------------------
-    edt: "get('g.Measurement.StandardTime')"
+    edt: "to_datetime(get('g.Measurement.StandardTime'))"
     srn: "get('g.MainSonde.SerialNumber')"
     pid: "get('g.Product.Id')"
     tags:
@@ -18,6 +26,8 @@ _IMS-100-BETA_002:
         - "cat('r:', get('g.Measurement.BalloonNumber', totype=str))"
     metadata:
         bpt_time: "get('g.Measurement.BurstpointTime')"
+        start_time: "to_datetime(get('g.Measurement.StartTime'))"
+        gruan_tropopause: "get('g.Measurement.TropopauseGeopotHeight')"
 
     # -- ORIG DATA ----------------------------------
     _time:

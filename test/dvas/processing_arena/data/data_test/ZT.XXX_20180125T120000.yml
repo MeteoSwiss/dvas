@@ -1,7 +1,17 @@
 event_dt: '2018-01-25T12:00:00.000Z'
+
 rig: '1'
+
 event_id: '2'
+
 station: 'XXX'
+
 sn: 'ZT-101'
+
 product_id: '0'
+
 day_night: 'day'
+
+start_time:
+
+bpt_time:

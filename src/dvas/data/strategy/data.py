@@ -21,9 +21,8 @@ from ...database.model import Flg as TableFlg
 from ...database.database import DatabaseManager, InfoManager
 from ...errors import ProfileError, DvasError
 from ...helper import RequiredAttrMetaClass
-from ...hardcoded import PRF_REF_INDEX_NAME, PRF_REF_TDT_NAME, PRF_REF_ALT_NAME, PRF_REF_VAL_NAME
-from ...hardcoded import PRF_REF_UCR_NAME, PRF_REF_UCS_NAME, PRF_REF_UCT_NAME, PRF_REF_UCU_NAME
-from ...hardcoded import PRF_REF_FLG_NAME
+from ...hardcoded import PRF_IDX, PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
+from ...hardcoded import PRF_FLG
 
 # Setup the logger
 logger = logging.getLogger(__name__)
@@ -86,7 +85,7 @@ class ProfileAC(metaclass=RequiredAttrMetaClass):
 
         """
         val = val.reset_index(inplace=False)
-        val.index.name = PRF_REF_INDEX_NAME
+        val.index.name = PRF_IDX
         return val[sorted(cls.DF_COLS_ATTR.keys())]
 
     @classmethod
@@ -193,7 +192,7 @@ class ProfileAC(metaclass=RequiredAttrMetaClass):
                 f"You gave {val.name if isinstance(val, pd.Series) else val.columns}"
             )
         except AssertionError:
-            raise ProfileError(f"Value must be a pd.Series")
+            raise ProfileError("Value must be a pd.Series")
 
     def __delattr__(self, item):
         raise ProfileError(f"Can't delete attribute '{item}'")
@@ -254,7 +253,7 @@ class ProfileAC(metaclass=RequiredAttrMetaClass):
             if key in val.columns and cls.DF_COLS_ATTR[key]['type']:
                 # I need to be cautions for the timedelta, as they cannot be transformed like
                 # any other stuff.
-                if key == PRF_REF_TDT_NAME:
+                if key == PRF_TDT:
                     # WARNING: for now, there is no way to access the prm_unit information at the
                     # level of Profile (the link is made only at the level of MultiProfile).
                     # So for now, let's force-assume that the data was provided in s.
@@ -285,9 +284,9 @@ class Profile(ProfileAC):
 
     # The column names for the pandas DataFrame
     DF_COLS_ATTR = {
-        PRF_REF_VAL_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
-        PRF_REF_ALT_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': True},
-        PRF_REF_FLG_NAME: {'test': FLOAT_TEST, 'type': 'Int64', 'index': False}
+        PRF_VAL: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+        PRF_ALT: {'test': FLOAT_TEST, 'type': np.float, 'index': True},
+        PRF_FLG: {'test': FLOAT_TEST, 'type': 'Int64', 'index': False}
     }
 
     def __init__(self, info, data=None):
@@ -420,8 +419,9 @@ class Profile(ProfileAC):
 
         """
         bit_nbr = self._get_flg_bit_nbr(val)
-        # Return 1 if the flag is set, 0 if it isn't, EVEN if the flag was not set (ie flg is <NA>).
-        return self.flg.apply(lambda x: (x >> bit_nbr) & 1 if not pd.isna(x) else 0)
+        # Return True if the flag is set, False if it isn't (also if the flag was not set,
+        # i.e. if flg is <NA>).
+        return self.flg.apply(lambda x: bool((x >> bit_nbr) & 1) if not pd.isna(x) else False)
 
     def has_tag(self, val):
         """ Check if a specific tag name is set for the Profile.
@@ -453,10 +453,10 @@ class RSProfile(Profile):
 
     # The column names for the pandas DataFrame
     DF_COLS_ATTR = {
-        PRF_REF_ALT_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': True},
-        PRF_REF_TDT_NAME: {'test': TIME_TEST, 'type': 'timedelta64[ns]', 'index': True},
-        PRF_REF_VAL_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
-        PRF_REF_FLG_NAME: {'test': FLOAT_TEST, 'type': 'Int64', 'index': False},
+        PRF_ALT: {'test': FLOAT_TEST, 'type': np.float, 'index': True},
+        PRF_TDT: {'test': TIME_TEST, 'type': 'timedelta64[ns]', 'index': True},
+        PRF_VAL: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+        PRF_FLG: {'test': FLOAT_TEST, 'type': 'Int64', 'index': False},
     }
 
     @property
@@ -495,10 +495,10 @@ class GDPProfile(RSProfile):
     DF_COLS_ATTR = dict(
         **RSProfile.DF_COLS_ATTR,
         **{
-            PRF_REF_UCR_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
-            PRF_REF_UCS_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
-            PRF_REF_UCT_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
-            PRF_REF_UCU_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+            PRF_UCR: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+            PRF_UCS: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+            PRF_UCT: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+            PRF_UCU: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
           }
     )
 
@@ -568,10 +568,10 @@ class DeltaProfile(GDPProfile):
     DF_COLS_ATTR = dict(
         **Profile.DF_COLS_ATTR,
         **{
-            PRF_REF_UCR_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
-            PRF_REF_UCS_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
-            PRF_REF_UCT_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
-            PRF_REF_UCU_NAME: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+            PRF_UCR: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+            PRF_UCS: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+            PRF_UCT: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+            PRF_UCU: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
           }
     )
 

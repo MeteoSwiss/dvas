@@ -21,7 +21,7 @@ import numpy as np
 from dvas.environ import path_var
 from dvas.dvas import Log
 from dvas.dvas import Database as DB
-from dvas.hardcoded import PRF_REF_TDT_NAME, PRF_REF_ALT_NAME
+from dvas.hardcoded import PRF_TDT, PRF_ALT
 import dvas.plots.utils as dpu
 from dvas import dynamic as dyn
 
@@ -62,6 +62,7 @@ def for_each_flight(func):
         # dynamic.THIS_FLIGHT
         for flight in rcp_dyn.ALL_FLIGHTS:
             rcp_dyn.CURRENT_FLIGHT = flight
+            logger.info('Processing flight: %s', flight)
             func(**kwargs)
 
     return wrapper
@@ -93,6 +94,7 @@ def for_each_var(func):
         # dynamic.THIS_FLIGHT
         for var in rcp_dyn.ALL_VARS:
             rcp_dyn.CURRENT_VAR = var
+            logger.info('Processing variable: %s', var)
             func(**kwargs)
 
     return wrapper
@@ -152,7 +154,8 @@ class RecipeStep:
         rcp_dyn.CURRENT_STEP_ID = self.step_id
 
         # Actually launch the function, which may be decorated (but I don't need to know that !)
-        logger.info('START RECIPE STEP %s: %s', self.step_id, self.name)
+        logger.info('$SFLASHSTART RECIPE STEP %s: %s $EFLASH',
+                    self.step_id, self.name)
         self._func(**self._kwargs)
 
 
@@ -165,7 +168,7 @@ class Recipe:
     _steps = None
     _reset_db = True
 
-    def __init__(self, rcp_fn, flights=None):
+    def __init__(self, rcp_fn, flights=None, debug=False):
         """ Recipe initialization from a suitable YAML recipe file.
 
         Args:
@@ -175,6 +178,8 @@ class Recipe:
                 Defaults to None = all available. Array must be 2D, e.g.::
 
                     [['e:12345', 'r:1'], ['e:12346', 'r:1']]
+            debug (bool, optional): if True, will force-set the logging level to DEBUG.
+                Defaults to False.
 
         """
 
@@ -203,8 +208,12 @@ class Recipe:
                                    'does not exist:' + f' {path_var.orig_data_path}')
 
         # Start the dvas logging
+        if debug:
+            loglvl = 'DEBUG'
+        else:
+            loglvl = rcp_data['rcp_params']['general']['log_lvl']
         Log.start_log(rcp_data['rcp_params']['general']['log_mode'],
-                      level=rcp_data['rcp_params']['general']['log_lvl'])
+                      level=loglvl)
 
         logger.info('Launching the %s recipe.', self._name)
 
@@ -291,8 +300,8 @@ class Recipe:
         DB.init()
 
         # Fetch the raw data
-        DB.fetch_raw_data([rcp_dyn.INDEXES[PRF_REF_TDT_NAME]] +
-                          [rcp_dyn.INDEXES[PRF_REF_ALT_NAME]] +
+        DB.fetch_raw_data([rcp_dyn.INDEXES[PRF_TDT]] +
+                          [rcp_dyn.INDEXES[PRF_ALT]] +
                           list(rcp_dyn.ALL_VARS) +
                           [rcp_dyn.ALL_VARS[var][uc] for var in rcp_dyn.ALL_VARS
                            for uc in rcp_dyn.ALL_VARS[var]],
@@ -325,18 +334,20 @@ class Recipe:
 
         return flights
 
-    def execute(self, from_step_id=None):
+    def execute(self, from_step_id=None, until_step_id=None):
         """ Run the recipe step-by-step, possibly skipping some of the first ones.
 
         Args:
             from_step_id (str|int, optional): if set, will start the processing from this specific
                 step_id. Defaults to None = start at first step.
+            until_step_id (str|int, optional): if set, will end the processing after this specific
+                step_id. Defaults to None = go until the end of the recipe.
 
         """
 
         # If I am skipping any steps, let's disable the DB reset. Else, it will blow up in my face.
         if from_step_id is not None:
-            logger.info('Force-disable the DB reset, in order to skip until the recipe step: %s',
+            logger.info('Force-disable the DB reset, and skip until the recipe step: %s',
                         from_step_id)
             self._reset_db = False
 
@@ -368,3 +379,7 @@ class Recipe:
             # If warranted, execute the step
             if unlock_steps and step.run:
                 step.execute()
+
+            # If we reached the final step, lock all the subsequent ones
+            if step.step_id == until_step_id:
+                unlock_steps = False

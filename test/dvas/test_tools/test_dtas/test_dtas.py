@@ -16,7 +16,7 @@ import pytest
 import pandas as pd
 
 # Import from this module
-from dvas.hardcoded import PRF_REF_TDT_NAME
+from dvas.hardcoded import PRF_TDT
 from dvas.data.strategy.data import CWSProfile, RSProfile, Profile
 from dvas.database.database import InfoManager
 from dvas.data.data import MultiCWSProfile, MultiRSProfile
@@ -31,14 +31,15 @@ db_data = {
     'sub_dir': 'test_tool_gdps',
     'data': [{'mdl_name': 'AR-GDP_001',
               'srn': 'AR1',
-              'pid': '0',},
+              'pid': '0'},
              {'mdl_name': 'BR-GDP_001',
               'srn': 'BR1',
-              'pid': '1',},
+              'pid': '1'},
              {'mdl_name': 'BR-GDP_001',
               'srn': 'CR1',
-              'pid': '2',},
-            ]}
+              'pid': '2'},
+             ]}
+
 
 @pytest.fixture
 def prf_and_cws(db_init):
@@ -54,10 +55,11 @@ def prf_and_cws(db_init):
     # Prepare some datasets to play with
     info_cws = InfoManager('20210302T0000Z', oids[-2:], tags=['cws', 'e:1', 'r:1'])
     data_cws = pd.DataFrame({'alt': [10., 15., 20.], 'val': [10., 20., 30.], 'flg': [1, 1, 1],
-                           'tdt': [0e9, 1e9, 2e9], 'ucr': [1, 1, 1], 'ucs': [1, 1, 1],
-                           'uct': [1, 1, 1], 'ucu': [1, 1, 1]})
+                             'tdt': [0e9, 1e9, 2e9], 'ucr': [1, 1, 1], 'ucs': [1, 1, 1],
+                             'uct': [1, 1, 1], 'ucu': [1, 1, 1]})
 
     return Profile(info_prf, data_prf), CWSProfile(info_cws, data_cws)
+
 
 @pytest.fixture
 def rsprf_and_cws(db_init):
@@ -74,10 +76,11 @@ def rsprf_and_cws(db_init):
     # Prepare some datasets to play with
     info_cws = InfoManager('20210302T0000Z', oids[-2:], tags=['cws', 'e:1', 'r:1'])
     data_cws = pd.DataFrame({'alt': [10., 15., 20.], 'val': [10., 20., 30.], 'flg': [1, 1, 1],
-                           'tdt': [0e9, 1e9, 2e9], 'ucr': [1, 1, 1], 'ucs': [1, 1, 1],
-                           'uct': [1, 1, 1], 'ucu': [1, 1, 1]})
+                             'tdt': [0e9, 1e9, 2e9], 'ucr': [1, 1, 1], 'ucs': [1, 1, 1],
+                             'uct': [1, 1, 1], 'ucu': [1, 1, 1]})
 
     return RSProfile(info_prf, data_prf), CWSProfile(info_cws, data_cws)
+
 
 @pytest.fixture
 def prfs(db_init):
@@ -101,6 +104,7 @@ def prfs(db_init):
 
     return multiprf
 
+
 @pytest.fixture
 def cwss1(db_init):
     """ Return a MultiRSProfile. """
@@ -121,6 +125,7 @@ def cwss1(db_init):
                     [CWSProfile(info_3, data_3)])
 
     return multiprf
+
 
 @pytest.fixture
 def cwss2(db_init):
@@ -161,13 +166,14 @@ def test_single_delta(prf_and_cws, rsprf_and_cws):
     prf, cws = prf_and_cws
     out = single_delta(prf, cws)
     # Was the data computed properly ?
-    assert np.all(out.val == (prf.val - cws.data.droplevel(PRF_REF_TDT_NAME).val))
+    assert np.all(out.val == (prf.val - cws.data.droplevel(PRF_TDT).val))
 
     # Idem for basic Profiles
     prf, cws = rsprf_and_cws
     out = single_delta(prf, cws)
     # Was the data computed properly ?
-    assert np.all(out.val == (prf.val - cws.val).droplevel(PRF_REF_TDT_NAME))
+    assert np.all(out.val == (prf.val - cws.val).droplevel(PRF_TDT))
+
 
 def test_compute(prfs, cwss1, cwss2):
     """ Function to test the creation of a MultiDeltaProfile instance from MultiRSProfile and

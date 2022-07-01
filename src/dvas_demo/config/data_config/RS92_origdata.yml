@@ -1,18 +1,28 @@
+# Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+#
+# Distributed under the terms of the GNU General Public License v3.0 or later.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# This file contains the extraction details for RS92 GDP and MDP files.
+# It must absolutely have the string 'origdata' in its name, to match the dvas class names.
+# --------------------------------------------------------------------------------------------------
+
 # ----------------------------------------------------
-# RS-92 type (NOT THE GDP!)
+# RS-92 MDP (MCH current format)
 # ----------------------------------------------------
 _RS92:
 
     # -- META DATA ----------------------------------
-    edt: "get('event_dt')"
+    edt: "to_datetime(get('event_dt'))"
     srn: "get('srn')"
     pid: "get('product_id')"
     tags:
         - "cat('e:', get('event_id'))"
         - "cat('r:', get('rig'))"
-        - "get('day_night')"
     metadata:
-        bpt_time: "get('bpt_time')"
+        bpt_time:
+        start_time: "to_datetime(get('start_time'))"
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter:
@@ -58,7 +68,7 @@ _RS92:
 _RS92-GDP_002:
 
     # -- META DATA ----------------------------------
-    edt: "cat(get('g.Ascent.StandardTime'),'Z')"
+    edt: "to_datetime(cat(get('g.Ascent.StandardTime'),'Z'))"
     srn: "get('g.Instrument.SerialNumber')"
     pid: "get('g.Product.ID')"
     tags:
@@ -66,6 +76,7 @@ _RS92-GDP_002:
         - "cat('r:', get('g.Ascent.BalloonNumber'))"
     metadata:
         bpt_time:
+        start_time: "to_datetime(cat(get('g.Ascent.StartTime'),'Z'))"
 
     # -- ORIG DATA ----------------------------------
     _time:

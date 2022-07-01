@@ -66,7 +66,8 @@ def fn_suffix(eid=None, rid=None, var=None, mids=None, tags=None):
         suffix += '_{}'.format('-'.join(mids))
 
     if tags is not None:
-        suffix += '_{}'.format('-'.join(tags))
+        suffix += '_{}'.format('-'.join([item.replace('tod:', '').replace(':', '')
+                               for item in tags]))
 
     return suffix[1:] if len(suffix) > 0 else None
 
@@ -90,7 +91,7 @@ def format_tags(tags):
 
 
 def rsid_tags(pop=None):
-    """ Returns the list of rsid tags, possibly by removing some of them.
+    """ Returns the list of rsid (recipe step ID) tags, possibly by removing some of them.
 
     Args:
         pop (list, optional): if set, any tags in this list will be removed from the returned list.

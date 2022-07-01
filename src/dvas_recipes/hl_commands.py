@@ -149,7 +149,7 @@ def optimize(n_cpus=None, prf_length=7001, chunk_min=50, chunk_max=300, n_chunk=
         db_data[ind].update({'oid': oid})
 
         # Prepare some datasets to play with: first an InfoManager with the oid we just minted ...
-        info = InfoManager('20210616T0000Z', oid, tags={'e:1', 'r:1'})
+        info = InfoManager('20210616T0000Z', oid, tags={'e:1', 'r:1', 'sync'})
 
         # And then some random data ...
         data = pd.DataFrame({'alt': np.arange(0, prf_length, 1),
@@ -220,7 +220,7 @@ def optimize(n_cpus=None, prf_length=7001, chunk_min=50, chunk_max=300, n_chunk=
     print(' If that looks right, please update your favorite dvas recipe accordingly !\n')
 
 
-def run_recipe(rcp_fn, flights=None, from_step_id=None):
+def run_recipe(rcp_fn, flights=None, from_step_id=None, until_step_id=None, debug=False):
     ''' Loads and execute a dvas recipe.
 
     Args:
@@ -234,6 +234,11 @@ def run_recipe(rcp_fn, flights=None, from_step_id=None):
                 e:12345, r:1
                 e:12346, r:1
         from_step_id (str, optional): if set, will skip all processing until this step_id value.
+            Defaults to None.
+        until_step_id (str, optional): if set, will skip all processing step beyond this step_id
+            value. Defaults to None.
+        debug (bool, optional): if True, will force-set the logging level to DEBUG.
+            Defaults to False.
 
     '''
 
@@ -253,13 +258,13 @@ def run_recipe(rcp_fn, flights=None, from_step_id=None):
         flights = np.atleast_2d(np.genfromtxt(flights, comments='#', delimiter=',', dtype=str))
 
     # Very well, I am now ready to start initializing the recipe.
-    rcp = Recipe(rcp_fn, flights=flights)
+    rcp = Recipe(rcp_fn, flights=flights, debug=debug)
 
     starttime = datetime.now()
 
     # Launch the procesing !
-    rcp.execute(from_step_id=from_step_id)
+    rcp.execute(from_step_id=from_step_id, until_step_id=until_step_id)
 
     # All done !
-    logger.info('\n\n All done - %i steps of "%s" recipe completed in %is.',
-                rcp.n_steps, rcp.name, (datetime.now()-starttime).total_seconds())
+    logger.info('\n\n All done - "%s" recipe completed in %is.\n',
+                rcp.name, (datetime.now()-starttime).total_seconds())

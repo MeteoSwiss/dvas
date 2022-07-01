@@ -19,28 +19,28 @@ from peewee import chunked, DoesNotExist
 from playhouse.shortcuts import model_to_dict
 import numpy as np
 from pandas import Timestamp
-from pampy.helpers import Iterable, Union
+from collections.abc import Iterable
 
 # Import from current package
 from .model import db
 from .model import Model as TableModel
 from .model import Object as TableObject
 from .model import Info as TableInfo
-from .model import Parameter as TableParameter
+from .model import Prm as TableParameter
 from .model import Tag as TableTag
 from .model import MetaData as TableMetaData
 from .model import Flg, DataSource, Data
 from .model import InfosObjects as TableInfosObjects
 from .model import InfosTags
 from .search import SearchInfoExpr
-from ..config.config import Parameter as ParameterCfg
+from ..config.config import Prm as ParameterCfg
 from ..config.config import Model as ModelCfg
 from ..config.config import Flg as FlgCfg
 from ..config.config import Tag as TagCfg
 from ..config.config import instantiate_config_managers
 from ..config.definitions.origdata import EDT_FLD_NM
 from ..config.definitions.origdata import TAG_FLD_NM, META_FLD_NM
-from ..hardcoded import TAG_NONE_NAME
+from ..hardcoded import TAG_NONE, TOD_VALS, EID_LEN
 from ..helper import SingleInstanceMetaClass
 from ..helper import TypedProperty as TProp
 from ..helper import get_by_path, check_datetime
@@ -274,6 +274,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
             # Insert to db
             for batch in chunked(document, n_max):
+                # TODO: check for flags (and other elements) if duplicated ... ?
                 table.insert_many(batch).execute()
 
         else:
@@ -376,6 +377,21 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                 if created:
                     logger.info("New tag created: (id=%s, name=%s)", tmp.id, tmp.tag_name)
 
+                    # The tags will be created freely - however, for some, let's check if the
+                    # content/format/etc ... matches what I expect. Raise an error if not.
+
+                    # TimeOfDay
+                    if glob_var.tod_pat.match(tmp.tag_name) is not None:
+                        # Check if this is a tod that dvas knows about. Else, log an error.
+                        if tmp.tag_name not in TOD_VALS:
+                            logger.error('Unknown TimeOfDay tag: %s', tmp.tag_name)
+                    # Event ID
+                    if glob_var.eid_pat.match(tmp.tag_name) is not None:
+                        # Does this look like a GRUAN id ?
+                        if len(tmp.tag_name) != EID_LEN:
+                            logger.error('Suspicious eid tag: %s. GRUAN event ids have 6 digits.',
+                                         tmp.tag_name)
+
             # Create original data information
             data_src, _ = DataSource.get_or_create(src=info.src)
 
@@ -452,7 +468,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                 # Create batch index
                 fields = [
                     TableMetaData.key_name, TableMetaData.value_str,
-                    TableMetaData.value_num, TableMetaData.info
+                    TableMetaData.value_num, TableMetaData.value_datetime, TableMetaData.info
                 ]
 
                 # Create batch data
@@ -460,6 +476,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     (key,
                      val if isinstance(val, str) else None,
                      val if isinstance(val, float) else None,
+                     val if isinstance(val, datetime) else None,
                      info_id)
                     for key, val in info.metadata.items()
                 ]
@@ -531,7 +548,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
         return out
 
-    @log_func_call(logger, time_it=True)
+    @log_func_call(logger, time_it=False, level='debug')
     def get_data(self, search_expr, prm_name, filter_empty):
         """Get data from DB
 
@@ -548,7 +565,7 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         info_id_list = self._get_info_id(search_expr, prm_name, filter_empty)
 
         if not info_id_list:
-            logger.warning("Empty search '%s' for '%s", search_expr, prm_name)
+            logger.debug("Empty search '%s' for parameter '%s'", search_expr, prm_name)
 
         # Query data
         res = []
@@ -589,7 +606,8 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
             # Get related metadata
             metadata_dict = {
-                arg.key_name: arg.value_num if arg.value_str is None else arg.value_str
+                arg.key_name: arg.value_str if (arg.value_str is not None) else
+                arg.value_num if (arg.value_num is not None) else arg.value_datetime
                 for arg in
                 TableMetaData.select().distinct().
                 join(TableInfo).
@@ -606,9 +624,8 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     iterator()
                 ]
             ):
-                # TODO
-                #  Detail exception
-                raise Exception(f'Data source is empty')
+
+                raise DvasError('Data source is empty')
 
             # Append
             out.append(
@@ -643,6 +660,10 @@ class InfoManagerMetaData(dict):
     Note:
         This class is used to bypass the missing class Mapping in
         pampy package.
+
+    Todo:
+        We do not use pampy anymore as of v0.6. Do we need to do something about this ?
+        fpavogt, 01.07.2022
 
     """
 
@@ -682,7 +703,8 @@ class InfoManagerMetaData(dict):
         try:
             assert isinstance(dict_args, dict)
             assert all(isinstance(key, str) for key in dict_args.keys())
-            assert all(isinstance(val, (type(None), str, float, int)) for val in dict_args.values())
+            assert all(isinstance(val, (type(None), str, float, int, datetime))
+                       for val in dict_args.values())
         except AssertionError:
             raise TypeError()
 
@@ -696,21 +718,17 @@ class InfoManager:
     """Data info manager"""
 
     #: datetime.datetime: UTC datetime
-    edt = TProp(Union[str, Timestamp, datetime], check_datetime)
+    edt = TProp(str | Timestamp | datetime, check_datetime)
 
     #: int|iterable of int: Object id
-    oid = TProp(
-        Union[int, Iterable[int]],
-        setter_fct=lambda x: (x,) if isinstance(x, int) else tuple(x),
-        getter_fct=lambda x: sorted(x)
-    )
+    oid = TProp(int | Iterable,
+                setter_fct=lambda x: (x,) if isinstance(x, int) else tuple(x),
+                getter_fct=lambda x: sorted(x))
 
     #: str|iterable of str: Tags
-    tags = TProp(
-        Union[str, Iterable[str]],
-        setter_fct=lambda x: set((x,)) if isinstance(x, str) else set(x),
-        getter_fct=lambda x: sorted(x)
-    )
+    tags = TProp(str | Iterable,
+                 setter_fct=lambda x: set((x,)) if isinstance(x, str) else set(x),
+                 getter_fct=lambda x: sorted(x))
 
     #: dict: Metadata
     metadata = TProp(InfoManagerMetaData, getter_fct=lambda x: x.copy())
@@ -718,7 +736,7 @@ class InfoManager:
     #: str: Data source
     src = TProp(str)
 
-    def __init__(self, edt, oid, tags=TAG_NONE_NAME, metadata={}, src=''):
+    def __init__(self, edt, oid, tags=TAG_NONE, metadata={}, src=''):
         """Constructor
 
         Args:
@@ -746,24 +764,27 @@ class InfoManager:
 
     @property
     def eid(self):
-        """str: Event ID which match 1st corresponding pattern in tags. Defaults to None."""
+        """ str: Event ID which match 1st corresponding pattern in tags. Defaults to None."""
         try:
-            # TODO: the following line triggers a *very* weird pylint Error 1101.
-            # I disable it for now ... but someone should really confirm whether this ok or not!
-            # fpavogt - 2020.12.09
-            out = next(filter(glob_var.eid_pat.match, self.tags))  # pylint: disable=E1101
+            out = next(filter(glob_var.eid_pat.match, self.tags))
         except StopIteration:
             out = None
         return out
 
     @property
     def rid(self):
-        """str: Rig ID which match 1st corresponding pattern in tags. Defaults to None."""
+        """ str: Rig ID which match 1st corresponding pattern in tags. Defaults to None."""
         try:
-            # TODO: the following line triggers a *very* weird pylint Error 1101.
-            # I disable it for now ... but someone should really confirm whether this ok or not!
-            # fpavogt - 2020.12.09
-            out = next(filter(glob_var.rid_pat.match, self.tags))  # pylint: disable=E1101
+            out = next(filter(glob_var.rid_pat.match, self.tags))
+        except StopIteration:
+            out = None
+        return out
+
+    @property
+    def tod(self):
+        """ str: TimeOfDay tag which match 1st corresponding pattern. Defaults to None. """
+        try:
+            out = next(filter(glob_var.tod_pat.match, self.tags))
         except StopIteration:
             out = None
         return out
@@ -833,11 +854,13 @@ class InfoManager:
         return f'{self}'
 
     def __str__(self):
-        p_printer = pprint.PrettyPrinter()
+        p_printer = pprint.PrettyPrinter(sort_dicts=False)
         return p_printer.pformat(
-            (f'edt: {self.edt}', f'oid: {self.oid}',
-             f'tags: {self.tags}', f'metadata: {self.metadata}',
-             f'src: {self.src}')
+            {'edt': f'{self.edt}',
+             'oid': f'{self.oid}',
+             'tags': f'{self.tags}',
+             'metadata': f'{self.metadata}',
+             'src': f'{self.src}'}
         )
 
     def get_hash(self):
