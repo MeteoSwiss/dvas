@@ -36,3 +36,7 @@
 - mdl_name: 'M10'
   mdl_desc: 'MétéoModem M10'
   mid: 'M10'
+
+- mdl_name: 'DFM-17'
+  mdl_desc: 'GRAW DFM-17'
+  mid: 'DFM-17'
