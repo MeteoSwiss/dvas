@@ -228,6 +228,8 @@ class FileHandler(AbstractHandler):
 
         """
         if self.file_model_pat.match(file.name) is None:
+            logger.debug('File %s does not match the pattern: %s',
+                         file.name, self.file_model_pat)
             return False
 
         return True
