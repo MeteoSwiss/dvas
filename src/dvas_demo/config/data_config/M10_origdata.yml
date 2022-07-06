@@ -35,7 +35,7 @@ _M10:
     csv_header: 0
 
     _time:
-        value: get('Time', 'rel') # this is the number of seconds since 1970-01-01T00:00:00Z
+        value: get('Time', 'rel')
 
     _alt_ref:
         value: get('Altitude')
@@ -76,7 +76,7 @@ _M10-GDP-ALPHA_002:
 
     # -- ORIG DATA ----------------------------------
     _time:
-        value: get('time', 'rel')  # this is the number of seconds since 1970-01-01T00:00:00Z
+        value: get('time', 'rel')
 
     _alt_ref:
         value: get('alt_gph')
@@ -161,7 +161,7 @@ _M10-GDP-ALPHA_005:
 
     # -- ORIG DATA ----------------------------------
     _time:
-        value: get('time', 'rel')  # this is the number of seconds since 1970-01-01T00:00:00Z
+        value: get('time', 'rel')
 
     _alt_ref:
         value: get('alt_gph')
@@ -246,7 +246,7 @@ _M10-GDP-ALPHA_105:
 
     # -- ORIG DATA ----------------------------------
     _time:
-        value: get('time', 'rel')  # this is the number of seconds since 1970-01-01T00:00:00Z
+        value: get('time', 'rel')
 
     _alt_ref:
         value: get('alt_gph')
