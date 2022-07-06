@@ -22,7 +22,6 @@ from dvas.errors import DvasError
 # Import from dvas_recipes
 from .. import dynamic
 from ..recipe import for_each_flight
-from ..errors import DvasRecipesError
 from . import tools
 from .. import utils as dru
 

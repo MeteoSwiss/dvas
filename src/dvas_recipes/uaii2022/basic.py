@@ -267,7 +267,7 @@ def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
 
                     case _:
                         logger.error('Unknown GRUAN tropopause format: %s',
-                            gdp_prf.info.metadata['gruan_tropopause'])
+                                     gdp_prf.info.metadata['gruan_tropopause'])
 
         # Now launch more generic cleanup steps
         cleanup_steps(gdp_prfs, **args, timeofday=timeofday)
