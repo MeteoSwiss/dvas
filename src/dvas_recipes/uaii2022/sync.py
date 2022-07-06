@@ -49,24 +49,22 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
     # First the GDPs
     gdp_shifts = [item for (ind, item) in enumerate(sync_shifts) if is_gdp[ind]]
     # Let's force users to have GDPs. That's really what dvas is meant for ...
-    if len(gdp_shifts) == 0:
-        raise DvasRecipesError('Ouch ! No GDPs to sync ?!')
-
-    gdps = MultiGDPProfile()
-    gdps.load_from_db("and_({}, tags('{}'))".format(filt, TAG_GDP), var_name,
-                      dynamic.INDEXES[PRF_TDT],
-                      alt_abbr=dynamic.INDEXES[PRF_ALT],
-                      ucr_abbr=dynamic.ALL_VARS[var_name]['ucr'],
-                      ucs_abbr=dynamic.ALL_VARS[var_name]['ucs'],
-                      uct_abbr=dynamic.ALL_VARS[var_name]['uct'],
-                      ucu_abbr=dynamic.ALL_VARS[var_name]['ucu'])
-    logger.info('Loaded %i GDP profiles for variable %s.', len(gdps), var_name)
-    gdps.sort()
-    gdps.rebase(sync_length, shifts=gdp_shifts, inplace=True)
-    gdps.save_to_db(
-        add_tags=[TAG_SYNC, dynamic.CURRENT_STEP_ID],
-        rm_tags=dru.rsid_tags(pop=dynamic.CURRENT_STEP_ID)
-        )
+    if len(gdp_shifts) > 0:
+        gdps = MultiGDPProfile()
+        gdps.load_from_db("and_({}, tags('{}'))".format(filt, TAG_GDP), var_name,
+                          dynamic.INDEXES[PRF_TDT],
+                          alt_abbr=dynamic.INDEXES[PRF_ALT],
+                          ucr_abbr=dynamic.ALL_VARS[var_name]['ucr'],
+                          ucs_abbr=dynamic.ALL_VARS[var_name]['ucs'],
+                          uct_abbr=dynamic.ALL_VARS[var_name]['uct'],
+                          ucu_abbr=dynamic.ALL_VARS[var_name]['ucu'])
+        logger.info('Loaded %i GDP profiles for variable %s.', len(gdps), var_name)
+        gdps.sort()
+        gdps.rebase(sync_length, shifts=gdp_shifts, inplace=True)
+        gdps.save_to_db(
+            add_tags=[TAG_SYNC, dynamic.CURRENT_STEP_ID],
+            rm_tags=dru.rsid_tags(pop=dynamic.CURRENT_STEP_ID)
+            )
 
     # And now idem for the non-GDPs
     non_gdp_shifts = [item for (ind, item) in enumerate(sync_shifts) if not is_gdp[ind]]
