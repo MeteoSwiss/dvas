@@ -40,3 +40,7 @@
 - mdl_name: 'DFM-17'
   mdl_desc: 'GRAW DFM-17'
   mid: 'DFM-17'
+
+- mdl_name: 'iMet-54-AA'
+  mdl_desc: 'InterMet iMet-54-AA'
+  mid: 'iMet-54-AA'
