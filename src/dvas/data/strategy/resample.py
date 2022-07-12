@@ -85,9 +85,17 @@ class ResampleStrategy(MPStrategyAC):
                 if all(new_tdt == prf.data.index.get_level_values(PRF_TDT)):
                     logger.info('No resampling required for %s', prfs[prf_ind].info.src)
                     continue
+                else:
+                    logger.warning('Non-integer time steps. Will require resampling.')
+            else:
+                logger.warning('Missing and/or extra-numerous timesteps. Will require resampling.')
 
             # Assess whether the datetimes are indeed increasing systematically
-            if any(np.diff(prf.data.index.get_level_values(PRF_TDT).total_seconds()) <= 0):
+            # WARNING: we here use the apply method and a lambda function, to avoid floating point
+            # errors related to https://github.com/pandas-dev/pandas/issues/34290
+            tmp = pd.Series(prf.data.index.get_level_values(PRF_TDT)).apply(
+                lambda x: x.total_seconds())
+            if any(np.diff(tmp) <= 0):
                 raise DvasError(
                     f'Time stamps are not systematically increasing for {prf.info.src}')
 

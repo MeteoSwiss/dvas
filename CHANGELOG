@@ -12,6 +12,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [fpavogt, 2022-07-06] Add support for the DFM-17 sonde
  - [fpavogt, 2022-07-01] Add subplot with relative contributions of GDPs to CWS in gdp-vs-cws (fix #226)
 ### Fixed:
+ - [fpavogt, 2022-07-12] Deal with the floating point errors associated to pd.dt.total_seconds()
  - [fpavogt, 2022-07-12] Fix typo in model mid field
 ### Changed:
  - [fpavogt, 2022-07-12] Check that time stamps are strictly increasing in the resampling strategy

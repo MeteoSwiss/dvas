@@ -1121,7 +1121,9 @@ class GetreldtExpr(TerminalLoadExprInterpreter):
 
         # Convert the datetime, and get the time steps in s
         out = pd.to_datetime(out, format=self._fmt)
-        out = (out - out.iloc[0]).dt.total_seconds()
+        out = (out - out.iloc[0]).apply(lambda x: x.total_seconds())
+        # WARNING: in the line above, we do not use .dt.total_seconds(), because this can lead to
+        # floating point errors ! See https://github.com/pandas-dev/pandas/issues/34290
 
         # If warranted, round the time steps
         if self._round_lvl is not None:
