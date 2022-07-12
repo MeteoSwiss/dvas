@@ -138,7 +138,7 @@ _RS41-SG:
     csv_header: 0
 
     _time:
-        value: getreldt('time_stamp', '%Y-%m-%dT%H:%M:%S.%fZ')
+        value: getreldt('time_stamp', '%Y-%m-%dT%H:%M:%S.%fZ', 0)
 
     _alt_ref:
         value: get('gph_gnss')

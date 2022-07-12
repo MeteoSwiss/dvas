@@ -18,9 +18,9 @@ from pytest_data import use_data
 # Import from python packages and modules
 from dvas.data.linker import LocalDBLinker
 from dvas.data.linker import CSVHandler, GDPHandler
+from dvas.data.linker import GetreldtExpr
 from dvas.environ import path_var
 from dvas.config.config import OrigData
-
 
 # Define db_data
 db_data = {
@@ -45,12 +45,14 @@ db_data = {
     ]
 }
 
+
 def test_pandas_csv_read_args():
     """ Test dedicated to error 160, when pandas inspect package could no longer extract the
     arguments of pandas.read_csv(). This is used to define the content of PD_CSV_READ_ARGS in
     linker.py """
 
     assert len(list(inspect.signature(pd.read_csv).parameters.keys())[1:]) > 0
+
 
 class TestFileHandle:
     """Test FileHandle class"""
@@ -155,3 +157,32 @@ class TestLoadDBLinker:
                 'force_write': True
             }]
         )
+
+
+class TestGetreldtExpr:
+    """ Test the GetreldtExpr class """
+
+    @staticmethod
+    def basic_setup(round_lvl):
+        """ Setup a basic routine that can be repeated to test different rounding levels. """
+
+        # Feed the class init
+        item = GetreldtExpr(
+            ['2022-07-12T11:14:00.050Z', '2022-07-12T11:14:01.061Z', '2022-07-12T11:14:02.050Z'],
+            fmt='%Y-%m-%dT%H:%M:%S.%fZ', round_lvl=round_lvl)
+
+        # Abuse the class parent elements to read in the data directly
+        item._FCT = pd.Series
+        item._ARGS = {}
+        item._KWARGS = {}
+
+        # Process the Series of datetime strings
+        return item.interpret()
+
+    def test_rounding(self):
+        """ Test that rounding of microseconds works as intended. """
+
+        assert all((self.basic_setup(None)).round(decimals=3) == np.array([0, 1.011, 2]))
+        assert all((self.basic_setup(1)).round(decimals=3) == np.array([0, 1.000, 2]))
+        assert all((self.basic_setup(2)).round(decimals=3) == np.array([0, 1.010, 2]))
+        assert all((self.basic_setup(3)).round(decimals=3) == np.array([0, 1.011, 2]))

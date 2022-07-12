@@ -951,7 +951,7 @@ class LoadExprInterpreter(ABC):
         # TODO
         #  Detail exception
         except Exception as exp:
-            raise Exception(exp)
+            raise DvasError(exp)
 
         return expr_out
 
@@ -1087,24 +1087,55 @@ class GetExpr(TerminalLoadExprInterpreter):
 class GetreldtExpr(TerminalLoadExprInterpreter):
     """ Absolute datetimes to relative seconds """
 
-    def __init__(self, arg, fmt=None):
+    def __init__(self, arg, fmt=None, round_lvl=None):
+        """ Initialization function
+
+        Args:
+            args (str): expression to process.
+            fmt (str, optional): specify the datetime str format. Defaults to None.
+            round_lvl (int, optional): Specify the time step rounding level,
+                as (1/10)**round_lvl seconds. Defaults to None = full accuracy.
+
+        Note:
+            If set, the round_lvl parameter will be fed to the `decimals` argument of the
+            `pandas.round()` routine. If the rounding leads to an error larger than
+            (1/10)**(round_lvl+1) seconds, a critical log message will be created.
+
+        """
         self._expression = arg
 
         if fmt is None:
             raise DvasError(f'Missing datetime decoding format in {self.__name__}')
         if not isinstance(fmt, str):
             raise DvasError(f'Datetime decoding format should be of type str, not: {type(fmt)}')
-
         self._fmt = fmt
+
+        if not (round_lvl is None or isinstance(round_lvl, int)):
+            raise DvasError(f'round_lvl should be of type "int", not: {type(round_lvl)}')
+        self._round_lvl = round_lvl
 
     def interpret(self):
         """ Implement fct method """
 
         out = self._FCT(self._expression, *self._ARGS, **self._KWARGS)  # noqa pylint: disable=E1102
 
-        # Convert the datetime, and get the time deltas in s
+        # Convert the datetime, and get the time steps in s
         out = pd.to_datetime(out, format=self._fmt)
         out = (out - out.iloc[0]).dt.total_seconds()
+
+        # If warranted, round the time steps
+        if self._round_lvl is not None:
+            out_orig = out.copy()
+            out = out.round(decimals=self._round_lvl)
+
+            # Raise a critical log message if rounding leads to errors larger than 1/10s of the
+            # rounding level.
+            if ((errs := (out-out_orig).abs()) >= 1/10**(self._round_lvl+1)).any():
+                msg_lvl = logger.critical
+            else:
+                msg_lvl = logger.info
+
+            msg_lvl('Maximum time stamp rounding error: %.3fs !', errs.max())
 
         return out
 
