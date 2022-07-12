@@ -22,25 +22,39 @@
   mid: 'C50'
 
 - mdl_name: 'RS92'
-  mdl_desc: 'Vaisala RS-92'
+  mdl_desc: 'Vaisala RS92'
   mid: 'RS92'
 
-- mdl_name: 'RS41-PRE2018'
-  mdl_desc: 'Vaisala RS-41 SG (pre-2018 file format)'
-  mid: 'RS41'
+- mdl_name: 'RS41-MCH-PRE2018'
+  mdl_desc: 'Vaisala RS41-SG (MCH pre-2018 file format)'
+  mid: 'RS41-MCH'
 
-- mdl_name: 'RS41'
-  mdl_desc: 'Vaisala RS-41 SG (current file format)'
-  mid: 'RS41'
+- mdl_name: 'RS41-MCH'
+  mdl_desc: 'Vaisala RS41-SG (MCH current file format)'
+  mid: 'RS41-MCH'
 
 - mdl_name: 'M10'
   mdl_desc: 'MétéoModem M10'
   mid: 'M10'
 
+# --------------- UAII 2022 MDPs ------------------------
+
+- mdl_name: 'ATMS-3710'
+  mdl_desc: 'Azista Industries Pvt Ltd. ATMS-3710 (UAII2022)'
+  mid: 'ATMS-3710'
+
 - mdl_name: 'DFM-17'
-  mdl_desc: 'GRAW DFM-17'
+  mdl_desc: 'GRAW DFM-17 (UAII2022)'
   mid: 'DFM-17'
 
 - mdl_name: 'iMet-54-AA'
-  mdl_desc: 'InterMet iMet-54-AA'
+  mdl_desc: 'InterMet iMet-54-AA (UAII2022)'
   mid: 'iMet-54-AA'
+
+- mdl_name: 'HT03G-1U'
+  mdl_desc: 'Tianjin Huayuntianyi Special Meteorological Sounding Tech Co. Ltd HT03G-1U(GTH3) (UAII2022)'
+  mid: 'HT03G-1U'
+
+- mdl_name: 'RS41-SG'
+  mdl_desc: 'Vaisala RS41-SG (UAII2022)'
+  mid: 'RS41-SG'
