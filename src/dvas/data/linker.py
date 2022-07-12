@@ -1105,7 +1105,7 @@ class GetreldtExpr(TerminalLoadExprInterpreter):
         self._expression = arg
 
         if fmt is None:
-            raise DvasError(f'Missing datetime decoding format in {self.__name__}')
+            raise DvasError(f'Missing datetime decoding format in {self.__class__.__name__}')
         if not isinstance(fmt, str):
             raise DvasError(f'Datetime decoding format should be of type str, not: {type(fmt)}')
         self._fmt = fmt
