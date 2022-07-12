@@ -129,7 +129,7 @@ class Model(MetadataModel):
     # Model identifier
     mid = TextField(
         null=False, unique=False, default='',
-        constraints=[Check("str_len_max(mdl_desc, 64)")]
+        constraints=[Check("str_len_max(mid, 64)")]
     )
 
 
