@@ -86,6 +86,11 @@ class ResampleStrategy(MPStrategyAC):
                     logger.info('No resampling required for %s', prfs[prf_ind].info.src)
                     continue
 
+            # Assess whether the datetimes are indeed increasing systematically
+            if any(np.diff(prf.data.index.get_level_values(PRF_TDT).total_seconds()) <= 0):
+                raise DvasError(
+                    f'Time stamps are not systematically increasing for {prf.info.src}')
+
             logger.warning('Starting resampling for %s', prfs[prf_ind].info.src)
             # Very well, interpolation is required. To avoid duplicating code, we shall rely on
             # the dvas.tools.gdps.utils.process_chunk() function to do so.

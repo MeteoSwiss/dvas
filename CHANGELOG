@@ -12,6 +12,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [fpavogt, 2022-07-01] Add subplot with relative contributions of GDPs to CWS in gdp-vs-cws (fix #226)
 ### Fixed:
 ### Changed:
+ - [fpavogt, 2022-07-12] Check that time stamps are strictly increasing in the resampling strategy
  - [fpavogt, 2022-07-01] Boost version to 0.7.0.dev0, after move to MeteoSwiss organization
 ### Deprecated:
 ### Removed:
