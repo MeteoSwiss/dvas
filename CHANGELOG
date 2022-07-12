@@ -6,8 +6,9 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [v0.7.0.dev0]
 ### Added:
+ - [fpavogt, 2022-07-12] Add support for the PS01B3M sonde
  - [fpavogt, 2022-07-12] Modify GetreldtExpr() to optionally round time stamps, and add dedicated test
- - [fpavogt, 2022-07-12] Add support for the RS41-SG, the ATMS-3710, and the HT03G-1U
+ - [fpavogt, 2022-07-12] Add support for the RS41-SG, the ATMS-3710, and the HT03G-1U sondes
  - [fpavogt, 2022-07-07] Add support for the iMet-54-AA sonde
  - [fpavogt, 2022-07-06] Add support for the DFM-17 sonde
  - [fpavogt, 2022-07-01] Add subplot with relative contributions of GDPs to CWS in gdp-vs-cws (fix #226)

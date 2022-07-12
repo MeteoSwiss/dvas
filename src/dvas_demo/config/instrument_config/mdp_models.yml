@@ -51,6 +51,10 @@
   mdl_desc: 'InterMet iMet-54-AA (UAII2022)'
   mid: 'iMet-54-AA'
 
+- mdl_name: 'PS01B3M'
+  mdl_desc: 'VSSC PS01B3M (UAII2022)'
+  mid: 'PS01B3M'
+
 - mdl_name: 'HT03G-1U'
   mdl_desc: 'Tianjin Huayuntianyi Special Meteorological Sounding Tech Co. Ltd HT03G-1U(GTH3) (UAII2022)'
   mid: 'HT03G-1U'

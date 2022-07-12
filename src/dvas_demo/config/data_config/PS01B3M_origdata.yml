@@ -1,0 +1,61 @@
+# Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+#
+# Distributed under the terms of the GNU General Public License v3.0 or later.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# This file contains the extraction details for the PS01B3M MDP files.
+# It must absolutely have the string 'origdata' in its name, to match the dvas class names.
+# --------------------------------------------------------------------------------------------------
+
+# ----------------------------------------------------
+# PS01B3M MDP (UAII2022)
+# ----------------------------------------------------
+_PS01B3M:
+
+    # -- META DATA ----------------------------------
+    edt: "to_datetime(get('event_dt'))"
+    srn: "get('srn')"
+    pid: "get('product_id')"
+    tags:
+        - "cat('e:', get('event_id'))"
+        - "cat('r:', get('rig'))"
+    metadata:
+        bpt_time:
+        start_time: "to_datetime(get('start_time'))"
+
+    # -- ORIG DATA ----------------------------------
+    csv_delimiter: ';'
+    csv_skip_blank_lines: False
+    csv_delim_whitespace: False
+    csv_skipinitialspace: True
+    csv_index_col: False
+    csv_skiprows: 17
+    csv_skipfooter: 1
+    csv_encoding:
+    csv_na_values: 'NaN'
+    csv_header: 0
+
+    _time:
+        value: getreldt('time_stamp', '%Y-%m-%dT%H:%M:%S.%fZ')
+
+    _alt_ref:
+        value: get('gph_gnss[gpm]')
+
+    _gph:
+        value: get('gph_gnss[gpm]')
+
+    _temp:
+        value: get('temp[˚C]', 'd2k')
+
+    _pres:
+        value: get('press_gnss[hpa]')
+
+    _rh:
+        value: get('rh[%]')
+
+    _wdir:
+        value: get('wind_dir[˚]')
+
+    _wspeed:
+        value: get('wind_speed[m/s]')
