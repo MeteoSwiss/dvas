@@ -235,7 +235,7 @@ class FileHandler(AbstractHandler):
         return True
 
     def handle(self, data_file_path, prm_name):
-        """Handle method
+        """ Handle method
 
         Args:
             data_file_path (pathlib.Path): Data file path
@@ -934,6 +934,7 @@ class LoadExprInterpreter(ABC):
             'get': GetExpr,
             'pow': PowExpr,
             'sqrt': SqrtExpr,
+            'getreldt': GetreldtExpr,
         }
 
         # Init
@@ -1079,6 +1080,31 @@ class GetExpr(TerminalLoadExprInterpreter):
 
         for op in self._op:
             out = op(out)
+
+        return out
+
+
+class GetreldtExpr(TerminalLoadExprInterpreter):
+    """ Absolute datetimes to relative seconds """
+
+    def __init__(self, arg, fmt=None):
+        self._expression = arg
+
+        if fmt is None:
+            raise DvasError(f'Missing datetime decoding format in {self.__name__}')
+        if not isinstance(fmt, str):
+            raise DvasError(f'Datetime decoding format should be of type str, not: {type(fmt)}')
+
+        self._fmt = fmt
+
+    def interpret(self):
+        """ Implement fct method """
+
+        out = self._FCT(self._expression, *self._ARGS, **self._KWARGS)  # noqa pylint: disable=E1102
+
+        # Convert the datetime, and get the time deltas in s
+        out = pd.to_datetime(out, format=self._fmt)
+        out = (out - out.iloc[0]).dt.total_seconds()
 
         return out
 
