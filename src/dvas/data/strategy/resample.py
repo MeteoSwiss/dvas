@@ -91,7 +91,8 @@ class ResampleStrategy(MPStrategyAC):
                 raise DvasError(
                     f'Time stamps are not systematically increasing for {prf.info.src}')
 
-            logger.warning('Starting resampling for %s', prfs[prf_ind].info.src)
+            # dvas should never resample anything. If we do, let's make it very visible.
+            logger.critical('Starting resampling for %s', prfs[prf_ind].info.src)
             # Very well, interpolation is required. To avoid duplicating code, we shall rely on
             # the dvas.tools.gdps.utils.process_chunk() function to do so.
             # This implies that we must construct a suitable set of df_chunks to feed that function.
