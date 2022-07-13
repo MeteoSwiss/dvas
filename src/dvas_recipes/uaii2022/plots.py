@@ -501,9 +501,6 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None, k_lvl=2):
         dpu.add_var_and_k(ax0, mid='+'.join(mid)+f' ({srn})',
                           var_name=dta_prfs.var_info[PRF_VAL]['prm_name'], k=None)
 
-        ax0.text(0.5, 0.5, 'PRELIMINARY', ha='center', va='center', c='k',
-                 fontsize=100, rotation=0, alpha=0.1, transform=ax0.transAxes)
-
         # Save it
         fn_suf = dru.fn_suffix(eid=eid, rid=rid, tags=None, mids=mid, var=dynamic.CURRENT_VAR)
         dpu.fancy_savefig(fig, fn_core='pp', fn_suffix=fn_suf, fn_prefix=dynamic.CURRENT_STEP_ID)
