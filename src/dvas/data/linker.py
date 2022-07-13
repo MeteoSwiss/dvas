@@ -664,7 +664,7 @@ class GDPHandler(FileHandler):
         # Define metadata file path
         metadata_file_path = self.get_metadata_filename(file_path)
 
-        with nc.Dataset(metadata_file_path, 'r') as self._fid:
+        with nc.Dataset(metadata_file_path, 'r') as self._fid:  #noqa pylint: disable=no-member
 
             # Read metadata fields
             try:
@@ -682,7 +682,7 @@ class GDPHandler(FileHandler):
         """Implementation of abstract method"""
 
         # Read data
-        with nc.Dataset(data_file_path, 'r') as self._fid:
+        with nc.Dataset(data_file_path, 'r') as self._fid:  #noqa pylint: disable=no-member
             data = pd.Series(self._fid[field_id][:])
 
         return data

@@ -153,7 +153,7 @@ class ResampleStrategy(MPStrategyAC):
             # If the gap is large, the weights should be NaNs. We want to resample, NOT interpolate.
             # Let's find any point that is 1s or more away from a real measurement, and block these.
             to_hide = [np.min(np.abs(this_data['tdt'].dt.total_seconds().values - item))
-                       for item in new_tdt.total_seconds().values]
+                       for item in new_tdt.total_seconds().values] #noqa pylint: disable=no-member
             to_hide = np.array(to_hide) >= interp_dist
 
             if any(to_hide):
