@@ -912,7 +912,7 @@ class LoadExprInterpreter(ABC):
 
     @staticmethod
     def eval(expr, get_fct, *args, **kwargs):
-        """Evaluate str expression
+        r""" Evaluate str expression
 
         Args:
             expr (str|ConfigExprInterpreter): Expression to evaluate
@@ -1137,7 +1137,7 @@ class GetreldtExpr(TerminalLoadExprInterpreter):
             else:
                 msg_lvl = logger.info
 
-            msg_lvl('Maximum time stamp rounding error: %.3fs !', errs.max())
+            msg_lvl('Maximum time stamp rounding error: %.3fs', errs.max())
 
         return out
 
