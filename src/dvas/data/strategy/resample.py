@@ -86,9 +86,9 @@ class ResampleStrategy(MPStrategyAC):
                     logger.info('No resampling required for %s', prfs[prf_ind].info.src)
                     continue
                 else:
-                    logger.warning('Non-integer time steps. Will require resampling.')
+                    logger.warning('Non-integer time steps.')
             else:
-                logger.warning('Missing and/or extra-numerous timesteps. Will require resampling.')
+                logger.warning('Missing and/or extra-numerous timesteps.')
 
             # Assess whether the datetimes are indeed increasing systematically
             # WARNING: we here use the apply method and a lambda function, to avoid floating point
@@ -163,16 +163,18 @@ class ResampleStrategy(MPStrategyAC):
             # Deal with the uncertainties, in case I do not have a GDPProfile
             for col in [PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU]:
                 if col not in this_data.columns:
-                    x_dx.loc[:, (0, col)] = 0
-                    x_dx.loc[:, (1, col)] = 0
+                    # To avoid warnings down the line, set the UC to 0 everywhere, except where
+                    # the value is a NaN.
+                    x_dx.loc[:, (0, col)] = 0 * x_dx.loc[:, (0, PRF_VAL)].values
+                    x_dx.loc[:, (1, col)] = 0 * x_dx.loc[:, (1, PRF_VAL)].values
 
             # Also deal with the total uncertainty
             try:
                 x_dx.loc[:, (0, 'uc_tot')] = prf.uc_tot.iloc[x_ip1_ind-1].values
                 x_dx.loc[:, (1, 'uc_tot')] = prf.uc_tot.iloc[x_ip1_ind].values
             except AttributeError:
-                x_dx.loc[:, (0, 'uc_tot')] = 0
-                x_dx.loc[:, (1, 'uc_tot')] = 0
+                x_dx.loc[:, (0, 'uc_tot')] = 0 * x_dx.loc[:, (0, PRF_VAL)].values
+                x_dx.loc[:, (1, 'uc_tot')] = 0 * x_dx.loc[:, (1, PRF_VAL)].values
 
             # Assign the oid, eid, mid, rid values. Since we are here resampling one profile,
             # they are the same for all (and thus their value is irrelevant)
