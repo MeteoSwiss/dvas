@@ -118,7 +118,7 @@ def flag_descent(prfs):
 
 
 @log_func_call(logger, time_it=False)
-def cleanup_steps(prfs, resampling_freq, crop_descent, timeofday=None):
+def cleanup_steps(prfs, resampling_freq, interp_dist, crop_descent, timeofday=None):
     """ Execute a series of cleanup-steps common to GDP and non-GDP profiles. This function is here
     to avoid duplicating code. The cleanup-up profiles are directly saved to the DB with the tag:
     TAG_CLN
@@ -127,6 +127,8 @@ def cleanup_steps(prfs, resampling_freq, crop_descent, timeofday=None):
         prfs (MultiRSProfile|MultiGDPProfile): the profiles to cleanup.
         resampling_freq (str): time step frequency, to feed :py:func:`pandas.timedelta_range`, e.g.
             '1s'.
+        interp_dist (float|int): distance to the nearest real measurement, in s, beyond which a
+            resampled point is forced to NaN (i.e. "dvas does not interpolate !")
         crop_descent (bool): if True, and data with the flag "descent" will be cropped out for good.
         timeofday (str): if set, will tag the Profile with this time of day. Defaults to None.
 
@@ -148,8 +150,8 @@ def cleanup_steps(prfs, resampling_freq, crop_descent, timeofday=None):
                 logger.warning('Adding missing TimeOfDay tag to %s profile.', prf.info.mid)
 
     # Resample the profiles as required
-    prfs.resample(freq=resampling_freq, inplace=True, chunk_size=dynamic.CHUNK_SIZE,
-                  n_cpus=dynamic.N_CPUS)
+    prfs.resample(freq=resampling_freq, interp_dist=interp_dist, inplace=True,
+                  chunk_size=dynamic.CHUNK_SIZE, n_cpus=dynamic.N_CPUS)
 
     # Save back to the DB
     prfs.save_to_db(

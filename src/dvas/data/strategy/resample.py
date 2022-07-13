@@ -31,7 +31,8 @@ logger = logging.getLogger(__name__)
 class ResampleStrategy(MPStrategyAC):
     """ Class to handle the resample strategy for RS and GDPs Profiles. """
 
-    def execute(self, prfs, freq: str = '1s', chunk_size: int = 150, n_cpus: int = 1):
+    def execute(self, prfs, freq: str = '1s', chunk_size: int = 150, n_cpus: int = 1,
+                interp_dist: float | int = 1):
         """Implementation of time resampling method for RS and GDP Profiles.
 
         .. note::
@@ -43,6 +44,9 @@ class ResampleStrategy(MPStrategyAC):
         Args:
             prfs (list of RSProfiles|GDPProfiles): GDP Profiles to resample.
             freq (str, optional): see pandas.timedelta_range(). Defaults to '1s'.
+            interp_dist (float|int, optional): define the distance between resampled points and
+                their closest measurement, in s, from which the resampled element is forced to NaN.
+                Defaults to 1, i.e. gaps that are >= 1s are not interpolated.
             chunk_size (int, optional): to speed up computation, Profiles get broken up in chunks of
                 that length. The larger the chunks, the larger the memory requirements. The smaller
                 the chunks the more items to process. Defaults to 150.
@@ -143,8 +147,19 @@ class ResampleStrategy(MPStrategyAC):
                                    np.diff(old_tdt)[x_ip1_ind[ind]-1]
                                    for (ind, item) in enumerate(new_tdt.values)])
 
-            # All these weights should be comprised between 0 and 1 ... else something is reall bad.
+            # All these weights should be comprised between 0 and 1 ... else something went bad.
             assert all((omega_vals >= 0) * (omega_vals <= 1))
+
+            # If the gap is large, the weights should be NaNs. We want to resample, NOT interpolate.
+            # Let's find any point that is 1s or more away from a real measurement, and block these.
+            to_hide = [np.min(np.abs(this_data['tdt'].dt.total_seconds().values - item))
+                       for item in new_tdt.total_seconds().values]
+            to_hide = np.array(to_hide) >= interp_dist
+
+            if any(to_hide):
+                logger.warning('Resampling %i points to NaN (>=1s from real data).',
+                               len(to_hide[to_hide]))
+                omega_vals[to_hide] = np.nan
 
             # I am now ready to "fill the chunks". The first profile will be
             # x_- * (omega-1) and the second will be x_+ * omega. That way, 1-2 =
@@ -234,7 +249,9 @@ class ResampleStrategy(MPStrategyAC):
             # out = process_chunk(x_dx, binning=1, method='delta')
 
             # Let's make sure I have the correct times ... just to make sure nothing got messed up.
-            assert (proc_chunk.tdt.round('s') == new_tdt).all()
+            # Remember that some of the times may be NaNs, in case of large gaps ...
+            notnans = proc_chunk.tdt.notna()
+            assert (proc_chunk.tdt.round('s')[notnans] == new_tdt[notnans]).all()
 
             # Create a new dataframe to keep the interpolated stuff
             new_data = pd.DataFrame(new_tdt, columns=this_data.columns)
@@ -242,8 +259,8 @@ class ResampleStrategy(MPStrategyAC):
             # Loop through the different columns to assign
             for name in this_data.columns:
                 if name == PRF_TDT:
-                    # Here, do nothing to avoid propagating floating point errors caused by the
-                    # interpolation of time steps.
+                    # Here, do nothing to avoid propagating floating point errors and NaNs
+                    # caused by the interpolation of the time steps.
                     continue
 
                 if name == PRF_FLG:

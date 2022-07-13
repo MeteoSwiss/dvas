@@ -463,15 +463,17 @@ class MultiRSProfileAC(MultiProfileAC):
         self._resample_stgy = resample_stgy
 
     @deepcopy
-    def resample(self, freq='1s', chunk_size=150, n_cpus=1):
+    def resample(self, freq='1s', interp_dist=1, chunk_size=150, n_cpus=1):
         """ Resample the profiles (one-by-one) onto regular timesteps using linear interpolation.
 
         Args:
             freq (str): see pandas.timedelta_range(). Defaults to '1s'.
+            interp_dist(int|float): Distance beyond which to not interpolate, and use NaNs.
+                Defaults to 1s.
 
         """
 
-        data = self._resample_stgy.execute(self.profiles, freq=freq,
+        data = self._resample_stgy.execute(self.profiles, freq=freq, interp_dist=interp_dist,
                                            chunk_size=chunk_size, n_cpus=n_cpus)
         self.update(self.db_variables, data)
 
