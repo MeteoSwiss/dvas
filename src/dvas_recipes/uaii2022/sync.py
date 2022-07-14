@@ -128,7 +128,7 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var):
 
     # Get the preliminary shifts from the altitude
     shifts_alt = dts.get_sync_shifts_from_alt(prfs, ref_alt=anchor_alt)
-    logger.info('sync. shifts from alt (%.1f): %s', anchor_alt, shifts_alt)
+    logger.info('Sync. shifts from alt (%.1f): %s', anchor_alt, shifts_alt)
 
     # Use these to get synch shifts from the variable
     shifts_val = dts.get_sync_shifts_from_val(prfs, max_shift=100, first_guess=shifts_alt)
