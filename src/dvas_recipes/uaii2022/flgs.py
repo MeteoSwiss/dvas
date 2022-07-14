@@ -132,6 +132,9 @@ def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp'):
         # Apply the PBL, FT, UTLS, HAS_CWS flags to every profile.
         for prfs in [cws_prfs, gdp_prfs, nongdp_prfs]:
 
+            if prfs is None:
+                continue
+
             for (prf_ind, prf) in enumerate(prfs):
 
                 # Apply the valid CWS flag
