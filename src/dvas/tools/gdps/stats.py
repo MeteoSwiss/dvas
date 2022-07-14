@@ -25,6 +25,7 @@ from .gdps import combine
 from ...plots import gdps as dpg
 from ...plots import utils as dpu
 from ...hardcoded import PRF_VAL, FLG_INCOMPATIBLE
+from ..tools import wrap_angle
 
 # Setup local logger
 logger = logging.getLogger(__name__)
@@ -119,8 +120,7 @@ def ks_test(gdp_pair, alpha=0.0027, m_val=1, **kwargs):
     # len_prf = len(gdp_pair[0].data)
 
     if (tmp1 := len(gdp_pair[1])) != (tmp0 := len(gdp_pair[0])):
-        raise DvasError("Ouch ! GDP Profiles have inconsistent lengths: {} vs {} ".format(tmp0,
-                                                                                          tmp1))
+        raise DvasError(f"Ouch ! GDP Profiles have inconsistent lengths: {tmp0} vs {tmp1}")
 
     # Compute the profile delta with the specified sampling
     gdp_delta, _ = combine(gdp_pair, binning=m_val, method='delta', **kwargs)
@@ -131,6 +131,16 @@ def ks_test(gdp_pair, alpha=0.0027, m_val=1, **kwargs):
 
     # Assign the first part of the data to it
     out[['Delta_pqei', 'sigma_pqei']] = gdp_delta.get_prms([PRF_VAL, 'uc_tot'])[0]
+
+    # Here, in the case of wind dir, let's make sure to wrap the data around.
+    # TODO: remove the hardcoded variable name !
+    try:
+        if gdp_pair.var_info['val']['prm_name'] == 'wdir':
+            out.loc[:, ['Delta_pqei']] = out.Delta_pqei.map(wrap_angle)
+    except KeyError:
+        # TODO: this happens when running tests, because the gdp_pair instance is not defined
+        # from the DB.
+        logger.critical('Unknown parameter name: angular wrapping not applied. Are you sure ?')
 
     # Compute k_pqei
     out['k_pqei'] = out['Delta_pqei']/out['sigma_pqei']
