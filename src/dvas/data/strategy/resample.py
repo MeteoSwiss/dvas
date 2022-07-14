@@ -157,8 +157,8 @@ class ResampleStrategy(MPStrategyAC):
             to_hide = np.array(to_hide) >= interp_dist
 
             if any(to_hide):
-                logger.warning('Resampling %i points to NaN (>=1s from real data).',
-                               len(to_hide[to_hide]))
+                logger.warning('Resampling %i points to NaN (>=%.3fs from real data).',
+                               len(to_hide[to_hide]), interp_dist)
                 omega_vals[to_hide] = np.nan
 
             # I am now ready to "fill the chunks". The first profile will be
@@ -180,16 +180,19 @@ class ResampleStrategy(MPStrategyAC):
                 if col not in this_data.columns:
                     # To avoid warnings down the line, set the UC to 0 everywhere, except where
                     # the value is a NaN.
-                    x_dx.loc[:, (0, col)] = 0 * x_dx.loc[:, (0, PRF_VAL)].values
-                    x_dx.loc[:, (1, col)] = 0 * x_dx.loc[:, (1, PRF_VAL)].values
+                    x_dx.loc[:, (0, col)] = [item if np.isnan(item) else 0 for item in omega_vals]
+                    x_dx.loc[:, (1, col)] = [item if np.isnan(item) else 0 for item in omega_vals]
 
             # Also deal with the total uncertainty
             try:
                 x_dx.loc[:, (0, 'uc_tot')] = prf.uc_tot.iloc[x_ip1_ind-1].values
                 x_dx.loc[:, (1, 'uc_tot')] = prf.uc_tot.iloc[x_ip1_ind].values
             except AttributeError:
-                x_dx.loc[:, (0, 'uc_tot')] = 0 * x_dx.loc[:, (0, PRF_VAL)].values
-                x_dx.loc[:, (1, 'uc_tot')] = 0 * x_dx.loc[:, (1, PRF_VAL)].values
+                x_dx.loc[:, (0, 'uc_tot')] = 0
+                x_dx.loc[:, (1, 'uc_tot')] = 0
+            # Let's also hide anything that was not interpolated
+            for i in [0, 1]:
+                x_dx.loc[np.isnan(omega_vals), (i, 'uc_tot')] = np.nan
 
             # Assign the oid, eid, mid, rid values. Since we are here resampling one profile,
             # they are the same for all (and thus their value is irrelevant)
