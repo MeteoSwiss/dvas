@@ -105,7 +105,7 @@ def flag_descent(prfs):
             bpt_time = (prf.info.metadata[MTDTA_BPT]).split(' ')
             if len(bpt_time) != 2:
                 raise DvasRecipesError(
-                    'Ouch ! "%s" is weird: %s' % (MTDTA_BPT, prf.info.metadata['bpt_time']))
+                    f'Ouch ! "{MTDTA_BPT}" is weird: {prf.info.metadata["bpt_time"]}')
 
             bpt_time = pd.Timedelta(float(bpt_time[0]), bpt_time[1])
             which = prf.data.index.get_level_values(PRF_TDT) >= bpt_time
