@@ -18,6 +18,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [fpavogt, 2022-07-12] Deal with the floating point errors associated to pd.dt.total_seconds()
  - [fpavogt, 2022-07-12] Fix typo in model mid field
 ### Changed:
+ - [fpavogt, 2022-07-15] Changed InfoManager sorting rule to include mid (fix #234)
  - [fpavogt, 2022-07-12] Check that time stamps are strictly increasing in the resampling strategy
  - [fpavogt, 2022-07-01] Boost version to 0.7.0.dev0, after move to MeteoSwiss organization
 ### Deprecated:

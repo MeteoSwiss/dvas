@@ -30,13 +30,13 @@ db_data = {
                 'edt': dt,
                 'mdl_name': 'YT',
                 'srn': 'YT-100', 'pid': '0',
-                'tags': 'load_profile',
+                'tags': tags,
                 'metadata': {},
                 'src': ''
             },
-        } for val, dt in [
-            (np.array([100, 101, 102]), '20200101T0000Z'),
-            (np.array([200, 201, 202]), '20200202T0000Z')
+        } for val, dt, tags in [
+            (np.array([100, 101, 102]), '20200101T0000Z', ['load_profile', 'e:1']),
+            (np.array([200, 201, 202]), '20200202T0000Z', ['load_profile', 'e:2'])
         ] for prm in ['temp', 'gph', 'temp_flag', 'time']
     ]
 }
@@ -52,7 +52,7 @@ class TestLoadProfileStrategy:
         loader_stgy = LoadProfileStrategy()
 
         # Load entry
-        filt = f"tags('load_profile')"
+        filt = "tags('load_profile')"
         res = loader_stgy.execute(filt, 'temp', 'gph')
 
         # Compare

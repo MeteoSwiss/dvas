@@ -270,6 +270,7 @@ class OneLayerConfigManager(ConfigManager):
         else:
             if len(doc_in) == 0:
                 logger.debug('No parameter file found for CLASS_KEY: %s', self.CLASS_KEY)
+                #raise Exception()
 
             for filepath in doc_in:
                 try:

@@ -314,6 +314,8 @@ def inspect_cws(gdp_start_with_tags, cws_start_with_tags):
                           uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
                           ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],
                           inplace=True)
+    gdp_prfs.sort(inplace=True)
+
     # Idem for the CWS
     cws_prfs = MultiCWSProfile()
     cws_prfs.load_from_db(cws_filt, dynamic.CURRENT_VAR,
@@ -324,6 +326,7 @@ def inspect_cws(gdp_start_with_tags, cws_start_with_tags):
                           uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
                           ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],
                           inplace=True)
+    cws_prfs.sort(inplace=True)
 
     # We can now create a GDP vs CWS plot ...
     dpg.gdps_vs_cws(gdp_prfs, cws_prfs, show=None,

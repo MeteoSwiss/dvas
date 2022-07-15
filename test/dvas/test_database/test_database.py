@@ -11,7 +11,7 @@ Module contents: Testing classes and function for dvas.database.database module.
 
 # Import external packages and modules
 from copy import deepcopy
-from datetime import datetime, timedelta
+from datetime import datetime
 import pytz
 import numpy as np
 import pytest
@@ -251,17 +251,17 @@ class TestInfoManager:
         self.info_mngr.rm_metadata('a')
 
         with pytest.raises(KeyError):
-            self.info_mngr.metadata['a']
+            _ = self.info_mngr.metadata['a']
 
     def test_sort(self):
         """Test sort method"""
 
-        # Init
-        info_mngr_1 = deepcopy(self.info_mngr)
-        info_mngr_2 = deepcopy(self.info_mngr)
-        info_mngr_2.edt += timedelta(1)
-        info_mngr_3 = deepcopy(info_mngr_2)
-        info_mngr_3.oid = [3] + info_mngr_3.oid
+        info_mngr_1 = InfoManager('20200101T0000Z', [1, 2], tags=['e:1', 'r:1'],
+                                  metadata={}, src='test_sort')
+        info_mngr_2 = InfoManager('20200101T0000Z', [1, 2], tags=['e:2', 'r:1'],
+                                  metadata={}, src='test_sort')
+        info_mngr_3 = InfoManager('20200101T0000Z', [1, 2, 3], tags=['e:2', 'r:1'],
+                                  metadata={}, src='test_sort')
 
         # Test
         assert all(
@@ -280,8 +280,8 @@ class TestInfoManager:
         """Test logical operator methods"""
 
         info_mngr_eq = deepcopy(self.info_mngr)
-        info_mngr_gt = deepcopy(self.info_mngr)
-        info_mngr_gt.edt += timedelta(1)
+        info_mngr_gt = InfoManager('20200101T0000Z', [1, 2], tags=['e:2', 'r:1'],
+                                  metadata={}, src='test_sort')
 
         assert info_mngr_eq == self.info_mngr
         assert info_mngr_gt > self.info_mngr
