@@ -25,7 +25,7 @@ from .gdps import combine
 from ...plots import gdps as dpg
 from ...plots import utils as dpu
 from ...hardcoded import PRF_VAL, FLG_INCOMPATIBLE
-from ..tools import wrap_angle
+#from ..tools import wrap_angle
 
 # Setup local logger
 logger = logging.getLogger(__name__)
@@ -108,13 +108,13 @@ def ks_test(gdp_pair, alpha=0.0027, m_val=1, **kwargs):
     '''
 
     if not isinstance(m_val, numbers.Integral):
-        raise DvasError('Ouch! binning should be an int, not %s' % (type(m_val)))
+        raise DvasError(f'Ouch! binning should be an int, not {type(m_val)}')
 
     if not isinstance(alpha, float):
-        raise Exception('Ouch! alpha should be a float, not %s.' % (type(alpha)))
+        raise Exception(f'Ouch! alpha should be a float, not {type(alpha)}')
 
     if alpha > 1 or alpha < 0:
-        raise Exception('Ouch! alpha should be 0<alpha<1, not %.1f.' % (alpha))
+        raise Exception(f'Ouch! alpha should be 0<alpha<1, not {alpha}')
 
     # How long are the profiles ?
     # len_prf = len(gdp_pair[0].data)
@@ -132,6 +132,7 @@ def ks_test(gdp_pair, alpha=0.0027, m_val=1, **kwargs):
     # Assign the first part of the data to it
     out[['Delta_pqei', 'sigma_pqei']] = gdp_delta.get_prms([PRF_VAL, 'uc_tot'])[0]
 
+    # noqa pylint: disable=pointless-string-statement
     """
     # ---------- NOT DOING THIS UNTIL #235 and #236 are dealt with properly ----------
     # Here, in the case of wind dir, let's make sure to wrap the data around.
@@ -199,7 +200,7 @@ def gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=None, rolling=True,
     if isinstance(m_vals, int):
         m_vals = [m_vals]
     if not isinstance(m_vals, list):
-        raise DvasError('Ouch ! m_vals must be a list, not: {}'.format(type(m_vals)))
+        raise DvasError(f'Ouch ! m_vals must be a list, not: {type(m_vals)}')
 
     # If warranted select which flags we want to mask in the rolling process.
     mask_flgs = None
@@ -290,8 +291,8 @@ def gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=None, rolling=True,
             edt_eid_rid_info = dpu.get_edt_eid_rid(gdp_pair)
 
             # Get the specific pair details
-            pair_info = '{}-{}_vs_{}-{}'.format(gdp_pair[0].info.oid, gdp_pair[0].info.mid,
-                                                gdp_pair[1].info.oid, gdp_pair[1].info.mid)
+            pair_info = f'{gdp_pair[0].info.oid}-{gdp_pair[0].info.mid}' + '_vs_' +\
+                        f'{gdp_pair[1].info.oid}-{gdp_pair[1].info.mid}'
 
             fnsuf = pair_info
             if fn_suffix is not None:
