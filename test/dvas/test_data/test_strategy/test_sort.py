@@ -9,6 +9,8 @@ Module contents: Testing classes and function for dvas.data.strategy.sort module
 
 """
 
+# Import from Python
+import numpy as np
 
 # Import from tested package
 from dvas.data.strategy.sort import SortProfileStrategy
@@ -16,18 +18,32 @@ from dvas.data.strategy.data import Profile
 from dvas.database.database import InfoManager
 
 
+# Define db_data
+db_data = {
+    'sub_dir': 'test_strategy_save',
+    'data': [
+        {
+            'mdl_name': 'YT',
+            'srn': 'YT-100',
+            'pid': '0',
+        },
+    ]
+}
+
 class TestSortProfileStrategy:
     """Test SortProfileStrategy class"""
 
-    def test_sort(self):
+    def test_sort(self, db_init):
         """Test sort method"""
+
+        data = db_init.data[0]
 
         sorter = SortProfileStrategy()
         order = [2, 0, 1]
         prf = [
-            Profile(InfoManager('20200110T0000Z', [0])),
-            Profile(InfoManager('20200101T0000Z', [0])),
-            Profile(InfoManager('20200105T0000Z', [0]))
+            Profile(InfoManager('20200110T0000Z', data['oid'])),
+            Profile(InfoManager('20200101T0000Z', data['oid'])),
+            Profile(InfoManager('20200105T0000Z', data['oid']))
         ]
 
         # Sort

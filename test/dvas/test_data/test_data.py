@@ -48,7 +48,7 @@ db_data = {
               'info': {'edt': dt,
                        'mdl_name': 'YT',
                        'srn': 'YT-100', 'pid': '0',
-                       'tags': 'load_multiprofile',
+                       'tags': ['load_multiprofile', f'e:{ind}'],
                        'metadata': {},
                        'src': ''},
              } for (ind, dt) in enumerate(['20200101T0000Z', '20200202T0000Z'])

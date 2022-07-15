@@ -147,7 +147,7 @@ def cleanup_steps(prfs, resampling_freq, interp_dist, crop_descent, timeofday=No
         for (ind, prf) in enumerate(prfs):
             if not prf.has_tag(timeofday):
                 prf.info.add_tags(timeofday)
-                logger.warning('Adding missing TimeOfDay tag to %s profile.', prf.info.mid)
+                logger.info('Adding missing TimeOfDay tag to %s profile.', prf.info.mid)
 
     # Resample the profiles as required
     prfs.resample(freq=resampling_freq, interp_dist=interp_dist, inplace=True,
