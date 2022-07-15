@@ -14,6 +14,7 @@ from pathlib import Path
 # Define
 RE_UPPER_W = r'[A-Z0-9]'
 RE_LOWER_W = r'[a-z0-9]'
+RE_UPPERLOWER_W = r'[a-zA-Z0-9]'
 
 
 # Paths
@@ -67,12 +68,12 @@ FLG_PRM_DESC_PREFIX = 'Flag of '
 # Models
 # -------
 #: str: Instrument type pattern (e.g. VAI-RS92, MET_LAB-C50, RS92-GDP_002)
-MODEL_PAT = rf"{RE_UPPER_W}+(({RE_UPPER_W})|([\-\_]))*{RE_UPPER_W}"
+MODEL_PAT = rf"{RE_UPPERLOWER_W}+(({RE_UPPERLOWER_W})|([\-\_]))*{RE_UPPERLOWER_W}"
 
-#: str: CSV file model catching group pattern (e.g RS41.PAY_20171024T120000)
+#: str: CSV file model catching group pattern (e.g RS41.etc..., DFM-17.etc ...)
 CSV_FILE_MDL_PAT = r"^(" + MODEL_PAT + r")\.[\w\-]+\."
 
-#: str: GDP file model catching group pattern (e.g PAY-RS-01_2_RS41-GDP-BETA_001_20170712T000000_1-002-001.nc)
+#: str: GDP file model catching group pattern (e.g PAY-RS-01_2_RS41-GDP-BETA_001_20170712Tetc.nc)
 GDP_FILE_MDL_PAT = r"^[A-Z]{3}\-[A-Z]{2}\-\d{2}\_\d\_([\w\-]+\_\d{3})\_\d{8}T"
 
 # Parameters

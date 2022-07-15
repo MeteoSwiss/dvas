@@ -840,7 +840,7 @@ class ConfigExprInterpreter(metaclass=ABCMeta):
 
     @staticmethod
     def eval(expr, get_fct):
-        """ Interpret expression.
+        r""" Interpret expression.
 
         Args:
             expr (str|ConfigExprInterpreter): Expression to evaluate.
@@ -1019,7 +1019,7 @@ class ToDatetime(NonTerminalConfigExprInterpreter):
         try:
             # Use the in-built helper function ...
             out = check_datetime(a, utc=False)
-        except:
+        except TypeError:
             raise NonTerminalExprInterpreterError()
 
         # Force the timezone to UTC by default

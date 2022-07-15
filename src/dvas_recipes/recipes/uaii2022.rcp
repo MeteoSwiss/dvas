@@ -19,7 +19,7 @@ rcp_paths:
         path: /Users/fvogt/Projects/MCH/UAII2022/dvas/codedev/src/dvas_demo
     orig_data_path:
         #name: test_flights_MCH/20220523T070000/
-        name: test_flights_DWD/20220126_1651
+        name: test_flights_DWD/20220427_0757
         path: /Users/fvogt/Projects/MCH/UAII2022/dvas/testzone/procdata_full/rs
     local_db_path:
         name: db
@@ -100,6 +100,7 @@ rcp_steps:
             - RS41-GDP # Model ids (mid) that require the correction
         check_tropopause: True # If True, will compare the GRUAN tropopause with the dvas one (for info only).
         resampling_freq: '1s' # Time step to resample onto, with format 'Xs'
+        interp_dist: 1 # Distance to the nearest measurement, in s, from which a resampled point is forced to NaN
         crop_descent: True # If True, descent data will be cropped for good. Else, it is simply flagged.
 
     # Profile synchronization on a flight-per-flight basis.
@@ -181,6 +182,26 @@ rcp_steps:
         start_with_tags: # list of tags to identify profiles in the database
             - '07'
             #- 'tod:daytime'
+        mids: # List of mid to process. Leave empty to process them all.
+        skip_gdps: False # If True, any 'mid' that contains 'GDP' will be skipped.
+        skip_nongdps: False # If True, any 'mid' that does NOT contain 'GDP' will be skipped.
+    - fct: uaii2022.plots.dtas_per_mid
+      step_id: '10'
+      run: True
+      kwargs:
+        start_with_tags: # list of tags to identify profiles in the database
+            - '07'
+            - 'tod:daytime'
+        mids: # List of mid to process. Leave empty to process them all.
+        skip_gdps: False # If True, any 'mid' that contains 'GDP' will be skipped.
+        skip_nongdps: False # If True, any 'mid' that does NOT contain 'GDP' will be skipped.
+    - fct: uaii2022.plots.dtas_per_mid
+      step_id: '11'
+      run: True
+      kwargs:
+        start_with_tags: # list of tags to identify profiles in the database
+            - '07'
+            - 'tod:nighttime'
         mids: # List of mid to process. Leave empty to process them all.
         skip_gdps: False # If True, any 'mid' that contains 'GDP' will be skipped.
         skip_nongdps: False # If True, any 'mid' that does NOT contain 'GDP' will be skipped.

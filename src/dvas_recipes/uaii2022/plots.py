@@ -97,7 +97,7 @@ def flight_overview(start_with_tags, label='mid', show=None):
                              alt_abbr=dynamic.INDEXES[PRF_ALT])
         rs_prfs.sort()  # Sorting is important to make sure I have the same colors for each plot
 
-        # Setup so dummy limits, to keep track of the actual ones as I go.
+        # Setup some dummy limits, to keep track of the actual ones as I go.
         xmin = np.infty
         xmax = -np.infty
 
@@ -108,6 +108,9 @@ def flight_overview(start_with_tags, label='mid', show=None):
             # show up cleanly.
             x = getattr(prf, PRF_VAL).index.get_level_values(PRF_IDX)
             y = getattr(prf, PRF_VAL).values
+
+            if var_name == 'wdir':
+                x, y = dpu.wrap_wdir_curve(x, y)
 
             this_ax.plot(x, y, '-', lw=0.7, label='|'.join(rs_prfs.get_info(label)[prf_ind]))
 
@@ -133,6 +136,9 @@ def flight_overview(start_with_tags, label='mid', show=None):
         ylbl = rs_prfs.var_info[PRF_VAL]['prm_name']
         ylbl += ' [{}]'.format(rs_prfs.var_info[PRF_VAL]['prm_unit'])
         this_ax.set_ylabel(dpu.fix_txt(ylbl), labelpad=10)
+        if var_name == 'wdir':
+            this_ax.set_ylim((0, 360))
+            this_ax.set_yticks([0, 180])
 
     # Set the label for the last plot only
     this_ax.set_xlabel(r'$i$')
@@ -500,9 +506,6 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None, k_lvl=2):
 
         dpu.add_var_and_k(ax0, mid='+'.join(mid)+f' ({srn})',
                           var_name=dta_prfs.var_info[PRF_VAL]['prm_name'], k=None)
-
-        ax0.text(0.5, 0.5, 'PRELIMINARY', ha='center', va='center', c='k',
-                 fontsize=100, rotation=0, alpha=0.1, transform=ax0.transAxes)
 
         # Save it
         fn_suf = dru.fn_suffix(eid=eid, rid=rid, tags=None, mids=mid, var=dynamic.CURRENT_VAR)

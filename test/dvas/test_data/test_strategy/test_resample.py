@@ -39,8 +39,8 @@ class TestResampleStrategy:
 
         # Prepare some datasets to play with
         info_1 = InfoManager('20201217T0000Z', 1)
-        data_1 = pd.DataFrame({'alt': [10., 15., 20., 35], 'val': [11., 12., 13., 14],
-                               'flg': [0]*4, 'tdt': [0, 1, 1.5, 2.1]})
+        data_1 = pd.DataFrame({'alt': [10., 15., 20., 35, 35], 'val': [11., 12., 13., 14, 14],
+                               'flg': [0]*5, 'tdt': [0, 1, 1.5, 2.1, 5]})
 
         # Let's build a multiprofile so I can test things out.
         multiprf = MultiRSProfile()
@@ -48,21 +48,23 @@ class TestResampleStrategy:
                         [RSProfile(info_1, data_1)])
 
         # Let's launch the resampling
-        out = multiprf.resample(freq='1s', inplace=False)
+        out = multiprf.resample(freq='1s', interp_dist=1, inplace=False)
 
         # Can I interpolate properly ?
         assert np.array_equal(out.profiles[0].data.index.get_level_values('alt').values,
-                              np.array([10, 15, 32.5]))
+                              np.array([10, 15, 32.5, 35, np.nan, 35]),
+                              equal_nan=True)
         assert np.array_equal(out.profiles[0].data.loc[:, 'val'].values,
-                              np.array([11, 12, 14*0.5/0.6+13*(1-0.5/0.6)]))
+                              np.array([11, 12, 14*0.5/0.6+13*(1-0.5/0.6), 14, np.nan, 14]),
+                              equal_nan=True)
 
-        # Do I really have 1sec time stamps ?
+        # Do I really have 1 sec time stamps ?
         tdts = out.profiles[0].data.index.get_level_values('tdt').values.astype('timedelta64[s]')
         assert len(np.unique(np.diff(tdts))) == 1
         assert np.unique(np.diff(tdts))[0] == np.timedelta64(1, 's')
 
         # Was the flag applied correctly ?
-        assert all(out.profiles[0].has_flg('interp') == [False, False, True])
+        assert all(out.profiles[0].has_flg('interp') == [False, False, True, True, True, False])
 
     def test_resample_gdp(self):
         """Test rebase method"""
