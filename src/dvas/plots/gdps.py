@@ -22,6 +22,7 @@ from ..errors import DvasError
 from ..hardcoded import PRF_IDX, PRF_VAL, PRF_ALT, PRF_TDT, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
 from ..hardcoded import MTDTA_TROPOPAUSE, MTDTA_PBL
 from . import utils as pu
+from ..tools import tools as tt
 
 # Setup the local logger
 logger = logging.getLogger(__name__)
@@ -118,13 +119,24 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
         gdp = gdps[gdp_ind]
 
         # First, plot the profiles themselves
-        ax0.plot(idxs, gdp[PRF_VAL].values, lw=0.5, ls='-', drawstyle='steps-mid',
+        x = idxs
+        y = gdp[PRF_VAL].values
+        ym = gdp[PRF_VAL].values-k_lvl*gdp['uc_tot'].values
+        yp = gdp[PRF_VAL].values+k_lvl*gdp['uc_tot'].values
+        delta = gdp[PRF_VAL].values-cws[PRF_VAL].values
+
+        # TODO: remove the hardcoded reference to the wdir
+        if gdp_prfs.var_info['val']['prm_name'] == 'wdir':
+            _, ym = pu.wrap_wdir_curve(x, ym)
+            _, yp = pu.wrap_wdir_curve(x, yp)
+            x, y = pu.wrap_wdir_curve(x, y)
+            delta = np.array([tt.wrap_angle(item) for item in delta])
+
+        ax0.plot(x, y, lw=0.5, ls='-', drawstyle='steps-mid',
                  label='|'.join(gdp_prfs.get_info(label)[gdp_ind]))
-        ax0.fill_between(idxs, gdp[PRF_VAL].values-k_lvl*gdp['uc_tot'].values,
-                         gdp[PRF_VAL]+k_lvl*gdp['uc_tot'], alpha=0.3, step='mid')
+        ax0.fill_between(x, ym, yp, alpha=0.3, step='mid')
 
         # Then, plot the Deltas with respect to the CWS
-        delta = gdp[PRF_VAL].values-cws[PRF_VAL].values
         ax1.plot(idxs, delta, drawstyle='steps-mid', lw=0.5, ls='-')
         ax1.fill_between(idxs, delta-k_lvl*gdp['uc_tot'], delta+k_lvl*gdp['uc_tot'], alpha=0.3,
                          step='mid')
@@ -136,10 +148,20 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
         limlow = limhigh
 
     # Then also plot the CWS uncertainty
-    ax0.plot(idxs, cws['val'], color=pu.CLRS['cws_1'], lw=0.5, ls='-', drawstyle='steps-mid',
+    # TODO: remove the hardcoded refernce to the wdir
+    x = idxs
+    y = cws[PRF_VAL].values
+    ym = cws[PRF_VAL].values-k_lvl*cws['uc_tot'].values
+    yp = cws[PRF_VAL].values+k_lvl*cws['uc_tot'].values
+
+    if gdp_prfs.var_info['val']['prm_name'] == 'wdir':
+            _, ym = pu.wrap_wdir_curve(x, ym)
+            _, yp = pu.wrap_wdir_curve(x, yp)
+            x, y = pu.wrap_wdir_curve(x, y)
+
+    ax0.plot(x, y, color=pu.CLRS['cws_1'], lw=0.5, ls='-', drawstyle='steps-mid',
              label='CWS')
-    ax0.fill_between(idxs, cws[PRF_VAL]-k_lvl*cws['uc_tot'],
-                     cws[PRF_VAL]+k_lvl*cws['uc_tot'], alpha=0.3, step='mid',
+    ax0.fill_between(x, ym, yp, alpha=0.3, step='mid',
                      color=pu.CLRS['cws_1'])
 
     ax1.plot(idxs, -k_lvl*cws['uc_tot'].values, lw=0.5, drawstyle='steps-mid',
