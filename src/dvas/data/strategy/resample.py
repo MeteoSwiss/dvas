@@ -99,9 +99,11 @@ class ResampleStrategy(MPStrategyAC):
             # errors related to https://github.com/pandas-dev/pandas/issues/34290
             tmp = pd.Series(prf.data.index.get_level_values(PRF_TDT)).apply(
                 lambda x: x.total_seconds())
-            if any(np.diff(tmp) <= 0):
+            if any(np.diff(tmp) < 0):
                 raise DvasError(
                     f'Time stamps are not systematically increasing for {prf.info.src}')
+            if any(np.diff(tmp) == 0):
+                raise DvasError(f'Some time stamps are duplicated for {prf.info.src}')
 
             # dvas should never resample anything. If we do, let's make it very visible.
             logger.critical('Starting resampling for %s', prfs[prf_ind].info.src)
