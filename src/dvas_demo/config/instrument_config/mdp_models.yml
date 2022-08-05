@@ -51,6 +51,14 @@
   mdl_desc: 'InterMet iMet-54-AA (UAII2022)'
   mid: 'iMet-54-AA'
 
+- mdl_name: 'iMS100'
+  mdl_desc: 'Meisei iMS100 (UAII2022)'
+  mid: 'iMS100'
+
+- mdl_name: 'M20'
+  mdl_desc: 'Meteomodem M20 (UAII2022)'
+  mid: 'M20'
+
 - mdl_name: 'PS01B3M'
   mdl_desc: 'VSSC PS01B3M (UAII2022)'
   mid: 'PS01B3M'
@@ -62,3 +70,7 @@
 - mdl_name: 'RS41-SG'
   mdl_desc: 'Vaisala RS41-SG (UAII2022)'
   mid: 'RS41-SG'
+
+- mdl_name: 'WxR-301D'
+  mdl_desc: 'Weathex CO., LTD. WxR-301D (UAII2022)'
+  mid: 'WxR-301D'

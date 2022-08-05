@@ -38,13 +38,13 @@ _ATMS-3710:
         value: getreldt('time_stamp', '%Y-%m-%dT%H:%M:%S.%fz')
 
     _alt_ref:
-        value: get('press_gnss_')
+        value: get('gph_gnss')
 
     _gph:
-        value: get('press_gnss_')
+        value: get('gph_gnss')
 
     _temp:
-        value: get('temp_air', 'd2k')
+        value: get('temp_air', 'c2k')
 
     _pres:
         value: get('press_sens')

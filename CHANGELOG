@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [v0.7.0.dev0]
 ### Added:
+ - [fpavogt, 2022-08-05] Add support for the M20, iMS100, ATMS-3710, and WxR-301D sondes
  - [fpavogt, 2022-07-13] Set resampled points to NaN if they are >=1s away from an original point (fix #233)
  - [fpavogt, 2022-07-12] Add support for the PS01B3M sonde
  - [fpavogt, 2022-07-12] Modify GetreldtExpr() to optionally round time stamps, and add dedicated test
@@ -14,6 +15,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [fpavogt, 2022-07-06] Add support for the DFM-17 sonde
  - [fpavogt, 2022-07-01] Add subplot with relative contributions of GDPs to CWS in gdp-vs-cws (fix #226)
 ### Fixed:
+ - [fpavogt, 2022-08-05] Fix #238
  - [fpavogt, 2022-07-15] Fix #232 - wdir curves no longer jump from 0 to 360 in plots
  - [fpavogt, 2022-07-12] Deal with the floating point errors associated to pd.dt.total_seconds()
  - [fpavogt, 2022-07-12] Fix typo in model mid field

@@ -4,15 +4,14 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
-# This file contains the extraction details for SRS-C50 GDP and MDP files.
+# This file contains the extraction details for the WxR-301D MDP files.
 # It must absolutely have the string 'origdata' in its name, to match the dvas class names.
 # --------------------------------------------------------------------------------------------------
 
-
 # ----------------------------------------------------
-# SRS-C50 MDP
+# WxR-301D MDP (UAII2022)
 # ----------------------------------------------------
-_C50:
+_WxR-301D:
 
     # -- META DATA ----------------------------------
     edt: "to_datetime(get('event_dt'))"
@@ -29,32 +28,34 @@ _C50:
     csv_delimiter: ';'
     csv_skip_blank_lines: False
     csv_delim_whitespace: False
-    csv_skiprows: 40
+    csv_skipinitialspace: False
+    csv_index_col:
+    csv_skiprows: 19
     csv_skipfooter: 1
     csv_encoding:
     csv_na_values:
     csv_header: 0
 
     _time:
-        value: get('Rel. Time')
+        value: getreldt('time_stamp', '%Y-%m-%dT%H:%M:%S.%fZ', 0)
 
     _alt_ref:
-        value: get('Altitude (gpm)')
+        value: get('gph_gnss')
 
     _gph:
-        value: get('Altitude (gpm)')
+        value: get('gph_gnss')
 
     _temp:
-        value: get('Temperature (?C)', 'c2k')
-
-    _rh:
-        value: get('Humidity (%)')
+        value: get('temp_air', 'c2k')
 
     _pres:
-        value: get('Pressure (hPa)')
+        value: get('press_gnss')
+
+    _rh:
+        value: get('rh')
 
     _wdir:
-        value: get('Wind Direction (?)')
+        value: get('wind_dir')
 
     _wspeed:
-        value: get('Wind Velocity (m/s)')
+        value: get('wind_speed')

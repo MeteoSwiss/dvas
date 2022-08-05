@@ -44,7 +44,7 @@ _RS92:
         value: get('Height')
 
     _temp:
-        value: get('T', 'd2k')
+        value: get('T', 'c2k')
 
     _temp_flag:
         value: get(0)

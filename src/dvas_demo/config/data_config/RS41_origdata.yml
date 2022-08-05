@@ -47,7 +47,7 @@ _RS41-MCH-PRE2018:
         value: get(2)
 
     _temp:
-        value: get(4, 'd2k')
+        value: get(4, 'c2k')
 
     _pres:
         value: get(3)
@@ -97,7 +97,7 @@ _RS41-MCH:
         value: get('GpsHeightMSL')
 
     _temp:
-        value: get('Temp', 'd2k')
+        value: get('Temp', 'c2k')
 
     _pres:
         value: get('P')
@@ -147,7 +147,7 @@ _RS41-SG:
         value: get('gph_gnss')
 
     _temp:
-        value: get('temp_air', 'd2k')
+        value: get('temp_air', 'c2k')
 
     _pres:
         value: get('press_gnss')

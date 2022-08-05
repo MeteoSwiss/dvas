@@ -44,7 +44,7 @@ _M10:
         value: get('Altitude')
 
     _temp:
-        value: get('T', 'd2k')
+        value: get('T', 'c2k')
 
     _pres:
         value: get('Press')
