@@ -12,6 +12,53 @@
 # iMS-100 MDP (UAII2022 format)
 # ----------------------------------------------------
 
+_iMS100:
+
+    # -- META DATA ----------------------------------
+    edt: "to_datetime(get('event_dt'))"
+    srn: "get('srn')"
+    pid: "get('product_id')"
+    tags:
+        - "cat('e:', get('event_id'))"
+        - "cat('r:', get('rig'))"
+    metadata:
+        bpt_time:
+        start_time: "to_datetime(get('start_time'))"
+
+    # -- ORIG DATA ----------------------------------
+    csv_delimiter: ';'
+    csv_skip_blank_lines: False
+    csv_delim_whitespace: False
+    csv_skiprows: 19
+    csv_skipfooter: 0
+    csv_encoding:
+    csv_na_values: 'NaN'
+    csv_header: 0
+
+    _time:
+        value: getreldt('time_stamp', '%Y-%m-%dT%H:%M:%S.%fZ')
+
+    _alt_ref:
+        value: get('gph_gnss')
+
+    _gph:
+        value: get('gph_gnss')
+
+    _temp:
+        value: get('temp', 'd2k')
+
+    _pres:
+        value: get('press_gnss')
+
+    _rh:
+        value: get('rh')
+
+    _wdir:
+        value: get('wind_dir')
+
+    _wspeed:
+        value: get('wind_speed')
+
 # ----------------------------------------------------
 # iMS-100 GDP, beta version 2
 # ----------------------------------------------------

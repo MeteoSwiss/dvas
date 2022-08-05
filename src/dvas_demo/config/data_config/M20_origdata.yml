@@ -4,14 +4,14 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
-# This file contains the extraction details for the ATMS-3710 MDP files.
+# This file contains the extraction details for the M20 MDP files.
 # It must absolutely have the string 'origdata' in its name, to match the dvas class names.
 # --------------------------------------------------------------------------------------------------
 
 # ----------------------------------------------------
-# ATMS-3710 MDP (UAII2022)
+# M20 MDP (UAII2022)
 # ----------------------------------------------------
-_ATMS-3710:
+_M20:
 
     # -- META DATA ----------------------------------
     edt: "to_datetime(get('event_dt'))"
@@ -31,11 +31,11 @@ _ATMS-3710:
     csv_skiprows: 18
     csv_skipfooter: 0
     csv_encoding:
-    csv_na_values:
+    csv_na_values: 'NaN'
     csv_header: 0
 
     _time:
-        value: getreldt('time_stamp', '%Y-%m-%dT%H:%M:%S.%fz')
+        value: getreldt('time_stamp', '%Y-%m-%dT%H:%M:%S.%fZ')
 
     _alt_ref:
         value: get('gph_gnss')
@@ -47,7 +47,7 @@ _ATMS-3710:
         value: get('temp_air', 'd2k')
 
     _pres:
-        value: get('press_sens')
+        value: get('press_gnss')
 
     _rh:
         value: get('rh')

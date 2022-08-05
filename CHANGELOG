@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [v0.7.0.dev0]
 ### Added:
+ - [fpavogt, 2022-08-05] Add support for the M20, iMS100, ATMS-3710, and WxR-301D sondes
  - [fpavogt, 2022-07-13] Set resampled points to NaN if they are >=1s away from an original point (fix #233)
  - [fpavogt, 2022-07-12] Add support for the PS01B3M sonde
  - [fpavogt, 2022-07-12] Modify GetreldtExpr() to optionally round time stamps, and add dedicated test
