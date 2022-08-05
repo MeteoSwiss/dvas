@@ -46,7 +46,7 @@ _WxR-301D:
         value: get('gph_gnss')
 
     _temp:
-        value: get('temp_air', 'd2k')
+        value: get('temp_air', 'c2k')
 
     _pres:
         value: get('press_gnss')

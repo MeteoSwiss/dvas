@@ -18,6 +18,7 @@ from itertools import takewhile
 import operator
 import inspect
 import netCDF4 as nc
+import numpy as np
 import pandas as pd
 
 # Import from current package
@@ -1055,10 +1056,10 @@ class GetExpr(TerminalLoadExprInterpreter):
         'nop': lambda x: x,
         'rel': lambda x: x - x.iloc[0],
         'div2': lambda x: x / 2,
-        'd2k': lambda x: x + 273.15,
-        'k2d': lambda x: x - 273.15,
-        'd2f': lambda x: (x * 9 / 5) + 32,
-        'f2d': lambda x: (x - 32) * 5 / 9,
+        'c2k': lambda x: x + 273.15,
+        'k2c': lambda x: x - 273.15,
+        'c2f': lambda x: (x * 9 / 5) + 32,
+        'f2c': lambda x: (x - 32) * 5 / 9,
         'ms2kmh': lambda x: x * 3.6,
         'kmh2ms': lambda x: x / 3.6,
         'm2km': lambda x: x / 1000,
@@ -1134,10 +1135,13 @@ class GetreldtExpr(TerminalLoadExprInterpreter):
             # rounding level.
             if ((errs := (out-out_orig).abs()) >= 1/10**(self._round_lvl+1)).any():
                 msg_lvl = logger.critical
+                #import pdb
+                #pdb.set_trace()
             else:
                 msg_lvl = logger.info
 
             msg_lvl('Maximum time stamp rounding error: %.3fs', errs.max())
+            msg_lvl('Median (original) time step: %.3fs', np.median(np.diff(out_orig)))
 
         return out
 

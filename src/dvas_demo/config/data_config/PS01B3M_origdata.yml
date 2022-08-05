@@ -46,7 +46,7 @@ _PS01B3M:
         value: get('gph_gnss[gpm]')
 
     _temp:
-        value: get('temp[˚C]', 'd2k')
+        value: get('temp[˚C]', 'c2k')
 
     _pres:
         value: get('press_gnss[hpa]')

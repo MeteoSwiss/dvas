@@ -45,7 +45,7 @@ _iMS100:
         value: get('gph_gnss')
 
     _temp:
-        value: get('temp', 'd2k')
+        value: get('temp', 'c2k')
 
     _pres:
         value: get('press_gnss')

@@ -44,7 +44,7 @@ _C34:
         value: get('Altitude (gpm)')
 
     _temp:
-        value: get('Temperature (?C)', 'd2k')
+        value: get('Temperature (?C)', 'c2k')
 
     _rh:
         value: get('Humidity (%)')
