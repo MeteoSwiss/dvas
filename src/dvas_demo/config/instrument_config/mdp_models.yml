@@ -43,8 +43,12 @@
   mdl_desc: 'Azista Industries Pvt Ltd. ATMS-3710 (UAII2022)'
   mid: 'ATMS-3710'
 
+- mdl_name: 'CF-06AH'
+  mdl_desc: 'Aerospace NewSky Technology Co., Ltd CF-06AH (UAII2022)'
+  mid: 'CF-06AH'
+
 - mdl_name: 'DFM-17'
-  mdl_desc: 'GRAW DFM-17 (UAII2022)'
+  mdl_desc: 'GRAW Radiosondes GmbH & Co. KG DFM-17 (UAII2022)'
   mid: 'DFM-17'
 
 - mdl_name: 'iMet-54-AA'
