@@ -91,8 +91,10 @@ class ResampleStrategy(MPStrategyAC):
                     continue
                 else:
                     logger.warning('Non-integer time steps.')
+            elif len(new_tdt) < len(prf.data):
+                logger.warning('Extra-numerous timesteps.')
             else:
-                logger.warning('Missing and/or extra-numerous timesteps.')
+                logger.warning('Missing time steps.')
 
             # Assess whether the datetimes are indeed increasing systematically
             # WARNING: we here use the apply method and a lambda function, to avoid floating point
@@ -190,11 +192,10 @@ class ResampleStrategy(MPStrategyAC):
                 x_dx.loc[:, (0, 'uc_tot')] = prf.uc_tot.iloc[x_ip1_ind-1].values
                 x_dx.loc[:, (1, 'uc_tot')] = prf.uc_tot.iloc[x_ip1_ind].values
             except AttributeError:
-                x_dx.loc[:, (0, 'uc_tot')] = 0
-                x_dx.loc[:, (1, 'uc_tot')] = 0
-            # Let's also hide anything that was not interpolated
-            for i in [0, 1]:
-                x_dx.loc[np.isnan(omega_vals), (i, 'uc_tot')] = np.nan
+                x_dx.loc[:, (0, 'uc_tot')] = [item if np.isnan(item) else 0
+                                              for item in x_dx.loc[:, (0, PRF_VAL)]]
+                x_dx.loc[:, (1, 'uc_tot')] = [item if np.isnan(item) else 0
+                                              for item in x_dx.loc[:, (1, PRF_VAL)]]
 
             # Assign the oid, eid, mid, rid values. Since we are here resampling one profile,
             # they are the same for all (and thus their value is irrelevant)
