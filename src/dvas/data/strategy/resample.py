@@ -60,7 +60,7 @@ class ResampleStrategy(MPStrategyAC):
 
         # Some sanity checks to begin with
         if not isinstance(prfs, list):
-            raise DvasError("Ouch ! prfs should be of type list, and not: {}".format(type(prfs)))
+            raise DvasError(f"Ouch ! prfs should be of type list, and not: {type(prfs)}")
         # The following should in principle never happen because the strategy ensures that.
         # If this blows up, then something must have gone really wrong ...
         if np.any([PRF_TDT not in prf.get_index_attr() for prf in prfs]):
@@ -94,13 +94,14 @@ class ResampleStrategy(MPStrategyAC):
             elif len(new_tdt) < len(prf.data):
                 logger.warning('Extra-numerous timesteps.')
             else:
-                logger.warning('Missing time steps.')
+                logger.warning('Missing (at least) %i time steps.', len(new_tdt) - len(prf.data))
 
             # Assess whether the datetimes are indeed increasing systematically
             # WARNING: we here use the apply method and a lambda function, to avoid floating point
             # errors related to https://github.com/pandas-dev/pandas/issues/34290
             tmp = pd.Series(prf.data.index.get_level_values(PRF_TDT)).apply(
                 lambda x: x.total_seconds())
+
             if any(np.diff(tmp) < 0):
                 raise DvasError(
                     f'Time stamps are not systematically increasing for {prf.info.src}')
@@ -150,6 +151,9 @@ class ResampleStrategy(MPStrategyAC):
             omega_vals = np.array([(item-old_tdt[x_ip1_ind[ind]-1]) /
                                    np.diff(old_tdt)[x_ip1_ind[ind]-1]
                                    for (ind, item) in enumerate(new_tdt.values)])
+
+            #import pdb
+            #pdb.set_trace()
 
             # All these weights should be comprised between 0 and 1 ... else something went bad.
             assert all((omega_vals >= 0) * (omega_vals <= 1))
