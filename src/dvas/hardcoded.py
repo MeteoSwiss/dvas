@@ -181,6 +181,16 @@ FLG_INCOMPATIBLE = 'incomp'
 #: str: Flag's desc for resampled values
 FLG_INCOMPATIBLE_DESC = 'Incompatible GDP measurements'
 
+#: str: Flag's name for ascent data
+FLG_PRELAUNCH = 'prelaunch'
+#: str: Flag's desc for ascent data
+FLG_PRELAUNCH_DESC = 'Prelaunch data'
+
+#: str: Flag's name for ascent data
+FLG_ASCENT = 'ascent'
+#: str: Flag's desc for ascent data
+FLG_ASCENT_DESC = 'Ascent data'
+
 #: str: Flag's name for descent data
 FLG_DESCENT = 'descent'
 #: str: Flag's desc for descent data
@@ -194,11 +204,14 @@ FLG_HASCWS_DESC = 'A valid CWS measure exists for this measurement point'
 # Metadata special fields
 # -----------------------
 
-#: str: Metdata field to store the time of the balloon burst point
-MTDTA_BPT = 'bpt_time'
+#: str: Metdata field to store the GPS time of the first point in the profile.
+MTDTA_FIRST = 'first_timestamp'
 
-#: str: Metadata field to store the GPS time associated to the first profile point.
-MTDTA_START = 'start_time'
+#: str: Metadata field to store the GPS time of the manufacturer-detected launch.
+MTDTA_LAUNCH = 'launch_timestamp'
+
+#: str: Metadata field to store the GPS time of the manufacturer-detected balloon burst.
+MTDTA_BURST = 'burst_timestamp'
 
 #: str: Metadata field to store the tropopause geopotential height
 MTDTA_TROPOPAUSE = 'tropopause-gph'
