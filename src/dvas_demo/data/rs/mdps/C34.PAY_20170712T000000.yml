@@ -8,8 +8,8 @@ srn: '6001'
 
 product_id: '0'
 
-first_timestep:
+first_timestamp:
 
-launch_timestep:
+launch_timestamp:
 
-burst_timestep:
+burst_timestamp:
