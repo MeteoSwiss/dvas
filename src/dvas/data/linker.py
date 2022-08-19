@@ -1064,6 +1064,7 @@ class GetExpr(TerminalLoadExprInterpreter):
         'kmh2ms': lambda x: x / 3.6,
         'm2km': lambda x: x / 1000,
         'km2m': lambda x: x + 1000,
+        'kn2ms': lambda x: x * 1852 / 3600,
     }
 
     def __init__(self, arg, op='nop'):
