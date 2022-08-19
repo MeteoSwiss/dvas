@@ -19,10 +19,11 @@ _iMet-54-AA:
     pid: "get('product_id')"
     tags:
         - "cat('e:', get('event_id'))"
-        - "cat('r:', get('rig'))"
+        - "cat('r:', get('rig_id'))"
     metadata:
-        bpt_time:
-        start_time: "to_datetime(get('start_time'))"
+        first_timestamp: "to_datetime(get('first_timestamp'))"
+        launch_timestamp: "to_datetime(get('launch_timestamp'))"
+        burst_timestamp: "to_datetime(get('burst_timestamp'))"
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter: ';'

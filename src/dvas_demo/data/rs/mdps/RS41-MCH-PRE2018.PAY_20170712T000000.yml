@@ -8,4 +8,8 @@ srn: 'M2710695'
 
 product_id: '0'
 
-start_time:
+first_timestamp:
+
+launch_timestamp:
+
+burst_timestamp:

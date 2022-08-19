@@ -67,9 +67,9 @@
   mdl_desc: 'VSSC PS01B3M (UAII2022)'
   mid: 'PS01B3M'
 
-- mdl_name: 'HT03G-1U'
-  mdl_desc: 'Tianjin Huayuntianyi Special Meteorological Sounding Tech Co. Ltd HT03G-1U(GTH3) (UAII2022)'
-  mid: 'HT03G-1U'
+- mdl_name: 'HT-GTS(U)2-1'
+  mdl_desc: 'Tianjin Huayuntianyi Special Meteorological Sounding Tech Co. Ltd HT-GTS(U)2-1 (GTH3) (UAII2022)'
+  mid: 'HT-GTS(U)2-1'
 
 - mdl_name: 'RS41-SG'
   mdl_desc: 'Vaisala RS41-SG (UAII2022)'

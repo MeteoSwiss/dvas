@@ -9,10 +9,6 @@
 # --------------------------------------------------------------------------------------------------
 
 # ----------------------------------------------------
-# RS41 MDP (UAII2022 format)
-# ----------------------------------------------------
-
-# ----------------------------------------------------
 # RS41 MDP (MCH pre-2018 format)
 # ----------------------------------------------------
 _RS41-MCH-PRE2018:
@@ -23,10 +19,11 @@ _RS41-MCH-PRE2018:
     pid: "get('product_id')"
     tags:
         - "cat('e:', get('event_id'))"
-        - "cat('r:', get('rig'))"
+        - "cat('r:', get('rig_id'))"
     metadata:
-        bpt_time:
-        start_time: "to_datetime(get('start_time'))"
+        first_timestamp: "to_datetime(get('first_timestamp'))"
+        launch_timestamp: "to_datetime(get('launch_timestamp'))"
+        burst_timestamp: "to_datetime(get('burst_timestamp'))"
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter:
@@ -72,10 +69,11 @@ _RS41-MCH:
     pid: "get('product_id')"
     tags:
         - "cat('e:', get('event_id'))"
-        - "cat('r:', get('rig'))"
+        - "cat('r:', get('rig_id'))"
     metadata:
-        bpt_time:
-        start_time: "to_datetime(get('start_time'))"
+        first_timestamp: "to_datetime(get('first_timestamp'))"
+        launch_timestamp: "to_datetime(get('launch_timestamp'))"
+        burst_timestamp: "to_datetime(get('burst_timestamp'))"
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter: ';'
@@ -122,10 +120,11 @@ _RS41-SG:
     pid: "get('product_id')"
     tags:
         - "cat('e:', get('event_id'))"
-        - "cat('r:', get('rig'))"
+        - "cat('r:', get('rig_id'))"
     metadata:
-        bpt_time:
-        start_time: "to_datetime(get('start_time'))"
+        first_timestamp: "to_datetime(get('first_timestamp'))"
+        launch_timestamp: "to_datetime(get('launch_timestamp'))"
+        burst_timestamp: "to_datetime(get('burst_timestamp'))"
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter: ';'
@@ -176,8 +175,9 @@ _RS41-GDP_001:
         - "cat('r:', get('g.Measurement.BalloonNumber'))"
         - "cat('tod:', get('g.Measurement.TimeOfDay'))"
     metadata:
-        bpt_time: "get('g.Measurement.BurstpointTime')"
-        start_time: "to_datetime(get('g.Measurement.StartTime'))"
+        first_timestamp: "to_datetime(get('g.Measurement.StartTime'))"
+        launch_timestamp: "to_datetime(get('g.Measurement.StartTime'))"
+        burst_timestamp: "get('g.Measurement.BurstpointDatetime')"
         gruan_tropopause: "get('g.Measurement.TropopauseGeopotHeight')"
 
     # -- ORIG DATA ----------------------------------
