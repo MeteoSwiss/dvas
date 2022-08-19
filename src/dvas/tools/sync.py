@@ -19,7 +19,7 @@ import numpy as np
 # Import from this package
 from ..logger import log_func_call
 from ..errors import DvasError
-from ..hardcoded import PRF_ALT, PRF_VAL, PRF_TDT, MTDTA_START
+from ..hardcoded import PRF_ALT, PRF_VAL, PRF_TDT, MTDTA_FIRST
 
 # Setup the local logger
 logger = logging.getLogger(__name__)
@@ -39,14 +39,14 @@ def get_sync_shifts_from_starttime(prfs):
 
     # Start with some sanity checks
     for prf in prfs:
-        if MTDTA_START not in prf.info.metadata.keys():
-            raise DvasError(f"'{MTDTA_START}' not found in metadata for: {prf.info.src}")
-        if prf.info.metadata[MTDTA_START] is None:
+        if MTDTA_FIRST not in prf.info.metadata.keys():
+            raise DvasError(f"'{MTDTA_FIRST}' not found in metadata for: {prf.info.src}")
+        if prf.info.metadata[MTDTA_FIRST] is None:
             raise DvasError(
-                f"'{MTDTA_START}' is None. GPS start-time sync impossible for: {prf.info.src}")
+                f"'{MTDTA_FIRST}' is None. GPS start-time sync impossible for: {prf.info.src}")
 
     # Extract all the start times, and convert them to datetimes
-    start_times = [prf.info.metadata[MTDTA_START] for prf in prfs]
+    start_times = [prf.info.metadata[MTDTA_FIRST] for prf in prfs]
 
     shifts = [int(np.round((item-np.min(start_times)).total_seconds())) for item in start_times]
 
