@@ -68,7 +68,7 @@ _IMS-100-BETA_002:
     # -- META DATA ----------------------------------
     edt: "to_datetime(get('g.Measurement.StandardTime'))"
     srn: "get('g.MainSonde.SerialNumber')"
-    pid: "get('g.Product.Id')"
+    pid: "get('g.GroundSystem.SerialNumber')"
     tags:
         - "cat('e:', get('g.Measurement.Id'))"
         - "cat('r:', get('g.Measurement.BalloonNumber', totype=str))"

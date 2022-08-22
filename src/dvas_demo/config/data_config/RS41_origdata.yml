@@ -66,7 +66,7 @@ _RS41-MCH:
     # -- META DATA ----------------------------------
     edt: "to_datetime(get('event_dt'))"
     srn: "get('srn')"
-    pid: "get('product_id')"
+    pid: "get('g.GroundSystem.SerialNumber')"
     tags:
         - "cat('e:', get('event_id'))"
         - "cat('r:', get('rig_id'))"
