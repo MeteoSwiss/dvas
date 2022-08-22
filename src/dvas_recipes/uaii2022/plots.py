@@ -431,8 +431,9 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None, k_lvl=2):
         if len(cws_prfs) != 1:
             raise DvasRecipesError(f'I got {len(cws_prfs)} != 1 CWS profiles ?!')
 
-        # Let's extract the corresponding SRN
+        # Let's extract the corresponding SRN and PID
         srn = db_view.srn.values[db_view.oid.values == prfs[p_ind].info.oid][0]
+        pid = db_view.pid.values[db_view.oid.values == prfs[p_ind].info.oid][0]
 
         # Start the plotting
         fig = plt.figure(figsize=(dpu.WIDTH_TWOCOL, 5.5))
@@ -507,11 +508,12 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None, k_lvl=2):
         # Add the source for the plot
         dpu.add_source(fig)
 
-        dpu.add_var_and_k(ax0, mid='+'.join(mid)+f' ({srn})',
+        dpu.add_var_and_k(ax0, mid='+'.join(mid)+f' \#{pid} ({srn})',
                           var_name=dta_prfs.var_info[PRF_VAL]['prm_name'], k=None)
 
         # Save it
-        fn_suf = dru.fn_suffix(eid=eid, rid=rid, tags=None, mids=mid, var=dynamic.CURRENT_VAR)
+        fn_suf = dru.fn_suffix(eid=eid, rid=rid, tags=None, mids=mid, pids=pid,
+                               var=dynamic.CURRENT_VAR)
         dpu.fancy_savefig(fig, fn_core='pp', fn_suffix=fn_suf, fn_prefix=dynamic.CURRENT_STEP_ID)
 
 
