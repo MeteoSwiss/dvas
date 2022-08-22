@@ -23,7 +23,7 @@
 
 - mdl_name: 'IMS-100-BETA_002'
   mdl_desc: 'iMS-100 GDP, BETA version 2'
-  mid: '[*]iMS-100'
+  mid: '[*]iMS100'
 
 - mdl_name: 'M10-GDP-ALPHA_002'
   mdl_desc: 'M10, ALPHA version 2'
