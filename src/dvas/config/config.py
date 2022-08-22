@@ -869,7 +869,8 @@ class ConfigExprInterpreter(metaclass=ABCMeta):
             'get': GetExpr,
             'upper': UpperExpr, 'lower': LowerExpr,
             'supper': SmallUpperExpr, 'small_upper': SmallUpperExpr,
-            'to_datetime': ToDatetime
+            'to_datetime': ToDatetime,
+            'split_select': SplitSelect
         }
 
         # Set get_value
@@ -1069,6 +1070,24 @@ class GetExpr(TerminalConfigExprInterpreter):
 
         return out
 
+class SplitSelect(GetExpr):
+    """ Split a string a select one item """
+
+    def __init__(self, arg, spl='_', sel=1):
+
+        super().__init__(arg, totype=str)
+
+        self._spl = spl
+        self._sel = sel
+
+    def interpret(self):
+        """ Split string 'arg' using 'spl' and return item 'sel' """
+
+        try:
+            return super().interpret().split(self._spl)[self._sel]
+        except (TypeError, IndexError):
+            raise TerminalExprInterpreterError()
+
 
 class NoneExpr(TerminalConfigExprInterpreter):
     """Apply none interpreter"""
@@ -1076,3 +1095,4 @@ class NoneExpr(TerminalConfigExprInterpreter):
     def interpret(self):
         """Implement fct method"""
         return self._expression
+
