@@ -68,7 +68,7 @@ FLG_PRM_DESC_PREFIX = 'Flag of '
 # Models
 # -------
 #: str: Instrument type pattern (e.g. VAI-RS92, MET_LAB-C50, RS92-GDP_002)
-MODEL_PAT = rf"{RE_UPPERLOWER_W}+(({RE_UPPERLOWER_W})|([\-\_]))*{RE_UPPERLOWER_W}"
+MODEL_PAT = rf"{RE_UPPERLOWER_W}+(({RE_UPPERLOWER_W})|([\-\_\(\)]))*{RE_UPPERLOWER_W}"
 
 #: str: CSV file model catching group pattern (e.g RS41.etc..., DFM-17.etc ...)
 CSV_FILE_MDL_PAT = r"^(" + MODEL_PAT + r")\.[\w\-]+\."
