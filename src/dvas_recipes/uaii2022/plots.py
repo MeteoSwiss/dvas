@@ -512,7 +512,7 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None, k_lvl=2):
                           var_name=dta_prfs.var_info[PRF_VAL]['prm_name'], k=None)
 
         # Save it
-        fn_suf = dru.fn_suffix(eid=eid, rid=rid, tags=None, mids=mid, pids=pid,
+        fn_suf = dru.fn_suffix(eid=eid, rid=rid, tags=None, mids=mid, pids=[pid],
                                var=dynamic.CURRENT_VAR)
         dpu.fancy_savefig(fig, fn_core='pp', fn_suffix=fn_suf, fn_prefix=dynamic.CURRENT_STEP_ID)
 
