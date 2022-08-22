@@ -121,20 +121,21 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
         # First, plot the profiles themselves
         x = idxs
         y = gdp[PRF_VAL].values
-        ym = gdp[PRF_VAL].values-k_lvl*gdp['uc_tot'].values
-        yp = gdp[PRF_VAL].values+k_lvl*gdp['uc_tot'].values
+        #ym = gdp[PRF_VAL].values-k_lvl*gdp['uc_tot'].values
+        #yp = gdp[PRF_VAL].values+k_lvl*gdp['uc_tot'].values
         delta = gdp[PRF_VAL].values-cws[PRF_VAL].values
 
         # TODO: remove the hardcoded reference to the wdir
         if gdp_prfs.var_info['val']['prm_name'] == 'wdir':
-            _, ym = pu.wrap_wdir_curve(x, ym)
-            _, yp = pu.wrap_wdir_curve(x, yp)
+            #_, ym = pu.wrap_wdir_curve(x, ym)
+            #_, yp = pu.wrap_wdir_curve(x, yp)
             x, y = pu.wrap_wdir_curve(x, y)
             delta = np.array([tt.wrap_angle(item) for item in delta])
 
         ax0.plot(x, y, lw=0.5, ls='-', drawstyle='steps-mid',
                  label='|'.join(gdp_prfs.get_info(label)[gdp_ind]))
-        ax0.fill_between(x, ym, yp, alpha=0.3, step='mid')
+        # Disabled following #240 - this is problematic for the wdir
+        #ax0.fill_between(x, ym, yp, alpha=0.3, step='mid')
 
         # Then, plot the Deltas with respect to the CWS
         ax1.plot(idxs, delta, drawstyle='steps-mid', lw=0.5, ls='-')
@@ -151,18 +152,19 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     # TODO: remove the hardcoded refernce to the wdir
     x = idxs
     y = cws[PRF_VAL].values
-    ym = cws[PRF_VAL].values-k_lvl*cws['uc_tot'].values
-    yp = cws[PRF_VAL].values+k_lvl*cws['uc_tot'].values
+    #ym = cws[PRF_VAL].values-k_lvl*cws['uc_tot'].values
+    #yp = cws[PRF_VAL].values+k_lvl*cws['uc_tot'].values
 
     if gdp_prfs.var_info['val']['prm_name'] == 'wdir':
-            _, ym = pu.wrap_wdir_curve(x, ym)
-            _, yp = pu.wrap_wdir_curve(x, yp)
+            #_, ym = pu.wrap_wdir_curve(x, ym)
+            #_, yp = pu.wrap_wdir_curve(x, yp)
             x, y = pu.wrap_wdir_curve(x, y)
 
     ax0.plot(x, y, color=pu.CLRS['cws_1'], lw=0.5, ls='-', drawstyle='steps-mid',
              label='CWS')
-    ax0.fill_between(x, ym, yp, alpha=0.3, step='mid',
-                     color=pu.CLRS['cws_1'])
+    # Disabled following #240 - this is problematic for the wdir
+    #ax0.fill_between(x, ym, yp, alpha=0.3, step='mid',
+    #                 color=pu.CLRS['cws_1'])
 
     ax1.plot(idxs, -k_lvl*cws['uc_tot'].values, lw=0.5, drawstyle='steps-mid',
              color='k')
