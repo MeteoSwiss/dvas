@@ -177,8 +177,8 @@ _RS41-GDP_001:
     metadata:
         first_timestamp: "to_datetime(get('g.Measurement.StartTime'))"
         launch_timestamp: "to_datetime(get('g.Measurement.StartTime'))"
-        burst_timestamp: "get('g.Measurement.BurstpointDatetime')"
-        gruan_tropopause: "get('g.Measurement.TropopauseGeopotHeight')"
+        burst_timestamp: "to_datetime(get('g.Measurement.BurstpointDatetime'))"
+        gruan_tropopause: "to_datetime(get('g.Measurement.TropopauseGeopotHeight'))"
 
     # -- ORIG DATA ----------------------------------
     _time:

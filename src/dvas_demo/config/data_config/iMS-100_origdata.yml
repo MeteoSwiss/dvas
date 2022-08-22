@@ -75,8 +75,8 @@ _IMS-100-BETA_002:
     metadata:
         first_timestep: "to_datetime(get('g.Measurement.StartTime'))"
         launch_timestep: "to_datetime(get('g.Measurement.StartTime'))"
-        burst_timestep: "get('g.Measurement.BurstpointDatetime')"
-        gruan_tropopause: "get('g.Measurement.TropopauseGeopotHeight')"
+        burst_timestep: "to_datetime(get('g.Measurement.BurstpointDatetime'))"
+        gruan_tropopause: "to_datetime(get('g.Measurement.TropopauseGeopotHeight'))"
 
     # -- ORIG DATA ----------------------------------
     _time:
