@@ -1,8 +1,8 @@
+event_id: '80596'
+
 event_dt: '20170712T000000Z'
 
-rig: '1'
-
-event_id: '80596'
+rig_id: '1'
 
 srn: 'M2710695'
 
