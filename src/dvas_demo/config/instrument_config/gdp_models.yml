@@ -15,17 +15,13 @@
 
 - mdl_name: 'RS41-GDP_001'
   mdl_desc: 'RS41 GDP, version 1'
-  mid: '[*]RS41'
+  mid: '(gdp)RS41'
 
 - mdl_name: 'RS92-GDP_002'
   mdl_desc: 'RS92 GDP, version 2'
-  mid: '[*]RS92'
+  mid: '(gdp)RS92'
 
 - mdl_name: 'IMS-100-BETA_002'
   mdl_desc: 'iMS100 GDP, BETA version 2'
-  mid: '[*]iMS100'
-
-- mdl_name: 'M10-GDP-ALPHA_002'
-  mdl_desc: 'M10, ALPHA version 2'
-  mid: '[*]M10'
+  mid: '(gdp)iMS100'
 
