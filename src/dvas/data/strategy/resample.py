@@ -73,6 +73,34 @@ class ResampleStrategy(MPStrategyAC):
             if len(prf.data) <= 1:
                 continue
 
+            logger.info('Checking that timesteps are increasing monotically ...')
+            is_bad = True
+            while is_bad:
+                # Compute the time deltas
+                # WARNING: we here use the apply method and a lambda function,
+                # to avoid floating point errors related to
+                # https://github.com/pandas-dev/pandas/issues/34290
+
+                tsteps = pd.Series(prf.data.index.get_level_values(PRF_TDT)).apply(
+                                   lambda x: x.total_seconds())
+
+                if any(bad := (tsteps.diff() < 0)):
+
+                    logger.error('Found %i decreasing timesteps for %s. Cropping them now.',
+                                 len(bad[bad]), prf.info.src)
+
+                elif any(bad := (tsteps.diff() == 0)):
+                    logger.error('Found %i duplicated timesteps. Cropping them now.',
+                                 len(bad[bad]))
+                else:
+                    is_bad = False
+
+                # If applicable, crop the bad points
+                if is_bad:
+                    prf.data = prf.data[~bad.values]
+                    # Sanity check that the IDX index remains ok.
+                    assert all(np.diff(prf.data.index.get_level_values('_idx')) == 1)
+
             # Let's identify the min and max integer values, rounded to the nearest second.
             t_0 = min(prf.data.index.get_level_values(PRF_TDT)).ceil('1s')
             t_1 = max(prf.data.index.get_level_values(PRF_TDT)).floor('1s')
@@ -95,18 +123,6 @@ class ResampleStrategy(MPStrategyAC):
                 logger.warning('Extra-numerous timesteps.')
             else:
                 logger.warning('Missing (at least) %i time steps.', len(new_tdt) - len(prf.data))
-
-            # Assess whether the datetimes are indeed increasing systematically
-            # WARNING: we here use the apply method and a lambda function, to avoid floating point
-            # errors related to https://github.com/pandas-dev/pandas/issues/34290
-            tmp = pd.Series(prf.data.index.get_level_values(PRF_TDT)).apply(
-                lambda x: x.total_seconds())
-
-            if any(np.diff(tmp) < 0):
-                raise DvasError(
-                    f'Time stamps are not systematically increasing for {prf.info.src}')
-            if any(np.diff(tmp) == 0):
-                raise DvasError(f'Some time stamps are duplicated for {prf.info.src}')
 
             # dvas should never resample anything. If we do, let's make it very visible.
             logger.critical('Starting resampling for %s', prfs[prf_ind].info.src)
@@ -152,16 +168,13 @@ class ResampleStrategy(MPStrategyAC):
                                    np.diff(old_tdt)[x_ip1_ind[ind]-1]
                                    for (ind, item) in enumerate(new_tdt.values)])
 
-            #import pdb
-            #pdb.set_trace()
-
             # All these weights should be comprised between 0 and 1 ... else something went bad.
             assert all((omega_vals >= 0) * (omega_vals <= 1))
 
             # If the gap is large, the weights should be NaNs. We want to resample, NOT interpolate.
             # Let's find any point that is 1s or more away from a real measurement, and block these.
             to_hide = [np.min(np.abs(this_data['tdt'].dt.total_seconds().values - item))
-                       for item in new_tdt.total_seconds().values] #noqa pylint: disable=no-member
+                       for item in new_tdt.total_seconds().values]  # noqa pylint: disable=no-member
             to_hide = np.array(to_hide) >= interp_dist
 
             if any(to_hide):
