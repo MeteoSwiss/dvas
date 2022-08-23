@@ -55,7 +55,7 @@ def prf_summary(create_eid_edt_files=False):
             fn_out = path_var.output_path / (dynamic.CURRENT_STEP_ID +
                                              f"_eid-edt_{row['eid'].replace(':', '')}" +
                                              f"_{row['edt'].strftime('%Y%m%dT%H%M%S')}")
-            open(fn_out, 'a').close()
+            open(fn_out, 'a', encoding='utf-8').close()
 
 
 @log_func_call(logger, time_it=False)
@@ -106,7 +106,7 @@ def flag_phases(prfs):
 
             descent_starts_at = prf.info.metadata[MTDTA_BURST] - prf.info.metadata[MTDTA_FIRST]
             if descent_starts_at.total_seconds() <= 0:
-                    logger.error('No ascent data for: %s', prf.info.src)
+                logger.error('No ascent data for: %s', prf.info.src)
             is_descent = prf.data.index.get_level_values(PRF_TDT) > descent_starts_at
 
         else:
@@ -154,7 +154,7 @@ def cleanup_steps(prfs, resampling_freq, interp_dist, crop_descent, timeofday=No
 
     """
 
-    # Flag descent data (do this *after* the resampling so I do not need to worry about it)
+    # Flag pre-launch, ascent, and descent data
     prfs = flag_phases(prfs)
 
     # Crop any prelaunch data
@@ -283,8 +283,8 @@ def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
                 match gdp_prf.info.metadata['gruan_tropopause'].split(' '):
                     case [val, 'gpm']:
 
-                        msg = 'Tropopause - GRUAN: {} [m] vs {} [m] :dvas ({})'.format(
-                            val, dvas_trop[1], gdp_prf.info.src)
+                        msg = f'Tropopause: GRUAN-> {val} [m] vs {dvas_trop[1]} [m] <-dvas ' +\
+                            f'({gdp_prf.info.src})'
 
                         if abs(float(val)-dvas_trop[1]) <= 20:
                             logger.info(msg)
