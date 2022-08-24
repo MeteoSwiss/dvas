@@ -93,8 +93,7 @@ def flag_phases(prfs):
             else:
                 logger.debug('No prelaunch data identified in: %s', prf.info.src)
         else:
-            logger.warning('Insufficient metadata to identify pre-launch data for: %s',
-                           prf.info.src)
+            logger.warning('Cannot identify pre-launch phase: missing metadata (%s)', prf.info.src)
             prelaunch_ends_at = pd.Timedelta(0, 's')
 
         is_prelaunch = prf.data.index.get_level_values(PRF_TDT) < prelaunch_ends_at
@@ -113,7 +112,7 @@ def flag_phases(prfs):
             max_alt_id = prf.data.index.get_level_values(PRF_ALT).argmax()
             is_descent = prf.data.index.get_level_values(PRF_IDX) > max_alt_id
             if is_descent.any():
-                logger.warning('Insufficient metadata to identify descent data for: %s',
+                logger.warning('Cannot identify descent phase: missing metadata (%s)',
                                prf.info.src)
                 logger.info('Points after max alt %.1f [%s] @ %.1f [s] will be flagged as "%s".',
                             prf.data.index[max_alt_id][1],
