@@ -145,7 +145,8 @@ def get_sync_shifts_from_val(prfs, max_shift=100, first_guess=None):
     # Let's just hide these away shamefully.
     with warnings.catch_warnings():
         warnings.filterwarnings('ignore', r'Mean of empty slice')
-        ind = [[np.nanmean(np.abs(1.-vals[0]/vals.shift(shift)[ind]))
+        ind = [[np.nanmean(np.abs(1. -
+                           vals.shift(first_guess[0])[0]/vals.shift(first_guess[ind]+shift)[ind]))
                 for ind in range(len(prfs))] for shift in shifts]
 
     ind = np.nanargmin(np.array(ind), axis=0)
@@ -155,7 +156,8 @@ def get_sync_shifts_from_val(prfs, max_shift=100, first_guess=None):
         logger.warning('sync_shift_from_val values is close from the edge of the search zone')
 
     # Return a list of shifts, resetting it to only have positive shifts.
-    out = list(shifts[ind]-np.min(shifts[ind]))
+    out = shifts[ind]+first_guess
+    out = list(out-np.min(out))
 
     # Check if we are far from the first_guess ... and if so, raise a warning
     if any(np.abs(item - first_guess[i]) > 3 for i, item in enumerate(out)):
