@@ -32,12 +32,11 @@ logger = logging.getLogger(__name__)
 
 
 @log_func_call(logger, time_it=False)
-def prf_summary(create_eid_edt_files=False):
+def prf_summary():
     """ Exports a summary of the different profiles in the DB.
 
     Args:
-        create_eid_edt_files (bool, optional): if True, will issue a set of empty files that tie
-            eids to edts. Used for the UAII 2022 preview tool. Defaults to False.
+
     """
 
     view = DB.extract_global_view()
@@ -46,16 +45,6 @@ def prf_summary(create_eid_edt_files=False):
     fn_out = path_var.output_path / (dynamic.CURRENT_STEP_ID + '_profile_list.csv')
     view.to_csv(fn_out, index=False)
     logger.info('Created profile list: %s', fn_out)
-
-    # The following files are required for the quick preview visualization tool developed for the
-    # UAII 2022.
-    if create_eid_edt_files:
-        for _, row in view.loc[:, ['edt', 'eid']].drop_duplicates().iterrows():
-
-            fn_out = path_var.output_path / (dynamic.CURRENT_STEP_ID +
-                                             f"_eid-edt_{row['eid'].replace(':', '')}" +
-                                             f"_{row['edt'].strftime('%Y%m%dT%H%M%S')}")
-            open(fn_out, 'a', encoding='utf-8').close()
 
 
 @log_func_call(logger, time_it=False)
