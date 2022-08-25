@@ -13,20 +13,19 @@ rcp_name: uaii2022
 # dvas paths: absolute paths begin with '/'.
 rcp_paths:
     path_anchors:  # Define useful shortcuts for the other paths
-        base_path: &base_path ./
+        common_base: &common_base ./
     config_dir_path:
-        name: config
-        path: /Users/fvogt/Projects/MCH/UAII2022/dvas/codedev/src/dvas_demo
+        base_path: /Users/dvas/projects/UAII2022/dvas/src/dvas_demo/
+        sub_path: config
     orig_data_path:
-        #name: test_flights_MCH/20220523T070000/
-        name: test_flights_DWD/20220510_1059
-        path: /Users/fvogt/Projects/MCH/UAII2022/dvas/testzone/procdata_full/rs
+        base_path: *common_base
+        sub_path: ../import
     local_db_path:
-        name: db
-        path: *base_path
+        base_path: *common_base
+        sub_path: db
     output_path:
-        name: output
-        path: *base_path
+        base_path: *common_base
+        sub_path: output
 
 # Recipe parameters
 rcp_params:
@@ -87,8 +86,6 @@ rcp_steps:
     - fct: uaii2022.basic.prf_summary
       step_id: '00'
       run: True
-      kwargs:
-          create_eid_edt_files: True # If True, will create the eid-edt files used for the UAII preview tool
 
     # Profile cleanup (cropping after burst, resampling)
     - fct: uaii2022.basic.cleanup
