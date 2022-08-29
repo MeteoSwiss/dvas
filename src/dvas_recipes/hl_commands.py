@@ -263,7 +263,7 @@ def run_recipe(rcp_fn: Path, fid_log_fn: Path,
             from the iMS100 GDP. This products would require the field  'g.measurement.InternalKey'
             to be present, like the RS41 GDP, e.g.:
 
-            :g.Measurement.InternalKey = "UAII2022_F08"ß
+            :g.Measurement.InternalKey = "UAII2022_F08"
 
     '''
 
