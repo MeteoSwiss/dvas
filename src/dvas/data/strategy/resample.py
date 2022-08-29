@@ -73,7 +73,8 @@ class ResampleStrategy(MPStrategyAC):
             if len(prf.data) <= 1:
                 continue
 
-            logger.info('Checking that timesteps are increasing monotically ...')
+            logger.info('Checking that timesteps are increasing monotically ... (%s)',
+                        prf.info.src)
             is_bad = True
             while is_bad:
                 # Compute the time deltas
@@ -86,12 +87,12 @@ class ResampleStrategy(MPStrategyAC):
 
                 if any(bad := (tsteps.diff() < 0)):
 
-                    logger.error('Found %i decreasing timesteps for %s. Cropping them now.',
+                    logger.error('Found %i decreasing timesteps. Cropping them now. (%s)',
                                  len(bad[bad]), prf.info.src)
 
                 elif any(bad := (tsteps.diff() == 0)):
-                    logger.error('Found %i duplicated timesteps. Cropping them now.',
-                                 len(bad[bad]))
+                    logger.error('Found %i duplicated timesteps. Cropping them now. (%s)',
+                                 len(bad[bad]), prf.info.src)
                 else:
                     is_bad = False
 
@@ -115,17 +116,21 @@ class ResampleStrategy(MPStrategyAC):
             # next profile without changing anything
             if len(new_tdt) == len(prf.data):
                 if all(new_tdt == prf.data.index.get_level_values(PRF_TDT)):
-                    logger.info('No resampling required for %s', prfs[prf_ind].info.src)
+                    logger.info('No resampling required for %s', prf.info.src)
                     continue
                 else:
-                    logger.warning('Non-integer time steps.')
+                    logger.warning('Non-integer time steps (%s).',
+                                   prfs[prf_ind].info.src)
             elif len(new_tdt) < len(prf.data):
-                logger.warning('Extra-numerous timesteps.')
+                logger.warning('Extra-numerous timesteps (%s).',
+                               prfs[prf_ind].info.src)
             else:
-                logger.warning('Missing (at least) %i time steps.', len(new_tdt) - len(prf.data))
+                logger.warning('Missing (at least) %i time steps (%s).',
+                               len(new_tdt) - len(prf.data),
+                               prf.info.src)
 
             # dvas should never resample anything. If we do, let's make it very visible.
-            logger.warning('Starting resampling for %s', prfs[prf_ind].info.src)
+            logger.warning('Starting resampling (%s)', prf.info.src)
             # Very well, interpolation is required. To avoid duplicating code, we shall rely on
             # the dvas.tools.gdps.utils.process_chunk() function to do so.
             # This implies that we must construct a suitable set of df_chunks to feed that function.
@@ -178,8 +183,8 @@ class ResampleStrategy(MPStrategyAC):
             to_hide = np.array(to_hide) >= interp_dist
 
             if any(to_hide):
-                logger.warning('Resampling %i points to NaN (>=%.3fs from real data).',
-                               len(to_hide[to_hide]), interp_dist)
+                logger.warning('Resampling %i points to NaN (>=%.3fs from real data) (%s).',
+                               len(to_hide[to_hide]), interp_dist, prf.info.src)
                 omega_vals[to_hide] = np.nan
 
             # I am now ready to "fill the chunks". The first profile will be
