@@ -41,6 +41,7 @@ from ..hardcoded import GDP_FILE_EXT
 from ..hardcoded import PRM_PAT, FLG_PRM_PAT
 from ..hardcoded import CSV_FILE_MDL_PAT, GDP_FILE_MDL_PAT
 from ..hardcoded import TAG_RAW, TAG_GDP, TAG_EMPTY
+from ..tools import wmo
 
 # Setup local logger
 logger = logging.getLogger(__name__)
@@ -936,6 +937,7 @@ class LoadExprInterpreter(ABC):
             'pow': PowExpr,
             'sqrt': SqrtExpr,
             'getreldt': GetreldtExpr,
+            'getgeomalt': GetgeomaltExpr,
         }
 
         # Init
@@ -1084,6 +1086,35 @@ class GetExpr(TerminalLoadExprInterpreter):
             out = op(out)
 
         return out
+
+
+class GetgeomaltExpr(TerminalLoadExprInterpreter):
+    """ Geometric altitude to geopotential height convertor """
+
+    def __init__(self, arg, lat=None):
+        """ Init function
+
+        Args:
+            args (str): expression to process.
+            lat (float, optional): geodetic latitude of launch site, in degrees
+
+        """
+
+        self._expression = arg
+
+        if lat is None:
+            raise DvasError('Missing latitude for geopotential height conversion.')
+        self._lat = np.deg2rad(lat)
+
+    def interpret(self):
+        """ Implement fct method """
+
+        out = self._FCT(self._expression, *self._ARGS, **self._KWARGS)  # noqa pylint: disable=E1102
+
+        # Convert geometric altitude to geopotential height
+        # See #242 for details
+
+        return wmo.geom2geopot(out, self._lat)
 
 
 class GetreldtExpr(TerminalLoadExprInterpreter):
