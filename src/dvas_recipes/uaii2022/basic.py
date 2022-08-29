@@ -78,9 +78,9 @@ def flag_phases(prfs):
             prelaunch_ends_at = prf.info.metadata[MTDTA_LAUNCH] - prf.info.metadata[MTDTA_FIRST]
             if prelaunch_ends_at.total_seconds() != 0:
                 if prelaunch_ends_at.total_seconds() < 0:
-                    logger.error('first_timestamp > launch_timestamp for: %s', prf.info.src)
+                    logger.warning('first_timestamp > launch_timestamp (%s)', prf.info.src)
             else:
-                logger.debug('No prelaunch data identified in: %s', prf.info.src)
+                logger.debug('No prelaunch data identified (%s)', prf.info.src)
         else:
             logger.warning('Cannot identify pre-launch phase: missing metadata (%s)', prf.info.src)
             prelaunch_ends_at = pd.Timedelta(0, 's')
@@ -94,7 +94,7 @@ def flag_phases(prfs):
 
             descent_starts_at = prf.info.metadata[MTDTA_BURST] - prf.info.metadata[MTDTA_FIRST]
             if descent_starts_at.total_seconds() <= 0:
-                logger.error('No ascent data for: %s', prf.info.src)
+                logger.error('No ascent data (%s)', prf.info.src)
             is_descent = prf.data.index.get_level_values(PRF_TDT) > descent_starts_at
 
         else:
@@ -103,11 +103,12 @@ def flag_phases(prfs):
             if is_descent.any():
                 logger.warning('Cannot identify descent phase: missing metadata (%s)',
                                prf.info.src)
-                logger.info('Points after max alt %.1f [%s] @ %.1f [s] will be flagged as "%s".',
-                            prf.data.index[max_alt_id][1],
-                            prfs.var_info[PRF_ALT]['prm_unit'],
-                            prf.data.index[max_alt_id][2].total_seconds(),
-                            FLG_DESCENT)
+                logger.info(
+                    'Points after max alt %.1f [%s] @ %.1f [s] will be flagged as "%s". (%s)',
+                    prf.data.index[max_alt_id][1],
+                    prfs.var_info[PRF_ALT]['prm_unit'],
+                    prf.data.index[max_alt_id][2].total_seconds(),
+                    FLG_DESCENT, prf.info.src)
 
         # Actually set the flags
         prf.set_flg(FLG_DESCENT, True, index=is_descent)
@@ -159,7 +160,7 @@ def cleanup_steps(prfs, resampling_freq, interp_dist, crop_descent, timeofday=No
         for (ind, prf) in enumerate(prfs):
             if not prf.has_tag(timeofday):
                 prf.info.add_tags(timeofday)
-                logger.info('Adding missing TimeOfDay tag to %s profile.', prf.info.mid)
+                logger.info('Adding missing TimeOfDay tag (%s)', prf.info.src)
 
     # Resample the profiles as required
     prfs.resample(freq=resampling_freq, interp_dist=interp_dist, inplace=True,

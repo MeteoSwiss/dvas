@@ -118,7 +118,8 @@ def dvas_run_recipe():
     # Cleanup the inputs
     args.rcp_fn = Path(args.rcp_fn)
     args.fid_log_fn = Path(args.fid_log_fn)
-    args.f = [item.strip(' ') for item in args.f.split(',')]
+    if args.f is not None:
+        args.f = [item.strip(' ') for item in args.f.split(',')]
 
     # Feed this to the actual recipe routine
     run_recipe(args.rcp_fn, args.fid_log_fn, fid_to_treat=args.f,
