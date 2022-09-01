@@ -1012,8 +1012,8 @@ class ToDatetime(NonTerminalConfigExprInterpreter):
     def fct(self, a):
         """ Convert a string to datetime """
 
-        # If I am given nothing, return nothing
-        if a is None:
+        # If I am given nothing or a NaN, return nothing
+        if (a is None) or (a in ['NaN']):
             return None
 
         # Here, it is important to raise a NonTerminalExprInterpreterError if something fails.
@@ -1069,6 +1069,7 @@ class GetExpr(TerminalConfigExprInterpreter):
             out = self._totype(out)
 
         return out
+
 
 class SplitSelect(GetExpr):
     """ Split a string a select one item """
