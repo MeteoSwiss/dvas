@@ -276,7 +276,6 @@ class Recipe:
         # Keep a list of all the steps ids. WIll be useful for auto-tagging
         rcp_dyn.ALL_STEP_IDS = [item._step_id for item in self._steps]
 
-
     @property
     def name(self):
         """ Returns the name of the Recipe. """

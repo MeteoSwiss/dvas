@@ -142,6 +142,8 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var):
         logger.critical(err)
 
     # Use these as best synch shifts
+    # TODO: if/when anyone will want to use start_time shifts instead, one should make sure to
+    # handle their NaNs properly.
     sync_shifts = shifts_val
 
     # Given these shifts, let's compute the new length of the synchronized Profiles.

@@ -278,13 +278,11 @@ def run_recipe(rcp_fn: Path, fid_log_fn: Path,
     fid_eid_log = np.atleast_2d(np.genfromtxt(fid_log_fn, comments='#', delimiter=',',
                                               dtype=str, autostrip=True))
 
-    # Now, let's sub-select the flights to process from the list provided
+    # If warranted, let's sub-select the flights to process from the list provided
     # This is all a bit convoluted, but meant to ease the processing of subsequebnt flights
     # individually in a campaign setting
     if fid_to_treat is not None:
         fid_eid_log = [item for item in fid_eid_log if item[0] in fid_to_treat]
-    else:
-        fid_eid_log = []
 
     # Extract the eids - rids tuples required by dvas, and drop the rest
     eids_to_treat = [(item[0], f'e:{item[1]}', f'r:{item[2]}') for item in fid_eid_log]

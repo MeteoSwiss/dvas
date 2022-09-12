@@ -152,6 +152,14 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
             # Actually assign the value to each measurement of the profile.
             x_dx.loc[:, (prf_id, metadata)] = val
 
+    # Debug code for the NaN mismatch error
+    # import pdb
+    # pdb.set_trace()
+    # uu = x_dx.loc[:,(0, 'uc_tot')].isna()
+    # vv = x_dx.loc[:,(0, 'val')].isna()
+    # all(vv==uu)
+    # x_dx[vv!=uu]
+
     # To drastically reduce memory requirements and speed up the code significantly,
     # we will break the profiles into smaller chunks. In doing so, we avoid having to deal with
     # correlation matrices with O(10^8) elements (the majority of which are 0 anyway).

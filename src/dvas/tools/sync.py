@@ -41,14 +41,19 @@ def get_sync_shifts_from_starttime(prfs):
     for prf in prfs:
         if MTDTA_FIRST not in prf.info.metadata.keys():
             raise DvasError(f"'{MTDTA_FIRST}' not found in metadata for: {prf.info.src}")
-        if prf.info.metadata[MTDTA_FIRST] is None:
-            raise DvasError(
-                f"'{MTDTA_FIRST}' is None. GPS start-time sync impossible for: {prf.info.src}")
 
-    # Extract all the start times, and convert them to datetimes
-    start_times = [prf.info.metadata[MTDTA_FIRST] for prf in prfs]
+    # Extract all the start times, not forgetting to account for any data cropping that may
+    # have taken place since it was loaded (i.e. get the FIRST DATETIME from the metadata,
+    # and add the first time delta - which should be 0 unless descent data was cropped).
+    start_times = [None if prf.info.metadata[MTDTA_FIRST] is None else
+                   prf.info.metadata[MTDTA_FIRST] + prf.data.index.get_level_values(PRF_TDT)[0]
+                   for prf in prfs]
 
-    shifts = [int(np.round((item-np.min(start_times)).total_seconds())) for item in start_times]
+    # Compute the corresponding shifts, resetting them to be all positive
+    valid_start_time = [item for item in start_times if item is not None]
+    shifts = [np.nan if (item is None) else
+              int(np.round((item - np.min(valid_start_time)).total_seconds()))
+              for item in start_times]
 
     return shifts
 

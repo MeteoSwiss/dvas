@@ -105,6 +105,8 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
                      'Axis will be cropped from gdp_vs_cws.')
         show_alts = False
     elif np.any(np.diff(alts) <= 0):
+        #import pdb
+        #pdb.set_trace()
         logger.error('CWS ref. alt. is not increasing monotically. %s',
                      'Axis will be cropped from gdp_vs_cws')
         show_alts = False
