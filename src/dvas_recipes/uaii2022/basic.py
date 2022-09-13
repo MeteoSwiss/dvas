@@ -17,8 +17,8 @@ import pandas as pd
 from dvas.environ import path_var
 from dvas.logger import log_func_call
 from dvas.data.data import MultiRSProfile, MultiGDPProfile
-from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_IDX, MTDTA_FIRST, MTDTA_LAUNCH, MTDTA_BURST
-from dvas.hardcoded import TAG_GDP, TAG_CLN, FLG_PRELAUNCH, FLG_ASCENT, FLG_DESCENT
+from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_IDX, PRF_VAL, MTDTA_FIRST, MTDTA_LAUNCH, MTDTA_BURST
+from dvas.hardcoded import TAG_GDP, TAG_CLN, FLG_PRELAUNCH, FLG_ASCENT, FLG_DESCENT, FLG_INVALID
 from dvas.dvas import Database as DB
 
 # Import from dvas_recipes
@@ -235,6 +235,17 @@ def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
                               inplace=True)
 
         logger.info('Loaded %i GDP profiles from the DB.', len(gdp_prfs))
+
+        # Check that whenever I have a value, I have a valid error, and vice-versa
+        val_vs_uc = gdp_prfs.get_prms(['val', 'uc_tot'])
+        for (gdp_ind, gdp) in enumerate(gdp_prfs):
+            ok = val_vs_uc.loc[:, gdp_ind][PRF_VAL].isna() == \
+                 val_vs_uc.loc[:, gdp_ind]['uc_tot'].isna()
+            if any(~ok):
+                logger.critical('%s: %i/%i val vs uc_tot NaN mismatch for %s, flagged as "%s".',
+                                '+'.join(gdp.info.mid), len(ok[~ok]), len(ok),
+                                dynamic.CURRENT_VAR, FLG_INVALID)
+                gdp_prfs[gdp_ind].set_flg(FLG_INVALID, True, index=ok.index[~ok].values)
 
         # Deal with the faulty RS41 gph_uc_tcor values (NaNs when they should not be, see #205)
         if dynamic.CURRENT_VAR == 'gph' and fix_gph_uct is not None:

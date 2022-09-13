@@ -171,6 +171,11 @@ FLG_EMPTY = 'raw_na'
 #: str: Flag's desc for raw NA values
 FLG_EMPTY_DESC = 'Raw NA values'
 
+#: str: Flag's name for raw NA values
+FLG_INVALID = 'invalid'
+#: str: Flag's desc for raw NA values
+FLG_INVALID_DESC = 'Invalid data'
+
 #: str: Flag's name for interpolated values
 FLG_INTERP = 'interp'
 #: str: Flag's desc for interpolated values
