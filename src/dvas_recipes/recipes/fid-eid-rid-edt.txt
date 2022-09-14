@@ -1,3 +1,6 @@
+# This file links campaign flight IDs, GRUAN event IDs, rig IDs, and GRUAN standard times.
+# It is required to process flights by their campaign IDs rather than their GRUAN IDs.
+# This is required until #243 is fixed.
 F01,158362,1,2022-08-16T08:00:00.000Z
 F03,158363,1,2022-08-16T19:15:00.000Z
 F05,158373,1,2022-08-17T11:30:00.000Z
