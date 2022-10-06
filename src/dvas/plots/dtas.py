@@ -120,17 +120,16 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
                      lw=0.4, ls='-', drawstyle='steps-mid', c=lc, alpha=1,
                      label='|'.join(dta_prfs.get_info(label)[dta_ind]))
 
-
         # And then, the deltas normalized by the uncertainties
         ax1.plot(dta.loc[:, PRF_ALT], dta.loc[:, PRF_VAL] / dta.loc[:, 'uc_tot'].values,
                  lw=0.5, ls='-', drawstyle='steps-mid', c=lc, alpha=1/len(flights))
 
     # Set the axis labels
     ylbl0 = r'$\delta_{e,i}$'
-    ylbl0 += ' [{}]'.format(dta_prfs.var_info[PRF_VAL]['prm_unit'])
+    ylbl0 += f' [{dta_prfs.var_info[PRF_VAL]["prm_unit"]}]'
     ylbl1 = r'$\delta_{e,i}/\sigma_{\Omega_{e,i}}$'
-    altlbl = dta_prfs.var_info[PRF_ALT]['prm_name']
-    altlbl += ' [{}]'.format(dta_prfs.var_info[PRF_ALT]['prm_unit'])
+    altlbl = r'gph$_{\rm CWS}$'
+    altlbl += f' [{dta_prfs.var_info[PRF_ALT]["prm_unit"]}]'
 
     ax0.set_ylabel(pu.fix_txt(ylbl0), labelpad=10)
     ax1.set_ylabel(pu.fix_txt(ylbl1), labelpad=10)
