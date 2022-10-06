@@ -283,7 +283,7 @@ def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
                 match gdp_prf.info.metadata['gruan_tropopause'].split(' '):
                     case [val, 'gpm']:
 
-                        msg = f'Tropopause: GRUAN-> {val} [m] vs {dvas_trop[1]} [m] <-dvas ' +\
+                        msg = f'Tropopause: GRUAN-> {val} [m] vs {dvas_trop[1]:.2f} [m] <-dvas ' +\
                             f'({gdp_prf.info.src})'
 
                         if abs(float(val)-dvas_trop[1]) <= 20:
