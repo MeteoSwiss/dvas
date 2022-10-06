@@ -17,7 +17,8 @@ import pandas as pd
 from dvas.environ import path_var
 from dvas.logger import log_func_call
 from dvas.data.data import MultiRSProfile, MultiGDPProfile
-from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_IDX, PRF_VAL, MTDTA_FIRST, MTDTA_LAUNCH, MTDTA_BURST
+from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_IDX, PRF_VAL
+from dvas.hardcoded import MTDTA_FIRST, MTDTA_LAUNCH, MTDTA_BURST
 from dvas.hardcoded import TAG_GDP, TAG_CLN, FLG_PRELAUNCH, FLG_ASCENT, FLG_DESCENT, FLG_INVALID
 from dvas.dvas import Database as DB
 

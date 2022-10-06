@@ -134,7 +134,7 @@ def flight_overview(start_with_tags, label='mid', show=None):
 
         # Set the ylabel:
         ylbl = rs_prfs.var_info[PRF_VAL]['prm_name']
-        ylbl += ' [{}]'.format(rs_prfs.var_info[PRF_VAL]['prm_unit'])
+        ylbl += f' [{rs_prfs.var_info[PRF_VAL]["prm_unit"]}]'
         this_ax.set_ylabel(dpu.fix_txt(ylbl), labelpad=10)
         if var_name == 'wdir':
             this_ax.set_ylim((0, 360))
@@ -230,7 +230,7 @@ def covmat_stats(covmats):
 
             msg = 'of the verifiable theoretical covariance matrix elements differ by more than'
             msg = msg + r'10\% of the true value.'
-            logger.error(rf'Ouch ! {tmp} \% {msg}')
+            logger.error(r'Ouch ! %s \% %s', (tmp, msg))
 
         errors[uc_name] = np.histogram(errors[uc_name],
                                        bins=bins,
@@ -253,7 +253,7 @@ def covmat_stats(covmats):
     ax0 = plt.subplot(fig_gs[0, 0])
 
     ax0.hist([bins[:-1]]*4, bins, weights=[item[1] for item in errors.items()],
-             label=[r'{} ({:.1f}\%)'.format(item[0], perc_covelmts_comp[item[0]])
+             label=[rf'{item[0]} ({perc_covelmts_comp[item[0]]:.1f}\%)'
                     for item in errors.items()], histtype='step')
 
     plt.legend()
@@ -343,7 +343,7 @@ def inspect_cws(gdp_start_with_tags, cws_start_with_tags):
 @for_each_var
 @for_each_flight
 @log_func_call(logger, time_it=False)
-def participant_preview(prf_tags, cws_tags, dta_tags, mids=None, k_lvl=2):
+def participant_preview(prf_tags, cws_tags, dta_tags, mids=None):
     """ Create the official per-flight preview diagram for the participants.
 
     Args:
@@ -368,7 +368,7 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None, k_lvl=2):
 
     # Basic sanity check of mid
     if not isinstance(mids, list):
-        raise DvasRecipesError('Ouch ! I need a list of mids, not: {}'.format(mids))
+        raise DvasRecipesError(f'Ouch ! I need a list of mids, not: {mids}')
 
     # Prepare the search queries
     prf_filt = tools.get_query_filter(tags_in=prf_tags+[eid, rid],
@@ -478,12 +478,11 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None, k_lvl=2):
                          facecolor=(0.8, 0.8, 0.8), step='mid', edgecolor='none')
 
         # Set the axis labels
-        ylbl0 = '{} [{}]'.format(prfs.var_info[PRF_VAL]['prm_name'],
-                                 prfs.var_info[PRF_VAL]['prm_unit'])
+        ylbl0 = f'{prfs.var_info[PRF_VAL]["prm_name"]} [{prfs.var_info[PRF_VAL]["prm_unit"]}]'
         ylbl1 = r'$\delta_{e,i}$'
-        ylbl1 += ' [{}]'.format(dta_prfs.var_info[PRF_VAL]['prm_unit'])
+        ylbl1 += f' [{dta_prfs.var_info[PRF_VAL]["prm_unit"]}]'
         altlbl = dta_prfs.var_info[PRF_ALT]['prm_name']
-        altlbl += ' [{}]'.format(dta_prfs.var_info[PRF_ALT]['prm_unit'])
+        altlbl += f' [{dta_prfs.var_info[PRF_ALT]["prm_unit"]}]'
 
         ax0.set_ylabel(dpu.fix_txt(ylbl0), labelpad=10)
         ax1.set_ylabel(dpu.fix_txt(ylbl1), labelpad=10)
@@ -508,7 +507,7 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None, k_lvl=2):
         # Add the source for the plot
         dpu.add_source(fig)
 
-        dpu.add_var_and_k(ax0, mid='+'.join(mid)+f' \#{pid} ({srn})',
+        dpu.add_var_and_k(ax0, mid='+'.join(mid)+rf' \#{pid} ({srn})',
                           var_name=dta_prfs.var_info[PRF_VAL]['prm_name'], k=None)
 
         # Save it
@@ -540,14 +539,14 @@ def dtas_per_mid(start_with_tags, mids=None, skip_gdps=False, skip_nongdps=False
 
     # Basic sanity check of mid
     if not isinstance(mids, list):
-        raise DvasRecipesError('Ouch ! I need a list of mids, not: {}'.format(mids))
+        raise DvasRecipesError(f'Ouch ! I need a list of mids, not: {mids}')
 
     # Very well, let's now loop through these, and generate the plot
     for mid in mids:
 
         # Second sanity check - make sure the mid is in the DB
         if mid not in db_view.mid.unique().tolist():
-            raise DvasRecipesError('Ouch ! mid unknown: {}'.format(mid))
+            raise DvasRecipesError(f'Ouch ! mid unknown: {mid}')
 
         # If warranted, skip any GDP profile
         if skip_gdps and 'GDP' in mid:
