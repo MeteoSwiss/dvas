@@ -6,6 +6,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [v0.7.0.dev0]
 ### Added:
+ - [fpavogt, 2022-09-13] Add new INVALID flag for GDP points with NaN uncertainties (see #244)
+ - [fpavogt, 2022-08-19] Add kn2ms conversion function
  - [fpavogt, 2022-08-05] Add support for the M20, iMS100, ATMS-3710, and WxR-301D sondes
  - [fpavogt, 2022-07-13] Set resampled points to NaN if they are >=1s away from an original point (fix #233)
  - [fpavogt, 2022-07-12] Add support for the PS01B3M sonde
@@ -15,11 +17,16 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [fpavogt, 2022-07-06] Add support for the DFM-17 sonde
  - [fpavogt, 2022-07-01] Add subplot with relative contributions of GDPs to CWS in gdp-vs-cws (fix #226)
 ### Fixed:
+ - [fpavogt, 2022-10-07] Correct bug in RS92 GDP config file, cleanup demo script
+ - [fpavogt, 2022-09-29] Fix #242
+ - [fpavogt, 2022-08-23] Fix #241
+ - [fpavogt, 2022-08-22] Fix #240
  - [fpavogt, 2022-08-05] Fix #238
  - [fpavogt, 2022-07-15] Fix #232 - wdir curves no longer jump from 0 to 360 in plots
  - [fpavogt, 2022-07-12] Deal with the floating point errors associated to pd.dt.total_seconds()
  - [fpavogt, 2022-07-12] Fix typo in model mid field
 ### Changed:
+ - [fpavogt, 2022-08-19] Add new metadata fields for first, launch, and burst points (fix #231)
  - [fpavogt, 2022-07-15] Changed InfoManager sorting rule to include mid (fix #234)
  - [fpavogt, 2022-07-12] Check that time stamps are strictly increasing in the resampling strategy
  - [fpavogt, 2022-07-01] Boost version to 0.7.0.dev0, after move to MeteoSwiss organization
