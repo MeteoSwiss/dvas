@@ -16,6 +16,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -31,7 +32,7 @@
             <a href="../index.html" class="icon icon-home"> dvas
           </a>
               <div class="version">
-                0.6.0.dev1
+                0.7.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -63,13 +64,142 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-dvas.dvas">dvas.dvas module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dvas.dvas">dvas.dvas module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.dvas.Log"><code class="docutils literal notranslate"><span class="pre">Log</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.dvas.Database"><code class="docutils literal notranslate"><span class="pre">Database</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.dvas.MultiProfile"><code class="docutils literal notranslate"><span class="pre">MultiProfile</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.dvas.MultiRSProfile"><code class="docutils literal notranslate"><span class="pre">MultiRSProfile</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.dvas.MultiGDPProfile"><code class="docutils literal notranslate"><span class="pre">MultiGDPProfile</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-dvas.dynamic">dvas.dynamic module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-dvas.environ">dvas.environ module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-dvas.errors">dvas.errors module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-dvas.hardcoded">dvas.hardcoded module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-dvas.helper">dvas.helper module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-dvas.logger">dvas.logger module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dvas.environ">dvas.environ module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.environ.ABCSingleInstanceMeta"><code class="docutils literal notranslate"><span class="pre">ABCSingleInstanceMeta</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.environ.VariableManager"><code class="docutils literal notranslate"><span class="pre">VariableManager</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.environ.GlobalPathVariablesManager"><code class="docutils literal notranslate"><span class="pre">GlobalPathVariablesManager</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.environ.GlobalPackageVariableManager"><code class="docutils literal notranslate"><span class="pre">GlobalPackageVariableManager</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.environ.path_var"><code class="docutils literal notranslate"><span class="pre">path_var</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.environ.glob_var"><code class="docutils literal notranslate"><span class="pre">glob_var</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dvas.errors">dvas.errors module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.errors.DvasError"><code class="docutils literal notranslate"><span class="pre">DvasError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.errors.ConfigError"><code class="docutils literal notranslate"><span class="pre">ConfigError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.errors.ConfigPathError"><code class="docutils literal notranslate"><span class="pre">ConfigPathError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.errors.ConfigReadError"><code class="docutils literal notranslate"><span class="pre">ConfigReadError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.errors.ConfigReadYAMLError"><code class="docutils literal notranslate"><span class="pre">ConfigReadYAMLError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.errors.ConfigCheckJSONError"><code class="docutils literal notranslate"><span class="pre">ConfigCheckJSONError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.errors.ConfigGenMaxLenError"><code class="docutils literal notranslate"><span class="pre">ConfigGenMaxLenError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.errors.ConfigNodeError"><code class="docutils literal notranslate"><span class="pre">ConfigNodeError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.errors.ConfigGetError"><code class="docutils literal notranslate"><span class="pre">ConfigGetError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.errors.ConfigLabelNameError"><code class="docutils literal notranslate"><span class="pre">ConfigLabelNameError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.errors.ExprInterpreterError"><code class="docutils literal notranslate"><span class="pre">ExprInterpreterError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.errors.NonTerminalExprInterpreterError"><code class="docutils literal notranslate"><span class="pre">NonTerminalExprInterpreterError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.errors.TerminalExprInterpreterError"><code class="docutils literal notranslate"><span class="pre">TerminalExprInterpreterError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.errors.LogDirError"><code class="docutils literal notranslate"><span class="pre">LogDirError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.errors.DBError"><code class="docutils literal notranslate"><span class="pre">DBError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.errors.DBIOError"><code class="docutils literal notranslate"><span class="pre">DBIOError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.errors.SearchError"><code class="docutils literal notranslate"><span class="pre">SearchError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.errors.ProfileError"><code class="docutils literal notranslate"><span class="pre">ProfileError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.errors.LoadError"><code class="docutils literal notranslate"><span class="pre">LoadError</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dvas.hardcoded">dvas.hardcoded module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.PKG_PATH"><code class="docutils literal notranslate"><span class="pre">PKG_PATH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.MPL_STYLES_PATH"><code class="docutils literal notranslate"><span class="pre">MPL_STYLES_PATH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.CONFIG_GEN_LIM"><code class="docutils literal notranslate"><span class="pre">CONFIG_GEN_LIM</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.GDP_FILE_EXT"><code class="docutils literal notranslate"><span class="pre">GDP_FILE_EXT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.CSV_FILE_EXT"><code class="docutils literal notranslate"><span class="pre">CSV_FILE_EXT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_FILE_EXT"><code class="docutils literal notranslate"><span class="pre">FLG_FILE_EXT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.CONFIG_FILE_EXT"><code class="docutils literal notranslate"><span class="pre">CONFIG_FILE_EXT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.EID_PAT"><code class="docutils literal notranslate"><span class="pre">EID_PAT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.EID_LEN"><code class="docutils literal notranslate"><span class="pre">EID_LEN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.RID_PAT"><code class="docutils literal notranslate"><span class="pre">RID_PAT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TOD_PAT"><code class="docutils literal notranslate"><span class="pre">TOD_PAT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TOD_VALS"><code class="docutils literal notranslate"><span class="pre">TOD_VALS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_PRM_NAME_SUFFIX"><code class="docutils literal notranslate"><span class="pre">FLG_PRM_NAME_SUFFIX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_PRM_DESC_PREFIX"><code class="docutils literal notranslate"><span class="pre">FLG_PRM_DESC_PREFIX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.MODEL_PAT"><code class="docutils literal notranslate"><span class="pre">MODEL_PAT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.CSV_FILE_MDL_PAT"><code class="docutils literal notranslate"><span class="pre">CSV_FILE_MDL_PAT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.GDP_FILE_MDL_PAT"><code class="docutils literal notranslate"><span class="pre">GDP_FILE_MDL_PAT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.PRM_PAT"><code class="docutils literal notranslate"><span class="pre">PRM_PAT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_PRM_PAT"><code class="docutils literal notranslate"><span class="pre">FLG_PRM_PAT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.PRM_AND_FLG_PRM_PAT"><code class="docutils literal notranslate"><span class="pre">PRM_AND_FLG_PRM_PAT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.PRF_IDX"><code class="docutils literal notranslate"><span class="pre">PRF_IDX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.PRF_TDT"><code class="docutils literal notranslate"><span class="pre">PRF_TDT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.PRF_ALT"><code class="docutils literal notranslate"><span class="pre">PRF_ALT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.PRF_VAL"><code class="docutils literal notranslate"><span class="pre">PRF_VAL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.PRF_UCR"><code class="docutils literal notranslate"><span class="pre">PRF_UCR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.PRF_UCS"><code class="docutils literal notranslate"><span class="pre">PRF_UCS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.PRF_UCT"><code class="docutils literal notranslate"><span class="pre">PRF_UCT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.PRF_UCU"><code class="docutils literal notranslate"><span class="pre">PRF_UCU</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.PRF_FLG"><code class="docutils literal notranslate"><span class="pre">PRF_FLG</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_NONE"><code class="docutils literal notranslate"><span class="pre">TAG_NONE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_NONE_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_NONE_DESC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_RAW"><code class="docutils literal notranslate"><span class="pre">TAG_RAW</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_RAW_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_RAW_DESC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_CLN"><code class="docutils literal notranslate"><span class="pre">TAG_CLN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_CLN_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_CLN_DESC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_GDP"><code class="docutils literal notranslate"><span class="pre">TAG_GDP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_GDP_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_GDP_DESC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_1S"><code class="docutils literal notranslate"><span class="pre">TAG_1S</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_1S_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_1S_DESC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_SYNC"><code class="docutils literal notranslate"><span class="pre">TAG_SYNC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_SYNC_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_SYNC_DESC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_CWS"><code class="docutils literal notranslate"><span class="pre">TAG_CWS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_CWS_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_CWS_DESC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_DTA"><code class="docutils literal notranslate"><span class="pre">TAG_DTA</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_DTA_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_DTA_DESC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_EMPTY"><code class="docutils literal notranslate"><span class="pre">TAG_EMPTY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_EMPTY_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_EMPTY_DESC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_EMPTY"><code class="docutils literal notranslate"><span class="pre">FLG_EMPTY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_EMPTY_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_EMPTY_DESC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_INVALID"><code class="docutils literal notranslate"><span class="pre">FLG_INVALID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_INVALID_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_INVALID_DESC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_INTERP"><code class="docutils literal notranslate"><span class="pre">FLG_INTERP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_INTERP_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_INTERP_DESC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_INCOMPATIBLE"><code class="docutils literal notranslate"><span class="pre">FLG_INCOMPATIBLE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_INCOMPATIBLE_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_INCOMPATIBLE_DESC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_PRELAUNCH"><code class="docutils literal notranslate"><span class="pre">FLG_PRELAUNCH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_PRELAUNCH_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_PRELAUNCH_DESC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_ASCENT"><code class="docutils literal notranslate"><span class="pre">FLG_ASCENT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_ASCENT_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_ASCENT_DESC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_DESCENT"><code class="docutils literal notranslate"><span class="pre">FLG_DESCENT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_DESCENT_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_DESCENT_DESC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_HASCWS"><code class="docutils literal notranslate"><span class="pre">FLG_HASCWS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_HASCWS_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_HASCWS_DESC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.MTDTA_FIRST"><code class="docutils literal notranslate"><span class="pre">MTDTA_FIRST</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.MTDTA_LAUNCH"><code class="docutils literal notranslate"><span class="pre">MTDTA_LAUNCH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.MTDTA_BURST"><code class="docutils literal notranslate"><span class="pre">MTDTA_BURST</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.MTDTA_TROPOPAUSE"><code class="docutils literal notranslate"><span class="pre">MTDTA_TROPOPAUSE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.MTDTA_PBL"><code class="docutils literal notranslate"><span class="pre">MTDTA_PBL</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dvas.helper">dvas.helper module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.helper.camel_to_snake"><code class="docutils literal notranslate"><span class="pre">camel_to_snake()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.helper.SingleInstanceMetaClass"><code class="docutils literal notranslate"><span class="pre">SingleInstanceMetaClass</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.helper.RequiredAttrMetaClass"><code class="docutils literal notranslate"><span class="pre">RequiredAttrMetaClass</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.helper.ContextDecorator"><code class="docutils literal notranslate"><span class="pre">ContextDecorator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.helper.TimeIt"><code class="docutils literal notranslate"><span class="pre">TimeIt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.helper.deepcopy"><code class="docutils literal notranslate"><span class="pre">deepcopy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.helper.TypedProperty"><code class="docutils literal notranslate"><span class="pre">TypedProperty</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.helper.get_by_path"><code class="docutils literal notranslate"><span class="pre">get_by_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.helper.check_path"><code class="docutils literal notranslate"><span class="pre">check_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.helper.check_datetime"><code class="docutils literal notranslate"><span class="pre">check_datetime()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.helper.unzip"><code class="docutils literal notranslate"><span class="pre">unzip()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.helper.get_dict_len"><code class="docutils literal notranslate"><span class="pre">get_dict_len()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.helper.get_class_public_attr"><code class="docutils literal notranslate"><span class="pre">get_class_public_attr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.helper.AttrDict"><code class="docutils literal notranslate"><span class="pre">AttrDict</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dvas.logger">dvas.logger module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.logger.DeltaTimeFormatter"><code class="docutils literal notranslate"><span class="pre">DeltaTimeFormatter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.logger.DvasFormatter"><code class="docutils literal notranslate"><span class="pre">DvasFormatter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.logger.apply_dvas_formatter"><code class="docutils literal notranslate"><span class="pre">apply_dvas_formatter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.logger.LogManager"><code class="docutils literal notranslate"><span class="pre">LogManager</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.logger.log_func_call"><code class="docutils literal notranslate"><span class="pre">log_func_call()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-dvas.version">dvas.version module</a></li>
 </ul>
 </li>
@@ -128,7 +258,153 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="dvas.config.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dvas.config.html#module-dvas.config.config">dvas.config.config module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.config.html#module-dvas.config.config">dvas.config.config module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dvas.config.html#dvas.config.config.instantiate_config_managers"><code class="docutils literal notranslate"><span class="pre">instantiate_config_managers()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.config.html#dvas.config.config.ConfigManager"><code class="docutils literal notranslate"><span class="pre">ConfigManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.ConfigManager.REQUIRED_ATTRIBUTES"><code class="docutils literal notranslate"><span class="pre">ConfigManager.REQUIRED_ATTRIBUTES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.ConfigManager.DOC_TYPE"><code class="docutils literal notranslate"><span class="pre">ConfigManager.DOC_TYPE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.ConfigManager.document"><code class="docutils literal notranslate"><span class="pre">ConfigManager.document</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.ConfigManager.init_document"><code class="docutils literal notranslate"><span class="pre">ConfigManager.init_document()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.ConfigManager.append"><code class="docutils literal notranslate"><span class="pre">ConfigManager.append()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.ConfigManager.read"><code class="docutils literal notranslate"><span class="pre">ConfigManager.read()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.config.html#dvas.config.config.OneLayerConfigManager"><code class="docutils literal notranslate"><span class="pre">OneLayerConfigManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.OneLayerConfigManager.REQUIRED_ATTRIBUTES"><code class="docutils literal notranslate"><span class="pre">OneLayerConfigManager.REQUIRED_ATTRIBUTES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.OneLayerConfigManager.DOC_TYPE"><code class="docutils literal notranslate"><span class="pre">OneLayerConfigManager.DOC_TYPE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.OneLayerConfigManager.PARAMETER_PATTERN_PROP"><code class="docutils literal notranslate"><span class="pre">OneLayerConfigManager.PARAMETER_PATTERN_PROP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.OneLayerConfigManager.LABEL_VAL_DEF"><code class="docutils literal notranslate"><span class="pre">OneLayerConfigManager.LABEL_VAL_DEF</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.OneLayerConfigManager.CLASS_KEY"><code class="docutils literal notranslate"><span class="pre">OneLayerConfigManager.CLASS_KEY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.OneLayerConfigManager.json_schema"><code class="docutils literal notranslate"><span class="pre">OneLayerConfigManager.json_schema</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.OneLayerConfigManager.read"><code class="docutils literal notranslate"><span class="pre">OneLayerConfigManager.read()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.OneLayerConfigManager.read_yaml"><code class="docutils literal notranslate"><span class="pre">OneLayerConfigManager.read_yaml()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.config.html#dvas.config.config.CSVOrigMeta"><code class="docutils literal notranslate"><span class="pre">CSVOrigMeta</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.CSVOrigMeta.PARAMETER_PATTERN_PROP"><code class="docutils literal notranslate"><span class="pre">CSVOrigMeta.PARAMETER_PATTERN_PROP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.CSVOrigMeta.LABEL_VAL_DEF"><code class="docutils literal notranslate"><span class="pre">CSVOrigMeta.LABEL_VAL_DEF</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.CSVOrigMeta.CLASS_KEY"><code class="docutils literal notranslate"><span class="pre">CSVOrigMeta.CLASS_KEY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.CSVOrigMeta.document"><code class="docutils literal notranslate"><span class="pre">CSVOrigMeta.document</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.config.html#dvas.config.config.OneDimArrayConfigManager"><code class="docutils literal notranslate"><span class="pre">OneDimArrayConfigManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.OneDimArrayConfigManager.REQUIRED_ATTRIBUTES"><code class="docutils literal notranslate"><span class="pre">OneDimArrayConfigManager.REQUIRED_ATTRIBUTES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.OneDimArrayConfigManager.DOC_TYPE"><code class="docutils literal notranslate"><span class="pre">OneDimArrayConfigManager.DOC_TYPE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.OneDimArrayConfigManager.CONST_LABELS"><code class="docutils literal notranslate"><span class="pre">OneDimArrayConfigManager.CONST_LABELS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.OneDimArrayConfigManager.NODE_GEN"><code class="docutils literal notranslate"><span class="pre">OneDimArrayConfigManager.NODE_GEN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.OneDimArrayConfigManager.json_schema"><code class="docutils literal notranslate"><span class="pre">OneDimArrayConfigManager.json_schema</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.OneDimArrayConfigManager.read"><code class="docutils literal notranslate"><span class="pre">OneDimArrayConfigManager.read()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.config.html#dvas.config.config.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.Model.PARAMETER_PATTERN_PROP"><code class="docutils literal notranslate"><span class="pre">Model.PARAMETER_PATTERN_PROP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.Model.LABEL_VAL_DEF"><code class="docutils literal notranslate"><span class="pre">Model.LABEL_VAL_DEF</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.Model.CLASS_KEY"><code class="docutils literal notranslate"><span class="pre">Model.CLASS_KEY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.Model.CONST_LABELS"><code class="docutils literal notranslate"><span class="pre">Model.CONST_LABELS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.Model.NODE_GEN"><code class="docutils literal notranslate"><span class="pre">Model.NODE_GEN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.Model.document"><code class="docutils literal notranslate"><span class="pre">Model.document</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.config.html#dvas.config.config.Prm"><code class="docutils literal notranslate"><span class="pre">Prm</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.Prm.PARAMETER_PATTERN_PROP"><code class="docutils literal notranslate"><span class="pre">Prm.PARAMETER_PATTERN_PROP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.Prm.LABEL_VAL_DEF"><code class="docutils literal notranslate"><span class="pre">Prm.LABEL_VAL_DEF</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.Prm.CLASS_KEY"><code class="docutils literal notranslate"><span class="pre">Prm.CLASS_KEY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.Prm.CONST_LABELS"><code class="docutils literal notranslate"><span class="pre">Prm.CONST_LABELS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.Prm.NODE_GEN"><code class="docutils literal notranslate"><span class="pre">Prm.NODE_GEN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.Prm.document"><code class="docutils literal notranslate"><span class="pre">Prm.document</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.config.html#dvas.config.config.Flg"><code class="docutils literal notranslate"><span class="pre">Flg</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.Flg.PARAMETER_PATTERN_PROP"><code class="docutils literal notranslate"><span class="pre">Flg.PARAMETER_PATTERN_PROP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.Flg.LABEL_VAL_DEF"><code class="docutils literal notranslate"><span class="pre">Flg.LABEL_VAL_DEF</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.Flg.CLASS_KEY"><code class="docutils literal notranslate"><span class="pre">Flg.CLASS_KEY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.Flg.CONST_LABELS"><code class="docutils literal notranslate"><span class="pre">Flg.CONST_LABELS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.Flg.NODE_GEN"><code class="docutils literal notranslate"><span class="pre">Flg.NODE_GEN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.Flg.document"><code class="docutils literal notranslate"><span class="pre">Flg.document</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.config.html#dvas.config.config.Tag"><code class="docutils literal notranslate"><span class="pre">Tag</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.Tag.PARAMETER_PATTERN_PROP"><code class="docutils literal notranslate"><span class="pre">Tag.PARAMETER_PATTERN_PROP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.Tag.LABEL_VAL_DEF"><code class="docutils literal notranslate"><span class="pre">Tag.LABEL_VAL_DEF</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.Tag.CLASS_KEY"><code class="docutils literal notranslate"><span class="pre">Tag.CLASS_KEY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.Tag.CONST_LABELS"><code class="docutils literal notranslate"><span class="pre">Tag.CONST_LABELS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.Tag.NODE_GEN"><code class="docutils literal notranslate"><span class="pre">Tag.NODE_GEN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.Tag.document"><code class="docutils literal notranslate"><span class="pre">Tag.document</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.config.html#dvas.config.config.MultiLayerConfigManager"><code class="docutils literal notranslate"><span class="pre">MultiLayerConfigManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.MultiLayerConfigManager.REQUIRED_ATTRIBUTES"><code class="docutils literal notranslate"><span class="pre">MultiLayerConfigManager.REQUIRED_ATTRIBUTES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.MultiLayerConfigManager.DOC_TYPE"><code class="docutils literal notranslate"><span class="pre">MultiLayerConfigManager.DOC_TYPE</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.MultiLayerConfigManager.NODE_PATTERN"><code class="docutils literal notranslate"><span class="pre">MultiLayerConfigManager.NODE_PATTERN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.MultiLayerConfigManager.get_val"><code class="docutils literal notranslate"><span class="pre">MultiLayerConfigManager.get_val()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.MultiLayerConfigManager.get_all"><code class="docutils literal notranslate"><span class="pre">MultiLayerConfigManager.get_all()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.MultiLayerConfigManager.get_default"><code class="docutils literal notranslate"><span class="pre">MultiLayerConfigManager.get_default()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.MultiLayerConfigManager.json_schema"><code class="docutils literal notranslate"><span class="pre">MultiLayerConfigManager.json_schema</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.config.html#dvas.config.config.OrigData"><code class="docutils literal notranslate"><span class="pre">OrigData</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.OrigData.PARAMETER_PATTERN_PROP"><code class="docutils literal notranslate"><span class="pre">OrigData.PARAMETER_PATTERN_PROP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.OrigData.LABEL_VAL_DEF"><code class="docutils literal notranslate"><span class="pre">OrigData.LABEL_VAL_DEF</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.OrigData.CLASS_KEY"><code class="docutils literal notranslate"><span class="pre">OrigData.CLASS_KEY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.OrigData.NODE_PATTERN"><code class="docutils literal notranslate"><span class="pre">OrigData.NODE_PATTERN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.OrigData.document"><code class="docutils literal notranslate"><span class="pre">OrigData.document</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.config.html#dvas.config.config.ConfigExprInterpreter"><code class="docutils literal notranslate"><span class="pre">ConfigExprInterpreter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.ConfigExprInterpreter.set_callable"><code class="docutils literal notranslate"><span class="pre">ConfigExprInterpreter.set_callable()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.ConfigExprInterpreter.interpret"><code class="docutils literal notranslate"><span class="pre">ConfigExprInterpreter.interpret()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.ConfigExprInterpreter.eval"><code class="docutils literal notranslate"><span class="pre">ConfigExprInterpreter.eval()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.config.html#dvas.config.config.NonTerminalConfigExprInterpreter"><code class="docutils literal notranslate"><span class="pre">NonTerminalConfigExprInterpreter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.NonTerminalConfigExprInterpreter.interpret"><code class="docutils literal notranslate"><span class="pre">NonTerminalConfigExprInterpreter.interpret()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.NonTerminalConfigExprInterpreter.fct"><code class="docutils literal notranslate"><span class="pre">NonTerminalConfigExprInterpreter.fct()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.config.html#dvas.config.config.CatExpr"><code class="docutils literal notranslate"><span class="pre">CatExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.CatExpr.fct"><code class="docutils literal notranslate"><span class="pre">CatExpr.fct()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.config.html#dvas.config.config.ReplExpr"><code class="docutils literal notranslate"><span class="pre">ReplExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.ReplExpr.fct"><code class="docutils literal notranslate"><span class="pre">ReplExpr.fct()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.config.html#dvas.config.config.ReplStrictExpr"><code class="docutils literal notranslate"><span class="pre">ReplStrictExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.ReplStrictExpr.fct"><code class="docutils literal notranslate"><span class="pre">ReplStrictExpr.fct()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.config.html#dvas.config.config.LowerExpr"><code class="docutils literal notranslate"><span class="pre">LowerExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.LowerExpr.fct"><code class="docutils literal notranslate"><span class="pre">LowerExpr.fct()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.config.html#dvas.config.config.UpperExpr"><code class="docutils literal notranslate"><span class="pre">UpperExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.UpperExpr.fct"><code class="docutils literal notranslate"><span class="pre">UpperExpr.fct()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.config.html#dvas.config.config.SmallUpperExpr"><code class="docutils literal notranslate"><span class="pre">SmallUpperExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.SmallUpperExpr.fct"><code class="docutils literal notranslate"><span class="pre">SmallUpperExpr.fct()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.config.html#dvas.config.config.ToDatetime"><code class="docutils literal notranslate"><span class="pre">ToDatetime</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.ToDatetime.fct"><code class="docutils literal notranslate"><span class="pre">ToDatetime.fct()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.config.html#dvas.config.config.TerminalConfigExprInterpreter"><code class="docutils literal notranslate"><span class="pre">TerminalConfigExprInterpreter</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.config.html#dvas.config.config.GetExpr"><code class="docutils literal notranslate"><span class="pre">GetExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.GetExpr.__init__"><code class="docutils literal notranslate"><span class="pre">GetExpr.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.GetExpr.interpret"><code class="docutils literal notranslate"><span class="pre">GetExpr.interpret()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.config.html#dvas.config.config.SplitSelect"><code class="docutils literal notranslate"><span class="pre">SplitSelect</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.SplitSelect.interpret"><code class="docutils literal notranslate"><span class="pre">SplitSelect.interpret()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.config.html#dvas.config.config.NoneExpr"><code class="docutils literal notranslate"><span class="pre">NoneExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.config.html#dvas.config.config.NoneExpr.interpret"><code class="docutils literal notranslate"><span class="pre">NoneExpr.interpret()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="dvas.data.html">dvas.data package</a><ul>
@@ -147,25 +423,532 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="dvas.data.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dvas.data.html#module-dvas.data.data">dvas.data.data module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dvas.data.html#module-dvas.data.io">dvas.data.io module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dvas.data.html#module-dvas.data.linker">dvas.data.linker module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.data.html#module-dvas.data.data">dvas.data.data module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.data.MultiProfileAC"><code class="docutils literal notranslate"><span class="pre">MultiProfileAC</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.data.MultiProfileAC.REQUIRED_ATTRIBUTES"><code class="docutils literal notranslate"><span class="pre">MultiProfileAC.REQUIRED_ATTRIBUTES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.data.MultiProfileAC.profiles"><code class="docutils literal notranslate"><span class="pre">MultiProfileAC.profiles</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.data.MultiProfileAC.db_variables"><code class="docutils literal notranslate"><span class="pre">MultiProfileAC.db_variables</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.data.MultiProfileAC.var_info"><code class="docutils literal notranslate"><span class="pre">MultiProfileAC.var_info</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.data.MultiProfileAC.info"><code class="docutils literal notranslate"><span class="pre">MultiProfileAC.info</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.data.MultiProfileAC.rm_info_tags"><code class="docutils literal notranslate"><span class="pre">MultiProfileAC.rm_info_tags()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.data.MultiProfileAC.add_info_tags"><code class="docutils literal notranslate"><span class="pre">MultiProfileAC.add_info_tags()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.data.MultiProfileAC.copy"><code class="docutils literal notranslate"><span class="pre">MultiProfileAC.copy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.data.MultiProfileAC.extract"><code class="docutils literal notranslate"><span class="pre">MultiProfileAC.extract()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.data.MultiProfileAC.load_from_db"><code class="docutils literal notranslate"><span class="pre">MultiProfileAC.load_from_db()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.data.MultiProfileAC.sort"><code class="docutils literal notranslate"><span class="pre">MultiProfileAC.sort()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.data.MultiProfileAC.save_to_db"><code class="docutils literal notranslate"><span class="pre">MultiProfileAC.save_to_db()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.data.MultiProfileAC.update"><code class="docutils literal notranslate"><span class="pre">MultiProfileAC.update()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.data.MultiProfileAC.append"><code class="docutils literal notranslate"><span class="pre">MultiProfileAC.append()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.data.MultiProfileAC.get_prms"><code class="docutils literal notranslate"><span class="pre">MultiProfileAC.get_prms()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.data.MultiProfileAC.get_info"><code class="docutils literal notranslate"><span class="pre">MultiProfileAC.get_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.data.MultiProfileAC.has_tag"><code class="docutils literal notranslate"><span class="pre">MultiProfileAC.has_tag()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.data.MultiProfileAC.plot"><code class="docutils literal notranslate"><span class="pre">MultiProfileAC.plot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.data.MultiProfileAC.rebase"><code class="docutils literal notranslate"><span class="pre">MultiProfileAC.rebase()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.data.MultiProfile"><code class="docutils literal notranslate"><span class="pre">MultiProfile</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.data.MultiRSProfileAC"><code class="docutils literal notranslate"><span class="pre">MultiRSProfileAC</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.data.MultiRSProfileAC.resample"><code class="docutils literal notranslate"><span class="pre">MultiRSProfileAC.resample()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.data.MultiRSProfile"><code class="docutils literal notranslate"><span class="pre">MultiRSProfile</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.data.MultiGDPProfileAC"><code class="docutils literal notranslate"><span class="pre">MultiGDPProfileAC</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.data.MultiGDPProfileAC.uc_tot"><code class="docutils literal notranslate"><span class="pre">MultiGDPProfileAC.uc_tot</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.data.MultiGDPProfile"><code class="docutils literal notranslate"><span class="pre">MultiGDPProfile</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.data.MultiCWSProfile"><code class="docutils literal notranslate"><span class="pre">MultiCWSProfile</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.data.MultiDeltaProfile"><code class="docutils literal notranslate"><span class="pre">MultiDeltaProfile</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.data.html#module-dvas.data.io">dvas.data.io module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.io.update_db"><code class="docutils literal notranslate"><span class="pre">update_db()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.data.html#module-dvas.data.linker">dvas.data.linker module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.linker.Handler"><code class="docutils literal notranslate"><span class="pre">Handler</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.Handler.set_next"><code class="docutils literal notranslate"><span class="pre">Handler.set_next()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.Handler.handle"><code class="docutils literal notranslate"><span class="pre">Handler.handle()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.linker.AbstractHandler"><code class="docutils literal notranslate"><span class="pre">AbstractHandler</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.AbstractHandler.set_next"><code class="docutils literal notranslate"><span class="pre">AbstractHandler.set_next()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.AbstractHandler.handle"><code class="docutils literal notranslate"><span class="pre">AbstractHandler.handle()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.linker.FileHandler"><code class="docutils literal notranslate"><span class="pre">FileHandler</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.FileHandler.__init__"><code class="docutils literal notranslate"><span class="pre">FileHandler.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.FileHandler.origdata_config_mngr"><code class="docutils literal notranslate"><span class="pre">FileHandler.origdata_config_mngr</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.FileHandler.file_suffix_re"><code class="docutils literal notranslate"><span class="pre">FileHandler.file_suffix_re</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.FileHandler.prm_re"><code class="docutils literal notranslate"><span class="pre">FileHandler.prm_re</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.FileHandler.file_model_pat"><code class="docutils literal notranslate"><span class="pre">FileHandler.file_model_pat</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.FileHandler.check_file"><code class="docutils literal notranslate"><span class="pre">FileHandler.check_file()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.FileHandler.check_prm"><code class="docutils literal notranslate"><span class="pre">FileHandler.check_prm()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.FileHandler.data_ok_tags"><code class="docutils literal notranslate"><span class="pre">FileHandler.data_ok_tags</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.FileHandler.check_file_mdl"><code class="docutils literal notranslate"><span class="pre">FileHandler.check_file_mdl()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.FileHandler.handle"><code class="docutils literal notranslate"><span class="pre">FileHandler.handle()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.FileHandler.get_data"><code class="docutils literal notranslate"><span class="pre">FileHandler.get_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.FileHandler.get_metadata_item"><code class="docutils literal notranslate"><span class="pre">FileHandler.get_metadata_item()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.FileHandler.get_metadata_filename"><code class="docutils literal notranslate"><span class="pre">FileHandler.get_metadata_filename()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.FileHandler.get_metadata"><code class="docutils literal notranslate"><span class="pre">FileHandler.get_metadata()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.FileHandler.get_model"><code class="docutils literal notranslate"><span class="pre">FileHandler.get_model()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.FileHandler.filter_files"><code class="docutils literal notranslate"><span class="pre">FileHandler.filter_files()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.FileHandler.read_metaconfig_fields"><code class="docutils literal notranslate"><span class="pre">FileHandler.read_metaconfig_fields()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.FileHandler.get_source_unique_id"><code class="docutils literal notranslate"><span class="pre">FileHandler.get_source_unique_id()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.linker.CSVHandler"><code class="docutils literal notranslate"><span class="pre">CSVHandler</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.CSVHandler.CFG_FILE_SUFFIX"><code class="docutils literal notranslate"><span class="pre">CSVHandler.CFG_FILE_SUFFIX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.CSVHandler.__init__"><code class="docutils literal notranslate"><span class="pre">CSVHandler.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.CSVHandler.origmeta_mngr"><code class="docutils literal notranslate"><span class="pre">CSVHandler.origmeta_mngr</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.CSVHandler.get_metadata_item"><code class="docutils literal notranslate"><span class="pre">CSVHandler.get_metadata_item()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.CSVHandler.get_metadata_filename"><code class="docutils literal notranslate"><span class="pre">CSVHandler.get_metadata_filename()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.CSVHandler.get_metadata"><code class="docutils literal notranslate"><span class="pre">CSVHandler.get_metadata()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.CSVHandler.get_data"><code class="docutils literal notranslate"><span class="pre">CSVHandler.get_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.linker.GDPHandler"><code class="docutils literal notranslate"><span class="pre">GDPHandler</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.GDPHandler.__init__"><code class="docutils literal notranslate"><span class="pre">GDPHandler.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.GDPHandler.get_metadata_item"><code class="docutils literal notranslate"><span class="pre">GDPHandler.get_metadata_item()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.GDPHandler.get_metadata_filename"><code class="docutils literal notranslate"><span class="pre">GDPHandler.get_metadata_filename()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.GDPHandler.get_metadata"><code class="docutils literal notranslate"><span class="pre">GDPHandler.get_metadata()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.GDPHandler.get_data"><code class="docutils literal notranslate"><span class="pre">GDPHandler.get_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.linker.FlgCSVHandler"><code class="docutils literal notranslate"><span class="pre">FlgCSVHandler</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.FlgCSVHandler.__init__"><code class="docutils literal notranslate"><span class="pre">FlgCSVHandler.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.linker.FlgGDPHandler"><code class="docutils literal notranslate"><span class="pre">FlgGDPHandler</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.FlgGDPHandler.__init__"><code class="docutils literal notranslate"><span class="pre">FlgGDPHandler.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.FlgGDPHandler.get_metadata_filename"><code class="docutils literal notranslate"><span class="pre">FlgGDPHandler.get_metadata_filename()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.FlgGDPHandler.get_data"><code class="docutils literal notranslate"><span class="pre">FlgGDPHandler.get_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.linker.DataLinker"><code class="docutils literal notranslate"><span class="pre">DataLinker</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.DataLinker.load"><code class="docutils literal notranslate"><span class="pre">DataLinker.load()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.DataLinker.save"><code class="docutils literal notranslate"><span class="pre">DataLinker.save()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.linker.LocalDBLinker"><code class="docutils literal notranslate"><span class="pre">LocalDBLinker</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.LocalDBLinker.load"><code class="docutils literal notranslate"><span class="pre">LocalDBLinker.load()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.LocalDBLinker.save"><code class="docutils literal notranslate"><span class="pre">LocalDBLinker.save()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.linker.CSVOutputLinker"><code class="docutils literal notranslate"><span class="pre">CSVOutputLinker</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.CSVOutputLinker.load"><code class="docutils literal notranslate"><span class="pre">CSVOutputLinker.load()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.CSVOutputLinker.save"><code class="docutils literal notranslate"><span class="pre">CSVOutputLinker.save()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.linker.LoadExprInterpreter"><code class="docutils literal notranslate"><span class="pre">LoadExprInterpreter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.LoadExprInterpreter.set_callable"><code class="docutils literal notranslate"><span class="pre">LoadExprInterpreter.set_callable()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.LoadExprInterpreter.interpret"><code class="docutils literal notranslate"><span class="pre">LoadExprInterpreter.interpret()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.LoadExprInterpreter.eval"><code class="docutils literal notranslate"><span class="pre">LoadExprInterpreter.eval()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.linker.NonTerminalLoadExprInterpreter"><code class="docutils literal notranslate"><span class="pre">NonTerminalLoadExprInterpreter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.NonTerminalLoadExprInterpreter.interpret"><code class="docutils literal notranslate"><span class="pre">NonTerminalLoadExprInterpreter.interpret()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.NonTerminalLoadExprInterpreter.fct"><code class="docutils literal notranslate"><span class="pre">NonTerminalLoadExprInterpreter.fct()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.linker.AddExpr"><code class="docutils literal notranslate"><span class="pre">AddExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.AddExpr.fct"><code class="docutils literal notranslate"><span class="pre">AddExpr.fct()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.linker.SubExpr"><code class="docutils literal notranslate"><span class="pre">SubExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.SubExpr.fct"><code class="docutils literal notranslate"><span class="pre">SubExpr.fct()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.linker.MulExpr"><code class="docutils literal notranslate"><span class="pre">MulExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.MulExpr.fct"><code class="docutils literal notranslate"><span class="pre">MulExpr.fct()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.linker.DivExpr"><code class="docutils literal notranslate"><span class="pre">DivExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.DivExpr.fct"><code class="docutils literal notranslate"><span class="pre">DivExpr.fct()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.linker.PowExpr"><code class="docutils literal notranslate"><span class="pre">PowExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.PowExpr.fct"><code class="docutils literal notranslate"><span class="pre">PowExpr.fct()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.linker.SqrtExpr"><code class="docutils literal notranslate"><span class="pre">SqrtExpr</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.linker.TerminalLoadExprInterpreter"><code class="docutils literal notranslate"><span class="pre">TerminalLoadExprInterpreter</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.linker.NoneExpr"><code class="docutils literal notranslate"><span class="pre">NoneExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.NoneExpr.interpret"><code class="docutils literal notranslate"><span class="pre">NoneExpr.interpret()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.linker.GetExpr"><code class="docutils literal notranslate"><span class="pre">GetExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.GetExpr.interpret"><code class="docutils literal notranslate"><span class="pre">GetExpr.interpret()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.linker.GetgeomaltExpr"><code class="docutils literal notranslate"><span class="pre">GetgeomaltExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.GetgeomaltExpr.__init__"><code class="docutils literal notranslate"><span class="pre">GetgeomaltExpr.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.GetgeomaltExpr.interpret"><code class="docutils literal notranslate"><span class="pre">GetgeomaltExpr.interpret()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.linker.GetreldtExpr"><code class="docutils literal notranslate"><span class="pre">GetreldtExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.GetreldtExpr.__init__"><code class="docutils literal notranslate"><span class="pre">GetreldtExpr.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.data.html#dvas.data.linker.GetreldtExpr.interpret"><code class="docutils literal notranslate"><span class="pre">GetreldtExpr.interpret()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.linker.ConfigInstrIdError"><code class="docutils literal notranslate"><span class="pre">ConfigInstrIdError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.linker.OutputDirError"><code class="docutils literal notranslate"><span class="pre">OutputDirError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.data.html#dvas.data.linker.OrigConfigError"><code class="docutils literal notranslate"><span class="pre">OrigConfigError</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="dvas.database.html">dvas.database package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="dvas.database.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dvas.database.html#module-dvas.database.database">dvas.database.database module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dvas.database.html#module-dvas.database.explorer">dvas.database.explorer module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dvas.database.html#module-dvas.database.model">dvas.database.model module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dvas.database.html#module-dvas.database.search">dvas.database.search module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.database.html#module-dvas.database.database">dvas.database.database module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.database.DB_CACHE_SIZE"><code class="docutils literal notranslate"><span class="pre">DB_CACHE_SIZE</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.database.DB_FILE_NM"><code class="docutils literal notranslate"><span class="pre">DB_FILE_NM</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.database.DatabaseManager"><code class="docutils literal notranslate"><span class="pre">DatabaseManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.DatabaseManager.DB_TABLES"><code class="docutils literal notranslate"><span class="pre">DatabaseManager.DB_TABLES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.DatabaseManager.db"><code class="docutils literal notranslate"><span class="pre">DatabaseManager.db</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.DatabaseManager.refresh_db"><code class="docutils literal notranslate"><span class="pre">DatabaseManager.refresh_db()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.DatabaseManager.get_or_none"><code class="docutils literal notranslate"><span class="pre">DatabaseManager.get_or_none()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.DatabaseManager.model_to_dict"><code class="docutils literal notranslate"><span class="pre">DatabaseManager.model_to_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.DatabaseManager.get_table"><code class="docutils literal notranslate"><span class="pre">DatabaseManager.get_table()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.DatabaseManager.add_data"><code class="docutils literal notranslate"><span class="pre">DatabaseManager.add_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.DatabaseManager.get_data"><code class="docutils literal notranslate"><span class="pre">DatabaseManager.get_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.DatabaseManager.get_flgs"><code class="docutils literal notranslate"><span class="pre">DatabaseManager.get_flgs()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.database.InfoManagerMetaData"><code class="docutils literal notranslate"><span class="pre">InfoManagerMetaData</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.InfoManagerMetaData.__init__"><code class="docutils literal notranslate"><span class="pre">InfoManagerMetaData.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.InfoManagerMetaData.copy"><code class="docutils literal notranslate"><span class="pre">InfoManagerMetaData.copy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.InfoManagerMetaData.update"><code class="docutils literal notranslate"><span class="pre">InfoManagerMetaData.update()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.database.InfoManager"><code class="docutils literal notranslate"><span class="pre">InfoManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.InfoManager.__init__"><code class="docutils literal notranslate"><span class="pre">InfoManager.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.InfoManager.edt"><code class="docutils literal notranslate"><span class="pre">InfoManager.edt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.InfoManager.oid"><code class="docutils literal notranslate"><span class="pre">InfoManager.oid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.InfoManager.tags"><code class="docutils literal notranslate"><span class="pre">InfoManager.tags</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.InfoManager.metadata"><code class="docutils literal notranslate"><span class="pre">InfoManager.metadata</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.InfoManager.src"><code class="docutils literal notranslate"><span class="pre">InfoManager.src</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.InfoManager.eid"><code class="docutils literal notranslate"><span class="pre">InfoManager.eid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.InfoManager.rid"><code class="docutils literal notranslate"><span class="pre">InfoManager.rid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.InfoManager.tod"><code class="docutils literal notranslate"><span class="pre">InfoManager.tod</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.InfoManager.mid"><code class="docutils literal notranslate"><span class="pre">InfoManager.mid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.InfoManager.tags_desc"><code class="docutils literal notranslate"><span class="pre">InfoManager.tags_desc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.InfoManager.object"><code class="docutils literal notranslate"><span class="pre">InfoManager.object</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.InfoManager.get_hash"><code class="docutils literal notranslate"><span class="pre">InfoManager.get_hash()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.InfoManager.add_tags"><code class="docutils literal notranslate"><span class="pre">InfoManager.add_tags()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.InfoManager.rm_tags"><code class="docutils literal notranslate"><span class="pre">InfoManager.rm_tags()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.InfoManager.add_metadata"><code class="docutils literal notranslate"><span class="pre">InfoManager.add_metadata()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.InfoManager.rm_metadata"><code class="docutils literal notranslate"><span class="pre">InfoManager.rm_metadata()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.InfoManager.sort"><code class="docutils literal notranslate"><span class="pre">InfoManager.sort()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.InfoManager.from_dict"><code class="docutils literal notranslate"><span class="pre">InfoManager.from_dict()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.database.DBCreateError"><code class="docutils literal notranslate"><span class="pre">DBCreateError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.database.DBInsertError"><code class="docutils literal notranslate"><span class="pre">DBInsertError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.database.DBDirError"><code class="docutils literal notranslate"><span class="pre">DBDirError</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.database.html#module-dvas.database.explorer">dvas.database.explorer module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.explorer.ParserExit"><code class="docutils literal notranslate"><span class="pre">ParserExit</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.explorer.Parser"><code class="docutils literal notranslate"><span class="pre">Parser</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.explorer.Parser.exit"><code class="docutils literal notranslate"><span class="pre">Parser.exit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.explorer.Parser.error"><code class="docutils literal notranslate"><span class="pre">Parser.error()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.explorer.DatabasePrompt"><code class="docutils literal notranslate"><span class="pre">DatabasePrompt</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.explorer.DatabasePrompt.prompt"><code class="docutils literal notranslate"><span class="pre">DatabasePrompt.prompt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.explorer.DatabasePrompt.intro"><code class="docutils literal notranslate"><span class="pre">DatabasePrompt.intro</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.explorer.DatabasePrompt.default"><code class="docutils literal notranslate"><span class="pre">DatabasePrompt.default()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.explorer.DatabasePrompt.do_exit"><code class="docutils literal notranslate"><span class="pre">DatabasePrompt.do_exit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.explorer.DatabasePrompt.help_exit"><code class="docutils literal notranslate"><span class="pre">DatabasePrompt.help_exit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.explorer.DatabasePrompt.do_prm"><code class="docutils literal notranslate"><span class="pre">DatabasePrompt.do_prm()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.explorer.DatabasePrompt.help_prm"><code class="docutils literal notranslate"><span class="pre">DatabasePrompt.help_prm()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.explorer.DatabasePrompt.do_info"><code class="docutils literal notranslate"><span class="pre">DatabasePrompt.do_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.explorer.DatabasePrompt.help_info"><code class="docutils literal notranslate"><span class="pre">DatabasePrompt.help_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.explorer.DatabasePrompt.do_obj"><code class="docutils literal notranslate"><span class="pre">DatabasePrompt.do_obj()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.explorer.DatabasePrompt.help_obj"><code class="docutils literal notranslate"><span class="pre">DatabasePrompt.help_obj()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.explorer.ReadDatabase"><code class="docutils literal notranslate"><span class="pre">ReadDatabase</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.explorer.ReadDatabase.info"><code class="docutils literal notranslate"><span class="pre">ReadDatabase.info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.explorer.ReadDatabase.prm"><code class="docutils literal notranslate"><span class="pre">ReadDatabase.prm()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.explorer.ReadDatabase.obj"><code class="docutils literal notranslate"><span class="pre">ReadDatabase.obj()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.database.html#module-dvas.database.model">dvas.database.model module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.model.re_fullmatch"><code class="docutils literal notranslate"><span class="pre">re_fullmatch()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.model.str_len_max"><code class="docutils literal notranslate"><span class="pre">str_len_max()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.model.check_unit"><code class="docutils literal notranslate"><span class="pre">check_unit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.model.TimestampTZField"><code class="docutils literal notranslate"><span class="pre">TimestampTZField</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.TimestampTZField.field_type"><code class="docutils literal notranslate"><span class="pre">TimestampTZField.field_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.TimestampTZField.db_value"><code class="docutils literal notranslate"><span class="pre">TimestampTZField.db_value()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.TimestampTZField.python_value"><code class="docutils literal notranslate"><span class="pre">TimestampTZField.python_value()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.model.MetadataModel"><code class="docutils literal notranslate"><span class="pre">MetadataModel</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.MetadataModel.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">MetadataModel.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.MetadataModel.id"><code class="docutils literal notranslate"><span class="pre">MetadataModel.id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.model.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Model.mdl_id"><code class="docutils literal notranslate"><span class="pre">Model.mdl_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Model.mdl_name"><code class="docutils literal notranslate"><span class="pre">Model.mdl_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Model.mdl_desc"><code class="docutils literal notranslate"><span class="pre">Model.mdl_desc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Model.mid"><code class="docutils literal notranslate"><span class="pre">Model.mid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Model.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">Model.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Model.objects"><code class="docutils literal notranslate"><span class="pre">Model.objects</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.model.Object"><code class="docutils literal notranslate"><span class="pre">Object</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Object.oid"><code class="docutils literal notranslate"><span class="pre">Object.oid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Object.srn"><code class="docutils literal notranslate"><span class="pre">Object.srn</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Object.pid"><code class="docutils literal notranslate"><span class="pre">Object.pid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Object.model"><code class="docutils literal notranslate"><span class="pre">Object.model</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Object.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">Object.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Object.infos_objects"><code class="docutils literal notranslate"><span class="pre">Object.infos_objects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Object.model_id"><code class="docutils literal notranslate"><span class="pre">Object.model_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.model.Prm"><code class="docutils literal notranslate"><span class="pre">Prm</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Prm.prm_id"><code class="docutils literal notranslate"><span class="pre">Prm.prm_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Prm.prm_name"><code class="docutils literal notranslate"><span class="pre">Prm.prm_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Prm.prm_desc"><code class="docutils literal notranslate"><span class="pre">Prm.prm_desc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Prm.prm_unit"><code class="docutils literal notranslate"><span class="pre">Prm.prm_unit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Prm.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">Prm.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Prm.info"><code class="docutils literal notranslate"><span class="pre">Prm.info</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.model.Flg"><code class="docutils literal notranslate"><span class="pre">Flg</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Flg.flg_id"><code class="docutils literal notranslate"><span class="pre">Flg.flg_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Flg.bit_pos"><code class="docutils literal notranslate"><span class="pre">Flg.bit_pos</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Flg.flg_name"><code class="docutils literal notranslate"><span class="pre">Flg.flg_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Flg.flg_desc"><code class="docutils literal notranslate"><span class="pre">Flg.flg_desc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Flg.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">Flg.DoesNotExist</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.model.Tag"><code class="docutils literal notranslate"><span class="pre">Tag</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Tag.id"><code class="docutils literal notranslate"><span class="pre">Tag.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Tag.tag_name"><code class="docutils literal notranslate"><span class="pre">Tag.tag_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Tag.tag_desc"><code class="docutils literal notranslate"><span class="pre">Tag.tag_desc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Tag.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">Tag.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Tag.infos_tags"><code class="docutils literal notranslate"><span class="pre">Tag.infos_tags</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.model.DataSource"><code class="docutils literal notranslate"><span class="pre">DataSource</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.DataSource.id"><code class="docutils literal notranslate"><span class="pre">DataSource.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.DataSource.src"><code class="docutils literal notranslate"><span class="pre">DataSource.src</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.DataSource.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">DataSource.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.DataSource.info"><code class="docutils literal notranslate"><span class="pre">DataSource.info</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.model.Info"><code class="docutils literal notranslate"><span class="pre">Info</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Info.info_id"><code class="docutils literal notranslate"><span class="pre">Info.info_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Info.edt"><code class="docutils literal notranslate"><span class="pre">Info.edt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Info.param"><code class="docutils literal notranslate"><span class="pre">Info.param</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Info.data_src"><code class="docutils literal notranslate"><span class="pre">Info.data_src</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Info.evt_hash"><code class="docutils literal notranslate"><span class="pre">Info.evt_hash</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Info.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">Info.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Info.data_src_id"><code class="docutils literal notranslate"><span class="pre">Info.data_src_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Info.datas"><code class="docutils literal notranslate"><span class="pre">Info.datas</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Info.infos_objects"><code class="docutils literal notranslate"><span class="pre">Info.infos_objects</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Info.infos_tags"><code class="docutils literal notranslate"><span class="pre">Info.infos_tags</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Info.param_id"><code class="docutils literal notranslate"><span class="pre">Info.param_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.model.InfosTags"><code class="docutils literal notranslate"><span class="pre">InfosTags</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.InfosTags.id"><code class="docutils literal notranslate"><span class="pre">InfosTags.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.InfosTags.tag"><code class="docutils literal notranslate"><span class="pre">InfosTags.tag</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.InfosTags.info"><code class="docutils literal notranslate"><span class="pre">InfosTags.info</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.InfosTags.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">InfosTags.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.InfosTags.info_id"><code class="docutils literal notranslate"><span class="pre">InfosTags.info_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.InfosTags.tag_id"><code class="docutils literal notranslate"><span class="pre">InfosTags.tag_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.model.InfosObjects"><code class="docutils literal notranslate"><span class="pre">InfosObjects</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.InfosObjects.id"><code class="docutils literal notranslate"><span class="pre">InfosObjects.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.InfosObjects.object"><code class="docutils literal notranslate"><span class="pre">InfosObjects.object</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.InfosObjects.info"><code class="docutils literal notranslate"><span class="pre">InfosObjects.info</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.InfosObjects.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">InfosObjects.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.InfosObjects.info_id"><code class="docutils literal notranslate"><span class="pre">InfosObjects.info_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.InfosObjects.object_id"><code class="docutils literal notranslate"><span class="pre">InfosObjects.object_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.model.MetaData"><code class="docutils literal notranslate"><span class="pre">MetaData</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.MetaData.metadata_id"><code class="docutils literal notranslate"><span class="pre">MetaData.metadata_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.MetaData.key_name"><code class="docutils literal notranslate"><span class="pre">MetaData.key_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.MetaData.value_str"><code class="docutils literal notranslate"><span class="pre">MetaData.value_str</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.MetaData.value_num"><code class="docutils literal notranslate"><span class="pre">MetaData.value_num</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.MetaData.value_datetime"><code class="docutils literal notranslate"><span class="pre">MetaData.value_datetime</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.MetaData.info"><code class="docutils literal notranslate"><span class="pre">MetaData.info</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.MetaData.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">MetaData.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.MetaData.info_id"><code class="docutils literal notranslate"><span class="pre">MetaData.info_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.model.Data"><code class="docutils literal notranslate"><span class="pre">Data</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Data.id"><code class="docutils literal notranslate"><span class="pre">Data.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Data.info"><code class="docutils literal notranslate"><span class="pre">Data.info</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Data.index"><code class="docutils literal notranslate"><span class="pre">Data.index</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Data.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">Data.DoesNotExist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Data.info_id"><code class="docutils literal notranslate"><span class="pre">Data.info_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Data.value"><code class="docutils literal notranslate"><span class="pre">Data.value</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.database.html#module-dvas.database.search">dvas.database.search module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.search.SearchInfoExpr"><code class="docutils literal notranslate"><span class="pre">SearchInfoExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.SearchInfoExpr.set_stgy"><code class="docutils literal notranslate"><span class="pre">SearchInfoExpr.set_stgy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.SearchInfoExpr.interpret"><code class="docutils literal notranslate"><span class="pre">SearchInfoExpr.interpret()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.SearchInfoExpr.eval"><code class="docutils literal notranslate"><span class="pre">SearchInfoExpr.eval()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.SearchInfoExpr.extract_global_view"><code class="docutils literal notranslate"><span class="pre">SearchInfoExpr.extract_global_view()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.SearchInfoExpr.get_eid"><code class="docutils literal notranslate"><span class="pre">SearchInfoExpr.get_eid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.SearchInfoExpr.get_rid"><code class="docutils literal notranslate"><span class="pre">SearchInfoExpr.get_rid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.SearchInfoExpr.get_tod"><code class="docutils literal notranslate"><span class="pre">SearchInfoExpr.get_tod()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.SearchInfoExpr.get_isgdp"><code class="docutils literal notranslate"><span class="pre">SearchInfoExpr.get_isgdp()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.search.LogicalSearchInfoExpr"><code class="docutils literal notranslate"><span class="pre">LogicalSearchInfoExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.LogicalSearchInfoExpr.interpret"><code class="docutils literal notranslate"><span class="pre">LogicalSearchInfoExpr.interpret()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.LogicalSearchInfoExpr.fct"><code class="docutils literal notranslate"><span class="pre">LogicalSearchInfoExpr.fct()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.search.AndExpr"><code class="docutils literal notranslate"><span class="pre">AndExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.AndExpr.fct"><code class="docutils literal notranslate"><span class="pre">AndExpr.fct()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.search.OrExpr"><code class="docutils literal notranslate"><span class="pre">OrExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.OrExpr.fct"><code class="docutils literal notranslate"><span class="pre">OrExpr.fct()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.search.NotExpr"><code class="docutils literal notranslate"><span class="pre">NotExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.NotExpr.fct"><code class="docutils literal notranslate"><span class="pre">NotExpr.fct()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.search.TerminalSearchInfoExpr"><code class="docutils literal notranslate"><span class="pre">TerminalSearchInfoExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.TerminalSearchInfoExpr.interpret"><code class="docutils literal notranslate"><span class="pre">TerminalSearchInfoExpr.interpret()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.TerminalSearchInfoExpr.get_filter"><code class="docutils literal notranslate"><span class="pre">TerminalSearchInfoExpr.get_filter()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.search.AllExpr"><code class="docutils literal notranslate"><span class="pre">AllExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.AllExpr.get_filter"><code class="docutils literal notranslate"><span class="pre">AllExpr.get_filter()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.search.DatetimeExpr"><code class="docutils literal notranslate"><span class="pre">DatetimeExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.DatetimeExpr.expression"><code class="docutils literal notranslate"><span class="pre">DatetimeExpr.expression</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.DatetimeExpr.get_filter"><code class="docutils literal notranslate"><span class="pre">DatetimeExpr.get_filter()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.search.SerialNumberExpr"><code class="docutils literal notranslate"><span class="pre">SerialNumberExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.SerialNumberExpr.expression"><code class="docutils literal notranslate"><span class="pre">SerialNumberExpr.expression</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.SerialNumberExpr.get_filter"><code class="docutils literal notranslate"><span class="pre">SerialNumberExpr.get_filter()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.search.ProductExpr"><code class="docutils literal notranslate"><span class="pre">ProductExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.ProductExpr.expression"><code class="docutils literal notranslate"><span class="pre">ProductExpr.expression</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.ProductExpr.get_filter"><code class="docutils literal notranslate"><span class="pre">ProductExpr.get_filter()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.search.TagExpr"><code class="docutils literal notranslate"><span class="pre">TagExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.TagExpr.expression"><code class="docutils literal notranslate"><span class="pre">TagExpr.expression</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.TagExpr.get_filter"><code class="docutils literal notranslate"><span class="pre">TagExpr.get_filter()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.search.ParameterExpr"><code class="docutils literal notranslate"><span class="pre">ParameterExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.ParameterExpr.expression"><code class="docutils literal notranslate"><span class="pre">ParameterExpr.expression</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.ParameterExpr.get_filter"><code class="docutils literal notranslate"><span class="pre">ParameterExpr.get_filter()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.search.RawExpr"><code class="docutils literal notranslate"><span class="pre">RawExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.RawExpr.get_filter"><code class="docutils literal notranslate"><span class="pre">RawExpr.get_filter()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.search.GDPExpr"><code class="docutils literal notranslate"><span class="pre">GDPExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.GDPExpr.get_filter"><code class="docutils literal notranslate"><span class="pre">GDPExpr.get_filter()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.search.OIDExpr"><code class="docutils literal notranslate"><span class="pre">OIDExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.OIDExpr.expression"><code class="docutils literal notranslate"><span class="pre">OIDExpr.expression</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.OIDExpr.get_filter"><code class="docutils literal notranslate"><span class="pre">OIDExpr.get_filter()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.search.MIDExpr"><code class="docutils literal notranslate"><span class="pre">MIDExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.MIDExpr.expression"><code class="docutils literal notranslate"><span class="pre">MIDExpr.expression</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.MIDExpr.get_filter"><code class="docutils literal notranslate"><span class="pre">MIDExpr.get_filter()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.search.SearchStrategyAC"><code class="docutils literal notranslate"><span class="pre">SearchStrategyAC</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.SearchStrategyAC.str_expr_dict"><code class="docutils literal notranslate"><span class="pre">SearchStrategyAC.str_expr_dict</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.SearchStrategyAC.qry"><code class="docutils literal notranslate"><span class="pre">SearchStrategyAC.qry</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.SearchStrategyAC.id"><code class="docutils literal notranslate"><span class="pre">SearchStrategyAC.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.SearchStrategyAC.exclude"><code class="docutils literal notranslate"><span class="pre">SearchStrategyAC.exclude</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.search.InfoStrategy"><code class="docutils literal notranslate"><span class="pre">InfoStrategy</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.InfoStrategy.str_expr_dict"><code class="docutils literal notranslate"><span class="pre">InfoStrategy.str_expr_dict</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.InfoStrategy.qry"><code class="docutils literal notranslate"><span class="pre">InfoStrategy.qry</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.InfoStrategy.id"><code class="docutils literal notranslate"><span class="pre">InfoStrategy.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.InfoStrategy.exclude"><code class="docutils literal notranslate"><span class="pre">InfoStrategy.exclude</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.search.PrmStrategy"><code class="docutils literal notranslate"><span class="pre">PrmStrategy</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.PrmStrategy.str_expr_dict"><code class="docutils literal notranslate"><span class="pre">PrmStrategy.str_expr_dict</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.PrmStrategy.qry"><code class="docutils literal notranslate"><span class="pre">PrmStrategy.qry</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.PrmStrategy.id"><code class="docutils literal notranslate"><span class="pre">PrmStrategy.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.PrmStrategy.exclude"><code class="docutils literal notranslate"><span class="pre">PrmStrategy.exclude</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.search.ObjectStrategy"><code class="docutils literal notranslate"><span class="pre">ObjectStrategy</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.ObjectStrategy.str_expr_dict"><code class="docutils literal notranslate"><span class="pre">ObjectStrategy.str_expr_dict</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.ObjectStrategy.qry"><code class="docutils literal notranslate"><span class="pre">ObjectStrategy.qry</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.ObjectStrategy.id"><code class="docutils literal notranslate"><span class="pre">ObjectStrategy.id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.ObjectStrategy.exclude"><code class="docutils literal notranslate"><span class="pre">ObjectStrategy.exclude</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="dvas.plots.html">dvas.plots package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="dvas.plots.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dvas.plots.html#module-dvas.plots.dtas">dvas.plots.dtas module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dvas.plots.html#module-dvas.plots.gdps">dvas.plots.gdps module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dvas.plots.html#module-dvas.plots.plots">dvas.plots.plots module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dvas.plots.html#module-dvas.plots.utils">dvas.plots.utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.plots.html#module-dvas.plots.dtas">dvas.plots.dtas module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dvas.plots.html#dvas.plots.dtas.dtas"><code class="docutils literal notranslate"><span class="pre">dtas()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.plots.html#module-dvas.plots.gdps">dvas.plots.gdps module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dvas.plots.html#dvas.plots.gdps.gdps_vs_cws"><code class="docutils literal notranslate"><span class="pre">gdps_vs_cws()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.plots.html#dvas.plots.gdps.uc_budget"><code class="docutils literal notranslate"><span class="pre">uc_budget()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.plots.html#dvas.plots.gdps.plot_ks_test"><code class="docutils literal notranslate"><span class="pre">plot_ks_test()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.plots.html#module-dvas.plots.plots">dvas.plots.plots module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dvas.plots.html#dvas.plots.plots.multiprf"><code class="docutils literal notranslate"><span class="pre">multiprf()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.plots.html#module-dvas.plots.utils">dvas.plots.utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dvas.plots.html#dvas.plots.utils.WIDTH_ONECOL"><code class="docutils literal notranslate"><span class="pre">WIDTH_ONECOL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.plots.html#dvas.plots.utils.WIDTH_TWOCOL"><code class="docutils literal notranslate"><span class="pre">WIDTH_TWOCOL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.plots.html#dvas.plots.utils.PLOT_STYLES"><code class="docutils literal notranslate"><span class="pre">PLOT_STYLES</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.plots.html#dvas.plots.utils.CLRS"><code class="docutils literal notranslate"><span class="pre">CLRS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.plots.html#dvas.plots.utils.CMAP_1"><code class="docutils literal notranslate"><span class="pre">CMAP_1</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.plots.html#dvas.plots.utils.CMAP_1_R"><code class="docutils literal notranslate"><span class="pre">CMAP_1_R</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.plots.html#dvas.plots.utils.PLOT_FMTS"><code class="docutils literal notranslate"><span class="pre">PLOT_FMTS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.plots.html#dvas.plots.utils.UNIT_LABELS"><code class="docutils literal notranslate"><span class="pre">UNIT_LABELS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.plots.html#dvas.plots.utils.set_mplstyle"><code class="docutils literal notranslate"><span class="pre">set_mplstyle()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.plots.html#dvas.plots.utils.add_sec_axis"><code class="docutils literal notranslate"><span class="pre">add_sec_axis()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.plots.html#dvas.plots.utils.fix_txt"><code class="docutils literal notranslate"><span class="pre">fix_txt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.plots.html#dvas.plots.utils.cmap_discretize"><code class="docutils literal notranslate"><span class="pre">cmap_discretize()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.plots.html#dvas.plots.utils.fancy_legend"><code class="docutils literal notranslate"><span class="pre">fancy_legend()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.plots.html#dvas.plots.utils.get_edt_eid_rid"><code class="docutils literal notranslate"><span class="pre">get_edt_eid_rid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.plots.html#dvas.plots.utils.add_edt_eid_rid"><code class="docutils literal notranslate"><span class="pre">add_edt_eid_rid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.plots.html#dvas.plots.utils.add_var_and_k"><code class="docutils literal notranslate"><span class="pre">add_var_and_k()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.plots.html#dvas.plots.utils.add_source"><code class="docutils literal notranslate"><span class="pre">add_source()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.plots.html#dvas.plots.utils.fancy_savefig"><code class="docutils literal notranslate"><span class="pre">fancy_savefig()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.plots.html#dvas.plots.utils.wrap_wdir_curve"><code class="docutils literal notranslate"><span class="pre">wrap_wdir_curve()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.plots.html#dvas.plots.utils.clr_palette_demo"><code class="docutils literal notranslate"><span class="pre">clr_palette_demo()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="dvas.tools.html">dvas.tools package</a><ul>
@@ -186,9 +969,27 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="dvas.tools.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dvas.tools.html#module-dvas.tools.math">dvas.tools.math module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dvas.tools.html#module-dvas.tools.sync">dvas.tools.sync module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dvas.tools.html#module-dvas.tools.tools">dvas.tools.tools module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.tools.html#module-dvas.tools.math">dvas.tools.math module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dvas.tools.html#dvas.tools.math.crosscorr"><code class="docutils literal notranslate"><span class="pre">crosscorr()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.tools.html#module-dvas.tools.sync">dvas.tools.sync module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dvas.tools.html#dvas.tools.sync.get_sync_shifts_from_starttime"><code class="docutils literal notranslate"><span class="pre">get_sync_shifts_from_starttime()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.tools.html#dvas.tools.sync.get_sync_shifts_from_alt"><code class="docutils literal notranslate"><span class="pre">get_sync_shifts_from_alt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.tools.html#dvas.tools.sync.get_sync_shifts_from_val"><code class="docutils literal notranslate"><span class="pre">get_sync_shifts_from_val()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.tools.html#module-dvas.tools.tools">dvas.tools.tools module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dvas.tools.html#dvas.tools.tools.fancy_nansum"><code class="docutils literal notranslate"><span class="pre">fancy_nansum()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.tools.html#dvas.tools.tools.fancy_bitwise_or"><code class="docutils literal notranslate"><span class="pre">fancy_bitwise_or()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.tools.html#dvas.tools.tools.df_to_chunks"><code class="docutils literal notranslate"><span class="pre">df_to_chunks()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.tools.html#dvas.tools.tools.wrap_angle"><code class="docutils literal notranslate"><span class="pre">wrap_angle()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.tools.html#module-dvas.tools.wmo">dvas.tools.wmo module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dvas.tools.html#dvas.tools.wmo.geom2geopot"><code class="docutils literal notranslate"><span class="pre">geom2geopot()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -844,7 +1645,7 @@ When existing the context manager, old values are restored.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.MODEL_PAT">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">MODEL_PAT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'[A-Z0-9]+(([A-Z0-9])|([\\-\\_]))*[A-Z0-9]'</span></em><a class="headerlink" href="#dvas.hardcoded.MODEL_PAT" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">MODEL_PAT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'[a-zA-Z0-9]+(([a-zA-Z0-9])|([\\-\\_\\(\\)]))*[a-zA-Z0-9]'</span></em><a class="headerlink" href="#dvas.hardcoded.MODEL_PAT" title="Permalink to this definition"></a></dt>
 <dd><p>Instrument type pattern (e.g. VAI-RS92, MET_LAB-C50, RS92-GDP_002)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -855,8 +1656,8 @@ When existing the context manager, old values are restored.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.CSV_FILE_MDL_PAT">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">CSV_FILE_MDL_PAT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'^([A-Z0-9]+(([A-Z0-9])|([\\-\\_]))*[A-Z0-9])\\.[\\w\\-]+\\.'</span></em><a class="headerlink" href="#dvas.hardcoded.CSV_FILE_MDL_PAT" title="Permalink to this definition"></a></dt>
-<dd><p>CSV file model catching group pattern (e.g RS41.PAY_20171024T120000)</p>
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">CSV_FILE_MDL_PAT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'^([a-zA-Z0-9]+(([a-zA-Z0-9])|([\\-\\_\\(\\)]))*[a-zA-Z0-9])\\.[\\w\\-]+\\.'</span></em><a class="headerlink" href="#dvas.hardcoded.CSV_FILE_MDL_PAT" title="Permalink to this definition"></a></dt>
+<dd><p>CSV file model catching group pattern (e.g RS41.etc…, DFM-17.etc …)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
@@ -867,7 +1668,7 @@ When existing the context manager, old values are restored.</p>
 <dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.GDP_FILE_MDL_PAT">
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">GDP_FILE_MDL_PAT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'^[A-Z]{3}\\-[A-Z]{2}\\-\\d{2}\\_\\d\\_([\\w\\-]+\\_\\d{3})\\_\\d{8}T'</span></em><a class="headerlink" href="#dvas.hardcoded.GDP_FILE_MDL_PAT" title="Permalink to this definition"></a></dt>
-<dd><p>GDP file model catching group pattern (e.g PAY-RS-01_2_RS41-GDP-BETA_001_20170712T000000_1-002-001.nc)</p>
+<dd><p>GDP file model catching group pattern (e.g PAY-RS-01_2_RS41-GDP-BETA_001_20170712Tetc.nc)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
@@ -1228,6 +2029,28 @@ When existing the context manager, old values are restored.</p>
 </dd></dl>
 
 <dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_INVALID">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_INVALID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'invalid'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_INVALID" title="Permalink to this definition"></a></dt>
+<dd><p>Flag’s name for raw NA values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_INVALID_DESC">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_INVALID_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Invalid</span> <span class="pre">data'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_INVALID_DESC" title="Permalink to this definition"></a></dt>
+<dd><p>Flag’s desc for raw NA values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.FLG_INTERP">
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_INTERP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'interp'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_INTERP" title="Permalink to this definition"></a></dt>
 <dd><p>Flag’s name for interpolated values</p>
@@ -1264,6 +2087,50 @@ When existing the context manager, old values are restored.</p>
 <dt class="sig sig-object py" id="dvas.hardcoded.FLG_INCOMPATIBLE_DESC">
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_INCOMPATIBLE_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Incompatible</span> <span class="pre">GDP</span> <span class="pre">measurements'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_INCOMPATIBLE_DESC" title="Permalink to this definition"></a></dt>
 <dd><p>Flag’s desc for resampled values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_PRELAUNCH">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_PRELAUNCH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'prelaunch'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_PRELAUNCH" title="Permalink to this definition"></a></dt>
+<dd><p>Flag’s name for ascent data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_PRELAUNCH_DESC">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_PRELAUNCH_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Prelaunch</span> <span class="pre">data'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_PRELAUNCH_DESC" title="Permalink to this definition"></a></dt>
+<dd><p>Flag’s desc for ascent data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_ASCENT">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_ASCENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ascent'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_ASCENT" title="Permalink to this definition"></a></dt>
+<dd><p>Flag’s name for ascent data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_ASCENT_DESC">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_ASCENT_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Ascent</span> <span class="pre">data'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_ASCENT_DESC" title="Permalink to this definition"></a></dt>
+<dd><p>Flag’s desc for ascent data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
@@ -1316,9 +2183,9 @@ When existing the context manager, old values are restored.</p>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.MTDTA_BPT">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">MTDTA_BPT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'bpt_time'</span></em><a class="headerlink" href="#dvas.hardcoded.MTDTA_BPT" title="Permalink to this definition"></a></dt>
-<dd><p>Metdata field to store the time of the balloon burst point</p>
+<dt class="sig sig-object py" id="dvas.hardcoded.MTDTA_FIRST">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">MTDTA_FIRST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'first_timestamp'</span></em><a class="headerlink" href="#dvas.hardcoded.MTDTA_FIRST" title="Permalink to this definition"></a></dt>
+<dd><p>Metdata field to store the GPS time of the first point in the profile.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
@@ -1327,9 +2194,20 @@ When existing the context manager, old values are restored.</p>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.MTDTA_START">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">MTDTA_START</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'start_time'</span></em><a class="headerlink" href="#dvas.hardcoded.MTDTA_START" title="Permalink to this definition"></a></dt>
-<dd><p>Metadata field to store the GPS time associated to the first profile point.</p>
+<dt class="sig sig-object py" id="dvas.hardcoded.MTDTA_LAUNCH">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">MTDTA_LAUNCH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'launch_timestamp'</span></em><a class="headerlink" href="#dvas.hardcoded.MTDTA_LAUNCH" title="Permalink to this definition"></a></dt>
+<dd><p>Metadata field to store the GPS time of the manufacturer-detected launch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.MTDTA_BURST">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">MTDTA_BURST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'burst_timestamp'</span></em><a class="headerlink" href="#dvas.hardcoded.MTDTA_BURST" title="Permalink to this definition"></a></dt>
+<dd><p>Metadata field to store the GPS time of the manufacturer-detected balloon burst.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>

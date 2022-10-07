@@ -16,6 +16,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -31,7 +32,7 @@
             <a href="../index.html" class="icon icon-home"> dvas
           </a>
               <div class="version">
-                0.6.0.dev1
+                0.7.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -115,30 +116,24 @@
 <p>Module content: basic high-level recipes for the UAII2022 campaign</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas_recipes.uaii2022.basic.prf_summary">
-<span class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii2022.basic.</span></span><span class="sig-name descname"><span class="pre">prf_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">create_eid_edt_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii2022.basic.prf_summary" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii2022.basic.</span></span><span class="sig-name descname"><span class="pre">prf_summary</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii2022.basic.prf_summary" title="Permalink to this definition"></a></dt>
 <dd><p>Exports a summary of the different profiles in the DB.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>create_eid_edt_files</strong> (<em>bool, optional</em>) – if True, will issue a set of empty files that tie
-eids to edts. Used for the UAII 2022 preview tool. Defaults to False.</p>
-</dd>
-</dl>
+<p>Args:</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="dvas_recipes.uaii2022.basic.flag_descent">
-<span class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii2022.basic.</span></span><span class="sig-name descname"><span class="pre">flag_descent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii2022.basic.flag_descent" title="Permalink to this definition"></a></dt>
-<dd><p>Set a dedicated flag for any point beyond the burst point.</p>
+<dt class="sig sig-object py" id="dvas_recipes.uaii2022.basic.flag_phases">
+<span class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii2022.basic.</span></span><span class="sig-name descname"><span class="pre">flag_phases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii2022.basic.flag_phases" title="Permalink to this definition"></a></dt>
+<dd><p>Flag the different profile phases, i.e. prelaunch, ascent,  and descent.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>prfs</strong> (<em>MultiRSProfile|MultiGDPProfile</em>) – the profiles to flag (individually).</p>
 </dd>
 </dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If available, this function will use the metadata info to set the flags. Else, it will
-simply flag any point beyond the max altitude.</p>
-</div>
+<p>If available, this function will use the metadata info to set the flags.
+If no first or burst timestamp is defined, any point beyond the max altitude will be flagged as
+descent.
+If no first or launch timestamp is set, the profile is assumed to start at the launch time.</p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>This function assumes that the profiles have not been shifted in any way (yet) !</p>
@@ -152,7 +147,7 @@ simply flag any point beyond the max altitude.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas_recipes.uaii2022.basic.cleanup_steps">
-<span class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii2022.basic.</span></span><span class="sig-name descname"><span class="pre">cleanup_steps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resampling_freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crop_descent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeofday</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii2022.basic.cleanup_steps" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii2022.basic.</span></span><span class="sig-name descname"><span class="pre">cleanup_steps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resampling_freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interp_dist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crop_descent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeofday</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii2022.basic.cleanup_steps" title="Permalink to this definition"></a></dt>
 <dd><p>Execute a series of cleanup-steps common to GDP and non-GDP profiles. This function is here
 to avoid duplicating code. The cleanup-up profiles are directly saved to the DB with the tag:
 TAG_CLN</p>
@@ -162,11 +157,17 @@ TAG_CLN</p>
 <li><p><strong>prfs</strong> (<em>MultiRSProfile|MultiGDPProfile</em>) – the profiles to cleanup.</p></li>
 <li><p><strong>resampling_freq</strong> (<em>str</em>) – time step frequency, to feed <code class="xref py py-func docutils literal notranslate"><span class="pre">pandas.timedelta_range()</span></code>, e.g.
 ‘1s’.</p></li>
+<li><p><strong>interp_dist</strong> (<em>float|int</em>) – distance to the nearest real measurement, in s, beyond which a
+resampled point is forced to NaN (i.e. “dvas does not interpolate !”)</p></li>
 <li><p><strong>crop_descent</strong> (<em>bool</em>) – if True, and data with the flag “descent” will be cropped out for good.</p></li>
 <li><p><strong>timeofday</strong> (<em>str</em>) – if set, will tag the Profile with this time of day. Defaults to None.</p></li>
 </ul>
 </dd>
 </dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Pre-launch data is always cropped.</p>
+</div>
 </dd></dl>
 
 </section>

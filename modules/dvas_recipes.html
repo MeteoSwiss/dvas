@@ -16,6 +16,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -31,7 +32,7 @@
             <a href="../index.html" class="icon icon-home"> dvas
           </a>
               <div class="version">
-                0.6.0.dev1
+                0.7.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -61,11 +62,42 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-dvas_recipes.dynamic">dvas_recipes.dynamic module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-dvas_recipes.errors">dvas_recipes.errors module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-dvas_recipes.hl_commands">dvas_recipes.hl_commands module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-dvas_recipes.recipe">dvas_recipes.recipe module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-dvas_recipes.utils">dvas_recipes.utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dvas_recipes.dynamic">dvas_recipes.dynamic module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dvas_recipes.dynamic.CURRENT_FLIGHT"><code class="docutils literal notranslate"><span class="pre">CURRENT_FLIGHT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas_recipes.dynamic.CURRENT_VAR"><code class="docutils literal notranslate"><span class="pre">CURRENT_VAR</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas_recipes.dynamic.INDEXES"><code class="docutils literal notranslate"><span class="pre">INDEXES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas_recipes.dynamic.CURRENT_STEP_ID"><code class="docutils literal notranslate"><span class="pre">CURRENT_STEP_ID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas_recipes.dynamic.ALL_STEP_IDS"><code class="docutils literal notranslate"><span class="pre">ALL_STEP_IDS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas_recipes.dynamic.N_CPUS"><code class="docutils literal notranslate"><span class="pre">N_CPUS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas_recipes.dynamic.DROP_FLGS"><code class="docutils literal notranslate"><span class="pre">DROP_FLGS</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dvas_recipes.errors">dvas_recipes.errors module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dvas_recipes.errors.DvasRecipesError"><code class="docutils literal notranslate"><span class="pre">DvasRecipesError</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dvas_recipes.hl_commands">dvas_recipes.hl_commands module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dvas_recipes.hl_commands.init_arena"><code class="docutils literal notranslate"><span class="pre">init_arena()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas_recipes.hl_commands.optimize"><code class="docutils literal notranslate"><span class="pre">optimize()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas_recipes.hl_commands.run_recipe"><code class="docutils literal notranslate"><span class="pre">run_recipe()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dvas_recipes.recipe">dvas_recipes.recipe module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dvas_recipes.recipe.for_each_flight"><code class="docutils literal notranslate"><span class="pre">for_each_flight()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas_recipes.recipe.for_each_var"><code class="docutils literal notranslate"><span class="pre">for_each_var()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas_recipes.recipe.RecipeStep"><code class="docutils literal notranslate"><span class="pre">RecipeStep</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas_recipes.recipe.Recipe"><code class="docutils literal notranslate"><span class="pre">Recipe</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dvas_recipes.utils">dvas_recipes.utils module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dvas_recipes.utils.demo_storage_path"><code class="docutils literal notranslate"><span class="pre">demo_storage_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas_recipes.utils.recipe_storage_path"><code class="docutils literal notranslate"><span class="pre">recipe_storage_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas_recipes.utils.default_arena_path"><code class="docutils literal notranslate"><span class="pre">default_arena_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas_recipes.utils.fn_suffix"><code class="docutils literal notranslate"><span class="pre">fn_suffix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas_recipes.utils.format_tags"><code class="docutils literal notranslate"><span class="pre">format_tags()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas_recipes.utils.rsid_tags"><code class="docutils literal notranslate"><span class="pre">rsid_tags()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -114,13 +146,28 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="dvas_recipes.uaii2022.html">dvas_recipes.uaii2022 package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="dvas_recipes.uaii2022.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dvas_recipes.uaii2022.html#module-dvas_recipes.uaii2022.basic">dvas_recipes.uaii2022.basic module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dvas_recipes.uaii2022.html#module-dvas_recipes.uaii2022.basic">dvas_recipes.uaii2022.basic module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dvas_recipes.uaii2022.html#dvas_recipes.uaii2022.basic.prf_summary"><code class="docutils literal notranslate"><span class="pre">prf_summary()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas_recipes.uaii2022.html#dvas_recipes.uaii2022.basic.flag_phases"><code class="docutils literal notranslate"><span class="pre">flag_phases()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas_recipes.uaii2022.html#dvas_recipes.uaii2022.basic.cleanup_steps"><code class="docutils literal notranslate"><span class="pre">cleanup_steps()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="dvas_recipes.uaii2022.html#module-dvas_recipes.uaii2022.dtas">dvas_recipes.uaii2022.dtas module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dvas_recipes.uaii2022.html#module-dvas_recipes.uaii2022.flgs">dvas_recipes.uaii2022.flgs module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dvas_recipes.uaii2022.html#module-dvas_recipes.uaii2022.gdps">dvas_recipes.uaii2022.gdps module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dvas_recipes.uaii2022.html#module-dvas_recipes.uaii2022.plots">dvas_recipes.uaii2022.plots module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dvas_recipes.uaii2022.html#module-dvas_recipes.uaii2022.sync">dvas_recipes.uaii2022.sync module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dvas_recipes.uaii2022.html#module-dvas_recipes.uaii2022.tools">dvas_recipes.uaii2022.tools module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dvas_recipes.uaii2022.html#module-dvas_recipes.uaii2022.plots">dvas_recipes.uaii2022.plots module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dvas_recipes.uaii2022.html#dvas_recipes.uaii2022.plots.covmat_stats"><code class="docutils literal notranslate"><span class="pre">covmat_stats()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dvas_recipes.uaii2022.html#module-dvas_recipes.uaii2022.sync">dvas_recipes.uaii2022.sync module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dvas_recipes.uaii2022.html#dvas_recipes.uaii2022.sync.apply_sync_shifts"><code class="docutils literal notranslate"><span class="pre">apply_sync_shifts()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dvas_recipes.uaii2022.html#module-dvas_recipes.uaii2022.tools">dvas_recipes.uaii2022.tools module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dvas_recipes.uaii2022.html#dvas_recipes.uaii2022.tools.get_query_filter"><code class="docutils literal notranslate"><span class="pre">get_query_filter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas_recipes.uaii2022.html#dvas_recipes.uaii2022.tools.find_tropopause"><code class="docutils literal notranslate"><span class="pre">find_tropopause()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -291,28 +338,38 @@ also increasing the computing time.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas_recipes.hl_commands.run_recipe">
-<span class="sig-prename descclassname"><span class="pre">dvas_recipes.hl_commands.</span></span><span class="sig-name descname"><span class="pre">run_recipe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rcp_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_step_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">until_step_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.hl_commands.run_recipe" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas_recipes.hl_commands.</span></span><span class="sig-name descname"><span class="pre">run_recipe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rcp_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid_log_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid_to_treat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_step_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">until_step_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.hl_commands.run_recipe" title="Permalink to this definition"></a></dt>
 <dd><p>Loads and execute a dvas recipe.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul>
 <li><p><strong>rcp_fn</strong> (<em>pathlib.Path</em>) – path to the specific dvas recipe to execute.</p></li>
-<li><p><strong>flights</strong> (<em>pathlib.Path, optional</em>) – path to the text file specifiying specific radiosonde
-flights to process. The file should contain one tuple of evt_id, rig_rid per line,
-e.g.:</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># This is a comment</span>
-<span class="c1"># Each line should contain the tags of an event_id and rig_id</span>
-<span class="n">e</span><span class="p">:</span><span class="mi">12345</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span><span class="mi">1</span>
-<span class="n">e</span><span class="p">:</span><span class="mi">12346</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span><span class="mi">1</span>
-</pre></div>
-</div>
-</li>
+<li><p><strong>fid_log_fn</strong> (<em>pathlib.Path</em>) – path to the log linking flight ids, event ids, rig ids,
+and event datetimes.</p></li>
+<li><p><strong>fid_to_treat</strong> (<em>list of str, optional</em>) – list of flights ids to treat specifically.</p></li>
 <li><p><strong>from_step_id</strong> (<em>str, optional</em>) – if set, will skip all processing until this step_id value.
 Defaults to None.</p></li>
 <li><p><strong>until_step_id</strong> (<em>str, optional</em>) – if set, will skip all processing step beyond this step_id
 value. Defaults to None.</p></li>
 <li><p><strong>debug</strong> (<em>bool, optional</em>) – if True, will force-set the logging level to DEBUG.
 Defaults to False.</p></li>
+<li><p><strong>The “fid_log_fn” file should contain one tuple of flight if, event id, rig id, and</strong></p></li>
+<li><p><strong>event datetime per line, e.g.::</strong> – # This is a comment
+F01,e:12345,r:1,2022-08-19T19:00:00.000Z
+T04,e:12340,r:2,2022-08-19T15:45:00.000Z</p></li>
+<li><p><strong>Event ids are meant to be GRUAN flight ids, in order to link GDPs with specific flights.</strong></p></li>
+<li><p><strong>Rig ids are also extracted from GRUAN parameters in GDP files to distinguish different rigs</strong></p></li>
+<li><p><strong>in case of multiple simultaneous launches.</strong></p></li>
+<li><p><strong>Event datetimes are not used by dvas directly, but allow for an easier identification of</strong></p></li>
+<li><p><strong>flights in UPPS</strong> (<em>UAII Plot Preview Software</em>)</p></li>
+<li><p><strong>Flight ids are user-defined reference strings, used to identify specific flight in a given</strong></p></li>
+<li><p><strong>campaign - these are typically defined before GRUAN event ids (that are generated at the</strong></p></li>
+<li><p><strong>creation of GDPs).)</strong></p></li>
+<li><p><strong>TODO</strong> – At present, it is not possible to link fids to eids, because the information is missing
+from the iMS100 GDP. This products would require the field  ‘g.measurement.InternalKey’
+to be present, like the RS41 GDP, e.g.:</p>
+<p>:g.Measurement.InternalKey = “UAII2022_F08”</p>
+</li>
 </ul>
 </dd>
 </dl>
@@ -399,25 +456,21 @@ be executed sequentially for all the specified variables.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="dvas_recipes.recipe.Recipe">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas_recipes.recipe.</span></span><span class="sig-name descname"><span class="pre">Recipe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rcp_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.recipe.Recipe" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas_recipes.recipe.</span></span><span class="sig-name descname"><span class="pre">Recipe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rcp_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eids_to_treat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.recipe.Recipe" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Recipe class, designed to handle the loading/initialization/execution of dvas recipes from
 dedicated YAML files.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas_recipes.recipe.Recipe.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rcp_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.recipe.Recipe.__init__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rcp_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eids_to_treat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.recipe.Recipe.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Recipe initialization from a suitable YAML recipe file.</p>
-<dl class="field-list">
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul>
+<dd class="field-odd"><ul class="simple">
 <li><p><strong>rcp_fn</strong> (<em>pathlib.Path</em>) – path of the recipe file to initialize.</p></li>
-<li><p><strong>flights</strong> (<em>2D ndarray of str, optional</em>) – ndarray listing specific flights to be processed,
-using their event id and rig id for identification.
-Defaults to None = all available. Array must be 2D, e.g.:</p>
-<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="p">[[</span><span class="s1">&#39;e:12345&#39;</span><span class="p">,</span> <span class="s1">&#39;r:1&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;e:12346&#39;</span><span class="p">,</span> <span class="s1">&#39;r:1&#39;</span><span class="p">]]</span>
-</pre></div>
-</div>
-</li>
+<li><p><strong>eids_to_treat</strong> (<em>list, optional</em>) – list of (‘fid’, ‘e:eid’, ‘r:rid’) tuples.
+If None, will process all the flights found in the DB.</p></li>
+<li><p><strong>fid_to_treat</strong> (<em>list, optional</em>) – list of specific fid to be processed.</p></li>
 <li><p><strong>debug</strong> (<em>bool, optional</em>) – if True, will force-set the logging level to DEBUG.
 Defaults to False.</p></li>
 </ul>
@@ -522,7 +575,7 @@ specific recipe: ‘./dvas_recipe_arena/’</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas_recipes.utils.fn_suffix">
-<span class="sig-prename descclassname"><span class="pre">dvas_recipes.utils.</span></span><span class="sig-name descname"><span class="pre">fn_suffix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.utils.fn_suffix" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas_recipes.utils.</span></span><span class="sig-name descname"><span class="pre">fn_suffix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.utils.fn_suffix" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the default suffix of filenames given a set of info provided by the user.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -530,7 +583,8 @@ specific recipe: ‘./dvas_recipe_arena/’</p>
 <li><p><strong>eid</strong> (<em>int, optional</em>) – the event id</p></li>
 <li><p><strong>rid</strong> (<em>int, optional</em>) – the rig id</p></li>
 <li><p><strong>var</strong> (<em>str, optional</em>) – the variable name</p></li>
-<li><p><strong>mids</strong> (<em>lost of str, optional</em>) – the list of mids</p></li>
+<li><p><strong>mids</strong> (<em>list of str, optional</em>) – the list of mids</p></li>
+<li><p><strong>pids</strong> (<em>list of str, optional</em>) – the list of pids</p></li>
 <li><p><strong>tags</strong> (<em>list of str, optional</em>) – the list of tags associated with the data</p></li>
 </ul>
 </dd>

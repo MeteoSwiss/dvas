@@ -16,6 +16,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -31,7 +32,7 @@
             <a href="../index.html" class="icon icon-home"> dvas
           </a>
               <div class="version">
-                0.6.0.dev1
+                0.7.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -117,15 +118,35 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dvas.tools.dtas.html">dvas.tools.dtas package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="dvas.tools.dtas.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dvas.tools.dtas.html#module-dvas.tools.dtas.dtas">dvas.tools.dtas.dtas module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.tools.dtas.html#module-dvas.tools.dtas.dtas">dvas.tools.dtas.dtas module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dvas.tools.dtas.html#dvas.tools.dtas.dtas.single_delta"><code class="docutils literal notranslate"><span class="pre">single_delta()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.tools.dtas.html#dvas.tools.dtas.dtas.compute"><code class="docutils literal notranslate"><span class="pre">compute()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="dvas.tools.gdps.html">dvas.tools.gdps package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="dvas.tools.gdps.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dvas.tools.gdps.html#module-dvas.tools.gdps.correlations">dvas.tools.gdps.correlations module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dvas.tools.gdps.html#module-dvas.tools.gdps.gdps">dvas.tools.gdps.gdps module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dvas.tools.gdps.html#module-dvas.tools.gdps.stats">dvas.tools.gdps.stats module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dvas.tools.gdps.html#module-dvas.tools.gdps.utils">dvas.tools.gdps.utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.tools.gdps.html#module-dvas.tools.gdps.correlations">dvas.tools.gdps.correlations module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dvas.tools.gdps.html#dvas.tools.gdps.correlations.coeffs"><code class="docutils literal notranslate"><span class="pre">coeffs()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.tools.gdps.html#module-dvas.tools.gdps.gdps">dvas.tools.gdps.gdps module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dvas.tools.gdps.html#dvas.tools.gdps.gdps.combine"><code class="docutils literal notranslate"><span class="pre">combine()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.tools.gdps.html#module-dvas.tools.gdps.stats">dvas.tools.gdps.stats module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dvas.tools.gdps.html#dvas.tools.gdps.stats.ks_test"><code class="docutils literal notranslate"><span class="pre">ks_test()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.tools.gdps.html#dvas.tools.gdps.stats.gdp_incompatibilities"><code class="docutils literal notranslate"><span class="pre">gdp_incompatibilities()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.tools.gdps.html#dvas.tools.gdps.stats.gdp_validities"><code class="docutils literal notranslate"><span class="pre">gdp_validities()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.tools.gdps.html#module-dvas.tools.gdps.utils">dvas.tools.gdps.utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dvas.tools.gdps.html#dvas.tools.gdps.utils.weighted_mean"><code class="docutils literal notranslate"><span class="pre">weighted_mean()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.tools.gdps.html#dvas.tools.gdps.utils.delta"><code class="docutils literal notranslate"><span class="pre">delta()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.tools.gdps.html#dvas.tools.gdps.utils.process_chunk"><code class="docutils literal notranslate"><span class="pre">process_chunk()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -345,6 +366,36 @@ will be smaller than the other ones.</p></li>
 <dd class="field-even"><p><em>float</em> – the wrapped values.</p>
 </dd>
 </dl>
+</dd></dl>
+
+</section>
+<section id="module-dvas.tools.wmo">
+<span id="dvas-tools-wmo-module"></span><h2>dvas.tools.wmo module<a class="headerlink" href="#module-dvas.tools.wmo" title="Permalink to this heading"></a></h2>
+<p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<p>This module contains WMO-related tools.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="dvas.tools.wmo.geom2geopot">
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.wmo.</span></span><span class="sig-name descname"><span class="pre">geom2geopot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.wmo.geom2geopot" title="Permalink to this definition"></a></dt>
+<dd><p>Convert geometric altitudes to geopotential heights.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vals</strong> (<em>ndaray or pd.Series or pd.DataFrame</em>) – geometric altitudes</p></li>
+<li><p><strong>lat</strong> (<em>float</em>) – geodetic latitude, in radians</p></li>
+</ul>
+</dd>
+</dl>
+<p>Uses the Mahoney equations from the CIMO guide.</p>
+<p>Reference:</p>
+<blockquote>
+<div><p>WMO GUIDE TO METEOROLOGICAL INSTRUMENTS AND METHODS OF OBSERVATION (the CIMO Guide),
+WMO-No. 8 (2014 edition, updated in 2017), Part I - MEASUREMENT OF METEOROLOGICAL VARIABLES,
+Ch. 12 - Measurement of upper-air pressure, temperature, humidity,
+Sec. 12.3.6 - Use of geometric height observations instead of pressure sensor observations,
+p. 364.</p>
+</div></blockquote>
 </dd></dl>
 
 </section>

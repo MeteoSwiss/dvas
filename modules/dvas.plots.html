@@ -16,6 +16,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -31,7 +32,7 @@
             <a href="../index.html" class="icon icon-home"> dvas
           </a>
               <div class="version">
-                0.6.0.dev1
+                0.7.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -375,7 +376,7 @@ valid rcParams codes to this function.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas.plots.utils.add_sec_axis">
-<span class="sig-prename descclassname"><span class="pre">dvas.plots.utils.</span></span><span class="sig-name descname"><span class="pre">add_sec_axis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xvals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_xvals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">which</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'x'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.plots.utils.add_sec_axis" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas.plots.utils.</span></span><span class="sig-name descname"><span class="pre">add_sec_axis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xvals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_xvals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">which</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'x'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.plots.utils.add_sec_axis" title="Permalink to this definition"></a></dt>
 <dd><p>Adds a secondary x-axis to the figure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -526,6 +527,31 @@ None (= as specified by dvas.plots.utils.PLOT_SHOW)</p></li>
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dvas.plots.utils.wrap_wdir_curve">
+<span class="sig-prename descclassname"><span class="pre">dvas.plots.utils.</span></span><span class="sig-name descname"><span class="pre">wrap_wdir_curve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.plots.utils.wrap_wdir_curve" title="Permalink to this definition"></a></dt>
+<dd><p>A simple routine that alters an x-y series of angles, by breaking connections between
+successive points that have more than 180deg offset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>ndarray</em>) – the x-values.</p></li>
+<li><p><strong>y</strong> (<em>ndarray</em>) – the y-values, angles in degrees in the range [0, 360]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><em>x, y</em> – the altered arrays, ready to be plotted.</p>
+</dd>
+</dl>
+<p>This routine essentially allows to remove large vertical “bars” that would otherwise be common
+in wind_dir plots for angles oscillating around 0=360 deg.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function is not flexible at all. It absolutely requires angles in degrees in the
+range [0, 360[.</p>
+</div>
 </dd></dl>
 
 <dl class="py function">

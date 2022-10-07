@@ -15,6 +15,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -28,7 +29,7 @@
             <a href="index.html" class="icon icon-home"> dvas
           </a>
               <div class="version">
-                0.6.0.dev1
+                0.7.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -121,6 +122,10 @@
         <li><a href="modules/dvas.data.html#dvas.data.linker.FlgGDPHandler.__init__">(dvas.data.linker.FlgGDPHandler method)</a>
 </li>
         <li><a href="modules/dvas.data.html#dvas.data.linker.GDPHandler.__init__">(dvas.data.linker.GDPHandler method)</a>
+</li>
+        <li><a href="modules/dvas.data.html#dvas.data.linker.GetgeomaltExpr.__init__">(dvas.data.linker.GetgeomaltExpr method)</a>
+</li>
+        <li><a href="modules/dvas.data.html#dvas.data.linker.GetreldtExpr.__init__">(dvas.data.linker.GetreldtExpr method)</a>
 </li>
         <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.Profile.__init__">(dvas.data.strategy.data.Profile method)</a>
 </li>
@@ -856,6 +861,13 @@
 </li>
       </ul></li>
       <li>
+    dvas.tools.wmo
+
+      <ul>
+        <li><a href="modules/dvas.tools.html#module-dvas.tools.wmo">module</a>
+</li>
+      </ul></li>
+      <li>
     dvas.version
 
       <ul>
@@ -1160,7 +1172,7 @@
 </li>
       <li><a href="modules/dvas.plots.html#dvas.plots.utils.fix_txt">fix_txt() (in module dvas.plots.utils)</a>
 </li>
-      <li><a href="modules/dvas_recipes.uaii2022.html#dvas_recipes.uaii2022.basic.flag_descent">flag_descent() (in module dvas_recipes.uaii2022.basic)</a>
+      <li><a href="modules/dvas_recipes.uaii2022.html#dvas_recipes.uaii2022.basic.flag_phases">flag_phases() (in module dvas_recipes.uaii2022.basic)</a>
 </li>
       <li><a href="modules/dvas.config.html#dvas.config.config.Flg">Flg (class in dvas.config.config)</a>
 
@@ -1168,9 +1180,13 @@
         <li><a href="modules/dvas.database.html#dvas.database.model.Flg">(class in dvas.database.model)</a>
 </li>
       </ul></li>
+      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.Profile.flg">flg (dvas.data.strategy.data.Profile property)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.hardcoded.FLG_ASCENT">FLG_ASCENT (in module dvas.hardcoded)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.Profile.flg">flg (dvas.data.strategy.data.Profile property)</a>
+      <li><a href="modules/dvas.html#dvas.hardcoded.FLG_ASCENT_DESC">FLG_ASCENT_DESC (in module dvas.hardcoded)</a>
 </li>
       <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.Profile.FLG_BIT_POS_NM">FLG_BIT_POS_NM (dvas.data.strategy.data.Profile attribute)</a>
 </li>
@@ -1204,11 +1220,19 @@
 </li>
       <li><a href="modules/dvas.html#dvas.hardcoded.FLG_INTERP_DESC">FLG_INTERP_DESC (in module dvas.hardcoded)</a>
 </li>
+      <li><a href="modules/dvas.html#dvas.hardcoded.FLG_INVALID">FLG_INVALID (in module dvas.hardcoded)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.hardcoded.FLG_INVALID_DESC">FLG_INVALID_DESC (in module dvas.hardcoded)</a>
+</li>
       <li><a href="modules/dvas.database.html#dvas.database.model.Flg.flg_name">flg_name (dvas.database.model.Flg attribute)</a>
 </li>
       <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.Profile.FLG_NAME_NM">FLG_NAME_NM (dvas.data.strategy.data.Profile attribute)</a>
 </li>
       <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.Profile.flg_names">flg_names (dvas.data.strategy.data.Profile property)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.hardcoded.FLG_PRELAUNCH">FLG_PRELAUNCH (in module dvas.hardcoded)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.hardcoded.FLG_PRELAUNCH_DESC">FLG_PRELAUNCH_DESC (in module dvas.hardcoded)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.hardcoded.FLG_PRM_DESC_PREFIX">FLG_PRM_DESC_PREFIX (in module dvas.hardcoded)</a>
 </li>
@@ -1261,6 +1285,8 @@
       <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.GDPProfile">GDPProfile (class in dvas.data.strategy.data)</a>
 </li>
       <li><a href="modules/dvas.plots.html#dvas.plots.gdps.gdps_vs_cws">gdps_vs_cws() (in module dvas.plots.gdps)</a>
+</li>
+      <li><a href="modules/dvas.tools.html#dvas.tools.wmo.geom2geopot">geom2geopot() (in module dvas.tools.wmo)</a>
 </li>
       <li><a href="modules/dvas.config.html#dvas.config.config.MultiLayerConfigManager.get_all">get_all() (dvas.config.config.MultiLayerConfigManager method)</a>
 </li>
@@ -1392,6 +1418,10 @@
         <li><a href="modules/dvas.data.html#dvas.data.linker.GetExpr">(class in dvas.data.linker)</a>
 </li>
       </ul></li>
+      <li><a href="modules/dvas.data.html#dvas.data.linker.GetgeomaltExpr">GetgeomaltExpr (class in dvas.data.linker)</a>
+</li>
+      <li><a href="modules/dvas.data.html#dvas.data.linker.GetreldtExpr">GetreldtExpr (class in dvas.data.linker)</a>
+</li>
       <li><a href="modules/dvas.html#dvas.environ.glob_var">glob_var (in module dvas.environ)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.environ.GlobalPackageVariableManager">GlobalPackageVariableManager (class in dvas.environ)</a>
@@ -1500,10 +1530,10 @@
         <li><a href="modules/dvas.database.html#dvas.database.model.MetaData.info_id">(dvas.database.model.MetaData attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/dvas.database.html#dvas.database.database.InfoManager">InfoManager (class in dvas.database.database)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/dvas.database.html#dvas.database.database.InfoManagerMetaData">InfoManagerMetaData (class in dvas.database.database)</a>
 </li>
       <li><a href="modules/dvas.database.html#dvas.database.model.Info.infos_objects">infos_objects (dvas.database.model.Info attribute)</a>
@@ -1545,7 +1575,13 @@
 </li>
         <li><a href="modules/dvas.config.html#dvas.config.config.NonTerminalConfigExprInterpreter.interpret">(dvas.config.config.NonTerminalConfigExprInterpreter method)</a>
 </li>
+        <li><a href="modules/dvas.config.html#dvas.config.config.SplitSelect.interpret">(dvas.config.config.SplitSelect method)</a>
+</li>
         <li><a href="modules/dvas.data.html#dvas.data.linker.GetExpr.interpret">(dvas.data.linker.GetExpr method)</a>
+</li>
+        <li><a href="modules/dvas.data.html#dvas.data.linker.GetgeomaltExpr.interpret">(dvas.data.linker.GetgeomaltExpr method)</a>
+</li>
+        <li><a href="modules/dvas.data.html#dvas.data.linker.GetreldtExpr.interpret">(dvas.data.linker.GetreldtExpr method)</a>
 </li>
         <li><a href="modules/dvas.data.html#dvas.data.linker.LoadExprInterpreter.interpret">(dvas.data.linker.LoadExprInterpreter method)</a>
 </li>
@@ -1826,6 +1862,8 @@
 </li>
         <li><a href="modules/dvas.tools.html#module-dvas.tools.tools">dvas.tools.tools</a>
 </li>
+        <li><a href="modules/dvas.tools.html#module-dvas.tools.wmo">dvas.tools.wmo</a>
+</li>
         <li><a href="modules/dvas.html#module-dvas.version">dvas.version</a>
 </li>
         <li><a href="modules/dvas_recipes.html#module-dvas_recipes">dvas_recipes</a>
@@ -1867,11 +1905,13 @@
 </li>
       <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.data.MPStrategyAC">MPStrategyAC (class in dvas.data.strategy.data)</a>
 </li>
-      <li><a href="modules/dvas.html#dvas.hardcoded.MTDTA_BPT">MTDTA_BPT (in module dvas.hardcoded)</a>
+      <li><a href="modules/dvas.html#dvas.hardcoded.MTDTA_BURST">MTDTA_BURST (in module dvas.hardcoded)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.hardcoded.MTDTA_FIRST">MTDTA_FIRST (in module dvas.hardcoded)</a>
+</li>
+      <li><a href="modules/dvas.html#dvas.hardcoded.MTDTA_LAUNCH">MTDTA_LAUNCH (in module dvas.hardcoded)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.hardcoded.MTDTA_PBL">MTDTA_PBL (in module dvas.hardcoded)</a>
-</li>
-      <li><a href="modules/dvas.html#dvas.hardcoded.MTDTA_START">MTDTA_START (in module dvas.hardcoded)</a>
 </li>
       <li><a href="modules/dvas.html#dvas.hardcoded.MTDTA_TROPOPAUSE">MTDTA_TROPOPAUSE (in module dvas.hardcoded)</a>
 </li>
@@ -2309,10 +2349,10 @@
       </ul></li>
       <li><a href="modules/dvas.database.html#dvas.database.search.SearchInfoExpr.set_stgy">set_stgy() (dvas.database.search.SearchInfoExpr class method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/dvas.tools.dtas.html#dvas.tools.dtas.dtas.single_delta">single_delta() (in module dvas.tools.dtas.dtas)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="modules/dvas.html#dvas.helper.SingleInstanceMetaClass">SingleInstanceMetaClass (class in dvas.helper)</a>
 </li>
       <li><a href="modules/dvas.config.html#dvas.config.config.SmallUpperExpr">SmallUpperExpr (class in dvas.config.config)</a>
@@ -2324,6 +2364,8 @@
 </li>
       </ul></li>
       <li><a href="modules/dvas.data.strategy.html#dvas.data.strategy.sort.SortProfileStrategy">SortProfileStrategy (class in dvas.data.strategy.sort)</a>
+</li>
+      <li><a href="modules/dvas.config.html#dvas.config.config.SplitSelect">SplitSelect (class in dvas.config.config)</a>
 </li>
       <li><a href="modules/dvas.data.html#dvas.data.linker.SqrtExpr">SqrtExpr (class in dvas.data.linker)</a>
 </li>
@@ -2524,6 +2566,8 @@
       <li><a href="modules/dvas.plots.html#dvas.plots.utils.WIDTH_TWOCOL">WIDTH_TWOCOL (in module dvas.plots.utils)</a>
 </li>
       <li><a href="modules/dvas.tools.html#dvas.tools.tools.wrap_angle">wrap_angle() (in module dvas.tools.tools)</a>
+</li>
+      <li><a href="modules/dvas.plots.html#dvas.plots.utils.wrap_wdir_curve">wrap_wdir_curve() (in module dvas.plots.utils)</a>
 </li>
   </ul></td>
 </tr></table>

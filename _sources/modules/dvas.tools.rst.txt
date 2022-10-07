@@ -41,3 +41,11 @@ dvas.tools.tools module
    :members:
    :undoc-members:
    :show-inheritance:
+
+dvas.tools.wmo module
+---------------------
+
+.. automodule:: dvas.tools.wmo
+   :members:
+   :undoc-members:
+   :show-inheritance:
