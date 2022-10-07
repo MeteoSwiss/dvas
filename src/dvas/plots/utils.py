@@ -178,6 +178,8 @@ def fix_txt(txt):
         txt = txt.replace(r'\it', r'')
         txt = txt.replace(r'\flushleft', r'')
         txt = txt.replace(r'\newline', r'')
+        txt = txt.replace(r'\textrm', r'')
+        txt = txt.replace(r'\text', r'')
 
     return txt
 
