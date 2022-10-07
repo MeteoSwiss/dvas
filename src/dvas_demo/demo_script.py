@@ -32,7 +32,7 @@ demo_file_path = Path(__file__).resolve()
 if __name__ == '__main__':
 
     print('\nStarting the dvas demonstration recipe ...\n')
-    print('To understand what happens next, look at: {}'.format(Path(__file__).name))
+    print(f'To understand what happens next, look at: {Path(__file__).name}')
 
     # ----------------------------------------------------------------------------------------------
     print("\n --- GENERAL SETUP ---")
@@ -97,8 +97,8 @@ if __name__ == '__main__':
     filt_dt = "dt('20171024T120000Z', '==')"
 
     # Define some more complex queries
-    filt_raw_dt = "and_({}, {})".format(filt_raw, filt_dt)
-    filt_raw_gdp_dt = "and_({}, {}, {})".format(filt_raw, filt_gdp, filt_dt)
+    filt_raw_dt = f"and_({filt_raw}, {filt_dt})"
+    filt_raw_gdp_dt = f"and_({filt_raw}, {filt_gdp}, {filt_dt})"
 
     # Load a series of basic profiles associated to a specific set of search criteria.
     # Each profile consists of a variable and an associated altitude.
@@ -133,14 +133,14 @@ if __name__ == '__main__':
     # The data is stored inside Pandas dataframes. Each type of profile contains a different set of
     # columns and indexes.
     prf_df = prfs[0].data
-    print('\nBasic profile dataframe:\n  index.names={}, columns={}'.format(
-        prf_df.index.names, prf_df.columns.to_list()))
+    print(f'\nBasic profile dataframe:\n  index.names={prf_df.index.names}, ' +
+          f'columns={prf_df.columns.to_list()}')
     rs_prf_df = rs_prfs[0].data
-    print('\nRS profile dataframe:\n  index.names={}, columns={}'.format(
-        rs_prf_df.index.names, rs_prf_df.columns.to_list()))
+    print(f'\nRS profile dataframe:\n  index.names={rs_prf_df.index.names}, ' +
+          f'columns={rs_prf_df.columns.to_list()}')
     gdp_prf_df = gdp_prfs[0].data
-    print('\nGDP profile dataframe:\n  index.names={}, columns={}'.format(
-        gdp_prf_df.index.names, gdp_prf_df.columns.to_list()))
+    print(f'\nGDP profile dataframe:\n  index.names={gdp_prf_df.index.names}, ' +
+          f'columns={gdp_prf_df.columns.to_list()}')
 
     # MultiProfiles has a var_info property to link the DataFrame columns to the actual variable
     print("\n Content of prfs.var_info['val']:\n")
@@ -239,7 +239,7 @@ if __name__ == '__main__':
     # tools located inside dvas.tools.gdps
 
     # Let us begin by extracting the synchronized GDPs for a specific flight
-    filt_gdp_dt_sync = "and_(tags('sync'), {}, {})".format(filt_gdp, filt_dt)
+    filt_gdp_dt_sync = f"and_(tags('sync'), {filt_gdp}, {filt_dt})"
     gdp_prfs = MultiGDPProfile()
     gdp_prfs.load_from_db(filt_gdp_dt_sync, 'temp', tdt_abbr='time', alt_abbr='gph',
                           ucr_abbr='temp_ucr', ucs_abbr='temp_ucs', uct_abbr='temp_uct',
@@ -252,7 +252,7 @@ if __name__ == '__main__':
     start_time = datetime.now()
     incompat = dtgs.gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=[1, 6],
                                           do_plot=True, n_cpus=4)
-    print('GDP mismatch derived in: {}s'.format((datetime.now()-start_time).total_seconds()))
+    print(f'GDP mismatch derived in: {(datetime.now()-start_time).total_seconds()}s')
 
     # Next, we derive "validities" given a specific strategy to assess the different GDP pair
     # incompatibilities ...
@@ -269,7 +269,7 @@ if __name__ == '__main__':
     cws, _ = dtgg.combine(gdp_prfs, binning=1, method='weighted mean',
                           mask_flgs=FLG_INCOMPATIBLE,
                           chunk_size=150, n_cpus=8)
-    print('CWS assembled in: {}s'.format((datetime.now()-start_time).total_seconds()))
+    print(f'CWS assembled in: {(datetime.now()-start_time).total_seconds()}s')
 
     # We can now inspect the result visually
     # First by looking at the GDP vs CWs profiles
@@ -282,22 +282,3 @@ if __name__ == '__main__':
     # 'tdt' indexes. As a result, if one tries to extract the cws from the DB right away, the 'alt'
     # and 'tdt' columns will be filled with NaNs.
     cws.save_to_db(add_tags=['cws'], rm_tags=['gdp'], prms=['val', 'ucr', 'ucs', 'uct', 'ucu'])
-
-    # ----------------------------------------------------------------------------------------------
-    """
-    print("\n --- ASSESSMENT OF CANDIDATE RADIOSONDES ---")
-    # We begin by assembling "delta profiles", i.e. deltas between candidate radiosondes and
-    # associated CWS.
-
-    # First extract all the synchronized candidate radiosonde profiles from a given flight
-    filt_nogdp_dt_sync = "and_(tags('sync'), not_(gdp()), {})".format(filt_dt)
-    can_prfs = MultiRSProfile()
-    can_prfs.load_from_db(filt_nogdp_dt_sync, 'temp', tdt_abbr='time', alt_abbr='gph', inplace=True)
-
-    # And now load the required CWS
-    filt_cws_dt = "and_(tags('cws'), {})".format(filt_dt)
-    cws_prfs = MultiCWSProfile()
-    cws_prfs.load_from_db(filt_cws_dt, 'temp', tdt_abbr='time', alt_abbr='gph',
-                          ucr_abbr='temp_ucr', ucs_abbr='temp_ucs', uct_abbr='temp_uct',
-                          inplace=True)
-    """

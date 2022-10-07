@@ -24,8 +24,7 @@ from ...errors import DvasError
 from .gdps import combine
 from ...plots import gdps as dpg
 from ...plots import utils as dpu
-from ...hardcoded import PRF_VAL, FLG_INCOMPATIBLE
-#from ..tools import wrap_angle
+from ...hardcoded import PRF_VAL, FLG_INCOMPATIBLE, FLG_INVALID
 
 # Setup local logger
 logger = logging.getLogger(__name__)
@@ -203,9 +202,9 @@ def gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=None, rolling=True,
         raise DvasError(f'Ouch ! m_vals must be a list, not: {type(m_vals)}')
 
     # If warranted select which flags we want to mask in the rolling process.
-    mask_flgs = None
+    mask_flgs = [FLG_INVALID]
     if rolling:
-        mask_flgs = FLG_INCOMPATIBLE
+        mask_flgs += [FLG_INCOMPATIBLE]
 
     # How many gdp Profiles do I have ?
     n_prf = len(gdp_prfs)

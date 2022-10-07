@@ -43,8 +43,12 @@
   mdl_desc: 'Azista Industries Pvt Ltd. ATMS-3710 (UAII2022)'
   mid: 'ATMS-3710'
 
+- mdl_name: 'CF-06AH'
+  mdl_desc: 'Aerospace NewSky Technology Co., Ltd CF-06AH (UAII2022)'
+  mid: 'CF-06AH'
+
 - mdl_name: 'DFM-17'
-  mdl_desc: 'GRAW DFM-17 (UAII2022)'
+  mdl_desc: 'GRAW Radiosondes GmbH & Co. KG DFM-17 (UAII2022)'
   mid: 'DFM-17'
 
 - mdl_name: 'iMet-54-AA'
@@ -63,9 +67,9 @@
   mdl_desc: 'VSSC PS01B3M (UAII2022)'
   mid: 'PS01B3M'
 
-- mdl_name: 'HT03G-1U'
-  mdl_desc: 'Tianjin Huayuntianyi Special Meteorological Sounding Tech Co. Ltd HT03G-1U(GTH3) (UAII2022)'
-  mid: 'HT03G-1U'
+- mdl_name: 'HT-GTS(U)2-1'
+  mdl_desc: 'Tianjin Huayuntianyi Special Meteorological Sounding Tech Co. Ltd HT-GTS(U)2-1 (GTH3) (UAII2022)'
+  mid: 'HT-GTS(U)2-1'
 
 - mdl_name: 'RS41-SG'
   mdl_desc: 'Vaisala RS41-SG (UAII2022)'

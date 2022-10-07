@@ -20,10 +20,11 @@ _iMS100:
     pid: "get('product_id')"
     tags:
         - "cat('e:', get('event_id'))"
-        - "cat('r:', get('rig'))"
+        - "cat('r:', get('rig_id'))"
     metadata:
-        bpt_time:
-        start_time: "to_datetime(get('start_time'))"
+        first_timestamp: "to_datetime(get('first_timestamp'))"
+        launch_timestamp: "to_datetime(get('launch_timestamp'))"
+        burst_timestamp: "to_datetime(get('burst_timestamp'))"
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter: ';'
@@ -67,13 +68,14 @@ _IMS-100-BETA_002:
     # -- META DATA ----------------------------------
     edt: "to_datetime(get('g.Measurement.StandardTime'))"
     srn: "get('g.MainSonde.SerialNumber')"
-    pid: "get('g.Product.Id')"
+    pid: "get('g.GroundSystem.SerialNumber')"
     tags:
         - "cat('e:', get('g.Measurement.Id'))"
         - "cat('r:', get('g.Measurement.BalloonNumber', totype=str))"
     metadata:
-        bpt_time: "get('g.Measurement.BurstpointTime')"
-        start_time: "to_datetime(get('g.Measurement.StartTime'))"
+        first_timestamp: "to_datetime(get('g.Measurement.StartTime'))"
+        launch_timestamp: "to_datetime(get('g.Measurement.StartTime'))"
+        burst_timestamp: "to_datetime(get('g.Measurement.BurstpointDatetime'))"
         gruan_tropopause: "get('g.Measurement.TropopauseGeopotHeight')"
 
     # -- ORIG DATA ----------------------------------

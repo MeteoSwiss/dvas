@@ -220,19 +220,16 @@ def optimize(n_cpus=None, prf_length=7001, chunk_min=50, chunk_max=300, n_chunk=
     print(' If that looks right, please update your favorite dvas recipe accordingly !\n')
 
 
-def run_recipe(rcp_fn, flights=None, from_step_id=None, until_step_id=None, debug=False):
+def run_recipe(rcp_fn: Path, fid_log_fn: Path,
+               fid_to_treat: list = None, from_step_id: str = None, until_step_id: str = None,
+               debug: bool = False):
     ''' Loads and execute a dvas recipe.
 
     Args:
         rcp_fn (pathlib.Path): path to the specific dvas recipe to execute.
-        flights (pathlib.Path, optional): path to the text file specifiying specific radiosonde
-            flights to process. The file should contain one tuple of evt_id, rig_rid per line,
-            e.g.::
-
-                # This is a comment
-                # Each line should contain the tags of an event_id and rig_id
-                e:12345, r:1
-                e:12346, r:1
+        fid_log_fn (pathlib.Path): path to the log linking flight ids, event ids, rig ids,
+            and event datetimes.
+        fid_to_treat (list of str, optional): list of flights ids to treat specifically.
         from_step_id (str, optional): if set, will skip all processing until this step_id value.
             Defaults to None.
         until_step_id (str, optional): if set, will skip all processing step beyond this step_id
@@ -240,25 +237,60 @@ def run_recipe(rcp_fn, flights=None, from_step_id=None, until_step_id=None, debu
         debug (bool, optional): if True, will force-set the logging level to DEBUG.
             Defaults to False.
 
+
+        The "fid_log_fn" file should contain one tuple of flight if, event id, rig id, and
+        event datetime per line, e.g.::
+
+                # This is a comment
+                F01,e:12345,r:1,2022-08-19T19:00:00.000Z
+                T04,e:12340,r:2,2022-08-19T15:45:00.000Z
+
+        Event ids are meant to be GRUAN flight ids, in order to link GDPs with specific flights.
+
+        Rig ids are also extracted from GRUAN parameters in GDP files to distinguish different rigs
+        in case of multiple simultaneous launches.
+
+        Event datetimes are not used by dvas directly, but allow for an easier identification of
+        flights in UPPS (UAII Plot Preview Software).
+
+        Flight ids are user-defined reference strings, used to identify specific flight in a given
+        campaign - these are typically defined before GRUAN event ids (that are generated at the
+        creation of GDPs).)
+
+        TODO:
+
+            At present, it is not possible to link fids to eids, because the information is missing
+            from the iMS100 GDP. This products would require the field  'g.measurement.InternalKey'
+            to be present, like the RS41 GDP, e.g.:
+
+            :g.Measurement.InternalKey = "UAII2022_F08"
+
     '''
 
     # Make sure the user specified info is valid.
-    if not isinstance(rcp_fn, Path):
-        raise DvasRecipesError('Ouch ! rcp_fn should be of type pathlib.Path, ' +
-                               'not: {}'.format(type(rcp_fn)))
+    for this_path in [rcp_fn, fid_log_fn]:
+        if not isinstance(this_path, Path):
+            raise DvasRecipesError(f'Bad pathlib.Path format: {this_path}')
+        if not this_path.exists():
+            raise DvasRecipesError(f'Inexistant path: {this_path}')
 
-    if not rcp_fn.exists():
-        raise DvasRecipesError('Ouch ! {} does not exist.'.format(rcp_fn))
+    # Extract the flight log
+    fid_eid_log = np.atleast_2d(np.genfromtxt(fid_log_fn, comments='#', delimiter=',',
+                                              dtype=str, autostrip=True))
 
-    # If warranted, extract the specific flights' eid/rid that should be processed
-    if flights is not None:
-        if not isinstance(flights, Path):
-            raise DvasRecipesError('Ouch ! flights should be of type pathlib.Path, not: ' +
-                                   '{}'.format(type(flights)))
-        flights = np.atleast_2d(np.genfromtxt(flights, comments='#', delimiter=',', dtype=str))
+    # If warranted, let's sub-select the flights to process from the list provided
+    # This is all a bit convoluted, but meant to ease the processing of subsequebnt flights
+    # individually in a campaign setting
+    if fid_to_treat is not None:
+        fid_eid_log = [item for item in fid_eid_log if item[0] in fid_to_treat]
+
+    # Extract the eids - rids tuples required by dvas, and drop the rest
+    eids_to_treat = [(item[0], f'e:{item[1]}', f'r:{item[2]}') for item in fid_eid_log]
+    if len(eids_to_treat) == 0:
+        eids_to_treat = None  # With this, we shall treat whatever is present in the db
 
     # Very well, I am now ready to start initializing the recipe.
-    rcp = Recipe(rcp_fn, flights=flights, debug=debug)
+    rcp = Recipe(rcp_fn, eids_to_treat=eids_to_treat, debug=debug)
 
     starttime = datetime.now()
 

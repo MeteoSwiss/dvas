@@ -17,8 +17,9 @@ import pandas as pd
 from dvas.environ import path_var
 from dvas.logger import log_func_call
 from dvas.data.data import MultiRSProfile, MultiGDPProfile
-from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_IDX
-from dvas.hardcoded import TAG_GDP, TAG_CLN, FLG_DESCENT, MTDTA_BPT
+from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_IDX, PRF_VAL
+from dvas.hardcoded import MTDTA_FIRST, MTDTA_LAUNCH, MTDTA_BURST
+from dvas.hardcoded import TAG_GDP, TAG_CLN, FLG_PRELAUNCH, FLG_ASCENT, FLG_DESCENT, FLG_INVALID
 from dvas.dvas import Database as DB
 
 # Import from dvas_recipes
@@ -32,12 +33,11 @@ logger = logging.getLogger(__name__)
 
 
 @log_func_call(logger, time_it=False)
-def prf_summary(create_eid_edt_files=False):
+def prf_summary():
     """ Exports a summary of the different profiles in the DB.
 
     Args:
-        create_eid_edt_files (bool, optional): if True, will issue a set of empty files that tie
-            eids to edts. Used for the UAII 2022 preview tool. Defaults to False.
+
     """
 
     view = DB.extract_global_view()
@@ -47,27 +47,18 @@ def prf_summary(create_eid_edt_files=False):
     view.to_csv(fn_out, index=False)
     logger.info('Created profile list: %s', fn_out)
 
-    # The following files are required for the quick preview visualization tool developed for the
-    # UAII 2022.
-    if create_eid_edt_files:
-        for _, row in view.loc[:, ['edt', 'eid']].drop_duplicates().iterrows():
-
-            fn_out = path_var.output_path / (dynamic.CURRENT_STEP_ID +
-                                             f"_eid-edt_{row['eid'].replace(':', '')}" +
-                                             f"_{row['edt'].strftime('%Y%m%dT%H%M%S')}")
-            open(fn_out, 'a').close()
-
 
 @log_func_call(logger, time_it=False)
-def flag_descent(prfs):
-    """ Set a dedicated flag for any point beyond the burst point.
+def flag_phases(prfs):
+    """ Flag the different profile phases, i.e. prelaunch, ascent,  and descent.
 
     Args:
         prfs (MultiRSProfile|MultiGDPProfile): the profiles to flag (individually).
 
-    Note:
-        If available, this function will use the metadata info to set the flags. Else, it will
-        simply flag any point beyond the max altitude.
+    If available, this function will use the metadata info to set the flags.
+    If no first or burst timestamp is defined, any point beyond the max altitude will be flagged as
+    descent.
+    If no first or launch timestamp is set, the profile is assumed to start at the launch time.
 
     Important:
         This function assumes that the profiles have not been shifted in any way (yet) !
@@ -80,39 +71,55 @@ def flag_descent(prfs):
     # Loop through each profile, and figure out if I need to flag anything
     for prf in prfs:
 
-        # Check if a bpt_time is avalaible. Else, look for the max altitude reached.
-        if MTDTA_BPT not in prf.info.metadata.keys():
-            logger.warning('"%s" not found in metadata for: %s', MTDTA_BPT, prf.info.src)
-            use_max = True
-        elif prf.info.metadata[MTDTA_BPT] is None:
-            logger.warning('"%s" is None for: %s', MTDTA_BPT, prf.info.src)
-            use_max = True
-        else:
-            logger.info('"%s" ok for: %s', MTDTA_BPT, prf.info.src)
-            use_max = False
+        # First, look for preflight data
+        if all((item in prf.info.metadata.keys()) and
+               ((item, None) not in prf.info.metadata.items())
+               for item in [MTDTA_FIRST, MTDTA_LAUNCH]):
 
-        if use_max:
+            prelaunch_ends_at = prf.info.metadata[MTDTA_LAUNCH] - prf.info.metadata[MTDTA_FIRST]
+            if prelaunch_ends_at.total_seconds() != 0:
+                if prelaunch_ends_at.total_seconds() < 0:
+                    logger.warning('first_timestamp > launch_timestamp (%s)', prf.info.src)
+            else:
+                logger.debug('No prelaunch data identified (%s)', prf.info.src)
+        else:
+            logger.warning('Cannot identify pre-launch phase: missing metadata (%s)', prf.info.src)
+            prelaunch_ends_at = pd.Timedelta(0, 's')
+
+        is_prelaunch = prf.data.index.get_level_values(PRF_TDT) < prelaunch_ends_at
+
+        # Then look for descent data
+        if all((item in prf.info.metadata.keys()) and
+               ((item, None) not in prf.info.metadata.items())
+               for item in [MTDTA_FIRST, MTDTA_BURST]):
+
+            descent_starts_at = prf.info.metadata[MTDTA_BURST] - prf.info.metadata[MTDTA_FIRST]
+            if descent_starts_at.total_seconds() <= 0:
+                logger.error('No ascent data (%s)', prf.info.src)
+            is_descent = prf.data.index.get_level_values(PRF_TDT) > descent_starts_at
+
+        else:
             max_alt_id = prf.data.index.get_level_values(PRF_ALT).argmax()
-            which = prf.data.index.get_level_values(PRF_IDX) > max_alt_id
-            logger.info('Points after max alt %.1f [%s] @ %.1f [s] flagged as "%s".',
-                        prf.data.index[max_alt_id][1],
-                        prfs.var_info[PRF_ALT]['prm_unit'],
-                        prf.data.index[max_alt_id][2].total_seconds(),
-                        FLG_DESCENT)
+            is_descent = prf.data.index.get_level_values(PRF_IDX) > max_alt_id
+            if is_descent.any():
+                logger.warning('Cannot identify descent phase: missing metadata (%s)',
+                               prf.info.src)
+                logger.info(
+                    'Points after max alt %.1f [%s] @ %.1f [s] will be flagged as "%s". (%s)',
+                    prf.data.index[max_alt_id][1],
+                    prfs.var_info[PRF_ALT]['prm_unit'],
+                    prf.data.index[max_alt_id][2].total_seconds(),
+                    FLG_DESCENT, prf.info.src)
 
-        else:
-            # Extract the burst point, and try to convert it to a time delta
-            bpt_time = (prf.info.metadata[MTDTA_BPT]).split(' ')
-            if len(bpt_time) != 2:
-                raise DvasRecipesError(
-                    f'Ouch ! "{MTDTA_BPT}" is weird: {prf.info.metadata["bpt_time"]}')
+        # Actually set the flags
+        prf.set_flg(FLG_DESCENT, True, index=is_descent)
+        prf.set_flg(FLG_PRELAUNCH, True, index=is_prelaunch)
+        prf.set_flg(FLG_ASCENT, True, index=~is_descent * ~is_prelaunch)
 
-            bpt_time = pd.Timedelta(float(bpt_time[0]), bpt_time[1])
-            which = prf.data.index.get_level_values(PRF_TDT) >= bpt_time
-            logger.info('Points after burst point @ %s [s] flagged as "%s"',
-                        bpt_time.total_seconds(), FLG_DESCENT)
-
-        prf.set_flg(FLG_DESCENT, True, index=which)
+        # Sanity check
+        assert not (prf.has_flg(FLG_DESCENT) * prf.has_flg(FLG_ASCENT)).any()
+        assert not (prf.has_flg(FLG_PRELAUNCH) * prf.has_flg(FLG_ASCENT)).any()
+        assert not (prf.has_flg(FLG_DESCENT) * prf.has_flg(FLG_PRELAUNCH)).any()
 
     return prfs
 
@@ -132,10 +139,17 @@ def cleanup_steps(prfs, resampling_freq, interp_dist, crop_descent, timeofday=No
         crop_descent (bool): if True, and data with the flag "descent" will be cropped out for good.
         timeofday (str): if set, will tag the Profile with this time of day. Defaults to None.
 
+    Note:
+        Pre-launch data is always cropped.
+
     """
 
-    # Flag descent data (do this *after* the resampling so I do not need to worry about it)
-    prfs = flag_descent(prfs)
+    # Flag pre-launch, ascent, and descent data
+    prfs = flag_phases(prfs)
+
+    # Crop any prelaunch data
+    for (ind, prf) in enumerate(prfs):
+        prfs[ind].data = prf.data.loc[~prf.has_flg(FLG_PRELAUNCH)]
 
     # Crop the descent data if warranted
     if crop_descent:
@@ -147,7 +161,7 @@ def cleanup_steps(prfs, resampling_freq, interp_dist, crop_descent, timeofday=No
         for (ind, prf) in enumerate(prfs):
             if not prf.has_tag(timeofday):
                 prf.info.add_tags(timeofday)
-                logger.info('Adding missing TimeOfDay tag to %s profile.', prf.info.mid)
+                logger.info('Adding missing TimeOfDay tag (%s)', prf.info.src)
 
     # Resample the profiles as required
     prfs.resample(freq=resampling_freq, interp_dist=interp_dist, inplace=True,
@@ -223,6 +237,17 @@ def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
 
         logger.info('Loaded %i GDP profiles from the DB.', len(gdp_prfs))
 
+        # Check that whenever I have a value, I have a valid error, and vice-versa
+        val_vs_uc = gdp_prfs.get_prms(['val', 'uc_tot'])
+        for (gdp_ind, gdp) in enumerate(gdp_prfs):
+            ok = val_vs_uc.loc[:, gdp_ind][PRF_VAL].isna() == \
+                 val_vs_uc.loc[:, gdp_ind]['uc_tot'].isna()
+            if any(~ok):
+                logger.critical('%s: %i/%i val vs uc_tot NaN mismatch for %s, flagged as "%s".',
+                                '+'.join(gdp.info.mid), len(ok[~ok]), len(ok),
+                                dynamic.CURRENT_VAR, FLG_INVALID)
+                gdp_prfs[gdp_ind].set_flg(FLG_INVALID, True, index=ok.index[~ok].values)
+
         # Deal with the faulty RS41 gph_uc_tcor values (NaNs when they should not be, see #205)
         if dynamic.CURRENT_VAR == 'gph' and fix_gph_uct is not None:
             # Safety check
@@ -259,8 +284,8 @@ def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
                 match gdp_prf.info.metadata['gruan_tropopause'].split(' '):
                     case [val, 'gpm']:
 
-                        msg = 'Tropopause - GRUAN: {} [m] vs {} [m] :dvas ({})'.format(
-                            val, dvas_trop[1], gdp_prf.info.src)
+                        msg = f'Tropopause: GRUAN-> {val} [m] vs {dvas_trop[1]:.2f} [m] <-dvas ' +\
+                            f'({gdp_prf.info.src})'
 
                         if abs(float(val)-dvas_trop[1]) <= 20:
                             logger.info(msg)

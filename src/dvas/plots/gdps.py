@@ -19,7 +19,7 @@ import matplotlib.transforms as transforms
 # Import from this package
 from ..logger import log_func_call
 from ..errors import DvasError
-from ..hardcoded import PRF_IDX, PRF_VAL, PRF_ALT, PRF_TDT, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
+from ..hardcoded import PRF_VAL, PRF_ALT, PRF_TDT, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
 from ..hardcoded import MTDTA_TROPOPAUSE, MTDTA_PBL
 from . import utils as pu
 from ..tools import tools as tt
@@ -48,17 +48,18 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     """
 
     # Start the plotting
-    fig = plt.figure(figsize=(pu.WIDTH_TWOCOL, 6.5))
+    fig = plt.figure(figsize=(pu.WIDTH_TWOCOL, 7))
 
     # Create a gridspec structure
-    gs_info = gridspec.GridSpec(3, 1, height_ratios=[1, 1, 0.2], width_ratios=[1],
-                                left=0.09, right=0.87, bottom=0.23, top=0.93,
+    gs_info = gridspec.GridSpec(4, 1, height_ratios=[1, 1, 0.75, 0.2], width_ratios=[1],
+                                left=0.09, right=0.87, bottom=0.1, top=0.93,
                                 wspace=0.5, hspace=0.05)
 
     # Create the axes - one for the profiles, and one for uctot, ucr, ucs, uct, ucu
     ax0 = fig.add_subplot(gs_info[0, 0])
     ax1 = fig.add_subplot(gs_info[1, 0], sharex=ax0)
-    ax2 = fig.add_subplot(gs_info[2, 0], sharex=ax0)
+    ax1b = fig.add_subplot(gs_info[2, 0], sharex=ax0)
+    ax2 = fig.add_subplot(gs_info[3, 0], sharex=ax0)
 
     # Extract the DataFrames from the MultiGDPProfile instances
     cws = cws_prf.get_prms([PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU,
@@ -72,42 +73,8 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     if len(cws) != len(gdps):
         raise DvasError('Ouch! GDPS and CWS do not have the same lengths. I cannot plot this.')
 
-    # Here, I want to make a plot with 3 x-axis: idx, tdt, and alt. To do that requires
-    # all these arrays to be completely filled with stuff, and have absolutely no NaNs
-    # (since matplotlib needs to interpolate and go back-and-forth between them)
-    idxs = cws.index.get_level_values(PRF_IDX).values
-    tdts = cws[PRF_TDT].dt.total_seconds().values
+    # Following #245, we no longer make a plot with multiple x-axes ... We just use the alt
     alts = cws[PRF_ALT].values
-
-    # For the altitude, I may need to pad the edges with stuff. Holes, on the other hand, should
-    # already have been plugged.
-    min_valid_alt_idx = cws.index[~cws['alt'].isna()].min()
-    max_valid_alt_idx = cws.index[~cws['alt'].isna()].max()
-    alts[:min_valid_alt_idx] = np.arange(0, min_valid_alt_idx, 1) - 1e6 + 1
-    alts[max_valid_alt_idx+1:] = np.arange(max_valid_alt_idx+1-len(alts), 0, 1) + 1e6
-
-    # Check for any holes - if found, forget about showing multiple axes
-    show_tdts = True
-    if np.any(np.isnan(tdts)):
-        logger.error('CWS tdt contains holes. %s',
-                     'Axis will be cropped from gdp_vs_cws.')
-        show_tdts = False
-    # Make sure time is monotically increasing. This should always be true ...
-    elif not np.all(np.diff(tdts) > 0):
-        raise DvasError('Ouch ! CWS tdts not increasing monotically ?!')
-
-    # For the altitude, things may not be that easy. Ballons can go down temporarily in gravity
-    # waves, for exemple. Do circumvent this, we shall display the alt axis only if it increases
-    # monotically
-    show_alts = True
-    if np.any(np.isnan(alts)):
-        logger.error('CWS ref_alt contains holes. %s',
-                     'Axis will be cropped from gdp_vs_cws.')
-        show_alts = False
-    elif np.any(np.diff(alts) <= 0):
-        logger.error('CWS ref. alt. is not increasing monotically. %s',
-                     'Axis will be cropped from gdp_vs_cws')
-        show_alts = False
 
     # What is the sum of the weights of each GDPs (i.e. the sum of 1/uc_tot**2) ?
     wtot = (1/gdps.loc[:, (slice(None), 'uc_tot')]**2).sum(axis=1).values
@@ -119,55 +86,52 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
         gdp = gdps[gdp_ind]
 
         # First, plot the profiles themselves
-        x = idxs
+        x = alts
         y = gdp[PRF_VAL].values
-        ym = gdp[PRF_VAL].values-k_lvl*gdp['uc_tot'].values
-        yp = gdp[PRF_VAL].values+k_lvl*gdp['uc_tot'].values
         delta = gdp[PRF_VAL].values-cws[PRF_VAL].values
 
         # TODO: remove the hardcoded reference to the wdir
         if gdp_prfs.var_info['val']['prm_name'] == 'wdir':
-            _, ym = pu.wrap_wdir_curve(x, ym)
-            _, yp = pu.wrap_wdir_curve(x, yp)
             x, y = pu.wrap_wdir_curve(x, y)
             delta = np.array([tt.wrap_angle(item) for item in delta])
 
         ax0.plot(x, y, lw=0.5, ls='-', drawstyle='steps-mid',
                  label='|'.join(gdp_prfs.get_info(label)[gdp_ind]))
-        ax0.fill_between(x, ym, yp, alpha=0.3, step='mid')
 
         # Then, plot the Deltas with respect to the CWS
-        ax1.plot(idxs, delta, drawstyle='steps-mid', lw=0.5, ls='-')
-        ax1.fill_between(idxs, delta-k_lvl*gdp['uc_tot'], delta+k_lvl*gdp['uc_tot'], alpha=0.3,
+        ax1.plot(alts, delta, drawstyle='steps-mid', lw=0.5, ls='-')
+        ax1.fill_between(alts, delta-k_lvl*gdp['uc_tot'], delta+k_lvl*gdp['uc_tot'], alpha=0.3,
                          step='mid')
+
+        # Plot the ascent speed
+        ax1b.plot(alts, gdp.loc[:, PRF_ALT].diff()/gdp.loc[:, PRF_TDT].diff().dt.total_seconds(),
+                  drawstyle='steps-mid', lw=0.5, ls='-')
 
         # Plot the relative contribution of each GDP to the CWS
         limhigh = limlow + (1/gdp.uc_tot**2).values/wtot
         limhigh[cws.val.isna()] = np.nan
-        ax2.fill_between(idxs, limlow, limhigh, step='mid')
+        ax2.fill_between(alts, limlow, limhigh, step='mid')
         limlow = limhigh
 
-    # Then also plot the CWS uncertainty
-    # TODO: remove the hardcoded refernce to the wdir
-    x = idxs
+    # Then also plot the CWS profile and uncertainty
+    # TODO: remove the hardcoded reference to the wdir
+    x = alts
     y = cws[PRF_VAL].values
-    ym = cws[PRF_VAL].values-k_lvl*cws['uc_tot'].values
-    yp = cws[PRF_VAL].values+k_lvl*cws['uc_tot'].values
 
     if gdp_prfs.var_info['val']['prm_name'] == 'wdir':
-            _, ym = pu.wrap_wdir_curve(x, ym)
-            _, yp = pu.wrap_wdir_curve(x, yp)
-            x, y = pu.wrap_wdir_curve(x, y)
+        x, y = pu.wrap_wdir_curve(x, y)
 
     ax0.plot(x, y, color=pu.CLRS['cws_1'], lw=0.5, ls='-', drawstyle='steps-mid',
              label='CWS')
-    ax0.fill_between(x, ym, yp, alpha=0.3, step='mid',
-                     color=pu.CLRS['cws_1'])
 
-    ax1.plot(idxs, -k_lvl*cws['uc_tot'].values, lw=0.5, drawstyle='steps-mid',
+    ax1.plot(alts, -k_lvl*cws['uc_tot'].values, lw=0.5, drawstyle='steps-mid',
              color='k')
-    ax1.plot(idxs, +k_lvl*cws['uc_tot'].values, lw=0.5, drawstyle='steps-mid',
+    ax1.plot(alts, +k_lvl*cws['uc_tot'].values, lw=0.5, drawstyle='steps-mid',
              color='k')
+
+    # Plot the CWS ascent speed
+    ax1b.plot(alts, cws.loc[:, PRF_ALT].diff()/cws.loc[:, PRF_TDT].diff().dt.total_seconds(),
+              drawstyle='steps-mid', lw=0.5, ls='-', color='k')
 
     # Display the location of the tropopause and the PBL
     for (loi, symb) in [(MTDTA_TROPOPAUSE, r'$\prec$'), (MTDTA_PBL, r'$\simeq$')]:
@@ -175,46 +139,24 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
             logger.warning('"%s" not found in CWS metadata.', loi)
             continue
 
-        loi_idx = np.argmin(np.abs(alts-cws_prf[0].info.metadata[loi]))
-        if loi == MTDTA_TROPOPAUSE and alts[loi_idx] != cws_prf[0].info.metadata[loi]:
-            logger.warning('%s stored as metadata does not match any %s',
-                           loi,
-                           'gph values of the CWS profile. Why ?!')
+        loi_gph = cws_prf[0].info.metadata[loi]
 
-        for ax in [ax0, ax1, ax2]:
-            ax.axvline(loi_idx, ls=':', lw=1, c='k')
+        for ax in [ax0, ax1, ax1b, ax2]:
+            ax.axvline(loi_gph, ls=':', lw=1, c='k')
             trans = transforms.blended_transform_factory(ax.transData, ax.transAxes)
-            ax0.text(loi_idx, 0.95, symb, transform=trans, ha='center', va='top',
+            ax0.text(loi_gph, 0.95, symb, transform=trans, ha='center', va='top',
                      rotation=90,
                      bbox=dict(boxstyle='square', fc="w", ec="none", pad=0.1))
 
     # Make it look pretty
-    ylbl = cws_prf.var_info[PRF_VAL]['prm_name']
-    ylbl += ' [{}]'.format(cws_prf.var_info[PRF_VAL]['prm_unit'])
-
-    idxlbl = r'$i$'
-    tdtlbl = cws_prf.var_info[PRF_TDT]['prm_name']
-    tdtlbl += ' [{}]'.format(cws_prf.var_info[PRF_TDT]['prm_unit'])
-    altlbl = cws_prf.var_info[PRF_ALT]['prm_name'] + r'$_{\rm CWS}$'
-    altlbl += ' [{}]'.format(cws_prf.var_info[PRF_ALT]['prm_unit'])
-
-    # idx axis
-    ax2.text(1.02, -0.4, pu.fix_txt(idxlbl), ha='left', va='center', transform=ax2.transAxes)
-
-    # Now deal with the multiple axis I need to show.
-    if show_tdts:
-        tdtax = pu.add_sec_axis(ax2, idxs, tdts, offset=-1.25, which='x')
-        tdtax.tick_params(labelsize='small')
-        ax2.text(1.02, -1.65, pu.fix_txt(tdtlbl), ha='left', va='center', transform=ax2.transAxes,
-                 fontsize='small')
-
-    if show_alts:
-        altax = pu.add_sec_axis(ax2, idxs, alts, offset=-2.5, which='x')
-        altax.tick_params(labelsize='small')
-        ax2.text(1.02, -2.9, pu.fix_txt(altlbl), ha='left', va='center', transform=ax2.transAxes,
-                 fontsize='small')
-
     # Legends, labels, etc ...
+    ylbl = cws_prf.var_info[PRF_VAL]['prm_name']
+    ylbl += f' [{cws_prf.var_info[PRF_VAL]["prm_unit"]}]'
+
+    altlbl = r'gph$_{\rm CWS}$'
+    altlbl += f' [{cws_prf.var_info[PRF_ALT]["prm_unit"]}]'
+    ax2.set_xlabel(pu.fix_txt(altlbl))
+
     ax0.text(-0.1, 0.5, pu.fix_txt(ylbl), ha='left', va='center',
              transform=ax0.transAxes, rotation=90)
     plt.setp(ax0.get_xticklabels(), visible=False)
@@ -224,8 +166,15 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     ax2.set_ylim((0, 1))
     ax2.set_yticks([])
 
-    # Crop the plot to the regions with valid ref_altitudes
-    ax0.set_xlim((min_valid_alt_idx, max_valid_alt_idx))
+    # For the ascent speed, show a guide at 5 m/s
+    ax1b.axhline(5, ls='--', lw=1, c='k')
+    ax1b.text(
+        -0.1, 0.5,
+        pu.fix_txt(r'$\frac{\textrm{d}(\text{gph}_{\text{CWS}})}{\textrm{dt}}$ [m\,s$^{-1}$]'),
+        ha='left', va='center', transform=ax1b.transAxes, rotation=90)
+
+    # Crop the plot to the regions with valid altitudes
+    ax0.set_xlim((np.nanmin(alts), np.nanmax(alts)))
 
     # Add the legend
     pu.fancy_legend(ax0, label)
@@ -262,11 +211,11 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     """
 
     # Start the plotting
-    fig = plt.figure(figsize=(pu.WIDTH_TWOCOL, 9.5))
+    fig = plt.figure(figsize=(pu.WIDTH_TWOCOL, 9))
 
     # Create a gridspec structure
     gs_info = gridspec.GridSpec(6, 1, height_ratios=[1]*6, width_ratios=[1],
-                                left=0.09, right=0.87, bottom=0.15, top=0.95,
+                                left=0.09, right=0.87, bottom=0.1, top=0.95,
                                 wspace=0.5, hspace=0.1)
 
     # Create the axes - one for the profiles, and one for uctot, ucr, ucs, uct, ucu
@@ -292,42 +241,8 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     if len(cws) != len(gdps):
         raise DvasError('Ouch! GDPS and CWS do not have the same lengths. I cannot plot this.')
 
-    # Here, I want to make a plot with 3 x-axis: idx, tdt, and alt. To do that requires
-    # all these arrays to be completely filled with stuff, and have absolutely no NaNs
-    # (since matplotlib needs to interpolate and go back-and-forth between them)
-    idxs = cws.index.get_level_values(PRF_IDX).values
-    tdts = cws[PRF_TDT].dt.total_seconds().values
+    # After #245, give up on the idea of showing multple x-axis., and show the altitude only
     alts = cws[PRF_ALT].values
-
-    # For the altitude, I may need to pad the edges with stuff. Holes, on the other hand, should
-    # already have been plugged.
-    min_valid_alt_idx = cws.index[~cws['alt'].isna()].min()
-    max_valid_alt_idx = cws.index[~cws['alt'].isna()].max()
-    alts[:min_valid_alt_idx] = np.arange(0, min_valid_alt_idx, 1) - 1e6 + 1
-    alts[max_valid_alt_idx+1:] = np.arange(max_valid_alt_idx+1-len(alts), 0, 1) + 1e6
-
-    # Check for any holes - if found, forget about showing multiple axes
-    show_tdts = True
-    if np.any(np.isnan(tdts)):
-        logger.error('CWS tdt contains holes. %s',
-                     'Axis will be cropped from uc_budget.')
-        show_tdts = False
-    # Make sure time is monotically increasing. This should always be true ...
-    elif not np.all(np.diff(tdts) > 0):
-        raise DvasError('Ouch ! CWS tdts not increasing monotically ?!')
-
-    # For the altitude, things may not be that easy. Ballons can go down temporarily in gravity
-    # waves, for exemple. Do circumvent this, we shall display the alt axis only if it increases
-    # monotically
-    show_alts = True
-    if np.any(np.isnan(alts)):
-        logger.error('CWS ref_alt contains holes. %s',
-                     'Axis will be cropped from uc_budget.')
-        show_alts = False
-    elif np.any(np.diff(alts) <= 0):
-        logger.error('CWS ref. alt. is not increasing monotically. %s',
-                     'Axis will be cropped from uc_budget.')
-        show_alts = False
 
     # Very well, let us plot all these things. First the GDPs ...
     for gdp_ind in range(len(gdps.columns.levels[0])):
@@ -335,15 +250,15 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
 
         # Finally, plot the individual errors too ...
         for (uc_ind, uc) in enumerate(['uc_tot', PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU]):
-            axs[uc_ind].plot(idxs, k_lvl*gdp[uc].values, drawstyle='steps-mid', lw=0.5,
+            axs[uc_ind].plot(alts, k_lvl*gdp[uc].values, drawstyle='steps-mid', lw=0.5,
                              label='|'.join(gdp_prfs.get_info(label)[gdp_ind]))
 
         # Let's also plot the weights (from the GDP combination scheme)
-        ax0b.plot(idxs, 1/gdp['uc_tot'].values**2, lw=0.5, drawstyle='steps-mid')
+        ax0b.plot(alts, 1/gdp['uc_tot'].values**2, lw=0.5, drawstyle='steps-mid')
 
     # Then also plot the CWS uncertainty
     for (uc_ind, uc) in enumerate(['uc_tot', PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU]):
-        axs[uc_ind].plot(idxs, k_lvl*cws[uc].values, drawstyle='steps-mid', lw=0.75, c='k',
+        axs[uc_ind].plot(alts, k_lvl*cws[uc].values, drawstyle='steps-mid', lw=0.75, c='k',
                          zorder=0, label='CWS')
         # Add the y-label, while I'm at it ...
         axs[uc_ind].text(-0.1, 0.5, pu.fix_txt(uc), ha='left', va='center',
@@ -357,40 +272,21 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
               transform=ax0b.transAxes, rotation=90)
 
     # Now make it look pretty
-    idxlbl = r'$i$'
-    tdtlbl = cws_prf.var_info[PRF_TDT]['prm_name']
-    tdtlbl += ' [{}]'.format(cws_prf.var_info[PRF_TDT]['prm_unit'])
-    altlbl = cws_prf.var_info[PRF_ALT]['prm_name'] + r'$_{\rm CWS}$'
-    altlbl += ' [{}]'.format(cws_prf.var_info[PRF_ALT]['prm_unit'])
-
-    # idx axis
-    ax4.text(1.02, -0.15, pu.fix_txt(idxlbl), ha='left', va='center', transform=ax4.transAxes)
-
-    # Now deal with the multiple axis I need to show.
-    if show_tdts:
-        tdtax = pu.add_sec_axis(ax4, idxs, tdts, offset=-0.4, which='x')
-        tdtax.tick_params(labelsize='small')
-        ax4.text(1.02, -0.5, pu.fix_txt(tdtlbl), ha='left', va='center', transform=ax4.transAxes,
-                 fontsize='small')
-
-    if show_alts:
-        altax = pu.add_sec_axis(ax4, idxs, alts, offset=-0.8, which='x')
-        altax.tick_params(labelsize='small')
-        ax4.text(1.02, -0.9, pu.fix_txt(altlbl), ha='left', va='center', transform=ax4.transAxes,
-                 fontsize='small')
+    altlbl = r'gph$_{\rm CWS}$'
+    altlbl += f' [{cws_prf.var_info[PRF_ALT]["prm_unit"]}]'
+    ax4.set_xlabel(pu.fix_txt(altlbl))
 
     # Legends, labels, etc ...
     for ax in [ax0, ax0b, ax1, ax2, ax3]:
         plt.setp(ax.get_xticklabels(), visible=False)
 
     # Crop the plot to the regions with valid ref_altitudes
-    ax0.set_xlim((min_valid_alt_idx, max_valid_alt_idx))
+    ax0.set_xlim((np.nanmin(alts), np.nanmax(alts)))
 
     # Add the legend
     pu.fancy_legend(ax0, label)
     # Add the k-level
-    var_msg = r'{} [{}]'.format(cws_prf.var_info[PRF_VAL]['prm_name'],
-                                cws_prf.var_info[PRF_VAL]['prm_unit'])
+    var_msg = f'{cws_prf.var_info[PRF_VAL]["prm_name"]} [{cws_prf.var_info[PRF_VAL]["prm_unit"]}]'
     pu.add_var_and_k(ax0, var_name=var_msg, k=k_lvl)
 
     # Add the edt/eid/rid info

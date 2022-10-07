@@ -19,10 +19,11 @@ _WxR-301D:
     pid: "get('product_id')"
     tags:
         - "cat('e:', get('event_id'))"
-        - "cat('r:', get('rig'))"
+        - "cat('r:', get('rig_id'))"
     metadata:
-        bpt_time:
-        start_time: "to_datetime(get('start_time'))"
+        first_timestamp: "to_datetime(get('first_timestamp'))"
+        launch_timestamp: "to_datetime(get('launch_timestamp'))"
+        burst_timestamp: "to_datetime(get('burst_timestamp'))"
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter: ';'
@@ -37,7 +38,7 @@ _WxR-301D:
     csv_header: 0
 
     _time:
-        value: getreldt('time_stamp', '%Y-%m-%dT%H:%M:%S.%fZ', 0)
+        value: getreldt('time_stamp', '%Y-%m-%dT%H:%M:%S.%fZ', 3)
 
     _alt_ref:
         value: get('gph_gnss')

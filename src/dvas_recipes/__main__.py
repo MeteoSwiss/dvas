@@ -92,29 +92,35 @@ def dvas_run_recipe():
         epilog='For more info: https://MeteoSwiss.github.io/dvas\n ',
         formatter_class=argparse.RawTextHelpFormatter)
 
-    parser.add_argument('rcp_fn', action='store',
-                        help=' (Path +) Name of the dvas recipe file (.rcp) to use.')
+    parser.add_argument('rcp_fn', action='store', metavar='path/to/recipe.rcp',
+                        help='(Path +) Name of the dvas recipe file (.rcp) to use.')
 
-    parser.add_argument('-f', '--flights', action='store', default=None,
-                        help='(Path +) Name of text file listing specific flights to process.')
+    parser.add_argument('fid_log_fn', action='store', metavar='path/to/eid_log.txt',
+                        help='(Path +) Name of file linking F-ids to eids, rids, and edts.')
 
-    parser.add_argument('-s', '--start_at', action='store', default=None,
+    parser.add_argument('-f', action='store', default=None, type=str,
+                        help='Flight id(s) to treat specifically.', metavar='Fxy,Fxz,...')
+
+    parser.add_argument('-s', action='store', default=None, type=str, metavar='00',
                         help='Skip recipe steps until this one. ' +
-                        'If set, the DB reset will be disabled !')
+                        'If set, the DB reset will be force-disabled !')
 
-    parser.add_argument('-e', '--end_at', action='store', default=None,
+    parser.add_argument('-e', action='store', default=None, type=str, metavar='99',
                         help='Skip recipe steps beyond this one. ')
 
-    parser.add_argument('-d', '--debug', action='store_true',
+    parser.add_argument('-d', action='store_true',
                         help='Force-set the logging level to DEBUG.')
 
     # Done getting ready.
     # What did we get from the user ?
     args = parser.parse_args()
 
-    if args.flights is not None:
-        args.flights = Path(args.flights)
+    # Cleanup the inputs
+    args.rcp_fn = Path(args.rcp_fn)
+    args.fid_log_fn = Path(args.fid_log_fn)
+    if args.f is not None:
+        args.f = [item.strip(' ') for item in args.f.split(',')]
 
     # Feed this to the actual recipe routine
-    run_recipe(Path(args.rcp_fn), flights=args.flights,
-               from_step_id=args.start_at, until_step_id=args.end_at, debug=args.debug)
+    run_recipe(args.rcp_fn, args.fid_log_fn, fid_to_treat=args.f,
+               from_step_id=args.s, until_step_id=args.e, debug=args.d)

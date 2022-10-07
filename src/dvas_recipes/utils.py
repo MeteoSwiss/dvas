@@ -43,14 +43,15 @@ def default_arena_path():
     return Path('.', 'dvas_proc_arena')
 
 
-def fn_suffix(eid=None, rid=None, var=None, mids=None, tags=None):
+def fn_suffix(eid=None, rid=None, var=None, mids=None, pids=None, tags=None):
     """ Returns the default suffix of filenames given a set of info provided by the user.
 
     Args:
         eid (int, optional): the event id
         rid (int, optional): the rig id
         var (str, optional): the variable name
-        mids (lost of str, optional): the list of mids
+        mids (list of str, optional): the list of mids
+        pids (list of str, optional): the list of pids
         tags (list of str, optional): the list of tags associated with the data
 
     Returns:
@@ -64,6 +65,9 @@ def fn_suffix(eid=None, rid=None, var=None, mids=None, tags=None):
 
     if mids is not None:
         suffix += '_{}'.format('-'.join(mids))
+
+    if pids is not None:
+        suffix += '_{}'.format('-'.join(pids))
 
     if tags is not None:
         suffix += '_{}'.format('-'.join([item.replace('tod:', '').replace(':', '')

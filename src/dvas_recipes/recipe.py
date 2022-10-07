@@ -168,16 +168,14 @@ class Recipe:
     _steps = None
     _reset_db = True
 
-    def __init__(self, rcp_fn, flights=None, debug=False):
+    def __init__(self, rcp_fn, eids_to_treat=None, debug=False):
         """ Recipe initialization from a suitable YAML recipe file.
 
         Args:
             rcp_fn (pathlib.Path): path of the recipe file to initialize.
-            flights (2D ndarray of str, optional): ndarray listing specific flights to be processed,
-                using their event id and rig id for identification.
-                Defaults to None = all available. Array must be 2D, e.g.::
-
-                    [['e:12345', 'r:1'], ['e:12346', 'r:1']]
+            eids_to_treat (list, optional): list of ('fid', 'e:eid', 'r:rid') tuples.
+                If None, will process all the flights found in the DB.
+            fid_to_treat (list, optional): list of specific fid to be processed.
             debug (bool, optional): if True, will force-set the logging level to DEBUG.
                 Defaults to False.
 
@@ -197,17 +195,32 @@ class Recipe:
             if item[0] == 'path_anchors':
                 continue
             # Set the path
-            setattr(path_var, item[0], Path(item[1]['path']) / item[1]['name'])
+            setattr(path_var, item[0], Path(item[1]['base_path']) / item[1]['sub_path'])
+
+        # Set the flights to be processed, if warranted.
+        # These get stored in the dedicated "dynamic" module, for easy access everywhere.
+        if eids_to_treat is not None:
+
+            # Get the list of fids, in order to create dedicated folders
+            fids = '_'.join([item[0] for item in eids_to_treat])
+            eids_to_treat = [(item[1], item[2]) for item in eids_to_treat]
+
+            # Adjust the input and output paths accordingly
+            setattr(path_var, 'output_path', path_var.output_path / fids)
+            setattr(path_var, 'orig_data_path', path_var.orig_data_path / fids)
+
+            rcp_dyn.ALL_FLIGHTS = eids_to_treat
 
         # Of all the paths, it is essential to make sure that orig_data_path exists.
-        # Else, en empty database will be created (without complaints), and it will be hard for the
+        # Else, an empty database will be created (without complaints), and it will be hard for the
         # user to understand that it is empty because no data was found (because the path was off).
         # Fixes #165.
         if not Path(path_var.orig_data_path).exists():
-            raise DvasRecipesError(f'Ouch ! the following orig_data_path (defined in {rcp_fn}) ' +
-                                   'does not exist:' + f' {path_var.orig_data_path}')
+            raise DvasRecipesError(f'orig_data_path not exist: {path_var.orig_data_path}')
 
         # Start the dvas logging
+        # Any path business should be completed by this point, as the log will check and create
+        # some of them, including the output path.
         if debug:
             loglvl = 'DEBUG'
         else:
@@ -216,6 +229,8 @@ class Recipe:
                       level=loglvl)
 
         logger.info('Launching the %s recipe.', self._name)
+        logger.info('orig_data_path was set to: %s', path_var.orig_data_path)
+        logger.info('output_path was set to: %s', path_var.output_path)
 
         # Let us fine-tune the plotting behavior of dvas if warranted
         if rcp_data['rcp_params']['general']['do_latex']:
@@ -236,7 +251,7 @@ class Recipe:
         if rcp_dyn.N_CPUS is None or rcp_dyn.N_CPUS > cpu_count():
             rcp_dyn.N_CPUS = cpu_count()
 
-        # Store the variables to be processed and their associated uncertainties.
+        # Store the list of flags to be dropped during analysis
         rcp_dyn.DROP_FLGS = rcp_data['rcp_params']['general']['drop_flgs']
 
         # Store the index names
@@ -260,14 +275,6 @@ class Recipe:
 
         # Keep a list of all the steps ids. WIll be useful for auto-tagging
         rcp_dyn.ALL_STEP_IDS = [item._step_id for item in self._steps]
-
-        # Set the flights to be processed, if warranted.
-        # These get stored in the dedicated "dynamic" module, for easy access everywhere.
-        if flights is not None:
-            if ndim := np.ndim(flights) != 2:
-                raise DvasRecipesError('Ouch ! np.ndim(flights) should be 2, not: {}'.format(ndim))
-
-            rcp_dyn.ALL_FLIGHTS = flights
 
     @property
     def name(self):
