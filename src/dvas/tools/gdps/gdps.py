@@ -61,31 +61,31 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
 
     # Some safety checks first of all
     if not isinstance(binning, (int, np.integer)):
-        raise DvasError('Ouch! binning must be of type int, not %s' % (type(binning)))
+        raise DvasError(f'binning must be of type int, not {type(binning)}')
     if binning <= 0:
-        raise DvasError('Ouch! binning must be greater or equal to 1 !')
+        raise DvasError('binning must be greater or equal to 1 !')
     if method not in ['weighted mean', 'mean', 'delta']:
-        raise DvasError('Ouch! Method %s unsupported.' % (method))
+        raise DvasError(f'Method {method} unsupported.')
 
     if not isinstance(chunk_size, (int, np.integer)):
-        raise DvasError('Ouch! chunk_size should be an int, not {}'.format(type(chunk_size)))
+        raise DvasError(f'chunk_size should be an int, not {type(chunk_size)}')
 
     if not isinstance(n_cpus, (int, np.integer)):
         if n_cpus == 'max':
             n_cpus = mp.cpu_count()
         else:
-            raise DvasError('Ouch! n_cpus should be an int, not {}'.format(type(n_cpus)))
+            raise DvasError(f'n_cpus should be an int, not {type(n_cpus)}')
 
     # Make sure I am not asking for more cpus than available
     if n_cpus > mp.cpu_count():
-        logger.warning('% cpus were requested, but I only found %i.', n_cpus, mp.cpu_count())
+        logger.warning('%i cpus were requested, but I only found %i.', n_cpus, mp.cpu_count())
         n_cpus = mp.cpu_count()
 
     # Check that all the profiles belong to the same event and the same rig. Anything else
     # doesn't make sense.
     if len(set(gdp_prfs.get_info('eid'))) > 1 or \
        len(set(gdp_prfs.get_info('rid'))) > 1:
-        raise DvasError('Ouch ! I will only combine GDPs that are from the same event+rig combo.')
+        raise DvasError('I will only combine GDPs that are from the same event+rig combo.')
 
     # Have all the profiles been synchronized ? Just trigger a warning for now. Maybe users simply
     # did not add the proper tag.
@@ -100,7 +100,7 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
 
     # Trigger an error if they do not have the same lengths.
     if len(len_gdps) > 1:
-        raise DvasError('Ouch ! GDPs must have the same length to be combined. ' +
+        raise DvasError('GDPs must have the same length to be combined. ' +
                         'Have these been synchronized ?')
 
     # Turn the set back into an int.
@@ -108,7 +108,7 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
 
     # For a delta, I can only have two profiles
     if method == 'delta' and n_prf != 2:
-        raise DvasError('Ouch! I can only make a delta between 2 GDPs, not %i !' % (n_prf))
+        raise DvasError(f'I can only make a delta between 2 GDPs, not {n_prf} !')
 
     # Make sure that the chunk_size is not smaller than the binning, else I cannot actually
     # bin the data as required
@@ -143,15 +143,22 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
             # If I am being given a list, make sure it has only 1 element. Else complain about it.
             if isinstance(val, list):
                 if len(val) > 1:
-                    raise DvasError("Ouch! {} ". format(metadata) +
-                                    "for profile #{} ".format(prf_id) +
-                                    " contains more than one value ( {} ).".format(val) +
+                    raise DvasError(f"{metadata} for profile #{prf_id} " +
+                                    f"contains more than one value ({val})." +
                                     " I am too dumb to handle this. So I give up here.")
 
                 val = val[0]
 
             # Actually assign the value to each measurement of the profile.
             x_dx.loc[:, (prf_id, metadata)] = val
+
+    # Debug code for the NaN mismatch error
+    # import pdb
+    # pdb.set_trace()
+    # uu = x_dx.loc[:,(0, 'uc_tot')].isna()
+    # vv = x_dx.loc[:,(0, 'val')].isna()
+    # all(vv==uu)
+    # x_dx[vv!=uu]
 
     # To drastically reduce memory requirements and speed up the code significantly,
     # we will break the profiles into smaller chunks. In doing so, we avoid having to deal with
@@ -200,7 +207,7 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
     new_info = InfoManager(np.unique(gdp_prfs.get_info('edt'))[0],  # dt
                            np.unique(gdp_prfs.get_info('oid')).tolist(),  # oids
                            tags=[new_rig_tag, new_evt_tag],
-                           src='dvas combine() [{}]'.format(Path(__file__).name))
+                           src=f'dvas combine() [{Path(__file__).name}]')
 
     # Let's create a dedicated Profile for the combined profile.
     # It's no different from a GDP, from the perspective of the errors.

@@ -178,6 +178,9 @@ def fix_txt(txt):
         txt = txt.replace(r'\it', r'')
         txt = txt.replace(r'\flushleft', r'')
         txt = txt.replace(r'\newline', r'')
+        txt = txt.replace(r'\textrm', r'')
+        txt = txt.replace(r'\text', r'')
+        txt = txt.replace(r'\,', r' ')
 
     return txt
 
@@ -392,6 +395,47 @@ def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show=
         plt.show()
     else:
         plt.close(fig)
+
+
+def wrap_wdir_curve(x, y):
+    """ A simple routine that alters an x-y series of angles, by breaking connections between
+    successive points that have more than 180deg offset.
+
+    Args:
+        x (ndarray): the x-values.
+        y (ndarray): the y-values, angles in degrees in the range [0, 360]
+
+    Returns:
+        x, y: the altered arrays, ready to be plotted.
+
+    This routine essentially allows to remove large vertical "bars" that would otherwise be common
+    in wind_dir plots for angles oscillating around 0=360 deg.
+
+    Note:
+        This function is not flexible at all. It absolutely requires angles in degrees in the
+        range [0, 360[.
+
+    """
+
+    # Let's identify the steps tha need to be broken
+    breaks = np.abs(np.diff(y)) >= 180
+
+    # Add a break by inserting a NaN point half-way through ... but also include some points
+    # at the 0 and 360 limits to show that the line itself is not broken !
+    xb = [[item] if not breaks[i] else
+          [item]+3*[0.5*(x[i]+x[i+1])]
+          for (i, item) in enumerate(x[:-1])]
+    xb += [[x[-1]]]
+    xb = [item for xbb in xb for item in xbb]
+
+    # Idem for the y values.
+    yb = [[item] if not breaks[i] else
+          [item]+[360*np.round(item/360), np.nan, 360*(1-np.round(item/360))]
+          for (i, item) in enumerate(y[:-1])]
+    yb += [[y[-1]]]
+    yb = [item for ybb in yb for item in ybb]
+
+    return xb, yb
 
 
 def clr_palette_demo():

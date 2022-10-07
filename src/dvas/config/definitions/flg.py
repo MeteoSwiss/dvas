@@ -12,8 +12,11 @@ Module contents: Required attributes definition for `.config.ConfigManager.Flag 
 # Import current packages modules
 from ...database.model import Flg as TableFlg
 from ...hardcoded import FLG_EMPTY, FLG_EMPTY_DESC
+from ...hardcoded import FLG_INVALID, FLG_INVALID_DESC
 from ...hardcoded import FLG_INCOMPATIBLE, FLG_INCOMPATIBLE_DESC
 from ...hardcoded import FLG_INTERP, FLG_INTERP_DESC
+from ...hardcoded import FLG_PRELAUNCH, FLG_PRELAUNCH_DESC
+from ...hardcoded import FLG_ASCENT, FLG_ASCENT_DESC
 from ...hardcoded import FLG_DESCENT, FLG_DESCENT_DESC
 from ...hardcoded import FLG_HASCWS, FLG_HASCWS_DESC
 
@@ -41,8 +44,11 @@ CONST_LABELS = [
     } for i, arg in enumerate(
         (
             (FLG_EMPTY, FLG_EMPTY_DESC),
+            (FLG_INVALID, FLG_INVALID_DESC),
             (FLG_INTERP, FLG_INTERP_DESC),
             (FLG_INCOMPATIBLE, FLG_INCOMPATIBLE_DESC),
+            (FLG_PRELAUNCH, FLG_PRELAUNCH_DESC),
+            (FLG_ASCENT, FLG_ASCENT_DESC),
             (FLG_DESCENT, FLG_DESCENT_DESC),
             (FLG_HASCWS, FLG_HASCWS_DESC)
         )

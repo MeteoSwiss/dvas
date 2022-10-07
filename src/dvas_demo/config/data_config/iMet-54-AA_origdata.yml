@@ -4,14 +4,14 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
-# This file contains the extraction details for SRS-C34 GDP and MDP files.
+# This file contains the extraction details for the iMet-54-AA MDP files.
 # It must absolutely have the string 'origdata' in its name, to match the dvas class names.
 # --------------------------------------------------------------------------------------------------
 
 # ----------------------------------------------------
-# SRS-C34 MDP
+# iMet-54-AA MDP (UAII2022)
 # ----------------------------------------------------
-_C34:
+_iMet-54-AA:
 
     # -- META DATA ----------------------------------
     edt: "to_datetime(get('event_dt'))"
@@ -29,32 +29,32 @@ _C34:
     csv_delimiter: ';'
     csv_skip_blank_lines: False
     csv_delim_whitespace: False
-    csv_skiprows: 45
-    csv_skipfooter: 1
+    csv_skiprows: 21
+    csv_skipfooter: 0
     csv_encoding:
     csv_na_values:
     csv_header: 0
 
     _time:
-        value: get('Rel. Time')
+        value: get('time', 'rel')
 
     _alt_ref:
-        value: get('Altitude (gpm)')
+        value: get('gph_gnss')
 
     _gph:
-        value: get('Altitude (gpm)')
+        value: get('gph_gnss')
 
     _temp:
-        value: get('Temperature (?C)', 'c2k')
-
-    _rh:
-        value: get('Humidity (%)')
+        value: get('temp', 'c2k')
 
     _pres:
-        value: get('Pressure (hPa)')
+        value: get('press_gnss')
+
+    _rh:
+        value: get('rh')
 
     _wdir:
-        value: get('Wind Direction (?)')
+        value: get('wind_dir')
 
     _wspeed:
-        value: get('Wind Velocity (m/s)')
+        value: get('wind_speed')

@@ -19,7 +19,7 @@ import numpy as np
 # Import from this package
 from ..logger import log_func_call
 from ..errors import DvasError
-from ..hardcoded import PRF_ALT, PRF_VAL, PRF_TDT, MTDTA_START
+from ..hardcoded import PRF_ALT, PRF_VAL, PRF_TDT, MTDTA_FIRST
 
 # Setup the local logger
 logger = logging.getLogger(__name__)
@@ -39,16 +39,21 @@ def get_sync_shifts_from_starttime(prfs):
 
     # Start with some sanity checks
     for prf in prfs:
-        if MTDTA_START not in prf.info.metadata.keys():
-            raise DvasError(f"'{MTDTA_START}' not found in metadata for: {prf.info.src}")
-        if prf.info.metadata[MTDTA_START] is None:
-            raise DvasError(
-                f"'{MTDTA_START}' is None. GPS start-time sync impossible for: {prf.info.src}")
+        if MTDTA_FIRST not in prf.info.metadata.keys():
+            raise DvasError(f"'{MTDTA_FIRST}' not found in metadata for: {prf.info.src}")
 
-    # Extract all the start times, and convert them to datetimes
-    start_times = [prf.info.metadata[MTDTA_START] for prf in prfs]
+    # Extract all the start times, not forgetting to account for any data cropping that may
+    # have taken place since it was loaded (i.e. get the FIRST DATETIME from the metadata,
+    # and add the first time delta - which should be 0 unless descent data was cropped).
+    start_times = [None if prf.info.metadata[MTDTA_FIRST] is None else
+                   prf.info.metadata[MTDTA_FIRST] + prf.data.index.get_level_values(PRF_TDT)[0]
+                   for prf in prfs]
 
-    shifts = [int(np.round((item-np.min(start_times)).total_seconds())) for item in start_times]
+    # Compute the corresponding shifts, resetting them to be all positive
+    valid_start_time = [item for item in start_times if item is not None]
+    shifts = [np.nan if (item is None) else
+              int(np.round((item - np.min(valid_start_time)).total_seconds()))
+              for item in start_times]
 
     return shifts
 
@@ -145,7 +150,8 @@ def get_sync_shifts_from_val(prfs, max_shift=100, first_guess=None):
     # Let's just hide these away shamefully.
     with warnings.catch_warnings():
         warnings.filterwarnings('ignore', r'Mean of empty slice')
-        ind = [[np.nanmean(np.abs(1.-vals[0]/vals.shift(shift)[ind]))
+        ind = [[np.nanmean(np.abs(1. -
+                           vals.shift(first_guess[0])[0]/vals.shift(first_guess[ind]+shift)[ind]))
                 for ind in range(len(prfs))] for shift in shifts]
 
     ind = np.nanargmin(np.array(ind), axis=0)
@@ -155,7 +161,8 @@ def get_sync_shifts_from_val(prfs, max_shift=100, first_guess=None):
         logger.warning('sync_shift_from_val values is close from the edge of the search zone')
 
     # Return a list of shifts, resetting it to only have positive shifts.
-    out = list(shifts[ind]-np.min(shifts[ind]))
+    out = shifts[ind]+first_guess
+    out = list(out-np.min(out))
 
     # Check if we are far from the first_guess ... and if so, raise a warning
     if any(np.abs(item - first_guess[i]) > 3 for i, item in enumerate(out)):

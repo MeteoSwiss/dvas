@@ -270,6 +270,7 @@ class OneLayerConfigManager(ConfigManager):
         else:
             if len(doc_in) == 0:
                 logger.debug('No parameter file found for CLASS_KEY: %s', self.CLASS_KEY)
+                #raise Exception()
 
             for filepath in doc_in:
                 try:
@@ -840,7 +841,7 @@ class ConfigExprInterpreter(metaclass=ABCMeta):
 
     @staticmethod
     def eval(expr, get_fct):
-        """ Interpret expression.
+        r""" Interpret expression.
 
         Args:
             expr (str|ConfigExprInterpreter): Expression to evaluate.
@@ -868,7 +869,8 @@ class ConfigExprInterpreter(metaclass=ABCMeta):
             'get': GetExpr,
             'upper': UpperExpr, 'lower': LowerExpr,
             'supper': SmallUpperExpr, 'small_upper': SmallUpperExpr,
-            'to_datetime': ToDatetime
+            'to_datetime': ToDatetime,
+            'split_select': SplitSelect
         }
 
         # Set get_value
@@ -1010,8 +1012,8 @@ class ToDatetime(NonTerminalConfigExprInterpreter):
     def fct(self, a):
         """ Convert a string to datetime """
 
-        # If I am given nothing, return nothing
-        if a is None:
+        # If I am given nothing or a NaN, return nothing
+        if (a is None) or (a in ['NaN']):
             return None
 
         # Here, it is important to raise a NonTerminalExprInterpreterError if something fails.
@@ -1019,7 +1021,7 @@ class ToDatetime(NonTerminalConfigExprInterpreter):
         try:
             # Use the in-built helper function ...
             out = check_datetime(a, utc=False)
-        except:
+        except TypeError:
             raise NonTerminalExprInterpreterError()
 
         # Force the timezone to UTC by default
@@ -1069,9 +1071,29 @@ class GetExpr(TerminalConfigExprInterpreter):
         return out
 
 
+class SplitSelect(GetExpr):
+    """ Split a string a select one item """
+
+    def __init__(self, arg, spl='_', sel=1):
+
+        super().__init__(arg, totype=str)
+
+        self._spl = spl
+        self._sel = sel
+
+    def interpret(self):
+        """ Split string 'arg' using 'spl' and return item 'sel' """
+
+        try:
+            return super().interpret().split(self._spl)[self._sel]
+        except (TypeError, IndexError):
+            raise TerminalExprInterpreterError()
+
+
 class NoneExpr(TerminalConfigExprInterpreter):
     """Apply none interpreter"""
 
     def interpret(self):
         """Implement fct method"""
         return self._expression
+

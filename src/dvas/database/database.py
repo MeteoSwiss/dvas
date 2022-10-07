@@ -11,6 +11,7 @@ Module contents: Local database management tools
 
 # Import from python packages
 import logging
+from collections.abc import Iterable
 import pprint
 from hashlib import blake2b
 from math import floor
@@ -19,7 +20,6 @@ from peewee import chunked, DoesNotExist
 from playhouse.shortcuts import model_to_dict
 import numpy as np
 from pandas import Timestamp
-from collections.abc import Iterable
 
 # Import from current package
 from .model import db
@@ -928,10 +928,10 @@ class InfoManager:
 
     @staticmethod
     def sort(info_list):
-        """Sort list of InfoManager. Sorting order [edt, srn, tags]
+        """ Sort list of InfoManager. Sorting order is set by _get_attr_sort_order().
 
         Args:
-            info_list (iterable of InfoManager): List to sort
+            info_list (iterable of InfoManager): list to sort
 
         Returns:
             list: Sorted InfoManager
@@ -940,9 +940,7 @@ class InfoManager:
         """
 
         # Sort
-        val = sorted(
-            zip(info_list, range(len(info_list)))
-        )
+        val = sorted(zip(info_list, range(len(info_list))))
 
         # Unzip index
         out = list(unzip(val)) if val else ([], [])
@@ -950,13 +948,30 @@ class InfoManager:
         return list(out[0]), out[1]
 
     def _get_attr_sort_order(self):
-        """Return attributes used for sorting/hashing
+        """ Process InfoManager attributes, such that distinct instances can be sorted.
 
         Returns:
-            tuple
+            str: suitable for sorting
+
+        The sort order is eid - mid - oid.
+
+        Note:
+           The str sorting approach is taken from the reply of John La Rooy on
+           `SO <https://stackoverflow.com/questions/33161059>`_
 
         """
-        return self.edt, *[str(arg) for arg in self.oid], *self.tags, self.src
+
+        # Let's extract the different elements that we want to use to sort InfoManagers
+        out = str(self.eid), *[str(arg) for arg in self.mid], \
+            *[str(arg) for arg in self.oid], *self.tags, self.src
+
+        # Convert this to one big string
+        out = ' '.join(out)
+
+        # To sort this properly, apply the smart suggestion to first bring it all lowercase,
+        # then swapping the caps (since caps get placed first)
+        return out.casefold() + out.swapcase()
+
 
     def __eq__(self, other):
         return self._get_attr_sort_order() == other._get_attr_sort_order()

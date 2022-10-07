@@ -18,6 +18,7 @@ from itertools import takewhile
 import operator
 import inspect
 import netCDF4 as nc
+import numpy as np
 import pandas as pd
 
 # Import from current package
@@ -40,6 +41,7 @@ from ..hardcoded import GDP_FILE_EXT
 from ..hardcoded import PRM_PAT, FLG_PRM_PAT
 from ..hardcoded import CSV_FILE_MDL_PAT, GDP_FILE_MDL_PAT
 from ..hardcoded import TAG_RAW, TAG_GDP, TAG_EMPTY
+from ..tools import wmo
 
 # Setup local logger
 logger = logging.getLogger(__name__)
@@ -228,12 +230,14 @@ class FileHandler(AbstractHandler):
 
         """
         if self.file_model_pat.match(file.name) is None:
+            logger.debug('File %s does not match the pattern: %s',
+                         file.name, self.file_model_pat)
             return False
 
         return True
 
     def handle(self, data_file_path, prm_name):
-        """Handle method
+        """ Handle method
 
         Args:
             data_file_path (pathlib.Path): Data file path
@@ -662,7 +666,7 @@ class GDPHandler(FileHandler):
         # Define metadata file path
         metadata_file_path = self.get_metadata_filename(file_path)
 
-        with nc.Dataset(metadata_file_path, 'r') as self._fid:
+        with nc.Dataset(metadata_file_path, 'r') as self._fid:  #noqa pylint: disable=no-member
 
             # Read metadata fields
             try:
@@ -680,7 +684,7 @@ class GDPHandler(FileHandler):
         """Implementation of abstract method"""
 
         # Read data
-        with nc.Dataset(data_file_path, 'r') as self._fid:
+        with nc.Dataset(data_file_path, 'r') as self._fid:  #noqa pylint: disable=no-member
             data = pd.Series(self._fid[field_id][:])
 
         return data
@@ -910,7 +914,7 @@ class LoadExprInterpreter(ABC):
 
     @staticmethod
     def eval(expr, get_fct, *args, **kwargs):
-        """Evaluate str expression
+        r""" Evaluate str expression
 
         Args:
             expr (str|ConfigExprInterpreter): Expression to evaluate
@@ -932,6 +936,8 @@ class LoadExprInterpreter(ABC):
             'get': GetExpr,
             'pow': PowExpr,
             'sqrt': SqrtExpr,
+            'getreldt': GetreldtExpr,
+            'getgeomalt': GetgeomaltExpr,
         }
 
         # Init
@@ -948,7 +954,7 @@ class LoadExprInterpreter(ABC):
         # TODO
         #  Detail exception
         except Exception as exp:
-            raise Exception(exp)
+            raise DvasError(exp)
 
         return expr_out
 
@@ -1052,14 +1058,15 @@ class GetExpr(TerminalLoadExprInterpreter):
         'nop': lambda x: x,
         'rel': lambda x: x - x.iloc[0],
         'div2': lambda x: x / 2,
-        'd2k': lambda x: x + 273.15,
-        'k2d': lambda x: x - 273.15,
-        'd2f': lambda x: (x * 9 / 5) + 32,
-        'f2d': lambda x: (x - 32) * 5 / 9,
+        'c2k': lambda x: x + 273.15,
+        'k2c': lambda x: x - 273.15,
+        'c2f': lambda x: (x * 9 / 5) + 32,
+        'f2c': lambda x: (x - 32) * 5 / 9,
         'ms2kmh': lambda x: x * 3.6,
         'kmh2ms': lambda x: x / 3.6,
         'm2km': lambda x: x / 1000,
         'km2m': lambda x: x + 1000,
+        'kn2ms': lambda x: x * 1852 / 3600,
     }
 
     def __init__(self, arg, op='nop'):
@@ -1077,6 +1084,96 @@ class GetExpr(TerminalLoadExprInterpreter):
 
         for op in self._op:
             out = op(out)
+
+        return out
+
+
+class GetgeomaltExpr(TerminalLoadExprInterpreter):
+    """ Geometric altitude to geopotential height convertor """
+
+    def __init__(self, arg, lat=None):
+        """ Init function
+
+        Args:
+            args (str): expression to process.
+            lat (float, optional): geodetic latitude of launch site, in degrees
+
+        """
+
+        self._expression = arg
+
+        if lat is None:
+            raise DvasError('Missing latitude for geopotential height conversion.')
+        self._lat = np.deg2rad(lat)
+
+    def interpret(self):
+        """ Implement fct method """
+
+        out = self._FCT(self._expression, *self._ARGS, **self._KWARGS)  # noqa pylint: disable=E1102
+
+        # Convert geometric altitude to geopotential height
+        # See #242 for details
+
+        return wmo.geom2geopot(out, self._lat)
+
+
+class GetreldtExpr(TerminalLoadExprInterpreter):
+    """ Absolute datetimes to relative seconds """
+
+    def __init__(self, arg, fmt=None, round_lvl=None):
+        """ Initialization function
+
+        Args:
+            args (str): expression to process.
+            fmt (str, optional): specify the datetime str format. Defaults to None.
+            round_lvl (int, optional): Specify the time step rounding level,
+                as (1/10)**round_lvl seconds. Defaults to None = full accuracy.
+
+        Note:
+            If set, the round_lvl parameter will be fed to the `decimals` argument of the
+            `pandas.round()` routine. If the rounding leads to an error larger than
+            (1/10)**(round_lvl+1) seconds, a critical log message will be created.
+
+        """
+        self._expression = arg
+
+        if fmt is None:
+            raise DvasError(f'Missing datetime decoding format in {self.__class__.__name__}')
+        if not isinstance(fmt, str):
+            raise DvasError(f'Datetime decoding format should be of type str, not: {type(fmt)}')
+        self._fmt = fmt
+
+        if not (round_lvl is None or isinstance(round_lvl, int)):
+            raise DvasError(f'round_lvl should be of type "int", not: {type(round_lvl)}')
+        self._round_lvl = round_lvl
+
+    def interpret(self):
+        """ Implement fct method """
+
+        out = self._FCT(self._expression, *self._ARGS, **self._KWARGS)  # noqa pylint: disable=E1102
+
+        # Convert the datetime, and get the time steps in s
+        out = pd.to_datetime(out, format=self._fmt)
+        out = (out - out.iloc[0]).apply(lambda x: x.total_seconds())
+        # WARNING: in the line above, we do not use .dt.total_seconds(), because this can lead to
+        # floating point errors ! See https://github.com/pandas-dev/pandas/issues/34290
+
+        # If warranted, round the time steps
+        if self._round_lvl is not None:
+            out_orig = out.copy()
+            out = out.round(decimals=self._round_lvl)
+
+            # Raise a critical log message if rounding leads to errors larger than 1/10s of the
+            # rounding level.
+            if ((errs := (out-out_orig).abs()) >= 1/10**(self._round_lvl+1)).any():
+                msg_lvl = logger.critical
+                #import pdb
+                #pdb.set_trace()
+            else:
+                msg_lvl = logger.info
+
+            msg_lvl('Maximum time stamp rounding error: %.3fs', errs.max())
+            msg_lvl('Median (original) time step: %.3fs', np.median(np.diff(out_orig)))
 
         return out
 

@@ -52,7 +52,7 @@ _BR-GDP_001:
         value: get('time')
 
     _temp:
-        value: get('temp', 'k2d')
+        value: get('temp', 'k2c')
 
     _temp_ucr:
         value: get('temp_uec')

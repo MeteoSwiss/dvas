@@ -31,7 +31,8 @@ logger = logging.getLogger(__name__)
 class ResampleStrategy(MPStrategyAC):
     """ Class to handle the resample strategy for RS and GDPs Profiles. """
 
-    def execute(self, prfs, freq: str = '1s', chunk_size: int = 150, n_cpus: int = 1):
+    def execute(self, prfs, freq: str = '1s', chunk_size: int = 150, n_cpus: int = 1,
+                interp_dist: float | int = 1):
         """Implementation of time resampling method for RS and GDP Profiles.
 
         .. note::
@@ -43,6 +44,9 @@ class ResampleStrategy(MPStrategyAC):
         Args:
             prfs (list of RSProfiles|GDPProfiles): GDP Profiles to resample.
             freq (str, optional): see pandas.timedelta_range(). Defaults to '1s'.
+            interp_dist (float|int, optional): define the distance between resampled points and
+                their closest measurement, in s, from which the resampled element is forced to NaN.
+                Defaults to 1, i.e. gaps that are >= 1s are not interpolated.
             chunk_size (int, optional): to speed up computation, Profiles get broken up in chunks of
                 that length. The larger the chunks, the larger the memory requirements. The smaller
                 the chunks the more items to process. Defaults to 150.
@@ -56,7 +60,7 @@ class ResampleStrategy(MPStrategyAC):
 
         # Some sanity checks to begin with
         if not isinstance(prfs, list):
-            raise DvasError("Ouch ! prfs should be of type list, and not: {}".format(type(prfs)))
+            raise DvasError(f"Ouch ! prfs should be of type list, and not: {type(prfs)}")
         # The following should in principle never happen because the strategy ensures that.
         # If this blows up, then something must have gone really wrong ...
         if np.any([PRF_TDT not in prf.get_index_attr() for prf in prfs]):
@@ -68,6 +72,35 @@ class ResampleStrategy(MPStrategyAC):
             # Here, do something only if I actually have data to resample
             if len(prf.data) <= 1:
                 continue
+
+            logger.info('Checking that timesteps are increasing monotically ... (%s)',
+                        prf.info.src)
+            is_bad = True
+            while is_bad:
+                # Compute the time deltas
+                # WARNING: we here use the apply method and a lambda function,
+                # to avoid floating point errors related to
+                # https://github.com/pandas-dev/pandas/issues/34290
+
+                tsteps = pd.Series(prf.data.index.get_level_values(PRF_TDT)).apply(
+                                   lambda x: x.total_seconds())
+
+                if any(bad := (tsteps.diff() < 0)):
+
+                    logger.error('Found %i decreasing timesteps. Cropping them now. (%s)',
+                                 len(bad[bad]), prf.info.src)
+
+                elif any(bad := (tsteps.diff() == 0)):
+                    logger.error('Found %i duplicated timesteps. Cropping them now. (%s)',
+                                 len(bad[bad]), prf.info.src)
+                else:
+                    is_bad = False
+
+                # If applicable, crop the bad points
+                if is_bad:
+                    prf.data = prf.data[~bad.values]
+                    # Sanity check that the IDX index remains ok.
+                    assert all(np.diff(prf.data.index.get_level_values('_idx')) == 1)
 
             # Let's identify the min and max integer values, rounded to the nearest second.
             t_0 = min(prf.data.index.get_level_values(PRF_TDT)).ceil('1s')
@@ -83,10 +116,21 @@ class ResampleStrategy(MPStrategyAC):
             # next profile without changing anything
             if len(new_tdt) == len(prf.data):
                 if all(new_tdt == prf.data.index.get_level_values(PRF_TDT)):
-                    logger.info('No resampling required for %s', prfs[prf_ind].info.src)
+                    logger.info('No resampling required for %s', prf.info.src)
                     continue
+                else:
+                    logger.warning('Non-integer time steps (%s).',
+                                   prfs[prf_ind].info.src)
+            elif len(new_tdt) < len(prf.data):
+                logger.warning('Extra-numerous timesteps (%s).',
+                               prfs[prf_ind].info.src)
+            else:
+                logger.warning('Missing (at least) %i time steps (%s).',
+                               len(new_tdt) - len(prf.data),
+                               prf.info.src)
 
-            logger.warning('Starting resampling for %s', prfs[prf_ind].info.src)
+            # dvas should never resample anything. If we do, let's make it very visible.
+            logger.warning('Starting resampling (%s)', prf.info.src)
             # Very well, interpolation is required. To avoid duplicating code, we shall rely on
             # the dvas.tools.gdps.utils.process_chunk() function to do so.
             # This implies that we must construct a suitable set of df_chunks to feed that function.
@@ -129,8 +173,19 @@ class ResampleStrategy(MPStrategyAC):
                                    np.diff(old_tdt)[x_ip1_ind[ind]-1]
                                    for (ind, item) in enumerate(new_tdt.values)])
 
-            # All these weights should be comprised between 0 and 1 ... else something is reall bad.
+            # All these weights should be comprised between 0 and 1 ... else something went bad.
             assert all((omega_vals >= 0) * (omega_vals <= 1))
+
+            # If the gap is large, the weights should be NaNs. We want to resample, NOT interpolate.
+            # Let's find any point that is 1s or more away from a real measurement, and block these.
+            to_hide = [np.min(np.abs(this_data['tdt'].dt.total_seconds().values - item))
+                       for item in new_tdt.total_seconds().values]  # noqa pylint: disable=no-member
+            to_hide = np.array(to_hide) >= interp_dist
+
+            if any(to_hide):
+                logger.warning('Resampling %i points to NaN (>=%.3fs from real data) (%s).',
+                               len(to_hide[to_hide]), interp_dist, prf.info.src)
+                omega_vals[to_hide] = np.nan
 
             # I am now ready to "fill the chunks". The first profile will be
             # x_- * (omega-1) and the second will be x_+ * omega. That way, 1-2 =
@@ -149,16 +204,20 @@ class ResampleStrategy(MPStrategyAC):
             # Deal with the uncertainties, in case I do not have a GDPProfile
             for col in [PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU]:
                 if col not in this_data.columns:
-                    x_dx.loc[:, (0, col)] = 0
-                    x_dx.loc[:, (1, col)] = 0
+                    # To avoid warnings down the line, set the UC to 0 everywhere, except where
+                    # the value is a NaN.
+                    x_dx.loc[:, (0, col)] = [item if np.isnan(item) else 0 for item in omega_vals]
+                    x_dx.loc[:, (1, col)] = [item if np.isnan(item) else 0 for item in omega_vals]
 
             # Also deal with the total uncertainty
             try:
                 x_dx.loc[:, (0, 'uc_tot')] = prf.uc_tot.iloc[x_ip1_ind-1].values
                 x_dx.loc[:, (1, 'uc_tot')] = prf.uc_tot.iloc[x_ip1_ind].values
             except AttributeError:
-                x_dx.loc[:, (0, 'uc_tot')] = 0
-                x_dx.loc[:, (1, 'uc_tot')] = 0
+                x_dx.loc[:, (0, 'uc_tot')] = [item if np.isnan(item) else 0
+                                              for item in x_dx.loc[:, (0, PRF_VAL)]]
+                x_dx.loc[:, (1, 'uc_tot')] = [item if np.isnan(item) else 0
+                                              for item in x_dx.loc[:, (1, PRF_VAL)]]
 
             # Assign the oid, eid, mid, rid values. Since we are here resampling one profile,
             # they are the same for all (and thus their value is irrelevant)
@@ -218,7 +277,9 @@ class ResampleStrategy(MPStrategyAC):
             # out = process_chunk(x_dx, binning=1, method='delta')
 
             # Let's make sure I have the correct times ... just to make sure nothing got messed up.
-            assert (proc_chunk.tdt.round('s') == new_tdt).all()
+            # Remember that some of the times may be NaNs, in case of large gaps ...
+            notnans = proc_chunk.tdt.notna()
+            assert (proc_chunk.tdt.round('s')[notnans] == new_tdt[notnans]).all()
 
             # Create a new dataframe to keep the interpolated stuff
             new_data = pd.DataFrame(new_tdt, columns=this_data.columns)
@@ -226,8 +287,8 @@ class ResampleStrategy(MPStrategyAC):
             # Loop through the different columns to assign
             for name in this_data.columns:
                 if name == PRF_TDT:
-                    # Here, do nothing to avoid propagating floating point errors caused by the
-                    # interpolation of time steps.
+                    # Here, do nothing to avoid propagating floating point errors and NaNs
+                    # caused by the interpolation of the time steps.
                     continue
 
                 if name == PRF_FLG:

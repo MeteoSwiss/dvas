@@ -103,11 +103,7 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
                              alpha=1/len(flights), step='mid', facecolor='k', edgecolor='none')
 
         else:
-            ax0.plot(dta.loc[:, PRF_ALT].values, dta.loc[:, PRF_VAL].values,
-                     lw=0.4, ls='-', drawstyle='steps-mid', c=lc, alpha=1,
-                     label='|'.join(dta_prfs.get_info(label)[dta_ind]))
-
-            # Next plot the uncertainties
+            # Plot the uncertainties of the CWS ...
             if dta_ind == 0:
                 ax0.fill_between(dta.loc[:, PRF_ALT],
                                  - k_lvl * dta.loc[:, 'uc_tot'].values,
@@ -119,16 +115,21 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
                     logger.error(
                         'Inconsistent delta uncertainties will not be reflected in the plot.')
 
+            # ... and the delta curves themsleves
+            ax0.plot(dta.loc[:, PRF_ALT].values, dta.loc[:, PRF_VAL].values,
+                     lw=0.4, ls='-', drawstyle='steps-mid', c=lc, alpha=1,
+                     label='|'.join(dta_prfs.get_info(label)[dta_ind]))
+
         # And then, the deltas normalized by the uncertainties
         ax1.plot(dta.loc[:, PRF_ALT], dta.loc[:, PRF_VAL] / dta.loc[:, 'uc_tot'].values,
                  lw=0.5, ls='-', drawstyle='steps-mid', c=lc, alpha=1/len(flights))
 
     # Set the axis labels
     ylbl0 = r'$\delta_{e,i}$'
-    ylbl0 += ' [{}]'.format(dta_prfs.var_info[PRF_VAL]['prm_unit'])
+    ylbl0 += f' [{dta_prfs.var_info[PRF_VAL]["prm_unit"]}]'
     ylbl1 = r'$\delta_{e,i}/\sigma_{\Omega_{e,i}}$'
-    altlbl = dta_prfs.var_info[PRF_ALT]['prm_name']
-    altlbl += ' [{}]'.format(dta_prfs.var_info[PRF_ALT]['prm_unit'])
+    altlbl = r'gph$_{\rm CWS}$'
+    altlbl += f' [{dta_prfs.var_info[PRF_ALT]["prm_unit"]}]'
 
     ax0.set_ylabel(pu.fix_txt(ylbl0), labelpad=10)
     ax1.set_ylabel(pu.fix_txt(ylbl1), labelpad=10)

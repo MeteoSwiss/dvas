@@ -127,10 +127,13 @@ def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp'):
                                      inplace=True)
         except DBIOError:
             logger.debug('No non-GDP profile found.')
-            nongdpp_prfs = None
+            nongdp_prfs = None
 
         # Apply the PBL, FT, UTLS, HAS_CWS flags to every profile.
         for prfs in [cws_prfs, gdp_prfs, nongdp_prfs]:
+
+            if prfs is None:
+                continue
 
             for (prf_ind, prf) in enumerate(prfs):
 

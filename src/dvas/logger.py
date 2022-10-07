@@ -214,7 +214,7 @@ class LogManager:
 
         # Test
         if path_var.output_path is None:
-            raise LogDirError('Ouch ! output_path is None.')
+            raise LogDirError('output_path is None.')
 
         # Set log path
         log_path = path_var.output_path / 'logs'
@@ -238,7 +238,7 @@ class LogManager:
 
         # Test logger name existence
         if name not in LOGGER_NAMES:
-            raise ValueError("Unknown logger name '{}'".format(name))
+            raise ValueError(f"Unknown logger name: {name}")
 
         out = logging.getLogger(name)
         out.disabled = True
@@ -288,12 +288,12 @@ def log_func_call(logger, time_it=False, level='info'):
             bound_args.apply_defaults()
 
             # Assemble a log message witht he function name ...
-            log_msg = 'Executing %s ...' % (func.__name__)
+            log_msg = f'Executing {func.__name__} ...'
             # ... and log it at the appropriate level
             getattr(logger, level)(log_msg)
 
             # Then get extra information about the arguments ...
-            log_msg = '... with the following input: %s' % (str(dict(bound_args.arguments)))
+            log_msg = f'... with the following input: {dict(bound_args.arguments)}'
             # ... and log it at the DEBUG level.
             logger.debug(log_msg)
 

@@ -19,7 +19,7 @@ from dvas.data.data import MultiRSProfile, MultiGDPProfile
 from dvas.tools.gdps import stats as dtgs
 from dvas.tools.gdps import gdps as dtgg
 from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
-from dvas.hardcoded import TAG_CWS, TAG_GDP, FLG_INCOMPATIBLE
+from dvas.hardcoded import TAG_CWS, TAG_GDP, FLG_INCOMPATIBLE, FLG_INVALID
 from dvas.errors import DBIOError
 
 # Import from dvas_recipes
@@ -151,8 +151,9 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
                         index=valids[~valids[str(gdp_prf.info.oid)]].index)
 
     # Let us now create a high-resolution CWS for these synchronized GDPs
+    # We shall mask any incompatible value, but also any invalid one (see e.g. #244)
     cws, covmats = dtgg.combine(gdp_prfs, binning=1, method=method,
-                                mask_flgs=FLG_INCOMPATIBLE,
+                                mask_flgs=[FLG_INCOMPATIBLE, FLG_INVALID],
                                 chunk_size=dynamic.CHUNK_SIZE, n_cpus=dynamic.N_CPUS)
 
     # Let's tag this CWS in the same way as the GDPs, so I can find them easily together

@@ -14,6 +14,7 @@ from pathlib import Path
 # Define
 RE_UPPER_W = r'[A-Z0-9]'
 RE_LOWER_W = r'[a-z0-9]'
+RE_UPPERLOWER_W = r'[a-zA-Z0-9]'
 
 
 # Paths
@@ -67,12 +68,12 @@ FLG_PRM_DESC_PREFIX = 'Flag of '
 # Models
 # -------
 #: str: Instrument type pattern (e.g. VAI-RS92, MET_LAB-C50, RS92-GDP_002)
-MODEL_PAT = rf"{RE_UPPER_W}+(({RE_UPPER_W})|([\-\_]))*{RE_UPPER_W}"
+MODEL_PAT = rf"{RE_UPPERLOWER_W}+(({RE_UPPERLOWER_W})|([\-\_\(\)]))*{RE_UPPERLOWER_W}"
 
-#: str: CSV file model catching group pattern (e.g RS41.PAY_20171024T120000)
+#: str: CSV file model catching group pattern (e.g RS41.etc..., DFM-17.etc ...)
 CSV_FILE_MDL_PAT = r"^(" + MODEL_PAT + r")\.[\w\-]+\."
 
-#: str: GDP file model catching group pattern (e.g PAY-RS-01_2_RS41-GDP-BETA_001_20170712T000000_1-002-001.nc)
+#: str: GDP file model catching group pattern (e.g PAY-RS-01_2_RS41-GDP-BETA_001_20170712Tetc.nc)
 GDP_FILE_MDL_PAT = r"^[A-Z]{3}\-[A-Z]{2}\-\d{2}\_\d\_([\w\-]+\_\d{3})\_\d{8}T"
 
 # Parameters
@@ -170,6 +171,11 @@ FLG_EMPTY = 'raw_na'
 #: str: Flag's desc for raw NA values
 FLG_EMPTY_DESC = 'Raw NA values'
 
+#: str: Flag's name for raw NA values
+FLG_INVALID = 'invalid'
+#: str: Flag's desc for raw NA values
+FLG_INVALID_DESC = 'Invalid data'
+
 #: str: Flag's name for interpolated values
 FLG_INTERP = 'interp'
 #: str: Flag's desc for interpolated values
@@ -179,6 +185,16 @@ FLG_INTERP_DESC = "Interpolated values"
 FLG_INCOMPATIBLE = 'incomp'
 #: str: Flag's desc for resampled values
 FLG_INCOMPATIBLE_DESC = 'Incompatible GDP measurements'
+
+#: str: Flag's name for ascent data
+FLG_PRELAUNCH = 'prelaunch'
+#: str: Flag's desc for ascent data
+FLG_PRELAUNCH_DESC = 'Prelaunch data'
+
+#: str: Flag's name for ascent data
+FLG_ASCENT = 'ascent'
+#: str: Flag's desc for ascent data
+FLG_ASCENT_DESC = 'Ascent data'
 
 #: str: Flag's name for descent data
 FLG_DESCENT = 'descent'
@@ -193,11 +209,14 @@ FLG_HASCWS_DESC = 'A valid CWS measure exists for this measurement point'
 # Metadata special fields
 # -----------------------
 
-#: str: Metdata field to store the time of the balloon burst point
-MTDTA_BPT = 'bpt_time'
+#: str: Metdata field to store the GPS time of the first point in the profile.
+MTDTA_FIRST = 'first_timestamp'
 
-#: str: Metadata field to store the GPS time associated to the first profile point.
-MTDTA_START = 'start_time'
+#: str: Metadata field to store the GPS time of the manufacturer-detected launch.
+MTDTA_LAUNCH = 'launch_timestamp'
+
+#: str: Metadata field to store the GPS time of the manufacturer-detected balloon burst.
+MTDTA_BURST = 'burst_timestamp'
 
 #: str: Metadata field to store the tropopause geopotential height
 MTDTA_TROPOPAUSE = 'tropopause-gph'
