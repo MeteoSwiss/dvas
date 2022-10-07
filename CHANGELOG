@@ -4,7 +4,15 @@ The format is inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [v0.7.0.dev0]
+## [v0.8.0.dev0]
+### Added:
+### Fixed:
+### Changed:
+### Deprecated:
+### Removed:
+### Security:
+
+## [v0.7.1]
 ### Added:
  - [fpavogt, 2022-09-13] Add new INVALID flag for GDP points with NaN uncertainties (see #244)
  - [fpavogt, 2022-08-19] Add kn2ms conversion function
@@ -30,9 +38,6 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [fpavogt, 2022-07-15] Changed InfoManager sorting rule to include mid (fix #234)
  - [fpavogt, 2022-07-12] Check that time stamps are strictly increasing in the resampling strategy
  - [fpavogt, 2022-07-01] Boost version to 0.7.0.dev0, after move to MeteoSwiss organization
-### Deprecated:
-### Removed:
-### Security:
 
 ## [v0.6.0.dev1]
 ### Added:
