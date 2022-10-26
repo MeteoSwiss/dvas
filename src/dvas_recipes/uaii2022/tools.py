@@ -25,13 +25,15 @@ from ..errors import DvasRecipesError
 logger = logging.getLogger(__name__)
 
 
-def get_query_filter(tags_in: list = None, tags_out: list = None, mids: list = None) -> str:
+def get_query_filter(tags_in: list = None, tags_out: list = None, mids: list = None,
+                     oids: list = None) -> str:
     """ Assembles a str to query the dvas DB, given a list of tags to include and/or exclude.
 
     Args:
         tags_in (list, optional): list of tags required to be present
         tags_out (list, optional): list of tags required to be absent
         mids (list, optional): list of mids required
+        oids (list, optional): list of oids required
 
     Returns:
         str: the query filter
@@ -47,6 +49,9 @@ def get_query_filter(tags_in: list = None, tags_out: list = None, mids: list = N
 
     if mids is not None:
         filt += ["or_(mid('" + "'), mid('".join(mids) + "'))"]
+
+    if oids is not None:
+        filt += ["or_(oid(" + "), oid(".join([str(item) for item in oids]) + "))"]
 
     if len(filt) == 0:
         return ''
