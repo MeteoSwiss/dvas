@@ -50,7 +50,7 @@ def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp'):
     cws_tags = dru.format_tags(cws_tags)
 
     # Get the event id and rig id
-    (eid, rid) = dynamic.CURRENT_FLIGHT
+    (_, eid, rid) = dynamic.CURRENT_FLIGHT
 
     # Define the DB query filters that will get me what I want
     cws_filt = tools.get_query_filter(

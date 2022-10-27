@@ -175,7 +175,6 @@ class Recipe:
             rcp_fn (pathlib.Path): path of the recipe file to initialize.
             eids_to_treat (list, optional): list of ('fid', 'e:eid', 'r:rid') tuples.
                 If None, will process all the flights found in the DB.
-            fid_to_treat (list, optional): list of specific fid to be processed.
             debug (bool, optional): if True, will force-set the logging level to DEBUG.
                 Defaults to False.
 
@@ -203,7 +202,6 @@ class Recipe:
 
             # Get the list of fids, in order to create dedicated folders
             fids = '_'.join([item[0] for item in eids_to_treat])
-            eids_to_treat = [(item[1], item[2]) for item in eids_to_treat]
 
             # Adjust the input and output paths accordingly
             setattr(path_var, 'output_path', path_var.output_path / fids)

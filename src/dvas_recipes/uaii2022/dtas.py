@@ -62,7 +62,7 @@ def compute_deltas(prf_start_with_tags, cws_start_with_tags, do_gdps=False, do_n
     cws_tags = dru.format_tags(cws_start_with_tags)
 
     # Get the event id and rig id
-    (eid, rid) = dynamic.CURRENT_FLIGHT
+    (_, eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What tags should I exclude from the search ?
     if not do_gdps and not do_nongdps:

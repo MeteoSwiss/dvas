@@ -105,7 +105,7 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var):
     tags = dru.format_tags(start_with_tags)
 
     # Extract the flight info
-    (eid, rid) = dynamic.CURRENT_FLIGHT
+    (_, eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What search query will let me access the data I need ?
     filt = tools.get_query_filter(tags_in=tags+[eid, rid], tags_out=dru.rsid_tags(pop=tags))

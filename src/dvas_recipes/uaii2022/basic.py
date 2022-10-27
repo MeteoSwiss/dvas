@@ -194,7 +194,7 @@ def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
     tags = dru.format_tags(start_with_tags)
 
     # Extract the flight info
-    (eid, rid) = dynamic.CURRENT_FLIGHT
+    (_, eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What search query will let me access the data I need ?
     filt = tools.get_query_filter(tags_in=tags + [eid, rid],
