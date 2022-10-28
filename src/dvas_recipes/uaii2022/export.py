@@ -198,11 +198,8 @@ def add_nc_variable(grp, prf):
             raise DvasRecipesError(
                 f'Size mismatch: relative_time dimension ({a}) vs prf[0] ({b}) ')
 
-    import pdb
-    pdb.set_trace()
-
-    # Now store all the columns
-    for col in prf[0].data.columns:
+    # Now store all the columns, not forgetting the total uncertainty
+    for col in prf[0].data.columns.tolist() + ['uc_tot']:
         # Flags should be stored as int, everything else as float
         # For the flags, we also must take care of NaNs.
         if col in [PRF_FLG]:
@@ -214,19 +211,32 @@ def add_nc_variable(grp, prf):
             np_type = 'float64'
             na_value = np.nan
 
-        # Actually create the variable, and store the data in there, but only if need to.
-        if col not in prf.var_info.keys():
+        # If the  variable was not loaded (i.e. no data ever loaded for it), move on.
+        if (col != 'uc_tot') and (col not in prf.var_info.keys()):
             continue
+        # Idem for uc_tot - not present in RSProfiles
+        if (col == 'uc_tot') and (not hasattr(prf[0], 'uc_tot')):
+            continue
+
+        # Create the actual nc Variable
         var_name = prf.var_info[PRF_VAL]["prm_name"]
         if col not in [PRF_VAL]:
             var_name += f"_{col}"
-        var_nc = grp.createVariable(f'{var_name}', nc_tpe,
-                                    dimensions=("relative_time"))
-        var_nc[:] = prf[0].data[col].to_numpy(dtype=np_type, na_value=na_value)
+        var_nc = grp.createVariable(f'{var_name}', nc_tpe, dimensions=("relative_time"))
+
+        # Fill the data
+        var_nc[:] = getattr(prf[0], col).to_numpy(dtype=np_type, na_value=na_value)
 
         # Set the Variable attributes
-        setattr(var_nc, 'long_name', prf.var_info[col]['prm_desc'])
-        setattr(var_nc, 'units', prf.var_info[col]['prm_unit'])
+        if col != 'uc_tot':
+            setattr(var_nc, 'long_name', prf.var_info[col]['prm_desc'])
+            setattr(var_nc, 'units', prf.var_info[col]['prm_unit'])
+        else:
+            # TODO: here the k-level is hardcoded !!! This is very dangerous !
+            setattr(var_nc, 'long_name',
+                    f"{prf.var_info[PRF_VAL]['prm_desc']} total uncertainty (k=1)")
+            setattr(var_nc, 'units', prf.var_info[PRF_VAL]['prm_unit'])
+
         # Specify the flag codes
         if col == PRF_FLG:
             masks = np.array([2**item[1]['bit_pos'] for item in prf[0].flg_names.items()])
