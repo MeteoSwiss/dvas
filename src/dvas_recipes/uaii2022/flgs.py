@@ -15,6 +15,7 @@ import logging
 from dvas.logger import log_func_call
 from dvas.hardcoded import TAG_CWS, TAG_GDP, TAG_DTA, FLG_HASCWS
 from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_VAL
+from dvas.hardcoded import FLG_PBL, FLG_TROPO, FLG_FREETROPO, FLG_STRATO, FLG_UTLS
 from dvas.hardcoded import MTDTA_TROPOPAUSE
 from dvas.data.data import MultiRSProfile, MultiGDPProfile, MultiCWSProfile
 from dvas.errors import DBIOError
@@ -82,8 +83,10 @@ def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp'):
     if (_ := len(cws_prfs)) != 1:
         raise DvasRecipesError(f'Found {_} CWS profiles for {temp_var}, but expected exactly 1.')
 
-    _, pbl_alt, pbl_tdt = tools.find_tropopause(cws_prfs[0])
-    logger.info('Tropopause from CWS: %.2f [m] @ %s', pbl_alt, pbl_tdt)
+    _, tropopause_alt, tropopause_tdt = tools.find_tropopause(cws_prfs[0])
+    tropopause_unit = cws_prfs.var_info[PRF_ALT]['prm_unit']
+    logger.info('Tropopause from CWS: %.2f [%s] @ %s',
+                tropopause_alt, tropopause_unit, tropopause_tdt)
 
     # For all variables, fetch the CWS to identify the valid regions
     for var_name in dynamic.ALL_VARS:
@@ -140,12 +143,18 @@ def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp'):
                 # Apply the valid CWS flag
                 prfs[prf_ind].set_flg(FLG_HASCWS, True, index=cws_cond)
 
-                # Tropopause, Troposphere & Stratosphere
-                prfs[prf_ind].info.add_metadata(MTDTA_TROPOPAUSE, pbl_alt)  # TODO: deal with units
-                t_cond = prf.data.index.get_level_values(PRF_ALT).values < pbl_alt
-                prfs[prf_ind].set_flg('troposphere', True, index=t_cond)
-                s_cond = prf.data.index.get_level_values(PRF_ALT).values > pbl_alt
-                prfs[prf_ind].set_flg('stratosphere', True, index=s_cond)
+                # Flag the different atmospheric regions ...
+                # TODO: deal with the PBL and free troposphere
+
+                # Tropopause
+                prfs[prf_ind].info.add_metadata(
+                    MTDTA_TROPOPAUSE, f"{tropopause_alt:.1f} {tropopause_unit}")
+                # Troposphere
+                t_cond = prf.data.index.get_level_values(PRF_ALT).values < tropopause_alt
+                prfs[prf_ind].set_flg(FLG_TROPO, True, index=t_cond)
+                # Stratosphere
+                s_cond = prf.data.index.get_level_values(PRF_ALT).values > tropopause_alt
+                prfs[prf_ind].set_flg(FLG_STRATO, True, index=s_cond)
 
             # Save it all back into the DB
             prfs.save_to_db(add_tags=[dynamic.CURRENT_STEP_ID],

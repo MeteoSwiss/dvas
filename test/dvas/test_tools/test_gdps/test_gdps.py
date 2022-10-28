@@ -18,6 +18,7 @@ import pandas as pd
 from dvas.data.strategy.data import GDPProfile
 from dvas.data.data import MultiGDPProfile
 from dvas.database.database import InfoManager
+from dvas.hardcoded import FLG_INCOMPATIBLE
 
 # Functions to test
 from dvas.tools.gdps.gdps import combine
@@ -228,8 +229,8 @@ def test_combine(gdp_1_prfs, gdp_2_prfs_real, gdp_3_prfs):
     assert np.all(out.profiles[0].data.loc[0, 'uct'] == 1.)
 
     # 3) Test for #166, and the fact that chunk_size should have no impact on the outcome
-    out_a, _ = combine(gdp_2_prfs_real, binning=3, method='delta', n_cpus=16, mask_flgs='incomp',
-                       chunk_size=3)
-    out_b, _ = combine(gdp_2_prfs_real, binning=3, method='delta', n_cpus=16, mask_flgs='incomp',
-                       chunk_size=4)
+    out_a, _ = combine(gdp_2_prfs_real, binning=3, method='delta', n_cpus=16,
+                       mask_flgs=FLG_INCOMPATIBLE, chunk_size=3)
+    out_b, _ = combine(gdp_2_prfs_real, binning=3, method='delta', n_cpus=16,
+                       mask_flgs=FLG_INCOMPATIBLE, chunk_size=4)
     assert out_a[0].data.equals(out_b[0].data)

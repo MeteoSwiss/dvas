@@ -44,7 +44,7 @@ def flight_overview(start_with_tags, label='mid', show=None):
 
     Args:
         start_with_tags (str|list of str): tag names for the search query into the
-            database. Defaults to 'sync'.
+            database.
         label (str, optional): label of the plot legend. Defaults to 'mid'.
         show (bool, optional): if set, overrides the default dvas rule about whether to show the
             plot, or not. Defaults to None.

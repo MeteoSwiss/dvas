@@ -22,7 +22,9 @@ from dvas.dvas import Database as DB
 from dvas.environ import path_var as dvas_path_var
 from dvas.version import VERSION
 from dvas.data.data import MultiRSProfile, MultiGDPProfile, MultiCWSProfile
-from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_IDX, TAG_GDP, TAG_CWS, TAG_DTA
+from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_IDX
+from dvas.hardcoded import TAG_ORIGINAL, TAG_CLN, TAG_1S, TAG_SYNC, TAG_GDP, TAG_CWS, TAG_DTA
+
 
 # Import from dvas_recipes
 from .. import dynamic
@@ -157,9 +159,10 @@ def add_dvas_attributes(grp, prf):
     set_attribute(grp, 'd.GroundSystem.Id', f"{','.join(db_view.pid)}")
 
     set_attribute(grp, 'd.Data.Source', f"{prf[0].info.src}")
-    set_attribute(grp, 'd.Data.IsOriginal', f"{prf[0].has_tag('raw')}")
-    set_attribute(grp, 'd.Data.IsCleaned', f"{prf[0].has_tag('clean')}")
-    set_attribute(grp, 'd.Data.IsSynchronized', f"{prf[0].has_tag('sync')}")
+    set_attribute(grp, 'd.Data.IsOriginal', f"{prf[0].has_tag(TAG_ORIGINAL)}")
+    set_attribute(grp, 'd.Data.IsCleaned', f"{prf[0].has_tag(TAG_CLN)}")
+    set_attribute(grp, 'd.Data.IsResampled', f"{prf[0].has_tag(TAG_1S)}")
+    set_attribute(grp, 'd.Data.IsSynchronized', f"{prf[0].has_tag(TAG_SYNC)}")
 
     # Also add all the metadata present
     for (key, value) in prf[0].info.metadata.items():

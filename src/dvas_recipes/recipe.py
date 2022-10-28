@@ -287,31 +287,29 @@ class Recipe:
 
     @staticmethod
     def init_db(reset: bool = True):
-        """ Initialize the dvas database, and fetch the raw data required for the recipe.
+        """ Initialize the dvas database, and fetch the original data required for the recipe.
 
         Args:
             reset (bool, optional): if True, the DB will be filled from scratch. Else, only new
-                raw data will be ingested. Defaults to True.
+                original data will be ingested. Defaults to True.
         """
 
         # Here, make sure the DB is stored locally, and not in memory.
         dyn.DB_IN_MEMORY = False
 
         if reset:
-            logger.info("Resetting the DB.")
+            logger.info("Resetting the DB ...")
             # Use this command to clear the DB
             DB.refresh_db()
 
         # Init the DB
         DB.init()
 
-        # Fetch the raw data
-        DB.fetch_raw_data([rcp_dyn.INDEXES[PRF_TDT]] +
-                          [rcp_dyn.INDEXES[PRF_ALT]] +
-                          list(rcp_dyn.ALL_VARS) +
-                          [rcp_dyn.ALL_VARS[var][uc] for var in rcp_dyn.ALL_VARS
-                           for uc in rcp_dyn.ALL_VARS[var]],
-                          strict=True)
+        # Fetch the original data
+        DB.fetch_original_data([rcp_dyn.INDEXES[PRF_TDT]] + [rcp_dyn.INDEXES[PRF_ALT]] +
+                               list(rcp_dyn.ALL_VARS) +
+                               [rcp_dyn.ALL_VARS[var][uc] for var in rcp_dyn.ALL_VARS
+                               for uc in rcp_dyn.ALL_VARS[var]], strict=True)
 
     @staticmethod
     def get_all_flights_from_db():

@@ -21,7 +21,7 @@ from dvas.database.model import Prm as TableParameter
 from dvas.database.database import InfoManager, InfoManagerMetaData
 from dvas.database.database import DBInsertError
 from dvas.environ import glob_var
-from dvas.hardcoded import TAG_RAW, TAG_GDP
+from dvas.hardcoded import TAG_ORIGINAL, TAG_GDP
 
 
 # Define db_data
@@ -40,7 +40,7 @@ db_data = {
                 'metadata': {'test_key_str': 'one', 'test_key_num': '1'},
                 'src': ''
             },
-        } for arg_tag in [TAG_RAW, TAG_GDP]
+        } for arg_tag in [TAG_ORIGINAL, TAG_GDP]
     ]
 }
 

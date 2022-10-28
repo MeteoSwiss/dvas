@@ -22,7 +22,7 @@ from .data import MPStrategyAC
 from ...tools.gdps.utils import process_chunk
 from ...tools.tools import df_to_chunks
 from ...hardcoded import PRF_IDX, PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
-from ...hardcoded import PRF_FLG
+from ...hardcoded import PRF_FLG, FLG_INTERP, TAG_1S
 
 # Steup the logger
 logger = logging.getLogger(__name__)
@@ -118,16 +118,14 @@ class ResampleStrategy(MPStrategyAC):
                 if all(new_tdt == prf.data.index.get_level_values(PRF_TDT)):
                     logger.info('No resampling required for %s', prf.info.src)
                     continue
-                else:
-                    logger.warning('Non-integer time steps (%s).',
-                                   prfs[prf_ind].info.src)
+
+                logger.warning('Non-integer time steps (%s).', prfs[prf_ind].info.src)
+
             elif len(new_tdt) < len(prf.data):
-                logger.warning('Extra-numerous timesteps (%s).',
-                               prfs[prf_ind].info.src)
+                logger.warning('Extra-numerous timesteps (%s).', prfs[prf_ind].info.src)
             else:
                 logger.warning('Missing (at least) %i time steps (%s).',
-                               len(new_tdt) - len(prf.data),
-                               prf.info.src)
+                               len(new_tdt) - len(prf.data), prf.info.src)
 
             # dvas should never resample anything. If we do, let's make it very visible.
             logger.warning('Starting resampling (%s)', prf.info.src)
@@ -153,7 +151,8 @@ class ResampleStrategy(MPStrategyAC):
             this_data.drop(columns=PRF_IDX, inplace=True)
 
             # Duplicate the last point as a "pseudo" new time step.
-            # This is to ensure proper interpolation all the way to the very edge of the raw data
+            # This is to ensure proper interpolation all the way to the very edge of the original
+            # data
             this_data = pd.concat([this_data, this_data.iloc[-1:]], axis=0, ignore_index=True)
             this_data.iloc[-1, this_data.columns.get_loc('tdt')] += pd.Timedelta(1, 's')
             # Re-extract the old_tdt with this extra row
@@ -311,8 +310,13 @@ class ResampleStrategy(MPStrategyAC):
             prfs[prf_ind].data = new_data
 
             # Here, remember to still deal with flags. I'll mark anything that was interpolated.
-            prfs[prf_ind].set_flg('interp', True,
+            prfs[prf_ind].set_flg(FLG_INTERP, True,
                                   index=pd.Index([ind for (ind, val) in enumerate(omega_vals)
                                                   if val not in [0, 1]]))
+
+            # Let's also tag the entire Profile so they are easy to spot from the outside
+            # (since resampling is definitely NOT what we want to do ... )
+            assert any(prfs[prf_ind].has_flg(FLG_INTERP)), "All this for nothing ?!"
+            prfs[prf_ind].info.add_tags(TAG_1S)
 
         return prfs

@@ -17,6 +17,7 @@ import pandas as pd
 from dvas.data.strategy.data import RSProfile, GDPProfile
 from dvas.data.data import MultiRSProfile, MultiGDPProfile
 from dvas.database.database import InfoManager
+from dvas.hardcoded import FLG_INTERP
 
 # Define db_data
 db_data = {
@@ -64,7 +65,7 @@ class TestResampleStrategy:
         assert np.unique(np.diff(tdts))[0] == np.timedelta64(1, 's')
 
         # Was the flag applied correctly ?
-        assert all(out.profiles[0].has_flg('interp') == [False, False, True, True, True, False])
+        assert all(out.profiles[0].has_flg(FLG_INTERP) == [False, False, True, True, True, False])
 
     def test_resample_gdp(self):
         """Test rebase method"""
@@ -101,4 +102,4 @@ class TestResampleStrategy:
         assert all(out.profiles[0].data.loc[2, 'uct'] == 1)
 
         # Was the flag applied correctly ?
-        assert all(out.profiles[0].has_flg('interp') == [False, False, True])
+        assert all(out.profiles[0].has_flg(FLG_INTERP) == [False, False, True])

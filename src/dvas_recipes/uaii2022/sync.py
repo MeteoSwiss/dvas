@@ -50,7 +50,7 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
     # Let's force users to have GDPs. That's really what dvas is meant for ...
     if len(gdp_shifts) > 0:
         gdps = MultiGDPProfile()
-        gdps.load_from_db("and_({}, tags('{}'))".format(filt, TAG_GDP), var_name,
+        gdps.load_from_db(f"and_({filt}, tags('{TAG_GDP}'))", var_name,
                           dynamic.INDEXES[PRF_TDT],
                           alt_abbr=dynamic.INDEXES[PRF_ALT],
                           ucr_abbr=dynamic.ALL_VARS[var_name]['ucr'],
@@ -70,7 +70,7 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
     # Only proceed if some non-GDP profiles were found. This makes pure-GDP flights possible.
     if len(non_gdp_shifts) > 0:
         non_gdps = MultiRSProfile()
-        non_gdps.load_from_db("and_({}, not_(tags('{}')))".format(filt, TAG_GDP), var_name,
+        non_gdps.load_from_db(f"and_({filt}, not_(tags('{TAG_GDP}')))", var_name,
                               dynamic.INDEXES[PRF_TDT],
                               alt_abbr=dynamic.INDEXES[PRF_ALT])
         logger.info('Loaded %i non-GDP profiles for variable %s.', len(non_gdps), var_name)
@@ -148,8 +148,8 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var):
 
     # Given these shifts, let's compute the new length of the synchronized Profiles.
     # Do it such that no data is actually cropped out, i.e. add NaN/NaT wherever needed.
-    raw_lengths = [len(item.data) for item in prfs.profiles]
-    sync_length = np.max(np.array(sync_shifts) + np.array(raw_lengths)) - np.min(sync_shifts)
+    orig_lengths = [len(item.data) for item in prfs.profiles]
+    sync_length = np.max(np.array(sync_shifts) + np.array(orig_lengths)) - np.min(sync_shifts)
 
     # Which of these profiles is a GDP ?
     is_gdp = prfs.has_tag(TAG_GDP)

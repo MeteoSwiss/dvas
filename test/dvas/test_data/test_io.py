@@ -12,6 +12,7 @@ Module contents: Testing classes and function for dvas.data.io module.
 # Import from python packages and modules
 from dvas.data.io import update_db
 from dvas.data.strategy.load import LoadRSProfileStrategy
+from dvas.hardcoded import TAG_ORIGINAL
 
 
 # Define db_data
@@ -32,7 +33,7 @@ def test_update_db():
     # Load
     prf_stgy = LoadRSProfileStrategy()
     data = prf_stgy.execute(
-        "tags('raw')", 'temp', 'time',
+        f"tags('{TAG_ORIGINAL}')", 'temp', 'time',
         alt_abbr='gph'
     )
 

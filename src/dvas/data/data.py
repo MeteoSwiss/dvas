@@ -29,7 +29,7 @@ from ..helper import RequiredAttrMetaClass
 from ..helper import deepcopy
 from ..helper import get_class_public_attr
 from ..errors import DBIOError
-from ..hardcoded import TAG_RAW, PRF_IDX
+from ..hardcoded import TAG_ORIGINAL, PRF_IDX
 
 # Loading strategies
 load_prf_stgy = LoadProfileStrategy()
@@ -232,7 +232,7 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
                 database. Defaults to None (= save all possible parameters).
 
         Notes:
-            The 'raw' tag will always be removed and the 'derived' tag will
+            The TAG_ORIGINAL will always be removed and the 'derived' tag will
             always be added by default when saving anything into the database.
 
         """
@@ -244,8 +244,8 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
         if add_tags is not None:
             obj.add_info_tags(add_tags)
 
-        # Remove tag RAW
-        rm_tags = [TAG_RAW] if rm_tags is None else rm_tags + [TAG_RAW]
+        # Remove tag ORIGINAL
+        rm_tags = [TAG_ORIGINAL] if rm_tags is None else rm_tags + [TAG_ORIGINAL]
 
         # Remove tags
         obj.rm_info_tags(rm_tags)

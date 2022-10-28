@@ -17,6 +17,7 @@ import numpy as np
 from dvas.data.data import MultiProfile
 from dvas.database.database import InfoManager
 from dvas.data.strategy.data import Profile
+from dvas.hardcoded import TAG_ORIGINAL
 
 
 # Define db_data
@@ -43,7 +44,7 @@ class TestSave:
         # Build some test data by hand
         prf_data = pd.DataFrame({'alt': [10., 15., 20.], 'val': [1., 2., 3.], 'flg': [0, 0, 0]})
         prf_data.set_index([prf_data.index, 'alt'], inplace=True)
-        info_mngr = InfoManager('20200303T0303Z', data['oid'], tags='raw')
+        info_mngr = InfoManager('20200303T0303Z', data['oid'], tags=TAG_ORIGINAL)
         prf = Profile(info_mngr, data=prf_data)
 
         prfs = [prf]
@@ -53,7 +54,7 @@ class TestSave:
         # Create a MultiProfile from scratch, then save it to the db.
         prf_v0 = MultiProfile()
         prf_v0.update(df_to_db_keys, prfs)
-        prf_v0.save_to_db(add_tags=['vof1'], rm_tags=['raw'], prms=['val', 'alt'])
+        prf_v0.save_to_db(add_tags=['vof1'], rm_tags=[TAG_ORIGINAL], prms=['val', 'alt'])
 
         # Now try to load it, and save it back (with different tags)
         prf_v1 = MultiProfile()
@@ -69,5 +70,5 @@ class TestSave:
         assert prf_v2.info[0].edt == prf_v0.info[0].edt
         assert np.all(prf_v2.info[0].oid == prf_v0.info[0].oid)
         assert np.all(prf_v2.info[0].oid == prf_v0.info[0].oid)
-        assert 'raw' not in prf_v2.info[0].tags
+        assert TAG_ORIGINAL not in prf_v2.info[0].tags
         assert 'vof1' not in prf_v2.info[0].tags

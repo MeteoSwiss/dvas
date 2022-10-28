@@ -93,7 +93,7 @@ rcp_steps:
       step_id: '01'
       run: True
       kwargs:
-        start_with_tags: raw
+        start_with_tags: is_original
         fix_gph_uct: # Correct the NaNs present in the gph_uct values for the RS41 GDP v1. See #205.
             - RS41-GDP # Model ids (mid) that require the correction
         check_tropopause: True # If True, will compare the GRUAN tropopause with the dvas one (for info only).
