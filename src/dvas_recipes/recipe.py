@@ -185,6 +185,7 @@ class Recipe:
 
         # Set the recipe name
         self._name = rcp_data['rcp_name']
+        rcp_dyn.RECIPE = rcp_data['rcp_name']
         # Set whether we want to reset the DB, or load an existing one
         self._reset_db = rcp_data['rcp_params']['general']['reset_db']
 

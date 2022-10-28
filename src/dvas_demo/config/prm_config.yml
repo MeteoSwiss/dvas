@@ -23,35 +23,35 @@
 
 - prm_name: 'gph(|(_uct)|(_ucu))'
   # Generate variables from regex generator for geopotential height.
-  prm_desc: 'cat("Geopotential height", repl({"_uct": " temporal-correlated uncertainty",
-                                              "_ucu": " un-correlated uncertainty"}, get(1)))'
+  prm_desc: 'cat("Geopotential height", repl({"_uct": " temporal-correlated uncertainty (k=1)",
+                                              "_ucu": " un-correlated uncertainty (k=1)"}, get(1)))'
   prm_unit: 'm'
 
 - prm_name: 'temp(|(_ucr)|(_ucs)|(_uct)|(_ucu))'
   # Generate variables from regex generator for temperature.
-  prm_desc: 'cat("Temperature", repl({"_ucr": " rig-correlated uncertainty",
-                                      "_ucs": " spatial-correlated uncertainty",
-                                      "_uct": " temporal-correlated uncertainty",
-                                      "_ucu": " un-correlated uncertainty"}, get(1)))'
+  prm_desc: 'cat("Temperature", repl({"_ucr": " rig-correlated uncertainty (k=1)",
+                                      "_ucs": " spatial-correlated uncertainty (k=1)",
+                                      "_uct": " temporal-correlated uncertainty (k=1)",
+                                      "_ucu": " un-correlated uncertainty (k=1)"}, get(1)))'
   prm_unit: 'K'
 
 - prm_name: 'rh(|(_ucr)|(_uct)|(_ucu))'
   # Generate variables from regex generator for relative humidity.
-  prm_desc: 'cat("Relative humidity", repl({"_ucr": " rig-correlated uncertainty",
-                                            "_uct": " temporal-correlated uncertainty",
-                                            "_ucu": " un-correlated uncertainty"}, get(1)))'
+  prm_desc: 'cat("Relative humidity", repl({"_ucr": " rig-correlated uncertainty (k=1)",
+                                            "_uct": " temporal-correlated uncertainty (k=1)",
+                                            "_ucu": " un-correlated uncertainty (k=1)"}, get(1)))'
   prm_unit: '%'
 
 - prm_name: 'pres(|(_uct)|(_ucu))'
   # Generate variables from regex generator for pressure.
-  prm_desc: 'cat("Pressure", repl({"_uct": " temporal-correlated uncertainty",
-                                   "_ucu": " un-correlated uncertainty"}, get(1)))'
+  prm_desc: 'cat("Pressure", repl({"_uct": " temporal-correlated uncertainty (k=1)",
+                                   "_ucu": " un-correlated uncertainty (k=1)"}, get(1)))'
   prm_unit: 'hPa'
 
 - prm_name: '(wdir|wspeed)(|(_ucu))'
   # Generate variables from regex generator for wind direction and wind speed.
   prm_desc: 'cat(repl({"wdir": "Wind direction",
                         "wspeed": "Wind speed"}, get(1)),
-                 repl({"_ucu": " un-correlated uncertainty"}, get(2)))'
+                 repl({"_ucu": " un-correlated uncertainty (k=1)"}, get(2)))'
   prm_unit: 'repl({"wdir": "deg",
                     "wspeed": "m/s"}, get(1))'

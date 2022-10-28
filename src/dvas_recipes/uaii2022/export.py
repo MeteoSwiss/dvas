@@ -14,7 +14,6 @@ import inspect
 from pathlib import Path
 from datetime import datetime
 import numpy as np
-import pandas as pd
 from netCDF4 import Dataset
 
 # Import dvas modules and classes
@@ -22,8 +21,8 @@ from dvas.logger import log_func_call
 from dvas.dvas import Database as DB
 from dvas.environ import path_var as dvas_path_var
 from dvas.version import VERSION
-from dvas.data.data import MultiRSProfile, MultiGDPProfile
-from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_FLG, PRF_IDX, TAG_GDP
+from dvas.data.data import MultiRSProfile, MultiGDPProfile, MultiCWSProfile
+from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_IDX, TAG_GDP, TAG_CWS, TAG_DTA
 
 # Import from dvas_recipes
 from .. import dynamic
@@ -35,25 +34,226 @@ from . import tools
 logger = logging.getLogger(__name__)
 
 
+def get_nc_fname(suffix: str, fid: str, edt: str, typ: str, mid: str = None, pid: str = None):
+    """ Assemble the netCDF filename for a given flight/mid.
+
+    Args:
+        suffix (str): filename suffix.
+        fid (str): Flight id.
+        edt (str): formatted event datetime, e.g. 'YYYYMMDDThhmmss'.
+        typ (str): 'cws', 'gdp', or 'mdp'.
+        mid (str, optional): model id. Useless if typ == 'cws'. Defaults to None.
+        pid (str, optional): product id. Useless if typ == 'cws'. Defaults to None.
+
+    Returns:
+        str: the netcdf filename
+
+    """
+
+    # Let's create the netCDF file.
+    fname = f"{suffix}_{fid}_{edt}_"
+    if typ == 'cws':
+        return fname + "CWS.nc"
+    else:
+        if typ == 'gdp':
+            fname += 'GDP_'
+        elif typ == 'mdp':
+            fname += 'MDP_'
+        else:
+            raise DvasRecipesError(f' typ unknown: {typ}')
+
+        return fname + f"{mid}_{pid}.nc"
+
+
+def add_cf_attributes(grp, title='', institution: str = ''):
+    """" Add global UAII attributes to a netCDF group.
+
+    Args:
+        grp: netCDF Dataset or group to add the info to.
+
+    """
+
+    setattr(grp, 'Conventions', "CF-1.7")
+    setattr(grp, 'title', title)
+    # History
+    val = f'{datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S UTC")} - created with dvas {VERSION}'
+    setattr(grp, 'history', val)
+    setattr(grp, 'institution', institution)
+    # Source
+    val = "/".join([item.name for item in Path(__file__).parents[:3][::-1]])
+    val += f"/{Path(__file__).name}"
+    val = f'dvas recipe: {dynamic.RECIPE} (step id: {dynamic.CURRENT_STEP_ID}) [{val}]'
+    setattr(grp, 'source', val)
+
+    # Comment
+    val = "Cleaned-up, resampled, synced atmospheric profile, following the UAII2022 dvas recipe."
+    setattr(grp, 'comment', val)
+
+    # References
+    setattr(grp, 'references', 'See the UAII 2022 Final Report for details.')
+
+
+def set_attribute(grp, name, value):
+    """ Safe attribute setting function, with in-built check mecanism in case the attribute already
+    exists.
+
+    Args:
+        grp: netCDF Dataset or group
+        name (str): attribute name
+        value: attribute value
+
+    """
+
+    try:
+        # If the Attribute already exists, check that the values match
+        stored_value = grp.getncattr(name)
+        assert stored_value == value, f'{name} attribute value mismatch: {stored_value} vs {value}'
+    except AttributeError:
+        # Else, set the attribute
+        setattr(grp, name, value)
+
+
+def add_dvas_attributes(grp, prf):
+    """ Add dvas-realted Global Attributes to a netCDF file.
+
+    Args:
+        grp: netCDF Dataset or group.
+        prf: MultiProfile, MultiRSProfile, MultiGDPProfile, MultiCWSProfile of length 1.
+
+    """
+
+    if len(prf) != 1:
+        raise DvasRecipesError(f'I got {len(prf)} profiles instead of 1.')
+
+    # Extract the oid, which I need to identify important profile info
+    oid = prf[0].info.oid
+
+    # Let's also get a view of the db to fetch the info via the oid
+    db_view = DB.extract_global_view()
+    # Down select only the relevant rows
+    db_view = db_view[db_view.oid.isin(oid)]
+
+    # Start setting things
+    set_attribute(grp, 'd.ObjectId', ','.join([str(item) for item in oid]))
+
+    # Add dvas specific global attributes
+    (fid, eid, rid) = dynamic.CURRENT_FLIGHT
+    set_attribute(grp, 'd.Flight.Id', f"{fid}")
+    assert len(db_view.eid.unique()) == 1, 'eid mismatch'
+    set_attribute(grp, 'd.Flight.EventId', f"{eid}")
+    assert len(db_view.edt.unique()) == 1, 'edt mismatch'
+    set_attribute(grp, 'd.Flight.Datetime', f"{prf[0].info.edt}")
+    set_attribute(grp, 'd.Flight.RigId', f"{rid}")
+    tods = []
+    for item in ['daytime', 'nighttime', 'twilight']:
+        if prf[0].has_tag(f'tod:{item}'):
+            tods += [item]
+    set_attribute(grp, 'd.Flight.TimeOfDay', ','.join(tods))
+
+    set_attribute(grp, 'd.Sonde.SerialNumber', f"{','.join(db_view.srn)}")
+    set_attribute(grp, 'd.Sonde.ModelId', f"{','.join(db_view.mid)}")
+    set_attribute(grp, 'd.Sonde.ModelName', f"{','.join(db_view.mdl_name)}")
+    set_attribute(grp, 'd.Sonde.ModelDescription', f"{','.join(db_view.mdl_desc)}")
+    set_attribute(grp, 'd.GroundSystem.Id', f"{','.join(db_view.pid)}")
+
+    set_attribute(grp, 'd.Data.Source', f"{prf[0].info.src}")
+    set_attribute(grp, 'd.Data.IsOriginal', f"{prf[0].has_tag('raw')}")
+    set_attribute(grp, 'd.Data.IsCleaned', f"{prf[0].has_tag('clean')}")
+    set_attribute(grp, 'd.Data.IsSynchronized', f"{prf[0].has_tag('sync')}")
+
+    # Also add all the metadata present
+    for (key, value) in prf[0].info.metadata.items():
+        set_attribute(grp, f'd.Metadata.{key}', f"{value}")
+
+
+def add_nc_variable(grp, prf):
+    """ Fills a netCDF Dataset with the Profile data.
+
+    Args:
+        grp: netCDF Dataset or group
+        prf: MultiProfile, MultiRSProfile, MultiGDPProfile, MultiCWSProfile of length 1.
+
+    """
+
+    if len(prf) != 1:
+        raise DvasRecipesError(f'I got {len(prf)} profiles instead of 1.')
+
+    # Create the netCDF base dimensions, if it does not already exists
+    # I shall create a single dimension based on the step id (idx). The time is that of
+    # the radiosonde, and essentially useless at this stage (no sync possible without a
+    # lot more info than available). So is the reference altitude axis, which is
+    # just a copy of the gph variable.
+    if len(grp.dimensions.keys()) == 0:
+        grp.createDimension("relative_time", len(prf[0].data))
+        rel_time = grp.createVariable("relative_time", "i8", dimensions=("relative_time"))
+        rel_time[:] = prf[0].data.index.get_level_values(PRF_IDX).values
+        rel_time.units = 's'
+        rel_time.standard_name = 'relative_time'
+        rel_time.long_name = 'Relative ascent time'
+        # rel_time.axis = 'Relative time'
+
+    else:
+        # Check the dimension is actually still matching !
+        if (a := grp.dimensions['relative_time'].size) != (b := len(prf[0].data)):
+            raise DvasRecipesError(
+                f'Size mismatch: relative_time dimension ({a}) vs prf[0] ({b}) ')
+
+    # Now store all the columns
+    for col in prf[0].data.columns:
+        # Flags should be stored as int, everything else as float
+        # For the flags, we also must take care of NaNs.
+        if col in [PRF_FLG]:
+            nc_tpe = 'i8'
+            np_type = 'int64'
+            na_value = 0
+        else:
+            nc_tpe = 'f8'
+            np_type = 'float64'
+            na_value = np.nan
+
+        # Actually create the variable, and store the data in there, but only if need to.
+        if col not in prf.var_info.keys():
+            continue
+        var_name = prf.var_info[PRF_VAL]["prm_name"]
+        if col not in [PRF_VAL]:
+            var_name += f"_{col}"
+        var_nc = grp.createVariable(f'{var_name}', nc_tpe,
+                                    dimensions=("relative_time"))
+        var_nc[:] = prf[0].data[col].to_numpy(dtype=np_type, na_value=na_value)
+
+        # Set the Variable attributes
+        setattr(var_nc, 'long_name', prf.var_info[col]['prm_desc'])
+        setattr(var_nc, 'units', prf.var_info[col]['prm_unit'])
+        # Specify the flag codes
+        if col == PRF_FLG:
+            masks = np.array([2**item[1]['bit_pos'] for item in prf[0].flg_names.items()])
+            meanings = np.array([item[1]['flg_name'] for item in prf[0].flg_names.items()])
+            sort_order = np.argsort(masks)
+            setattr(var_nc, 'flag_masks', f"{', '.join([str(item) for item in masks[sort_order]])}")
+            setattr(var_nc, 'flag_meaning', f"{', '.join(meanings[sort_order])}")
+
+
 @for_each_flight
 @log_func_call(logger, time_it=False)
-def export_profiles(tags: str | list, which: str | list):
+def export_profiles(tags: str | list, which: str | list, suffix: str = '', institution: str = ''):
     """ Export profiles from the db to netCDF
 
     Args:
         tags (str|list): list of tags to identify profiles to export in the DB.
         which (str|list): list of profiles to include, e.g.: ['mdp', 'gdp', 'cws'].
+        suffix (str, optional): name of the netCDF file suffix. Defaults to ''.
+        institution (str, optional): for the netCDF eponym field. Defaults to ''.
 
     """
 
-    # Format the tags
+    # Format the search tags
     tags = dru.format_tags(tags)
 
     # Extract the flight info
-    (eid, rid) = dynamic.CURRENT_FLIGHT
-    logger.info('Exporting %s profiles for (%s;%s) ...', which, eid, rid)
+    (fid, eid, rid) = dynamic.CURRENT_FLIGHT
+    logger.info('Exporting %s profiles for (%s; %s; %s) ...', which, fid, eid, rid)
 
-    # What is the destination
+    # What is the destination for the nc files ?
     out_path = dvas_path_var.output_path
     if out_path is None:
         raise DvasRecipesError('Output path is None.')
@@ -64,13 +264,60 @@ def export_profiles(tags: str | list, which: str | list):
         # Set user read/write permission
         out_path.chmod(out_path.stat().st_mode | 0o600)
 
-    # Let's figure out which MDPs and GDPs exist for this eid/rid
+    # Let's figure out which MDPs and GDPs exist for this fid/eid/rid
     db_view = DB.extract_global_view()
     mids = db_view.loc[(db_view.eid == eid) * (db_view.rid == rid)]
+    # Let's also extract the edt, which I will need later on ...
+    edt = np.unique(mids['edt'])
+    if len(edt) != 1:
+        raise DvasRecipesError(f'There should be only 1 edt per eid/rid pair, not: {len(edt)}')
+    else:
+        edt = edt[0]
 
+    # Let's deal with the CWS first, if warranted
+    if 'cws' in which:
+        logger.info('Exporting the cws ...')
+
+        # Let's define the full name and create the netCDF file
+        fname = get_nc_fname(suffix, fid, edt.strftime('%Y%m%dT%H%M%S'), 'cws')
+        rootgrp = Dataset(out_path / fname, "w", format="NETCDF4")
+
+        # Add the Global Attributes
+        add_cf_attributes(rootgrp, institution=institution)
+
+        # Assemble the search filter
+        filt = tools.get_query_filter(tags_in=tags + [eid, rid, TAG_CWS],
+                                      tags_out=dru.rsid_tags(pop=tags) + [TAG_GDP, TAG_DTA],
+                                      )
+
+        # Let's keep track of the CWS length, and make sure all the profiles have the same length
+        len_cws = None
+
+        # Start looking for all the variables
+        for (var_name, var) in dynamic.ALL_VARS.items():
+
+            prf = MultiCWSProfile()
+            prf.load_from_db(f'{filt}', var_name,
+                             tdt_abbr=dynamic.INDEXES[PRF_TDT],
+                             alt_abbr=dynamic.INDEXES[PRF_ALT],
+                             ucr_abbr=var['ucr'],
+                             ucs_abbr=var['ucs'],
+                             uct_abbr=var['uct'],
+                             ucu_abbr=var['ucu'],
+                             inplace=True)
+
+            add_dvas_attributes(rootgrp, prf)
+            add_nc_variable(rootgrp, prf)
+
+            if len_cws is None:
+                len_cws = len(prf[0].data)
+            else:
+                assert len_cws == (b := len(prf[0].data)), \
+                    f'CWS {var_name} length is {b}. Should be {len_cws}'
+
+    # Now let's deal with MDPs and GDPs
+    # Let's iterate over all the mids of this flight
     for (_, item) in mids.iterrows():
-
-        logger.info('Processing oid: %s [%s]...', item['oid'], item['mid'])
 
         # Process specific mdps/gpds only if warranted
         if item['is_gdp'] and 'gdp' not in which:
@@ -78,45 +325,27 @@ def export_profiles(tags: str | list, which: str | list):
         if not item['is_gdp'] and 'mdp' not in which:
             continue
 
-        # Very well, let's create the netCDF file.
-        fname = f"{dynamic.CURRENT_STEP_ID}_"
-        fname += f"{item['edt'].strftime('%Y-%m-%dT%H-%M-%S')}_"
-        fname += f"{item['mid'].replace('(', '').replace(')', '')}_"
-        fname += f"{item['srn'].replace(' ', '')}.nc"
+        logger.info('Exporting %s [#%s] ...', item['mid'], item['pid'])
 
-        rootgrp = Dataset(out_path / fname,
-                          "w", format="NETCDF4")
+        # Let's create the netCDF file.
 
-        # Add the basic dvas info
-        val = f'{datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S UTC")}- created with dvas {VERSION}'
-        setattr(rootgrp, 'history', val)
+        if item['is_gdp']:
+            typ = 'gdp'
+        else:
+            typ = 'mdp'
+        fname = get_nc_fname(suffix, fid, edt.strftime('%Y%m%dT%H%M%S'), typ,
+                             mid=item['mid'], pid=item['pid'])
+        rootgrp = Dataset(out_path / fname, "w", format="NETCDF4")
 
-        val = "/".join([item.name for item in Path(__file__).parents[:3][::-1]])
-        val += f"/{Path(__file__).name}"
-        val = f'{inspect.currentframe().f_code.co_name}() [{val}]'
-        setattr(rootgrp, 'source', val)
-
-        setattr(rootgrp, 'dvas.oid', f"{item['oid']}")
-        setattr(rootgrp, 'dvas.srn', f"{item['srn']}")
-        setattr(rootgrp, 'dvas.pid', f"{item['pid']}")
-        setattr(rootgrp, 'dvas.mid', f"{item['mid']}")
-        setattr(rootgrp, 'dvas.mdl_name', f"{item['mdl_name']}")
-        setattr(rootgrp, 'dvas.mdl_desc', f"{item['mdl_desc']}")
-        setattr(rootgrp, 'dvas.src', f"{item['src']}")
-        setattr(rootgrp, 'dvas.edt', f"{item['edt']}")
-        setattr(rootgrp, 'dvas.eid', f"{item['eid']}")
-        setattr(rootgrp, 'dvas.rid', f"{item['rid']}")
-
-        # TODO: time of day, start time, burst time, ... ?
+        # Add CF-1.7 Global Attributes
+        add_cf_attributes(rootgrp)
 
         # Now get the data from the DB
         for (var_name, var) in dynamic.ALL_VARS.items():
 
-            logger.info(f'{var_name}')
-
             # Assemble the search filter
             filt = tools.get_query_filter(tags_in=tags + [eid, rid],
-                                          tags_out=dru.rsid_tags(pop=tags),
+                                          tags_out=dru.rsid_tags(pop=tags) + [TAG_CWS, TAG_DTA],
                                           oids=[item['oid']])
 
             if item['is_gdp']:
@@ -136,38 +365,13 @@ def export_profiles(tags: str | list, which: str | list):
                                  alt_abbr=dynamic.INDEXES[PRF_ALT],
                                  inplace=True)
 
-            if len(prf) != 1:
-                raise DvasRecipesError(f'Search query returned {len(prf)} profiles instead of 1.')
+            add_dvas_attributes(rootgrp, prf)
+            add_nc_variable(rootgrp, prf)
 
-            # Create the netCDF base dimensions, if it does not already exists
-            if len(rootgrp.dimensions.keys()) == 0:
-                rootgrp.createDimension("idx", len(prf[0].data))
-                rootgrp.createDimension("time", len(prf[0].data))
-                rootgrp.createDimension("ref_gph", len(prf[0].data))
-
-                idx = rootgrp.createVariable("idx", "i8", dimensions=("idx"))
-                idx[:] = prf[0].data.index.get_level_values(PRF_IDX).values
-                time = rootgrp.createVariable("time", "f8", dimensions=("time"))
-                time.units = 's'
-                time[:] = prf[0].data.index.get_level_values(PRF_TDT).seconds.values
-                ref_gph = rootgrp.createVariable("ref_gph", "f8",
-                                                 dimensions=("ref_gph"))
-                ref_gph.units = 'm'
-                ref_gph[:] = prf[0].data.index.get_level_values(PRF_ALT).values
-
-            # Now store all the columns
-            for col in prf[0].data.columns:
-
-                if col in [PRF_FLG]:
-                    nc_tpe = 'i8'
-                    np_type = 'int64'
-                    na_value = 0
-                else:
-                    nc_tpe = 'f8'
-                    np_type = 'float64'
-                    na_value = np.nan
-                var_nc = rootgrp.createVariable(f'{var_name}_{col}', nc_tpe,
-                                                dimensions=("idx"))
-                var_nc[:] = prf[0].data[col].to_numpy(dtype=np_type, na_value=na_value)
+            if len_cws is None:
+                len_cws = len(prf[0].data)
+            else:
+                assert len_cws == (b := len(prf[0].data)), \
+                    f'{item["mid"]} [#{item["pid"]}] {var_name} length is {b}. Should be {len_cws}'
 
         rootgrp.close()
