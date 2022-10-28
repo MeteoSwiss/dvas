@@ -56,7 +56,7 @@ RID_PAT = r'^r:\w+$'
 TOD_PAT = r'^tod:\w+$'
 
 #: set: possible values for the TimeOfDay
-TOD_VALS = {'tod:daytime', 'tod:nighttime', 'tod:twilight'}
+TOD_VALS = ('tod:daytime', 'tod:nighttime', 'tod:twilight')
 
 #: str: Suffix used for flag parameter's name or file's name
 FLG_PRM_NAME_SUFFIX = '_flag'

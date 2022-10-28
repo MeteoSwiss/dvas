@@ -23,6 +23,7 @@ import pandas as pd
 from ...logger import log_func_call
 from ...errors import DvasError
 from ...hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
+from ...hardcoded import TOD_VALS, TAG_RAW, TAG_CLN, TAG_1S, TAG_SYNC
 from ..tools import df_to_chunks
 from .utils import process_chunk
 from ...data.data import MultiCWSProfile
@@ -203,10 +204,13 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
                                  for item in np.unique(gdp_prfs.get_info('rid')).tolist()])
     new_evt_tag = 'e:'+','.join([item.split(':')[1]
                                  for item in np.unique(gdp_prfs.get_info('eid')).tolist()])
+    new_tod_tags = [tag for tag in TOD_VALS if any(gdp_prfs.has_tag(tag))]
+    all_or_nothing_tags = [tag for tag in [TAG_RAW, TAG_CLN, TAG_1S, TAG_SYNC]
+                           if all(gdp_prfs.has_tag(tag))]
 
     new_info = InfoManager(np.unique(gdp_prfs.get_info('edt'))[0],  # dt
                            np.unique(gdp_prfs.get_info('oid')).tolist(),  # oids
-                           tags=[new_rig_tag, new_evt_tag],
+                           tags=[new_rig_tag, new_evt_tag] + new_tod_tags + all_or_nothing_tags,
                            src=f'dvas combine() [{Path(__file__).name}]')
 
     # Let's create a dedicated Profile for the combined profile.

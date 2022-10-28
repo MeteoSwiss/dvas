@@ -198,6 +198,9 @@ def add_nc_variable(grp, prf):
             raise DvasRecipesError(
                 f'Size mismatch: relative_time dimension ({a}) vs prf[0] ({b}) ')
 
+    import pdb
+    pdb.set_trace()
+
     # Now store all the columns
     for col in prf[0].data.columns:
         # Flags should be stored as int, everything else as float
