@@ -40,8 +40,9 @@ class RebaseStrategy(MPStrategyAC):
 
         Any missing data gets filled with NaN/NaT. Any superfulous data is be cropped.
         All non-integer indices get rebased as well (i.e. they are NOT interpolated). Any missing
-        data also gets flagged with FLG_NOPRF to indicate to it is not associated with any real
-        profile measurement.
+        data gets flagged with FLG_NOPRF to indicate to it is not associated with any real
+        profile measurement. A shift of -n crops the first n points, whereas a shift of +n crops
+        the last n points (unless new_lengths is adjusted).
 
         """
 

@@ -109,6 +109,7 @@ rcp_steps:
         start_with_tags: '01'
         anchor_alt: 5000 # Initial (single) altitude to anchor all profiles.
         global_match_var: 'gph' # Variable to match globally
+        crop_pre_gdp: True # It True, profiles will be cropped at the first GDP point.
 
     # Simple plotting step of the complete profiles for all the variables.
     - fct: uaii2022.plots.flight_overview
@@ -140,9 +141,19 @@ rcp_steps:
           prf_tags: '02' # str or list of tags to identify Profiles in the database. If empty, will not touch Profiles
           cws_tags: '04' # str or list of tags to identify Combined Working Standard in the database
 
+    # Export cleaned, synced profiles to netCDF
+    - fct: uaii2022.export.export_profiles
+      step_id: '06'
+      run: True
+      kwargs:
+          which: mdp, gdp, cws # list of profiles to export, e.g. mdp, gdp, and/or cws
+          tags: '05' # list of tags to identify profiles to export in the DB
+          suffix: UAII2022
+          institution: Federal Office of Meteorology and Climatology - MeteoSwiss
+
     # GDP vs CWS plotting
     - fct: uaii2022.plots.inspect_cws
-      step_id: '06'
+      step_id: '07'
       run: True
       kwargs:
         gdp_start_with_tags: '05' # list of tags to identify GDP profiles in the DB
@@ -150,7 +161,7 @@ rcp_steps:
 
     # Compute the deltas between the profiles of sondes under test and Combined Working Standards
     - fct: uaii2022.dtas.compute_deltas
-      step_id: '07'
+      step_id: '08'
       run: True
       kwargs:
         prf_start_with_tags: '05' # List of tags to identify profiles in the database
@@ -161,12 +172,12 @@ rcp_steps:
 
     # Creation of preview plots for participants
     - fct: uaii2022.plots.participant_preview
-      step_id: '08'
+      step_id: '09'
       run: True
       kwargs:
           prf_tags: '05' # str or list of tags to identify Profiles in the database
           cws_tags: '05' # str or list of tags to identify Combined Working Standard in the database
-          dta_tags: '07' # str or list of tags to identify Deltas in the database
+          dta_tags: '08' # str or list of tags to identify Deltas in the database
           mids: # List of mid to process. Leave empty to process them all.
             #  - M10
             #  - M20
@@ -174,22 +185,12 @@ rcp_steps:
 
     # Plot the deltas as a function of the model id, rather than as a function of flight.
     - fct: uaii2022.plots.dtas_per_mid
-      step_id: '09'
-      run: True
-      kwargs:
-        start_with_tags: # list of tags to identify profiles in the database
-            - '07'
-            #- 'tod:daytime'
-        mids: # List of mid to process. Leave empty to process them all.
-        skip_gdps: False # If True, any 'mid' that contains 'GDP' will be skipped.
-        skip_nongdps: False # If True, any 'mid' that does NOT contain 'GDP' will be skipped.
-    - fct: uaii2022.plots.dtas_per_mid
       step_id: '10'
       run: True
       kwargs:
         start_with_tags: # list of tags to identify profiles in the database
-            - '07'
-            - 'tod:daytime'
+            - '08'
+            #- 'tod:daytime'
         mids: # List of mid to process. Leave empty to process them all.
         skip_gdps: False # If True, any 'mid' that contains 'GDP' will be skipped.
         skip_nongdps: False # If True, any 'mid' that does NOT contain 'GDP' will be skipped.
@@ -198,7 +199,17 @@ rcp_steps:
       run: True
       kwargs:
         start_with_tags: # list of tags to identify profiles in the database
-            - '07'
+            - '08'
+            - 'tod:daytime'
+        mids: # List of mid to process. Leave empty to process them all.
+        skip_gdps: False # If True, any 'mid' that contains 'GDP' will be skipped.
+        skip_nongdps: False # If True, any 'mid' that does NOT contain 'GDP' will be skipped.
+    - fct: uaii2022.plots.dtas_per_mid
+      step_id: '12'
+      run: True
+      kwargs:
+        start_with_tags: # list of tags to identify profiles in the database
+            - '08'
             - 'tod:nighttime'
         mids: # List of mid to process. Leave empty to process them all.
         skip_gdps: False # If True, any 'mid' that contains 'GDP' will be skipped.

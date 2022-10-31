@@ -10,7 +10,6 @@ Module content: export recipes for the UAII2022 campaign
 
 # Import general Python packages
 import logging
-import inspect
 from pathlib import Path
 from datetime import datetime
 import numpy as np
@@ -78,7 +77,7 @@ def add_cf_attributes(grp, title='', institution: str = ''):
     setattr(grp, 'Conventions', "CF-1.7")
     setattr(grp, 'title', title)
     # History
-    val = f'{datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S UTC")} - created with dvas {VERSION}'
+    val = f'{datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%f")} - created with dvas {VERSION}'
     setattr(grp, 'history', val)
     setattr(grp, 'institution', institution)
     # Source
@@ -166,6 +165,8 @@ def add_dvas_attributes(grp, prf):
 
     # Also add all the metadata present
     for (key, value) in prf[0].info.metadata.items():
+        if isinstance(value, datetime):
+            value = value.strftime('%Y-%m-%dT%H:%M:%S.%f %Z')
         set_attribute(grp, f'd.Metadata.{key}', f"{value}")
 
 

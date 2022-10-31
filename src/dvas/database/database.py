@@ -972,7 +972,6 @@ class InfoManager:
         # then swapping the caps (since caps get placed first)
         return out.casefold() + out.swapcase()
 
-
     def __eq__(self, other):
         return self._get_attr_sort_order() == other._get_attr_sort_order()
 

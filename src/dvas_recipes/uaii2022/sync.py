@@ -10,16 +10,18 @@ Module content: high-level synchronization recipes for the UAII2022 campaign
 
 # Import general Python packages
 import logging
+from datetime import timedelta
 import numpy as np
 
 # Import dvas modules and classes
-from dvas.hardcoded import PRF_TDT, PRF_ALT, TAG_SYNC, TAG_GDP
+from dvas.hardcoded import PRF_TDT, PRF_ALT, TAG_SYNC, TAG_GDP, MTDTA_FIRST
 from dvas.logger import log_func_call
 from dvas.data.data import MultiRSProfile, MultiGDPProfile
 from dvas.tools import sync as dts
 from dvas.errors import DvasError
 
 # Import from dvas_recipes
+from ..errors import DvasRecipesError
 from .. import dynamic
 from ..recipe import for_each_flight
 from . import tools
@@ -27,6 +29,50 @@ from .. import utils as dru
 
 # Setup local logger
 logger = logging.getLogger(__name__)
+
+
+@log_func_call(logger, time_it=False)
+def adjust_first_timestamp(prfs, sync_shifts, mtdta_key=MTDTA_FIRST):
+    """ Apply the sync_shifts to the first_timstamp stored in the metadata.
+
+    Args:
+        prfs: RSProfiles, GDPProfiles, or CWSProfiles.
+        sync_shifts (list of int): the sync shifts to apply.
+        mtdta_key (str, optional): the metadata key to adjust. Defaults to MTDTA_FIRST.
+
+    This routine fixes #256.
+
+    """
+
+    assert len(prfs) == len(sync_shifts), f'length mismatch: {len(prfs)} vs {len(sync_shifts)}'
+
+    # Let's loop throught the shifts
+    for (s_ind, s_val) in enumerate(sync_shifts):
+
+        # First, compute the time step
+        t_step = np.unique(np.diff(prfs[s_ind].data.index.get_level_values('tdt').seconds))
+        t_step = [val for val in t_step if not np.isnan(val)]
+        if len(t_step) != 1:
+            raise DvasRecipesError(f'Cannot compute time shift with t_step: {t_step}')
+        t_step = t_step[0]
+
+        # Compute the time shift. Assume/remember than negative shifts are cropped, while positive
+        # ones are padded with NaN's (i.e. 0 = shift reference)
+        t_shift = -s_val*t_step
+
+        logger.debug('t_step = %.2f sec (%s)', t_step, ','.join(prfs[s_ind].info.mid))
+        logger.debug('s_val = %+i steps', s_val)
+        logger.debug('%s actual shift: %+.2f sec (%s)', mtdta_key, t_shift,
+                     ','.join(prfs[s_ind].info.mid))
+
+        # Update the metadata field as required
+        prfs[s_ind].info.add_metadata(
+            mtdta_key, prfs[s_ind].info.metadata[mtdta_key] + timedelta(seconds=float(t_shift)))
+
+        # Add also the computed sjift to the metadata
+        prfs[s_ind].info.add_metadata('sync_shift_applied', f"{s_val:+} steps")
+        prfs[s_ind].info.add_metadata(f'sync_shift_correction_to_{mtdta_key}',
+                                      f"{t_shift:+.1f} sec")
 
 
 @log_func_call(logger, time_it=False)
@@ -47,7 +93,6 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
 
     # First the GDPs
     gdp_shifts = [item for (ind, item) in enumerate(sync_shifts) if is_gdp[ind]]
-    # Let's force users to have GDPs. That's really what dvas is meant for ...
     if len(gdp_shifts) > 0:
         gdps = MultiGDPProfile()
         gdps.load_from_db(f"and_({filt}, tags('{TAG_GDP}'))", var_name,
@@ -60,6 +105,7 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
         logger.info('Loaded %i GDP profiles for variable %s.', len(gdps), var_name)
         gdps.sort()
         gdps.rebase(sync_length, shifts=gdp_shifts, inplace=True)
+        adjust_first_timestamp(gdps, gdp_shifts, mtdta_key=MTDTA_FIRST)
         gdps.save_to_db(
             add_tags=[TAG_SYNC, dynamic.CURRENT_STEP_ID],
             rm_tags=dru.rsid_tags(pop=dynamic.CURRENT_STEP_ID)
@@ -76,6 +122,7 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
         logger.info('Loaded %i non-GDP profiles for variable %s.', len(non_gdps), var_name)
         non_gdps.sort()
         non_gdps.rebase(sync_length, shifts=non_gdp_shifts, inplace=True)
+        adjust_first_timestamp(non_gdps, non_gdp_shifts, mtdta_key=MTDTA_FIRST)
         non_gdps.save_to_db(
             add_tags=[TAG_SYNC, dynamic.CURRENT_STEP_ID],
             rm_tags=dru.rsid_tags(pop=dynamic.CURRENT_STEP_ID)
@@ -84,7 +131,7 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
 
 @for_each_flight
 @log_func_call(logger, time_it=False)
-def sync_flight(start_with_tags, anchor_alt, global_match_var):
+def sync_flight(start_with_tags, anchor_alt, global_match_var, crop_pre_gdp):
     """ Highest-level function responsible for synchronizing all the profile from a specific RS
     flight.
 
@@ -98,6 +145,8 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var):
         global_match_var (str): Name of the variable to use for getting the synchronization shifts
             from a flobal match of the profile.
             Relies on dvas.tools.sync.get_synch_shifts_from_val()
+        crop_pre_gdp (bool): if True, any data taken before gdp values excists will be
+            cropped. Defaults to False.
 
     """
 
@@ -115,6 +164,9 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var):
     prfs.load_from_db(filt, global_match_var, dynamic.INDEXES[PRF_TDT],
                       alt_abbr=dynamic.INDEXES[PRF_ALT])
     prfs.sort()
+
+    # Which of these profiles is a GDP ?
+    is_gdp = prfs.has_tag(TAG_GDP)
 
     # Get the Object IDs, so I can keep track of the different profiles and don't mess things up.
     oids = prfs.get_info(prm='oid')
@@ -141,23 +193,26 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var):
     except DvasError as err:
         logger.critical(err)
 
-    # Use these as best synch shifts
-    # TODO: if/when anyone will want to use start_time shifts instead, one should make sure to
-    # handle their NaNs properly.
+    # GPS times have many issues ... let's use gph sync shifts instead.
     sync_shifts = shifts_val
+
+    # Now, let's reset the shift depening on whether we want to crop pre-GDP data, or not
+    if crop_pre_gdp:
+        shift_min = np.min([s_val for (s_ind, s_val) in enumerate(sync_shifts) if is_gdp[s_ind]])
+    else:
+        shift_min = np.min(sync_shifts)
+    sync_shifts -= shift_min
 
     # Given these shifts, let's compute the new length of the synchronized Profiles.
     # Do it such that no data is actually cropped out, i.e. add NaN/NaT wherever needed.
     orig_lengths = [len(item.data) for item in prfs.profiles]
-    sync_length = np.max(np.array(sync_shifts) + np.array(orig_lengths)) - np.min(sync_shifts)
-
-    # Which of these profiles is a GDP ?
-    is_gdp = prfs.has_tag(TAG_GDP)
+    sync_length = np.max(np.array(sync_shifts) + np.array(orig_lengths))
 
     # Keep track of the important info
     logger.info('oids: %s', oids)
     logger.info('mids: %s', prfs.get_info(prm='mid'))
     logger.info('is_gdp: %s', is_gdp)
+    logger.info('crop_pre_gdp: %s', crop_pre_gdp)
     logger.info('sync_shifts: %s', sync_shifts)
     logger.info('sync_length: %s', sync_length)
 
