@@ -21,7 +21,7 @@ import dvas.plots.utils as dpu
 from dvas.data.data import MultiProfile, MultiRSProfile, MultiGDPProfile
 from dvas.environ import path_var
 from dvas.hardcoded import TAG_ORIGINAL, TAG_1S, TAG_SYNC, TAG_GDP, TAG_CWS
-from dvas.hardcoded import FLG_INCOMPATIBLE
+from dvas.hardcoded import FLG_INCOMPATIBLE, FLG_TROPO
 from dvas.tools import sync as dts
 from dvas.tools.gdps import gdps as dtgg
 from dvas.tools.gdps import stats as dtgs
@@ -161,12 +161,11 @@ if __name__ == '__main__':
         print(f"  {flg_name}: {item['flg_desc']}")
 
     # To flag specific elements of a given profile, use the internal methods:
-    # Here, 'dummy_flg' is defined in the flg_config.yml parameter file.
-    prfs[0].set_flg('is_troposphere', True, index=pd.Index([0, 1, 2]))
+    prfs[0].set_flg(FLG_TROPO, True, index=pd.Index([0, 1, 2]))
 
     # Let's check to see that the data was actually flagged
-    print('\nDid I flag only the first three steps with a "is_troposphere" flag ?')
-    print(prfs[0].has_flg('is_troposphere'))
+    print(f'\nDid I flag only the first three steps with a "{FLG_TROPO}" flag ?')
+    print(prfs[0].has_flg(FLG_TROPO))
 
     # FLags are used to characterize individual measurments. Tags, on the other hand, are used to
     # characterize entire Profiles. They are useful, for example, to identify if a Profile has been
