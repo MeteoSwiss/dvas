@@ -16,7 +16,7 @@ import pandas as pd
 # Import from current package
 from .data import MPStrategyAC
 from ...errors import DvasError
-from ...hardcoded import PRF_IDX
+from ...hardcoded import PRF_IDX, FLG_NOPRF
 
 
 class RebaseStrategy(MPStrategyAC):
@@ -25,9 +25,6 @@ class RebaseStrategy(MPStrategyAC):
     def execute(self, prfs, new_lengths, shifts=None):
         """ Rebases Profiles on a DataFrame with a different length, possibly shifting values
         around.
-
-        Any missing data gets filled with NaN/NaT. Any superfulous data is be cropped.
-        All non-integer indices get rebased as well (i.e. they are NOT interpolated).
 
         Args:
             prfs (list of dvas.data.strategy.data.Profile|RSProfile|GDPProfile): Profiles to
@@ -41,27 +38,31 @@ class RebaseStrategy(MPStrategyAC):
         Returns:
             dvas.data.MultiProfile|MultiRSProfile|MultiGDPProfile: the rebased MultiProfile.
 
+        Any missing data gets filled with NaN/NaT. Any superfulous data is be cropped.
+        All non-integer indices get rebased as well (i.e. they are NOT interpolated). Any missing
+        data also gets flagged with FLG_NOPRF to indicate to it is not associated with any real
+        profile measurement.
+
         """
 
         # Make sure I get fed a list of profiles.
         if not isinstance(prfs, list):
-            raise DvasError("Ouch ! prfs should be of type list, and not: {}".format(type(prfs)))
+            raise DvasError(f"prfs should be of type list, and not: {type(prfs)}")
 
         # Deal with the length(s). Try to be as courteous as possible.
         if isinstance(new_lengths, numbers.Integral):
             new_lengths = [new_lengths] * len(prfs)
         elif isinstance(new_lengths, list):
             if not all([isinstance(item, numbers.Integral) for item in new_lengths]):
-                raise DvasError("Ouch ! new_lengths should be a list of int.")
+                raise DvasError("new_lengths should be a list of int.")
             if len(new_lengths) != len(prfs):
                 if len(set(new_lengths)) == 1:
                     new_lengths = [new_lengths[0]] * len(prfs)
                 else:
-                    raise DvasError("Ouch ! new_lengths should have length of %i, not %i" %
-                                    (len(prfs), len(new_lengths)))
+                    raise DvasError(
+                        f"new_lengths should have length of {len(prfs)}, not {len(new_lengths)}")
         else:
-            raise DvasError("Type %s unspported for new_length. I need int|list of int." %
-                            type(new_lengths))
+            raise DvasError(f"new_len type should be int|list of int, not: {type(new_lengths)}")
 
         # Deal with the shift(s). Still try to be as courteous as possible.
         if shifts is None:
@@ -75,10 +76,10 @@ class RebaseStrategy(MPStrategyAC):
                 if len(set(shifts)) == 1:
                     shifts = [shifts[0]] * len(prfs)
                 else:
-                    raise DvasError("Ouch ! shifts should have length of %i, not %i" %
-                                    (len(prfs), len(shifts)))
+                    raise DvasError(
+                        f"shifts should have length of {len(prfs)}, not {len(shifts)}")
         else:
-            raise DvasError("Type %s unspported for shifts. I need int|list of int." % type(shifts))
+            raise DvasError(f"shifts should be int|list of int, not: {type(shifts)}")
 
         # We are good to go: let's loop through the different Profiles.
         for (prf_ind, prf) in enumerate(prfs):
@@ -108,5 +109,10 @@ class RebaseStrategy(MPStrategyAC):
             # And finally let's assign the new DataFrame to the Profile. The underlying setter
             # will take care of reformatting all the indices as needed.
             prfs[prf_ind].data = new_data
+
+            # Fix #256: let's make sure any "artifical" profile point is flagged accodingly
+            prfs[prf_ind].set_flg(FLG_NOPRF, True,
+                                  index=pd.Index([item for item in new_data.index.values
+                                                  if item not in this_data.index.values]))
 
         return prfs
