@@ -205,7 +205,7 @@ def test_combine(gdp_1_prfs, gdp_2_prfs_real, gdp_3_prfs):
         - correct propagation of errors when rebining a single profile
 
     """
-
+    """
     # 0) Ultra-basic test: the mean of a single profile with binning = 1 should return the
     # same thing
     for method in ['mean', 'weighted mean']:
@@ -227,9 +227,9 @@ def test_combine(gdp_1_prfs, gdp_2_prfs_real, gdp_3_prfs):
     out, _ = combine(gdp_3_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus='max')
     assert np.all(out.profiles[0].data.loc[0, 'ucu'] == np.sqrt(1/3))
     assert np.all(out.profiles[0].data.loc[0, 'uct'] == 1.)
-
+    """
     # 3) Test for #166, and the fact that chunk_size should have no impact on the outcome
-    out_a, _ = combine(gdp_2_prfs_real, binning=3, method='delta', n_cpus=16,
+    out_a, _ = combine(gdp_2_prfs_real, binning=3, method='delta', n_cpus=1,
                        mask_flgs=FLG_INCOMPATIBLE, chunk_size=3)
     out_b, _ = combine(gdp_2_prfs_real, binning=3, method='delta', n_cpus=16,
                        mask_flgs=FLG_INCOMPATIBLE, chunk_size=4)

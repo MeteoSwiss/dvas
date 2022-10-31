@@ -40,4 +40,4 @@ def test_update_db():
     assert all([not arg.val.isna().all() for arg in data[0]])
     assert all([not arg.alt.isna().all() for arg in data[0]])
     assert all([not arg.tdt.isna().all() for arg in data[0]])
-    assert sum([not arg.flg.isna().all() for arg in data[0]]) == 2
+    assert sum([not (arg.flg == 0).all() for arg in data[0]]) == 2

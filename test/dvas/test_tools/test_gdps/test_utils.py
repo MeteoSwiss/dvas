@@ -42,8 +42,9 @@ def chunk():
             test_chunk.loc[:, (slice(None), key)] = \
                 test_chunk.loc[:, (slice(None), key)].astype('timedelta64[ns]')
         elif key == PRF_FLG:
+            test_chunk.loc[:, (slice(None), key)] = 0
             test_chunk.loc[:, (slice(None), key)] = \
-                test_chunk.loc[:, (slice(None), key)].astype('Int64')
+                test_chunk.loc[:, (slice(None), key)].astype(int)
         else:
             test_chunk.loc[:, (slice(None), key)] = \
                 test_chunk.loc[:, (slice(None), key)].astype('float')
@@ -115,13 +116,13 @@ def test_weighted_mean(chunk):
 
     # If all the values are NaNs, should be NaN, and so should the flag.
     assert out.isna().loc[1, PRF_VAL]
-    assert out.isna().loc[1, PRF_FLG]
+    assert out.loc[1, PRF_FLG] == 0
     # If only some of the bins are NaN's, I should return a number and flag
     assert out.loc[2, PRF_VAL] == 6/2
     assert out.loc[2, PRF_FLG] == 3
     # if all the weights are NaN's, return NaN
     assert out.isna().loc[9, PRF_VAL]
-    assert out.isna().loc[9, PRF_FLG]
+    assert out.loc[9, PRF_FLG] == 0
     # jac_mat has correct dimensions ?
     assert np.shape(jac_mat) == (int(np.ceil(len(chunk))), len(chunk)*3)
     # Content of jac_mat is as expected
@@ -173,9 +174,9 @@ def test_delta(chunk):
     assert np.shape(jac_out) == (len(chunk_2)//binning + len(chunk_2) % binning, 2*len(chunk_2))
     # Correct flags ?
     assert out.loc[0, 'flg'] == 3
-    assert out.isna().loc[1, 'flg']
+    assert out.loc[1, 'flg'] == 0
     assert out.loc[2, 'flg'] == 0
-    assert out.isna().loc[9, 'flg']
+    assert out.loc[9, 'flg'] == 0
 
     # Now do the same with some binning
     binning = 2

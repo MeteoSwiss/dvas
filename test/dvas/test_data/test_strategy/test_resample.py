@@ -73,7 +73,7 @@ class TestResampleStrategy:
         # Prepare some datasets to play with
         info_1 = InfoManager('20201217T0000Z', 1)
         data_1 = pd.DataFrame({'alt': [10., 15., 20., 35], 'val': [11., 12., 13., 14],
-                               'flg': [0]*4, 'ucr': [1, 1, 1, 1], 'ucs': [1, 1, 1, 1],
+                               'flg': [0, 1, 2, 8], 'ucr': [1, 1, 1, 1], 'ucs': [1, 1, 1, 1],
                                'uct': [1, 1, 1, 1], 'ucu': [1, 1, 1, 1],
                                'tdt': [0, 1, 1.5, 2.1]})
 
@@ -103,3 +103,5 @@ class TestResampleStrategy:
 
         # Was the flag applied correctly ?
         assert all(out.profiles[0].has_flg(FLG_INTERP) == [False, False, True])
+        assert np.array_equal(out[0].flg.values, [0, 1, 14])  # FLG_INTERP is bit 8
+

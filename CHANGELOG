@@ -8,7 +8,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Added:
  - [fpavogt, 2022-10-28] Add netCDF export recipe step
 ### Fixed:
- - [fpavogt, 2022-10-31] Fix #252 and #256.
+ - [fpavogt, 2022-10-31] Fix #253 (no more Int64 flags) and #259 (resampled points now inherit teh anchor flags)
+ - [fpavogt, 2022-10-31] Fix #252 and #256
  - [fpavogt, 2022-10-28] Fix #254
 ### Changed:
  - [fpavogt, 2022-10-28] Clean-up TAGS and FLAGS, incl. rename of "raw" to "original" (fix #255)

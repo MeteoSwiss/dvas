@@ -29,14 +29,15 @@ db_data = {
     'sub_dir': 'test_tool_stats',
     'data': [{'mdl_name': 'AR-GDP_001',
               'srn': 'AR1',
-              'pid': '0',},
+              'pid': '0'},
              {'mdl_name': 'AR-GDP_001',
               'srn': 'BR1',
-              'pid': '1',},
+              'pid': '1'},
              {'mdl_name': 'AR-GDP_001',
               'srn': 'BR2',
-              'pid': '1',},
-            ]}
+              'pid': '1'},
+             ]}
+
 
 @pytest.fixture
 def gdp_2_prfs(db_init):
@@ -64,6 +65,7 @@ def gdp_2_prfs(db_init):
                     [GDPProfile(info_1, data_1), GDPProfile(info_2, data_2)])
 
     return multiprf
+
 
 @pytest.fixture
 def gdp_3_prfs(db_init):
@@ -98,29 +100,30 @@ def gdp_3_prfs(db_init):
 
     return multiprf
 
+
 def test_ks_test(gdp_2_prfs):
     """ Test the proper usage of the KS test """
 
     out_1 = ks_test(gdp_2_prfs, alpha=0.0027, m_val=1, n_cpus=1)
-    assert len(out_1) == len(gdp_2_prfs[0]) # Correct length ?
-    assert round(100*(1-out_1.loc[0, 'pks_pqei']), 1) == 68.3 # 1-sigma
-    assert round(100*(1-out_1.loc[1, 'pks_pqei']), 1) == 95.4 # 2-sigma
-    assert round(100*(1-out_1.loc[2, 'pks_pqei']), 1) == 99.7 # 3-sigma
-    assert out_1.isna().loc[3, 'pks_pqei'] # Bad point
+    assert len(out_1) == len(gdp_2_prfs[0])  # Correct length ?
+    assert round(100*(1-out_1.loc[0, 'pks_pqei']), 1) == 68.3  # 1-sigma
+    assert round(100*(1-out_1.loc[1, 'pks_pqei']), 1) == 95.4  # 2-sigma
+    assert round(100*(1-out_1.loc[2, 'pks_pqei']), 1) == 99.7  # 3-sigma
+    assert out_1.isna().loc[3, 'pks_pqei']  # Bad point
     assert all(out_1.loc[:2, 'f_pqei'].values == [0, 0, 1])  # Correct flags
-    assert out_1.isna().loc[3, 'f_pqei'] # NaN flags is no data
-    assert all(out_1.loc[:2, 'Delta_pqei'].values == [2, 4, 6]) # Delta
+    assert out_1.isna().loc[3, 'f_pqei']  # NaN flags is no data
+    assert all(out_1.loc[:2, 'Delta_pqei'].values == [2, 4, 6])  # Delta
 
     # Now with some binning
     out_2 = ks_test(gdp_2_prfs, alpha=0.0027, m_val=2, n_cpus=1)
-    assert len(out_2) == len(gdp_2_prfs[0])//2 + len(gdp_2_prfs[0])%2 # Correct length ?
+    assert len(out_2) == len(gdp_2_prfs[0])//2 + len(gdp_2_prfs[0]) % 2  # Correct length ?
 
     # Partial NaN's get ignored completely ?
     assert out_1.loc[2, 'k_pqei'] == out_2.loc[1, 'k_pqei']
 
     # Try when the length is not compatible with the binning
     out_3 = ks_test(gdp_2_prfs, alpha=0.0027, m_val=3, n_cpus=1)
-    assert len(out_3) == len(gdp_2_prfs[0])//2 + len(gdp_2_prfs[0])%2 # Correct length ?
+    assert len(out_3) == len(gdp_2_prfs[0])//2 + len(gdp_2_prfs[0]) % 2  # Correct length ?
 
 
 def test_gdp_incompatibilities(gdp_2_prfs):
@@ -128,6 +131,7 @@ def test_gdp_incompatibilities(gdp_2_prfs):
 
     out = gdp_incompatibilities(gdp_2_prfs, alpha=0.0027, m_vals=[1, 2], do_plot=True)
     assert isinstance(out, pd.DataFrame)
+
 
 def test_gdp_validities(gdp_3_prfs):
     """ Test the different validation strategies to determine if GDPs are compatible with each
@@ -141,7 +145,7 @@ def test_gdp_validities(gdp_3_prfs):
     # ... before feeding it into the function to test
     out = gdp_validities(incompat, m_vals=[1], strategy='all-or-none')
     assert isinstance(out, pd.DataFrame)
-    assert out.all(axis=1)[0] # 1-sigma - all-or-none
-    assert out.all(axis=1)[1] # 2-sigma - all-or-none
-    assert (~out).all(axis=1)[2] # 2-sigma - all-or-none
-    assert (~out).all(axis=1)[3] # Bad point - all-or-none
+    assert out.all(axis=1)[0]  # 1-sigma - all-or-none
+    assert out.all(axis=1)[1]  # 2-sigma - all-or-none
+    assert (~out).all(axis=1)[2]  # 2-sigma - all-or-none
+    assert (~out).all(axis=1)[3]  # Bad point - all-or-none

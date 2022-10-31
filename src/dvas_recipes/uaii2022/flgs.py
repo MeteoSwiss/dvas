@@ -15,7 +15,7 @@ import logging
 from dvas.logger import log_func_call
 from dvas.hardcoded import TAG_CWS, TAG_GDP, TAG_DTA, FLG_HASCWS
 from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_VAL
-from dvas.hardcoded import FLG_PBL, FLG_TROPO, FLG_FREETROPO, FLG_STRATO, FLG_UTLS
+from dvas.hardcoded import FLG_TROPO, FLG_STRATO
 from dvas.hardcoded import MTDTA_TROPOPAUSE
 from dvas.data.data import MultiRSProfile, MultiGDPProfile, MultiCWSProfile
 from dvas.errors import DBIOError
@@ -144,7 +144,7 @@ def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp'):
                 prfs[prf_ind].set_flg(FLG_HASCWS, True, index=cws_cond)
 
                 # Flag the different atmospheric regions ...
-                # TODO: deal with the PBL and free troposphere
+                # TODO: deal with the PBL, free troposphere, and UTLS
 
                 # Tropopause
                 prfs[prf_ind].info.add_metadata(

@@ -29,7 +29,7 @@ from ..helper import RequiredAttrMetaClass
 from ..helper import deepcopy
 from ..helper import get_class_public_attr
 from ..errors import DBIOError
-from ..hardcoded import TAG_ORIGINAL, PRF_IDX
+from ..hardcoded import TAG_ORIGINAL, PRF_IDX, PRF_FLG
 
 # Loading strategies
 load_prf_stgy = LoadProfileStrategy()
@@ -351,7 +351,9 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
         if mask_flgs is not None:
             for flg in mask_flgs:
                 for (p_ind, prf) in enumerate(self.profiles):
-                    out[p_ind][prf.has_flg(flg)] = np.nan
+                    out[p_ind].loc[prf.has_flg(flg), out[p_ind].columns != PRF_FLG] = np.nan
+                    # As of #253, flgs cannot be NaNs, so I treat them separately.
+                    out[p_ind].loc[prf.has_flg(flg), PRF_FLG] = 0
 
         # Drop the superfluous index
         out = [df.reset_index(level=[name for name in df.index.names

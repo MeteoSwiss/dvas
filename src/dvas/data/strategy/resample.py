@@ -20,7 +20,7 @@ import pandas as pd
 from ...errors import DvasError
 from .data import MPStrategyAC
 from ...tools.gdps.utils import process_chunk
-from ...tools.tools import df_to_chunks
+from ...tools.tools import df_to_chunks, fancy_bitwise_or
 from ...hardcoded import PRF_IDX, PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
 from ...hardcoded import PRF_FLG, FLG_INTERP, TAG_1S
 
@@ -291,15 +291,19 @@ class ResampleStrategy(MPStrategyAC):
                     continue
 
                 if name == PRF_FLG:
-                    # For the points that were not interpolated, copy them over
-                    # For the others, do nothing as we will set them properly below
-                    # Treat the case of omega_vals =0/1 differently, to assign the corret flags
-                    new_data.loc[np.flatnonzero(omega_vals == 0), name] = \
-                        this_data.loc[x_ip1_ind[omega_vals == 0] - 1, name].values
 
-                    new_data.loc[np.flatnonzero(omega_vals == 1), name] = \
-                        this_data.loc[x_ip1_ind[omega_vals == 1], name].values
+                    # Assemble a DataFrame of meaningful flags, i.e. ignore those of the points
+                    # that are not used for the interpolation. Typically those with weight of 0 or 1
+                    flg_low = this_data.loc[x_ip1_ind - 1, PRF_FLG].mask(omega_vals == 1, 0)
+                    flg_hgh = this_data.loc[x_ip1_ind, PRF_FLG].mask(omega_vals == 0, 0)
+                    meaningful_flgs = pd.concat(
+                        [flg_low.reset_index(drop=True), flg_hgh.reset_index(drop=True)], axis=1)
 
+                    assert len(meaningful_flgs) == len(new_data), "flgs size mismatch"
+
+                    # Very well, I am now ready to combine and assign these
+                    # Fixes #259
+                    new_data[name] = fancy_bitwise_or(meaningful_flgs, axis=1)
                     continue
 
                 # For all the rest, let's just use the data that was recently computed

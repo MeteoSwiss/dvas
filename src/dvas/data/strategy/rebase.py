@@ -16,7 +16,7 @@ import pandas as pd
 # Import from current package
 from .data import MPStrategyAC
 from ...errors import DvasError
-from ...hardcoded import PRF_IDX, FLG_NOPRF
+from ...hardcoded import PRF_IDX, FLG_NOPRF, PRF_FLG
 
 
 class RebaseStrategy(MPStrategyAC):
@@ -96,6 +96,8 @@ class RebaseStrategy(MPStrategyAC):
 
             # Create the new data, full of NaNs but with all the suitable columns.
             new_data = pd.DataFrame(index=range(new_lengths[prf_ind]), columns=this_data.columns)
+            # As of #253, flags absolutely cannot be NaNs
+            new_data[PRF_FLG] = 0
 
             # Here let's make sure this new data has the proper column types.
             # Do it one by one, because I miserably failed at figuring out something more elegant.

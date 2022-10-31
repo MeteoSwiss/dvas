@@ -13,7 +13,7 @@ import logging
 from pathlib import Path
 from datetime import datetime
 import numpy as np
-from netCDF4 import Dataset
+from netCDF4 import Dataset  # noqa pylint: disable=E0611
 
 # Import dvas modules and classes
 from dvas.logger import log_func_call
