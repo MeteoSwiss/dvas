@@ -191,38 +191,39 @@ class ResampleStrategy(MPStrategyAC):
             # x_- * (1-omega) + x_+ * omega.
             for col in this_data.columns:
                 if col == PRF_FLG:  # Do nothing to the flags
-                    x_dx.loc[:, (0, col)] = this_data.iloc[x_ip1_ind-1][col].values
-                    x_dx.loc[:, (1, col)] = this_data.iloc[x_ip1_ind][col].values
+                    x_dx[(0, col)] = this_data.iloc[x_ip1_ind-1][col].values
+                    x_dx[(1, col)] = this_data.iloc[x_ip1_ind][col].values
                 else:
                     # Here note that we multiply by (omega-1) instead of omega
                     # This is so that we can "disguise" the combination of profiles as a delta
                     # (rather than a sum) for compatibility with process_chunk()
-                    x_dx.loc[:, (0, col)] = this_data.iloc[x_ip1_ind-1][col].values * (omega_vals-1)
-                    x_dx.loc[:, (1, col)] = this_data.iloc[x_ip1_ind][col].values * omega_vals
+                    x_dx[(0, col)] = this_data.iloc[x_ip1_ind-1][col].values * (omega_vals-1)
+                    x_dx[(1, col)] = this_data.iloc[x_ip1_ind][col].values * omega_vals
+
 
             # Deal with the uncertainties, in case I do not have a GDPProfile
             for col in [PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU]:
                 if col not in this_data.columns:
                     # To avoid warnings down the line, set the UC to 0 everywhere, except where
                     # the value is a NaN.
-                    x_dx.loc[:, (0, col)] = [item if np.isnan(item) else 0 for item in omega_vals]
-                    x_dx.loc[:, (1, col)] = [item if np.isnan(item) else 0 for item in omega_vals]
+                    x_dx[(0, col)] = [item if np.isnan(item) else 0 for item in omega_vals]
+                    x_dx[(1, col)] = [item if np.isnan(item) else 0 for item in omega_vals]
 
             # Also deal with the total uncertainty
             try:
-                x_dx.loc[:, (0, 'uc_tot')] = prf.uc_tot.iloc[x_ip1_ind-1].values
-                x_dx.loc[:, (1, 'uc_tot')] = prf.uc_tot.iloc[x_ip1_ind].values
+                x_dx[(0, 'uc_tot')] = prf.uc_tot.iloc[x_ip1_ind-1].values
+                x_dx[(1, 'uc_tot')] = prf.uc_tot.iloc[x_ip1_ind].values
             except AttributeError:
-                x_dx.loc[:, (0, 'uc_tot')] = [item if np.isnan(item) else 0
-                                              for item in x_dx.loc[:, (0, PRF_VAL)]]
-                x_dx.loc[:, (1, 'uc_tot')] = [item if np.isnan(item) else 0
-                                              for item in x_dx.loc[:, (1, PRF_VAL)]]
+                x_dx[(0, 'uc_tot')] = [item if np.isnan(item) else 0
+                                       for item in x_dx.loc[:, (0, PRF_VAL)]]
+                x_dx[(1, 'uc_tot')] = [item if np.isnan(item) else 0
+                                       for item in x_dx.loc[:, (1, PRF_VAL)]]
 
             # Assign the oid, eid, mid, rid values. Since we are here resampling one profile,
             # they are the same for all (and thus their value is irrelevant)
             for col in ['eid', 'rid', 'mid']:
-                x_dx.loc[:, (0, col)] = 0
-                x_dx.loc[:, (1, col)] = 0
+                x_dx[(0, col)] = 0
+                x_dx[(1, col)] = 0
 
             # WARNING: here, we set the oid to be different for the two "profiles".
             # This is not correct, strictly speaking, since all the data comes from the "same"
@@ -232,8 +233,8 @@ class ResampleStrategy(MPStrategyAC):
             # in the correlation matrix, we can use this as an "alternative" to say that two
             # points with the same index are different. But the day that the oid is being used,
             # then this will blow up. Badly.
-            x_dx.loc[:, (0, 'oid')] = 0
-            x_dx.loc[:, (1, 'oid')] = 1
+            x_dx[(0, 'oid')] = 0
+            x_dx[(1, 'oid')] = 1
 
             # Break this into chunks to speed up calculation
             # WARNING: This is possible only by assuming that there is no cross-correlation between
@@ -307,7 +308,7 @@ class ResampleStrategy(MPStrategyAC):
                     continue
 
                 # For all the rest, let's just use the data that was recently computed
-                new_data.loc[:, name] = proc_chunk.loc[:, name].values
+                new_data[name] = proc_chunk.loc[:, name].values
 
             # And finally let's assign the new DataFrame to the Profile. The underlying setter
             # will take care of reformatting all the indices as needed.

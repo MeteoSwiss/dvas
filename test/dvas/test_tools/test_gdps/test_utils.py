@@ -34,7 +34,8 @@ def chunk():
     cols = pd.MultiIndex.from_tuples([(ind, item) for item in lvl_one for ind in range(3)])
 
     # Initialize the DataFrame
-    test_chunk = pd.DataFrame(index=pd.Series(range(10)), columns=cols).sort_index(axis=1)
+    test_chunk = pd.DataFrame(index=pd.Series(range(10)), columns=cols)
+    test_chunk = test_chunk.sort_index(axis=1)
 
     # Set the proper types for the different columns
     for key in lvl_one:
@@ -173,10 +174,10 @@ def test_delta(chunk):
     # Correct jacobian shape ?
     assert np.shape(jac_out) == (len(chunk_2)//binning + len(chunk_2) % binning, 2*len(chunk_2))
     # Correct flags ?
-    assert out.loc[0, 'flg'] == 3
-    assert out.loc[1, 'flg'] == 0
-    assert out.loc[2, 'flg'] == 0
-    assert out.loc[9, 'flg'] == 0
+    assert out.loc[0, PRF_FLG] == 3
+    assert out.loc[1, PRF_FLG] == 0
+    assert out.loc[2, PRF_FLG] == 0
+    assert out.loc[9, PRF_FLG] == 0
 
     # Now do the same with some binning
     binning = 2

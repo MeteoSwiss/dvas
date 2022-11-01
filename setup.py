@@ -43,15 +43,13 @@ setup(
         'numpy',
         "pandas>=1.3.0",
         "peewee",
-        "pytest",
-        "pytest-data",
         "pytz",
         "ruamel-yaml",
         "scipy",
         "sre_yield",
     ],
     extras_require={
-        'dev': ['sphinx', 'sphinx-rtd-theme', 'plantweb', 'pylint', 'pytest', 'pytest-cov']
+        'dev': ['sphinx', 'sphinx-rtd-theme', 'plantweb', 'pylint', 'pytest', 'pytest-data']
     },
     # Setup entry points to use dvas from a terminal
     entry_points={

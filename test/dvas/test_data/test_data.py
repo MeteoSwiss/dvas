@@ -126,7 +126,7 @@ class TestMultiProfile:
         mlt_gdpprf[0].set_flg('user_qc', False, [0])
         out_nomsk = mlt_gdpprf.get_prms(prm_list='val', mask_flgs='user_qc')
 
-        #Check that data was masked as I expected
+        # Check that data was masked as I expected
         assert np.isnan(out_msk[0]['val'][0])
         assert not np.isnan(out_nomsk[0]['val'][0])
 
