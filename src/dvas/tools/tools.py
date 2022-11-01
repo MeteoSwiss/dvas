@@ -76,7 +76,7 @@ def fancy_nansum(vals, axis=None):
 
     # Check the data type to make sure it is what I expect
     if not isinstance(vals, pd.core.frame.DataFrame):
-        raise DvasError("vals should be pandas DataFrame, not: %s" % (type(vals)))
+        raise DvasError(f"vals should be pandas DataFrame, not: {type(vals)}")
 
     # If no axis is specified, let us just sum every element
     if axis is None:

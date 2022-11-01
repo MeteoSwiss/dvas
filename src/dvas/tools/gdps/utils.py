@@ -164,13 +164,13 @@ def weighted_mean(df_chunk, binning=1):
     # First, we assemble them at high resolution. Note here that the flag for any weight that is
     # NaN or 0 is set to 0, so they do not get carried over.
     flgs = pd.DataFrame(fancy_bitwise_or(
-        df_chunk.loc[:, (slice(None), 'flg')].mask((w_ps.isna() | (w_ps == 0)).values, other=0),
+        df_chunk.loc[:, (slice(None), PRF_FLG)].mask((w_ps.isna() | (w_ps == 0)).values, other=0),
         axis=1))
 
     # Then, only if warranted, apply the binning too
     if binning > 1:
         flgs = flgs.groupby(flgs.index//binning).aggregate(fancy_bitwise_or)
-    chunk_out[PRF_FLG] = flgs
+    chunk_out[PRF_FLG] = flgs.values
 
     return chunk_out, jac_mat
 
@@ -301,9 +301,9 @@ def delta(df_chunk, binning=1):
     # First, we assemble them at high resolution. Note that we here mask any flags that belongs to
     # a NaN value, because this is not actually used in the delta.
     flgs = pd.DataFrame(fancy_bitwise_or(
-        df_chunk.loc[:, (slice(None), 'flg')].mask(df_chunk.loc[:, (slice(None),
-                                                                    'val')].isna().values,
-                                                   other=0), axis=1))
+        df_chunk.loc[:, (slice(None), PRF_FLG)].mask(df_chunk.loc[:, (slice(None),
+                                                                      PRF_VAL)].isna().values,
+                                                     other=0), axis=1))
 
     # Then, only if warranted, apply the binning too
     if binning > 1:

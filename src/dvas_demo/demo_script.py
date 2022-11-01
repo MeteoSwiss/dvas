@@ -184,7 +184,7 @@ if __name__ == '__main__':
 
     # Let us inspect the (original) GDP profiles with dedicated plots.
     # Defaults behavior, just adding a prefix to the filename.
-    gdp_prfs.plot(fn_prefix='01-a', show=True)
+    # gdp_prfs.plot(fn_prefix='01-a', show=True)
 
     # Repeat the same plot, but this time with the GDP uncertainties.
     # Set "show" to True to display it on-screen.
@@ -241,7 +241,7 @@ if __name__ == '__main__':
     # tools located inside dvas.tools.gdps
 
     # Let us begin by extracting the synchronized GDPs for a specific flight
-    filt_gdp_dt_sync = f"and_(tags({TAG_SYNC}), {filt_gdp}, {filt_dt})"
+    filt_gdp_dt_sync = f"and_(tags('{TAG_SYNC}'), {filt_gdp}, {filt_dt})"
     gdp_prfs = MultiGDPProfile()
     gdp_prfs.load_from_db(filt_gdp_dt_sync, 'temp', tdt_abbr='time', alt_abbr='gph',
                           ucr_abbr='temp_ucr', ucs_abbr='temp_ucs', uct_abbr='temp_uct',
@@ -270,7 +270,7 @@ if __name__ == '__main__':
     start_time = datetime.now()
     cws, _ = dtgg.combine(gdp_prfs, binning=1, method='weighted mean',
                           mask_flgs=FLG_INCOMPATIBLE,
-                          chunk_size=150, n_cpus=8)
+                          chunk_size=150, n_cpus=1)
     print(f'CWS assembled in: {(datetime.now()-start_time).total_seconds()}s')
 
     # We can now inspect the result visually
