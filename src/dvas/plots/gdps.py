@@ -139,7 +139,7 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
             logger.warning('"%s" not found in CWS metadata.', loi)
             continue
 
-        loi_gph = cws_prf[0].info.metadata[loi]
+        loi_gph = float(cws_prf[0].info.metadata[loi].split(' ')[0])
 
         for ax in [ax0, ax1, ax1b, ax2]:
             ax.axvline(loi_gph, ls=':', lw=1, c='k')
@@ -170,7 +170,7 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     ax1b.axhline(5, ls='--', lw=1, c='k')
     ax1b.text(
         -0.1, 0.5,
-        pu.fix_txt(r'$\frac{\textrm{d}(\text{gph}_{\text{CWS}})}{\textrm{dt}}$ [m\,s$^{-1}$]'),
+        pu.fix_txt(r'$\frac{\textrm{d}(\text{gph})}{\textrm{dt}}$ [m\,s$^{-1}$]'),
         ha='left', va='center', transform=ax1b.transAxes, rotation=90)
 
     # Crop the plot to the regions with valid altitudes
