@@ -19,7 +19,7 @@ from ..linker import LocalDBLinker
 from ...database.database import InfoManager
 from ...database.model import Data
 from ...errors import LoadError
-from ...hardcoded import FLG_PRM_NAME_SUFFIX
+from ...hardcoded import FLG_PRM_NAME_SUFFIX, PRF_FLG
 
 # Define
 INDEX_NM = Data.index.name
@@ -97,10 +97,14 @@ class LoadStrategyAC(MPStrategyAC):
             raise LoadError(err_msg)
 
         # Add missing columns
-        for i in range(len(data)):
-            for val in kwargs.keys():
+        for (i, _) in enumerate(data):
+            for val in kwargs:
                 if val not in data[i].columns:
-                    data[i][val] = None
+                    # As of #253, flags cannot be NaNs (or None) any longer ...
+                    if val == PRF_FLG:
+                        data[i][val] = 0
+                    else:
+                        data[i][val] = None
 
         return info, data
 

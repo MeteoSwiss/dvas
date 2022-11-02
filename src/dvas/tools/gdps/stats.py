@@ -270,7 +270,8 @@ def gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=None, rolling=True,
             # If requested, flag the bad levels detected using this binning intensity
             if rolling:
                 for gdp in gdp_pair:
-                    gdp.set_flg('incomp', True, index=out[out[(m_val, 'f_pqei')] == 1].index)
+                    gdp.set_flg(FLG_INCOMPATIBLE, True,
+                                index=out[out[(m_val, 'f_pqei')] == 1].index)
 
         # Assign this pair's outcome to the final storage dictionnary
         incompat[key] = out

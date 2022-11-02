@@ -65,7 +65,7 @@ def weighted_mean(df_chunk, binning=1):
     # Begin with some important sanity checks to make sure the DataFrame has the correct format
     for col in [PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, 'w_ps']:
         if col not in df_chunk.columns.unique(level=1):
-            raise DvasError('Ouch ! column "{}" is missing from the DataFrame'.format(col))
+            raise DvasError(f'Column "{col}" is missing from the DataFrame')
 
     # How many profiles do I want to combine ?
     n_prf = len(df_chunk.columns.unique(level=0))
@@ -162,15 +162,15 @@ def weighted_mean(df_chunk, binning=1):
     # Before we end, let us compute the flags. We apply a general bitwise OR to them, such that
     # they do not cancel each other or disappear: they get propagated all the way
     # First, we assemble them at high resolution. Note here that the flag for any weight that is
-    # NaN or 0 is set to 0 (but not pd.NA). THis is on purpose, to show that the resulting point
-    # is not inheriting "no" flags.
+    # NaN or 0 is set to 0, so they do not get carried over.
     flgs = pd.DataFrame(fancy_bitwise_or(
-        df_chunk.loc[:, (slice(None), 'flg')].mask((w_ps.isna() | (w_ps == 0)).values), axis=1))
+        df_chunk.loc[:, (slice(None), PRF_FLG)].mask((w_ps.isna() | (w_ps == 0)).values, other=0),
+        axis=1))
 
     # Then, only if warranted, apply the binning too
     if binning > 1:
         flgs = flgs.groupby(flgs.index//binning).aggregate(fancy_bitwise_or)
-    chunk_out[PRF_FLG] = flgs
+    chunk_out[PRF_FLG] = flgs.values
 
     return chunk_out, jac_mat
 
@@ -213,14 +213,14 @@ def delta(df_chunk, binning=1):
     # Begin with some important sanity checks to make sure the DataFrame has the correct format
     for col in [PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG]:
         if col not in df_chunk.columns.unique(level=1):
-            raise DvasError('Ouch ! column "{}" is missing from the DataFrame'.format(col))
+            raise DvasError(f'Column "{col}" is missing from the DataFrame')
 
     # How many profiles do I want to combine ?
     n_prf = len(df_chunk.columns.unique(level=0))
 
     if n_prf != 2:
         raise DvasError("Ouch ! I can only make the difference between 2 profiles, " +
-                        "but you gave me {}.".format(n_prf))
+                        f"but you gave me {n_prf}.")
 
     # Create the structure that will store all the weighted means
     chunk_out = pd.DataFrame()
@@ -301,13 +301,14 @@ def delta(df_chunk, binning=1):
     # First, we assemble them at high resolution. Note that we here mask any flags that belongs to
     # a NaN value, because this is not actually used in the delta.
     flgs = pd.DataFrame(fancy_bitwise_or(
-        df_chunk.loc[:, (slice(None), 'flg')].mask(df_chunk.loc[:, (slice(None),
-                                                                    'val')].isna().values), axis=1))
+        df_chunk.loc[:, (slice(None), PRF_FLG)].mask(df_chunk.loc[:, (slice(None),
+                                                                      PRF_VAL)].isna().values,
+                                                     other=0), axis=1))
 
     # Then, only if warranted, apply the binning too
     if binning > 1:
         flgs = flgs.groupby(flgs.index//binning).aggregate(fancy_bitwise_or)
-    chunk_out[PRF_FLG] = flgs
+    chunk_out[PRF_FLG] = flgs.values
 
     return chunk_out, jac_mat
 
@@ -346,13 +347,13 @@ def process_chunk(df_chunk, binning=1, method='weighted mean'):
 
     # Begin with some sanity checks
     if method not in ['mean', 'weighted mean', 'delta']:
-        raise DvasError('Ouch! method {} unknown.'.format(method))
+        raise DvasError('Method {method} unknown.')
 
     # Check I have all the required columns
     for col in [PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU,
                 'uc_tot', 'oid', 'mid', 'eid', 'rid']:
         if col not in df_chunk.columns.unique(level=1):
-            raise DvasError('Ouch ! column "{}" is missing from the DataFrame'.format(col))
+            raise DvasError('Column "{col}" is missing from the DataFrame')
 
     # Also check that the level 0 starts from 0 onwards
     if 0 not in df_chunk.columns.unique(level=0):
@@ -371,16 +372,16 @@ def process_chunk(df_chunk, binning=1, method='weighted mean'):
             # Warn the user and clean it up.
             logger.warning("GDP Profile %i: NaN mismatch for 'val' and 'uc_tot'", prf_ind)
             df_chunk.loc[df_chunk.loc[:, (prf_ind, 'uc_tot')].isna().values,
-                         (prf_ind, 'val')] = np.nan
+                         (prf_ind, PRF_VAL)] = np.nan
             for col in [PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU, 'uc_tot']:
-                df_chunk.loc[df_chunk.loc[:, (prf_ind, 'val')].isna().values,
+                df_chunk.loc[df_chunk.loc[:, (prf_ind, PRF_VAL)].isna().values,
                              (prf_ind, col)] = np.nan
 
-        if not all(df_chunk.loc[:, (prf_ind, PRF_FLG)].isna() ==
-                   df_chunk.loc[:, (prf_ind, PRF_VAL)].isna()):
+        if not all(df_chunk.loc[df_chunk.loc[:, (prf_ind, PRF_VAL)].isna(),
+                                (prf_ind, PRF_FLG)] == 0):
             logger.debug("GDP profile %i: hiding some flags for the NaN data values.")
             df_chunk.loc[df_chunk.loc[:, (prf_ind, PRF_VAL)].isna().values,
-                         (prf_ind, PRF_FLG)] = np.nan
+                         (prf_ind, PRF_FLG)] = 0
 
     # Compute the weights for each point, if applicable
     # First I need to add the new columns (one for each Profile).

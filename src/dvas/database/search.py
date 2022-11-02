@@ -31,7 +31,7 @@ from .model import InfosObjects as TableInfosObjects
 from .model import InfosTags as TableInfosTags
 from .model import DataSource as TablDataSource
 from .model import Model as TableModel
-from ..hardcoded import TAG_EMPTY, TAG_RAW, TAG_GDP
+from ..hardcoded import TAG_EMPTY, TAG_ORIGINAL, TAG_GDP
 from ..hardcoded import EID_PAT, RID_PAT, TOD_PAT
 from ..helper import TypedProperty as TProp
 from ..helper import check_datetime
@@ -136,7 +136,7 @@ class SearchInfoExpr(metaclass=ABCMeta):
             - not_(<expr>): Negation, correspond to all() without <expr>
 
         Shortcut expressions:
-            - raw(): Same as tags('raw')
+            - original(): Same as tags('original')
             - gdp(): Same as tags('gdp')
 
         Raises:
@@ -456,15 +456,15 @@ class ParameterExpr(TerminalSearchInfoExpr):
         return TableParameter.prm_name == self.expression
 
 
-class RawExpr(TerminalSearchInfoExpr):
-    """Raw filter"""
+class OriginalExpr(TerminalSearchInfoExpr):
+    """Original filter"""
 
     def __init__(self):
         pass
 
     def get_filter(self):
         """Implement get_filter method"""
-        return TableTag.tag_name.in_([TAG_RAW])
+        return TableTag.tag_name.in_([TAG_ORIGINAL])
 
 
 class GDPExpr(TerminalSearchInfoExpr):
@@ -544,7 +544,7 @@ class InfoStrategy(SearchStrategyAC):
                 'model_id': MIDExpr, 'mid': MIDExpr,
                 'tags': TagExpr,
                 'prm': ParameterExpr,
-                'raw': RawExpr,
+                'original': OriginalExpr,
                 'gdp': GDPExpr,
             }
         )
@@ -619,7 +619,7 @@ class ObjectStrategy(SearchStrategyAC):
                 'object_id': OIDExpr, 'oid': OIDExpr,
                 'product_id': ProductExpr, 'pid': ProductExpr,
                 'tags': TagExpr,
-                'raw': RawExpr,
+                'original': OriginalExpr,
                 'gdp': GDPExpr,
             }
         )

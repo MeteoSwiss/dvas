@@ -76,7 +76,7 @@ def fancy_nansum(vals, axis=None):
 
     # Check the data type to make sure it is what I expect
     if not isinstance(vals, pd.core.frame.DataFrame):
-        raise DvasError("vals should be pandas DataFrame, not: %s" % (type(vals)))
+        raise DvasError(f"vals should be pandas DataFrame, not: {type(vals)}")
 
     # If no axis is specified, let us just sum every element
     if axis is None:
@@ -89,8 +89,7 @@ def fancy_nansum(vals, axis=None):
 
 
 def fancy_bitwise_or(vals, axis=None):
-    """ A custom bitwise_or routine that ignores NaN unless only NaNs are provided, in which case
-    a NaN is returned.
+    """ A custom bitwise_or routine to combine flags.
 
     Args:
         vals (pandas.DataFrame): the data to sum.
@@ -98,31 +97,25 @@ def fancy_bitwise_or(vals, axis=None):
             (=sum everything).
 
     Returns:
-        pd.NA|int|pd.array: the result as a scalar if axis=None, and a pandas array with dtype Int64
-            if not.
+        int|pd.array: the result as a scalar if axis=None, and a pandas array if not.
+
+    This function got drastically simpler after #253 and the decision to drop NaN flags.
+
     """
 
     # Let's make sure I have been given integers, in order to run bitwise operations
     if not all(pd.api.types.is_integer_dtype(item) for item in vals.dtypes):
         raise DvasError('Ouch ! I need ints to perform a bitwise OR, but I got:', vals.dtypes)
 
-    # Easy if all is nan and axis is None
-    if axis is None and vals.isna().all(axis=axis):
-        return pd.NA  # Return the 'Int64' NaN value
+    # As of #253, dvas will no longer use Int64 for flags ... such that NaNs should be impossible.
+    if vals.isna().any(axis=None):
+        raise DvasError(f'Found a NaN flag ?! {vals}')
 
     # Let's compute a bitwise_or along the proper axis, not forgetting to mask any NA to not blow
     # things up.
-    out = np.bitwise_or.reduce(vals.mask(vals.isna(), 0), axis=axis)
+    out = np.bitwise_or.reduce(vals, axis=axis)
 
-    # If the axis is None, I'll be returning a scalar, so I do not need to do anything else
-    if axis is None:
-        return out
-
-    # If the axis is not None, then I need to mask the rows or columns that are full of NA
-    # Note here that out is a numpy array with dtype "object". We shall convert this to a pandas
-    # array with dtype='Int64'
-    out[vals.isna().all(axis=axis)] = pd.NA
-    return pd.array(out).astype('Int64')
+    return out
 
 
 @log_func_call(logger)

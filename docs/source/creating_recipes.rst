@@ -28,16 +28,7 @@ Protected tag names
 ...................
 
 The following tag names are used by dvas, and thus protected. They are defined in
-`dvas/config/definitions/tag.py`:
-
-    * ``raw``:
-    * ``gdp``:
-    * ``derived``:
-    * ``empty``:
-    * ``sync``:
-    *  ``1s``:
-    * ``resampled``:
-    * ``delta``:
+`dvas/config/definitions/tag.py`.
 
 Default database variable names
 ...............................

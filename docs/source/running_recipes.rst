@@ -51,21 +51,21 @@ Anatomy of a dvas processing arena
 ----------------------------------
 
 There are 3 main components to a dvas processing arena: the
-:ref:`raw data <raw_data>`,
+:ref:`original data <original_data>`,
 the :ref:`database config files <config_data>`,
 and the :ref:`recipe file <recipe_file>`. Let's take a closer look at each of these.
 
-.. _raw_data:
+.. _original_data:
 
 The data folder
 ...............
-This folder contains all the raw data to be processed. The actual structuring of subfolders inside
-``./data`` does not actually matter to dvas, so feel free to organize your datasets as you please.
-Note, however, the following restrictions:
+This folder contains all the original data to be processed. The actual structuring of subfolders
+inside ``./data`` does not actually matter to dvas, so feel free to organize your datasets as you
+please. Note, however, the following restrictions:
 
-  - for non-GDP radiosondes: a ``.yml`` text file **with the same name** as the raw data file must be
-    specified for all datasets. These ``.yml`` files must contain all the metadata not otherwise
-    present in the raw data files.
+  - for non-GDP radiosondes: a ``.yml`` text file **with the same name** as the original data file
+    must be specified for all datasets. These ``.yml`` files must contain all the metadata not
+    otherwise present in the original data files.
 
     .. todo:: Specify what these metadata should be
 
@@ -75,8 +75,8 @@ The config folder
 .................
 
 This folder contains all the information required to setup the dvas database, and have it ingest all
-the raw data correctly. Modifying these files is only required if one wishes to include datasets
-that differ from those already supported by dvas.
+the original data correctly. Modifying these files is only required if one wishes to include
+datasets that differ from those already supported by dvas.
 
 .. _recipe_file:
 

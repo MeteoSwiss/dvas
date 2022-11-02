@@ -25,13 +25,15 @@ from ..errors import DvasRecipesError
 logger = logging.getLogger(__name__)
 
 
-def get_query_filter(tags_in: list = None, tags_out: list = None, mids: list = None) -> str:
+def get_query_filter(tags_in: list = None, tags_out: list = None, mids: list = None,
+                     oids: list = None) -> str:
     """ Assembles a str to query the dvas DB, given a list of tags to include and/or exclude.
 
     Args:
         tags_in (list, optional): list of tags required to be present
         tags_out (list, optional): list of tags required to be absent
         mids (list, optional): list of mids required
+        oids (list, optional): list of oids required
 
     Returns:
         str: the query filter
@@ -47,6 +49,9 @@ def get_query_filter(tags_in: list = None, tags_out: list = None, mids: list = N
 
     if mids is not None:
         filt += ["or_(mid('" + "'), mid('".join(mids) + "'))"]
+
+    if oids is not None:
+        filt += ["or_(oid(" + "), oid(".join([str(item) for item in oids]) + "))"]
 
     if len(filt) == 0:
         return ''
@@ -116,6 +121,7 @@ def find_tropopause(rs_prf, min_alt=5500, algo='gruan'):
 
     # TODO: in this function, we always assume that we have meters ...
     # This should (at the very least) be checked for.
+    # This would most likely require #228 to be fixed, though ...
 
     # Let us duplicate the alt index as a column ...
     rs_prf.data.loc[:, PRF_ALT] = rs_prf.data.index.get_level_values('alt').values
@@ -140,7 +146,7 @@ def find_tropopause(rs_prf, min_alt=5500, algo='gruan'):
     rs_prf.data.loc[:, 'lapse_rate'] = - rs_prf_diff.temp_interp / rs_prf_diff.alt_interp * 1e3
 
     # Loop through all altitudes, stopping only were the lapse rate is small enough (and valid)
-    for idxmin, row in rs_prf.data[rs_prf.data['alt'] > min_alt].iterrows():
+    for idxmin, row in rs_prf.data[rs_prf.data[PRF_ALT] > min_alt].iterrows():
         if np.isnan(row[PRF_VAL]):
             # I refuse to detect the tropopause at an interpolated location.
             continue

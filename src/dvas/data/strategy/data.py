@@ -28,7 +28,7 @@ from ...hardcoded import PRF_FLG
 logger = logging.getLogger(__name__)
 
 # Define some generic stuff
-INT_TEST = (np.int64, np.int, int, type(pd.NA))
+INT_TEST = (np.int64, np.int, int)
 FLOAT_TEST = (np.float, float) + INT_TEST
 TIME_TEST = FLOAT_TEST + (pd.Timedelta, type(pd.NaT))
 
@@ -170,8 +170,7 @@ class ProfileAC(metaclass=RequiredAttrMetaClass):
                 # Prepare value
                 assert isinstance(val, pd.Series)
                 if any([ind not in self.data.index for ind in val.index]):
-                    raise DvasError('Ouch ! Bad index {}. Should be {}'.format(val.index,
-                                                                               self.data.index))
+                    raise DvasError(f'Bad index {val.index}. Should be {self.data.index}')
                 value = self._prepare_df(val.to_frame(), cols_key=[item])
 
                 # Update value
@@ -241,13 +240,14 @@ class ProfileAC(metaclass=RequiredAttrMetaClass):
 
             # Test column name. If it is missing, raise an error
             if key not in val.columns:
-                raise ProfileError('Required column not found: %s' % key)
+                raise ProfileError(f'Required column not found: {key}')
 
             # ... to test if they all have the proper type.
             if ~val[key].apply(type).apply(
                     issubclass, args=(cls.DF_COLS_ATTR[key]['test']+(type(None),),)).all():
-                raise ProfileError("Wrong data type for '%s': I need %s but you gave me %s" %
-                                   (key, cls.DF_COLS_ATTR[key]['test'], val[key].dtype))
+                raise ProfileError(
+                    f"Wrong data type for '{key}': I need {cls.DF_COLS_ATTR[key]['test']} " +
+                    f" but you gave me {val[key].dtype}.")
 
             # Convert
             if key in val.columns and cls.DF_COLS_ATTR[key]['type']:
@@ -272,7 +272,7 @@ class Profile(ProfileAC):
     The data is stored in a pandas DataFrame with column labels:
       - 'alt' (float)
       - 'val' (float)
-      - 'flg' (Int64)
+      - 'flg' (int)
 
     The same format is expected as input.
 
@@ -286,7 +286,7 @@ class Profile(ProfileAC):
     DF_COLS_ATTR = {
         PRF_VAL: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
         PRF_ALT: {'test': FLOAT_TEST, 'type': np.float, 'index': True},
-        PRF_FLG: {'test': FLOAT_TEST, 'type': 'Int64', 'index': False}
+        PRF_FLG: {'test': FLOAT_TEST, 'type': np.int, 'index': False}
     }
 
     def __init__(self, info, data=None):
@@ -445,7 +445,7 @@ class RSProfile(Profile):
     - 'alt' (float)
     - 'tdt' (timedelta64[ns])
     - 'val' (float)
-    - 'flg' (Int64)
+    - 'flg' (int)
 
     The same format is expected as input.
 
@@ -456,7 +456,7 @@ class RSProfile(Profile):
         PRF_ALT: {'test': FLOAT_TEST, 'type': np.float, 'index': True},
         PRF_TDT: {'test': TIME_TEST, 'type': 'timedelta64[ns]', 'index': True},
         PRF_VAL: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
-        PRF_FLG: {'test': FLOAT_TEST, 'type': 'Int64', 'index': False},
+        PRF_FLG: {'test': FLOAT_TEST, 'type': np.int, 'index': False},
     }
 
     @property
@@ -485,7 +485,7 @@ class GDPProfile(RSProfile):
     - 'ucs' (float)
     - 'uct' (float)
     - 'ucu' (float)
-    - 'flg' (Int64)
+    - 'flg' (int)
 
     The same format is expected as input.
 

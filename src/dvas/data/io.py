@@ -68,7 +68,7 @@ def update_db(search, strict=False):
     db_mngr = DatabaseManager()
     db_linker = LocalDBLinker()
 
-    # Define chain of responsibility for loading from raw
+    # Define chain of responsibility for loading from original
     handler = CSVHandler(origdata_config_mngr)
     handler.\
         set_next(GDPHandler(origdata_config_mngr)).\

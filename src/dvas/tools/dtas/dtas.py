@@ -74,7 +74,7 @@ def single_delta(prf, cws, angular_wrap=False):
             raise DvasError('Angular wrapping failed ?!')
 
     # For the flags, let's apply a bitwise_or to combine the prf and cws values
-    flg_pdf = pd.DataFrame([cws.data['flg'].values, prf.data['flg'].values], dtype='Int64').T
+    flg_pdf = pd.DataFrame([cws.data['flg'].values, prf.data['flg'].values], dtype=int).T
     dta_data.loc[:, [PRF_FLG]] = fancy_bitwise_or(flg_pdf, axis=1)
 
     # Create a new DeltaProfile instance

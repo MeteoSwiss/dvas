@@ -34,34 +34,33 @@ def chunk():
     cols = pd.MultiIndex.from_tuples([(ind, item) for item in lvl_one for ind in range(3)])
 
     # Initialize the DataFrame
-    test_chunk = pd.DataFrame(index=pd.Series(range(10)), columns=cols).sort_index(axis=1)
+    test_chunk = pd.DataFrame(index=pd.Series(range(10)), columns=cols)
+    test_chunk.sort_index(axis=1, inplace=True)
 
     # Set the proper types for the different columns
-    for key in lvl_one:
-        if key == 'tdt':
-            test_chunk.loc[:, (slice(None), key)] = \
-                test_chunk.loc[:, (slice(None), key)].astype('timedelta64[ns]')
-        elif key == PRF_FLG:
-            test_chunk.loc[:, (slice(None), key)] = \
-                test_chunk.loc[:, (slice(None), key)].astype('Int64')
+    for col in cols:
+        if col[1] == 'tdt':
+            test_chunk[col] = test_chunk[col].astype('timedelta64[ns]')
+        elif col[1] == PRF_FLG:
+            test_chunk[col] = 0
+            test_chunk[col] = test_chunk[col].astype(int)
         else:
-            test_chunk.loc[:, (slice(None), key)] = \
-                test_chunk.loc[:, (slice(None), key)].astype('float')
+            test_chunk[col] = test_chunk[col].astype('float')
 
     # The time deltas
-    test_chunk.loc[:, (0, PRF_TDT)] = pd.to_timedelta(range(10), unit='s')
-    test_chunk.loc[:, (1, PRF_TDT)] = pd.to_timedelta(range(1, 11), unit='s')
-    test_chunk.loc[:, (2, PRF_TDT)] = pd.to_timedelta(np.arange(0.01, 10.01, 1), unit='s')
+    test_chunk[(0, PRF_TDT)] = pd.to_timedelta(range(10), unit='s')
+    test_chunk[(1, PRF_TDT)] = pd.to_timedelta(range(1, 11), unit='s')
+    test_chunk[(2, PRF_TDT)] = pd.to_timedelta(np.arange(0.01, 10.01, 1), unit='s')
 
     # Some altitudes
-    test_chunk.loc[:, (0, PRF_ALT)] = np.arange(0, 50, 5.)
-    test_chunk.loc[:, (1, PRF_ALT)] = np.arange(1, 50, 5.)
-    test_chunk.loc[:, (2, PRF_ALT)] = np.arange(0.01, 50, 5.)
+    test_chunk[(0, PRF_ALT)] = np.arange(0, 50, 5.)
+    test_chunk[(1, PRF_ALT)] = np.arange(1, 50, 5.)
+    test_chunk[(2, PRF_ALT)] = np.arange(0.01, 50, 5.)
 
     # Some values
-    test_chunk.loc[:, (0, PRF_VAL)] = 1.
-    test_chunk.loc[:, (1, PRF_VAL)] = 2.
-    test_chunk.loc[:, (2, PRF_VAL)] = 4.
+    test_chunk[(0, PRF_VAL)] = 1.
+    test_chunk[(1, PRF_VAL)] = 2.
+    test_chunk[(2, PRF_VAL)] = 4.
     test_chunk.loc[:, (slice(None), 'w_ps')] = 1.
 
     # Set some NaN's
@@ -98,8 +97,8 @@ def chunk():
     test_chunk.loc[:, (slice(None), 'rid')] = 'r:1'
 
     for ind in range(3):
-        test_chunk.loc[:, (ind, 'oid')] = ind
-        test_chunk.loc[:, (ind, 'mid')] = 'A'  # Force the same mid for all Profiles
+        test_chunk[(ind, 'oid')] = ind
+        test_chunk[(ind, 'mid')] = 'A'  # Force the same mid for all Profiles
 
     return test_chunk
 
@@ -115,13 +114,13 @@ def test_weighted_mean(chunk):
 
     # If all the values are NaNs, should be NaN, and so should the flag.
     assert out.isna().loc[1, PRF_VAL]
-    assert out.isna().loc[1, PRF_FLG]
+    assert out.loc[1, PRF_FLG] == 0
     # If only some of the bins are NaN's, I should return a number and flag
     assert out.loc[2, PRF_VAL] == 6/2
     assert out.loc[2, PRF_FLG] == 3
     # if all the weights are NaN's, return NaN
     assert out.isna().loc[9, PRF_VAL]
-    assert out.isna().loc[9, PRF_FLG]
+    assert out.loc[9, PRF_FLG] == 0
     # jac_mat has correct dimensions ?
     assert np.shape(jac_mat) == (int(np.ceil(len(chunk))), len(chunk)*3)
     # Content of jac_mat is as expected
@@ -172,10 +171,10 @@ def test_delta(chunk):
     # Correct jacobian shape ?
     assert np.shape(jac_out) == (len(chunk_2)//binning + len(chunk_2) % binning, 2*len(chunk_2))
     # Correct flags ?
-    assert out.loc[0, 'flg'] == 3
-    assert out.isna().loc[1, 'flg']
-    assert out.loc[2, 'flg'] == 0
-    assert out.isna().loc[9, 'flg']
+    assert out.loc[0, PRF_FLG] == 3
+    assert out.loc[1, PRF_FLG] == 0
+    assert out.loc[2, PRF_FLG] == 0
+    assert out.loc[9, PRF_FLG] == 0
 
     # Now do the same with some binning
     binning = 2

@@ -30,6 +30,7 @@ from dvas.tools.gdps.gdps import combine
 from dvas import dynamic as dyn
 from dvas.environ import path_var
 import dvas.plots.utils as dpu
+from dvas.hardcoded import TAG_SYNC
 
 # Import from dvas recipes
 from .errors import DvasRecipesError
@@ -149,7 +150,7 @@ def optimize(n_cpus=None, prf_length=7001, chunk_min=50, chunk_max=300, n_chunk=
         db_data[ind].update({'oid': oid})
 
         # Prepare some datasets to play with: first an InfoManager with the oid we just minted ...
-        info = InfoManager('20210616T0000Z', oid, tags={'e:1', 'r:1', 'sync'})
+        info = InfoManager('20210616T0000Z', oid, tags={'e:1', 'r:1', TAG_SYNC})
 
         # And then some random data ...
         data = pd.DataFrame({'alt': np.arange(0, prf_length, 1),

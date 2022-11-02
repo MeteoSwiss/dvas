@@ -13,8 +13,8 @@ Module contents: Plotting functions related to the gruan submodule.
 import logging
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
-import matplotlib.transforms as transforms
+from matplotlib import gridspec
+from matplotlib import transforms
 
 # Import from this package
 from ..logger import log_func_call
@@ -139,14 +139,14 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
             logger.warning('"%s" not found in CWS metadata.', loi)
             continue
 
-        loi_gph = cws_prf[0].info.metadata[loi]
+        loi_gph = float(cws_prf[0].info.metadata[loi].split(' ')[0])
 
         for ax in [ax0, ax1, ax1b, ax2]:
             ax.axvline(loi_gph, ls=':', lw=1, c='k')
-            trans = transforms.blended_transform_factory(ax.transData, ax.transAxes)
-            ax0.text(loi_gph, 0.95, symb, transform=trans, ha='center', va='top',
-                     rotation=90,
-                     bbox=dict(boxstyle='square', fc="w", ec="none", pad=0.1))
+        trans = transforms.blended_transform_factory(ax0.transData, ax0.transAxes)
+        ax0.text(loi_gph, 0.95, symb, transform=trans, ha='center', va='top',
+                 rotation=90,
+                 bbox=dict(boxstyle='square', fc="w", ec="none", pad=0.1))
 
     # Make it look pretty
     # Legends, labels, etc ...
@@ -170,7 +170,7 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     ax1b.axhline(5, ls='--', lw=1, c='k')
     ax1b.text(
         -0.1, 0.5,
-        pu.fix_txt(r'$\frac{\textrm{d}(\text{gph}_{\text{CWS}})}{\textrm{dt}}$ [m\,s$^{-1}$]'),
+        pu.fix_txt(r'$\frac{\textrm{d}(\text{gph})}{\textrm{dt}}$ [m\,s$^{-1}$]'),
         ha='left', va='center', transform=ax1b.transAxes, rotation=90)
 
     # Crop the plot to the regions with valid altitudes

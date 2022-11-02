@@ -18,12 +18,13 @@ import numpy as np
 from dvas.data.strategy.data import Profile, RSProfile, GDPProfile, DeltaProfile
 from dvas.errors import ProfileError
 from dvas.database.database import InfoManager
+from dvas.hardcoded import TAG_ORIGINAL, TAG_GDP
 
 
 class TestProfile:
     """Test Profile class"""
 
-    info = InfoManager('20200202T0000Z', 1, tags=['raw'])
+    info = InfoManager('20200202T0000Z', 1, tags=[TAG_ORIGINAL])
     ok_data = pd.DataFrame({'alt': [10., 15., 20.], 'val': [1., 2., 3.], 'flg': [0, 0, 0]})
     ko_index_data = ok_data[['val', 'flg']].copy()
 
@@ -65,8 +66,8 @@ class TestProfile:
         assert np.array_equal(inst.alt.values, self.ok_data['alt'].values)
 
         # Test tag getter
-        assert inst.has_tag('raw')
-        assert not inst.has_tag('gdp')
+        assert inst.has_tag(TAG_ORIGINAL)
+        assert not inst.has_tag(TAG_GDP)
 
     def test_setter(self):
         """Test setter method"""

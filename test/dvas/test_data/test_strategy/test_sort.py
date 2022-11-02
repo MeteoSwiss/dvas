@@ -10,7 +10,6 @@ Module contents: Testing classes and function for dvas.data.strategy.sort module
 """
 
 # Import from Python
-import numpy as np
 
 # Import from tested package
 from dvas.data.strategy.sort import SortProfileStrategy

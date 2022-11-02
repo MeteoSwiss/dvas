@@ -16,7 +16,7 @@ import pytest
 import pandas as pd
 
 # Import from this module
-from dvas.hardcoded import PRF_TDT
+from dvas.hardcoded import PRF_TDT, TAG_SYNC, TAG_CWS
 from dvas.data.strategy.data import CWSProfile, RSProfile, Profile
 from dvas.database.database import InfoManager
 from dvas.data.data import MultiCWSProfile, MultiRSProfile
@@ -49,11 +49,11 @@ def prf_and_cws(db_init):
     oids = [item['oid'] for item in db_init.data]
 
     # Prepare some datasets to play with
-    info_prf = InfoManager('20210302T0000Z', oids[0], tags=['sync', 'e:1', 'r:1'])
+    info_prf = InfoManager('20210302T0000Z', oids[0], tags=[TAG_SYNC, 'e:1', 'r:1'])
     data_prf = pd.DataFrame({'alt': [10., 15., 20.], 'val': [10., 20., 30.], 'flg': [1, 1, 1]})
 
     # Prepare some datasets to play with
-    info_cws = InfoManager('20210302T0000Z', oids[-2:], tags=['cws', 'e:1', 'r:1'])
+    info_cws = InfoManager('20210302T0000Z', oids[-2:], tags=[TAG_CWS, 'e:1', 'r:1'])
     data_cws = pd.DataFrame({'alt': [10., 15., 20.], 'val': [10., 20., 30.], 'flg': [1, 1, 1],
                              'tdt': [0e9, 1e9, 2e9], 'ucr': [1, 1, 1], 'ucs': [1, 1, 1],
                              'uct': [1, 1, 1], 'ucu': [1, 1, 1]})
@@ -69,12 +69,12 @@ def rsprf_and_cws(db_init):
     oids = [item['oid'] for item in db_init.data]
 
     # Prepare some datasets to play with
-    info_prf = InfoManager('20210302T0000Z', oids[0], tags=['sync', 'e:1', 'r:1'])
+    info_prf = InfoManager('20210302T0000Z', oids[0], tags=[TAG_SYNC, 'e:1', 'r:1'])
     data_prf = pd.DataFrame({'alt': [10., 15., 20.], 'val': [10., 20., 30.], 'flg': [1, 1, 1],
                              'tdt': [0e9, 1e9, 2e9]})
 
     # Prepare some datasets to play with
-    info_cws = InfoManager('20210302T0000Z', oids[-2:], tags=['cws', 'e:1', 'r:1'])
+    info_cws = InfoManager('20210302T0000Z', oids[-2:], tags=[TAG_CWS, 'e:1', 'r:1'])
     data_cws = pd.DataFrame({'alt': [10., 15., 20.], 'val': [10., 20., 30.], 'flg': [1, 1, 1],
                              'tdt': [0e9, 1e9, 2e9], 'ucr': [1, 1, 1], 'ucs': [1, 1, 1],
                              'uct': [1, 1, 1], 'ucu': [1, 1, 1]})

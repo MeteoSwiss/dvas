@@ -175,7 +175,6 @@ class Recipe:
             rcp_fn (pathlib.Path): path of the recipe file to initialize.
             eids_to_treat (list, optional): list of ('fid', 'e:eid', 'r:rid') tuples.
                 If None, will process all the flights found in the DB.
-            fid_to_treat (list, optional): list of specific fid to be processed.
             debug (bool, optional): if True, will force-set the logging level to DEBUG.
                 Defaults to False.
 
@@ -186,6 +185,7 @@ class Recipe:
 
         # Set the recipe name
         self._name = rcp_data['rcp_name']
+        rcp_dyn.RECIPE = rcp_data['rcp_name']
         # Set whether we want to reset the DB, or load an existing one
         self._reset_db = rcp_data['rcp_params']['general']['reset_db']
 
@@ -203,7 +203,6 @@ class Recipe:
 
             # Get the list of fids, in order to create dedicated folders
             fids = '_'.join([item[0] for item in eids_to_treat])
-            eids_to_treat = [(item[1], item[2]) for item in eids_to_treat]
 
             # Adjust the input and output paths accordingly
             setattr(path_var, 'output_path', path_var.output_path / fids)
@@ -288,31 +287,29 @@ class Recipe:
 
     @staticmethod
     def init_db(reset: bool = True):
-        """ Initialize the dvas database, and fetch the raw data required for the recipe.
+        """ Initialize the dvas database, and fetch the original data required for the recipe.
 
         Args:
             reset (bool, optional): if True, the DB will be filled from scratch. Else, only new
-                raw data will be ingested. Defaults to True.
+                original data will be ingested. Defaults to True.
         """
 
         # Here, make sure the DB is stored locally, and not in memory.
         dyn.DB_IN_MEMORY = False
 
         if reset:
-            logger.info("Resetting the DB.")
+            logger.info("Resetting the DB ...")
             # Use this command to clear the DB
             DB.refresh_db()
 
         # Init the DB
         DB.init()
 
-        # Fetch the raw data
-        DB.fetch_raw_data([rcp_dyn.INDEXES[PRF_TDT]] +
-                          [rcp_dyn.INDEXES[PRF_ALT]] +
-                          list(rcp_dyn.ALL_VARS) +
-                          [rcp_dyn.ALL_VARS[var][uc] for var in rcp_dyn.ALL_VARS
-                           for uc in rcp_dyn.ALL_VARS[var]],
-                          strict=True)
+        # Fetch the original data
+        DB.fetch_original_data([rcp_dyn.INDEXES[PRF_TDT]] + [rcp_dyn.INDEXES[PRF_ALT]] +
+                               list(rcp_dyn.ALL_VARS) +
+                               [rcp_dyn.ALL_VARS[var][uc] for var in rcp_dyn.ALL_VARS
+                               for uc in rcp_dyn.ALL_VARS[var]], strict=True)
 
     @staticmethod
     def get_all_flights_from_db():

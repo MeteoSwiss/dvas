@@ -55,10 +55,10 @@ def test_fancy_bitwise_or():
     """ Function to test if the fancy_bitwise_or fct works as expected. """
 
     # Create a fake dataset
-    vals = pd.DataFrame(np.array([[np.nan, np.nan, np.nan],
-                                  [np.nan, 1, 2],
+    vals = pd.DataFrame(np.array([[0, 0, 0],
+                                  [0, 1, 2],
                                   [1, 3, 4],
-                                  [1, 1, 1]])).astype('Int64')
+                                  [1, 1, 1]])).astype(int)
 
     out = tools.fancy_bitwise_or(vals, axis=None)
     assert out == 7
@@ -68,7 +68,6 @@ def test_fancy_bitwise_or():
 
     out = tools.fancy_bitwise_or(vals, axis=1)
     assert all(out[1:] == pd.array([3, 7, 1]))
-    assert out.isna()[0]
 
 
 def test_wrap_angle():

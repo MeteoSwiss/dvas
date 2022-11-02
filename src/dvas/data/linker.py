@@ -40,7 +40,7 @@ from ..environ import glob_var
 from ..hardcoded import GDP_FILE_EXT
 from ..hardcoded import PRM_PAT, FLG_PRM_PAT
 from ..hardcoded import CSV_FILE_MDL_PAT, GDP_FILE_MDL_PAT
-from ..hardcoded import TAG_RAW, TAG_GDP, TAG_EMPTY
+from ..hardcoded import TAG_ORIGINAL, TAG_GDP, TAG_EMPTY
 from ..tools import wmo
 
 # Setup local logger
@@ -502,7 +502,7 @@ class CSVHandler(FileHandler):
         self._file_model_pat = re.compile(CSV_FILE_MDL_PAT)
         self._origmeta_mngr = CSVOrigMeta()
 
-        self._data_ok_tags = [TAG_RAW]
+        self._data_ok_tags = [TAG_ORIGINAL]
 
     @property
     def origmeta_mngr(self):
@@ -545,7 +545,7 @@ class CSVHandler(FileHandler):
 
             # Meta data are in data file
             if metadata_file_path == file_path:
-                meta_raw = ''.join(
+                meta_original = ''.join(
                     [arg[1:] for arg in
                      takewhile(lambda x: x[0] in ['#', '%'], fid)
                      ]
@@ -553,11 +553,11 @@ class CSVHandler(FileHandler):
 
             # Meta data are in separate file
             else:
-                meta_raw = fid.read()
+                meta_original = fid.read()
 
         # Read YAML config
         try:
-            self.origmeta_mngr.read(meta_raw)
+            self.origmeta_mngr.read(meta_original)
             assert self.origmeta_mngr.document is not None
 
         except ConfigReadError as exc:
@@ -585,46 +585,34 @@ class CSVHandler(FileHandler):
             [mdl_name, prm_name]
         )
 
-        # Get raw data config param
-        raw_csv_read_args = {
-            key: val
-            for key, val in origdata_cfg_prm.items()
-            if key in PD_CSV_READ_ARGS
-        }
+        # Get original data config param
+        original_csv_read_args = {key: val for key, val in origdata_cfg_prm.items()
+                                  if key in PD_CSV_READ_ARGS}
 
         # Reset to default if dedicated config field is True
         if origdata_cfg_prm[CSV_USE_DEFAULT_FLD_NM]:
-            raw_csv_read_args_def = {
-                key: val
-                for key, val in self.origdata_config_mngr.get_default().items()
-                if key in PD_CSV_READ_ARGS
-            }
-            raw_csv_read_args.update(raw_csv_read_args_def)
+            original_csv_read_args_def = {
+                key: val for key, val in self.origdata_config_mngr.get_default().items()
+                if key in PD_CSV_READ_ARGS}
+            original_csv_read_args.update(original_csv_read_args_def)
 
         # Replace prefix
-        raw_csv_read_args = {
-            key.replace('csv_', ''): val
-            for key, val in raw_csv_read_args.items()
-        }
+        original_csv_read_args = {key.replace('csv_', ''): val
+                                  for key, val in original_csv_read_args.items()}
 
         # Transform the skiprow argument into a suitable lambda function, if warranted.
         # That's to deal with side-effects of #182 when the list of column names is not the last
         # one before the data. fpavogt, 26.11.2021
-        if 'skiprows' in raw_csv_read_args.keys():
-            if isinstance(raw_csv_read_args['skiprows'], str):
-                raw_csv_read_args['skiprows'] = eval(raw_csv_read_args['skiprows'])
+        if 'skiprows' in original_csv_read_args.keys():
+            if isinstance(original_csv_read_args['skiprows'], str):
+                original_csv_read_args['skiprows'] = eval(original_csv_read_args['skiprows'])
 
         # Set read_csv arguments
         # (Add usecols, squeeze and engine arguments)
-        raw_csv_read_args.update(
-            {
-                'usecols': [field_id],
-                'engine': 'python',
-            }
-        )
+        original_csv_read_args.update({'usecols': [field_id], 'engine': 'python'})
 
-        # Read raw csv
-        data = pd.read_csv(data_file_path, **raw_csv_read_args).squeeze("columns")
+        # Read original csv
+        data = pd.read_csv(data_file_path, **original_csv_read_args).squeeze("columns")
 
         return data
 
@@ -647,7 +635,7 @@ class GDPHandler(FileHandler):
         self._file_model_pat = re.compile(GDP_FILE_MDL_PAT)
         self._fid = None
 
-        self._data_ok_tags = [TAG_RAW, TAG_GDP]
+        self._data_ok_tags = [TAG_ORIGINAL, TAG_GDP]
 
     def get_metadata_item(self, item):
         """Implementation of abstract method"""
@@ -729,7 +717,7 @@ class FlgGDPHandler(GDPHandler):
         )
         self._prm_re = re.compile(FLG_PRM_PAT)
 
-        self._data_ok_tags = [TAG_RAW, TAG_GDP]
+        self._data_ok_tags = [TAG_ORIGINAL, TAG_GDP]
 
     def get_metadata_filename(self, data_file_path):
         """Implementation of abstract method"""
@@ -743,25 +731,17 @@ class FlgGDPHandler(GDPHandler):
             [mdl_name, prm_name]
         )
 
-        # Get raw data config param
-        raw_csv_read_args = {
-            key.replace('csv_', ''): val
-            for key, val in origdata_cfg_prm.items()
-            if key in PD_CSV_READ_ARGS
-        }
+        # Get original data config param
+        original_csv_read_args = {key.replace('csv_', ''): val
+                                  for key, val in origdata_cfg_prm.items()
+                                  if key in PD_CSV_READ_ARGS}
 
         # Set read_csv arguments
         # (Add usecols, squeeze and engine arguments)
-        raw_csv_read_args.update(
-            {
-                'usecols': [field_id],
-                'squeeze': True,
-                'engine': 'python',
-            }
-        )
+        original_csv_read_args.update({'usecols': [field_id], 'squeeze': True, 'engine': 'python'})
 
-        # Read raw csv
-        data = pd.read_csv(data_file_path, **raw_csv_read_args)
+        # Read original csv
+        data = pd.read_csv(data_file_path, **original_csv_read_args)
 
         return data
 

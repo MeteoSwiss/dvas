@@ -8,6 +8,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
 Module content: dynamic variables, that get modified on the fly by the Recipes.
 """
 
+#: str: name of the dvas recipe
+RECIPE = None
+
 #: list: list of event_id, rig_id pairs identifying all the flights to to be processed. E.g.:
 # [[12345, 1], [12346, 1]]
 ALL_FLIGHTS = None
