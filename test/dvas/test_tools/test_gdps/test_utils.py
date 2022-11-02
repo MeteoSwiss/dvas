@@ -38,22 +38,19 @@ def chunk():
     test_chunk = test_chunk.sort_index(axis=1)
 
     # Set the proper types for the different columns
-    for key in lvl_one:
-        if key == 'tdt':
-            test_chunk.loc[:, (slice(None), key)] = \
-                test_chunk.loc[:, (slice(None), key)].astype('timedelta64[ns]')
-        elif key == PRF_FLG:
-            test_chunk.loc[:, (slice(None), key)] = 0
-            test_chunk.loc[:, (slice(None), key)] = \
-                test_chunk.loc[:, (slice(None), key)].astype(int)
+    for col in cols:
+        if col[1] == 'tdt':
+            test_chunk[col] = test_chunk[col].astype('timedelta64[ns]')
+        elif col[1] == PRF_FLG:
+            test_chunk[col] = 0
+            test_chunk[col] = test_chunk[col].astype(int)
         else:
-            test_chunk.loc[:, (slice(None), key)] = \
-                test_chunk.loc[:, (slice(None), key)].astype('float')
+            test_chunk[col] = test_chunk[col].astype('float')
 
     # The time deltas
-    test_chunk.loc[:, (0, PRF_TDT)] = pd.to_timedelta(range(10), unit='s')
-    test_chunk.loc[:, (1, PRF_TDT)] = pd.to_timedelta(range(1, 11), unit='s')
-    test_chunk.loc[:, (2, PRF_TDT)] = pd.to_timedelta(np.arange(0.01, 10.01, 1), unit='s')
+    test_chunk[(0, PRF_TDT)] = pd.to_timedelta(range(10), unit='s')
+    test_chunk[(1, PRF_TDT)] = pd.to_timedelta(range(1, 11), unit='s')
+    test_chunk[(2, PRF_TDT)] = pd.to_timedelta(np.arange(0.01, 10.01, 1), unit='s')
 
     # Some altitudes
     test_chunk.loc[:, (0, PRF_ALT)] = np.arange(0, 50, 5.)
@@ -100,8 +97,8 @@ def chunk():
     test_chunk.loc[:, (slice(None), 'rid')] = 'r:1'
 
     for ind in range(3):
-        test_chunk.loc[:, (ind, 'oid')] = ind
-        test_chunk.loc[:, (ind, 'mid')] = 'A'  # Force the same mid for all Profiles
+        test_chunk[(ind, 'oid')] = ind
+        test_chunk[(ind, 'mid')] = 'A'  # Force the same mid for all Profiles
 
     return test_chunk
 

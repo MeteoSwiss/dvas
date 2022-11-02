@@ -10,6 +10,7 @@ Module contents: Rebase strategy
 """
 
 # Import from external packages
+import warnings
 import numbers
 import pandas as pd
 
@@ -107,7 +108,11 @@ class RebaseStrategy(MPStrategyAC):
             # Fill the new data where needed. Note here that this line relies on the fact that
             # pandas will take care of replacing only the rows that have the same indices.
             # Anything that needs to be dropped from this_data will thus be dropped as required.
-            new_data.update(this_data)
+            # new_data has the correct dtypes - we can thus ignore the pandas FutureWarning
+            # coming from v1.5.0
+            with warnings.catch_warnings():
+                warnings.simplefilter(action='ignore', category=FutureWarning)
+                new_data.update(this_data)
 
             # And finally let's assign the new DataFrame to the Profile. The underlying setter
             # will take care of reformatting all the indices as needed.

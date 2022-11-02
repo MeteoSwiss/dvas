@@ -141,7 +141,7 @@ rcp_steps:
           prf_tags: '02' # str or list of tags to identify Profiles in the database. If empty, will not touch Profiles
           cws_tags: '04' # str or list of tags to identify Combined Working Standard in the database
 
-    # Export cleaned, synced profiles to netCDF
+    # Export cleaned, resampled, synced, profiles to netCDF
     - fct: uaii2022.export.export_profiles
       step_id: '06'
       run: True
