@@ -12,13 +12,14 @@ Module content: high-level plotting for the UAII2022 recipe
 import logging
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
+from matplotlib import gridspec
+from matplotlib import transforms
 
 # Import dvas modules and classes
 from dvas.logger import log_func_call
 from dvas.data.data import MultiProfile, MultiGDPProfile, MultiCWSProfile, MultiDeltaProfile
 from dvas.hardcoded import PRF_IDX, PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCU, PRF_UCR, PRF_UCS, PRF_UCT
-from dvas.hardcoded import TAG_DTA, TAG_GDP, TAG_CWS
+from dvas.hardcoded import TAG_DTA, TAG_GDP, TAG_CWS, MTDTA_PBL, MTDTA_TROPOPAUSE
 from dvas.data.data import MultiRSProfile
 from dvas.tools.gdps import utils as dtgu
 from dvas.plots import utils as dpu
@@ -448,34 +449,48 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None):
         ax1 = fig.add_subplot(gs_info[1, 0], sharex=ax0)
 
         # Extract the DataFrames
-        prf = prfs.get_prms([PRF_ALT, PRF_VAL])[p_ind]
-        cws = cws_prfs.get_prms([PRF_ALT, PRF_VAL, 'uc_tot'])[0]
-        dta = dta_prfs.get_prms([PRF_ALT, PRF_VAL, 'uc_tot'])[p_ind]
+        prf_pdf = prfs.get_prms([PRF_ALT, PRF_VAL])[p_ind]
+        cws_pdf = cws_prfs.get_prms([PRF_ALT, PRF_VAL, 'uc_tot'])[0]
+        dta_pdf = dta_prfs.get_prms([PRF_ALT, PRF_VAL, 'uc_tot'])[p_ind]
 
         # Show the delta = 0 line
-        ax1.plot(cws.loc[:, PRF_ALT].values, cws.loc[:, PRF_VAL].values*0,
+        ax1.plot(cws_pdf.loc[:, PRF_ALT].values, cws_pdf.loc[:, PRF_VAL].values*0,
                  lw=0.4, ls='-', c='darkorchid')
 
         # Very well, let us plot all these things.
         # First, plot the profiles themselves
-        ax0.plot(prf.loc[:, PRF_ALT].values, prf.loc[:, PRF_VAL].values,
+        ax0.plot(prf_pdf.loc[:, PRF_ALT].values, prf_pdf.loc[:, PRF_VAL].values,
                  lw=0.4, ls='-', drawstyle='steps-mid', c='k', alpha=1,
                  label=mid[0])
-        ax0.plot(cws.loc[:, PRF_ALT].values, cws.loc[:, PRF_VAL].values,
+        ax0.plot(cws_pdf.loc[:, PRF_ALT].values, cws_pdf.loc[:, PRF_VAL].values,
                  lw=0.4, ls='-', drawstyle='steps-mid', c='darkorchid', alpha=1, label='CWS')
-        ax0.fill_between(prf.loc[:, PRF_ALT].values,
+        ax0.fill_between(prf_pdf.loc[:, PRF_ALT].values,
                          prfs.get_prms(PRF_VAL).max(axis=1).values,
                          prfs.get_prms(PRF_VAL).min(axis=1).values,
                          facecolor=(0.8, 0.8, 0.8), step='mid', edgecolor='none',
                          label='All sondes')
 
         # Next plot the uncertainties
-        ax1.plot(dta.loc[:, PRF_ALT], dta.loc[:, PRF_VAL],
+        ax1.plot(dta_pdf.loc[:, PRF_ALT], dta_pdf.loc[:, PRF_VAL],
                  alpha=1, drawstyle='steps-mid', color='k', lw=0.4)
-        ax1.fill_between(dta.loc[:, PRF_ALT].values,
+        ax1.fill_between(dta_pdf.loc[:, PRF_ALT].values,
                          dta_prfs.get_prms(PRF_VAL).max(axis=1).values,
                          dta_prfs.get_prms(PRF_VAL).min(axis=1).values,
                          facecolor=(0.8, 0.8, 0.8), step='mid', edgecolor='none')
+
+        # Display the location of the tropopause and the PBL
+        for (loi, symb) in [(MTDTA_TROPOPAUSE, r'$\prec$'), (MTDTA_PBL, r'$\simeq$')]:
+            if loi not in prf.info.metadata.keys():
+                logger.warning('"%s" not found in CWS metadata.', loi)
+                continue
+
+            loi_gph = float(prf.info.metadata[loi].split(' ')[0])
+
+            for ax in [ax0, ax1]:
+                ax.axvline(loi_gph, ls=':', lw=1, c='k')
+            trans = transforms.blended_transform_factory(ax0.transData, ax0.transAxes)
+            ax0.text(loi_gph, 0.95, symb, transform=trans, ha='center', va='top',
+                     rotation=90, bbox=dict(boxstyle='square', fc="w", ec="none", pad=0.1))
 
         # Set the axis labels
         ylbl0 = f'{prfs.var_info[PRF_VAL]["prm_name"]} [{prfs.var_info[PRF_VAL]["prm_unit"]}]'
@@ -491,8 +506,8 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None):
         # For the delta curve, set the scale for this specific mid (in case the rest of the sondes
         # behave very badly). This seems convoluted, but accounts for cases when ymin/ymax
         # are negative. It reproduces the default behavior of autoscale.
-        ymin = dta.loc[:, PRF_VAL].min()
-        ymax = dta.loc[:, PRF_VAL].max()
+        ymin = dta_pdf.loc[:, PRF_VAL].min()
+        ymax = dta_pdf.loc[:, PRF_VAL].max()
         if ~np.isnan(ymin) and ~np.isnan(ymax):  # If the delta is full or NaN, this may happen ...
             ax1.set_ylim((ymin-0.05*np.abs(ymax-ymin),
                           ymax+0.05*np.abs(ymax-ymin)))
