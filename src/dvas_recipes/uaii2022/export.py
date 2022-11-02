@@ -11,7 +11,7 @@ Module content: export recipes for the UAII2022 campaign
 # Import general Python packages
 import logging
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 import numpy as np
 from netCDF4 import Dataset  # noqa pylint: disable=E0611
 
@@ -77,7 +77,10 @@ def add_cf_attributes(grp, title='', institution: str = ''):
     setattr(grp, 'Conventions', "CF-1.7")
     setattr(grp, 'title', title)
     # History
-    val = f'{datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%f")} - created with dvas {VERSION}'
+    # Thanks to Craig McQueen's reply for getting timezone-aware utcnow() time on
+    # https://stackoverflow.com/questions/2331592
+    val = f'{datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%f %Z")} - '
+    val += f'created with dvas {VERSION}'
     setattr(grp, 'history', val)
     setattr(grp, 'institution', institution)
     # Source
@@ -143,7 +146,8 @@ def add_dvas_attributes(grp, prf):
     assert len(db_view.eid.unique()) == 1, 'eid mismatch'
     set_attribute(grp, 'd.Flight.EventId', f"{eid}")
     assert len(db_view.edt.unique()) == 1, 'edt mismatch'
-    set_attribute(grp, 'd.Flight.Datetime', f"{prf[0].info.edt}")
+    set_attribute(grp, 'd.Flight.Datetime',
+                  f"{prf[0].info.edt.strftime('%Y-%m-%dT%H:%M:%S.%f %Z')}")
     set_attribute(grp, 'd.Flight.RigId', f"{rid}")
     tods = []
     for item in ['daytime', 'nighttime', 'twilight']:
