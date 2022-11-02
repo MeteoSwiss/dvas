@@ -35,7 +35,7 @@ def chunk():
 
     # Initialize the DataFrame
     test_chunk = pd.DataFrame(index=pd.Series(range(10)), columns=cols)
-    test_chunk = test_chunk.sort_index(axis=1)
+    test_chunk.sort_index(axis=1, inplace=True)
 
     # Set the proper types for the different columns
     for col in cols:
@@ -53,14 +53,14 @@ def chunk():
     test_chunk[(2, PRF_TDT)] = pd.to_timedelta(np.arange(0.01, 10.01, 1), unit='s')
 
     # Some altitudes
-    test_chunk.loc[:, (0, PRF_ALT)] = np.arange(0, 50, 5.)
-    test_chunk.loc[:, (1, PRF_ALT)] = np.arange(1, 50, 5.)
-    test_chunk.loc[:, (2, PRF_ALT)] = np.arange(0.01, 50, 5.)
+    test_chunk[(0, PRF_ALT)] = np.arange(0, 50, 5.)
+    test_chunk[(1, PRF_ALT)] = np.arange(1, 50, 5.)
+    test_chunk[(2, PRF_ALT)] = np.arange(0.01, 50, 5.)
 
     # Some values
-    test_chunk.loc[:, (0, PRF_VAL)] = 1.
-    test_chunk.loc[:, (1, PRF_VAL)] = 2.
-    test_chunk.loc[:, (2, PRF_VAL)] = 4.
+    test_chunk[(0, PRF_VAL)] = 1.
+    test_chunk[(1, PRF_VAL)] = 2.
+    test_chunk[(2, PRF_VAL)] = 4.
     test_chunk.loc[:, (slice(None), 'w_ps')] = 1.
 
     # Set some NaN's
