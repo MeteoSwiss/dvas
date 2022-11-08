@@ -20,7 +20,7 @@ import pandas as pd
 from ...logger import log_func_call
 from ...errors import DvasError
 from ...hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
-from ..tools import fancy_nansum, fancy_bitwise_or
+from ..tools import fancy_nansum, fancy_bitwise_or, wrap_angle
 from .correlations import coeffs
 
 # Setup local logger
@@ -28,10 +28,49 @@ logger = logging.getLogger(__name__)
 
 
 @log_func_call(logger)
-def weighted_mean(df_chunk, binning=1):
-    """ Compute the (respective) weighted mean of the 'tdt', 'val', and 'alt' columns of a
-    pd.DataFrame, with weights defined in the 'w_ps' column. Also returns the Jacobian matrix for
+def merge_bin(wx_ps, binning):
+    """ Small utility function to sum individual profiles into bins.
+
+    Args:
+        wx_ps (pd.DataFrame): the DataFrame to bin, with columns representing distinct profiles.
+        binning (int): the vertical binning.
+
+    Returns:
+        pd.DataFrame: the binned profile.
+
+    """
+
+    # First, sum accross profiles
+    # Note the special treatment of NaNs: ignored, unless that is all I get from all the
+    # profiles at a given time step/altitude.
+    wx_s = fancy_nansum(wx_ps, axis=1)
+
+    # Then sum these across the time/altitude layers according to the binning
+    if binning > 1:
+        # Note again the special treatment of NaNs:
+        # ignored, unless that is all I have in a given bin.
+        return wx_s.groupby(wx_s.index//binning).aggregate(fancy_nansum)
+
+    # If no binning is required, then do nothing and save us some time.
+    return wx_s
+
+
+@log_func_call(logger)
+def weighted_mean(df_chunk, binning=1, mode='arithmetic'):
+    """ Compute the (respective) weighted mean of the 'tdt', 'val', and 'alt' columns of
+    a pd.DataFrame, with weights defined in the 'w_ps' column. Also returns the Jacobian matrix for
     `val` to enable accurate error propagation.
+
+    Args:
+        df_chunk (pandas.DataFrame): data containing the Profiles to merge.
+        binning (int, optional): binning size. Defaults to 1 (=no binning).
+        mode (str, optional): whether to compute an arithmetic or circular mean for 'val'.
+            An arithmetic mean is always computed for 'tdt' and 'alt'.
+
+    Returns:
+        (pandas.DataFrame, np.ma.masked_array): weighted mean profile, and associated Jacobian
+        matrix. The matrix has a size of m * n, with m = len(df_chunk)/binning, and
+        n = len(df_chunk) * n_profile.
 
     Note:
         The input format for `df_chunk` is a `pandas.DataFrame` with a very specific structure.
@@ -46,15 +85,6 @@ def weighted_mean(df_chunk, binning=1):
             0      486.7  0 days 00:00:00  284.7    0  55.8  485.9 ... 22.4
             1      492.4  0 days 00:00:01  284.6    1  67.5  493.4 ... 26.3
             ...
-
-    Args:
-        df_chunk (pandas.DataFrame): data conatining the Profiles to merge.
-        binning (int, optional): binning size. Defaults to 1 (=no binning).
-
-    Returns:
-        (pandas.DataFrame, np.ma.masked_array): weighted mean profile, and associated Jacobian
-        matrix. The matrix has a size of m * n, with m = len(df_chunk)/binning, and
-        n = len(df_chunk) * n_profile.
 
     Note:
         The function will ignore NaNs in a given bin, unless *all* the values in the bin are NaNs.
@@ -102,26 +132,32 @@ def weighted_mean(df_chunk, binning=1):
     # weighted means.
     for col in [PRF_TDT, PRF_ALT, PRF_VAL]:
 
-        # 1) First multiple vals * weights and keep this in a "clean" DataFrame
-        wx_ps = df_chunk.xs(col, level=1, axis=1) * w_ps
+        if col in [PRF_VAL] and mode == 'circular':
+            # Compute the circular mean
+            # 1) Compute u and v
+            u_ps = df_chunk.xs(col, level=1, axis=1).apply(np.deg2rad).apply(np.sin) * w_ps
+            v_ps = df_chunk.xs(col, level=1, axis=1).apply(np.deg2rad).apply(np.cos) * w_ps
 
-        # 2) Sum val * weight accross profiles.
-        # Note the special treatment of NaNs: ignored, unless that is all I get from all the
-        # profiles at a given time step/altitude.
-        wx_s = fancy_nansum(wx_ps, axis=1)
+            # 2) Sum u and v bins.
+            u_ms = merge_bin(u_ps, binning)
+            v_ms = merge_bin(v_ps, binning)
 
-        # 3) Then sum these across the time/altitude layers according to the binning
-        if binning > 1:
-            # Note again the special treatment of NaNs:
-            # ignored, unless that is all I have in a given bin.
-            wx_ms = wx_s.groupby(wx_s.index//binning).aggregate(fancy_nansum)
+            # 3) Compute the weighted circular mean - not forgetting to bring this back in the
+            # range [0, 360[.
+            chunk_out[col] = np.arctan2(u_ms, v_ms).apply(np.rad2deg) % 360
+
         else:
-            # If no binning is required, then do nothing and save us some time.
-            wx_ms = wx_s
+            # Compute the arithmetic mean
 
-        # Compute the weighted mean
-        # To avoid some runtime Warning, we replaced any 0 total weight with nan
-        chunk_out[col] = wx_ms / w_ms
+            # 1) First multiple vals * weights and keep this in a "clean" DataFrame
+            wx_ps = df_chunk.xs(col, level=1, axis=1) * w_ps
+
+            # 2) Sum the bins
+            wx_ms = merge_bin(wx_ps, binning)
+
+            # 3) Compute the weighted arithmetic mean
+            # To avoid some runtime Warning, we replaced any 0 total weight with nan
+            chunk_out[col] = wx_ms / w_ms
 
     # All done. Let us now compute the associated Jacobian matrix.
 
@@ -151,13 +187,40 @@ def weighted_mean(df_chunk, binning=1):
     # zero weight but that get included in the bin.
     w_mat[(cols % len(df_chunk))//binning != rows] = np.nan
 
-    # I also need to assemble a matrix of the total weights for each (final) row.
-    wtot_mat = np.tile(w_ms.values, (len(df_chunk)*n_prf, 1)).T
+    if mode == 'circular':
 
-    # I can now assemble the Jacobian for the weighted mean. Turn this into a masked array.
-    jac_mat = np.ma.masked_array(w_mat / wtot_mat,
-                                 mask=(np.isnan(wtot_mat) | np.isnan(w_mat)),
-                                 fill_value=np.nan)
+        # Assemble the full matrix of angles ...
+        x_mat = np.tile(df_chunk.xs('val', level=1, axis=1).values.T.flatten(), (len(chunk_out), 1))
+        # ... in radiansm, ready to be sin-ed or cos-ed
+        x_mat = np.deg2rad(x_mat)
+
+        # Compute some important factors (see the LaTeX doc of Hell for details)
+        v_u2v2 = np.tile(v_ms/(u_ms**2+v_ms**2).values, (len(df_chunk)*n_prf, 1)).T
+        u_v = np.tile(u_ms/v_ms, (len(df_chunk)*n_prf, 1)).T
+
+        # Here, we shall mask any infity that may occur ...
+        # typically if I get two angles 180deg appart
+        u_v[np.isinf(u_v)] = np.nan
+
+        # Ready to assemble the Jacobian matrix. We make turn it into a masked array.
+        jac_mat = np.ma.masked_array(v_u2v2 * (w_mat*np.cos(x_mat) + u_v*w_mat*np.sin(x_mat)),
+                                     mask=(np.isnan(v_u2v2) | np.isnan(w_mat) | np.isnan(x_mat) |
+                                           np.isnan(u_v)),
+                                     fill_value=np.nan)
+
+        # In very bad cases (e.g. 0 & 180), the Jacobian values can be NaN. In those cases, let's
+        # also set the chunk value to NaN.
+        chunk_out[jac_mat.sum(axis=1).mask] = np.nan
+
+    else:
+        # Get the Jacobian for the arithmetic mean
+        # I need to assemble a matrix of the total weights for each (final) row.
+        wtot_mat = np.tile(w_ms.values, (len(df_chunk)*n_prf, 1)).T
+
+        # I can now assemble the Jacobian for the weighted mean. Turn this into a masked array.
+        jac_mat = np.ma.masked_array(w_mat / wtot_mat,
+                                     mask=(np.isnan(wtot_mat) | np.isnan(w_mat)),
+                                     fill_value=np.nan)
 
     # Before we end, let us compute the flags. We apply a general bitwise OR to them, such that
     # they do not cancel each other or disappear: they get propagated all the way
@@ -176,10 +239,26 @@ def weighted_mean(df_chunk, binning=1):
 
 
 @log_func_call(logger)
-def delta(df_chunk, binning=1):
+def delta(df_chunk, binning=1, mode='arithmetic'):
     """ Compute the delta of the 'tdt', 'val', and 'alt' columns of a pd.DataFrame containing
     exactly 2 Profiles. Also returns the Jacobian matrix for `val` to enable accurate error
     propagation.
+
+    Args:
+        df_chunk (pandas.DataFrame): data containing the Profiles to merge.
+        binning (int, optional): binning size. Defaults to 1 (=no binning).
+        mode (str, optional): whether to compute an arithmetic or circular delta for 'val'.
+            An arithmetic delta is always computed for 'tdt' and 'alt'. A circular delta will wrap
+            results between [-180;180[.
+
+    Returns:
+        (pandas.DataFrame, np.ma.masked_array): delta profile (1 - 0), and associated Jacobian
+        matrix. The matrix has a size of m * n, with m = len(df_chunk)/binning, and
+        n = len(df_chunk) * 2.
+
+    Note:
+        The function will ignore NaNs in a given bin, unless *all* the values in the bin are NaNs.
+        See fancy_nansum() for details.
 
     Note:
         The input format for `df_chunk` is a `pandas.DataFrame` with a very specific structure.
@@ -194,19 +273,6 @@ def delta(df_chunk, binning=1):
             0      486.7  0 days 00:00:00  284.7   0 486.5  ...    0
             1      492.4  0 days 00:00:01  284.6   0 491.9  ...    1
             ...
-
-    Args:
-        df_chunk (pandas.DataFrame): data containing the Profiles to merge.
-        binning (int, optional): binning size. Defaults to 1 (=no binning).
-
-    Returns:
-        (pandas.DataFrame, np.ma.masked_array): delta profile (1 - 0), and associated Jacobian
-        matrix. The matrix has a size of m * n, with m = len(df_chunk)/binning, and
-        n = len(df_chunk) * 2.
-
-    Note:
-        The function will ignore NaNs in a given bin, unless *all* the values in the bin are NaNs.
-        See fancy_nansum() for details.
 
     """
 
@@ -263,6 +329,11 @@ def delta(df_chunk, binning=1):
         if col != PRF_VAL:
             continue
 
+        # Wrap angle in a suitable range, if warranted.
+        # Since this simply adds/removes a constant, it does not change the Jacobian
+        if mode == 'circular':
+            chunk_out[col] = chunk_out[col].apply(wrap_angle)
+
         # How big is my Jacobian ? (Make it a masked_array)
         jac_mat = np.ma.masked_array(np.ones((len(chunk_out), len(df_chunk)*n_prf)),
                                      mask=False,
@@ -313,8 +384,20 @@ def delta(df_chunk, binning=1):
     return chunk_out, jac_mat
 
 
-def process_chunk(df_chunk, binning=1, method='weighted mean'):
+def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean'):
     """ Process a DataFrame chunk and propagate the errors.
+
+    Args:
+        df_chunk (pandas.DataFrame): data containing the Profiles to merge.
+        binning (int, optional): binning size. Defaults to 1 (=no binning).
+        method (str, optional): the processing method. Can be one of
+            ['arithmetic mean', 'weighted arithmetic mean',
+             'circular mean', 'weighted circular mean',
+             'arithmetic delta', 'circular delta']. Defaults to 'weighted arithmetic mean'.
+
+    Returns:
+        pandas.DataFrame, dict: the processing outcome, including all the errors,
+            and the full correlation matrices (one per uncertainty type) as a dict.
 
     Note:
         The input format for `df_chunk` is a `pandas.DataFrame` with a very specific structure.
@@ -330,24 +413,10 @@ def process_chunk(df_chunk, binning=1, method='weighted mean'):
             1      492.4  0 days 00:00:01  284.6  0.07 NaN  ...     1 493.4
             ...
 
-    Args:
-        df_chunk (pandas.DataFrame): data containing the Profiles to merge.
-        binning (int, optional): binning size. Defaults to 1 (=no binning).
-        method (str, optional): the processing method. Can be one of
-            ['mean', 'weighted mean', delta']. Defaults to 'weighted mean'.
-
-    Returns:
-        pandas.DataFrame, dict: the processing outcome, including all the errors,
-            and the full correlation matrices (one per uncertainty type) as a dict.
-
     Note:
         The function will ignore NaNs in a given bin, unless *all* the values in the bin are NaNs.
         See fancy_nansum() for details.
     """
-
-    # Begin with some sanity checks
-    if method not in ['mean', 'weighted mean', 'delta']:
-        raise DvasError('Method {method} unknown.')
 
     # Check I have all the required columns
     for col in [PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU,
@@ -385,7 +454,7 @@ def process_chunk(df_chunk, binning=1, method='weighted mean'):
 
     # Compute the weights for each point, if applicable
     # First I need to add the new columns (one for each Profile).
-    # ----- What follows is prblematic because .stack looses the dtype of the flg, which
+    # ----- What follows is problematic because .stack looses the dtype of the flg, which
     # wreaks havoc down the line ---
     # df_chunk = df_chunk.stack(level=0)
     # df_chunk.loc[:, 'w_ps'] = np.nan
@@ -396,7 +465,7 @@ def process_chunk(df_chunk, binning=1, method='weighted mean'):
         df_chunk.loc[:, (ind, 'w_ps')] = np.nan
 
     # Then I can fill it with the appropriate values
-    if method == 'weighted mean':
+    if 'weighted' in method:
         df_chunk.loc[:, (slice(None), 'w_ps')] = \
             1/df_chunk.loc[:, (slice(None), 'uc_tot')].values**2
     else:
@@ -408,10 +477,19 @@ def process_chunk(df_chunk, binning=1, method='weighted mean'):
             df_chunk.loc[:, (slice(None), 'uc_tot')].isna().values, np.nan)
 
     # Combine the Profiles, and compute the Jacobian matrix as well
-    if method in ['mean', 'weighted mean']:
-        x_ms, G_mat = weighted_mean(df_chunk, binning=binning)
-    elif method == 'delta':
-        x_ms, G_mat = delta(df_chunk, binning=binning)
+    if 'arithmetic' in method:
+        mode = 'arithmetic'
+    elif 'circular' in method:
+        mode = 'circular'
+    else:
+        raise DvasError(f'method unknown: {method}')
+
+    if 'mean' in method:
+        x_ms, G_mat = weighted_mean(df_chunk, binning=binning, mode=mode)
+    elif 'delta' in method:
+        x_ms, G_mat = delta(df_chunk, binning=binning, mode=mode)
+    else:
+        raise DvasError(f'method unknown: {method}')
 
     # Let's get started with the computation of the errors.
     V_mats = {}  # Will store the covariance matrices in this dict

@@ -80,3 +80,4 @@ def test_wrap_angle():
     assert tools.wrap_angle(182) == - 178
     assert tools.wrap_angle(-45) == -45
     assert tools.wrap_angle(-720) == 0.
+    assert tools.wrap_angle(180) == -180

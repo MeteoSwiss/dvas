@@ -205,32 +205,32 @@ def test_combine(gdp_1_prfs, gdp_2_prfs_real, gdp_3_prfs):
         - correct propagation of errors when rebining a single profile
 
     """
-    """
     # 0) Ultra-basic test: the mean of a single profile with binning = 1 should return the
     # same thing
-    for method in ['mean', 'weighted mean']:
+    for method in ['arithmetic mean', 'weighted arithmetic mean', 'weighted circular mean']:
         out, _ = combine(gdp_1_prfs, binning=1, method=method, chunk_size=200, n_cpus=1)
 
         for key in ['val', 'ucr', 'ucs', 'uct', 'ucu']:
-            assert np.array_equal(out.profiles[0].data[key], gdp_1_prfs.profiles[0].data[key])
+            assert out.profiles[0].data[key].round(10).equals(gdp_1_prfs.profiles[0].data[key])
         for key in ['tdt', 'alt']:
             assert np.array_equal(out.profiles[0].data.index.get_level_values(key),
                                   gdp_1_prfs.profiles[0].data.index.get_level_values(key))
 
     # 1) Basic test: does it work with multiprocessing ? Also check proper tagging
-    out, _ = combine(gdp_1_prfs, binning=2, method='mean', chunk_size=200, n_cpus='max')
+    out, _ = combine(gdp_1_prfs, binning=2, method='arithmetic mean', chunk_size=200, n_cpus='max')
     assert np.all(out.profiles[0].data.loc[0, 'val'] == 15.)
     assert out.get_info('eid')[0] == 'e:1'
     assert out.get_info('rid')[0] == 'r:1'
 
     # 2) Check the weighted mean errors ...
-    out, _ = combine(gdp_3_prfs, binning=1, method='weighted mean', chunk_size=200, n_cpus='max')
+    out, _ = combine(gdp_3_prfs, binning=1, method='weighted arithmetic mean', chunk_size=200,
+                     n_cpus='max')
     assert np.all(out.profiles[0].data.loc[0, 'ucu'] == np.sqrt(1/3))
     assert np.all(out.profiles[0].data.loc[0, 'uct'] == 1.)
-    """
+
     # 3) Test for #166, and the fact that chunk_size should have no impact on the outcome
-    out_a, _ = combine(gdp_2_prfs_real, binning=3, method='delta', n_cpus=1,
+    out_a, _ = combine(gdp_2_prfs_real, binning=3, method='arithmetic delta', n_cpus=1,
                        mask_flgs=FLG_INCOMPATIBLE, chunk_size=3)
-    out_b, _ = combine(gdp_2_prfs_real, binning=3, method='delta', n_cpus=16,
+    out_b, _ = combine(gdp_2_prfs_real, binning=3, method='arithmetic delta', n_cpus=16,
                        mask_flgs=FLG_INCOMPATIBLE, chunk_size=4)
     assert out_a[0].data.equals(out_b[0].data)

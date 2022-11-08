@@ -92,7 +92,7 @@ def chunk():
     # Errors are NaNs, but values are not.
     test_chunk.loc[9, (slice(None), PRF_UCR)] = np.nan
 
-    # THe other stuff
+    # The other stuff
     test_chunk.loc[:, (slice(None), 'eid')] = 'e:1'
     test_chunk.loc[:, (slice(None), 'rid')] = 'r:1'
 
@@ -103,10 +103,82 @@ def chunk():
     return test_chunk
 
 
-def test_weighted_mean(chunk):
+@pytest.fixture
+def angular_chunk():
+    """ A data chunk with angles to test the GDP utils functions related to the wdir. """
+
+    # First, the level 1 column names
+    lvl_one = [PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU,
+               'uc_tot', 'w_ps', 'oid', 'mid', 'eid', 'rid']
+
+    # Set the proper MultiIndex
+    cols = pd.MultiIndex.from_tuples([(ind, item) for item in lvl_one for ind in range(3)])
+
+    # Initialize the DataFrame
+    test_chunk = pd.DataFrame(index=pd.Series(range(5)), columns=cols)
+    test_chunk.sort_index(axis=1, inplace=True)
+
+    # Set the proper types for the different columns
+    for col in cols:
+        if col[1] == 'tdt':
+            test_chunk[col] = test_chunk[col].astype('timedelta64[ns]')
+        elif col[1] == PRF_FLG:
+            test_chunk[col] = 0
+            test_chunk[col] = test_chunk[col].astype(int)
+        else:
+            test_chunk[col] = test_chunk[col].astype('float')
+
+    test_chunk.loc[0, (slice(None), PRF_TDT)] = pd.to_timedelta(0, unit='s')
+    test_chunk.loc[0, (0, PRF_ALT)] = 0
+    test_chunk.loc[0, (1, PRF_ALT)] = 1
+    test_chunk.loc[0, (2, PRF_ALT)] = 0.01
+    test_chunk.loc[1, (0, PRF_ALT)] = 5
+    test_chunk.loc[1, (1, PRF_ALT)] = 190
+    test_chunk.loc[1, (2, PRF_ALT)] = 6
+
+    test_chunk.loc[0, (0, PRF_VAL)] = 5
+    test_chunk.loc[0, (1, PRF_VAL)] = 350
+    test_chunk.loc[0, (2, PRF_VAL)] = 20
+
+    test_chunk.loc[1, (0, PRF_VAL)] = 0
+    test_chunk.loc[1, (1, PRF_VAL)] = -1
+    test_chunk.loc[1, (2, PRF_VAL)] = 358
+
+    test_chunk.loc[2, (0, PRF_VAL)] = 10
+    test_chunk.loc[2, (1, PRF_VAL)] = np.nan
+    test_chunk.loc[2, (2, PRF_VAL)] = 190
+
+    test_chunk.loc[3, (0, PRF_VAL)] = np.nan
+    test_chunk.loc[3, (1, PRF_VAL)] = 5
+    test_chunk.loc[3, (2, PRF_VAL)] = -5
+
+    test_chunk.loc[4, (0, PRF_VAL)] = np.nan
+    test_chunk.loc[4, (1, PRF_VAL)] = -60
+    test_chunk.loc[4, (2, PRF_VAL)] = 100.
+
+    test_chunk.loc[:, (slice(None), 'w_ps')] = 1.
+
+    test_chunk.loc[:, (slice(None), PRF_UCR)] = 0.
+    test_chunk.loc[:, (slice(None), PRF_UCS)] = 0.
+    test_chunk.loc[:, (slice(None), PRF_UCT)] = 0.
+    test_chunk.loc[:, (slice(None), PRF_UCU)] = 1.
+    test_chunk.loc[:, (slice(None), 'uc_tot')] = 1.
+
+    # The other stuff
+    test_chunk.loc[:, (slice(None), 'eid')] = 'e:1'
+    test_chunk.loc[:, (slice(None), 'rid')] = 'r:1'
+
+    for ind in range(3):
+        test_chunk[(ind, 'oid')] = ind
+        test_chunk[(ind, 'mid')] = 'A'  # Force the same mid for all Profiles
+
+    return test_chunk
+
+
+def test_weighted_arithmetic_mean(chunk):
     """ Function used to test the weighted_mean combination of profiles."""
 
-    out, jac_mat = weighted_mean(chunk, binning=1)
+    out, jac_mat = weighted_mean(chunk, binning=1, mode='arithmetic')
     # Can I actually compute a weighted mean ?
     assert out.loc[0, PRF_VAL] == 7/3
     assert out.loc[0, PRF_TDT] == 1/3 * pd.to_timedelta(1.01, unit='s')
@@ -133,7 +205,7 @@ def test_weighted_mean(chunk):
     assert all(jac_mat[9, :].mask)
 
     # Idem but with some binning this time
-    out, jac_mat = weighted_mean(chunk, binning=3)
+    out, jac_mat = weighted_mean(chunk, binning=3, mode='arithmetic')
     # Ignore the NaN values in the bin, and normalize properly. Combine flags just fine.
     assert out.loc[0, PRF_VAL] == 13/5
     assert out.loc[0, PRF_FLG] == 7
@@ -150,6 +222,28 @@ def test_weighted_mean(chunk):
     # jac_mat has correct dimensions ?
     assert np.shape(jac_mat) == (int(np.ceil(len(chunk)/3)), len(chunk)*3)
     assert jac_mat[0, 0] == 1/5
+
+
+def test_weighted_circular_mean(angular_chunk):
+    """ Function used to test the weighted_mean combination of profiles."""
+
+    out, jac_mat = weighted_mean(angular_chunk, binning=1, mode='circular')
+
+    # Circular mean is computed correctly ...
+    assert np.array_equal(out.loc[:, PRF_VAL].round(10), [5, 359, np.nan, 0, 20], equal_nan=True)
+
+    # Jacobian elements should all sum up to 1 ... (?)
+    assert (jac_mat.sum(axis=1).round(10) == 1).all()
+
+    # With 3 angles, the one in the middle should contribute more to the uncertainties
+    assert (jac_mat[0]-jac_mat[0][0] <= 0).all()
+
+    # Bad cases have fully-masked jacobian ?
+    assert jac_mat[2].mask.all()
+
+    # In I feed only two numbers, they dshould contribute both equally
+    assert (jac_mat[3].round(10) == 0.5).all()
+    assert (jac_mat[4].round(10) == 0.5).all()
 
 
 def test_delta(chunk):
@@ -191,13 +285,26 @@ def test_delta(chunk):
     assert all(out.isna()[2:])
 
 
+def test_circular_delta(angular_chunk):
+    """ Function to test that circular deltas (i.e. delta for angles) works fine. """
+
+    chunk_2 = angular_chunk.loc[:, :1]
+    binning = 1
+    out, _ = delta(chunk_2, binning=binning, mode='circular')
+
+    # Values are wrapped
+    assert out.loc[0, PRF_VAL] == -15
+    # Altitudes are not
+    assert out.loc[1, PRF_ALT] == 185
+
+
 def test_process_chunk(chunk):
     """ Function to test the processing of Profile chunks. This is the one responsible for the
     propagation of errors.
     """
 
     # First test the mean
-    out_1, _ = process_chunk(chunk, binning=1, method='weighted mean')
+    out_1, _ = process_chunk(chunk, binning=1, method='weighted arithmetic mean')
     assert out_1.loc[0, PRF_UCR] == np.sqrt(1/3)
     assert out_1.loc[0, PRF_UCS] == 1
     assert out_1.loc[0, PRF_UCT] == 1
@@ -210,20 +317,45 @@ def test_process_chunk(chunk):
     assert not np.isnan(out_1.loc[8, PRF_VAL])
 
     # Now with binning
-    out_2, _ = process_chunk(chunk, binning=2, method='mean')
+    out_2, _ = process_chunk(chunk, binning=2, method='arithmetic mean')
     # Correct length ?
     assert len(out_2) == len(out_1)//2 + len(out_1) % 2
 
     # Then assess the delta
-    out_1, _ = process_chunk(chunk.loc[:, :1], binning=1, method='delta')
+    out_1, _ = process_chunk(chunk.loc[:, :1], binning=1, method='arithmetic delta')
 
     # If some crazy users has NaN's for values but non-NaN errors, make sure I fully ignore these.
     assert np.isnan(out_1.loc[1, 'ucr'])
 
     # What happens with binning ?
-    out_2, _ = process_chunk(chunk.loc[:, :1], binning=2, method='delta')
+    out_2, _ = process_chunk(chunk.loc[:, :1], binning=2, method='arithmetic delta')
 
     # In case of partial binning things get ignored accordingly.
     assert all(out_1.iloc[0].values == out_2.iloc[0].values)
     # If all is NaN, then result is NaN.
     assert all(out_2.loc[4, ['val', 'ucr', 'ucs', 'uct', 'ucu']].isna())
+
+
+def test_process_angular_chunk(angular_chunk):
+    """ Function to test the processing of Profile chunks. This is the one responsible for the
+    propagation of errors.
+    """
+
+    out_1, _ = process_chunk(angular_chunk, binning=1, method='weighted circular mean')
+    out_a, _ = process_chunk(angular_chunk, binning=1, method='weighted arithmetic mean')
+
+    # Correct value ?
+    assert out_1.loc[0, PRF_VAL].round(10) == 5
+
+    # Test that PRF_TDT and PRF_ALT are not affected by the circular mean
+    assert out_1[PRF_ALT].equals(out_a[PRF_ALT])
+    assert out_1[PRF_TDT].equals(out_a[PRF_TDT])
+
+    # The uncertainty should be larger than the arithmetic one
+    assert (out_1.loc[:1, 'ucu'] >= np.sqrt(1/3)).all()
+    assert (out_1.loc[3:, 'ucu'] >= np.sqrt(1/2)).all()
+
+    # # angles further appart should have larger uncertainties ...
+    assert out_1.loc[0, 'ucu'] > out_1.loc[1, 'ucu']
+
+

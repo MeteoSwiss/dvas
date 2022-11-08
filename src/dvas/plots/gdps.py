@@ -319,9 +319,9 @@ def plot_ks_test(df, alpha, unit=None, left_label=None, right_label=None, **kwar
 
     # Some sanity checks first
     if not isinstance(alpha, float):
-        raise DvasError('Ouch ! alpha must be a float, and not %s' % (type(alpha)))
+        raise DvasError(f'alpha must be a float, and not: {type(alpha)}')
     if not 0 <= alpha <= 1:
-        raise DvasError('Ouch ! alpha={} is invalid. Should be >= 0 and <=1.'.format(alpha))
+        raise DvasError(f'alpha={alpha} is invalid. Should be >= 0 and <=1.')
 
     # How many different binnings do I have ?
     # Note: bin "0" contains the full-resolution delta, and does not count as a used binning for the

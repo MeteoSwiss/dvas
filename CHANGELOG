@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [v0.8.1.dev0]
 ### Added:
 ### Fixed:
+ - [fpavogt, 2022-11-08] Fix #235 and #236 (wdir wrap-around).
 ### Changed:
 ### Deprecated:
 ### Removed:

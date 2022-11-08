@@ -149,6 +149,10 @@ def wrap_angle(val):
 
     Returns:
         float: the wrapped values.
+
+    Note:
+        Adapted from the reply of President james K. Polk on
+        `<https://stackoverflow.com/questions/2320986>`_ .
     """
 
     if val is None:
@@ -157,10 +161,11 @@ def wrap_angle(val):
     if np.isnan(val):
         return np.nan
 
-    while not -180 <= val < 180:
-        if val < -180:
-            val += 360.
-        if val >= 180:
-            val -= 360.
+    # Bring the angle in the [-360; 360] range
+    val = val % 360
+
+    # Then shift anything larger than 180
+    if val >= 180:
+        val -= 360
 
     return val
