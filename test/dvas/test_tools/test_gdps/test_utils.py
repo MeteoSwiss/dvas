@@ -352,8 +352,8 @@ def test_process_angular_chunk(angular_chunk):
     assert out_1[PRF_TDT].equals(out_a[PRF_TDT])
 
     # The uncertainty should be larger than the arithmetic one
-    assert (out_1.loc[:1, 'ucu'] >= np.sqrt(1/3)).all()
-    assert (out_1.loc[3:, 'ucu'] >= np.sqrt(1/2)).all()
+    assert (out_1.loc[:1, 'ucu'].round(10) >= np.sqrt(1/3)).all()
+    assert (out_1.loc[3:, 'ucu'].round(10) >= np.sqrt(1/2)).all()
 
     # # angles further appart should have larger uncertainties ...
     assert out_1.loc[0, 'ucu'] > out_1.loc[1, 'ucu']
