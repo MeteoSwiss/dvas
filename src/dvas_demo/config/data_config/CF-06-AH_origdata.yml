@@ -4,14 +4,15 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
-# This file contains the extraction details for the iMet-54-AA MDP files.
+# This file contains the extraction details for CF-06-AH MDP files.
 # It must absolutely have the string 'origdata' in its name, to match the dvas class names.
 # --------------------------------------------------------------------------------------------------
 
 # ----------------------------------------------------
-# iMet-54-AA MDP (UAII2022)
+# CF-06-AH MDP (UAII2022 format)
 # ----------------------------------------------------
-_iMet-54-AA:
+
+_CF-06-AH:
 
     # -- META DATA ----------------------------------
     edt: "to_datetime(get('event_dt'))"
@@ -29,14 +30,14 @@ _iMet-54-AA:
     csv_delimiter: ';'
     csv_skip_blank_lines: False
     csv_delim_whitespace: False
-    csv_skiprows: 21
+    csv_skiprows: 17
     csv_skipfooter: 0
     csv_encoding:
     csv_na_values:
     csv_header: 0
 
     _time:
-        value: get('time', 'rel')
+        value: getreldt('time_stamp', '%Y-%m-%dT%H:%M:%S.%fZ')
 
     _alt_ref:
         value: get('gph_gnss')
@@ -45,10 +46,10 @@ _iMet-54-AA:
         value: get('gph_gnss')
 
     _temp:
-        value: get('temp', 'c2k')
+        value: get('temp_air', 'c2k')
 
     _pres:
-        value: get('press_gnss')
+        value: get('gph_press')
 
     _rh:
         value: get('rh')

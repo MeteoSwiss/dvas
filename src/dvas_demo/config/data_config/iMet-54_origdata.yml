@@ -4,14 +4,14 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
-# This file contains the extraction details for the HT-GTS(U)2-1 (GTH3) MDP files.
+# This file contains the extraction details for the iMet-54 MDP files.
 # It must absolutely have the string 'origdata' in its name, to match the dvas class names.
 # --------------------------------------------------------------------------------------------------
 
 # ----------------------------------------------------
-# HT-GTS(U)2-1 (GTH3) MDP (UAII2022)
+# iMet-54 MDP (UAII2022)
 # ----------------------------------------------------
-_HT-GTS(U)2-1:
+_iMet-54:
 
     # -- META DATA ----------------------------------
     edt: "to_datetime(get('event_dt'))"
@@ -29,7 +29,7 @@ _HT-GTS(U)2-1:
     csv_delimiter: ';'
     csv_skip_blank_lines: False
     csv_delim_whitespace: False
-    csv_skiprows: 18
+    csv_skiprows: 21
     csv_skipfooter: 0
     csv_encoding:
     csv_na_values:
@@ -45,7 +45,7 @@ _HT-GTS(U)2-1:
         value: get('gph_gnss')
 
     _temp:
-        value: get('temp_air', 'c2k')
+        value: get('temp', 'c2k')
 
     _pres:
         value: get('press_gnss')
