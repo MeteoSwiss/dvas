@@ -35,15 +35,8 @@ logger = logging.getLogger(__name__)
 @log_func_call(logger)
 def compute_deltas(prf_start_with_tags, cws_start_with_tags, do_gdps=False, do_nongdps=True,
                    save_to_db=False):
-    """ Highest-level recipe function responsible for compute differences between profiles under
+    """ Highest-level recipe function responsible for computing differences between profiles under
     test and appropriate combined working standards.
-
-    This function directly builds the DeltaProfile instances and uploads them to the db with the
-    'delta' tag.
-
-    Note:
-        This function is designed to work for one specific flight at a time. It can then be looped
-        over using the @for_each_flight decorator to process the entire campaign.
 
     Args:
         prf_start_with_tags (str|list of str): tag name(s) for the search query into the database.
@@ -54,6 +47,14 @@ def compute_deltas(prf_start_with_tags, cws_start_with_tags, do_gdps=False, do_n
             Default to True.
         save_to_db (bool optional): if True, the deltas will be saved to the DB with the 'delta'
             tag.
+
+    This function directly builds the DeltaProfile instances and uploads them to the db with the
+    'delta' tag.
+
+    Note:
+        This function is designed to work for one specific flight at a time. It can then be looped
+        over using the @for_each_flight decorator to process the entire campaign.
+
 
     """
 
@@ -108,7 +109,7 @@ def compute_deltas(prf_start_with_tags, cws_start_with_tags, do_gdps=False, do_n
         raise DvasRecipesError(f'Ouch ! I need 1 CWS, but I got {len(cws_prfs)} instead.')
 
     # Compute the Delta Profiles
-    dta_prfs = dtdd.compute(prfs, cws_prfs, angular_wrap=dynamic.CURRENT_VAR == 'wdir')
+    dta_prfs = dtdd.compute(prfs, cws_prfs, circular=dynamic.CURRENT_VAR == 'wdir')
 
     # Save the Delta profiles to the database.
     # WARNING: I will keep the GDP tag, even if the resulting delta profile is not fully correct

@@ -86,7 +86,7 @@ def single_delta(prf, cws, angular_wrap=False):
     return dta
 
 
-def compute(prfs, cwss, angular_wrap=False):
+def compute(prfs, cwss, circular=False):
     """ Compute the deltas between many error-less profiles and error-full cws.
 
     Args:
@@ -96,7 +96,7 @@ def compute(prfs, cwss, angular_wrap=False):
             with prfs is assumed, unless this contains a single profile, in which case the same
             CWS will be subtracted from all the Profiles.
             I.e. len(cwss) == 1 or len(cwss) == len(prfs).
-        angular_wrap (bool, optional): if True, will wrap delta values in the range [-180;+180[.
+        circular (bool, optional): if True, will wrap delta values in the range [-180;+180[.
             Defaults to False.
 
     Returns:
@@ -116,7 +116,7 @@ def compute(prfs, cwss, angular_wrap=False):
     # Now loop through these, and assemble the DeltaProfile
     dtas = []
     for (prf_ind, prf) in enumerate(prfs):
-        dtas += [single_delta(prf, cws_prfs[prf_ind], angular_wrap=angular_wrap)]
+        dtas += [single_delta(prf, cws_prfs[prf_ind], circular=circular)]
 
     # All done, let's pack it all inside a MultiDeltaProfile instance.
     out = MultiDeltaProfile()
