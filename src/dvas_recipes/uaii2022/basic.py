@@ -238,15 +238,25 @@ def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
         logger.info('Loaded %i GDP profiles from the DB.', len(gdp_prfs))
 
         # Check that whenever I have a value, I have a valid error, and vice-versa
+        # Check also cases where the uncertainty is equal to 0
+        # Both these checks are implemented following #244 and #260
         val_vs_uc = gdp_prfs.get_prms(['val', 'uc_tot'])
         for (gdp_ind, gdp) in enumerate(gdp_prfs):
             ok = val_vs_uc.loc[:, gdp_ind][PRF_VAL].isna() == \
                  val_vs_uc.loc[:, gdp_ind]['uc_tot'].isna()
-            if any(~ok):
-                logger.critical('%s: %i/%i val vs uc_tot NaN mismatch for %s, flagged as "%s".',
+
+            nok = val_vs_uc.loc[:, gdp_ind]['uc_tot'] == 0
+
+            if any(~ok) or any(nok):
+                logger.critical('%s: %i/%i val vs uc_tot "NaN" mismatch for %s, flagged as "%s".',
                                 '+'.join(gdp.info.mid), len(ok[~ok]), len(ok),
                                 dynamic.CURRENT_VAR, FLG_INVALID)
+                logger.critical('%s: %i/%i val vs uc_tot "0" mismatch for %s, flagged as "%s".',
+                                '+'.join(gdp.info.mid), len(nok[nok]), len(nok),
+                                dynamic.CURRENT_VAR, FLG_INVALID)
+
                 gdp_prfs[gdp_ind].set_flg(FLG_INVALID, True, index=ok.index[~ok].values)
+                gdp_prfs[gdp_ind].set_flg(FLG_INVALID, True, index=nok.index[nok].values)
 
         # Deal with the faulty RS41 gph_uc_tcor values (NaNs when they should not be, see #205)
         if dynamic.CURRENT_VAR == 'gph' and fix_gph_uct is not None:
