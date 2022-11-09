@@ -20,7 +20,7 @@ from matplotlib import transforms
 from ..logger import log_func_call
 from ..errors import DvasError
 from ..hardcoded import PRF_VAL, PRF_ALT, PRF_TDT, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
-from ..hardcoded import MTDTA_TROPOPAUSE, MTDTA_PBL
+from ..hardcoded import MTDTA_TROPOPAUSE, MTDTA_PBL, FLG_HASCWS
 from . import utils as pu
 from ..tools import tools as tt
 
@@ -71,13 +71,15 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     # This is not fool proof, but it is a start. I could also check for the sync tag, but it
     # would be less strict as a check.
     if len(cws) != len(gdps):
-        raise DvasError('Ouch! GDPS and CWS do not have the same lengths. I cannot plot this.')
+        raise DvasError('GDPS and CWS do not have the same lengths. I cannot plot this.')
 
     # Following #245, we no longer make a plot with multiple x-axes ... We just use the alt
     alts = cws[PRF_ALT].values
 
     # What is the sum of the weights of each GDPs (i.e. the sum of 1/uc_tot**2) ?
     wtot = (1/gdps.loc[:, (slice(None), 'uc_tot')]**2).sum(axis=1).values
+    # Hide anything that was not used to compute the CWS (fix #260)
+    wtot[~cws_prf[0].has_flg(FLG_HASCWS)] = np.nan
     limlow = np.zeros_like(wtot)
 
     # Very well, let us plot all these things.
@@ -91,7 +93,7 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
         delta = gdp[PRF_VAL].values-cws[PRF_VAL].values
 
         # TODO: remove the hardcoded reference to the wdir
-        if gdp_prfs.var_info['val']['prm_name'] == 'wdir':
+        if gdp_prfs.var_info[PRF_VAL]['prm_name'] == 'wdir':
             x, y = pu.wrap_wdir_curve(x, y)
             delta = np.array([tt.wrap_angle(item) for item in delta])
 
@@ -109,7 +111,7 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
 
         # Plot the relative contribution of each GDP to the CWS
         limhigh = limlow + (1/gdp.uc_tot**2).values/wtot
-        limhigh[cws.val.isna()] = np.nan
+        limhigh[~cws_prf[0].has_flg(FLG_HASCWS)] = np.nan
         ax2.fill_between(alts, limlow, limhigh, step='mid')
         limlow = limhigh
 
@@ -118,7 +120,7 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     x = alts
     y = cws[PRF_VAL].values
 
-    if gdp_prfs.var_info['val']['prm_name'] == 'wdir':
+    if gdp_prfs.var_info[PRF_VAL]['prm_name'] == 'wdir':
         x, y = pu.wrap_wdir_curve(x, y)
 
     ax0.plot(x, y, color=pu.CLRS['cws_1'], lw=0.5, ls='-', drawstyle='steps-mid',
@@ -239,7 +241,7 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     # This is not fool proof, but it is a start. I could also check for the sync tag, but it
     # would be less strict as a check.
     if len(cws) != len(gdps):
-        raise DvasError('Ouch! GDPS and CWS do not have the same lengths. I cannot plot this.')
+        raise DvasError('GDPS and CWS do not have the same lengths. I cannot plot this.')
 
     # After #245, give up on the idea of showing multple x-axis., and show the altitude only
     alts = cws[PRF_ALT].values
@@ -254,7 +256,8 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
                              label='|'.join(gdp_prfs.get_info(label)[gdp_ind]))
 
         # Let's also plot the weights (from the GDP combination scheme)
-        ax0b.plot(alts, 1/gdp['uc_tot'].values**2, lw=0.5, drawstyle='steps-mid')
+        ax0b.plot(alts, 1/gdp['uc_tot'].mask(~cws_prf[0].has_flg(FLG_HASCWS).values)**2,
+                  lw=0.5, drawstyle='steps-mid')
 
     # Then also plot the CWS uncertainty
     for (uc_ind, uc) in enumerate(['uc_tot', PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU]):
