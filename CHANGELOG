@@ -7,7 +7,9 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [v0.8.1.dev0]
 ### Added:
 ### Fixed:
- - [fpavogt, 2022-11-08] Fix #235 and #236 (wdir wrap-around).
+ - [fpavogt, 2022-11-09] Fix #262 - handle angular wrapping in resample
+ - [fpavogt, 2022-11-09] Fix Runtime warning caused by uc_tot=0 cases in gdp_vs_cws plots
+ - [fpavogt, 2022-11-08] Fix #235 and #236 (wdir wrap-around)
 ### Changed:
 ### Deprecated:
 ### Removed:
