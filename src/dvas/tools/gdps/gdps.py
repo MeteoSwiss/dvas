@@ -43,9 +43,8 @@ def combine(gdp_prfs, binning=1, method='weighted arithmetic mean',
         gdp_profs (dvas.data.data.MultiGDPProfile): synchronized GDP profiles to combine.
         binning (int, optional): the number of profile steps to put into a bin. Defaults to 1.
         method (str, optional): combination rule. Can be one of
-            ['weighted arithmetic mean', 'arithmetic mean',
-             'weighted circular mean', 'circular mean', or 'delta'].
-             Defaults to 'weighted arithmetic mean'.
+            ['weighted arithmetic mean', 'arithmetic mean', weighted circular mean',
+            'circular mean', or 'delta']. Defaults to 'weighted arithmetic mean'.
         mask_flgs (str|list of str, optional): (list of) flag(s) to ignore when combining profiles.
         chunk_size (int, optional): to speed up computation, Profiles get broken up in chunks of
             that length. The larger the chunks, the larger the memory requirements. The smaller the

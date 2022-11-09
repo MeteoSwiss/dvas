@@ -391,9 +391,9 @@ def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean'):
         df_chunk (pandas.DataFrame): data containing the Profiles to merge.
         binning (int, optional): binning size. Defaults to 1 (=no binning).
         method (str, optional): the processing method. Can be one of
-            ['arithmetic mean', 'weighted arithmetic mean',
-             'circular mean', 'weighted circular mean',
-             'arithmetic delta', 'circular delta']. Defaults to 'weighted arithmetic mean'.
+            ['arithmetic mean', 'weighted arithmetic mean', 'circular mean',
+            'weighted circular mean', 'arithmetic delta', 'circular delta'].
+            Defaults to 'weighted arithmetic mean'.
 
     Returns:
         pandas.DataFrame, dict: the processing outcome, including all the errors,
@@ -416,6 +416,7 @@ def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean'):
     Note:
         The function will ignore NaNs in a given bin, unless *all* the values in the bin are NaNs.
         See fancy_nansum() for details.
+
     """
 
     # Check I have all the required columns

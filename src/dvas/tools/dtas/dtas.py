@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 
 @log_func_call(logger)
-def single_delta(prf, cws, angular_wrap=False):
+def single_delta(prf, cws, circular=False):
     """ Compute the delta between a (single) error-less Profile|RSProfile and a (single)
     error-full CWS.
 
@@ -40,7 +40,7 @@ def single_delta(prf, cws, angular_wrap=False):
     Args:
         prf (Profile|RSProfile): the 'candidate' profile.
         cws (CWSProfile): the `reference` Combined Working Standard profile.
-        angular_wrap (bool, optional): if True, will wrap delta values in the range [-180;+180[.
+        circular (bool, optional): if True, will wrap delta values in the range [-180;+180[.
             Defaults to False.
 
     Returns:
@@ -68,7 +68,7 @@ def single_delta(prf, cws, angular_wrap=False):
 
     # Handle the angular_wrap, if warranted. This is used to make sure the wdir delta is never
     # larger than +-180 deg
-    if angular_wrap:
+    if circular:
         dta_data.loc[:, [PRF_VAL]] = dta_data.val.map(wrap_angle)
         if (dta_data.val >= 180).any() or (dta_data.val < -180).any():
             raise DvasError('Angular wrapping failed ?!')
