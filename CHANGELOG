@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [v0.8.2.dev0]
 ### Added:
+ - [fpavogt, 2022-11-10] Add a WAS_INVALID flag to keep track of fixed GDP points, e.g. via #205
 ### Fixed:
 ### Changed:
  - [fpavogt, 2022-11-10] Cleanup filename of KS plots

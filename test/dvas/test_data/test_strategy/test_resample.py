@@ -103,7 +103,6 @@ class TestResampleStrategy:
 
         # Was the flag applied correctly ?
         assert all(out.profiles[0].has_flg(FLG_INTERP) == [False, False, True])
-        assert np.array_equal(out[0].flg.values, [0, 1, 14])  # FLG_INTERP is bit 8
 
     def test_resample_wdir(self):
         """Test resample method for wind direction (i.e. require angular wrapping)"""

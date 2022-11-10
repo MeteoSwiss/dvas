@@ -173,9 +173,15 @@ FLG_NOPRF = 'no_original_data'
 FLG_NOPRF_DESC = 'No original data existing for this point (i.e. out of bound)'
 
 #: str: Flag name for invalid values
-FLG_INVALID = 'is_invalid'
+FLG_ISINVALID = 'is_invalid'
 #: str: Flag desc for invalid values
-FLG_INVALID_DESC = 'Invalid data (e.g. NaN value for real GDP measurement)'
+FLG_ISINVALID_DESC = 'Invalid data (e.g. NaN value for real GDP measurement)'
+
+#: str: Flag name for invalid values
+FLG_WASINVALID = 'was_invalid'
+#: str: Flag desc for invalid values
+FLG_WASINVALID_DESC = 'Invalid data (e.g. NaN uct value for real GDP gph measurement) ' +\
+                      'that was corrected following official GRUAN instructions'
 
 #: str: Flag name for interpolated values
 FLG_INTERP = 'is_interpolated'
