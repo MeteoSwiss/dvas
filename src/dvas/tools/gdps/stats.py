@@ -282,14 +282,17 @@ def gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=None, method='arithmeti
             edt_eid_rid_info = dpu.get_edt_eid_rid(gdp_pair)
 
             # Get the specific pair details
-            pair_info = f'{gdp_pair[0].info.oid}-{gdp_pair[0].info.mid}' + '_vs_' +\
-                        f'{gdp_pair[1].info.oid}-{gdp_pair[1].info.mid}'
+            pair_info = f'[{"-".join([f"{item}" for item in gdp_pair[0].info.oid])}]'
+            pair_info += f'{"-".join([f"{item}" for item in gdp_pair[0].info.mid])}_vs_'
+            pair_info += f'[{"-".join([f"{item}" for item in gdp_pair[1].info.oid])}]'
+            pair_info += f'{"-".join([f"{item}" for item in gdp_pair[1].info.mid])}'
 
             fnsuf = pair_info
             if fn_suffix is not None:
                 fnsuf = fn_suffix + '_' + fnsuf
 
-            dpg.plot_ks_test(out, alpha, left_label=edt_eid_rid_info+'_'+pair_info,
+            dpg.plot_ks_test(out, alpha,
+                             left_label=edt_eid_rid_info+' '+pair_info.replace('_', ' '),
                              right_label=var_name, unit=var_unit,
                              fn_prefix=fn_prefix, fn_suffix=fnsuf)
 
