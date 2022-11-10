@@ -108,19 +108,19 @@ def ks_test(gdp_pair, alpha=0.0027, m_val=1, method='arithmetic delta', **kwargs
     '''
 
     if not isinstance(m_val, numbers.Integral):
-        raise DvasError(f'Ouch! binning should be an int, not {type(m_val)}')
+        raise DvasError(f'binning should be an int, not {type(m_val)}')
 
     if not isinstance(alpha, float):
-        raise Exception(f'Ouch! alpha should be a float, not {type(alpha)}')
+        raise Exception(f'alpha should be a float, not {type(alpha)}')
 
     if alpha > 1 or alpha < 0:
-        raise Exception(f'Ouch! alpha should be 0<alpha<1, not {alpha}')
+        raise Exception(f'alpha should be 0<alpha<1, not {alpha}')
 
     # How long are the profiles ?
     # len_prf = len(gdp_pair[0].data)
 
     if (tmp1 := len(gdp_pair[1])) != (tmp0 := len(gdp_pair[0])):
-        raise DvasError(f"Ouch ! GDP Profiles have inconsistent lengths: {tmp0} vs {tmp1}")
+        raise DvasError(f"GDP Profiles have inconsistent lengths: {tmp0} vs {tmp1}")
 
     # Compute the profile delta with the specified sampling
     gdp_delta, _ = combine(gdp_pair, binning=m_val, method=method, **kwargs)
@@ -189,7 +189,7 @@ def gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=None, method='arithmeti
     if isinstance(m_vals, int):
         m_vals = [m_vals]
     if not isinstance(m_vals, list):
-        raise DvasError(f'Ouch ! m_vals must be a list, not: {type(m_vals)}')
+        raise DvasError(f'm_vals must be a list, not: {type(m_vals)}')
 
     # If warranted select which flags we want to mask in the rolling process.
     mask_flgs = [FLG_ISINVALID]
@@ -272,8 +272,8 @@ def gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=None, method='arithmeti
 
             # Is there a unit for the data at hand ?
             try:
-                var_name = gdp_pair.var_info['val']['prm_name']
-                var_unit = gdp_pair.var_info['val']['prm_unit']
+                var_name = gdp_pair.var_info[PRF_VAL]['prm_name']
+                var_unit = gdp_pair.var_info[PRF_VAL]['prm_unit']
             except KeyError:
                 var_name = None
                 var_unit = None
@@ -282,10 +282,12 @@ def gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=None, method='arithmeti
             edt_eid_rid_info = dpu.get_edt_eid_rid(gdp_pair)
 
             # Get the specific pair details
-            pair_info = f'[{"-".join([f"{item}" for item in gdp_pair[0].info.oid])}]'
-            pair_info += f'{"-".join([f"{item}" for item in gdp_pair[0].info.mid])}_vs_'
-            pair_info += f'[{"-".join([f"{item}" for item in gdp_pair[1].info.oid])}]'
-            pair_info += f'{"-".join([f"{item}" for item in gdp_pair[1].info.mid])}'
+            # Start with the second profile, since the delta does Profile2-Profile1, but
+            # people usually understand the opposite when writing Profile1_vs_Profile2.
+            pair_info = f'{"-".join([f"{item}" for item in gdp_pair[1].info.mid])}_'
+            pair_info += f'[{"-".join([f"{item}" for item in gdp_pair[1].info.oid])}]_minus_'
+            pair_info += f'{"-".join([f"{item}" for item in gdp_pair[0].info.mid])}_'
+            pair_info += f'[{"-".join([f"{item}" for item in gdp_pair[0].info.oid])}]'
 
             fnsuf = pair_info
             if fn_suffix is not None:
