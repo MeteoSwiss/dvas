@@ -40,41 +40,41 @@
 # --------------- UAII 2022 MDPs ------------------------
 
 - mdl_name: 'ATMS-3710'
-  mdl_desc: 'Azista Industries Pvt Ltd. ATMS-3710 (UAII2022)'
+  mdl_desc: 'ATMS-3710 from Azista Industries Pvt Ltd [UAII2022 file format]'
   mid: 'ATMS-3710'
 
-- mdl_name: 'CF-06AH'
-  mdl_desc: 'Aerospace NewSky Technology Co., Ltd CF-06AH (UAII2022)'
-  mid: 'CF-06AH'
+- mdl_name: 'CF-06-AH'
+  mdl_desc: 'CF-06-AH from Aerospace Newsky Technology Co., Ltd. [UAII2022 file format]'
+  mid: 'CF-06-AH'
 
 - mdl_name: 'DFM-17'
-  mdl_desc: 'GRAW Radiosondes GmbH & Co. KG DFM-17 (UAII2022)'
+  mdl_desc: 'DFM-17 from Graw Radiosondes GmbH & Co. KG [UAII2022 file format]'
   mid: 'DFM-17'
 
-- mdl_name: 'iMet-54-AA'
-  mdl_desc: 'InterMet iMet-54-AA (UAII2022)'
-  mid: 'iMet-54-AA'
+- mdl_name: 'iMet-54'
+  mdl_desc: 'iMet-54 from Diel Met Systems (Pty) Ltd trading as InterMet [UAII2022 file format]'
+  mid: 'iMet-54'
 
-- mdl_name: 'iMS100'
-  mdl_desc: 'Meisei iMS100 (UAII2022)'
-  mid: 'iMS100'
+- mdl_name: 'iMS-100'
+  mdl_desc: 'Meisei iMS-100 GPS radiosonde from Meisei Electric co., ltd. [UAII2022 file format]'
+  mid: 'iMS-100'
 
 - mdl_name: 'M20'
-  mdl_desc: 'Meteomodem M20 (UAII2022)'
+  mdl_desc: 'Meteomodem-M20 from Meteomodem [UAII2022 file format]'
   mid: 'M20'
 
-- mdl_name: 'PS01B3M'
-  mdl_desc: 'VSSC PS01B3M (UAII2022)'
-  mid: 'PS01B3M'
+- mdl_name: 'PS-B3'
+  mdl_desc: 'Pisharoty Sonde B3 from Vikram Sarabhai Space Center, Indian Space Research Organisation [UAII2022 file format]'
+  mid: 'PS-B3'
 
-- mdl_name: 'HT-GTS(U)2-1'
-  mdl_desc: 'Tianjin Huayuntianyi Special Meteorological Sounding Tech Co. Ltd HT-GTS(U)2-1 (GTH3) (UAII2022)'
-  mid: 'HT-GTS(U)2-1'
+- mdl_name: 'GTH3'
+  mdl_desc: 'HT-GTS(U)2-1 (GTH3) from Tianjin Huayuntianyi Special Meteorological Sounding Tech Co., Ltd. [UAII2022 file format]'
+  mid: 'GTH3'
 
-- mdl_name: 'RS41-SG'
-  mdl_desc: 'Vaisala RS41-SG (UAII2022)'
-  mid: 'RS41-SG'
+- mdl_name: 'RS41'
+  mdl_desc: 'RS41-SG from Vaisala [UAII2022 file format]'
+  mid: 'RS41'
 
 - mdl_name: 'WxR-301D'
-  mdl_desc: 'Weathex CO., LTD. WxR-301D (UAII2022)'
+  mdl_desc: 'WxR-301D from Weathex [UAII2022 file format]'
   mid: 'WxR-301D'

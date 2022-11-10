@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 
 @log_func_call(logger)
-def single_delta(prf, cws, angular_wrap=False):
+def single_delta(prf, cws, circular=False):
     """ Compute the delta between a (single) error-less Profile|RSProfile and a (single)
     error-full CWS.
 
@@ -40,7 +40,7 @@ def single_delta(prf, cws, angular_wrap=False):
     Args:
         prf (Profile|RSProfile): the 'candidate' profile.
         cws (CWSProfile): the `reference` Combined Working Standard profile.
-        angular_wrap (bool, optional): if True, will wrap delta values in the range [-180;+180[.
+        circular (bool, optional): if True, will wrap delta values in the range [-180;+180[.
             Defaults to False.
 
     Returns:
@@ -50,10 +50,10 @@ def single_delta(prf, cws, angular_wrap=False):
     # First, let's run some preliminary checks, to make sure the data I was fed is appropriate.
     for attr in ['edt', 'rid', 'eid']:
         if getattr(prf.info, attr) != getattr(cws.info, attr):
-            raise DvasError(f'Ouch ! prf-cws value mismatch for: {attr}')
+            raise DvasError(f'prf-cws value mismatch for: {attr}')
 
     if len(prf) != len(cws):
-        raise DvasError(f'Ouch ! prf-cws length mismatch: {len(prf)} vs {len(cws)}')
+        raise DvasError(f'prf-cws length mismatch: {len(prf)} vs {len(cws)}')
 
     # Prepare the InfoManager of the delta Profile. Just get it as a copy of the Profile itself
     dta_info = deepcopy(prf.info)
@@ -68,7 +68,7 @@ def single_delta(prf, cws, angular_wrap=False):
 
     # Handle the angular_wrap, if warranted. This is used to make sure the wdir delta is never
     # larger than +-180 deg
-    if angular_wrap:
+    if circular:
         dta_data.loc[:, [PRF_VAL]] = dta_data.val.map(wrap_angle)
         if (dta_data.val >= 180).any() or (dta_data.val < -180).any():
             raise DvasError('Angular wrapping failed ?!')
@@ -81,12 +81,12 @@ def single_delta(prf, cws, angular_wrap=False):
     dta = DeltaProfile(dta_info, dta_data)
 
     # Add the origin of this DeltaProfile
-    dta.info.src = 'dvas single_delta() [{}]'.format(Path(__file__).name)
+    dta.info.src = f'dvas single_delta() [{Path(__file__).name}]'
 
     return dta
 
 
-def compute(prfs, cwss, angular_wrap=False):
+def compute(prfs, cwss, circular=False):
     """ Compute the deltas between many error-less profiles and error-full cws.
 
     Args:
@@ -96,7 +96,7 @@ def compute(prfs, cwss, angular_wrap=False):
             with prfs is assumed, unless this contains a single profile, in which case the same
             CWS will be subtracted from all the Profiles.
             I.e. len(cwss) == 1 or len(cwss) == len(prfs).
-        angular_wrap (bool, optional): if True, will wrap delta values in the range [-180;+180[.
+        circular (bool, optional): if True, will wrap delta values in the range [-180;+180[.
             Defaults to False.
 
     Returns:
@@ -105,7 +105,7 @@ def compute(prfs, cwss, angular_wrap=False):
 
     # First, let's make sure I have a proper length.
     if not len(cwss) in [1, len(prfs)]:
-        raise DvasError(f'Ouch ! Incompatible cwss length: {len(cwss)} not in [1, {len(prfs)}]')
+        raise DvasError(f'Incompatible cwss length: {len(cwss)} not in [1, {len(prfs)}]')
 
     # Now let's make a list of CWSProfile that I can use in a loop
     cws_prfs = [prf for prf in cwss]
@@ -116,7 +116,7 @@ def compute(prfs, cwss, angular_wrap=False):
     # Now loop through these, and assemble the DeltaProfile
     dtas = []
     for (prf_ind, prf) in enumerate(prfs):
-        dtas += [single_delta(prf, cws_prfs[prf_ind], angular_wrap=angular_wrap)]
+        dtas += [single_delta(prf, cws_prfs[prf_ind], circular=circular)]
 
     # All done, let's pack it all inside a MultiDeltaProfile instance.
     out = MultiDeltaProfile()

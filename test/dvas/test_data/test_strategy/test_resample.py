@@ -17,7 +17,7 @@ import pandas as pd
 from dvas.data.strategy.data import RSProfile, GDPProfile
 from dvas.data.data import MultiRSProfile, MultiGDPProfile
 from dvas.database.database import InfoManager
-from dvas.hardcoded import FLG_INTERP
+from dvas.hardcoded import FLG_INTERP, PRF_VAL
 
 # Define db_data
 db_data = {
@@ -45,7 +45,7 @@ class TestResampleStrategy:
 
         # Let's build a multiprofile so I can test things out.
         multiprf = MultiRSProfile()
-        multiprf.update({'val': None, 'tdt': None, 'alt': None, 'flg': None},
+        multiprf.update({'val': 'temp', 'tdt': None, 'alt': None, 'flg': None},
                         [RSProfile(info_1, data_1)])
 
         # Let's launch the resampling
@@ -79,7 +79,7 @@ class TestResampleStrategy:
 
         # Let's build a multiprofile so I can test things out.
         multiprf = MultiGDPProfile()
-        multiprf.update({'val': None, 'tdt': None, 'alt': None, 'flg': None, 'ucr': None,
+        multiprf.update({'val': 'temp', 'tdt': None, 'alt': None, 'flg': None, 'ucr': None,
                          'ucs': None, 'uct': None, 'ucu': None},
                         [GDPProfile(info_1, data_1)])
 
@@ -105,3 +105,22 @@ class TestResampleStrategy:
         assert all(out.profiles[0].has_flg(FLG_INTERP) == [False, False, True])
         assert np.array_equal(out[0].flg.values, [0, 1, 14])  # FLG_INTERP is bit 8
 
+    def test_resample_wdir(self):
+        """Test resample method for wind direction (i.e. require angular wrapping)"""
+
+        # Prepare some datasets to play with
+        info_1 = InfoManager('20201217T0000Z', 1)
+        data_1 = pd.DataFrame({'alt': [10., 15., 20., 35, 35, 42, 45],
+                               'val': [0., 1., 359, 181, 179, 358, 2],
+                               'flg': [0]*7, 'tdt': [0, 1, 1.5, 2.5, 3, 3.5, 4.5]})
+
+        # Let's build a multiprofile so I can test things out.
+        multiprf = MultiRSProfile()
+        multiprf.update({'val': 'wdir',
+                         'tdt': None, 'alt': None, 'flg': None},
+                        [RSProfile(info_1, data_1)])
+
+        # Let's launch the resampling
+        out = multiprf.resample(freq='1s', interp_dist=1, inplace=False)
+
+        assert np.array_equal(out[0].data[PRF_VAL].round(10).values, [0, 1, 270, 179, 0])

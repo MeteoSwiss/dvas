@@ -4,15 +4,14 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
-# This file contains the extraction details for CF-06AH MDP files.
+# This file contains the extraction details for the PS-B3 MDP files.
 # It must absolutely have the string 'origdata' in its name, to match the dvas class names.
 # --------------------------------------------------------------------------------------------------
 
 # ----------------------------------------------------
-# CF-06AH MDP (UAII2022 format)
+# PS-B3 MDP (UAII2022)
 # ----------------------------------------------------
-
-_CF-06AH:
+_PS-B3:
 
     # -- META DATA ----------------------------------
     edt: "to_datetime(get('event_dt'))"
@@ -30,32 +29,34 @@ _CF-06AH:
     csv_delimiter: ';'
     csv_skip_blank_lines: False
     csv_delim_whitespace: False
+    csv_skipinitialspace: True
+    csv_index_col: False
     csv_skiprows: 17
-    csv_skipfooter: 0
+    csv_skipfooter: 1
     csv_encoding:
-    csv_na_values:
+    csv_na_values: 'NaN'
     csv_header: 0
 
     _time:
         value: getreldt('time_stamp', '%Y-%m-%dT%H:%M:%S.%fZ')
 
     _alt_ref:
-        value: get('gph_gnss')
+        value: get('gph_gnss[gpm]')
 
     _gph:
-        value: get('gph_gnss')
+        value: get('gph_gnss[gpm]')
 
     _temp:
-        value: get('temp_air', 'c2k')
+        value: get('temp[˚C]', 'c2k')
 
     _pres:
-        value: get('gph_press')
+        value: get('press_gnss[mBar]')
 
     _rh:
-        value: get('rh')
+        value: get('rh[%]')
 
     _wdir:
-        value: get('wind_dir')
+        value: get('wind_dir[˚]')
 
     _wspeed:
-        value: get('wind_speed')
+        value: get('wind_speed[m/s]')

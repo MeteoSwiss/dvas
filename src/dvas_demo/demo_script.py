@@ -253,7 +253,7 @@ if __name__ == '__main__':
     # binning values "m".
     start_time = datetime.now()
     incompat = dtgs.gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=[1, 6],
-                                          do_plot=True, n_cpus=4)
+                                          do_plot=True, n_cpus=4, method='arithmetic delta')
     print(f'GDP mismatch derived in: {(datetime.now()-start_time).total_seconds()}s')
 
     # Next, we derive "validities" given a specific strategy to assess the different GDP pair
@@ -268,7 +268,7 @@ if __name__ == '__main__':
     # Let us now create a high-resolution CWS for these synchronized GDPs, making sure to drop
     # incompatible elements.
     start_time = datetime.now()
-    cws, _ = dtgg.combine(gdp_prfs, binning=1, method='weighted mean',
+    cws, _ = dtgg.combine(gdp_prfs, binning=1, method='weighted arithmetic mean',
                           mask_flgs=FLG_INCOMPATIBLE,
                           chunk_size=150, n_cpus=1)
     print(f'CWS assembled in: {(datetime.now()-start_time).total_seconds()}s')

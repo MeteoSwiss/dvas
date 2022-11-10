@@ -35,19 +35,16 @@ logger = logging.getLogger(__name__)
 
 
 @log_func_call(logger)
-def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_size=150, n_cpus=1):
+def combine(gdp_prfs, binning=1, method='weighted arithmetic mean',
+            mask_flgs=None, chunk_size=150, n_cpus=1):
     ''' Combines and (possibly) rebins GDP profiles, with full error propagation.
-
-    Note:
-
-        This function requires profiles that have been resampled (if applicable) and synchronized
-        beforehand. This implies that the `_idx` index must be identical for all Profiles.
 
     Args:
         gdp_profs (dvas.data.data.MultiGDPProfile): synchronized GDP profiles to combine.
         binning (int, optional): the number of profile steps to put into a bin. Defaults to 1.
         method (str, optional): combination rule. Can be one of
-            ['weighted mean', 'mean', or 'delta']. Defaults to 'weighted mean'.
+            ['weighted arithmetic mean', 'arithmetic mean', weighted circular mean',
+            'circular mean', or 'delta']. Defaults to 'weighted arithmetic mean'.
         mask_flgs (str|list of str, optional): (list of) flag(s) to ignore when combining profiles.
         chunk_size (int, optional): to speed up computation, Profiles get broken up in chunks of
             that length. The larger the chunks, the larger the memory requirements. The smaller the
@@ -58,6 +55,13 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
     Returns:
         (dvas.data.data.MultiCWSProfile, dict): the combined working standard profile, and the
             a dictionnary with the full covariance matrices for the different uncertainty types.
+
+    Note:
+        This function requires profiles that have been resampled (if applicable) and synchronized
+        beforehand. This implies that the `_idx` index must be identical for all Profiles.
+
+
+
     '''
 
     # Some safety checks first of all
@@ -65,7 +69,8 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
         raise DvasError(f'binning must be of type int, not {type(binning)}')
     if binning <= 0:
         raise DvasError('binning must be greater or equal to 1 !')
-    if method not in ['weighted mean', 'mean', 'delta']:
+    if method not in ['weighted arithmetic mean', 'arithmetic mean', 'weighted circular mean',
+                      'circular mean', 'arithmetic delta', 'circular delta']:
         raise DvasError(f'Method {method} unsupported.')
 
     if not isinstance(chunk_size, (int, np.integer)):
@@ -91,7 +96,7 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
     # Have all the profiles been synchronized ? Just trigger a warning for now. Maybe users simply
     # did not add the proper tag.
     if any(TAG_SYNC not in item for item in gdp_prfs.get_info('tags')):
-        logger.warning(f'No "{TAG_SYNC}" tag found. Is this intended ?')
+        logger.warning('No "%s" tag found. Is this intended ?', TAG_SYNC)
 
     # How many gdps do we have ?
     n_prf = len(gdp_prfs)
@@ -152,14 +157,6 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
 
             # Actually assign the value to each measurement of the profile.
             x_dx.loc[:, (prf_id, metadata)] = val
-
-    # Debug code for the NaN mismatch error
-    # import pdb
-    # pdb.set_trace()
-    # uu = x_dx.loc[:,(0, 'uc_tot')].isna()
-    # vv = x_dx.loc[:,(0, 'val')].isna()
-    # all(vv==uu)
-    # x_dx[vv!=uu]
 
     # To drastically reduce memory requirements and speed up the code significantly,
     # we will break the profiles into smaller chunks. In doing so, we avoid having to deal with

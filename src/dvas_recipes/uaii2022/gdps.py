@@ -41,8 +41,6 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
     """ Highest-level recipe function responsible for assembling the combined working standard for
     a specific RS flight.
 
-    This function directly builds the profiles and uploads them to the db with the 'cws' tag.
-
     Args:
         start_with_tags (str|list of str): tag name(s) for the search query into the database.
         m_vals (int|list of int, optional): list of m-values used for identifiying incompatible and
@@ -60,7 +58,26 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
         explore_covmats (bool, optional): if True, will generate plots of the covariance matrices.
             Defaults to True.
 
+    This function directly builds the profiles and uploads them to the db with the 'cws' tag.
+
+    Note:
+        For the variable called 'w_dir', the function automatically uses a (weighted) circular mean
+        instead of a (weighted) arithmetic mean.
+
     """
+
+    # First, figure out if I need an arithmetic or circular mean
+    if dynamic.CURRENT_VAR == 'wdir':
+        which_method = 'circular'
+    else:
+        which_method = 'arithmetic'
+
+    if method == 'mean':
+        method = ' '.join([which_method, method])
+    elif method == 'weighted mean':
+        method = method.replace(' ', f' {which_method} ')
+
+    logger.info('CWS assembly method for %s: %s', dynamic.CURRENT_VAR, method)
 
     # Format the tags
     tags = dru.format_tags(start_with_tags)
@@ -129,6 +146,7 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
     logger.info('Identifying incompatibilities between GDPs for variable: %s', dynamic.CURRENT_VAR)
     incompat = dtgs.gdp_incompatibilities(gdp_prfs, alpha=alpha,
                                           m_vals=[np.abs(item) for item in m_vals],
+                                          method=f'{which_method} delta',
                                           do_plot=True,
                                           n_cpus=dynamic.N_CPUS,
                                           chunk_size=dynamic.CHUNK_SIZE,

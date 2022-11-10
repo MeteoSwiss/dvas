@@ -4,6 +4,17 @@ The format is inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [v0.8.1.dev0]
+### Added:
+### Fixed:
+ - [fpavogt, 2022-11-09] Fix #262 - handle angular wrapping in resample
+ - [fpavogt, 2022-11-09] Fix Runtime warning caused by uc_tot=0 cases in gdp_vs_cws plots
+ - [fpavogt, 2022-11-08] Fix #235 and #236 (wdir wrap-around)
+### Changed:
+### Deprecated:
+### Removed:
+### Security:
+
 ## [v0.8.0.dev0]
 ### Added:
  - [fpavogt, 2022-10-28] Add netCDF export recipe step
@@ -13,9 +24,6 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [fpavogt, 2022-10-28] Fix #254
 ### Changed:
  - [fpavogt, 2022-10-28] Clean-up TAGS and FLAGS, incl. rename of "raw" to "original" (fix #255)
-### Deprecated:
-### Removed:
-### Security:
 
 ## [v0.7.1]
 ### Added:

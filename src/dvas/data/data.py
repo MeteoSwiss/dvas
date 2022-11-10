@@ -29,7 +29,7 @@ from ..helper import RequiredAttrMetaClass
 from ..helper import deepcopy
 from ..helper import get_class_public_attr
 from ..errors import DBIOError
-from ..hardcoded import TAG_ORIGINAL, PRF_IDX, PRF_FLG
+from ..hardcoded import TAG_ORIGINAL, PRF_IDX, PRF_FLG, PRF_VAL
 
 # Loading strategies
 load_prf_stgy = LoadProfileStrategy()
@@ -473,10 +473,18 @@ class MultiRSProfileAC(MultiProfileAC):
             interp_dist(int|float): Distance beyond which to not interpolate, and use NaNs.
                 Defaults to 1s.
 
+        Note:
+            Will unwrap angles if self.var_info[PRF_VAL]['prm_name'] == 'wdir'.
+
         """
 
+        if self.var_info[PRF_VAL]['prm_name'] == 'wdir':
+            circular = True
+        else:
+            circular = False
+
         data = self._resample_stgy.execute(self.profiles, freq=freq, interp_dist=interp_dist,
-                                           chunk_size=chunk_size, n_cpus=n_cpus)
+                                           chunk_size=chunk_size, n_cpus=n_cpus, circular=circular)
         self.update(self.db_variables, data)
 
 

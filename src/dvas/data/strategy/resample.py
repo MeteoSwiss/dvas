@@ -32,14 +32,8 @@ class ResampleStrategy(MPStrategyAC):
     """ Class to handle the resample strategy for RS and GDPs Profiles. """
 
     def execute(self, prfs, freq: str = '1s', chunk_size: int = 150, n_cpus: int = 1,
-                interp_dist: float | int = 1):
-        """Implementation of time resampling method for RS and GDP Profiles.
-
-        .. note::
-
-            This strategy does NOT treat NaN's in a special way. This implies that if a NaN is one
-            of the two closest original data points from a new location to be interpolated, that
-            location will result in a NaN as well.
+                interp_dist: float | int = 1, circular: bool = False):
+        """ Implementation of time resampling method for RS and GDP Profiles.
 
         Args:
             prfs (list of RSProfiles|GDPProfiles): GDP Profiles to resample.
@@ -52,9 +46,17 @@ class ResampleStrategy(MPStrategyAC):
                 the chunks the more items to process. Defaults to 150.
             n_cpus (int|str, optional): number of cpus to use. Can be a number, or 'max'. Set to 1
                 to disable multiprocessing. Defaults to 1.
+            circular (bool, optional): if True, will assume angular values and use np.unwrap()
+                before interpolating. Defaults to False.
 
         Returns:
             dvas.data.MultiRSProfile|MultiGDPProfile: the resampled MultiProfile.
+
+        .. note::
+
+            This strategy does NOT treat NaN's in a special way. This implies that if a NaN is one
+            of the two closest original data points from a new location to be interpolated, that
+            location will result in a NaN as well.
 
         """
 
@@ -150,6 +152,10 @@ class ResampleStrategy(MPStrategyAC):
             # Let's drop the original integer index, to avoid type conversion issues
             this_data.drop(columns=PRF_IDX, inplace=True)
 
+            # Unwrap angles if necessary
+            if circular:
+                this_data[PRF_VAL] = np.rad2deg(np.unwrap(np.deg2rad(this_data[PRF_VAL])))
+
             # Duplicate the last point as a "pseudo" new time step.
             # This is to ensure proper interpolation all the way to the very edge of the original
             # data
@@ -168,6 +174,8 @@ class ResampleStrategy(MPStrategyAC):
 
             # What are the linear interpolation weights ?
             # Here, we have x_- * (1-omega) + x_+ * (omega)
+            # Note: for circular resampling (with angluar values), as long as we have only two
+            # angles, the arithmetic average is equivalent to the circular one. So we worry not.
             omega_vals = np.array([(item-old_tdt[x_ip1_ind[ind]-1]) /
                                    np.diff(old_tdt)[x_ip1_ind[ind]-1]
                                    for (ind, item) in enumerate(new_tdt.values)])
@@ -199,7 +207,6 @@ class ResampleStrategy(MPStrategyAC):
                     # (rather than a sum) for compatibility with process_chunk()
                     x_dx[(0, col)] = this_data.iloc[x_ip1_ind-1][col].values * (omega_vals-1)
                     x_dx[(1, col)] = this_data.iloc[x_ip1_ind][col].values * omega_vals
-
 
             # Deal with the uncertainties, in case I do not have a GDPProfile
             for col in [PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU]:
@@ -244,7 +251,7 @@ class ResampleStrategy(MPStrategyAC):
             chunks = df_to_chunks(x_dx, chunk_size)
 
             # Prepare a routine to dispatch chunks to multiple cpus
-            merge_func = functools.partial(process_chunk, binning=1, method='delta')
+            merge_func = functools.partial(process_chunk, binning=1, method='arithmetic delta')
             if n_cpus == 1:
                 proc_chunks = map(merge_func, chunks)
             else:
@@ -271,10 +278,6 @@ class ResampleStrategy(MPStrategyAC):
             # Re-assemble all the chunks into one DataFrame.
             proc_chunk = [item[0] for item in proc_chunks]
             proc_chunk = pd.concat(proc_chunk, axis=0)
-
-            # Start the interpolation. Since I already applied the weights, I just need to do a
-            # delta.
-            # out = process_chunk(x_dx, binning=1, method='delta')
 
             # Let's make sure I have the correct times ... just to make sure nothing got messed up.
             # Remember that some of the times may be NaNs, in case of large gaps ...
@@ -309,6 +312,10 @@ class ResampleStrategy(MPStrategyAC):
 
                 # For all the rest, let's just use the data that was recently computed
                 new_data[name] = proc_chunk.loc[:, name].values
+
+            # In case of angles, let's remmeber to bring these back to the [0;360[ range
+            if circular:
+                new_data[PRF_VAL] = new_data[PRF_VAL] % 360
 
             # And finally let's assign the new DataFrame to the Profile. The underlying setter
             # will take care of reformatting all the indices as needed.
