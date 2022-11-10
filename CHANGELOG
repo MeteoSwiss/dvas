@@ -4,16 +4,20 @@ The format is inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [v0.8.1.dev0]
+## [v0.8.2.dev0]
 ### Added:
+### Fixed:
+### Changed:
+ - [fpavogt, 2022-11-10] Cleanup filename of KS plots
+### Deprecated:
+### Removed:
+### Security:
+
+## [v0.8.1.dev0]
 ### Fixed:
  - [fpavogt, 2022-11-09] Fix #262 - handle angular wrapping in resample
  - [fpavogt, 2022-11-09] Fix Runtime warning caused by uc_tot=0 cases in gdp_vs_cws plots
  - [fpavogt, 2022-11-08] Fix #235 and #236 (wdir wrap-around)
-### Changed:
-### Deprecated:
-### Removed:
-### Security:
 
 ## [v0.8.0.dev0]
 ### Added:
