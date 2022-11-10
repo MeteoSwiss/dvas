@@ -273,12 +273,12 @@ def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
             nok = val_vs_uc.loc[:, gdp_ind]['uc_tot'] == 0
 
             if any(~ok) or any(nok):
-                logger.critical('%s: %i/%i val vs uc_tot "NaN" mismatch for %s, flagged as "%s".',
-                                '+'.join(gdp.info.mid), len(ok[~ok]), len(ok),
-                                dynamic.CURRENT_VAR, FLG_ISINVALID)
-                logger.critical('%s: %i/%i val vs uc_tot "0" mismatch for %s, flagged as "%s".',
-                                '+'.join(gdp.info.mid), len(nok[nok]), len(nok),
-                                dynamic.CURRENT_VAR, FLG_ISINVALID)
+                logger.info('%s: %i/%i val vs uc_tot "NaN" mismatch for %s, flagged as "%s".',
+                            '+'.join(gdp.info.mid), len(ok[~ok]), len(ok),
+                            dynamic.CURRENT_VAR, FLG_ISINVALID)
+                logger.info('%s: %i/%i val vs uc_tot "0" mismatch for %s, flagged as "%s".',
+                            '+'.join(gdp.info.mid), len(nok[nok]), len(nok),
+                            dynamic.CURRENT_VAR, FLG_ISINVALID)
 
                 gdp_prfs[gdp_ind].set_flg(FLG_ISINVALID, True, index=ok.index[~ok].values)
                 gdp_prfs[gdp_ind].set_flg(FLG_ISINVALID, True, index=nok.index[nok].values)
