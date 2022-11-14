@@ -89,7 +89,7 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
         raise DvasRecipesError(f'Ouch ! m_vals should be a list of int, not: {m_vals}')
 
     # Get the event id and rig id
-    (_, eid, rid) = dynamic.CURRENT_FLIGHT
+    (fid, eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What search query will let me access the data I need ?
     gdp_filt = tools.get_query_filter(tags_in=tags+[eid, rid, TAG_GDP],
@@ -151,7 +151,8 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
                                           n_cpus=dynamic.N_CPUS,
                                           chunk_size=dynamic.CHUNK_SIZE,
                                           fn_prefix=dynamic.CURRENT_STEP_ID,
-                                          fn_suffix=dru.fn_suffix(eid=eid, rid=rid, tags=tags,
+                                          fn_suffix=dru.fn_suffix(fid=fid, eid=eid, rid=rid,
+                                                                  tags=tags,
                                                                   var=dynamic.CURRENT_VAR))
 
     # Next, we derive "validities" given a specific strategy to assess the different GDP pair

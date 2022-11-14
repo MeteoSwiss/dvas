@@ -169,6 +169,10 @@ def add_dvas_attributes(grp, prf):
 
     # Also add all the metadata present
     for (key, value) in prf[0].info.metadata.items():
+        # Skip the fid, that was already stored more cleanly earlier
+        if key == 'fid':
+            continue
+        # Format datetimes cleanly
         if isinstance(value, datetime):
             value = value.strftime('%Y-%m-%dT%H:%M:%S.%f %Z')
         set_attribute(grp, f'd.Metadata.{key}', f"{value}")

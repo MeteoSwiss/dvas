@@ -56,7 +56,7 @@ def flight_overview(start_with_tags, label='mid', show=None):
     tags = dru.format_tags(start_with_tags)
 
     # Extract the flight info
-    (_, eid, rid) = dynamic.CURRENT_FLIGHT
+    (fid, eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What search query will let me access the data I need ?
     filt = tools.get_query_filter(tags_in=tags+[eid, rid], tags_out=dru.rsid_tags(pop=tags))
@@ -149,7 +149,7 @@ def flight_overview(start_with_tags, label='mid', show=None):
 
     # Save it all
     dpu.fancy_savefig(fig, 'flight_overview', fn_prefix=dynamic.CURRENT_STEP_ID,
-                      fn_suffix=dru.fn_suffix(eid=eid, rid=rid, tags=tags),
+                      fn_suffix=dru.fn_suffix(fid=fid, eid=eid, rid=rid, tags=tags),
                       fmts=dpu.PLOT_FMTS, show=show)
 
 
@@ -271,10 +271,10 @@ def covmat_stats(covmats):
 
     # Save it all
     # Get the event id and rig id
-    (_, eid, rid) = dynamic.CURRENT_FLIGHT
+    (fid, eid, rid) = dynamic.CURRENT_FLIGHT
     dpu.fancy_savefig(fig, f'covmat_check_chunk-size-{dynamic.CHUNK_SIZE}',
                       fn_prefix=dynamic.CURRENT_STEP_ID,
-                      fn_suffix=dru.fn_suffix(eid=eid, rid=rid, var=dynamic.CURRENT_VAR),
+                      fn_suffix=dru.fn_suffix(fid=fid, eid=eid, rid=rid, var=dynamic.CURRENT_VAR),
                       fmts=dpu.PLOT_FMTS, show=None)
 
 
@@ -297,7 +297,7 @@ def inspect_cws(gdp_start_with_tags, cws_start_with_tags):
     # and simply call the dedicated plotting routine.
 
     # Get the event id and rig id
-    (_, eid, rid) = dynamic.CURRENT_FLIGHT
+    (fid, eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What search query will let me access the data I need ?
     gdp_filt = tools.get_query_filter(tags_in=gdp_tags+[eid, rid, TAG_GDP],
@@ -332,12 +332,12 @@ def inspect_cws(gdp_start_with_tags, cws_start_with_tags):
     # We can now create a GDP vs CWS plot ...
     dpg.gdps_vs_cws(gdp_prfs, cws_prfs, show=None,
                     fn_prefix=dynamic.CURRENT_STEP_ID,
-                    fn_suffix=dru.fn_suffix(eid=eid, rid=rid, tags=gdp_tags,
+                    fn_suffix=dru.fn_suffix(fid=fid, eid=eid, rid=rid, tags=gdp_tags,
                                             var=dynamic.CURRENT_VAR))
     # And a uc_budget plot
     dpg.uc_budget(gdp_prfs, cws_prfs, show=None,
                   fn_prefix=dynamic.CURRENT_STEP_ID,
-                  fn_suffix=dru.fn_suffix(eid=eid, rid=rid, tags=gdp_tags,
+                  fn_suffix=dru.fn_suffix(fid=fid, eid=eid, rid=rid, tags=gdp_tags,
                                           var=dynamic.CURRENT_VAR))
 
 
@@ -355,7 +355,7 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None):
     """
 
     # Get the event id and rig id
-    (_, eid, rid) = dynamic.CURRENT_FLIGHT
+    (fid, eid, rid) = dynamic.CURRENT_FLIGHT
 
     # Format the tags
     prf_tags = dru.format_tags(prf_tags)
@@ -526,7 +526,7 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None):
                           var_name=dta_prfs.var_info[PRF_VAL]['prm_name'], k=None)
 
         # Save it
-        fn_suf = dru.fn_suffix(eid=eid, rid=rid, tags=None, mids=mid, pids=[pid],
+        fn_suf = dru.fn_suffix(fid=fid, eid=eid, rid=rid, tags=None, mids=mid, pids=[pid],
                                var=dynamic.CURRENT_VAR)
         dpu.fancy_savefig(fig, fn_core='pp', fn_suffix=fn_suf, fn_prefix=dynamic.CURRENT_STEP_ID)
 

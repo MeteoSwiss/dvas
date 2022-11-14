@@ -126,7 +126,7 @@ def flag_phases(prfs):
 
 
 @log_func_call(logger, time_it=False)
-def cleanup_steps(prfs, resampling_freq, interp_dist, crop_descent, timeofday=None):
+def cleanup_steps(prfs, resampling_freq, interp_dist, crop_descent, timeofday=None, fid=None):
     """ Execute a series of cleanup-steps common to GDP and non-GDP profiles. This function is here
     to avoid duplicating code. The cleanup-up profiles are directly saved to the DB with the tag:
     TAG_CLN
@@ -139,6 +139,7 @@ def cleanup_steps(prfs, resampling_freq, interp_dist, crop_descent, timeofday=No
             resampled point is forced to NaN (i.e. "dvas does not interpolate !")
         crop_descent (bool): if True, and data with the flag "descent" will be cropped out for good.
         timeofday (str): if set, will tag the Profile with this time of day. Defaults to None.
+        fid (str): if set, will add the flight id to the profile metadata. Defaults to None.
 
     Note:
         Pre-launch data is always cropped.
@@ -163,6 +164,11 @@ def cleanup_steps(prfs, resampling_freq, interp_dist, crop_descent, timeofday=No
             if not prf.has_tag(timeofday):
                 prf.info.add_tags(timeofday)
                 logger.info('Adding missing TimeOfDay tag (%s)', prf.info.src)
+
+    # Add the fid, if warranted
+    if fid is not None:
+        for prf in prfs:
+            prf.info.add_metadata('fid', fid)
 
     # Resample the profiles as required
     prfs.resample(freq=resampling_freq, interp_dist=interp_dist, inplace=True,
@@ -195,7 +201,7 @@ def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
     tags = dru.format_tags(start_with_tags)
 
     # Extract the flight info
-    (_, eid, rid) = dynamic.CURRENT_FLIGHT
+    (fid, eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What search query will let me access the data I need ?
     filt = tools.get_query_filter(tags_in=tags + [eid, rid],
@@ -312,7 +318,7 @@ def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
                                      gdp_prf.info.metadata['gruan_tropopause'])
 
         # Now launch more generic cleanup steps
-        cleanup_steps(gdp_prfs, **args, timeofday=timeofday)
+        cleanup_steps(gdp_prfs, **args, timeofday=timeofday, fid=fid)
 
     # Process the non-GDPs, if any
     if not db_view[this_flight].is_gdp.all():
@@ -328,4 +334,4 @@ def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
 
         logger.info('Loaded %i RS profiles from the DB.', len(rs_prfs))
 
-        cleanup_steps(rs_prfs, **args, timeofday=timeofday)
+        cleanup_steps(rs_prfs, **args, timeofday=timeofday, fid=fid)
