@@ -195,7 +195,7 @@ def combine(gdp_prfs, binning=1, method='weighted arithmetic mean',
     # Re-assemble all the chunks into one DataFrame.
     x_ms = pd.concat(x_ms, axis=0)
 
-    # Almost there. Now we just need to package this into a clean MultiGDPProfile
+    # Almost there. Now we just need to package this into a clean MultiCWSProfile
     # Let's first prepare the info dict
     new_rig_tag = 'r:'+','.join([item.split(':')[1]
                                  for item in np.unique(gdp_prfs.get_info('rid')).tolist()])
@@ -205,10 +205,14 @@ def combine(gdp_prfs, binning=1, method='weighted arithmetic mean',
     all_or_nothing_tags = [tag for tag in [TAG_ORIGINAL, TAG_CLN, TAG_SYNC]
                            if all(gdp_prfs.has_tag(tag))]
 
+    new_fid = ','.join(set(item['fid'] if 'fid' in item.keys() else '???' for item in
+                       gdp_prfs.get_info(prm='metadata')))
+
     new_info = InfoManager(np.unique(gdp_prfs.get_info('edt'))[0],  # dt
                            np.unique(gdp_prfs.get_info('oid')).tolist(),  # oids
                            tags=[new_rig_tag, new_evt_tag] + one_or_more_tags + all_or_nothing_tags,
                            src=f'dvas combine() [{Path(__file__).name}]')
+    new_info.add_metadata('fid', new_fid)
 
     # Let's create a dedicated Profile for the combined profile.
     # It's no different from a GDP, from the perspective of the errors.

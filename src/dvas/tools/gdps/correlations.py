@@ -84,9 +84,9 @@ def coeffs(i, j, sigma_name, oid_i=None, oid_j=None, mid_i=None, mid_j=None,
         if var is None:
             continue
         if not isinstance(var, np.ndarray):
-            raise DvasError('Ouch ! I was expecting a numpy.ndarray, not %s' % type(var))
+            raise DvasError(f'I was expecting a numpy.ndarray, not: {type(var)}')
         if np.shape(var) != np.shape(i):
-            raise DvasError('Ouch ! All items should have the same shape !')
+            raise DvasError('All items should have the same shape !')
 
     # Make sure to return something with the same shape as what came in.
     corcoef = np.zeros_like(i)
@@ -106,7 +106,7 @@ def coeffs(i, j, sigma_name, oid_i=None, oid_j=None, mid_i=None, mid_j=None,
         # between radiosondes that fly together.
         # This is related to the manner through which this uncertainty is being derived, which is
         # sensitive to short-but-real atmospheric fluctuations, which are common between radiosondes
-        # flying together. This also implies that these uncertainties are being underestimated.
+        # flying together. This also implies that these uncertainties are being overestimated.
         #
         # Here, we choose to entirely ignore any correlation between the ucr components. This helps
         # reduce the impact of this "additional" uncertainty, related to real atmospheric
@@ -127,7 +127,6 @@ def coeffs(i, j, sigma_name, oid_i=None, oid_j=None, mid_i=None, mid_j=None,
         corcoef[(mid_i == mid_j)] = 1.0
 
     else:
-        raise DvasError("Ouch ! uc_type must be one of ['ucr', 'ucs', 'uct', 'ucu'], not: %s" %
-                        (sigma_name))
+        raise DvasError(f"uc_type must be one of ['ucr', 'ucs', 'uct', 'ucu'], not: {sigma_name}")
 
     return corcoef

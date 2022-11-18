@@ -19,7 +19,7 @@ from dvas.data.data import MultiRSProfile, MultiGDPProfile
 from dvas.tools.gdps import stats as dtgs
 from dvas.tools.gdps import gdps as dtgg
 from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
-from dvas.hardcoded import TAG_CWS, TAG_GDP, FLG_INCOMPATIBLE, FLG_INVALID
+from dvas.hardcoded import TAG_CWS, TAG_GDP, FLG_INCOMPATIBLE, FLG_ISINVALID
 from dvas.errors import DBIOError
 
 # Import from dvas_recipes
@@ -89,7 +89,7 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
         raise DvasRecipesError(f'Ouch ! m_vals should be a list of int, not: {m_vals}')
 
     # Get the event id and rig id
-    (_, eid, rid) = dynamic.CURRENT_FLIGHT
+    (fid, eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What search query will let me access the data I need ?
     gdp_filt = tools.get_query_filter(tags_in=tags+[eid, rid, TAG_GDP],
@@ -151,7 +151,8 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
                                           n_cpus=dynamic.N_CPUS,
                                           chunk_size=dynamic.CHUNK_SIZE,
                                           fn_prefix=dynamic.CURRENT_STEP_ID,
-                                          fn_suffix=dru.fn_suffix(eid=eid, rid=rid, tags=tags,
+                                          fn_suffix=dru.fn_suffix(fid=fid, eid=eid, rid=rid,
+                                                                  tags=tags,
                                                                   var=dynamic.CURRENT_VAR))
 
     # Next, we derive "validities" given a specific strategy to assess the different GDP pair
@@ -171,7 +172,7 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
     # Let us now create a high-resolution CWS for these synchronized GDPs
     # We shall mask any incompatible value, but also any invalid one (see e.g. #244)
     cws, covmats = dtgg.combine(gdp_prfs, binning=1, method=method,
-                                mask_flgs=[FLG_INCOMPATIBLE, FLG_INVALID],
+                                mask_flgs=[FLG_INCOMPATIBLE, FLG_ISINVALID],
                                 chunk_size=dynamic.CHUNK_SIZE, n_cpus=dynamic.N_CPUS)
 
     # Let's tag this CWS in the same way as the GDPs, so I can find them easily together

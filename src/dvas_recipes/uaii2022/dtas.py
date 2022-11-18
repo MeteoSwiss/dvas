@@ -63,7 +63,7 @@ def compute_deltas(prf_start_with_tags, cws_start_with_tags, do_gdps=False, do_n
     cws_tags = dru.format_tags(cws_start_with_tags)
 
     # Get the event id and rig id
-    (_, eid, rid) = dynamic.CURRENT_FLIGHT
+    (fid, eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What tags should I exclude from the search ?
     if not do_gdps and not do_nongdps:
@@ -121,7 +121,7 @@ def compute_deltas(prf_start_with_tags, cws_start_with_tags, do_gdps=False, do_n
                             rm_tags=dru.rsid_tags(pop=dynamic.CURRENT_STEP_ID))
 
     # Let us now also plot these deltas
-    fn_suf = dru.fn_suffix(eid=eid, rid=rid, tags=prf_tags, var=dynamic.CURRENT_VAR)
+    fn_suf = dru.fn_suffix(fid=fid, eid=eid, rid=rid, tags=prf_tags, var=dynamic.CURRENT_VAR)
 
     if do_gdps and do_nongdps:
         fn_suf += ''

@@ -43,10 +43,11 @@ def default_arena_path():
     return Path('.', 'dvas_proc_arena')
 
 
-def fn_suffix(eid=None, rid=None, var=None, mids=None, pids=None, tags=None):
+def fn_suffix(fid=None, eid=None, rid=None, var=None, mids=None, pids=None, tags=None):
     """ Returns the default suffix of filenames given a set of info provided by the user.
 
     Args:
+        fid (str, optional): the flight id
         eid (int, optional): the event id
         rid (int, optional): the rig id
         var (str, optional): the variable name
@@ -59,7 +60,7 @@ def fn_suffix(eid=None, rid=None, var=None, mids=None, pids=None, tags=None):
     """
 
     suffix = ''
-    for item in [eid, rid, var]:
+    for item in [fid, eid, rid, var]:
         if item is not None:
             suffix += '_{}'.format(item.replace(':', ''))
 

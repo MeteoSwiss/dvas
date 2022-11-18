@@ -95,7 +95,7 @@ rcp_steps:
       kwargs:
         start_with_tags: is_original
         fix_gph_uct: # Correct the NaNs present in the gph_uct values for the RS41 GDP v1. See #205.
-            - RS41-GDP # Model ids (mid) that require the correction
+            - (gdp)RS41 # Model ids (mid) that require the correction
         check_tropopause: True # If True, will compare the GRUAN tropopause with the dvas one (for info only).
         resampling_freq: '1s' # Time step to resample onto, with format 'Xs'
         interp_dist: 1 # Distance to the nearest measurement, in s, from which a resampled point is forced to NaN
@@ -129,7 +129,7 @@ rcp_steps:
         m_vals: [1] # list of m values. The negative ones are ignored for the cws assembly
         strategy: 'all-or-none' # Strategy to decide which GDPs to combine, in case of incompatibilities. One of [all-or-none, force-all-valid].
         method: 'weighted mean' # Combination method: mean or weighted mean
-        alpha: 0.0027 # alpha level for the KS test. 0.0027 = 3-sigmas
+        alpha: 0.0455 # alpha level for the KS test. 0.0027 = 3-sigmas, 0.0455 = 2-sigmas
         cws_alt_ref: gph # Name of the variable to use in order to populate alt_ref
         explore_covmats: False # If True, will generate plots of the content of covariance matrices
 

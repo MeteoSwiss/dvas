@@ -9,4 +9,4 @@ Module contents: Version of the package.
 
 """
 
-VERSION = '0.8.1.dev0'
+VERSION = '0.8.2.dev0'

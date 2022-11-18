@@ -257,6 +257,9 @@ def delta(df_chunk, binning=1, mode='arithmetic'):
         n = len(df_chunk) * 2.
 
     Note:
+        The delta is computed as Profile2-Profile1, via a diff() function.
+
+    Note:
         The function will ignore NaNs in a given bin, unless *all* the values in the bin are NaNs.
         See fancy_nansum() for details.
 

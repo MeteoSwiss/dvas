@@ -19,7 +19,8 @@ from dvas.logger import log_func_call
 from dvas.data.data import MultiRSProfile, MultiGDPProfile
 from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_IDX, PRF_VAL
 from dvas.hardcoded import MTDTA_FIRST, MTDTA_LAUNCH, MTDTA_BURST
-from dvas.hardcoded import TAG_GDP, TAG_CLN, FLG_PRELAUNCH, FLG_ASCENT, FLG_DESCENT, FLG_INVALID
+from dvas.hardcoded import TAG_GDP, TAG_CLN, FLG_PRELAUNCH, FLG_ASCENT, FLG_DESCENT
+from dvas.hardcoded import FLG_ISINVALID, FLG_WASINVALID
 from dvas.dvas import Database as DB
 
 # Import from dvas_recipes
@@ -125,7 +126,7 @@ def flag_phases(prfs):
 
 
 @log_func_call(logger, time_it=False)
-def cleanup_steps(prfs, resampling_freq, interp_dist, crop_descent, timeofday=None):
+def cleanup_steps(prfs, resampling_freq, interp_dist, crop_descent, timeofday=None, fid=None):
     """ Execute a series of cleanup-steps common to GDP and non-GDP profiles. This function is here
     to avoid duplicating code. The cleanup-up profiles are directly saved to the DB with the tag:
     TAG_CLN
@@ -138,6 +139,7 @@ def cleanup_steps(prfs, resampling_freq, interp_dist, crop_descent, timeofday=No
             resampled point is forced to NaN (i.e. "dvas does not interpolate !")
         crop_descent (bool): if True, and data with the flag "descent" will be cropped out for good.
         timeofday (str): if set, will tag the Profile with this time of day. Defaults to None.
+        fid (str): if set, will add the flight id to the profile metadata. Defaults to None.
 
     Note:
         Pre-launch data is always cropped.
@@ -162,6 +164,11 @@ def cleanup_steps(prfs, resampling_freq, interp_dist, crop_descent, timeofday=No
             if not prf.has_tag(timeofday):
                 prf.info.add_tags(timeofday)
                 logger.info('Adding missing TimeOfDay tag (%s)', prf.info.src)
+
+    # Add the fid, if warranted
+    if fid is not None:
+        for prf in prfs:
+            prf.info.add_metadata('fid', fid)
 
     # Resample the profiles as required
     prfs.resample(freq=resampling_freq, interp_dist=interp_dist, inplace=True,
@@ -194,7 +201,7 @@ def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
     tags = dru.format_tags(start_with_tags)
 
     # Extract the flight info
-    (_, eid, rid) = dynamic.CURRENT_FLIGHT
+    (fid, eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What search query will let me access the data I need ?
     filt = tools.get_query_filter(tags_in=tags + [eid, rid],
@@ -237,6 +244,30 @@ def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
 
         logger.info('Loaded %i GDP profiles from the DB.', len(gdp_prfs))
 
+        # Deal with the faulty RS41 gph_uc_tcor values (NaNs when they should not be, see #205)
+        if dynamic.CURRENT_VAR == 'gph' and fix_gph_uct is not None:
+            # Safety check
+            if not isinstance(fix_gph_uct, list):
+                raise DvasRecipesError(f'Ouch ! fix_gph_uct should be a list, not: {fix_gph_uct}')
+
+            # Start looping through the profiles, to identify the ones I need.
+            for gdp in gdp_prfs:
+                if ' '.join(gdp.info.mid) in fix_gph_uct:
+
+                    # What are the bug conditions ?
+                    cond1 = gdp.data.loc[:, 'uct'].isna()
+                    cond2 = ~gdp.data.loc[:, 'val'].isna()
+
+                    if (n_bad := (cond1 & cond2).sum()) > 0:  # True = 1
+                        logger.info('Fixing %i bad gph_uct values for mid: %s',
+                                    n_bad, gdp.info.mid[0])
+                        # Fix the bug
+                        gdp.data.loc[cond1 & cond2, 'uct'] = gdp.data.loc[:, 'uct'].max(skipna=True)
+
+                        # Flag it so we can find these bad points later on if needed
+                        gdp.set_flg(FLG_WASINVALID, True,
+                                    index=gdp.data.index[cond1 & cond2].values)
+
         # Check that whenever I have a value, I have a valid error, and vice-versa
         # Check also cases where the uncertainty is equal to 0
         # Both these checks are implemented following #244 and #260
@@ -248,35 +279,15 @@ def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
             nok = val_vs_uc.loc[:, gdp_ind]['uc_tot'] == 0
 
             if any(~ok) or any(nok):
-                logger.critical('%s: %i/%i val vs uc_tot "NaN" mismatch for %s, flagged as "%s".',
-                                '+'.join(gdp.info.mid), len(ok[~ok]), len(ok),
-                                dynamic.CURRENT_VAR, FLG_INVALID)
-                logger.critical('%s: %i/%i val vs uc_tot "0" mismatch for %s, flagged as "%s".',
-                                '+'.join(gdp.info.mid), len(nok[nok]), len(nok),
-                                dynamic.CURRENT_VAR, FLG_INVALID)
+                logger.info('%s: %i/%i val vs uc_tot "NaN" mismatch for %s, flagged as "%s".',
+                            '+'.join(gdp.info.mid), len(ok[~ok]), len(ok),
+                            dynamic.CURRENT_VAR, FLG_ISINVALID)
+                logger.info('%s: %i/%i val vs uc_tot "0" mismatch for %s, flagged as "%s".',
+                            '+'.join(gdp.info.mid), len(nok[nok]), len(nok),
+                            dynamic.CURRENT_VAR, FLG_ISINVALID)
 
-                gdp_prfs[gdp_ind].set_flg(FLG_INVALID, True, index=ok.index[~ok].values)
-                gdp_prfs[gdp_ind].set_flg(FLG_INVALID, True, index=nok.index[nok].values)
-
-        # Deal with the faulty RS41 gph_uc_tcor values (NaNs when they should not be, see #205)
-        if dynamic.CURRENT_VAR == 'gph' and fix_gph_uct is not None:
-            # Safety check
-            if not isinstance(fix_gph_uct, list):
-                raise DvasRecipesError(f'Ouch ! fix_gph_uct should be a list, not: {fix_gph_uct}')
-
-            # Start looping through the profiles, to identify the ones I need.
-            for gdp in gdp_prfs:
-                if gdp.info.mid[0] in fix_gph_uct:  # Here we assume that each GDP has a single mid
-
-                    # What are the bug conditions ?
-                    cond1 = gdp.data.loc[:, 'uct'].isna()
-                    cond2 = ~gdp.data.loc[:, 'val'].isna()
-
-                    if (n_bad := (cond1 & cond2).sum()) > 0:  # True = 1
-                        logger.info('Fixing %i bad gph_uct values for mid: %s',
-                                    n_bad, gdp.info.mid[0])
-                        # Fix the bug
-                        gdp.data.loc[cond1 & cond2, 'uct'] = gdp.data.loc[:, 'uct'].max(skipna=True)
+                gdp_prfs[gdp_ind].set_flg(FLG_ISINVALID, True, index=ok.index[~ok].values)
+                gdp_prfs[gdp_ind].set_flg(FLG_ISINVALID, True, index=nok.index[nok].values)
 
         # Validate the GRUAN tropopause calculation
         if dynamic.CURRENT_VAR == 'temp' and check_tropopause:
@@ -307,7 +318,7 @@ def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
                                      gdp_prf.info.metadata['gruan_tropopause'])
 
         # Now launch more generic cleanup steps
-        cleanup_steps(gdp_prfs, **args, timeofday=timeofday)
+        cleanup_steps(gdp_prfs, **args, timeofday=timeofday, fid=fid)
 
     # Process the non-GDPs, if any
     if not db_view[this_flight].is_gdp.all():
@@ -323,4 +334,4 @@ def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
 
         logger.info('Loaded %i RS profiles from the DB.', len(rs_prfs))
 
-        cleanup_steps(rs_prfs, **args, timeofday=timeofday)
+        cleanup_steps(rs_prfs, **args, timeofday=timeofday, fid=fid)

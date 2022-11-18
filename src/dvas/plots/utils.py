@@ -264,9 +264,12 @@ def get_edt_eid_rid(prfs):
     edts = [item.strftime('%Y-%m-%d %H:%M %Z') for item in prfs.get_info('edt')]
     eids = prfs.get_info('eid')
     rids = prfs.get_info('rid')
+    # TODO: fids are stored in the metadata ... this is not ideal.
+    fids = [item['fid'] if 'fid' in item.keys() else '???'
+            for item in prfs.get_info(prm='metadata')]
 
     # Format it all nicely for each Profile.
-    info_txt = set('{} ({}, {})'.format(item, eids[ind], rids[ind])
+    info_txt = set(f'{item} ({fids[ind]}, {eids[ind]}, {rids[ind]})'
                    for ind, item in enumerate(edts))
     # Stich the different items together in case I have more than one flight in the list
     info_txt = ' / '.join(info_txt)
