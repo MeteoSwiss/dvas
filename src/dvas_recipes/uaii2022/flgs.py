@@ -10,13 +10,14 @@ Module content: high-level flagging recipes for the UAII2022 campaign
 
 # Import from Python
 import logging
+import numpy as np
 
 # Import from dvas
 from dvas.logger import log_func_call
 from dvas.hardcoded import TAG_CWS, TAG_GDP, TAG_DTA, FLG_HASCWS
 from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_VAL
-from dvas.hardcoded import FLG_TROPO, FLG_STRATO
-from dvas.hardcoded import MTDTA_TROPOPAUSE
+from dvas.hardcoded import FLG_PBL, FLG_TROPO, FLG_FREETROPO, FLG_STRATO, FLG_UTLS
+from dvas.hardcoded import MTDTA_TROPOPAUSE, MTDTA_PBL, MTDTA_UTLSMIN, MTDTA_UTLSMAX
 from dvas.data.data import MultiRSProfile, MultiGDPProfile, MultiCWSProfile
 from dvas.errors import DBIOError
 
@@ -33,7 +34,8 @@ logger = logging.getLogger(__name__)
 
 @for_each_flight
 @log_func_call(logger, time_it=False)
-def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp'):
+def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp', set_pbl_at=None,
+                   utls_lims=None):
     """ Flag the different regions of interest in the Profiles, e.g. "descent", "FT", "UTLS", ...
 
     Args:
@@ -43,6 +45,10 @@ def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp'):
             Defaults to None.
         temp_var (str, optional): name of the temperature variable, to derive the troposphere
             altitude. Defaults to 'temp'.
+        set_pbl_at (dict, optional): dict with keys corresponding to distinct timeof days, and
+            values in geopotential meters. Defauls to None.
+        utls_lims (dict, optional): dict with 'min' and 'max' keys specifying the UTLS upper and
+            lower bounds, in geopotential meters. Defaults to None.
 
     """
 
@@ -65,8 +71,6 @@ def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp'):
     nongdp_filt = tools.get_query_filter(
         tags_in=prf_tags+[eid, rid],
         tags_out=dru.rsid_tags(pop=prf_tags) + [TAG_GDP, TAG_CWS, TAG_DTA])
-
-    # TODO: get the PBL limit info somehow - fixed value for site, or flight-per-flight basis ?
 
     # Step 1: query the temp CWS, so that we can derive the tropopause altitude
     if temp_var not in dynamic.ALL_VARS.keys():
@@ -144,17 +148,69 @@ def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp'):
                 prfs[prf_ind].set_flg(FLG_HASCWS, True, index=cws_cond)
 
                 # Flag the different atmospheric regions ...
-                # TODO: deal with the PBL, free troposphere, and UTLS
-
                 # Tropopause
                 prfs[prf_ind].info.add_metadata(
                     MTDTA_TROPOPAUSE, f"{tropopause_alt:.1f} {tropopause_unit}")
+
                 # Troposphere
                 t_cond = prf.data.index.get_level_values(PRF_ALT).values < tropopause_alt
                 prfs[prf_ind].set_flg(FLG_TROPO, True, index=t_cond)
                 # Stratosphere
                 s_cond = prf.data.index.get_level_values(PRF_ALT).values > tropopause_alt
                 prfs[prf_ind].set_flg(FLG_STRATO, True, index=s_cond)
+
+                # PBL
+                if set_pbl_at is not None:
+                    assert isinstance(set_pbl_at, dict), \
+                        f'set_pbl_at should be dict, not: {type(set_pbl_at)}'
+
+                    # Identify which tod tags are set
+                    pbl_alt = [value for (key, value) in set_pbl_at.items()
+                               if prf.has_tag(f'tod:{key}')]
+
+                    if len(pbl_alt) > 1:
+                        tods = [key for key in set_pbl_at.keys() if prf.has_tag(key)]
+                        logger.error('Multiple tods for mid: %s -- %s', prf.info.mid, tods)
+
+                    pbl_alt = np.unique(pbl_alt)
+                    if len(pbl_alt) == 0:
+                        raise DvasRecipesError(f'No PBL found ... invalid ToD ? {set_pbl_at}')
+                    elif len(pbl_alt) > 1:
+                        raise DvasRecipesError('Non-unique PBL ... duplicated ToD ?')
+                    else:
+                        pbl_alt = pbl_alt[0]
+
+                    # Add the info the metadata
+                    prfs[prf_ind].info.add_metadata(MTDTA_PBL,  f"{pbl_alt:.1f} m")
+
+                    # Also apply the PBL flags
+                    cond = prf.data.index.get_level_values(PRF_ALT).values < pbl_alt
+                    prfs[prf_ind].set_flg(FLG_PBL, True, index=cond)
+
+                    # With a PBL, I can also flag the free troposphere
+                    cond = prf.data.index.get_level_values(PRF_ALT).values > pbl_alt
+                    cond *= prf.data.index.get_level_values(PRF_ALT).values < tropopause_alt
+                    prfs[prf_ind].set_flg(FLG_FREETROPO, True, index=cond)
+                else:
+                    logger.warning('No PBL info provided. No flags set for: %s, %s',
+                                   FLG_PBL, FLG_FREETROPO)
+
+                # UTLS
+                if utls_lims is not None:
+                    if not isinstance(utls_lims, dict):
+                        raise DvasRecipesError(f'utls_lims is not dict: {type(utls_lims)}')
+                    for key in ['min', 'max']:
+                        if key not in utls_lims.keys():
+                            raise DvasRecipesError(f'{key} key not found in utls_lims')
+
+                    prfs[prf_ind].info.add_metadata(MTDTA_UTLSMIN,  f"{utls_lims['min']:.1f} m")
+                    prfs[prf_ind].info.add_metadata(MTDTA_UTLSMAX,  f"{utls_lims['max']:.1f} m")
+
+                    cond = prf.data.index.get_level_values(PRF_ALT).values > utls_lims['min']
+                    cond *= prf.data.index.get_level_values(PRF_ALT).values < utls_lims['max']
+                    prfs[prf_ind].set_flg(FLG_UTLS, True, index=cond)
+                else:
+                    logger.warning('No UTLS info provided. No flags set for: %s', FLG_UTLS)
 
             # Save it all back into the DB
             prfs.save_to_db(add_tags=[dynamic.CURRENT_STEP_ID],

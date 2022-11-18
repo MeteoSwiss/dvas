@@ -256,3 +256,9 @@ MTDTA_TROPOPAUSE = 'dvas_tropopause'
 
 #: str: Metadata field to store the tropopause geopotential height
 MTDTA_PBL = 'dvas_planetary_boundary_layer'
+
+#: str: Metadata field to store the min geopotential height of the UTLS region
+MTDTA_UTLSMIN = 'dvas_utls_min'
+
+#: str: Metadata field to store the max geopotential height of the UTLS region
+MTDTA_UTLSMAX = 'dvas_utls_max'
