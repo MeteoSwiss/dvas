@@ -201,7 +201,7 @@ def combine(gdp_prfs, binning=1, method='weighted arithmetic mean',
                                  for item in np.unique(gdp_prfs.get_info('rid')).tolist()])
     new_evt_tag = 'e:'+','.join([item.split(':')[1]
                                  for item in np.unique(gdp_prfs.get_info('eid')).tolist()])
-    one_or_more_tags = [tag for tag in [TOD_VALS, TAG_1S] if any(gdp_prfs.has_tag(tag))]
+    one_or_more_tags = [tag for tag in list(TOD_VALS) + [TAG_1S] if any(gdp_prfs.has_tag(tag))]
     all_or_nothing_tags = [tag for tag in [TAG_ORIGINAL, TAG_CLN, TAG_SYNC]
                            if all(gdp_prfs.has_tag(tag))]
 
