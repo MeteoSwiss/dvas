@@ -178,6 +178,10 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
     # Let's tag this CWS in the same way as the GDPs, so I can find them easily together
     cws.add_info_tags(tags)
 
+    # Let's also keep track of important information (fixes #266)
+    cws[0].info.add_metadata('KS_test.alpha_level', f'{alpha}')
+    cws[0].info.add_metadata('KS_test.m_values', f"{','.join([str(val) for val in m_vals])}")
+
     # Take a closer look at the covariance matrices, if required
     if explore_covmats:
         plots.covmat_stats(covmats)

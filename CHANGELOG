@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [fpavogt, 2022-11-18] Add/connect UTLS, PBL, and Free Tropopause region flags
  - [fpavogt, 2022-11-10] Add a WAS_INVALID flag to keep track of fixed GDP points, e.g. via #205
 ### Fixed:
+ - [fpavogt, 2022-11-22] Fix #266 by keeping track of KS alpha level in metadata of CWS
  - [fpavogt, 2022-11-14] Includ fid in plots and filenames (fix #261)
 ### Changed:
  - [fpavogt, 2022-11-10] Cleanup filename of KS plots
