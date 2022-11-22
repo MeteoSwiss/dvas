@@ -112,9 +112,6 @@ def compute_deltas(prf_start_with_tags, cws_start_with_tags, do_gdps=False, do_n
     dta_prfs = dtdd.compute(prfs, cws_prfs, circular=dynamic.CURRENT_VAR == 'wdir')
 
     # Save the Delta profiles to the database.
-    # WARNING: I will keep the GDP tag, even if the resulting delta profile is not fully correct
-    # in terms of error propagation. This is just to still be able to distinguish between those
-    # GDP and non-GDP profiles down the line.
     if save_to_db:
         logger.info('Saving delta profiles to the DB.')
         dta_prfs.save_to_db(add_tags=[TAG_DTA, dynamic.CURRENT_STEP_ID],

@@ -554,21 +554,21 @@ def dtas_per_mid(start_with_tags, mids=None, skip_gdps=False, skip_nongdps=False
 
     # Basic sanity check of mid
     if not isinstance(mids, list):
-        raise DvasRecipesError(f'Ouch ! I need a list of mids, not: {mids}')
+        raise DvasRecipesError(f'I need a list of mids, not: {mids}')
 
     # Very well, let's now loop through these, and generate the plot
     for mid in mids:
 
         # Second sanity check - make sure the mid is in the DB
         if mid not in db_view.mid.unique().tolist():
-            raise DvasRecipesError(f'Ouch ! mid unknown: {mid}')
+            raise DvasRecipesError(f'mid unknown: {mid}')
 
         # If warranted, skip any GDP profile
-        if skip_gdps and 'GDP' in mid:
+        if skip_gdps and '(gdp)' in mid:
             logger.info('Skipping mid: %s', mid)
             continue
 
-        if skip_nongdps and 'GDP' not in mid:
+        if skip_nongdps and '(gdp)' not in mid:
             logger.info('Skipping mid: %s', mid)
             continue
 
