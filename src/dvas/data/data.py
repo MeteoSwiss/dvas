@@ -28,7 +28,7 @@ from ..database.model import Prm as TableParameter
 from ..helper import RequiredAttrMetaClass
 from ..helper import deepcopy
 from ..helper import get_class_public_attr
-from ..errors import DBIOError
+from ..errors import DBIOError, DvasError
 from ..hardcoded import TAG_ORIGINAL, PRF_IDX, PRF_FLG, PRF_VAL
 
 # Loading strategies
@@ -308,7 +308,7 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
 
         self.update(db_df_keys, self.profiles + [val])
 
-    def get_prms(self, prm_list=None, mask_flgs=None):
+    def get_prms(self, prm_list=None, mask_flgs=None, with_metadata=None):
         """ Convenience getter to extract specific columns from the DataFrames and/or class
         properties of all the Profile instances.
 
@@ -317,6 +317,8 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
                 Profile DataFrames. Defaults to None (=returns all the columns from the DataFrame).
             mask_flgs (str|list of str, optional): name(s) of the flag(s) to NaN-ify in the
                 extraction process. Defaults to None.
+            with_metadata (str|list, optional): name of the metadata fields to include in the table.
+                Defaults to None.
 
         Returns:
             pd.DataFrame: the requested data as a MultiIndex pandas DataFrame.
@@ -341,6 +343,12 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
             if isinstance(mask_flgs, str):
                 mask_flgs = [mask_flgs]
 
+        if with_metadata is not None:
+            if isinstance(with_metadata, str):
+                with_metadata = [with_metadata]
+        else:
+            with_metadata = []
+
         # Let's prepare the data. First, put all the DataFrames into a list
         out = [pd.concat([getattr(prf, prm) for prm in prm_list], axis=1, ignore_index=False)
                for prf in self.profiles]
@@ -363,6 +371,24 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
 
         # Drop all the columns I do not want to keep
         out = [df[prm_list] for df in out]
+
+        # I may also have been asked to include some metadata as new columns
+        for item in with_metadata:
+            vals = self.get_info(item)
+
+            # Loop through it and assign the values
+            for (prf_id, val) in enumerate(vals):
+
+                # If I am being given a list, make sure it has only 1 element.
+                if isinstance(val, list):
+                    if len(val) > 1:
+                        raise DvasError(f"Metadata field'{item}' for profile #{prf_id} " +
+                                        f"contains more than one value ({val})." +
+                                        " I am too dumb to handle this. So I give up here.")
+                    val = val[0]
+
+                # Actually assign the value to each measurement of the profile.
+                out[prf_id].loc[:, item] = val
 
         # Before I combine everything in one big DataFrame, I need to re-organize the columns
         # to avoid collisions. Let's group all columns from one profile under its position in the

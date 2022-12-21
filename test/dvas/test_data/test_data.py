@@ -135,6 +135,13 @@ class TestMultiProfile:
         out_msk = mlt_gdpprf.get_prms(prm_list='tdt', mask_flgs='user_qc')
         assert pd.isnull(out_msk[0]['tdt'][0])
 
+        # Check that I can also extract metadata
+        out_mtdta = mlt_gdpprf.get_prms(prm_list='val', with_metadata=['oid', 'mid'])
+        assert all(out_mtdta.loc[:, (1, 'mid')] == 'MDL_YT')
+        # Points that are "filled" with NaN in this data frame have no metadata info either
+        assert out_mtdta.loc[3:, (0, 'oid')].isna().all()
+
+
     def test_rm_info_tags(self, mlt_prf):
         """Test rm_info_tags method"""
 

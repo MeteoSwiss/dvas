@@ -136,27 +136,7 @@ def combine(gdp_prfs, binning=1, method='weighted arithmetic mean',
     # errors.
     x_dx = gdp_prfs.get_prms([PRF_ALT, PRF_TDT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT,
                               PRF_UCU, 'uc_tot'],
-                             mask_flgs=mask_flgs)
-
-    # I also need to extract some of the metadata required for computing cross-correlations.
-    # Let's add it to the common DataFrame so I can carry it all in one go.
-    for metadata in ['oid', 'mid', 'eid', 'rid']:
-        vals = gdp_prfs.get_info(metadata)
-
-        # Loop through it and assign the values where appropriate
-        for (prf_id, val) in enumerate(vals):
-
-            # If I am being given a list, make sure it has only 1 element. Else complain about it.
-            if isinstance(val, list):
-                if len(val) > 1:
-                    raise DvasError(f"{metadata} for profile #{prf_id} " +
-                                    f"contains more than one value ({val})." +
-                                    " I am too dumb to handle this. So I give up here.")
-
-                val = val[0]
-
-            # Actually assign the value to each measurement of the profile.
-            x_dx.loc[:, (prf_id, metadata)] = val
+                             mask_flgs=mask_flgs, with_metadata=['oid', 'mid', 'eid', 'rid'])
 
     # To drastically reduce memory requirements and speed up the code significantly,
     # we will break the profiles into smaller chunks. In doing so, we avoid having to deal with
