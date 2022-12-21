@@ -337,9 +337,9 @@ def add_source(fig):
         fig (matplotlib.pyplot.figure): the figure to add the text to.
 
     """
-    msg = r'\it\flushleft Created with\newline dvas v{}'.format(VERSION)
+    msg = r'\it\flushleft Created with dvas v{}'.format(VERSION)
 
-    fig.text(0.01, 0.02, fix_txt(msg), fontsize='xx-small',
+    fig.text(0.01, 0.01, fix_txt(msg), fontsize='small',
              horizontalalignment='left', verticalalignment='bottom')
 
 
