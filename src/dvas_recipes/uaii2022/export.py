@@ -201,7 +201,8 @@ def add_nc_variable(grp, prf):
         rel_time[:] = prf[0].data.index.get_level_values(PRF_IDX).values
         rel_time.units = 's'
         rel_time.standard_name = 'relative_time'
-        rel_time.long_name = 'Relative ascent time'
+        rel_time.long_name = 'Relative time'
+        rel_time.comment = 'Seconds counted since d.Metadata.first_timestamp'
         # rel_time.axis = 'Relative time'
 
     else:
