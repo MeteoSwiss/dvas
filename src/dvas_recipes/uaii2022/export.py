@@ -66,7 +66,7 @@ def get_nc_fname(suffix: str, fid: str, edt: str, typ: str, mid: str = None, pid
         return fname + f"{mid}_{pid}.nc"
 
 
-def add_cf_attributes(grp, title='', institution: str = ''):
+def add_cf_attributes(grp, title='', institution: str = '', comment: str = None):
     """" Add global UAII attributes to a netCDF group.
 
     Args:
@@ -90,8 +90,8 @@ def add_cf_attributes(grp, title='', institution: str = ''):
     setattr(grp, 'source', val)
 
     # Comment
-    val = "Cleaned-up, resampled, synced atmospheric profile, following the UAII2022 dvas recipe."
-    setattr(grp, 'comment', val)
+    if comment is not None:
+        setattr(grp, 'comment', comment)
 
     # References
     setattr(grp, 'references', 'See the UAII 2022 Final Report for details.')
@@ -118,7 +118,7 @@ def set_attribute(grp, name, value):
 
 
 def add_dvas_attributes(grp, prf):
-    """ Add dvas-realted Global Attributes to a netCDF file.
+    """ Add dvas-related Global Attributes to a netCDF file.
 
     Args:
         grp: netCDF Dataset or group.
@@ -300,6 +300,8 @@ def export_profiles(tags: str | list, which: str | list, suffix: str = '', insti
     else:
         edt = edt[0]
 
+    comment = "Cleaned-up, resampled, synced atmospheric profile."
+
     # Let's deal with the CWS first, if warranted
     if 'cws' in which:
         logger.info('Exporting the cws ...')
@@ -309,7 +311,8 @@ def export_profiles(tags: str | list, which: str | list, suffix: str = '', insti
         rootgrp = Dataset(out_path / fname, "w", format="NETCDF4")
 
         # Add the Global Attributes
-        add_cf_attributes(rootgrp, institution=institution)
+        add_cf_attributes(rootgrp, title='Combined Working measurement Standard (CWS)',
+                          institution=institution, comment=comment)
 
         # Assemble the search filter
         filt = tools.get_query_filter(tags_in=tags + [eid, rid, TAG_CWS],
@@ -357,14 +360,16 @@ def export_profiles(tags: str | list, which: str | list, suffix: str = '', insti
 
         if item['is_gdp']:
             typ = 'gdp'
+            title = 'GRUAN Data Product (GDP) atmospheric profile'
         else:
             typ = 'mdp'
+            title = 'Manufacturer Data Product (MDP) atmospheric profile'
         fname = get_nc_fname(suffix, fid, edt.strftime('%Y%m%dT%H%M%S'), typ,
                              mid=item['mid'], pid=item['pid'])
         rootgrp = Dataset(out_path / fname, "w", format="NETCDF4")
 
         # Add CF-1.7 Global Attributes
-        add_cf_attributes(rootgrp)
+        add_cf_attributes(rootgrp, title=title, institution=institution, comment=comment)
 
         # Now get the data from the DB
         for (var_name, var) in dynamic.ALL_VARS.items():

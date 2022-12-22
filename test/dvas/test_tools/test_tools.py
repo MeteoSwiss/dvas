@@ -69,6 +69,12 @@ def test_fancy_bitwise_or():
     out = tools.fancy_bitwise_or(vals, axis=1)
     assert all(out[1:] == pd.array([3, 7, 1]))
 
+    # Also make sure it works with a single column
+    vals = pd.DataFrame(np.array([0, 0, 0])).astype(int)
+
+    out = tools.fancy_bitwise_or(vals, axis=None)
+    assert out == 0
+
 
 def test_wrap_angle():
     """ Function to test the wrap_angle routine """

@@ -6,7 +6,7 @@ Distributed under the terms of the GNU General Public License v3.0 or later.
 
 SPDX-License-Identifier: GPL-3.0-or-later
 
-Module contents: Testing 'gruan' classes and function of the tools submodule.
+Module contents: Testing 'chunk' classes and function of the tools submodule.
 
 """
 
@@ -19,7 +19,7 @@ from dvas.errors import DvasError
 from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
 
 # Function to test
-from dvas.tools.gdps.utils import weighted_mean, delta, process_chunk
+from dvas.tools.chunks import weighted_mean, delta, process_chunk
 
 
 @pytest.fixture

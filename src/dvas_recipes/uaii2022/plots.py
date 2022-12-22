@@ -21,7 +21,7 @@ from dvas.data.data import MultiProfile, MultiGDPProfile, MultiCWSProfile, Multi
 from dvas.hardcoded import PRF_IDX, PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCU, PRF_UCR, PRF_UCS, PRF_UCT
 from dvas.hardcoded import TAG_DTA, TAG_GDP, TAG_CWS, MTDTA_PBL, MTDTA_TROPOPAUSE
 from dvas.data.data import MultiRSProfile
-from dvas.tools.gdps import utils as dtgu
+from dvas.tools.gdps import correlations as dtgc
 from dvas.plots import utils as dpu
 from dvas.plots import gdps as dpg
 from dvas.plots import dtas as dpd
@@ -198,7 +198,7 @@ def covmat_stats(covmats):
         # This is the covariance of the different elements of the combined profile with itself.
         # As such, it doesn't matter what the mid, rid, eid, oid actaully are - their just the same
         # for all the points in the profile.
-        cc_mat = dtgu.coeffs(
+        cc_mat = dtgc.coeffs(
             i_inds,  # i
             j_inds,  # j
             uc_name,

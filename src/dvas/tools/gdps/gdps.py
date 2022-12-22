@@ -25,7 +25,7 @@ from ...errors import DvasError
 from ...hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
 from ...hardcoded import TOD_VALS, TAG_ORIGINAL, TAG_CLN, TAG_1S, TAG_SYNC
 from ..tools import df_to_chunks
-from .utils import process_chunk
+from ..chunks import process_chunk
 from ...data.data import MultiCWSProfile
 from ...data.strategy.data import CWSProfile
 from ...database.database import InfoManager

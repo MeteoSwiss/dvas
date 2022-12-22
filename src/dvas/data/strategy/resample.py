@@ -19,7 +19,7 @@ import pandas as pd
 # Import from current package
 from ...errors import DvasError
 from .data import MPStrategyAC
-from ...tools.gdps.utils import process_chunk
+from ...tools.chunks import process_chunk
 from ...tools.tools import df_to_chunks, fancy_bitwise_or
 from ...hardcoded import PRF_IDX, PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
 from ...hardcoded import PRF_FLG, FLG_INTERP, TAG_1S

@@ -308,7 +308,7 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
 
         self.update(db_df_keys, self.profiles + [val])
 
-    def get_prms(self, prm_list=None, mask_flgs=None, with_metadata=None):
+    def get_prms(self, prm_list=None, mask_flgs=None, with_metadata=None, pooled=False):
         """ Convenience getter to extract specific columns from the DataFrames and/or class
         properties of all the Profile instances.
 
@@ -319,6 +319,8 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
                 extraction process. Defaults to None.
             with_metadata (str|list, optional): name of the metadata fields to include in the table.
                 Defaults to None.
+            pooled (bool, optional): if True, all profiles will be gathered together. If False,
+                Profiles are kept distinct using a MultiIndex. Defaults to False.
 
         Returns:
             pd.DataFrame: the requested data as a MultiIndex pandas DataFrame.
@@ -390,11 +392,20 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
                 # Actually assign the value to each measurement of the profile.
                 out[prf_id].loc[:, item] = val
 
+        # If warranted, pool all the data together
+        if pooled:
+            for (df_ind, df) in enumerate(out):
+                out[df_ind]['profile_index'] = df_ind
+
+            out = [pd.concat(out, axis=0)]
+
         # Before I combine everything in one big DataFrame, I need to re-organize the columns
-        # to avoid collisions. Let's group all columns from one profile under its position in the
+        # to avoid collisions.
+        # Let's group all columns from one profile under its position in the
         # list (0,1, ...) using pd.MultiIndex()
         for (df_ind, df) in enumerate(out):
-            out[df_ind].columns = pd.MultiIndex.from_tuples([(df_ind, item) for item in df.columns],
+            out[df_ind].columns = pd.MultiIndex.from_tuples([(df_ind, item)
+                                                             for item in df.columns],
                                                             names=('#', 'prm'))
 
         # Great, I can now bring everything into one large DataFrame

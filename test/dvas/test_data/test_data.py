@@ -141,6 +141,9 @@ class TestMultiProfile:
         # Points that are "filled" with NaN in this data frame have no metadata info either
         assert out_mtdta.loc[3:, (0, 'oid')].isna().all()
 
+        # Check that I can pool all the data instead
+        out_pooled = mlt_gdpprf.get_prms(prm_list='val', with_metadata=['oid', 'mid'], pooled=True)
+        assert out_pooled.shape == (9, 4)
 
     def test_rm_info_tags(self, mlt_prf):
         """Test rm_info_tags method"""
