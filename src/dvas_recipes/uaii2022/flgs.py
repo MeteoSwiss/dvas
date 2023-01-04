@@ -153,10 +153,10 @@ def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp', set_pbl_at=Non
                     MTDTA_TROPOPAUSE, f"{tropopause_alt:.1f} {tropopause_unit}")
 
                 # Troposphere
-                t_cond = prf.data.index.get_level_values(PRF_ALT).values < tropopause_alt
+                t_cond = cws_prfs[0].data.index.get_level_values(PRF_ALT).values < tropopause_alt
                 prfs[prf_ind].set_flg(FLG_TROPO, True, index=t_cond)
                 # Stratosphere
-                s_cond = prf.data.index.get_level_values(PRF_ALT).values > tropopause_alt
+                s_cond = cws_prfs[0].data.index.get_level_values(PRF_ALT).values > tropopause_alt
                 prfs[prf_ind].set_flg(FLG_STRATO, True, index=s_cond)
 
                 # PBL
@@ -184,12 +184,12 @@ def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp', set_pbl_at=Non
                     prfs[prf_ind].info.add_metadata(MTDTA_PBL,  f"{pbl_alt:.1f} m")
 
                     # Also apply the PBL flags
-                    cond = prf.data.index.get_level_values(PRF_ALT).values < pbl_alt
+                    cond = cws_prfs[0].data.index.get_level_values(PRF_ALT).values < pbl_alt
                     prfs[prf_ind].set_flg(FLG_PBL, True, index=cond)
 
                     # With a PBL, I can also flag the free troposphere
-                    cond = prf.data.index.get_level_values(PRF_ALT).values > pbl_alt
-                    cond *= prf.data.index.get_level_values(PRF_ALT).values < tropopause_alt
+                    cond = cws_prfs[0].data.index.get_level_values(PRF_ALT).values > pbl_alt
+                    cond *= cws_prfs[0].data.index.get_level_values(PRF_ALT).values < tropopause_alt
                     prfs[prf_ind].set_flg(FLG_FREETROPO, True, index=cond)
                 else:
                     logger.warning('No PBL info provided. No flags set for: %s, %s',
@@ -206,8 +206,10 @@ def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp', set_pbl_at=Non
                     prfs[prf_ind].info.add_metadata(MTDTA_UTLSMIN,  f"{utls_lims['min']:.1f} m")
                     prfs[prf_ind].info.add_metadata(MTDTA_UTLSMAX,  f"{utls_lims['max']:.1f} m")
 
-                    cond = prf.data.index.get_level_values(PRF_ALT).values > utls_lims['min']
-                    cond *= prf.data.index.get_level_values(PRF_ALT).values < utls_lims['max']
+                    cond = cws_prfs[0].data.index.get_level_values(PRF_ALT).values > \
+                        utls_lims['min']
+                    cond *= cws_prfs[0].data.index.get_level_values(PRF_ALT).values < \
+                        utls_lims['max']
                     prfs[prf_ind].set_flg(FLG_UTLS, True, index=cond)
                 else:
                     logger.warning('No UTLS info provided. No flags set for: %s', FLG_UTLS)

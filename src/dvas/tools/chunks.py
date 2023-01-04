@@ -534,6 +534,8 @@ def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean'):
             # If I reach this point, then the data is not making sense.
             # Warn the user and clean it up.
             logger.warning("GDP Profile %i: NaN mismatch for 'val' and 'uc_tot'", prf_ind)
+            import pdb
+            pdb.set_trace()
             df_chunk.loc[df_chunk.loc[:, (prf_ind, 'uc_tot')].isna().values,
                          (prf_ind, PRF_VAL)] = np.nan
             for col in [PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU, 'uc_tot']:

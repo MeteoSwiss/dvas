@@ -145,6 +145,10 @@ class TestMultiProfile:
         out_pooled = mlt_gdpprf.get_prms(prm_list='val', with_metadata=['oid', 'mid'], pooled=True)
         assert out_pooled.shape == (9, 4)
 
+        # Check that I can extract only specific flags
+        out_request_flgs = mlt_gdpprf.get_prms(prm_list='val', request_flgs='user_qc')
+        assert len(out_request_flgs) == 1
+
     def test_rm_info_tags(self, mlt_prf):
         """Test rm_info_tags method"""
 

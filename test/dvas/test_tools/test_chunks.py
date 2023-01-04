@@ -175,6 +175,58 @@ def angular_chunk():
     return test_chunk
 
 
+@pytest.fixture
+def big_lambda_chunk():
+    """ A data chunk to test the Big Lambda chunk functions. """
+
+    # First, the level 1 column names
+    lvl_one = [PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU,
+               'uc_tot', 'oid', 'mid', 'eid', 'rid', 'profile_index']
+
+    # Set the proper MultiIndex
+    cols = pd.MultiIndex.from_tuples([(ind, item) for item in lvl_one for ind in range(1)])
+
+    # Initialize the DataFrame
+    test_chunk = pd.DataFrame(index=pd.Series(range(2)), columns=cols)
+    test_chunk.sort_index(axis=1, inplace=True)
+
+    # Set the proper types for the different columns
+    for col in cols:
+        if col[1] == PRF_FLG:
+            test_chunk[col] = 0
+            test_chunk[col] = test_chunk[col].astype(int)
+        else:
+            test_chunk[col] = test_chunk[col].astype('float')
+
+    # Some altitudes
+    test_chunk[(0, PRF_ALT)] = np.arange(0, 10, 5.)
+
+    # Some values
+    test_chunk[(0, PRF_VAL)] = [-1, +1]
+    test_chunk[(0, 'profile_index')] = 1
+
+    # Set some NaN's
+
+    # Some errors
+    test_chunk.loc[:, (slice(None), PRF_UCR)] = 0.5
+    test_chunk.loc[:, (slice(None), PRF_UCS)] = 0.5
+    test_chunk.loc[:, (slice(None), PRF_UCT)] = 0.5
+    test_chunk.loc[:, (slice(None), PRF_UCU)] = 0.5
+    test_chunk.loc[:, (slice(None), 'uc_tot')] = np.sqrt(2)
+
+    # Some flags
+
+    # Errors are NaNs, but values are not.
+
+    # The other stuff
+    test_chunk.loc[:, (slice(None), 'eid')] = 'e:1'
+    test_chunk.loc[:, (slice(None), 'rid')] = 'r:1'
+    test_chunk[(0, 'oid')] = 0
+    test_chunk.loc[:, (slice(None), 'mid')] = 'A'  # Force the same mid for all Profiles
+
+    return test_chunk
+
+
 def test_weighted_arithmetic_mean(chunk):
     """ Function used to test the weighted_mean combination of profiles."""
 
@@ -359,3 +411,17 @@ def test_process_angular_chunk(angular_chunk):
     assert out_1.loc[0, 'ucu'] > out_1.loc[1, 'ucu']
 
 
+def test_process_biglambda_chunk(big_lambda_chunk):
+    """ Function to test the Big Lambda processing of chunks. """
+
+    big_lambda_chunk.loc[:, (0, 'val')] = [-1, +1]
+    out1 = process_chunk(big_lambda_chunk, method='biglambda')
+    # No correlated uncertainties if the uncertainties are the same and there is no bias
+    assert out1[0]['ucs'][0] == 0
+    assert out1[0]['uct'][0] == 0
+
+    big_lambda_chunk.loc[:, (0, 'val')] = [+1, +1]
+    out2 = process_chunk(big_lambda_chunk, method='biglambda')
+    # Maximum correlation if the standard deviation is 0
+    assert out2[0]['ucs'][0] == 0.5
+    assert out2[0]['uct'][0] == 0.5

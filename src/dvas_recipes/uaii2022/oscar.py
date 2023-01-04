@@ -128,7 +128,8 @@ def compute_oscar(start_with_tags, mids=None, suffix='', institution='',
 
             # Let's extract the data I care about
             pdf = prfs.get_prms([PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU,
-                                'uc_tot'], mask_flgs=None, with_metadata=['oid', 'mid', 'eid', 'rid'],
+                                'uc_tot'], mask_flgs=None,
+                                with_metadata=['oid', 'mid', 'eid', 'rid'],
                                 pooled=True)
 
             # Sort by altitudes
@@ -139,6 +140,7 @@ def compute_oscar(start_with_tags, mids=None, suffix='', institution='',
                       for (ind, item) in enumerate(gph_bins[:-1])]
 
             # Start processing chunks
+            logger.info('Processing the high-resolution chunks for %s ...', var_name)
             proc_func = functools.partial(process_chunk, method='biglambda')
             if dynamic.N_CPUS == 1:
                 proc_chunks = map(proc_func, chunks)
@@ -170,12 +172,20 @@ def compute_oscar(start_with_tags, mids=None, suffix='', institution='',
             # Store all this information in the netCDF
             val_nc = rootgrp.createVariable(f'{var_name}', 'f8', dimensions=("ref_alt"))
             uc_nc = rootgrp.createVariable(f'{var_name}_uc', 'f8', dimensions=("ref_alt"))
+            ucr_nc = rootgrp.createVariable(f'{var_name}_ucr', 'f8', dimensions=("ref_alt"))
+            ucs_nc = rootgrp.createVariable(f'{var_name}_ucs', 'f8', dimensions=("ref_alt"))
+            uct_nc = rootgrp.createVariable(f'{var_name}_uct', 'f8', dimensions=("ref_alt"))
+            ucu_nc = rootgrp.createVariable(f'{var_name}_ucu', 'f8', dimensions=("ref_alt"))
             npts_nc = rootgrp.createVariable(f'{var_name}_npts', 'i8', dimensions=("ref_alt"))
             nprfs_nc = rootgrp.createVariable(f'{var_name}_nprfs', 'i8', dimensions=("ref_alt"))
 
             # Fill the data
             val_nc[:] = biglambda_ms[PRF_VAL]
             uc_nc[:] = biglambda_ms.loc[:, ('ucr', 'ucs', 'uct', 'ucu')].pow(2).sum(axis=1).pow(0.5)
+            ucr_nc[:] = biglambda_ms[PRF_UCR]
+            ucs_nc[:] = biglambda_ms[PRF_UCS]
+            uct_nc[:] = biglambda_ms[PRF_UCT]
+            ucu_nc[:] = biglambda_ms[PRF_UCU]
             npts_nc[:] = biglambda_ms['n_pts']
             nprfs_nc[:] = biglambda_ms['n_prfs']
 
@@ -183,9 +193,26 @@ def compute_oscar(start_with_tags, mids=None, suffix='', institution='',
             setattr(val_nc, 'long_name', f'Big Lambda profile of {var_name}')
             setattr(val_nc, 'units', prfs.var_info[PRF_VAL]['prm_unit'])
 
-            setattr(val_nc, 'long_name',
+            setattr(uc_nc, 'long_name',
                     f'Total uncertainty of the Big Lambda profile of {var_name} (k=1)')
-            setattr(val_nc, 'units', prfs.var_info[PRF_VAL]['prm_unit'])
+            setattr(uc_nc, 'units', prfs.var_info[PRF_VAL]['prm_unit'])
+
+            setattr(ucr_nc, 'long_name',
+                    f'Rig-correlated uncertainty of the Big Lambda profile of {var_name} (k=1)')
+            setattr(ucr_nc, 'units', prfs.var_info[PRF_VAL]['prm_unit'])
+
+            setattr(ucs_nc, 'long_name',
+                    f'Spatial-correlated uncertainty of the Big Lambda profile of {var_name} (k=1)')
+            setattr(ucs_nc, 'units', prfs.var_info[PRF_VAL]['prm_unit'])
+
+            setattr(uct_nc, 'long_name',
+                    'Temporal-correlated uncertainty of the Big Lambda profile of ' +
+                    f'{var_name} (k=1)')
+            setattr(uct_nc, 'units', prfs.var_info[PRF_VAL]['prm_unit'])
+
+            setattr(ucu_nc, 'long_name',
+                    f'Uncorrelated uncertainty of the Big Lambda profile of {var_name} (k=1)')
+            setattr(ucu_nc, 'units', prfs.var_info[PRF_VAL]['prm_unit'])
 
             setattr(npts_nc, 'long_name', 'Number of individual data point combined in each bin')
             setattr(npts_nc, 'units', '')
@@ -193,6 +220,38 @@ def compute_oscar(start_with_tags, mids=None, suffix='', institution='',
             setattr(nprfs_nc, 'long_name', 'Number of distinct delta profiles combined in each bin')
             setattr(nprfs_nc, 'units', '')
 
-            # TODO: deal with the region chunks too
+            # Let us now deal with the region chunks
+            for region in ['planetary_boundary_layer', 'troposphere', 'free_troposphere',
+                           'upper_troposphere_lower_stratosphere', 'stratosphere']:
+                logger.info('Processing the %s chunk for %s ...', region, var_name)
+                flg = f"is_in_{region}"
+                pdf = prfs.get_prms(
+                    [PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU, 'uc_tot'],
+                    mask_flgs=None, request_flgs=[flg, 'has_valid_cws'],
+                    with_metadata=['oid', 'mid', 'eid', 'rid'],
+                    pooled=True)
+
+                val = process_chunk(pdf, method='biglambda')
+
+                uc_val = val[0].loc[:, ('ucr', 'ucs', 'uct', 'ucu')].pow(2).sum(axis=1).pow(0.5)[0]
+
+                set_attribute(rootgrp, f'd.{var_name}.{region}.biglambda',
+                              f'{val[0]["val"][0]:.5f} {prfs.var_info[PRF_VAL]["prm_unit"]}')
+                set_attribute(
+                    rootgrp, f'd.{var_name}.{region}.biglambda.uc', f"{uc_val:.5f} " +
+                    f'{prfs.var_info[PRF_VAL]["prm_unit"]}')
+                set_attribute(rootgrp, f'd.{var_name}.{region}.biglambda.ucr',
+                              f'{val[0]["ucr"][0]:.5f} {prfs.var_info[PRF_VAL]["prm_unit"]}')
+                set_attribute(rootgrp, f'd.{var_name}.{region}.biglambda.ucs',
+                              f'{val[0]["ucs"][0]:.5f} {prfs.var_info[PRF_VAL]["prm_unit"]}')
+                set_attribute(rootgrp, f'd.{var_name}.{region}.biglambda.uct',
+                              f'{val[0]["uct"][0]:.5f} {prfs.var_info[PRF_VAL]["prm_unit"]}')
+                set_attribute(rootgrp, f'd.{var_name}.{region}.biglambda.ucu',
+                              f'{val[0]["ucu"][0]:.5f} {prfs.var_info[PRF_VAL]["prm_unit"]}')
+
+                set_attribute(rootgrp, f'd.{var_name}.{region}.biglambda.npts',
+                              f'{val[0]["n_pts"][0]}')
+                set_attribute(rootgrp, f'd.{var_name}.{region}.biglambda.nprfs',
+                              f'{val[0]["n_prfs"][0]}')
 
         rootgrp.close()

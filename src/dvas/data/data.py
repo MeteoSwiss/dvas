@@ -308,7 +308,8 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
 
         self.update(db_df_keys, self.profiles + [val])
 
-    def get_prms(self, prm_list=None, mask_flgs=None, with_metadata=None, pooled=False):
+    def get_prms(self, prm_list=None, mask_flgs=None, request_flgs=None, with_metadata=None,
+                 pooled=False):
         """ Convenience getter to extract specific columns from the DataFrames and/or class
         properties of all the Profile instances.
 
@@ -317,6 +318,8 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
                 Profile DataFrames. Defaults to None (=returns all the columns from the DataFrame).
             mask_flgs (str|list of str, optional): name(s) of the flag(s) to NaN-ify in the
                 extraction process. Defaults to None.
+            request_flgs(str|list of str, optional): if set, will only return points that have these
+                flag values set (AND rule applied, if multiple values are provided).
             with_metadata (str|list, optional): name of the metadata fields to include in the table.
                 Defaults to None.
             pooled (bool, optional): if True, all profiles will be gathered together. If False,
@@ -345,6 +348,10 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
             if isinstance(mask_flgs, str):
                 mask_flgs = [mask_flgs]
 
+        if request_flgs is not None:
+            if isinstance(request_flgs, str):
+                request_flgs = [request_flgs]
+
         if with_metadata is not None:
             if isinstance(with_metadata, str):
                 with_metadata = [with_metadata]
@@ -364,6 +371,14 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
                     out[p_ind].loc[prf.has_flg(flg), out[p_ind].columns != PRF_FLG] = np.nan
                     # As of #253, flgs cannot be NaNs, so I treat them separately.
                     out[p_ind].loc[prf.has_flg(flg), PRF_FLG] = 0
+
+        if request_flgs is not None:
+            for (p_ind, prf) in enumerate(self.profiles):
+                valids = np.array([True] * len(prf))
+                for flg in request_flgs:
+                    valids *= prf.has_flg(flg).values
+
+                out[p_ind] = out[p_ind][valids]
 
         # Drop the superfluous index
         out = [df.reset_index(level=[name for name in df.index.names
