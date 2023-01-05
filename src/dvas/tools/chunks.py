@@ -534,8 +534,6 @@ def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean'):
             # If I reach this point, then the data is not making sense.
             # Warn the user and clean it up.
             logger.warning("GDP Profile %i: NaN mismatch for 'val' and 'uc_tot'", prf_ind)
-            import pdb
-            pdb.set_trace()
             df_chunk.loc[df_chunk.loc[:, (prf_ind, 'uc_tot')].isna().values,
                          (prf_ind, PRF_VAL)] = np.nan
             for col in [PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU, 'uc_tot']:
@@ -568,9 +566,9 @@ def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean'):
         df_chunk.loc[:, (slice(None), 'w_ps')] = 1.
         # Let us not forget to mask anything that has a NaN value or total error.
         df_chunk.loc[:, (slice(None), 'w_ps')] = df_chunk.loc[:, (slice(None), 'w_ps')].mask(
-            df_chunk.loc[:, (slice(None), 'val')].isna().values, np.nan)
+            df_chunk.loc[:, (slice(None), 'val')].isna().values, np.nan).values
         df_chunk.loc[:, (slice(None), 'w_ps')] = df_chunk.loc[:, (slice(None), 'w_ps')].mask(
-            df_chunk.loc[:, (slice(None), 'uc_tot')].isna().values, np.nan)
+            df_chunk.loc[:, (slice(None), 'uc_tot')].isna().values, np.nan).values
 
     # Combine the Profiles, and compute the Jacobian matrix as well
     if 'arithmetic' in method:
@@ -624,6 +622,21 @@ def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean'):
         raveled_sigmas = np.array([df_chunk.xs(sigma_name, level=1, axis=1).T.values.ravel()])
         # ... turn them into a masked array ...
         raveled_sigmas = np.ma.masked_invalid(raveled_sigmas)
+
+        # If all the sigmas are NaN's, let's skip the matrix multiplication to save *a lot* of time
+        if raveled_sigmas.mask.all():
+            x_ms.loc[:, sigma_name] = np.nan
+            V_mats[sigma_name] = np.ma.masked_invalid(np.full((len(x_ms), len(x_ms)), np.nan))
+            continue
+
+        # If there are no correlations, I can avoid some potentially large (and time-consuming)
+        # matrix multiplications.
+        if (np.tril(cc_mat, k=-1) == 0).all() and (np.triu(cc_mat, k=+1) == 0).all():
+            variances = (raveled_sigmas**2 * G_mat**2).sum(axis=1).filled(np.nan)
+            x_ms.loc[:, sigma_name] = np.sqrt(variances)
+            V_mats[sigma_name] = np.ma.masked_invalid(np.diag(variances, k=0))
+            continue
+
         # ... and combine them with the correlation coefficients. Mind the mix of Hadamard and dot
         # products to get the correct mix !
         U_mat = np.multiply(cc_mat, np.ma.dot(raveled_sigmas.T, raveled_sigmas))
