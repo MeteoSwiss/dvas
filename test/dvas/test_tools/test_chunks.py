@@ -209,7 +209,7 @@ def big_lambda_chunk():
     test_chunk.loc[:, (slice(None), PRF_UCS)] = 0.5
     test_chunk.loc[:, (slice(None), PRF_UCT)] = 0.5
     test_chunk.loc[:, (slice(None), PRF_UCU)] = 0.5
-    test_chunk.loc[:, (slice(None), 'uc_tot')] = np.sqrt(2)
+    test_chunk.loc[:, (slice(None), 'uc_tot')] = np.sqrt(1.5)
 
     # Some flags
 
@@ -421,3 +421,20 @@ def test_process_biglambda_chunk(big_lambda_chunk):
     # Maximum correlation if the standard deviation is 0
     assert out2[0]['ucs'][0] == 0.5
     assert out2[0]['uct'][0] == 0.5
+
+    # Test the case of partial NaNs
+    big_lambda_chunk.loc[:, (0, 'val')] = [+1, np.nan]
+    out3 = process_chunk(big_lambda_chunk, method='biglambda')
+
+    assert out3[0]['n_pts'][0] == 1
+    assert out3[0]['n_prfs'][0] == 1
+    for uc in ['ucs', 'uct', 'ucu']:
+        assert out3[0][uc][0] == 0.5
+
+    # Test the case of full NaNs
+    big_lambda_chunk.loc[:, (0, 'val')] = [np.nan, np.nan]
+    out4 = process_chunk(big_lambda_chunk, method='biglambda')
+    for item in ['val', 'mean', 'std', 'ucs', 'uct', 'ucu']:
+        assert out4[0][item].isna().all()
+    assert out4[0]['n_pts'][0] == 0
+    assert out4[0]['n_prfs'][0] == 0

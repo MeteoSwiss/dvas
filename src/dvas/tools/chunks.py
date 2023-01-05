@@ -451,13 +451,17 @@ def biglambda(df_chunk):
         chunk_out.loc[0, 'mean'] = (df_chunk[(0, PRF_VAL)]).mean()
         chunk_out.loc[0, 'std'] = (df_chunk[(0, PRF_VAL)]).std(ddof=0)
         # Quick sanity check
-        sanity = np.round(np.sqrt(chunk_out.loc[0, 'mean']**2+chunk_out.loc[0, 'std']**2), 10) == \
-            np.round(chunk_out.loc[0, PRF_VAL], 10)
+        sanity = (chunk_out.loc[:, 'mean']**2+chunk_out.loc[:, 'std']**2)
+        sanity = sanity.pow(0.5).round(10).equals(chunk_out.loc[:, PRF_VAL].round(10))
         if not sanity:
             raise DvasError('RMSE vs MEAN + STD mismatch.')
         # Also keep track of the amount of points/profiles used to derive those values
-        chunk_out.loc[0, 'n_pts'] = len(df_chunk)
-        chunk_out.loc[0, 'n_prfs'] = len(np.unique(df_chunk.loc[:, (0, 'profile_index')].values))
+        # Make sure to NOT count any invalid value (e.g. where the CWS of manufacturer is a NaN)
+        # as this would mess up the Jacobian matrix (since a 1/J goes in there).
+        is_usable = ~df_chunk[(0, 'val')].isna()
+        chunk_out.loc[0, 'n_pts'] = len(df_chunk[is_usable])
+        chunk_out.loc[0, 'n_prfs'] = \
+            len(np.unique(df_chunk[is_usable].loc[:, (0, 'profile_index')].values))
 
         # All done. Let us now compute the associated Jacobian matrix if we are dealing with 'val'.
         if col != PRF_VAL:
@@ -472,6 +476,9 @@ def biglambda(df_chunk):
         jac_mat[0, :] = df_chunk.loc[:, (0, PRF_VAL)].values
         jac_mat /= chunk_out.loc[0, 'n_pts']
         jac_mat /= chunk_out.loc[0, PRF_VAL]
+
+        # Let's not forget to hide any bad element
+        jac_mat = np.ma.masked_invalid(jac_mat)
 
     # Before we end, let us compute the flags. We apply a general bitwise OR to them, such that
     # they do not cancel each other or disappear: they get propagated all the way.
