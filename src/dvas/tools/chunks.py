@@ -433,6 +433,8 @@ def biglambda(df_chunk):
     # If I was given no data, deal with it
     if len(df_chunk) == 0:
         chunk_out.loc[0, PRF_VAL] = np.nan
+        chunk_out.loc[0, 'mean'] = np.nan
+        chunk_out.loc[0, 'std'] = np.nan
         chunk_out.loc[0, 'n_pts'] = 0
         chunk_out.loc[0, 'n_prfs'] = 0
 
@@ -444,8 +446,16 @@ def biglambda(df_chunk):
     # Let's loop through the variables and compute their biglambda value.
     for col in [PRF_VAL]:
 
-        # Compute the RMS
+        # Compute the RMSE, bias and std. Mind the ddof of pandas std !!!
         chunk_out.loc[0, PRF_VAL] = (df_chunk[(0, PRF_VAL)]**2).mean()**0.5
+        chunk_out.loc[0, 'mean'] = (df_chunk[(0, PRF_VAL)]).mean()
+        chunk_out.loc[0, 'std'] = (df_chunk[(0, PRF_VAL)]).std(ddof=0)
+        # Quick sanity check
+        sanity = np.round(np.sqrt(chunk_out.loc[0, 'mean']**2+chunk_out.loc[0, 'std']**2), 10) == \
+            np.round(chunk_out.loc[0, PRF_VAL], 10)
+        if not sanity:
+            raise DvasError('RMSE vs MEAN + STD mismatch.')
+        # Also keep track of the amount of points/profiles used to derive those values
         chunk_out.loc[0, 'n_pts'] = len(df_chunk)
         chunk_out.loc[0, 'n_prfs'] = len(np.unique(df_chunk.loc[:, (0, 'profile_index')].values))
 

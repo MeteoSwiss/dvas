@@ -170,17 +170,21 @@ def compute_oscar(start_with_tags, mids=None, suffix='', institution='',
             biglambda_ms = pd.concat(biglambda_ms, axis=0)
 
             # Store all this information in the netCDF
-            val_nc = rootgrp.createVariable(f'{var_name}', 'f8', dimensions=("ref_alt"))
-            uc_nc = rootgrp.createVariable(f'{var_name}_uc', 'f8', dimensions=("ref_alt"))
-            ucr_nc = rootgrp.createVariable(f'{var_name}_ucr', 'f8', dimensions=("ref_alt"))
-            ucs_nc = rootgrp.createVariable(f'{var_name}_ucs', 'f8', dimensions=("ref_alt"))
-            uct_nc = rootgrp.createVariable(f'{var_name}_uct', 'f8', dimensions=("ref_alt"))
-            ucu_nc = rootgrp.createVariable(f'{var_name}_ucu', 'f8', dimensions=("ref_alt"))
+            val_nc = rootgrp.createVariable(f'{var_name}_biglambda', 'f8', dimensions=("ref_alt"))
+            mean_nc = rootgrp.createVariable(f'{var_name}_mean', 'f8', dimensions=("ref_alt"))
+            std_nc = rootgrp.createVariable(f'{var_name}_std', 'f8', dimensions=("ref_alt"))
+            uc_nc = rootgrp.createVariable(f'{var_name}_biglambda_uc', 'f8', dimensions=("ref_alt"))
+            ucr_nc = rootgrp.createVariable(f'{var_name}_biglambda_ucr', 'f8', dimensions=("ref_alt"))
+            ucs_nc = rootgrp.createVariable(f'{var_name}_biglambda_ucs', 'f8', dimensions=("ref_alt"))
+            uct_nc = rootgrp.createVariable(f'{var_name}_biglambda_uct', 'f8', dimensions=("ref_alt"))
+            ucu_nc = rootgrp.createVariable(f'{var_name}_biglambda_ucu', 'f8', dimensions=("ref_alt"))
             npts_nc = rootgrp.createVariable(f'{var_name}_npts', 'i8', dimensions=("ref_alt"))
             nprfs_nc = rootgrp.createVariable(f'{var_name}_nprfs', 'i8', dimensions=("ref_alt"))
 
             # Fill the data
             val_nc[:] = biglambda_ms[PRF_VAL]
+            mean_nc[:] = biglambda_ms['mean']
+            std_nc[:] = biglambda_ms['std']
             uc_nc[:] = biglambda_ms.loc[:, ('ucr', 'ucs', 'uct', 'ucu')].pow(2).sum(axis=1).pow(0.5)
             ucr_nc[:] = biglambda_ms[PRF_UCR]
             ucs_nc[:] = biglambda_ms[PRF_UCS]
@@ -192,6 +196,10 @@ def compute_oscar(start_with_tags, mids=None, suffix='', institution='',
             # Set the Variable attributes
             setattr(val_nc, 'long_name', f'Big Lambda profile of {var_name}')
             setattr(val_nc, 'units', prfs.var_info[PRF_VAL]['prm_unit'])
+            setattr(mean_nc, 'long_name', f'Mean delta profile of {var_name}')
+            setattr(mean_nc, 'units', prfs.var_info[PRF_VAL]['prm_unit'])
+            setattr(std_nc, 'long_name', f'Standard deviation profile of {var_name}')
+            setattr(std_nc, 'units', prfs.var_info[PRF_VAL]['prm_unit'])
 
             setattr(uc_nc, 'long_name',
                     f'Total uncertainty of the Big Lambda profile of {var_name} (k=1)')
@@ -248,6 +256,11 @@ def compute_oscar(start_with_tags, mids=None, suffix='', institution='',
                               f'{val[0]["uct"][0]:.5f} {prfs.var_info[PRF_VAL]["prm_unit"]}')
                 set_attribute(rootgrp, f'd.{var_name}.{region}.biglambda.ucu',
                               f'{val[0]["ucu"][0]:.5f} {prfs.var_info[PRF_VAL]["prm_unit"]}')
+
+                set_attribute(rootgrp, f'd.{var_name}.{region}.mean_delta',
+                              f'{val[0]["mean"][0]:.5f} {prfs.var_info[PRF_VAL]["prm_unit"]}')
+                set_attribute(rootgrp, f'd.{var_name}.{region}.std',
+                              f'{val[0]["std"][0]:.5f} {prfs.var_info[PRF_VAL]["prm_unit"]}')
 
                 set_attribute(rootgrp, f'd.{var_name}.{region}.biglambda.npts',
                               f'{val[0]["n_pts"][0]}')
