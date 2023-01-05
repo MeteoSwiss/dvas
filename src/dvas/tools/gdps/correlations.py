@@ -27,7 +27,6 @@ from ...errors import DvasError
 logger = logging.getLogger(__name__)
 
 
-@log_func_call(logger)
 def coeffs(i, j, sigma_name, oid_i=None, oid_j=None, mid_i=None, mid_j=None,
            rid_i=None, rid_j=None, eid_i=None, eid_j=None):
     ''' Computes the correlation coefficient(s), for the different uncertainty types of GRUAN Data
