@@ -236,7 +236,6 @@ def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
         gdp_prfs.load_from_db(f'and_({filt}, tags("{TAG_GDP}"))', dynamic.CURRENT_VAR,
                               tdt_abbr=dynamic.INDEXES[PRF_TDT],
                               alt_abbr=dynamic.INDEXES[PRF_ALT],
-                              ucr_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucr'],
                               ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
                               uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
                               ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],

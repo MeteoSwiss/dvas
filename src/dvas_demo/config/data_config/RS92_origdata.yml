@@ -96,14 +96,14 @@ _RS92-GDP_002:
 
     _temp:
         value: get('temp')
-    _temp_ucr:
+    _temp_uct:
+        value: get('u_cor_temp')
+    _temp_ucu:
         # In v2 of the GDP, this value is wrong. It must be reconstructed from:
         # value: sqrt('u_temp'**2 - 'u_cor_temp'**2)
         # See GRUAN TD4, section 5.1 for details.
         value: >-
             sqrt(sub(pow(get('u_temp'), 2), pow(get('u_cor_temp'), 2)))
-    _temp_uct:
-        value: get('u_cor_temp')
 
     _pres:
         value: get('press')
@@ -112,15 +112,15 @@ _RS92-GDP_002:
 
     _rh:
         value: mul(get('rh'), 100) # Convert to %
-    _rh_ucr:
+    _rh_uct:
+        value: mul(get('u_cor_rh'), 100) # Convert to %
+    _rh_ucu:
         # In v2 of the GDP, this value is wrong. It must be reconstructed from:
         # value: sqrt('u_rh'**2 - 'u_cor_rh'**2)
         # See GRUAN TD4, section 5.1 for details.
         # Also, convert this to %
         value: >-
             mul(sqrt(sub(pow(get('u_rh'), 2), pow(get('u_cor_rh'), 2))), 100)
-    _rh_uct:
-        value: mul(get('u_cor_rh'), 100) # Convert to %
 
     _wdir:
         value: get('wdir')

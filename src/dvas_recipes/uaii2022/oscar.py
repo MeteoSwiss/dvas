@@ -22,7 +22,7 @@ from dvas.environ import path_var as dvas_path_var
 from dvas.data.data import MultiDeltaProfile
 from dvas.dvas import Database as DB
 from dvas.tools.chunks import process_chunk
-from dvas.hardcoded import PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU, PRF_FLG
+from dvas.hardcoded import PRF_ALT, PRF_VAL, PRF_UCS, PRF_UCT, PRF_UCU, PRF_FLG
 from dvas.hardcoded import TAG_DTA, TAG_CWS
 
 # Import from dvas_recipes
@@ -119,7 +119,6 @@ def compute_oscar(start_with_tags, mids=None, suffix='', institution='',
             prfs = MultiDeltaProfile()
             prfs.load_from_db(prf_filt, var_name,
                               alt_abbr=dynamic.INDEXES[PRF_ALT],
-                              ucr_abbr=var['ucr'],
                               ucs_abbr=var['ucs'],
                               uct_abbr=var['uct'],
                               ucu_abbr=var['ucu'],
@@ -127,7 +126,7 @@ def compute_oscar(start_with_tags, mids=None, suffix='', institution='',
             logger.info('Found %i delta_profiles for %s', len(prfs), var_name)
 
             # Let's extract the data I care about
-            pdf = prfs.get_prms([PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU,
+            pdf = prfs.get_prms([PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCS, PRF_UCT, PRF_UCU,
                                 'uc_tot'], mask_flgs=None,
                                 with_metadata=['oid', 'mid', 'eid', 'rid'],
                                 pooled=True)
@@ -174,7 +173,6 @@ def compute_oscar(start_with_tags, mids=None, suffix='', institution='',
             mean_nc = rootgrp.createVariable(f'{var_name}_mean', 'f8', dimensions=("ref_alt"))
             std_nc = rootgrp.createVariable(f'{var_name}_std', 'f8', dimensions=("ref_alt"))
             uc_nc = rootgrp.createVariable(f'{var_name}_biglambda_uc', 'f8', dimensions=("ref_alt"))
-            ucr_nc = rootgrp.createVariable(f'{var_name}_biglambda_ucr', 'f8', dimensions=("ref_alt"))
             ucs_nc = rootgrp.createVariable(f'{var_name}_biglambda_ucs', 'f8', dimensions=("ref_alt"))
             uct_nc = rootgrp.createVariable(f'{var_name}_biglambda_uct', 'f8', dimensions=("ref_alt"))
             ucu_nc = rootgrp.createVariable(f'{var_name}_biglambda_ucu', 'f8', dimensions=("ref_alt"))
@@ -185,8 +183,7 @@ def compute_oscar(start_with_tags, mids=None, suffix='', institution='',
             val_nc[:] = biglambda_ms[PRF_VAL]
             mean_nc[:] = biglambda_ms['mean']
             std_nc[:] = biglambda_ms['std']
-            uc_nc[:] = biglambda_ms.loc[:, ('ucr', 'ucs', 'uct', 'ucu')].pow(2).sum(axis=1).pow(0.5)
-            ucr_nc[:] = biglambda_ms[PRF_UCR]
+            uc_nc[:] = biglambda_ms.loc[:, ('ucs', 'uct', 'ucu')].pow(2).sum(axis=1).pow(0.5)
             ucs_nc[:] = biglambda_ms[PRF_UCS]
             uct_nc[:] = biglambda_ms[PRF_UCT]
             ucu_nc[:] = biglambda_ms[PRF_UCU]
@@ -204,10 +201,6 @@ def compute_oscar(start_with_tags, mids=None, suffix='', institution='',
             setattr(uc_nc, 'long_name',
                     f'Total uncertainty of the Big Lambda profile of {var_name} (k=1)')
             setattr(uc_nc, 'units', prfs.var_info[PRF_VAL]['prm_unit'])
-
-            setattr(ucr_nc, 'long_name',
-                    f'Rig-correlated uncertainty of the Big Lambda profile of {var_name} (k=1)')
-            setattr(ucr_nc, 'units', prfs.var_info[PRF_VAL]['prm_unit'])
 
             setattr(ucs_nc, 'long_name',
                     f'Spatial-correlated uncertainty of the Big Lambda profile of {var_name} (k=1)')
@@ -234,22 +227,20 @@ def compute_oscar(start_with_tags, mids=None, suffix='', institution='',
                 logger.info('Processing the %s chunk for %s ...', region, var_name)
                 flg = f"is_in_{region}"
                 pdf = prfs.get_prms(
-                    [PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU, 'uc_tot'],
+                    [PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCS, PRF_UCT, PRF_UCU, 'uc_tot'],
                     mask_flgs=None, request_flgs=[flg, 'has_valid_cws'],
                     with_metadata=['oid', 'mid', 'eid', 'rid'],
                     pooled=True)
 
                 val = process_chunk(pdf, method='biglambda')
 
-                uc_val = val[0].loc[:, ('ucr', 'ucs', 'uct', 'ucu')].pow(2).sum(axis=1).pow(0.5)[0]
+                uc_val = val[0].loc[:, ('ucs', 'uct', 'ucu')].pow(2).sum(axis=1).pow(0.5)[0]
 
                 set_attribute(rootgrp, f'd.{var_name}.{region}.biglambda',
                               f'{val[0]["val"][0]:.5f} {prfs.var_info[PRF_VAL]["prm_unit"]}')
                 set_attribute(
                     rootgrp, f'd.{var_name}.{region}.biglambda.uc', f"{uc_val:.5f} " +
                     f'{prfs.var_info[PRF_VAL]["prm_unit"]}')
-                set_attribute(rootgrp, f'd.{var_name}.{region}.biglambda.ucr',
-                              f'{val[0]["ucr"][0]:.5f} {prfs.var_info[PRF_VAL]["prm_unit"]}')
                 set_attribute(rootgrp, f'd.{var_name}.{region}.biglambda.ucs',
                               f'{val[0]["ucs"][0]:.5f} {prfs.var_info[PRF_VAL]["prm_unit"]}')
                 set_attribute(rootgrp, f'd.{var_name}.{region}.biglambda.uct',

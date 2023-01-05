@@ -18,6 +18,7 @@ import pytest
 from dvas.data.strategy.load import LoadRSProfileStrategy, LoadGDPProfileStrategy
 from dvas.data.data import MultiProfile, MultiRSProfile, MultiGDPProfile
 
+
 @pytest.fixture
 def mlt_prf():
     """# Load multiprofile"""
@@ -27,15 +28,17 @@ def mlt_prf():
     mlt_prf.update(data[1], data[0])
     return mlt_prf
 
+
 @pytest.fixture
 def mlt_gdpprf():
     """# Load multiprofile"""
     mlt_gdpprf = MultiGDPProfile()
     prf_stgy = LoadGDPProfileStrategy()
     data = prf_stgy.execute("all()", 'temp', 'time', alt_abbr='gph',
-                            ucr_abbr='ucr1', ucs_abbr='ucs1', uct_abbr='uct1', ucu_abbr='ucu1')
+                            ucs_abbr='ucs1', uct_abbr='uct1', ucu_abbr='ucu1')
     mlt_gdpprf.update(data[1], data[0])
     return mlt_gdpprf
+
 
 # Define db_data
 db_data = {
@@ -51,10 +54,10 @@ db_data = {
                        'tags': ['load_multiprofile', f'e:{ind}'],
                        'metadata': {},
                        'src': ''},
-             } for (ind, dt) in enumerate(['20200101T0000Z', '20200202T0000Z'])
-             for prm in ['temp', 'gph', 'temp_flag', 'time', 'ucr1', 'ucs1',
+              } for (ind, dt) in enumerate(['20200101T0000Z', '20200202T0000Z'])
+             for prm in ['temp', 'gph', 'temp_flag', 'time', 'ucs1',
                          'uct1', 'ucu1']
-            ]
+             ]
 }
 
 

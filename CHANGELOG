@@ -16,6 +16,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [fpavogt, 2022-11-10] Cleanup filename of KS plots
 ### Deprecated:
 ### Removed:
+ - [fpavogt, 2021-01-05] Removed 'ucr' in favor of 'ucu' (fixes #268)
 ### Security:
 
 ## [v0.8.1.dev0]

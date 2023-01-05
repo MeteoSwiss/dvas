@@ -94,10 +94,10 @@ _IMS-100-BETA_002:
 
     _temp:
         value: get('temp')
-    _temp_ucr:
-        value: get('temp_uc_ucor')
     _temp_uct:
         value: get('temp_uc_cor')
+    _temp_ucu:
+        value: get('temp_uc_ucor')
 
     _pres:
         value: get('press')
@@ -108,10 +108,10 @@ _IMS-100-BETA_002:
 
     _rh:
         value: get('rh')
-    _rh_ucr:
-        value: get('rh_uc_ucor')
     _rh_uct:
         value: get('rh_uc_cor')
+    _rh_ucu:
+        value: get('rh_uc_ucor')
 
     _wdir:
         value: get('wdir')

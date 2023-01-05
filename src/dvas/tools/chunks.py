@@ -19,7 +19,7 @@ import pandas as pd
 # Import from current package
 from ..logger import log_func_call
 from ..errors import DvasError
-from ..hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
+from ..hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCS, PRF_UCT, PRF_UCU
 from .tools import fancy_nansum, fancy_bitwise_or, wrap_angle
 from .gdps.correlations import coeffs
 
@@ -503,15 +503,15 @@ def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean'):
     Note:
         The input format for `df_chunk` is a `pandas.DataFrame` with a very specific structure.
         It requires a single index called `_idx`, with 13 columns per profiles with labels `tdt`,
-        `alt`, `val`, 'flg', `ucr`, `ucs`, `uct`, `ucu`, `uc_tot`, `oid`, `mid`, `eid`, and `rid`.
+        `alt`, `val`, 'flg', `ucs`, `uct`, `ucu`, `uc_tot`, `oid`, `mid`, `eid`, and `rid`.
         All these must be grouped together using pd.MultiIndex where the level 0 corresponds
         to the profile number (e.g. 0,1,2...), and the level 1 is the original column name, i.e.::
 
                        0                                                1
-                     alt              tdt    val   ucr ucs  ...   rid alt ...
+                     alt              tdt    val  ucs  ...   rid alt ...
             _idx
-            0      486.7  0 days 00:00:00  284.7   NaN NaN  ...     1 485.8
-            1      492.4  0 days 00:00:01  284.6  0.07 NaN  ...     1 493.4
+            0      486.7  0 days 00:00:00  284.7  NaN  ...     1 485.8
+            1      492.4  0 days 00:00:01  284.6  0.0  ...     1 493.4
             ...
 
     Note:
@@ -521,7 +521,7 @@ def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean'):
     """
 
     # Check I have all the required columns
-    for col in [PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU,
+    for col in [PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCS, PRF_UCT, PRF_UCU,
                 'uc_tot', 'oid', 'mid', 'eid', 'rid']:
         if method in ['biglambda'] and col in [PRF_TDT]:
             continue
@@ -546,7 +546,7 @@ def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean'):
             logger.warning("GDP Profile %i: NaN mismatch for 'val' and 'uc_tot'", prf_ind)
             df_chunk.loc[df_chunk.loc[:, (prf_ind, 'uc_tot')].isna().values,
                          (prf_ind, PRF_VAL)] = np.nan
-            for col in [PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU, 'uc_tot']:
+            for col in [PRF_UCS, PRF_UCT, PRF_UCU, 'uc_tot']:
                 df_chunk.loc[df_chunk.loc[:, (prf_ind, PRF_VAL)].isna().values,
                              (prf_ind, col)] = np.nan
 
@@ -605,7 +605,7 @@ def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean'):
     V_mats = {}  # Will store the covariance matrices in this dict
     # Let us now assemble the U matrices, filling all the cross-correlations for the different
     # types of uncertainties
-    for sigma_name in [PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU]:
+    for sigma_name in [PRF_UCS, PRF_UCT, PRF_UCU]:
         cc_mat = coeffs(
             np.tile(df_chunk.index.values, (n_prf*len(df_chunk), n_prf)),  # i
             np.tile(df_chunk.index.values, (n_prf*len(df_chunk), n_prf)).T,  # j

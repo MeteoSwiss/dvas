@@ -18,7 +18,7 @@ from matplotlib import transforms
 # Import dvas modules and classes
 from dvas.logger import log_func_call
 from dvas.data.data import MultiProfile, MultiGDPProfile, MultiCWSProfile, MultiDeltaProfile
-from dvas.hardcoded import PRF_IDX, PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCU, PRF_UCR, PRF_UCS, PRF_UCT
+from dvas.hardcoded import PRF_IDX, PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCU, PRF_UCS, PRF_UCT
 from dvas.hardcoded import TAG_DTA, TAG_GDP, TAG_CWS, MTDTA_PBL, MTDTA_TROPOPAUSE
 from dvas.data.data import MultiRSProfile
 from dvas.tools.gdps import correlations as dtgc
@@ -157,7 +157,7 @@ def covmat_stats(covmats):
     """ Takes a closer look at the *true* covariance matrix computed by dvas for a combined profile.
 
     Looks in particular at the error one does by ignoring it and assuming the combined profile
-    uncertainties behave like a ucu, ucr, ucs, or uct types or uncertainties.
+    uncertainties behave like a ucu, ucs, or uct types or uncertainties.
 
     Args:
         proc_chunks: the outcome of map(process_chunk, chunks).
@@ -176,7 +176,7 @@ def covmat_stats(covmats):
         list(np.linspace(1, 10, 10)) + [15, 20, 100]
 
     # Loop through all the uncertainty types
-    for uc_name in [PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU]:
+    for uc_name in [PRF_UCS, PRF_UCT, PRF_UCU]:
 
         # Build matrices of indexes
         i_inds, j_inds = np.meshgrid(np.arange(0, len(covmats[uc_name][0]), 1),
@@ -189,7 +189,7 @@ def covmat_stats(covmats):
 
         # For the uncorrelated uncertainties, all the off-diagonal elements should always be 0
         # (unless they are NaNs). Let's issue a log-ERROR message if this is not the case.
-        if uc_name in [PRF_UCR, PRF_UCU]:
+        if uc_name in [PRF_UCU]:
             if np.any(covmats[uc_name][valids] != 0):
                 logger.error("Non-0 off-diagonal elements of covarience matrix [%s].",
                              uc_name)
@@ -310,7 +310,6 @@ def inspect_cws(gdp_start_with_tags, cws_start_with_tags):
     gdp_prfs.load_from_db(gdp_filt, dynamic.CURRENT_VAR,
                           tdt_abbr=dynamic.INDEXES[PRF_TDT],
                           alt_abbr=dynamic.INDEXES[PRF_ALT],
-                          ucr_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucr'],
                           ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
                           uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
                           ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],
@@ -322,7 +321,6 @@ def inspect_cws(gdp_start_with_tags, cws_start_with_tags):
     cws_prfs.load_from_db(cws_filt, dynamic.CURRENT_VAR,
                           tdt_abbr=dynamic.INDEXES[PRF_TDT],
                           alt_abbr=dynamic.INDEXES[PRF_ALT],
-                          ucr_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucr'],
                           ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
                           uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
                           ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],
@@ -393,7 +391,6 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None):
     cws_prfs = MultiCWSProfile()
     cws_prfs.load_from_db(cws_filt, dynamic.CURRENT_VAR, dynamic.INDEXES[PRF_TDT],
                           alt_abbr=dynamic.INDEXES[PRF_ALT],
-                          ucr_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucr'],
                           ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
                           uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
                           ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],
@@ -401,7 +398,6 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None):
     dta_prfs = MultiDeltaProfile()
     dta_prfs.load_from_db(dta_filt, dynamic.CURRENT_VAR,
                           alt_abbr=dynamic.INDEXES[PRF_ALT],
-                          ucr_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucr'],
                           ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
                           uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
                           ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],
@@ -444,7 +440,7 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None):
                                     left=0.09, right=0.87, bottom=0.12, top=0.93,
                                     wspace=0.5, hspace=0.1)
 
-        # Create the axes - one for the profiles, and one for uctot, ucr, ucs, uct, ucu
+        # Create the axes - one for the profiles, and one for uctot, ucs, uct, ucu
         ax0 = fig.add_subplot(gs_info[0, 0])
         ax1 = fig.add_subplot(gs_info[1, 0], sharex=ax0)
 
@@ -580,7 +576,6 @@ def dtas_per_mid(start_with_tags, mids=None, skip_gdps=False, skip_nongdps=False
         dta_prfs = MultiDeltaProfile()
         dta_prfs.load_from_db(dta_filt, dynamic.CURRENT_VAR,
                               alt_abbr=dynamic.INDEXES[PRF_ALT],
-                              ucr_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucr'],
                               ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
                               uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
                               ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],

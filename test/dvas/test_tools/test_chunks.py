@@ -16,7 +16,7 @@ import pytest
 import pandas as pd
 
 from dvas.errors import DvasError
-from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
+from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCS, PRF_UCT, PRF_UCU
 
 # Function to test
 from dvas.tools.chunks import weighted_mean, delta, process_chunk
@@ -27,7 +27,7 @@ def chunk():
     """ A data chunk to test the GDP utils functions. """
 
     # First, the level 1 column names
-    lvl_one = [PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU,
+    lvl_one = [PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCS, PRF_UCT, PRF_UCU,
                'uc_tot', 'w_ps', 'oid', 'mid', 'eid', 'rid']
 
     # Set the proper MultiIndex
@@ -71,7 +71,6 @@ def chunk():
     test_chunk.loc[9, (slice(None), 'w_ps')] = np.nan
 
     # Some errors
-    test_chunk.loc[:, (slice(None), PRF_UCR)] = 1.
     test_chunk.loc[:, (slice(None), PRF_UCS)] = 1.
     test_chunk.loc[:, (slice(None), PRF_UCT)] = 1.
     test_chunk.loc[:, (slice(None), PRF_UCU)] = 1.
@@ -90,7 +89,7 @@ def chunk():
     test_chunk.loc[8, (2, PRF_FLG)] = 4
 
     # Errors are NaNs, but values are not.
-    test_chunk.loc[9, (slice(None), PRF_UCR)] = np.nan
+    test_chunk.loc[9, (slice(None), PRF_UCU)] = np.nan
 
     # The other stuff
     test_chunk.loc[:, (slice(None), 'eid')] = 'e:1'
@@ -108,7 +107,7 @@ def angular_chunk():
     """ A data chunk with angles to test the GDP utils functions related to the wdir. """
 
     # First, the level 1 column names
-    lvl_one = [PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU,
+    lvl_one = [PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCS, PRF_UCT, PRF_UCU,
                'uc_tot', 'w_ps', 'oid', 'mid', 'eid', 'rid']
 
     # Set the proper MultiIndex
@@ -158,7 +157,6 @@ def angular_chunk():
 
     test_chunk.loc[:, (slice(None), 'w_ps')] = 1.
 
-    test_chunk.loc[:, (slice(None), PRF_UCR)] = 0.
     test_chunk.loc[:, (slice(None), PRF_UCS)] = 0.
     test_chunk.loc[:, (slice(None), PRF_UCT)] = 0.
     test_chunk.loc[:, (slice(None), PRF_UCU)] = 1.
@@ -180,7 +178,7 @@ def big_lambda_chunk():
     """ A data chunk to test the Big Lambda chunk functions. """
 
     # First, the level 1 column names
-    lvl_one = [PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU,
+    lvl_one = [PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCS, PRF_UCT, PRF_UCU,
                'uc_tot', 'oid', 'mid', 'eid', 'rid', 'profile_index']
 
     # Set the proper MultiIndex
@@ -208,7 +206,6 @@ def big_lambda_chunk():
     # Set some NaN's
 
     # Some errors
-    test_chunk.loc[:, (slice(None), PRF_UCR)] = 0.5
     test_chunk.loc[:, (slice(None), PRF_UCS)] = 0.5
     test_chunk.loc[:, (slice(None), PRF_UCT)] = 0.5
     test_chunk.loc[:, (slice(None), PRF_UCU)] = 0.5
@@ -357,15 +354,14 @@ def test_process_chunk(chunk):
 
     # First test the mean
     out_1, _ = process_chunk(chunk, binning=1, method='weighted arithmetic mean')
-    assert out_1.loc[0, PRF_UCR] == np.sqrt(1/3)
     assert out_1.loc[0, PRF_UCS] == 1
     assert out_1.loc[0, PRF_UCT] == 1
     assert out_1.loc[0, PRF_UCU] == np.sqrt(1/3)
-    assert np.isnan(out_1.loc[1, PRF_UCR])  # Values are all NaNs
-    assert np.isnan(out_1.loc[9, PRF_UCR])  # Error are all NaNs
+    assert np.isnan(out_1.loc[1, PRF_UCU])  # Values are all NaNs
+    assert np.isnan(out_1.loc[9, PRF_UCU])  # Error are all NaNs
 
     # With partial NaN's, errors still get computed correctly.
-    assert not np.isnan(out_1.loc[8, PRF_UCR])
+    assert not np.isnan(out_1.loc[8, PRF_UCU])
     assert not np.isnan(out_1.loc[8, PRF_VAL])
 
     # Now with binning
@@ -377,7 +373,7 @@ def test_process_chunk(chunk):
     out_1, _ = process_chunk(chunk.loc[:, :1], binning=1, method='arithmetic delta')
 
     # If some crazy users has NaN's for values but non-NaN errors, make sure I fully ignore these.
-    assert np.isnan(out_1.loc[1, 'ucr'])
+    assert np.isnan(out_1.loc[1, PRF_UCU])
 
     # What happens with binning ?
     out_2, _ = process_chunk(chunk.loc[:, :1], binning=2, method='arithmetic delta')
@@ -385,7 +381,7 @@ def test_process_chunk(chunk):
     # In case of partial binning things get ignored accordingly.
     assert all(out_1.iloc[0].values == out_2.iloc[0].values)
     # If all is NaN, then result is NaN.
-    assert all(out_2.loc[4, ['val', 'ucr', 'ucs', 'uct', 'ucu']].isna())
+    assert all(out_2.loc[4, ['val', 'ucs', 'uct', 'ucu']].isna())
 
 
 def test_process_angular_chunk(angular_chunk):

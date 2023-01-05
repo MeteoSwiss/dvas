@@ -49,32 +49,26 @@ rcp_params:
         alt: alt_ref
     vars:
         gph:
-            ucr:
             ucs:
             uct: gph_uct
             ucu: gph_ucu
         temp:
-            ucr: temp_ucr
             ucs: temp_ucs
             uct: temp_uct
-            ucu:
+            ucu: temp_ucu
         rh:
-            ucr: rh_ucr
             ucs:
             uct: rh_uct
-            ucu:
+            ucu: rh_ucu
         pres:
-            ucr:
             ucs:
             uct: pres_uct
             ucu: pres_ucu
         wdir:
-            ucr:
             ucs:
             uct:
             ucu: wdir_ucu
         wspeed:
-            ucr:
             ucs:
             uct:
             ucu: wspeed_ucu

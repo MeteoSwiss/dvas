@@ -72,7 +72,7 @@ if __name__ == '__main__':
     DB.fetch_original_data(
         [
             'time', 'gph', 'gph_uct', 'gph_ucu',
-            'temp', 'temp_flg', 'temp_ucr', 'temp_ucs', 'temp_uct'
+            'temp', 'temp_flg', 'temp_ucs', 'temp_uct'
         ],
         strict=True
     )
@@ -114,7 +114,7 @@ if __name__ == '__main__':
     # Load GDPs for temperature, including all the errors at hand
     gdp_prfs = MultiGDPProfile()
     gdp_prfs.load_from_db(filt_orig_gdp_dt, 'temp', tdt_abbr='time', alt_abbr='gph',
-                          ucr_abbr='temp_ucr', ucs_abbr='temp_ucs', uct_abbr='temp_uct',
+                          ucs_abbr='temp_ucs', uct_abbr='temp_uct',
                           inplace=True)
 
     # ----------------------------------------------------------------------------------------------
@@ -244,7 +244,7 @@ if __name__ == '__main__':
     filt_gdp_dt_sync = f"and_(tags('{TAG_SYNC}'), {filt_gdp}, {filt_dt})"
     gdp_prfs = MultiGDPProfile()
     gdp_prfs.load_from_db(filt_gdp_dt_sync, 'temp', tdt_abbr='time', alt_abbr='gph',
-                          ucr_abbr='temp_ucr', ucs_abbr='temp_ucs', uct_abbr='temp_uct',
+                          ucs_abbr='temp_ucs', uct_abbr='temp_uct',
                           inplace=True)
 
     # Before combining the GDPs with each other, let us assess their consistency. This is a two
@@ -284,4 +284,4 @@ if __name__ == '__main__':
     # 'tdt' indexes. As a result, if one tries to extract the cws from the DB right away, the 'alt'
     # and 'tdt' columns will be filled with NaNs.
     cws.save_to_db(add_tags=[TAG_CWS], rm_tags=[TAG_GDP],
-                   prms=['val', 'ucr', 'ucs', 'uct', 'ucu'])
+                   prms=['val', 'ucs', 'uct', 'ucu'])

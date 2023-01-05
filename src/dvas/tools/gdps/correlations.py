@@ -20,7 +20,6 @@ import logging
 import numpy as np
 
 # Import from current package
-from ...logger import log_func_call
 from ...errors import DvasError
 
 # Setup local logger
@@ -35,7 +34,7 @@ def coeffs(i, j, sigma_name, oid_i=None, oid_j=None, mid_i=None, mid_j=None,
     Args:
         i (numpy.ndarray of int|float): synchronized time, step, or altitude of measurement 1.
         j (numpy.ndarray of int|float): synchronized time, step, or altitude of measurement 2.
-        sigma_name (str): uncertainty type. Must be one of ['ucr', 'ucs', 'uct', 'ucu'].
+        sigma_name (str): uncertainty type. Must be one of ['ucs', 'uct', 'ucu'].
         oid_i (numpy.ndarray of int|str, optional): object id from measurement 1.
         oid_j (numpy.ndarray of int|str, optional): object id from measurement 2.
         mid_i (numpy.ndarray of int|str, optional): GDP model from measurement 1.
@@ -62,15 +61,13 @@ def coeffs(i, j, sigma_name, oid_i=None, oid_j=None, mid_i=None, mid_j=None,
 
     The supported uncertainty types are:
 
-    - 'ucr': rig-correlated uncertainty.
-             Intended for the so-called "uncorrelated" GRUAN uncertainty.
     - 'ucs': spatial-correlated uncertainty.
              Full correlation between measurements acquired during the same event at the same site,
              irrespective of the time step/altitude, rig, radiosonde model, or serial number.
     - 'uct': temporal-correlated uncertainty.
              Full correlation between measurements acquired at distinct sites during distinct
              events, with distinct radiosondes models and serial numbers.
-    - 'ucu': uncorrelated.
+    - 'ucu': un-correlated uncertainty.
              No correlation whatsoever between distinct measurements.
 
     Todo:
@@ -99,22 +96,6 @@ def coeffs(i, j, sigma_name, oid_i=None, oid_j=None, mid_i=None, mid_j=None,
         # Nothing to add in case of uncorrelated uncertainties.
         pass
 
-    elif sigma_name == 'ucr':
-
-        # The so-called "uncorrelated" uncertainties from the GDPs show clear signs of correlations
-        # between radiosondes that fly together.
-        # This is related to the manner through which this uncertainty is being derived, which is
-        # sensitive to short-but-real atmospheric fluctuations, which are common between radiosondes
-        # flying together. This also implies that these uncertainties are being overestimated.
-        #
-        # Here, we choose to entirely ignore any correlation between the ucr components. This helps
-        # reduce the impact of this "additional" uncertainty, related to real atmospheric
-        # fluctuations, that should not have been present in the first place. In other words, we
-        # (partially) correct a wrong with a wrong.
-        #
-        # See the scientific dvas documentation for details on this aspect.
-        pass
-
     elif sigma_name == 'ucs':
         # 1) Full spatial-correlation between measurements acquired in the same event with the same
         #    GDP model, irrespective of the rig, or serial number.
@@ -126,6 +107,6 @@ def coeffs(i, j, sigma_name, oid_i=None, oid_j=None, mid_i=None, mid_j=None,
         corcoef[(mid_i == mid_j)] = 1.0
 
     else:
-        raise DvasError(f"uc_type must be one of ['ucr', 'ucs', 'uct', 'ucu'], not: {sigma_name}")
+        raise DvasError(f"uc_type must be one of ['ucs', 'uct', 'ucu'], not: {sigma_name}")
 
     return corcoef

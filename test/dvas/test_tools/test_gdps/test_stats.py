@@ -50,17 +50,16 @@ def gdp_2_prfs(db_init):
     info_1 = InfoManager('20210302T0000Z', oids[0], tags=['e:1', 'r:1'])
     data_1 = pd.DataFrame({'alt': [5, 10., 15., 20.], 'val': [0, 10., 20., 30.],
                            'flg': [1, 1, 1, 1], 'tdt': [0e9, 1e9, 2e9, 3e9],
-                           'ucr': [1, 1, 1, 1], 'ucs': [1, 1, 1, 1],
-                           'uct': [1, 1, 1, 1], 'ucu': [1, 1, 1, 1]})
+                           'ucs': [1, 1, 1, 1], 'uct': [1, 1, 1, 1], 'ucu': [1, 1, 1, 1]})
     info_2 = InfoManager('20210302T0000Z', oids[1], tags=['e:1', 'r:1'])
-    data_2 = pd.DataFrame({'alt': [5, 11., 16., 20.1], 'val': [2, 14., 26., np.nan],
+    data_2 = pd.DataFrame({'alt': [5, 11., 16., 20.1],
+                           'val': [np.sqrt(2), 10+2*np.sqrt(2), 20.+3*np.sqrt(2), np.nan],
                            'flg': [1, 1, 1, 1], 'tdt': [0e9, 1e9, 2e9, 3e9],
-                           'ucr': [1, 1, 1, 1], 'ucs': [1, 1, 1, 1],
-                           'uct': [1, 1, 1, 1], 'ucu': [1, 1, 1, 1]})
+                           'ucs': [1, 1, 1, 1], 'uct': [1, 1, 1, 1], 'ucu': [1, 1, 1, 1]})
 
     # Let's build a multiprofile so I can test things out.
     multiprf = MultiGDPProfile()
-    multiprf.update({'val': None, 'tdt': None, 'alt': None, 'flg': None, 'ucr': None, 'ucs': None,
+    multiprf.update({'val': None, 'tdt': None, 'alt': None, 'flg': None, 'ucs': None,
                      'uct': None, 'ucu': None},
                     [GDPProfile(info_1, data_1), GDPProfile(info_2, data_2)])
 
@@ -78,22 +77,19 @@ def gdp_3_prfs(db_init):
     info_1 = InfoManager('20210302T0000Z', oids[0], tags=['e:1', 'r:1'])
     data_1 = pd.DataFrame({'alt': [5, 10., 15., 20.], 'val': [0, 10., 20., 30.],
                            'flg': [1, 1, 1, 1], 'tdt': [0e9, 1e9, 2e9, 3e9],
-                           'ucr': [1, 1, 1, 1], 'ucs': [1, 1, 1, 1],
-                           'uct': [1, 1, 1, 1], 'ucu': [1, 1, 1, 1]})
+                           'ucs': [1, 1, 1, 1], 'uct': [1, 1, 1, 1], 'ucu': [1, 1, 1, 1]})
     info_2 = InfoManager('20210302T0000Z', oids[1], tags=['e:1', 'r:1'])
     data_2 = pd.DataFrame({'alt': [5, 11., 16., 20.1], 'val': [2, 14., 26., np.nan],
                            'flg': [1, 1, 1, 1], 'tdt': [0e9, 1e9, 2e9, 3e9],
-                           'ucr': [1, 1, 1, 1], 'ucs': [1, 1, 1, 1],
-                           'uct': [1, 1, 1, 1], 'ucu': [1, 1, 1, 1]})
+                           'ucs': [1, 1, 1, 1], 'uct': [1, 1, 1, 1], 'ucu': [1, 1, 1, 1]})
     info_3 = InfoManager('20210302T0000Z', oids[2], tags=['e:1', 'r:1'])
     data_3 = pd.DataFrame({'alt': [5, 11., 16., 20.1], 'val': [2, 14., 26., np.nan],
                            'flg': [1, 1, 1, 1], 'tdt': [0e9, 1e9, 2e9, 3e9],
-                           'ucr': [1, 1, 1, 1], 'ucs': [1, 1, 1, 1],
-                           'uct': [1, 1, 1, 1], 'ucu': [1, 1, 1, 1]})
+                           'ucs': [1, 1, 1, 1], 'uct': [1, 1, 1, 1], 'ucu': [1, 1, 1, 1]})
 
     # Let's build a multiprofile so I can test things out.
     multiprf = MultiGDPProfile()
-    multiprf.update({'val': None, 'tdt': None, 'alt': None, 'flg': None, 'ucr': None, 'ucs': None,
+    multiprf.update({'val': None, 'tdt': None, 'alt': None, 'flg': None, 'ucs': None,
                      'uct': None, 'ucu': None},
                     [GDPProfile(info_1, data_1), GDPProfile(info_2, data_2),
                      GDPProfile(info_3, data_3)])
@@ -112,7 +108,8 @@ def test_ks_test(gdp_2_prfs):
     assert out_1.isna().loc[3, 'pks_pqei']  # Bad point
     assert all(out_1.loc[:2, 'f_pqei'].values == [0, 0, 1])  # Correct flags
     assert out_1.isna().loc[3, 'f_pqei']  # NaN flags is no data
-    assert all(out_1.loc[:2, 'Delta_pqei'].values == [2, 4, 6])  # Delta
+    assert all(out_1.loc[:2, 'Delta_pqei'].round(10).values ==
+               np.round([np.sqrt(2), 2*np.sqrt(2), 3*np.sqrt(2)], 10))
 
     # Now with some binning
     out_2 = ks_test(gdp_2_prfs, alpha=0.0027, m_val=2, n_cpus=1)

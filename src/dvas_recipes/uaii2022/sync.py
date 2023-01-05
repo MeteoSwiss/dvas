@@ -98,7 +98,6 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
         gdps.load_from_db(f"and_({filt}, tags('{TAG_GDP}'))", var_name,
                           dynamic.INDEXES[PRF_TDT],
                           alt_abbr=dynamic.INDEXES[PRF_ALT],
-                          ucr_abbr=dynamic.ALL_VARS[var_name]['ucr'],
                           ucs_abbr=dynamic.ALL_VARS[var_name]['ucs'],
                           uct_abbr=dynamic.ALL_VARS[var_name]['uct'],
                           ucu_abbr=dynamic.ALL_VARS[var_name]['ucu'])

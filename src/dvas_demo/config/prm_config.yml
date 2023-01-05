@@ -27,18 +27,16 @@
                                               "_ucu": " un-correlated uncertainty (k=1)"}, get(1)))'
   prm_unit: 'm'
 
-- prm_name: 'temp(|(_ucr)|(_ucs)|(_uct)|(_ucu))'
+- prm_name: 'temp(|(_ucs)|(_uct)|(_ucu))'
   # Generate variables from regex generator for temperature.
-  prm_desc: 'cat("Temperature", repl({"_ucr": " rig-correlated uncertainty (k=1)",
-                                      "_ucs": " spatial-correlated uncertainty (k=1)",
+  prm_desc: 'cat("Temperature", repl({"_ucs": " spatial-correlated uncertainty (k=1)",
                                       "_uct": " temporal-correlated uncertainty (k=1)",
                                       "_ucu": " un-correlated uncertainty (k=1)"}, get(1)))'
   prm_unit: 'K'
 
-- prm_name: 'rh(|(_ucr)|(_uct)|(_ucu))'
+- prm_name: 'rh(|(_uct)|(_ucu))'
   # Generate variables from regex generator for relative humidity.
-  prm_desc: 'cat("Relative humidity", repl({"_ucr": " rig-correlated uncertainty (k=1)",
-                                            "_uct": " temporal-correlated uncertainty (k=1)",
+  prm_desc: 'cat("Relative humidity", repl({"_uct": " temporal-correlated uncertainty (k=1)",
                                             "_ucu": " un-correlated uncertainty (k=1)"}, get(1)))'
   prm_unit: '%'
 

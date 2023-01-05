@@ -50,12 +50,12 @@ def gdp_1_prfs(db_init):
     # Prepare some datasets to play with
     info_1 = InfoManager('20210302T0000Z', oids[0], tags=['e:1', 'r:1'])
     data_1 = pd.DataFrame({'alt': [10., 15., 20.], 'val': [10., 20., 30.], 'flg': [1, 1, 1],
-                           'tdt': [0, 1, 2], 'ucr': [1, 1, 1], 'ucs': [1, 1, 1],
-                           'uct': [1, 1, 1], 'ucu': [1, 1, 1]})
+                           'tdt': [0, 1, 2],
+                           'ucs': [1, 1, 1], 'uct': [1, 1, 1], 'ucu': [np.sqrt(2)]*3})
 
     # Let's build a multiprofile so I can test things out.
     multiprf = MultiGDPProfile()
-    multiprf.update({'val': None, 'tdt': None, 'alt': None, 'flg': None, 'ucr': None, 'ucs': None,
+    multiprf.update({'val': None, 'tdt': None, 'alt': None, 'flg': None, 'ucs': None,
                      'uct': None, 'ucu': None},
                     [GDPProfile(info_1, data_1)])
 
@@ -91,13 +91,6 @@ def gdp_2_prfs_real(db_init):
                                    216.12918091, 216.1293335,  216.12643433, 216.12104797,
                                    216.11351013, 216.10374451, 216.09164429, 216.07739258],
                            'flg': [0] * 32, 'tdt': np.arange(0, 32, 1),
-                           'ucr': [0.07555172, 0.08199992, 0.08165803, 0.08122376, 0.08155127,
-                                   0.08151338, 0.08151397, 0.08127866, 0.08158639, 0.08061193,
-                                   0.08002041, 0.07791159, 0.07304052, 0.0691337,  0.06931446,
-                                   0.0652895,  0.06085247, 0.06019598, 0.05996601, 0.05956999,
-                                   0.05957349, 0.05995082, 0.06036155, 0.06025105, 0.06082179,
-                                   0.0606791,  0.06057125, 0.0612908,  0.06411498, 0.06740434,
-                                   0.06809566, 0.06971079],
                            'ucs': [0.03440255, 0.03444686, 0.0344841,  0.0345178,  0.03454728,
                                    0.03458127, 0.03460733, 0.0346407,  0.03468493, 0.03471906,
                                    0.03475836, 0.03479092, 0.03482113, 0.03488062, 0.03494934,
@@ -134,13 +127,6 @@ def gdp_2_prfs_real(db_init):
                                    216.10705566, 216.11524963, 216.11997986, 216.12156677,
                                    216.12059021, 216.11734009, 216.11131287, 216.10166931],
                            'flg': [0] * 32, 'tdt': np.arange(0, 32, 1),
-                           'ucr': [0.07256918, 0.0871015,  0.0944924,  0.09441814, 0.09380143,
-                                   0.09393378, 0.09405857, 0.09433935, 0.09445141, 0.09447317,
-                                   0.09403224, 0.09246008, 0.08812037, 0.07778805, 0.07471242,
-                                   0.07461127, 0.06599253, 0.05912118, 0.0582149,  0.0581477,
-                                   0.05765999, 0.05778417, 0.05820568, 0.05815959, 0.05915051,
-                                   0.06003633, 0.06001211, 0.05997865, 0.0612901,  0.06316715,
-                                   0.06527633, 0.06582592],
                            'ucs': [0.034509,  0.03456827, 0.03463086, 0.03468378, 0.03473072,
                                    0.03477457, 0.034821,  0.03485432, 0.03489641, 0.03494982,
                                    0.0349712,  0.03500867, 0.03506324, 0.03510539, 0.03514243,
@@ -159,7 +145,7 @@ def gdp_2_prfs_real(db_init):
 
     # Let's build a multiprofile so I can test things out.
     multiprf = MultiGDPProfile()
-    multiprf.update({'val': None, 'tdt': None, 'alt': None, 'flg': None, 'ucr': None, 'ucs': None,
+    multiprf.update({'val': None, 'tdt': None, 'alt': None, 'flg': None, 'ucs': None,
                      'uct': None, 'ucu': None},
                     [GDPProfile(info_1, data_1), GDPProfile(info_2, data_2)])
 
@@ -176,20 +162,20 @@ def gdp_3_prfs(db_init):
     # Prepare some datasets to play with
     info_1 = InfoManager('20210302T0000Z', oids[0], tags=['e:1', 'r:1'])
     data_1 = pd.DataFrame({'alt': [10., 15., 20.], 'val': [10., 20., 30.], 'flg': [1, 1, 1],
-                           'tdt': [1, 2, 3], 'ucr': [1, 1, 1], 'ucs': [1, 1, 1],
+                           'tdt': [1, 2, 3], 'ucs': [1, 1, 1],
                            'uct': [1, 1, 1], 'ucu': [1, 1, 1]})
     info_2 = InfoManager('20210302T0000Z', oids[1], tags=['e:1', 'r:1'])
     data_2 = pd.DataFrame({'alt': [11., 16., 20.1], 'val': [10.5, 21., np.nan], 'flg': [1, 1, 1],
-                           'tdt': [1, 2, 3], 'ucr': [1, 1, 1], 'ucs': [1, 1, 1],
+                           'tdt': [1, 2, 3], 'ucs': [1, 1, 1],
                            'uct': [1, 1, 1], 'ucu': [1, 1, 1]})
     info_3 = InfoManager('20210302T0000Z', oids[2], tags=['e:1', 'r:1'])
     data_3 = pd.DataFrame({'alt': [10.1, 17., 20.], 'val': [11., 21.1, np.nan], 'flg': [1, 1, 1],
-                           'tdt': [1, 2, 3], 'ucr': [1, 1, 1], 'ucs': [1, 1, 1],
+                           'tdt': [1, 2, 3], 'ucs': [1, 1, 1],
                            'uct': [1, 1, 1], 'ucu': [1, 1, 1]})
 
     # Let's build a multiprofile so I can test things out.
     multiprf = MultiGDPProfile()
-    multiprf.update({'val': None, 'tdt': None, 'alt': None, 'flg': None, 'ucr': None, 'ucs': None,
+    multiprf.update({'val': None, 'tdt': None, 'alt': None, 'flg': None, 'ucs': None,
                      'uct': None, 'ucu': None},
                     [GDPProfile(info_1, data_1), GDPProfile(info_2, data_2),
                      GDPProfile(info_3, data_3)])
@@ -210,8 +196,8 @@ def test_combine(gdp_1_prfs, gdp_2_prfs_real, gdp_3_prfs):
     for method in ['arithmetic mean', 'weighted arithmetic mean', 'weighted circular mean']:
         out, _ = combine(gdp_1_prfs, binning=1, method=method, chunk_size=200, n_cpus=1)
 
-        for key in ['val', 'ucr', 'ucs', 'uct', 'ucu']:
-            assert out.profiles[0].data[key].round(10).equals(gdp_1_prfs.profiles[0].data[key])
+        for key in ['val', 'ucs', 'uct', 'ucu']:
+            assert out[0].data[key].round(10).equals(gdp_1_prfs[0].data[key].round(10))
         for key in ['tdt', 'alt']:
             assert np.array_equal(out.profiles[0].data.index.get_level_values(key),
                                   gdp_1_prfs.profiles[0].data.index.get_level_values(key))
@@ -225,7 +211,7 @@ def test_combine(gdp_1_prfs, gdp_2_prfs_real, gdp_3_prfs):
     # 2) Check the weighted mean errors ...
     out, _ = combine(gdp_3_prfs, binning=1, method='weighted arithmetic mean', chunk_size=200,
                      n_cpus='max')
-    assert np.all(out.profiles[0].data.loc[0, 'ucu'] == np.sqrt(1/3))
+    assert np.all(out.profiles[0].data.loc[0, 'ucu'].round(10).values == np.round(np.sqrt(1/3), 10))
     assert np.all(out.profiles[0].data.loc[0, 'uct'] == 1.)
 
     # 3) Test for #166, and the fact that chunk_size should have no impact on the outcome

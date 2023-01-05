@@ -16,7 +16,7 @@ import matplotlib.gridspec as gridspec
 
 # import from dvas
 from ..errors import DvasError
-from ..hardcoded import PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
+from ..hardcoded import PRF_VAL, PRF_UCS, PRF_UCT, PRF_UCU
 from ..logger import log_func_call
 from . import utils as pu
 
@@ -34,7 +34,7 @@ def multiprf(prfs, index='alt', label='mid', uc=None, k_lvl=1, rel_to=None, expo
             Defaults to 'alt'.
         label (str, optional): name of the label for each curve, that will be fed to
             `prfs.get_info(label)`. Defaults to 'mid'.
-        uc (str, optional): which uncertainty to plot, if any. Can be one of  ['ucr', 'ucs', 'uct',
+        uc (str, optional): which uncertainty to plot, if any. Can be one of  ['ucs', 'uct',
             'ucu', 'uc_tot']. Defaults to None.
         k_lvl (int|float, optional): k-level for the uncertainty, if uc is not None. Defaults to 1.
         rel_to (int, optional): if set, will plot the differences with respect to prfs[rel_to].
@@ -50,7 +50,7 @@ def multiprf(prfs, index='alt', label='mid', uc=None, k_lvl=1, rel_to=None, expo
     """
 
     # Some sanity checks
-    if uc not in [None, 'uc_tot', PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU]:
+    if uc not in [None, 'uc_tot', PRF_UCS, PRF_UCT, PRF_UCU]:
         raise DvasError('Ouch ! Unknown uc name: {}'.format(uc))
 
     if not isinstance(k_lvl, (float, int)):

@@ -157,7 +157,6 @@ def optimize(n_cpus=None, prf_length=7001, chunk_min=50, chunk_max=300, n_chunk=
                              'tdt': np.arange(0, prf_length, 1),
                              'val': np.random.rand(prf_length),
                              'flg': None,
-                             'ucr': np.random.rand(prf_length),
                              'ucs': np.random.rand(prf_length),
                              'uct': np.random.rand(prf_length),
                              'ucu': np.random.rand(prf_length)})
@@ -169,8 +168,7 @@ def optimize(n_cpus=None, prf_length=7001, chunk_min=50, chunk_max=300, n_chunk=
     # certain variable names have been properly defined in the db configuration files.
     multiprf = MultiGDPProfile()
     multiprf.update({'val': 'temp', 'tdt': 'time', 'alt': 'gph', 'flg': None,
-                     'ucr': 'temp_ucr', 'ucs': 'temp_ucs',
-                     'uct': 'temp_uct', 'ucu': 'temp_ucu'},
+                     'ucs': 'temp_ucs', 'uct': 'temp_uct', 'ucu': 'temp_ucu'},
                     gdp_prfs)
 
     print('\n Computing the weighted-mean of 3 profiles with different chunk sizes,' +

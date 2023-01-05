@@ -102,9 +102,6 @@ PRF_ALT = 'alt'
 #: str: Name of the variable column for the pandas DataFrame of Profiles, RSProfile, GDPProfiles
 PRF_VAL = 'val'
 
-#: str: Name of the Rig-correlated uncertainty column for the pandas DataFrame of GDPProfiles
-PRF_UCR = 'ucr'
-
 #: str: Name of the Spatial-correlated uncertainty column for the pandas DataFrame of GDPProfiles
 PRF_UCS = 'ucs'
 

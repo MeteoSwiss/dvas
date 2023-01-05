@@ -29,9 +29,10 @@ RIG_NOK = [np.array(['rig a']), np.array(['rig b'])]    # Different rig names
 EVT_OK = [np.array(['evt']), np.array(['evt'])]         # Same event
 EVT_NOK = [np.array(['evt x']), np.array(['evt y'])]    # Different event
 
+
 # Let us test a series of conditions for the different types of uncertainty types
 @pytest.mark.parametrize("test_input_1, expected_1", [
-    # Uncorrelated errors: same point
+    # Uncorrelated errors:
     (T_OK + ['ucu'] + SRN_OK + MDL_OK + RIG_OK + EVT_OK, 1),
     # Uncorrelated errors: different time
     (T_NOK + ['ucu'] + SRN_OK + MDL_OK + RIG_OK + EVT_OK, 0),
@@ -42,18 +43,7 @@ EVT_NOK = [np.array(['evt x']), np.array(['evt y'])]    # Different event
     # Uncorrelated errors: different events
     (T_OK + ['ucu'] + SRN_NOK + MDL_OK + RIG_OK + EVT_NOK, 0),
     #
-    # Rig-correlated errors: same point
-    (T_OK + ['ucr'] + SRN_OK + MDL_OK + RIG_OK + EVT_OK, 1),
-    # Uncorrelated errors: different time
-    (T_NOK + ['ucr'] + SRN_OK + MDL_OK + RIG_OK + EVT_OK, 0),
-    # Uncorrelated errors: different Serial Number
-    (T_OK + ['ucr'] + SRN_NOK + MDL_OK + RIG_OK + EVT_OK, 0),
-    # Uncorrelated errors: different rig
-    (T_OK + ['ucr'] + SRN_NOK + MDL_OK + RIG_NOK + EVT_OK, 0),
-    # Uncorrelated errors: different events
-    (T_OK + ['ucr'] + SRN_NOK + MDL_OK + RIG_OK + EVT_NOK, 0),
-    #
-    # Spatial-correlated errors: same point
+    # Spatial-correlated errors:
     (T_OK + ['ucs'] + SRN_OK + MDL_OK + RIG_OK + EVT_OK, 1),
     # Spatial-correlated errors: different times
     (T_NOK + ['ucs'] + SRN_NOK + MDL_OK + RIG_OK + EVT_OK, 1),
@@ -64,7 +54,7 @@ EVT_NOK = [np.array(['evt x']), np.array(['evt y'])]    # Different event
     # Uncorrelated errors: different event
     (T_OK + ['ucs'] + SRN_NOK + MDL_OK + RIG_OK + EVT_NOK, 0),
     #
-    # Temporal-correlated errors: same point
+    # Temporal-correlated errors:
     (T_OK + ['uct'] + SRN_OK + MDL_OK + RIG_OK + EVT_OK, 1),
     # Temporal-correlated errors: different time
     (T_NOK + ['uct'] + SRN_NOK + MDL_OK + RIG_OK + EVT_OK, 1),
@@ -73,6 +63,7 @@ EVT_NOK = [np.array(['evt x']), np.array(['evt y'])]    # Different event
     # Temporal-correlated errors: different events and times
     (T_NOK + ['uct'] + SRN_NOK + MDL_OK + RIG_OK + EVT_NOK, 1),
     ])
+
 
 def test_coeffs(test_input_1, expected_1):
     """Function used to test if the GDP correlations are properly implemented.

@@ -18,7 +18,7 @@ from dvas.logger import log_func_call
 from dvas.data.data import MultiRSProfile, MultiGDPProfile
 from dvas.tools.gdps import stats as dtgs
 from dvas.tools.gdps import gdps as dtgg
-from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
+from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCS, PRF_UCT, PRF_UCU
 from dvas.hardcoded import TAG_CWS, TAG_GDP, FLG_INCOMPATIBLE, FLG_ISINVALID
 from dvas.errors import DBIOError
 
@@ -102,7 +102,6 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
     gdp_prfs.load_from_db(gdp_filt, dynamic.CURRENT_VAR,
                           tdt_abbr=dynamic.INDEXES[PRF_TDT],
                           alt_abbr=dynamic.INDEXES[PRF_ALT],
-                          ucr_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucr'],
                           ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
                           uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
                           ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],
@@ -206,7 +205,7 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
     # weighted mean. I also do not save the tdt column, which is assembled in a distinct manner.
     cws.save_to_db(add_tags=[TAG_CWS, dynamic.CURRENT_STEP_ID],
                    rm_tags=[TAG_GDP] + dru.rsid_tags(pop=dynamic.CURRENT_STEP_ID),
-                   prms=[PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU])
+                   prms=[PRF_VAL, PRF_UCS, PRF_UCT, PRF_UCU])
 
     # Deal with 'ref_alt' if warranted
     if dynamic.CURRENT_VAR == cws_alt_ref:

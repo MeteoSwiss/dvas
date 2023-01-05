@@ -98,7 +98,6 @@ def compute_deltas(prf_start_with_tags, cws_start_with_tags, do_gdps=False, do_n
     cws_prfs.load_from_db(cws_filt, dynamic.CURRENT_VAR,
                           tdt_abbr=dynamic.INDEXES[PRF_TDT],
                           alt_abbr=dynamic.INDEXES[PRF_ALT],
-                          ucr_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucr'],
                           ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
                           uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
                           ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],

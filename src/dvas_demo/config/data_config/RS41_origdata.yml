@@ -196,12 +196,12 @@ _RS41-GDP_001:
 
     _temp:
         value: get('temp')
-    _temp_ucr:
-        value: get('temp_uc_ucor', 'div2')  # Go from K=2 to K=1
     _temp_ucs:
         value: get('temp_uc_scor', 'div2')  # Go from K=2 to K=1
     _temp_uct:
         value: get('temp_uc_tcor', 'div2')  # Go from K=2 to K=1
+    _temp_ucu:
+        value: get('temp_uc_ucor', 'div2')  # Go from K=2 to K=1
     #_temp_flag:
     #    value: get(0)
     #    csv_use_default: True
@@ -215,10 +215,10 @@ _RS41-GDP_001:
 
     _rh:
         value: get('rh')
-    _rh_ucr:
-        value: get('rh_uc_ucor', 'div2')  # Go from K=2 to K=1
     _rh_uct:
         value: get('rh_uc_tcor', 'div2')  # Go from K=2 to K=1
+    _rh_ucu:
+        value: get('rh_uc_ucor', 'div2')  # Go from K=2 to K=1
 
     _wdir:
         value: get('wdir')

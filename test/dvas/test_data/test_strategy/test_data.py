@@ -167,7 +167,7 @@ class TestGDPProfile:
     ok_data = pd.DataFrame(
         {
             'alt': [10., 15., 20.], 'val': [1., 2., 3.], 'flg': [0, 0, 0], 'tdt': [0, 1e9, 2e9],
-            'ucr': [1, 1, 1], 'ucs': [1, 1, 1], 'uct': [1, 1, 1], 'ucu': [1, 1, 1]}
+            'ucs': [1, 1, 1], 'uct': [1, 1, 1], 'ucu': [1, 1, 1]}
     )
     ko_index_data = ok_data[['val', 'alt', 'flg', 'tdt']].copy()
 
@@ -203,7 +203,7 @@ class TestGDPProfile:
         )
 
         # Test uc_tot
-        assert np.round(inst.uc_tot.abs().max(), 1) == np.round(np.sqrt(4), 1)
+        assert np.round(inst.uc_tot.abs().max(), 1) == np.round(np.sqrt(3), 1)
         inst.uc_tot.name = 'uc_tot'
 
         # Test alt
@@ -212,16 +212,17 @@ class TestGDPProfile:
         # Test tdt
         assert np.array_equal(inst.tdt.values, self.ok_data['tdt'].values)
 
+
 class TestDeltaProfile:
     """ Test the DeltaProfile class """
     info = InfoManager('20211019T0000Z', 1)
     still_ok_data = pd.DataFrame(
         {
             'alt': [10., 15., 20.], 'val': [1., 2., 3.], 'flg': [0, 0, 0], 'tdt': [0, 1e9, 2e9],
-            'ucr': [1, 1, 1], 'ucs': [1, 1, 1], 'uct': [1, 1, 1], 'ucu': [1, 1, 1]}
+            'ucs': [1, 1, 1], 'uct': [1, 1, 1], 'ucu': [1, 1, 1]}
     )
-    ok_index_data = still_ok_data[['val', 'alt', 'flg', 'ucr', 'ucs', 'uct', 'ucu']].copy()
-    nok_index_data = still_ok_data[['val', 'alt', 'ucr', 'ucs', 'uct', 'ucu']].copy()
+    ok_index_data = still_ok_data[['val', 'alt', 'flg', 'ucs', 'uct', 'ucu']].copy()
+    nok_index_data = still_ok_data[['val', 'alt', 'ucs', 'uct', 'ucu']].copy()
 
     def test_init(self):
         """Test init class"""
