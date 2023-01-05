@@ -131,7 +131,7 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
 
 @for_each_flight
 @log_func_call(logger, time_it=False)
-def sync_flight(start_with_tags, anchor_alt, global_match_var, crop_pre_gdp):
+def sync_flight(start_with_tags, anchor_alt, global_match_var, valid_value_range, crop_pre_gdp):
     """ Highest-level function responsible for synchronizing all the profile from a specific RS
     flight.
 
@@ -145,8 +145,10 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var, crop_pre_gdp):
         global_match_var (str): Name of the variable to use for getting the synchronization shifts
             from a flobal match of the profile.
             Relies on dvas.tools.sync.get_synch_shifts_from_val()
+        valid_value_range (list|None): if a len(2) list is provided, values of the global_match_var
+            outside this range will be ignored when deriving the global-match synch shifts.
         crop_pre_gdp (bool): if True, any data taken before gdp values excists will be
-            cropped. Defaults to False.
+            cropped.
 
     """
 
@@ -183,7 +185,8 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var, crop_pre_gdp):
     logger.info('Sync. shifts from alt (%.1f): %s', anchor_alt, shifts_alt)
 
     # Use these to get synch shifts from the variable
-    shifts_val = dts.get_sync_shifts_from_val(prfs, max_shift=100, first_guess=shifts_alt)
+    shifts_val = dts.get_sync_shifts_from_val(prfs, max_shift=100, first_guess=shifts_alt,
+                                              valid_value_range=valid_value_range)
     logger.info('Sync. shifts from "%s": %s', global_match_var, shifts_val)
 
     # Get shifts from the GPS times

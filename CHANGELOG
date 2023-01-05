@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [v0.8.2.dev0]
 ### Added:
+ - [fpavogt, 2023-01-05] Sync via global match can be restricted to a specific range of values (fix #269)
  - [fpavogt, 2022-11-18] Add/connect UTLS, PBL, and Free Tropopause region flags
  - [fpavogt, 2022-11-10] Add a WAS_INVALID flag to keep track of fixed GDP points, e.g. via #205
 ### Fixed:

@@ -109,6 +109,7 @@ rcp_steps:
         start_with_tags: '01'
         anchor_alt: 5000 # Initial (single) altitude to anchor all profiles.
         global_match_var: 'gph' # Variable to match globally
+        valid_value_range: [4000, 6000] # If a len(2) list is set, global_match_var values outside the range will be ignored.
         crop_pre_gdp: True # It True, profiles will be cropped at the first GDP point.
 
     # Simple plotting step of the complete profiles for all the variables.
@@ -177,13 +178,6 @@ rcp_steps:
         do_nongdps: True # if True, will also compute deltas for the non-GDPs
         save_to_db: True # if True, will save the delta profiles to the DB
 
-    # Build the OSCAR profiles from the deltas
-    - fct: uaii2022.oscar.compute_profiles
-      step_id: 'XX'
-      run: True
-      kwargs:
-        start_with_tags: '08' # List of tags to identify profiles in the database
-
     # Creation of preview plots for participants
     - fct: uaii2022.plots.participant_preview
       step_id: '09'
@@ -194,18 +188,23 @@ rcp_steps:
         dta_tags: '08' # str or list of tags to identify Deltas in the database
         mids: # List of mid to process. Leave empty to process them all.
 
-    # Plot the deltas as a function of the model id, rather than as a function of flight.
-    - fct: uaii2022.plots.dtas_per_mid
+    # Build the OSCAR profiles from the deltas
+    - fct: uaii2022.oscar.compute_oscar
       step_id: '10'
       run: True
       kwargs:
-        start_with_tags: # list of tags to identify profiles in the database
+        start_with_tags: # List of tags to identify profiles in the database
           - '08'
-          #- 'tod:daytime'
-        mids: # List of mid to process. Leave empty to process them all.
-        skip_gdps: False # If True, any 'mid' that contains 'GDP' will be skipped.
-        skip_nongdps: False # If True, any 'mid' that does NOT contain 'GDP' will be skipped.
+          - 'tod:daytime'
+        mids:
+          - 'M20'
+        suffix: UAII2022
+        institution: Federal Office of Meteorology and Climatology - MeteoSwiss
+        gph_min: 0 # Minimum gph value to consider, in m.
+        gph_bin_size: 100 # Size of the gph bins for the high-resolution OSCAR profile, in m.
+        gph_bin_count: 340 # Number of bins for the high-resolution OSCAR profile.
 
+    # Plot the deltas as a function of the model id, rather than as a function of flight.
     - fct: uaii2022.plots.dtas_per_mid
       step_id: '11'
       run: True

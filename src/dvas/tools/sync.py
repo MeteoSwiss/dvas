@@ -102,7 +102,7 @@ def get_sync_shifts_from_alt(prfs, ref_alt=5000.):
 
 
 @log_func_call(logger)
-def get_sync_shifts_from_val(prfs, max_shift=100, first_guess=None):
+def get_sync_shifts_from_val(prfs, max_shift=100, first_guess=None, valid_value_range=None):
     """ Estimates the shifts required to synchronize profiles, such that <abs(val_A-val_B)> is
     minimized.
 
@@ -112,6 +112,8 @@ def get_sync_shifts_from_val(prfs, max_shift=100, first_guess=None):
             Defaults to 100.
         first_guess (int|list of int, optional): starting guess around which to center the search.
             Defaults to None.
+        valid_value_range (list, optional): if set, values outside the range set by this list of
+            len(2) will be ignored.
 
     Returns:
         list of int: list of shifts required to synchronize profiles.
@@ -125,7 +127,7 @@ def get_sync_shifts_from_val(prfs, max_shift=100, first_guess=None):
     if isinstance(first_guess, int):
         first_guess = [first_guess] * len(prfs)
     if len(first_guess) != len(prfs):
-        raise DvasError('Ouch ! first guess should be the same length as prfs.')
+        raise DvasError('first_guess should be the same length as prfs.')
 
     # In what follows, we assume that all the profiles are sampled with a fixed, uniform timestep.
     # Let's raise an error if this is not the case.
@@ -133,14 +135,27 @@ def get_sync_shifts_from_val(prfs, max_shift=100, first_guess=None):
     # is unique (or not) and identical for all profiles (or Not)
     ndts = prfs.get_prms(PRF_TDT).diff(periods=1, axis=0).nunique(axis=0, dropna=True)
     if np.any([item != 1 for item in ndts.values]):
-        raise DvasError(f'Ouch ! The profiles do not all have uniform time steps: {ndts.values}')
+        raise DvasError(f'The profiles do not all have uniform time steps: {ndts.values}')
     dts = [prfs.get_prms(PRF_TDT)[item][PRF_TDT].diff().unique().tolist()
            for item in range(len(prfs))]
     if np.any([item != dts[0] for item in dts]):
-        raise DvasError(f'Ouch ! Inconsistent time steps between the different profiles: {dts}')
+        raise DvasError(f'Inconsistent time steps between the different profiles: {dts}')
 
     # Let us first begin by extracting all the value arrays that need to be "cross-correlated".
     vals = prfs.get_prms(PRF_VAL)
+
+    if valid_value_range is not None:
+        if not isinstance(valid_value_range, list):
+            raise DvasError(f'Bad data type for valid_value_range: {type(valid_value_range)}')
+        if len(valid_value_range) != 2:
+            raise DvasError(f'valid_value_range should be of len(2), not: {len(valid_value_range)}')
+
+        assert valid_value_range[0] <= valid_value_range[1], \
+            f'Odd valid_value_range limits: {valid_value_range}'
+
+        # Hide the data, so it does not affect the derivation of sync shifts
+        vals[vals < valid_value_range[0]] = np.nan
+        vals[vals > valid_value_range[1]] = np.nan
 
     # Let's build an array of shifts to consider
     shifts = np.arange(-np.abs(max_shift), np.abs(max_shift)+1, 1)
