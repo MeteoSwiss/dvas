@@ -234,6 +234,13 @@ def compute_oscar(start_with_tags, mids=None, suffix='', institution='',
 
                 val = process_chunk(pdf, method='biglambda')
 
+                # Let's compute the mean altitude of all the points in the region, as a rough
+                # indication of where we stand. This is variable dependant, since I get points
+                # that have a valid CWS (which may not always be there for certain variables)
+                set_attribute(rootgrp, f'd.{var_name}.{region}.mean_ref_alt',
+                              f'{pdf[(0, PRF_ALT)].mean():.1f} {prfs.var_info[PRF_ALT]["prm_unit"]}'
+                              )
+
                 uc_val = val[0].loc[:, ('ucs', 'uct', 'ucu')].pow(2).sum(axis=1).pow(0.5)[0]
 
                 set_attribute(rootgrp, f'd.{var_name}.{region}.biglambda',
