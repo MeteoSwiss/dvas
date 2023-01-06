@@ -152,18 +152,20 @@ def add_sec_axis(ax, xvals, new_xvals, offset=-0.1, which='x'):
     return new_ax
 
 
-def fix_txt(txt):
+def fix_txt(txt, usetex=None):
     """ Corrects any string for problematic characters before it gets added to a plot. Fixes vary
     depending whether on the chosen plotting style's value of `usetex` in `rcparams`.
 
     Args:
         txt (str): text to cleanup.
+        usetex (bool, optional): if set, allows to override the default settings. Defaults to None.
 
     Returns:
         str: the corrected string.
     """
 
-    usetex = rcParams['text.usetex']
+    if usetex is None:
+        usetex = rcParams['text.usetex']
 
     # First deal with the cases when a proper LaTeX is being used
     if usetex:
