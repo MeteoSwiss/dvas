@@ -182,21 +182,23 @@ rcp_steps:
         dta_tags: '08' # str or list of tags to identify Deltas in the database
         mids: # List of mid to process. Leave empty to process them all.
 
-    # Build the OSCAR profiles from the deltas
-    - fct: uaii2022.oscar.compute_oscar
+    # Build the Big Lambda profiles from the deltas
+    - fct: uaii2022.biglambda.compute_biglambda
       step_id: '10'
       run: True
       kwargs:
         start_with_tags: # List of tags to identify profiles in the database
           - '08'
-          - 'tod:daytime'
         mids:
           - 'M20'
+        tods: # List of (str|list) of time-of-days to process sequentially.
+          - daytime
+          #- [nighttime, twilight]
         suffix: UAII2022
         institution: Federal Office of Meteorology and Climatology - MeteoSwiss
         gph_min: 0 # Minimum gph value to consider, in m.
-        gph_bin_size: 100 # Size of the gph bins for the high-resolution OSCAR profile, in m.
-        gph_bin_count: 340 # Number of bins for the high-resolution OSCAR profile.
+        gph_bin_size: 100 # Size of the gph bins for the high-resolution Big Lambda profile, in m.
+        gph_bin_count: 340 # Number of bins for the high-resolution Big Lambda profile.
 
     # Plot the deltas as a function of the model id, rather than as a function of flight.
     - fct: uaii2022.plots.dtas_per_mid
