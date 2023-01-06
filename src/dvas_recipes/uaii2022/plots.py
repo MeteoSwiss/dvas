@@ -19,7 +19,8 @@ from matplotlib import transforms
 from dvas.logger import log_func_call
 from dvas.data.data import MultiProfile, MultiGDPProfile, MultiCWSProfile, MultiDeltaProfile
 from dvas.hardcoded import PRF_IDX, PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCU, PRF_UCS, PRF_UCT
-from dvas.hardcoded import TAG_DTA, TAG_GDP, TAG_CWS, MTDTA_PBL, MTDTA_TROPOPAUSE
+from dvas.hardcoded import TAG_DTA, TAG_GDP, TAG_CWS
+from dvas.hardcoded import MTDTA_PBL, MTDTA_TROPOPAUSE, MTDTA_UTLSMIN, MTDTA_UTLSMAX
 from dvas.data.data import MultiRSProfile
 from dvas.tools.gdps import correlations as dtgc
 from dvas.plots import utils as dpu
@@ -475,7 +476,8 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None):
                          facecolor=(0.8, 0.8, 0.8), step='mid', edgecolor='none')
 
         # Display the location of the tropopause and the PBL
-        for (loi, symb) in [(MTDTA_TROPOPAUSE, r'$\prec$'), (MTDTA_PBL, r'$\simeq$')]:
+        for (loi, symb) in [(MTDTA_TROPOPAUSE, r'$\prec$'), (MTDTA_PBL, r'$\simeq$'),
+                            (MTDTA_UTLSMIN, r'$\top$'), (MTDTA_UTLSMAX, r'$\bot$')]:
             if loi not in prf.info.metadata.keys():
                 logger.warning('"%s" not found in CWS metadata.', loi)
                 continue
