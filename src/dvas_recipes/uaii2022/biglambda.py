@@ -62,7 +62,7 @@ def biglambda_tod(prf_tags, mid, tod, suffix='', institution='',
     if mid not in db_view.mid.unique().tolist():
         raise DvasRecipesError(f'mid unknown: {mid}')
     else:
-        logger.info('Processing %s (%s)...', mid, tod)
+        logger.info('Processing %s %s...', mid, tod)
 
     # Get the model name and model description
     mdesc = db_view[db_view.mid == mid].mdl_desc.unique()
