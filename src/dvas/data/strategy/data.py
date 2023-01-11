@@ -28,8 +28,8 @@ from ...hardcoded import PRF_FLG
 logger = logging.getLogger(__name__)
 
 # Define some generic stuff
-INT_TEST = (np.int64, np.int, int)
-FLOAT_TEST = (np.float, float) + INT_TEST
+INT_TEST = (np.int_, int)
+FLOAT_TEST = (np.float_, float) + INT_TEST
 TIME_TEST = FLOAT_TEST + (pd.Timedelta, type(pd.NaT))
 
 
@@ -284,9 +284,9 @@ class Profile(ProfileAC):
 
     # The column names for the pandas DataFrame
     DF_COLS_ATTR = {
-        PRF_VAL: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
-        PRF_ALT: {'test': FLOAT_TEST, 'type': np.float, 'index': True},
-        PRF_FLG: {'test': FLOAT_TEST, 'type': np.int, 'index': False}
+        PRF_VAL: {'test': FLOAT_TEST, 'type': np.float_, 'index': False},
+        PRF_ALT: {'test': FLOAT_TEST, 'type': np.float_, 'index': True},
+        PRF_FLG: {'test': FLOAT_TEST, 'type': np.int_, 'index': False}
     }
 
     def __init__(self, info, data=None):
@@ -453,10 +453,10 @@ class RSProfile(Profile):
 
     # The column names for the pandas DataFrame
     DF_COLS_ATTR = {
-        PRF_ALT: {'test': FLOAT_TEST, 'type': np.float, 'index': True},
+        PRF_ALT: {'test': FLOAT_TEST, 'type': np.float_, 'index': True},
         PRF_TDT: {'test': TIME_TEST, 'type': 'timedelta64[ns]', 'index': True},
-        PRF_VAL: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
-        PRF_FLG: {'test': FLOAT_TEST, 'type': np.int, 'index': False},
+        PRF_VAL: {'test': FLOAT_TEST, 'type': np.float_, 'index': False},
+        PRF_FLG: {'test': FLOAT_TEST, 'type': np.int_, 'index': False},
     }
 
     @property
@@ -493,9 +493,9 @@ class GDPProfile(RSProfile):
     DF_COLS_ATTR = dict(
         **RSProfile.DF_COLS_ATTR,
         **{
-            PRF_UCS: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
-            PRF_UCT: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
-            PRF_UCU: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+            PRF_UCS: {'test': FLOAT_TEST, 'type': np.float_, 'index': False},
+            PRF_UCT: {'test': FLOAT_TEST, 'type': np.float_, 'index': False},
+            PRF_UCU: {'test': FLOAT_TEST, 'type': np.float_, 'index': False},
           }
     )
 
@@ -555,9 +555,9 @@ class DeltaProfile(GDPProfile):
     DF_COLS_ATTR = dict(
         **Profile.DF_COLS_ATTR,
         **{
-            PRF_UCS: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
-            PRF_UCT: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
-            PRF_UCU: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+            PRF_UCS: {'test': FLOAT_TEST, 'type': np.float_, 'index': False},
+            PRF_UCT: {'test': FLOAT_TEST, 'type': np.float_, 'index': False},
+            PRF_UCU: {'test': FLOAT_TEST, 'type': np.float_, 'index': False},
           }
     )
 
