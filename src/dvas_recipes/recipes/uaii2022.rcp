@@ -38,7 +38,7 @@ rcp_params:
             - pdf
             - png
         plot_show: False
-        chunk_size: 150
+        chunk_size: 200
         n_cpus: # If set, will cap the number of cpus used to run the dvas recipe
         drop_flgs: # List of flags to drop from the analysis
             - descent

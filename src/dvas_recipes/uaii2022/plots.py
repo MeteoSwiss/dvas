@@ -161,7 +161,8 @@ def covmat_stats(covmats):
     uncertainties behave like a ucu, ucs, or uct types or uncertainties.
 
     Args:
-        proc_chunks: the outcome of map(process_chunk, chunks).
+        covmats (dict): the outcome of dvas.tools.gdps.combine()[1], i.e. the dict of covariance
+            matrices.
     """
 
     # Setup a dict to store the "theoretical" covariance matrices
@@ -179,12 +180,13 @@ def covmat_stats(covmats):
     # Loop through all the uncertainty types
     for uc_name in [PRF_UCS, PRF_UCT, PRF_UCU]:
 
-        # Build matrices of indexes
-        i_inds, j_inds = np.meshgrid(np.arange(0, len(covmats[uc_name][0]), 1),
-                                     np.arange(0, len(covmats[uc_name][0]), 1))
+        # How many points are associated to the matrix ?
+        npts = covmats[uc_name].shape[0]
 
+        # Build matrices of indexes
+        inds = np.arange(0, npts, 1)
         # Which position are off-diagonal ?
-        off_diag = i_inds != j_inds
+        off_diag = ~np.eye(npts, npts, dtype=bool)
         # Out of these, which ones are "valid", i.e. not NaN ?
         valids = off_diag * ~np.isnan(covmats[uc_name])
 
@@ -199,19 +201,8 @@ def covmat_stats(covmats):
         # This is the covariance of the different elements of the combined profile with itself.
         # As such, it doesn't matter what the mid, rid, eid, oid actaully are - their just the same
         # for all the points in the profile.
-        cc_mat = dtgc.coeffs(
-            i_inds,  # i
-            j_inds,  # j
-            uc_name,
-            oid_i=np.ones_like(covmats[uc_name]),
-            oid_j=np.ones_like(covmats[uc_name]),
-            mid_i=np.ones_like(covmats[uc_name]),
-            mid_j=np.ones_like(covmats[uc_name]),
-            rid_i=np.ones_like(covmats[uc_name]),
-            rid_j=np.ones_like(covmats[uc_name]),
-            eid_i=np.ones_like(covmats[uc_name]),
-            eid_j=np.ones_like(covmats[uc_name]),
-            )
+        cc_mat = dtgc.corr_coeff_matrix(uc_name, inds, oids=np.ones(npts), mids=np.ones(npts),
+                                        rids=np.ones(npts), eids=np.ones(npts))
 
         # And now get the uncertainties from the diagonal of the covariance matrix ...
         sigmas = np.atleast_2d(np.sqrt(covmats[uc_name].diagonal()))
@@ -222,7 +213,7 @@ def covmat_stats(covmats):
         th_covmats[uc_name] = np.multiply(cc_mat, np.ma.dot(sigmas.T, sigmas))
 
         # Having done so, we can compute the relative error (in %) that one does by reconstructing
-        # the covariance matrix assuming it is exactly of the given ucu/r/s/t type.
+        # the covariance matrix assuming it is exactly of the given ucs/t/u type.
         errors[uc_name] = th_covmats[uc_name][valids] / covmats[uc_name][valids] - 1
         errors[uc_name] *= 100
 
@@ -240,7 +231,7 @@ def covmat_stats(covmats):
 
         # Finally, store the percentage of covariance elements that can be checked,
         # i.e that were computed.
-        perc_covelmts_comp[uc_name] = len(valids[valids]) / (np.size(valids)-len(valids)) * 100
+        perc_covelmts_comp[uc_name] = len(valids[valids]) / npts**2 * 100
 
     # Now, let's make a histogram plot of this information
     fig = plt.figure(figsize=(dpu.WIDTH_ONECOL, 5))
@@ -254,15 +245,22 @@ def covmat_stats(covmats):
 
     ax0 = plt.subplot(fig_gs[0, 0])
 
-    ax0.hist([bins[:-1]]*4, bins, weights=[item[1] for item in errors.items()],
-             label=[rf'{item[0]} ({perc_covelmts_comp[item[0]]:.1f}\%)'
-                    for item in errors.items()], histtype='step')
+    for uc_name in ['ucs', 'uct', 'ucu']:
+        ax0.plot(np.diff(bins), errors[uc_name], '-', drawstyle='steps-mid',
+                 label=rf'{uc_name} ({perc_covelmts_comp[uc_name]:.2f}\%)')
+
+    #ax0.hist([item[1].reshape(-1) for item in errors.items()], bins,
+    #         weights=[np.full(len(valids[valids]), 1/len(valids[valids])**2)],
+    #         label=[rf'{item} ({perc_covelmts_comp[item]:.1f}\%)'
+    #                for item in errors.keys()], histtype='step')
 
     plt.legend()
     ax0.set_xlim((-25, 25))
 
     ax0.set_xlabel(r'$(V_{i\neq j}^{\rm th}/{V_{i\neq j}}-1)\times 100$')
     ax0.set_ylabel(r'Normalized number count [\%]', labelpad=10)
+
+    ax0.set_ylim((0, 100))
 
     # Add the k-level
     dpu.add_var_and_k(ax0, var_name=dynamic.CURRENT_VAR)

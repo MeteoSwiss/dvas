@@ -21,7 +21,7 @@ from ..logger import log_func_call
 from ..errors import DvasError
 from ..hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCS, PRF_UCT, PRF_UCU
 from .tools import fancy_nansum, fancy_bitwise_or, wrap_angle
-from .gdps.correlations import coeffs
+from .gdps.correlations import corr_coeff_matrix
 
 # Setup local logger
 logger = logging.getLogger(__name__)
@@ -613,26 +613,14 @@ def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean'):
     # Let us now assemble the U matrices, filling all the cross-correlations for the different
     # types of uncertainties
     for sigma_name in [PRF_UCS, PRF_UCT, PRF_UCU]:
-        cc_mat = coeffs(
-            np.tile(df_chunk.index.values, (n_prf*len(df_chunk), n_prf)),  # i
-            np.tile(df_chunk.index.values, (n_prf*len(df_chunk), n_prf)).T,  # j
+        cc_mat = corr_coeff_matrix(
             sigma_name,
-            oid_i=np.tile(df_chunk.xs('oid', level=1, axis=1).T.values.ravel(),
-                          (n_prf*len(df_chunk), 1)),
-            oid_j=np.tile(df_chunk.xs('oid', level=1, axis=1).T.values.ravel(),
-                          (n_prf*len(df_chunk), 1)).T,
-            mid_i=np.tile(df_chunk.xs('mid', level=1, axis=1).T.values.ravel(),
-                          (n_prf*len(df_chunk), 1)),
-            mid_j=np.tile(df_chunk.xs('mid', level=1, axis=1).T.values.ravel(),
-                          (n_prf*len(df_chunk), 1)).T,
-            rid_i=np.tile(df_chunk.xs('rid', level=1, axis=1).T.values.ravel(),
-                          (n_prf*len(df_chunk), 1)),
-            rid_j=np.tile(df_chunk.xs('rid', level=1, axis=1).T.values.ravel(),
-                          (n_prf*len(df_chunk), 1)).T,
-            eid_i=np.tile(df_chunk.xs('eid', level=1, axis=1).T.values.ravel(),
-                          (n_prf*len(df_chunk), 1)),
-            eid_j=np.tile(df_chunk.xs('eid', level=1, axis=1).T.values.ravel(),
-                          (n_prf*len(df_chunk), 1)).T,
+            np.tile(df_chunk.index.values, n_prf),  # step_ids
+            # Time-saving trick: make sure we do NOT have an 'object' type !
+            oids=df_chunk.xs('oid', level=1, axis=1).T.values.ravel().astype(int),
+            mids=df_chunk.xs('mid', level=1, axis=1).T.values.ravel().astype(str),
+            rids=df_chunk.xs('rid', level=1, axis=1).T.values.ravel().astype(str),
+            eids=df_chunk.xs('eid', level=1, axis=1).T.values.ravel().astype(str),
         )
 
         # Implement the multiplication. First get the uncertainties ...
