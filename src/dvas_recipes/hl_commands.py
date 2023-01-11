@@ -156,7 +156,7 @@ def optimize(n_cpus=None, prf_length=7001, chunk_min=50, chunk_max=300, n_chunk=
         data = pd.DataFrame({'alt': np.arange(0, prf_length, 1),
                              'tdt': np.arange(0, prf_length, 1),
                              'val': np.random.rand(prf_length),
-                             'flg': None,
+                             'flg': np.zeros(prf_length),
                              'ucs': np.random.rand(prf_length),
                              'uct': np.random.rand(prf_length),
                              'ucu': np.random.rand(prf_length)})
@@ -183,11 +183,11 @@ def optimize(n_cpus=None, prf_length=7001, chunk_min=50, chunk_max=300, n_chunk=
     for chunk_size in chunk_sizes:
         start_time = time.perf_counter()
         # Here I don't actually care about the outcome, just the time it takes to get there ...
-        _ = combine(multiprf, binning=1, method='weighted mean', chunk_size=chunk_size,
+        _ = combine(multiprf, binning=1, method='weighted arithmetic mean', chunk_size=chunk_size,
                     n_cpus=n_cpus)
         # Store this info, and also print it to screen ...
         run_times += [time.perf_counter() - start_time]
-        print('  chunk_size: {} <=> {:.2f}s'.format(chunk_size, run_times[-1]))
+        print(f'  chunk_size: {chunk_size} <=> {run_times[-1]:.2f}s')
 
     # Let's activate the default dvas plotting style. No LaTeX here.
     dpu.set_mplstyle('base')
