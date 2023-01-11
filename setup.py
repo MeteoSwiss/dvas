@@ -37,7 +37,7 @@ setup(
     long_description_content_type="text/markdown",
     python_requires='>=3.10.0',
     install_requires=[
-        "astroid>=2.13"
+        "astroid>=2.13",
         "jsonschema",
         "matplotlib",
         "netcdf4",
