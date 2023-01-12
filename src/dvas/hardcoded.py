@@ -259,3 +259,6 @@ MTDTA_UTLSMIN = 'dvas_utls_min'
 
 #: str: Metadata field to store the max geopotential height of the UTLS region
 MTDTA_UTLSMAX = 'dvas_utls_max'
+
+#: str: Metadata field to store the synop cloud code
+MTDTA_SYNOP = 'synop_clouds'

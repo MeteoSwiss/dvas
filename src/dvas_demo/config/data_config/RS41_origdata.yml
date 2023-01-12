@@ -179,6 +179,7 @@ _RS41-GDP_001:
         launch_timestamp: "to_datetime(get('g.Measurement.StartTime'))"
         burst_timestamp: "to_datetime(get('g.Measurement.BurstpointDatetime'))"
         gruan_tropopause: "get('g.Measurement.TropopauseGeopotHeight')"
+        synop_clouds: "get('g.SurfaceObs.SynopClouds')"
 
     # -- ORIG DATA ----------------------------------
     _time:

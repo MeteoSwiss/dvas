@@ -273,8 +273,7 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
         """
 
         # Check input type
-        assert isinstance(data, list), "Was expecting a list, not: %s" % (type(data))
-
+        assert isinstance(data, list), f"Was expecting a list, not: {type(data)}"
         # Test data if not empty
         if data:
 
