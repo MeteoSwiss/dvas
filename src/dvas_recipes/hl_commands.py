@@ -58,25 +58,27 @@ def init_arena(arena_path=None):
         arena_path = default_arena_path()
 
     if not isinstance(arena_path, Path):
-        raise DvasRecipesError(" Huh ! arena_path should be of type pathlib.Path, not: " +
-                               "{}".format(type(arena_path)))
+        raise DvasRecipesError("arena_path should be of type pathlib.Path, not: " +
+                               f"{type(arena_path)}")
 
-    print("Initializing a new dvas processing arena under {} ...".format(arena_path))
+    print(f"Initializing a new dvas processing arena under {arena_path} ...")
 
     # Require a new folder to avoid issues ...
     while arena_path.exists():
-        arena_path = input('{} already exists.'.format(arena_path) +
+        arena_path = input(f'{arena_path} already exists.' +
                            ' Please specify a new (relative) path for the dvas arena:')
         arena_path = Path(arena_path)
 
     # Very well, setup the config files for the dvas database initialization
-    shutil.copytree(demo_storage_path(), arena_path, ignore=None, dirs_exist_ok=False)
+    shutil.copytree(demo_storage_path(), arena_path,
+                    ignore=shutil.ignore_patterns('db', 'output', 'data', '*.py'),
+                    dirs_exist_ok=False)
 
     # And also copy the dvas recipes, in case the user wants to use these
     shutil.copytree(recipe_storage_path(), arena_path, ignore=None, dirs_exist_ok=True)
 
     # Say goodbye ...
-    print('All done in %i s.' % ((datetime.now()-start_time).total_seconds()))
+    print(f'All done in {(datetime.now()-start_time).total_seconds()}s.')
 
 
 def optimize(n_cpus=None, prf_length=7001, chunk_min=50, chunk_max=300, n_chunk=6):
@@ -208,14 +210,12 @@ def optimize(n_cpus=None, prf_length=7001, chunk_min=50, chunk_max=300, n_chunk=
              horizontalalignment='right', verticalalignment='bottom',
              transform=ax0.transAxes)
 
-    fn_out = 'dvas_optimize_{}_{}-cpus.pdf'.format(datetime.now().strftime('%Y%m%dT%H%M%S'),
-                                                   n_cpus)
+    fn_out = f'dvas_optimize_{datetime.now().strftime("%Y%m%dT%H%M%S")}_{n_cpus}-cpus.pdf'
 
     plt.savefig(fn_out)
 
     print(f'\n All done. Plot saved under "{fn_out}"\n')
-    print('\033[91m Best chunk size: {} \033[0m'.format(
-        chunk_sizes[run_times.index(min(run_times))]))
+    print(f'\033[91m Best chunk size: {chunk_sizes[run_times.index(min(run_times))]} \033[0m')
     print(' If that looks right, please update your favorite dvas recipe accordingly !\n')
 
 
