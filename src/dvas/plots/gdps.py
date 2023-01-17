@@ -219,7 +219,7 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
 
     # Create a gridspec structure
     gs_info = gridspec.GridSpec(5, 1, height_ratios=[1]*5, width_ratios=[1],
-                                left=0.09, right=0.87, bottom=0.08, top=0.95,
+                                left=0.09, right=0.87, bottom=0.1, top=0.95,
                                 wspace=0.5, hspace=0.1)
 
     # Create the axes - one for the profiles, and one for uctot, ucs, uct, ucu
@@ -281,7 +281,7 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     ax3.set_xlabel(pu.fix_txt(altlbl))
 
     # Legends, labels, etc ...
-    for ax in [ax0, ax0b, ax1, ax2, ax3]:
+    for ax in [ax0, ax0b, ax1, ax2]:
         plt.setp(ax.get_xticklabels(), visible=False)
 
     # Crop the plot to the regions with valid ref_altitudes
