@@ -4,6 +4,15 @@ The format is inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [v0.9.1.dev0]
+### Added:
+### Fixed:
+ - [fpavogt, 17.01.2023] Left align ylabels accross suplots (fix #272)
+### Changed:
+### Deprecated:
+### Removed:
+### Security:
+
 ## [v0.9.0.dev0]
 ### Added:
  - [fpavogt, 2023-01-12] Add synop cloud code to GDP and CWS metadata
@@ -17,10 +26,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Changed:
  - [fpavogt, 2023-01-11] Refactor the corr. coeffs. routine to improve performances
  - [fpavogt, 2022-11-10] Cleanup filename of KS plots
-### Deprecated:
 ### Removed:
  - [fpavogt, 2021-01-05] Removed 'ucr' in favor of 'ucu' (fixes #268)
-### Security:
 
 ## [v0.8.1.dev0]
 ### Fixed:

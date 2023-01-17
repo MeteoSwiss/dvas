@@ -137,7 +137,9 @@ def flight_overview(start_with_tags, label='mid', show=None):
         # Set the ylabel:
         ylbl = rs_prfs.var_info[PRF_VAL]['prm_name']
         ylbl += f' [{rs_prfs.var_info[PRF_VAL]["prm_unit"]}]'
-        this_ax.set_ylabel(dpu.fix_txt(ylbl), labelpad=10)
+        # Include the ylabel as text, to have it left-aligned with all other subplots
+        this_ax.text(-0.1, 0.5, dpu.fix_txt(ylbl), ha='left', va='center',
+                     transform=this_ax.transAxes, rotation=90)
         if var_name == 'wdir':
             this_ax.set_ylim((0, 360))
             this_ax.set_yticks([0, 180])
@@ -495,8 +497,11 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None):
         altlbl = dta_prfs.var_info[PRF_ALT]['prm_name']
         altlbl += f' [{dta_prfs.var_info[PRF_ALT]["prm_unit"]}]'
 
-        ax0.set_ylabel(dpu.fix_txt(ylbl0), labelpad=10)
-        ax1.set_ylabel(dpu.fix_txt(ylbl1), labelpad=10)
+        # Plot ylabels as text, to have them left-aligned accross sub-plots
+        ax0.text(-0.1, 0.5, dpu.fix_txt(ylbl0), ha='left', va='center',
+                 transform=ax0.transAxes, rotation=90)
+        ax1.text(-0.1, 0.5, dpu.fix_txt(ylbl1), ha='left', va='center',
+                 transform=ax1.transAxes, rotation=90)
         ax1.set_xlabel(dpu.fix_txt(altlbl))
 
         # For the delta curve, set the scale for this specific mid (in case the rest of the sondes

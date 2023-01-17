@@ -137,8 +137,11 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
     altlbl = r'gph$_{\rm CWS}$'
     altlbl += f' [{dta_prfs.var_info[PRF_ALT]["prm_unit"]}]'
 
-    ax0.set_ylabel(pu.fix_txt(ylbl0), labelpad=10)
-    ax1.set_ylabel(pu.fix_txt(ylbl1), labelpad=10)
+    # Plot ylabel as text, to have them left aligned accross subplots
+    ax0.text(-0.1, 0.5, pu.fix_txt(ylbl0), ha='left', va='center',
+             transform=ax0.transAxes, rotation=90)
+    ax1.text(-0.1, 0.5, pu.fix_txt(ylbl1), ha='left', va='center',
+             transform=ax1.transAxes, rotation=90)
     ax1.set_xlabel(pu.fix_txt(altlbl))
 
     # Hide certain ticks, and set the limits
