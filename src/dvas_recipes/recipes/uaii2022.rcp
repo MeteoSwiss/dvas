@@ -15,7 +15,7 @@ rcp_paths:
     path_anchors:  # Define useful shortcuts for the other paths
         common_base: &common_base ./
     config_dir_path:
-        base_path: /Users/dvas/projects/UAII2022/dvas/src/dvas_demo/
+        base_path: *common
         sub_path: config
     orig_data_path:
         base_path: *common_base
@@ -189,10 +189,9 @@ rcp_steps:
       kwargs:
         start_with_tags: # List of tags to identify profiles in the database
           - '08'
-        mids:
-          - 'M20'
+        mids: # List of model ids to process. Leave blank to process them all.
         tods: # List of (str|list) of time-of-days to process sequentially.
-          - daytime
+          #- daytime
           #- [nighttime, twilight]
         suffix: UAII2022
         institution: Federal Office of Meteorology and Climatology - MeteoSwiss
@@ -207,18 +206,7 @@ rcp_steps:
       kwargs:
         start_with_tags: # list of tags to identify profiles in the database
           - '08'
-          - 'tod:daytime'
-        mids: # List of mid to process. Leave empty to process them all.
-        skip_gdps: False # If True, any 'mid' that contains 'GDP' will be skipped.
-        skip_nongdps: False # If True, any 'mid' that does NOT contain 'GDP' will be skipped.
-
-    - fct: uaii2022.plots.dtas_per_mid
-      step_id: '12'
-      run: True
-      kwargs:
-        start_with_tags: # list of tags to identify profiles in the database
-          - '08'
-          - 'tod:nighttime'
+          #- 'tod:daytime'
         mids: # List of mid to process. Leave empty to process them all.
         skip_gdps: False # If True, any 'mid' that contains 'GDP' will be skipped.
         skip_nongdps: False # If True, any 'mid' that does NOT contain 'GDP' will be skipped.
