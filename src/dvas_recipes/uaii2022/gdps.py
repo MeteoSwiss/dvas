@@ -18,8 +18,8 @@ from dvas.logger import log_func_call
 from dvas.data.data import MultiRSProfile, MultiGDPProfile
 from dvas.tools.gdps import stats as dtgs
 from dvas.tools.gdps import gdps as dtgg
-from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
-from dvas.hardcoded import TAG_CWS, TAG_GDP, FLG_INCOMPATIBLE, FLG_ISINVALID
+from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCS, PRF_UCT, PRF_UCU
+from dvas.hardcoded import TAG_CWS, TAG_GDP, FLG_INCOMPATIBLE, FLG_ISINVALID, MTDTA_SYNOP
 from dvas.errors import DBIOError
 
 # Import from dvas_recipes
@@ -86,7 +86,7 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
     if m_vals is None:
         m_vals = [1]
     if not isinstance(m_vals, list):
-        raise DvasRecipesError(f'Ouch ! m_vals should be a list of int, not: {m_vals}')
+        raise DvasRecipesError(f'm_vals should be a list of int, not: {m_vals}')
 
     # Get the event id and rig id
     (fid, eid, rid) = dynamic.CURRENT_FLIGHT
@@ -102,7 +102,6 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
     gdp_prfs.load_from_db(gdp_filt, dynamic.CURRENT_VAR,
                           tdt_abbr=dynamic.INDEXES[PRF_TDT],
                           alt_abbr=dynamic.INDEXES[PRF_ALT],
-                          ucr_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucr'],
                           ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
                           uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
                           ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],
@@ -178,6 +177,16 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
     # Let's tag this CWS in the same way as the GDPs, so I can find them easily together
     cws.add_info_tags(tags)
 
+    # Let's also keep track of important information (fixes #266)
+    cws[0].info.add_metadata('KS_test.alpha_level', f'{alpha}')
+    cws[0].info.add_metadata('KS_test.m_values', f"{','.join([str(val) for val in m_vals])}")
+    # ... including the cloud synop code, which may differ between GDPs
+    scode = set(mtdta[MTDTA_SYNOP] for mtdta in gdp_prfs.get_info('metadata')
+                if MTDTA_SYNOP in mtdta.keys())
+    if len(scode) > 1:
+        logger.error('Inconsistent synop cloud code between GDPs: %s', scode)
+    cws[0].info.add_metadata(f'{MTDTA_SYNOP}', f'{"-".join(scode)}')
+
     # Take a closer look at the covariance matrices, if required
     if explore_covmats:
         plots.covmat_stats(covmats)
@@ -202,7 +211,7 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
     # weighted mean. I also do not save the tdt column, which is assembled in a distinct manner.
     cws.save_to_db(add_tags=[TAG_CWS, dynamic.CURRENT_STEP_ID],
                    rm_tags=[TAG_GDP] + dru.rsid_tags(pop=dynamic.CURRENT_STEP_ID),
-                   prms=[PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU])
+                   prms=[PRF_VAL, PRF_UCS, PRF_UCT, PRF_UCU])
 
     # Deal with 'ref_alt' if warranted
     if dynamic.CURRENT_VAR == cws_alt_ref:

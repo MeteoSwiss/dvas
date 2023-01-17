@@ -16,7 +16,7 @@ import matplotlib.gridspec as gridspec
 
 # Import from this package
 from ..logger import log_func_call
-from ..hardcoded import PRF_VAL, PRF_ALT, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU, TOD_VALS
+from ..hardcoded import PRF_VAL, PRF_ALT, PRF_UCS, PRF_UCT, PRF_UCU, TOD_VALS
 from . import utils as pu
 
 # Setup the local logger
@@ -49,12 +49,12 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
                                 left=0.09, right=0.87, bottom=0.12, top=0.93,
                                 wspace=0.5, hspace=0.1)
 
-    # Create the axes - one for the profiles, and one for uctot, ucr, ucs, uct, ucu
+    # Create the axes - one for the profiles, and one for uctot, ucs, uct, ucu
     ax0 = fig.add_subplot(gs_info[0, 0])
     ax1 = fig.add_subplot(gs_info[1, 0], sharex=ax0)
 
     # Extract the DataFrames from the MultiGDPProfile instances
-    deltas = dta_prfs.get_prms([PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU, 'uc_tot'])
+    deltas = dta_prfs.get_prms([PRF_ALT, PRF_VAL, PRF_UCS, PRF_UCT, PRF_UCU, 'uc_tot'])
 
     # What flights are present in the data ?
     flights = set(item + ' ' + dta_prfs.get_info('rid')[ind]
@@ -105,15 +105,21 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
         else:
             # Plot the uncertainties of the CWS ...
             if dta_ind == 0:
-                ax0.fill_between(dta.loc[:, PRF_ALT],
-                                 - k_lvl * dta.loc[:, 'uc_tot'].values,
-                                 + k_lvl * dta.loc[:, 'uc_tot'].values,
-                                 alpha=0.2, step='mid', facecolor='k', edgecolor='none',
-                                 label='CWS')
-            else:
-                if not dta.loc[:, 'uc_tot'].equals(deltas[0].loc[:, 'uc_tot']):
-                    logger.error(
-                        'Inconsistent delta uncertainties will not be reflected in the plot.')
+                # ... or not. Turns out, the CWS uncertainty is not always the same. If one point
+                # is a NaN, then it has a NaN uncertainty, which implies the simple test initially
+                # implemented to check that all the uc are the same does not work.
+                # Rather than doing anything too complicated, let's just avoid showing the CWS
+                # in the plot.
+                pass
+                #ax0.fill_between(dta.loc[:, PRF_ALT],
+                #                 - k_lvl * dta.loc[:, 'uc_tot'].values,
+                #                 + k_lvl * dta.loc[:, 'uc_tot'].values,
+                #                 alpha=0.2, step='mid', facecolor='k', edgecolor='none',
+                #                 label='CWS')
+            #else:
+            #    if not dta.loc[:, 'uc_tot'].equals(deltas[0].loc[:, 'uc_tot']):
+            #        logger.error(
+            #            'Inconsistent delta uncertainties will not be reflected in the plot.')
 
             # ... and the delta curves themsleves
             ax0.plot(dta.loc[:, PRF_ALT].values, dta.loc[:, PRF_VAL].values,

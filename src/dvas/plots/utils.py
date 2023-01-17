@@ -152,18 +152,20 @@ def add_sec_axis(ax, xvals, new_xvals, offset=-0.1, which='x'):
     return new_ax
 
 
-def fix_txt(txt):
+def fix_txt(txt, usetex=None):
     """ Corrects any string for problematic characters before it gets added to a plot. Fixes vary
     depending whether on the chosen plotting style's value of `usetex` in `rcparams`.
 
     Args:
         txt (str): text to cleanup.
+        usetex (bool, optional): if set, allows to override the default settings. Defaults to None.
 
     Returns:
         str: the corrected string.
     """
 
-    usetex = rcParams['text.usetex']
+    if usetex is None:
+        usetex = rcParams['text.usetex']
 
     # First deal with the cases when a proper LaTeX is being used
     if usetex:
@@ -337,9 +339,9 @@ def add_source(fig):
         fig (matplotlib.pyplot.figure): the figure to add the text to.
 
     """
-    msg = r'\it\flushleft Created with\newline dvas v{}'.format(VERSION)
+    msg = r'\it\flushleft Created with dvas v{}'.format(VERSION)
 
-    fig.text(0.01, 0.02, fix_txt(msg), fontsize='xx-small',
+    fig.text(0.01, 0.01, fix_txt(msg), fontsize='small',
              horizontalalignment='left', verticalalignment='bottom')
 
 

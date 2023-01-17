@@ -64,7 +64,7 @@ def check_unit(prm_unit, prm_name):
             # Until this changes, let's raise an error if this is not what the user provided.
             # See #192 and data.startegy.data.py for details.
             if prm_unit != 's':
-                msg = 'Ouch ! Only "s" is allowed as the unit of time data.'
+                msg = 'Only "s" is allowed as the unit of time data.'
                 msg += ' See Github error #192 for details.'
                 logger.error(msg)
                 return False

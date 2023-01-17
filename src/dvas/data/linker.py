@@ -1147,8 +1147,6 @@ class GetreldtExpr(TerminalLoadExprInterpreter):
             # rounding level.
             if ((errs := (out-out_orig).abs()) >= 1/10**(self._round_lvl+1)).any():
                 msg_lvl = logger.critical
-                #import pdb
-                #pdb.set_trace()
             else:
                 msg_lvl = logger.info
 

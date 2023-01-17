@@ -4,15 +4,22 @@ The format is inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [v0.8.2.dev0]
+## [v0.9.0.dev0]
 ### Added:
+ - [fpavogt, 2023-01-12] Add synop cloud code to GDP and CWS metadata
+ - [fpavogt, 2023-01-06] Add clean TOD option to biglambda recipe step (fixes #249)
+ - [fpavogt, 2023-01-05] Sync via global match can be restricted to a specific range of values (fix #269)
+ - [fpavogt, 2022-11-18] Add/connect UTLS, PBL, and Free Tropopause region flags
  - [fpavogt, 2022-11-10] Add a WAS_INVALID flag to keep track of fixed GDP points, e.g. via #205
 ### Fixed:
- - [fpavogt, 2022-11-14] Includ fid in plots and filenames (fix #261)
+ - [fpavogt, 2022-11-22] Fix #266 by keeping track of KS alpha level in metadata of CWS
+ - [fpavogt, 2022-11-14] Include fid in plots and filenames (fix #261)
 ### Changed:
+ - [fpavogt, 2023-01-11] Refactor the corr. coeffs. routine to improve performances
  - [fpavogt, 2022-11-10] Cleanup filename of KS plots
 ### Deprecated:
 ### Removed:
+ - [fpavogt, 2021-01-05] Removed 'ucr' in favor of 'ucu' (fixes #268)
 ### Security:
 
 ## [v0.8.1.dev0]
@@ -25,7 +32,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Added:
  - [fpavogt, 2022-10-28] Add netCDF export recipe step
 ### Fixed:
- - [fpavogt, 2022-10-31] Fix #253 (no more Int64 flags) and #259 (resampled points now inherit teh anchor flags)
+ - [fpavogt, 2022-10-31] Fix #253 (no more Int64 flags) and #259 (resampled points now inherit the anchor flags)
  - [fpavogt, 2022-10-31] Fix #252 and #256
  - [fpavogt, 2022-10-28] Fix #254
 ### Changed:

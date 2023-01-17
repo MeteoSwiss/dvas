@@ -43,10 +43,9 @@ implemented by defaults. They follow MeteoSwiss conventions:
     * ``pres``: pressure
     * ``wdir``: wind direction
     * ``wspeed``: wind speed
-    * ``xxx_ucr``: rig-uncorrelated uncertainty of xxx
     * ``xxx_ucs``: spatial-correlated uncertainty of xxx
     * ``xxx_uct``: temporal-correlated uncertainty of xxx
-    * ``xxx_ucu``: true uncorrelated uncertainty of xxx
+    * ``xxx_ucu``: un-correlated uncertainty of xxx
 
 Parameter names
 ...............
@@ -57,10 +56,9 @@ names are applicable (as defined in `dvas.hardcoded`):
    * ``val``: primary Profile value
    * ``alt``: altitude
    * ``tdt``: time delta
-   * ``ucr``: rig-uncorrelated uncertainty
    * ``ucs``: spatial-correlated uncertainty
    * ``uct``: temporal-correlated uncertainty
-   * ``ucu``: true uncorrelated uncertainty
+   * ``ucu``: un-correlated uncertainty
    * ``flg``: flags
 
 The following parameters are applicable to their event metadata:

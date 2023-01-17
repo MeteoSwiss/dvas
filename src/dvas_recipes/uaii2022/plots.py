@@ -18,10 +18,11 @@ from matplotlib import transforms
 # Import dvas modules and classes
 from dvas.logger import log_func_call
 from dvas.data.data import MultiProfile, MultiGDPProfile, MultiCWSProfile, MultiDeltaProfile
-from dvas.hardcoded import PRF_IDX, PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCU, PRF_UCR, PRF_UCS, PRF_UCT
-from dvas.hardcoded import TAG_DTA, TAG_GDP, TAG_CWS, MTDTA_PBL, MTDTA_TROPOPAUSE
+from dvas.hardcoded import PRF_IDX, PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCU, PRF_UCS, PRF_UCT
+from dvas.hardcoded import TAG_DTA, TAG_GDP, TAG_CWS
+from dvas.hardcoded import MTDTA_PBL, MTDTA_TROPOPAUSE, MTDTA_UTLSMIN, MTDTA_UTLSMAX
 from dvas.data.data import MultiRSProfile
-from dvas.tools.gdps import utils as dtgu
+from dvas.tools.gdps import correlations as dtgc
 from dvas.plots import utils as dpu
 from dvas.plots import gdps as dpg
 from dvas.plots import dtas as dpd
@@ -157,10 +158,11 @@ def covmat_stats(covmats):
     """ Takes a closer look at the *true* covariance matrix computed by dvas for a combined profile.
 
     Looks in particular at the error one does by ignoring it and assuming the combined profile
-    uncertainties behave like a ucu, ucr, ucs, or uct types or uncertainties.
+    uncertainties behave like a ucu, ucs, or uct types or uncertainties.
 
     Args:
-        proc_chunks: the outcome of map(process_chunk, chunks).
+        covmats (dict): the outcome of dvas.tools.gdps.combine()[1], i.e. the dict of covariance
+            matrices.
     """
 
     # Setup a dict to store the "theoretical" covariance matrices
@@ -176,20 +178,21 @@ def covmat_stats(covmats):
         list(np.linspace(1, 10, 10)) + [15, 20, 100]
 
     # Loop through all the uncertainty types
-    for uc_name in [PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU]:
+    for uc_name in [PRF_UCS, PRF_UCT, PRF_UCU]:
+
+        # How many points are associated to the matrix ?
+        npts = covmats[uc_name].shape[0]
 
         # Build matrices of indexes
-        i_inds, j_inds = np.meshgrid(np.arange(0, len(covmats[uc_name][0]), 1),
-                                     np.arange(0, len(covmats[uc_name][0]), 1))
-
+        inds = np.arange(0, npts, 1)
         # Which position are off-diagonal ?
-        off_diag = i_inds != j_inds
+        off_diag = ~np.eye(npts, npts, dtype=bool)
         # Out of these, which ones are "valid", i.e. not NaN ?
         valids = off_diag * ~np.isnan(covmats[uc_name])
 
         # For the uncorrelated uncertainties, all the off-diagonal elements should always be 0
         # (unless they are NaNs). Let's issue a log-ERROR message if this is not the case.
-        if uc_name in [PRF_UCR, PRF_UCU]:
+        if uc_name in [PRF_UCU]:
             if np.any(covmats[uc_name][valids] != 0):
                 logger.error("Non-0 off-diagonal elements of covarience matrix [%s].",
                              uc_name)
@@ -198,19 +201,8 @@ def covmat_stats(covmats):
         # This is the covariance of the different elements of the combined profile with itself.
         # As such, it doesn't matter what the mid, rid, eid, oid actaully are - their just the same
         # for all the points in the profile.
-        cc_mat = dtgu.coeffs(
-            i_inds,  # i
-            j_inds,  # j
-            uc_name,
-            oid_i=np.ones_like(covmats[uc_name]),
-            oid_j=np.ones_like(covmats[uc_name]),
-            mid_i=np.ones_like(covmats[uc_name]),
-            mid_j=np.ones_like(covmats[uc_name]),
-            rid_i=np.ones_like(covmats[uc_name]),
-            rid_j=np.ones_like(covmats[uc_name]),
-            eid_i=np.ones_like(covmats[uc_name]),
-            eid_j=np.ones_like(covmats[uc_name]),
-            )
+        cc_mat = dtgc.corr_coeff_matrix(uc_name, inds, oids=np.ones(npts), mids=np.ones(npts),
+                                        rids=np.ones(npts), eids=np.ones(npts))
 
         # And now get the uncertainties from the diagonal of the covariance matrix ...
         sigmas = np.atleast_2d(np.sqrt(covmats[uc_name].diagonal()))
@@ -221,7 +213,7 @@ def covmat_stats(covmats):
         th_covmats[uc_name] = np.multiply(cc_mat, np.ma.dot(sigmas.T, sigmas))
 
         # Having done so, we can compute the relative error (in %) that one does by reconstructing
-        # the covariance matrix assuming it is exactly of the given ucu/r/s/t type.
+        # the covariance matrix assuming it is exactly of the given ucs/t/u type.
         errors[uc_name] = th_covmats[uc_name][valids] / covmats[uc_name][valids] - 1
         errors[uc_name] *= 100
 
@@ -239,7 +231,7 @@ def covmat_stats(covmats):
 
         # Finally, store the percentage of covariance elements that can be checked,
         # i.e that were computed.
-        perc_covelmts_comp[uc_name] = len(valids[valids]) / (np.size(valids)-len(valids)) * 100
+        perc_covelmts_comp[uc_name] = len(valids[valids]) / npts**2 * 100
 
     # Now, let's make a histogram plot of this information
     fig = plt.figure(figsize=(dpu.WIDTH_ONECOL, 5))
@@ -253,15 +245,22 @@ def covmat_stats(covmats):
 
     ax0 = plt.subplot(fig_gs[0, 0])
 
-    ax0.hist([bins[:-1]]*4, bins, weights=[item[1] for item in errors.items()],
-             label=[rf'{item[0]} ({perc_covelmts_comp[item[0]]:.1f}\%)'
-                    for item in errors.items()], histtype='step')
+    for uc_name in ['ucs', 'uct', 'ucu']:
+        ax0.plot(np.diff(bins), errors[uc_name], '-', drawstyle='steps-mid',
+                 label=rf'{uc_name} ({perc_covelmts_comp[uc_name]:.2f}\%)')
+
+    #ax0.hist([item[1].reshape(-1) for item in errors.items()], bins,
+    #         weights=[np.full(len(valids[valids]), 1/len(valids[valids])**2)],
+    #         label=[rf'{item} ({perc_covelmts_comp[item]:.1f}\%)'
+    #                for item in errors.keys()], histtype='step')
 
     plt.legend()
     ax0.set_xlim((-25, 25))
 
     ax0.set_xlabel(r'$(V_{i\neq j}^{\rm th}/{V_{i\neq j}}-1)\times 100$')
     ax0.set_ylabel(r'Normalized number count [\%]', labelpad=10)
+
+    ax0.set_ylim((0, 100))
 
     # Add the k-level
     dpu.add_var_and_k(ax0, var_name=dynamic.CURRENT_VAR)
@@ -310,7 +309,6 @@ def inspect_cws(gdp_start_with_tags, cws_start_with_tags):
     gdp_prfs.load_from_db(gdp_filt, dynamic.CURRENT_VAR,
                           tdt_abbr=dynamic.INDEXES[PRF_TDT],
                           alt_abbr=dynamic.INDEXES[PRF_ALT],
-                          ucr_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucr'],
                           ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
                           uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
                           ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],
@@ -322,7 +320,6 @@ def inspect_cws(gdp_start_with_tags, cws_start_with_tags):
     cws_prfs.load_from_db(cws_filt, dynamic.CURRENT_VAR,
                           tdt_abbr=dynamic.INDEXES[PRF_TDT],
                           alt_abbr=dynamic.INDEXES[PRF_ALT],
-                          ucr_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucr'],
                           ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
                           uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
                           ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],
@@ -393,7 +390,6 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None):
     cws_prfs = MultiCWSProfile()
     cws_prfs.load_from_db(cws_filt, dynamic.CURRENT_VAR, dynamic.INDEXES[PRF_TDT],
                           alt_abbr=dynamic.INDEXES[PRF_ALT],
-                          ucr_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucr'],
                           ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
                           uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
                           ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],
@@ -401,7 +397,6 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None):
     dta_prfs = MultiDeltaProfile()
     dta_prfs.load_from_db(dta_filt, dynamic.CURRENT_VAR,
                           alt_abbr=dynamic.INDEXES[PRF_ALT],
-                          ucr_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucr'],
                           ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
                           uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
                           ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],
@@ -444,7 +439,7 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None):
                                     left=0.09, right=0.87, bottom=0.12, top=0.93,
                                     wspace=0.5, hspace=0.1)
 
-        # Create the axes - one for the profiles, and one for uctot, ucr, ucs, uct, ucu
+        # Create the axes - one for the profiles, and one for uctot, ucs, uct, ucu
         ax0 = fig.add_subplot(gs_info[0, 0])
         ax1 = fig.add_subplot(gs_info[1, 0], sharex=ax0)
 
@@ -479,7 +474,8 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None):
                          facecolor=(0.8, 0.8, 0.8), step='mid', edgecolor='none')
 
         # Display the location of the tropopause and the PBL
-        for (loi, symb) in [(MTDTA_TROPOPAUSE, r'$\prec$'), (MTDTA_PBL, r'$\simeq$')]:
+        for (loi, symb) in [(MTDTA_TROPOPAUSE, r'$\prec$'), (MTDTA_PBL, r'$\simeq$'),
+                            (MTDTA_UTLSMIN, r'$\top$'), (MTDTA_UTLSMAX, r'$\bot$')]:
             if loi not in prf.info.metadata.keys():
                 logger.warning('"%s" not found in CWS metadata.', loi)
                 continue
@@ -554,21 +550,21 @@ def dtas_per_mid(start_with_tags, mids=None, skip_gdps=False, skip_nongdps=False
 
     # Basic sanity check of mid
     if not isinstance(mids, list):
-        raise DvasRecipesError(f'Ouch ! I need a list of mids, not: {mids}')
+        raise DvasRecipesError(f'I need a list of mids, not: {mids}')
 
     # Very well, let's now loop through these, and generate the plot
     for mid in mids:
 
         # Second sanity check - make sure the mid is in the DB
         if mid not in db_view.mid.unique().tolist():
-            raise DvasRecipesError(f'Ouch ! mid unknown: {mid}')
+            raise DvasRecipesError(f'mid unknown: {mid}')
 
         # If warranted, skip any GDP profile
-        if skip_gdps and 'GDP' in mid:
+        if skip_gdps and '(gdp)' in mid:
             logger.info('Skipping mid: %s', mid)
             continue
 
-        if skip_nongdps and 'GDP' not in mid:
+        if skip_nongdps and '(gdp)' not in mid:
             logger.info('Skipping mid: %s', mid)
             continue
 
@@ -580,7 +576,6 @@ def dtas_per_mid(start_with_tags, mids=None, skip_gdps=False, skip_nongdps=False
         dta_prfs = MultiDeltaProfile()
         dta_prfs.load_from_db(dta_filt, dynamic.CURRENT_VAR,
                               alt_abbr=dynamic.INDEXES[PRF_ALT],
-                              ucr_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucr'],
                               ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
                               uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
                               ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],

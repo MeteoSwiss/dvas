@@ -51,6 +51,10 @@
   mdl_desc: 'DFM-17 from Graw Radiosondes GmbH & Co. KG [UAII2022 file format]'
   mid: 'DFM-17'
 
+- mdl_name: 'GTH3'
+  mdl_desc: 'HT-GTS(U)2-1 (GTH3) from Tianjin Huayuntianyi Special Meteorological Sounding Tech Co., Ltd. [UAII2022 file format]'
+  mid: 'GTH3'
+
 - mdl_name: 'iMet-54'
   mdl_desc: 'iMet-54 from Diel Met Systems (Pty) Ltd trading as InterMet [UAII2022 file format]'
   mid: 'iMet-54'
@@ -66,10 +70,6 @@
 - mdl_name: 'PS-B3'
   mdl_desc: 'Pisharoty Sonde B3 from Vikram Sarabhai Space Center, Indian Space Research Organisation [UAII2022 file format]'
   mid: 'PS-B3'
-
-- mdl_name: 'GTH3'
-  mdl_desc: 'HT-GTS(U)2-1 (GTH3) from Tianjin Huayuntianyi Special Meteorological Sounding Tech Co., Ltd. [UAII2022 file format]'
-  mid: 'GTH3'
 
 - mdl_name: 'RS41'
   mdl_desc: 'RS41-SG from Vaisala [UAII2022 file format]'

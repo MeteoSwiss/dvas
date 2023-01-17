@@ -19,8 +19,8 @@ from matplotlib import transforms
 # Import from this package
 from ..logger import log_func_call
 from ..errors import DvasError
-from ..hardcoded import PRF_VAL, PRF_ALT, PRF_TDT, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
-from ..hardcoded import MTDTA_TROPOPAUSE, MTDTA_PBL, FLG_HASCWS
+from ..hardcoded import PRF_VAL, PRF_ALT, PRF_TDT, PRF_UCS, PRF_UCT, PRF_UCU
+from ..hardcoded import MTDTA_TROPOPAUSE, MTDTA_PBL, FLG_HASCWS, MTDTA_UTLSMIN, MTDTA_UTLSMAX
 from . import utils as pu
 from ..tools import tools as tt
 
@@ -55,16 +55,16 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
                                 left=0.09, right=0.87, bottom=0.1, top=0.93,
                                 wspace=0.5, hspace=0.05)
 
-    # Create the axes - one for the profiles, and one for uctot, ucr, ucs, uct, ucu
+    # Create the axes - one for the profiles, and one for uctot, ucs, uct, ucu
     ax0 = fig.add_subplot(gs_info[0, 0])
     ax1 = fig.add_subplot(gs_info[1, 0], sharex=ax0)
     ax1b = fig.add_subplot(gs_info[2, 0], sharex=ax0)
     ax2 = fig.add_subplot(gs_info[3, 0], sharex=ax0)
 
     # Extract the DataFrames from the MultiGDPProfile instances
-    cws = cws_prf.get_prms([PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU,
+    cws = cws_prf.get_prms([PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCS, PRF_UCT, PRF_UCU,
                             'uc_tot'])[0]
-    gdps = gdp_prfs.get_prms([PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU,
+    gdps = gdp_prfs.get_prms([PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCS, PRF_UCT, PRF_UCU,
                               'uc_tot'])
 
     # Let us make sure that all the profiles are synchronized by checking the profile lengths
@@ -136,7 +136,8 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
               drawstyle='steps-mid', lw=0.5, ls='-', color='k')
 
     # Display the location of the tropopause and the PBL
-    for (loi, symb) in [(MTDTA_TROPOPAUSE, r'$\prec$'), (MTDTA_PBL, r'$\simeq$')]:
+    for (loi, symb) in [(MTDTA_TROPOPAUSE, r'$\prec$'), (MTDTA_PBL, r'$\simeq$'),
+                        (MTDTA_UTLSMIN, r'$\top$'), (MTDTA_UTLSMAX, r'$\bot$')]:
         if loi not in cws_prf[0].info.metadata.keys():
             logger.warning('"%s" not found in CWS metadata.', loi)
             continue
@@ -213,28 +214,27 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     """
 
     # Start the plotting
-    fig = plt.figure(figsize=(pu.WIDTH_TWOCOL, 9))
+    fig = plt.figure(figsize=(pu.WIDTH_TWOCOL, 7.5))
 
     # Create a gridspec structure
-    gs_info = gridspec.GridSpec(6, 1, height_ratios=[1]*6, width_ratios=[1],
-                                left=0.09, right=0.87, bottom=0.1, top=0.95,
+    gs_info = gridspec.GridSpec(5, 1, height_ratios=[1]*5, width_ratios=[1],
+                                left=0.09, right=0.87, bottom=0.08, top=0.95,
                                 wspace=0.5, hspace=0.1)
 
-    # Create the axes - one for the profiles, and one for uctot, ucr, ucs, uct, ucu
+    # Create the axes - one for the profiles, and one for uctot, ucs, uct, ucu
     ax0 = fig.add_subplot(gs_info[0, 0])
     ax0b = fig.add_subplot(gs_info[1, 0], sharex=ax0)
     ax1 = fig.add_subplot(gs_info[2, 0], sharex=ax0)
     ax2 = fig.add_subplot(gs_info[3, 0], sharex=ax0)
     ax3 = fig.add_subplot(gs_info[4, 0], sharex=ax0)
-    ax4 = fig.add_subplot(gs_info[5, 0], sharex=ax0)
     # Keep a list to loop efficiently
-    axs = [ax0, ax1, ax2, ax3, ax4]
+    axs = [ax0, ax1, ax2, ax3]
 
     # Extract the DataFrames from the MultiGDPProfile/MultiCWSProfile instances
-    gdps = gdp_prfs.get_prms([PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU,
+    gdps = gdp_prfs.get_prms([PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCS, PRF_UCT, PRF_UCU,
                               'uc_tot'])
 
-    cws = cws_prf.get_prms([PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU,
+    cws = cws_prf.get_prms([PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCS, PRF_UCT, PRF_UCU,
                             'uc_tot'])[0]
 
     # Let us make sure that all the profiles are synchronized by checking the profile lengths
@@ -251,7 +251,7 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
         gdp = gdps[gdp_ind]
 
         # Finally, plot the individual errors too ...
-        for (uc_ind, uc) in enumerate(['uc_tot', PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU]):
+        for (uc_ind, uc) in enumerate(['uc_tot', PRF_UCS, PRF_UCT, PRF_UCU]):
             axs[uc_ind].plot(alts, k_lvl*gdp[uc].values, drawstyle='steps-mid', lw=0.5,
                              label='|'.join(gdp_prfs.get_info(label)[gdp_ind]))
 
@@ -260,7 +260,7 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
                   lw=0.5, drawstyle='steps-mid')
 
     # Then also plot the CWS uncertainty
-    for (uc_ind, uc) in enumerate(['uc_tot', PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU]):
+    for (uc_ind, uc) in enumerate(['uc_tot', PRF_UCS, PRF_UCT, PRF_UCU]):
         axs[uc_ind].plot(alts, k_lvl*cws[uc].values, drawstyle='steps-mid', lw=0.75, c='k',
                          zorder=0, label='CWS')
         # Add the y-label, while I'm at it ...
@@ -277,7 +277,7 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     # Now make it look pretty
     altlbl = r'gph$_{\rm CWS}$'
     altlbl += f' [{cws_prf.var_info[PRF_ALT]["prm_unit"]}]'
-    ax4.set_xlabel(pu.fix_txt(altlbl))
+    ax3.set_xlabel(pu.fix_txt(altlbl))
 
     # Legends, labels, etc ...
     for ax in [ax0, ax0b, ax1, ax2, ax3]:

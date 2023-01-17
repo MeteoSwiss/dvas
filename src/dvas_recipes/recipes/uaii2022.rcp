@@ -15,7 +15,7 @@ rcp_paths:
     path_anchors:  # Define useful shortcuts for the other paths
         common_base: &common_base ./
     config_dir_path:
-        base_path: /Users/dvas/projects/UAII2022/dvas/src/dvas_demo/
+        base_path: *common
         sub_path: config
     orig_data_path:
         base_path: *common_base
@@ -38,7 +38,7 @@ rcp_params:
             - pdf
             - png
         plot_show: False
-        chunk_size: 150
+        chunk_size: 200
         n_cpus: # If set, will cap the number of cpus used to run the dvas recipe
         drop_flgs: # List of flags to drop from the analysis
             - descent
@@ -49,32 +49,26 @@ rcp_params:
         alt: alt_ref
     vars:
         gph:
-            ucr:
             ucs:
             uct: gph_uct
             ucu: gph_ucu
         temp:
-            ucr: temp_ucr
             ucs: temp_ucs
             uct: temp_uct
-            ucu:
+            ucu: temp_ucu
         rh:
-            ucr: rh_ucr
             ucs:
             uct: rh_uct
-            ucu:
+            ucu: rh_ucu
         pres:
-            ucr:
             ucs:
             uct: pres_uct
             ucu: pres_ucu
         wdir:
-            ucr:
             ucs:
             uct:
             ucu: wdir_ucu
         wspeed:
-            ucr:
             ucs:
             uct:
             ucu: wspeed_ucu
@@ -95,7 +89,7 @@ rcp_steps:
       kwargs:
         start_with_tags: is_original
         fix_gph_uct: # Correct the NaNs present in the gph_uct values for the RS41 GDP v1. See #205.
-            - (gdp)RS41 # Model ids (mid) that require the correction
+          - (gdp)RS41 # Model ids (mid) that require the correction
         check_tropopause: True # If True, will compare the GRUAN tropopause with the dvas one (for info only).
         resampling_freq: '1s' # Time step to resample onto, with format 'Xs'
         interp_dist: 1 # Distance to the nearest measurement, in s, from which a resampled point is forced to NaN
@@ -109,6 +103,7 @@ rcp_steps:
         start_with_tags: '01'
         anchor_alt: 5000 # Initial (single) altitude to anchor all profiles.
         global_match_var: 'gph' # Variable to match globally
+        valid_value_range: [4000, 6000] # If a len(2) list is set, global_match_var values outside the range will be ignored.
         crop_pre_gdp: True # It True, profiles will be cropped at the first GDP point.
 
     # Simple plotting step of the complete profiles for all the variables.
@@ -138,18 +133,25 @@ rcp_steps:
       step_id: '05'
       run: True
       kwargs:
-          prf_tags: '02' # str or list of tags to identify Profiles in the database. If empty, will not touch Profiles
-          cws_tags: '04' # str or list of tags to identify Combined Working Standard in the database
+        prf_tags: '02' # str or list of tags to identify Profiles in the database. If empty, will not touch Profiles
+        cws_tags: '04' # str or list of tags to identify Combined Working Standard in the database
+        set_pbl_at:
+          daytime: 1270 # Mean PBL height (day) (in gph meters)
+          twilight: 350 # Mean PBL height (twilight) (in gph meters)
+          nighttime: 350 # Mean PBL height (night) (in gph meters)
+        utls_lims:
+          min: 8000 # UTLS lower limit (in gph meters)
+          max: 18000 # UTLS upper limits (in gph meters)
 
     # Export cleaned, resampled, synced, profiles to netCDF
     - fct: uaii2022.export.export_profiles
       step_id: '06'
       run: True
       kwargs:
-          which: mdp, gdp, cws # list of profiles to export, e.g. mdp, gdp, and/or cws
-          tags: '05' # list of tags to identify profiles to export in the DB
-          suffix: UAII2022
-          institution: Federal Office of Meteorology and Climatology - MeteoSwiss
+        which: mdp, gdp, cws # list of profiles to export, e.g. mdp, gdp, and/or cws
+        tags: '05' # list of tags to identify profiles to export in the DB
+        suffix: UAII2022
+        institution: Federal Office of Meteorology and Climatology - MeteoSwiss
 
     # GDP vs CWS plotting
     - fct: uaii2022.plots.inspect_cws
@@ -175,42 +177,36 @@ rcp_steps:
       step_id: '09'
       run: True
       kwargs:
-          prf_tags: '05' # str or list of tags to identify Profiles in the database
-          cws_tags: '05' # str or list of tags to identify Combined Working Standard in the database
-          dta_tags: '08' # str or list of tags to identify Deltas in the database
-          mids: # List of mid to process. Leave empty to process them all.
-            #  - M10
-            #  - M20
-            #  - RS41
+        prf_tags: '05' # str or list of tags to identify Profiles in the database
+        cws_tags: '05' # str or list of tags to identify Combined Working Standard in the database
+        dta_tags: '08' # str or list of tags to identify Deltas in the database
+        mids: # List of mid to process. Leave empty to process them all.
 
-    # Plot the deltas as a function of the model id, rather than as a function of flight.
-    - fct: uaii2022.plots.dtas_per_mid
+    # Build the Big Lambda profiles from the deltas
+    - fct: uaii2022.biglambda.compute_biglambda
       step_id: '10'
       run: True
       kwargs:
-        start_with_tags: # list of tags to identify profiles in the database
-            - '08'
-            #- 'tod:daytime'
-        mids: # List of mid to process. Leave empty to process them all.
-        skip_gdps: False # If True, any 'mid' that contains 'GDP' will be skipped.
-        skip_nongdps: False # If True, any 'mid' that does NOT contain 'GDP' will be skipped.
+        start_with_tags: # List of tags to identify profiles in the database
+          - '08'
+        mids: # List of model ids to process. Leave blank to process them all.
+        tods: # List of (str|list) of time-of-days to process sequentially.
+          #- daytime
+          #- [nighttime, twilight]
+        suffix: UAII2022
+        institution: Federal Office of Meteorology and Climatology - MeteoSwiss
+        gph_min: 0 # Minimum gph value to consider, in m.
+        gph_bin_size: 100 # Size of the gph bins for the high-resolution Big Lambda profile, in m.
+        gph_bin_count: 340 # Number of bins for the high-resolution Big Lambda profile.
+
+    # Plot the deltas as a function of the model id, rather than as a function of flight.
     - fct: uaii2022.plots.dtas_per_mid
       step_id: '11'
       run: True
       kwargs:
         start_with_tags: # list of tags to identify profiles in the database
-            - '08'
-            - 'tod:daytime'
-        mids: # List of mid to process. Leave empty to process them all.
-        skip_gdps: False # If True, any 'mid' that contains 'GDP' will be skipped.
-        skip_nongdps: False # If True, any 'mid' that does NOT contain 'GDP' will be skipped.
-    - fct: uaii2022.plots.dtas_per_mid
-      step_id: '12'
-      run: True
-      kwargs:
-        start_with_tags: # list of tags to identify profiles in the database
-            - '08'
-            - 'tod:nighttime'
+          - '08'
+          #- 'tod:daytime'
         mids: # List of mid to process. Leave empty to process them all.
         skip_gdps: False # If True, any 'mid' that contains 'GDP' will be skipped.
         skip_nongdps: False # If True, any 'mid' that does NOT contain 'GDP' will be skipped.

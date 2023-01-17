@@ -19,7 +19,7 @@ ALL_FLIGHTS = None
 CURRENT_FLIGHT = None
 
 #: dict: All variables to be processed by the recipe. Should be set once only, e.g.:
-# {'temp': {'ucr': 'temp_ucr', 'ucs': 'temp_ucs', 'uct': 'temp_uct', 'ucu': None}, 'rh': {...}, ...}
+# {'temp': {'ucs': 'temp_ucs', 'uct': 'temp_uct', 'ucu': None}, 'rh': {...}, ...}
 ALL_VARS = None
 
 #: dict: current variable name to be processed, and associated uncertainties, e.g.: 'temp'

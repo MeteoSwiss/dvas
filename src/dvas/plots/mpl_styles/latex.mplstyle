@@ -9,4 +9,3 @@
 
 text.usetex: True
 text.latex.preamble: \usepackage{cmbright} \usepackage{amsmath} \usepackage{amssymb}
-

@@ -7,18 +7,16 @@
   prm_desc: 'Geopotential height'
   prm_unit: 'm'
 
-- prm_name: 'temp(|(_ucr)|(_ucs)|(_uct)|(_ucu))'
+- prm_name: 'temp(|(_ucs)|(_uct)|(_ucu))'
   # Generate variables from regex generator for temperature.
-  prm_desc: 'cat("Temperature", repl({"_ucr": " rig-correlated uncertainty",
-                                      "_ucs": " spatial-correlated uncertainty",
+  prm_desc: 'cat("Temperature", repl({"_ucs": " spatial-correlated uncertainty",
                                       "_uct": " temporal-correlated uncertainty",
                                       "_ucu": " un-correlated uncertainty"}, get(1)))'
   prm_unit: 'K'
 
-- prm_name: 'rh(|(_ucr)|(_uct)|(_ucu))'
+- prm_name: 'rh(|(_uct)|(_ucu))'
   # Generate variables from regex generator for relative humidity.
-  prm_desc: 'cat("Relative humidity", repl({"_ucr": " rig-correlated uncertainty",
-                                            "_uct": " temporal-correlated uncertainty",
+  prm_desc: 'cat("Relative humidity", repl({"_uct": " temporal-correlated uncertainty",
                                             "_ucu": " un-correlated uncertainty"}, get(1)))'
   prm_unit: '%'
 
@@ -41,10 +39,6 @@
 - prm_name: 'dummytst_(param\d)'
   prm_desc: 'get(1)'
   prm_unit: ''
-
-- prm_name: 'ucr1'
-  prm_desc: 'Dummy error'
-  prm_unit: 'm'
 
 - prm_name: 'ucs1'
   prm_desc: 'Dummy error'

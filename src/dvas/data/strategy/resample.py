@@ -19,9 +19,9 @@ import pandas as pd
 # Import from current package
 from ...errors import DvasError
 from .data import MPStrategyAC
-from ...tools.gdps.utils import process_chunk
+from ...tools.chunks import process_chunk
 from ...tools.tools import df_to_chunks, fancy_bitwise_or
-from ...hardcoded import PRF_IDX, PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
+from ...hardcoded import PRF_IDX, PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCS, PRF_UCT, PRF_UCU
 from ...hardcoded import PRF_FLG, FLG_INTERP, TAG_1S
 
 # Steup the logger
@@ -140,7 +140,7 @@ class ResampleStrategy(MPStrategyAC):
 
             # Let's begin by creating the chunk array
             cols = [[0, 1],
-                    [PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU,
+                    [PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCS, PRF_UCT, PRF_UCU,
                      'uc_tot', 'oid', 'mid', 'eid', 'rid']]
             cols = pd.MultiIndex.from_product(cols)
             x_dx = pd.DataFrame(columns=cols)
@@ -209,7 +209,7 @@ class ResampleStrategy(MPStrategyAC):
                     x_dx[(1, col)] = this_data.iloc[x_ip1_ind][col].values * omega_vals
 
             # Deal with the uncertainties, in case I do not have a GDPProfile
-            for col in [PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU]:
+            for col in [PRF_UCS, PRF_UCT, PRF_UCU]:
                 if col not in this_data.columns:
                     # To avoid warnings down the line, set the UC to 0 everywhere, except where
                     # the value is a NaN.

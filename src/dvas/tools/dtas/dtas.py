@@ -15,11 +15,12 @@ This module contains tools and routines related to deltas between profiles and C
 import logging
 from copy import deepcopy
 from pathlib import Path
+import numpy as np
 import pandas as pd
 
 # Import from this module
 from ...logger import log_func_call
-from ...hardcoded import PRF_TDT, PRF_FLG, PRF_VAL
+from ...hardcoded import PRF_TDT, PRF_FLG, PRF_VAL, PRF_UCS, PRF_UCT, PRF_UCU
 from ...data.strategy.data import DeltaProfile
 from ...data.data import MultiDeltaProfile
 from ...errors import DvasError
@@ -65,6 +66,10 @@ def single_delta(prf, cws, circular=False):
     # Next compute the delta itself. Here, let's keep in mind that the index from the cws is
     # **different** from the index of the profile !
     dta_data.loc[:, [PRF_VAL]] = prf.data['val'].values - cws.data[PRF_VAL].values
+
+    # Here, let us hide the uncertainties should the prf not contain any data
+    for col_name in [PRF_UCS, PRF_UCT, PRF_UCU]:
+        dta_data.loc[prf.data['val'].isna().values, [col_name]] = np.nan
 
     # Handle the angular_wrap, if warranted. This is used to make sure the wdir delta is never
     # larger than +-180 deg

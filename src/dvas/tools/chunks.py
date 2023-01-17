@@ -17,11 +17,11 @@ import numpy as np
 import pandas as pd
 
 # Import from current package
-from ...logger import log_func_call
-from ...errors import DvasError
-from ...hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
-from ..tools import fancy_nansum, fancy_bitwise_or, wrap_angle
-from .correlations import coeffs
+from ..logger import log_func_call
+from ..errors import DvasError
+from ..hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCS, PRF_UCT, PRF_UCU
+from .tools import fancy_nansum, fancy_bitwise_or, wrap_angle
+from .gdps.correlations import corr_coeff_matrix
 
 # Setup local logger
 logger = logging.getLogger(__name__)
@@ -102,7 +102,7 @@ def weighted_mean(df_chunk, binning=1, mode='arithmetic'):
 
     # Let's make sure their ID is what I expect them to be.
     if not np.array_equal(df_chunk.columns.unique(level=0), range(n_prf)):
-        raise DvasError('Ouch ! Profile values must be grouped using MultiIndex with ids 0,1, ...')
+        raise DvasError('Profile values must be grouped using MultiIndex with ids 0,1, ...')
 
     # Force the weights to be NaNs if the data is a NaN. Else, the normalization will be off.
     mask = df_chunk.xs(PRF_VAL, level=1, axis=1).isna()
@@ -288,7 +288,7 @@ def delta(df_chunk, binning=1, mode='arithmetic'):
     n_prf = len(df_chunk.columns.unique(level=0))
 
     if n_prf != 2:
-        raise DvasError("Ouch ! I can only make the difference between 2 profiles, " +
+        raise DvasError("I can only make the difference between 2 profiles, " +
                         f"but you gave me {n_prf}.")
 
     # Create the structure that will store all the weighted means
@@ -387,15 +387,120 @@ def delta(df_chunk, binning=1, mode='arithmetic'):
     return chunk_out, jac_mat
 
 
+def biglambda(df_chunk):
+    """ Compute the Lambda value (which is the RMS) of the 'val' column of a pd.DataFrame containing
+    a series of measurements, possibly from distinct profiles and out-of-order.
+    Also returns the Jacobian matrix for `val` to enable accurate error propagation.
+
+    Args:
+        df_chunk (pandas.DataFrame): data to process.
+
+    Returns:
+        (pandas.DataFrame, np.ma.masked_array): lambda value, and associated Jacobian
+        matrix. The matrix has a size of 1 * n, with n = len(df_chunk).
+
+    Note:
+        The input format for `df_chunk` is a `pandas.DataFrame` with a very specific structure.
+        It requires a single index called `_idx`, with 4 columns with labels `tdt`,
+        `alt`, `val`, and 'flg'. All these must be grouped together using pd.MultiIndex where the
+        level 0 corresponds to the profile number which must be 0, and the level 1 is the original
+        column name, i.e.::
+
+                       0
+                     alt  val flg
+            _idx
+            0      486.7  284.7   0
+            1      492.4  284.6   0
+            ...
+
+    """
+
+    # Begin with some important sanity checks to make sure the DataFrame has the correct format
+    for col in [PRF_ALT, PRF_VAL, PRF_FLG]:
+        if col not in df_chunk.columns.unique(level=1):
+            raise DvasError(f'Column "{col}" is missing from the DataFrame')
+
+    # How many profiles do I want to combine ?
+    n_prf = len(df_chunk.columns.unique(level=0))
+
+    if n_prf != 1:
+        raise DvasError("I expected all the items in a single pseudo-profile, " +
+                        f"but you gave me {n_prf}.")
+
+    # Create the structure that will store the Lambda value
+    chunk_out = pd.DataFrame()
+
+    # If I was given no data, deal with it
+    if len(df_chunk) == 0:
+        chunk_out.loc[0, PRF_VAL] = np.nan
+        chunk_out.loc[0, 'mean'] = np.nan
+        chunk_out.loc[0, 'std'] = np.nan
+        chunk_out.loc[0, 'n_pts'] = 0
+        chunk_out.loc[0, 'n_prfs'] = 0
+
+        chunk_out['n_pts'] = chunk_out.n_pts.astype(int)
+        chunk_out['n_prfs'] = chunk_out.n_prfs.astype(int)
+
+        return chunk_out, None
+
+    # Let's loop through the variables and compute their biglambda value.
+    for col in [PRF_VAL]:
+
+        # Compute the RMSE, bias and std. Mind the ddof of pandas std !!!
+        chunk_out.loc[0, PRF_VAL] = (df_chunk[(0, PRF_VAL)]**2).mean()**0.5
+        chunk_out.loc[0, 'mean'] = (df_chunk[(0, PRF_VAL)]).mean()
+        chunk_out.loc[0, 'std'] = (df_chunk[(0, PRF_VAL)]).std(ddof=0)
+        # Quick sanity check
+        sanity = (chunk_out.loc[:, 'mean']**2+chunk_out.loc[:, 'std']**2)
+        sanity = sanity.pow(0.5).round(10).equals(chunk_out.loc[:, PRF_VAL].round(10))
+        if not sanity:
+            raise DvasError('RMSE vs MEAN + STD mismatch.')
+        # Also keep track of the amount of points/profiles used to derive those values
+        # Make sure to NOT count any invalid value (e.g. where the CWS of manufacturer is a NaN)
+        # as this would mess up the Jacobian matrix (since a 1/J goes in there).
+        is_usable = ~df_chunk[(0, 'val')].isna()
+        chunk_out.loc[0, 'n_pts'] = len(df_chunk[is_usable])
+        chunk_out.loc[0, 'n_prfs'] = \
+            len(np.unique(df_chunk[is_usable].loc[:, (0, 'profile_index')].values))
+
+        # All done. Let us now compute the associated Jacobian matrix if we are dealing with 'val'.
+        if col != PRF_VAL:
+            continue
+
+        # How big is my Jacobian ? (Make it a masked_array)
+        jac_mat = np.ma.masked_array(np.ones((len(chunk_out), len(df_chunk))),
+                                     mask=False,
+                                     fill_value=np.nan)
+
+        # Let's fill it according to the statistical guide
+        jac_mat[0, :] = df_chunk.loc[:, (0, PRF_VAL)].values
+        jac_mat /= chunk_out.loc[0, 'n_pts']
+        jac_mat /= chunk_out.loc[0, PRF_VAL]
+
+        # Let's not forget to hide any bad element
+        jac_mat = np.ma.masked_invalid(jac_mat)
+
+    # Before we end, let us compute the flags. We apply a general bitwise OR to them, such that
+    # they do not cancel each other or disappear: they get propagated all the way.
+    chunk_out[PRF_FLG] = fancy_bitwise_or(df_chunk.loc[:, (slice(None), PRF_FLG)], axis=None)
+
+    chunk_out[PRF_FLG] = chunk_out.loc[:, PRF_FLG].astype(int)
+    chunk_out['n_pts'] = chunk_out.n_pts.astype(int)
+    chunk_out['n_prfs'] = chunk_out.n_prfs.astype(int)
+
+    return chunk_out, jac_mat
+
+
 def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean'):
     """ Process a DataFrame chunk and propagate the errors.
 
     Args:
         df_chunk (pandas.DataFrame): data containing the Profiles to merge.
-        binning (int, optional): binning size. Defaults to 1 (=no binning).
+        binning (int, optional): binning size. Defaults to 1 (=no binning). No effect if
+            method='biglambda'.
         method (str, optional): the processing method. Can be one of
             ['arithmetic mean', 'weighted arithmetic mean', 'circular mean',
-            'weighted circular mean', 'arithmetic delta', 'circular delta'].
+            'weighted circular mean', 'arithmetic delta', 'circular delta', 'biglambda'].
             Defaults to 'weighted arithmetic mean'.
 
     Returns:
@@ -405,15 +510,15 @@ def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean'):
     Note:
         The input format for `df_chunk` is a `pandas.DataFrame` with a very specific structure.
         It requires a single index called `_idx`, with 13 columns per profiles with labels `tdt`,
-        `alt`, `val`, 'flg', `ucr`, `ucs`, `uct`, `ucu`, `uc_tot`, `oid`, `mid`, `eid`, and `rid`.
+        `alt`, `val`, 'flg', `ucs`, `uct`, `ucu`, `uc_tot`, `oid`, `mid`, `eid`, and `rid`.
         All these must be grouped together using pd.MultiIndex where the level 0 corresponds
         to the profile number (e.g. 0,1,2...), and the level 1 is the original column name, i.e.::
 
                        0                                                1
-                     alt              tdt    val   ucr ucs  ...   rid alt ...
+                     alt              tdt    val  ucs  ...   rid alt ...
             _idx
-            0      486.7  0 days 00:00:00  284.7   NaN NaN  ...     1 485.8
-            1      492.4  0 days 00:00:01  284.6  0.07 NaN  ...     1 493.4
+            0      486.7  0 days 00:00:00  284.7  NaN  ...     1 485.8
+            1      492.4  0 days 00:00:01  284.6  0.0  ...     1 493.4
             ...
 
     Note:
@@ -423,14 +528,16 @@ def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean'):
     """
 
     # Check I have all the required columns
-    for col in [PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU,
+    for col in [PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCS, PRF_UCT, PRF_UCU,
                 'uc_tot', 'oid', 'mid', 'eid', 'rid']:
+        if method in ['biglambda'] and col in [PRF_TDT]:
+            continue
         if col not in df_chunk.columns.unique(level=1):
             raise DvasError('Column "{col}" is missing from the DataFrame')
 
     # Also check that the level 0 starts from 0 onwards
     if 0 not in df_chunk.columns.unique(level=0):
-        raise DvasError('Ouch ! Profile "0" is missing ...')
+        raise DvasError('Profile "0" is missing ...')
 
     # How many profiles do I want to combine ?
     n_prf = len(df_chunk.columns.unique(level=0))
@@ -446,7 +553,7 @@ def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean'):
             logger.warning("GDP Profile %i: NaN mismatch for 'val' and 'uc_tot'", prf_ind)
             df_chunk.loc[df_chunk.loc[:, (prf_ind, 'uc_tot')].isna().values,
                          (prf_ind, PRF_VAL)] = np.nan
-            for col in [PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU, 'uc_tot']:
+            for col in [PRF_UCS, PRF_UCT, PRF_UCU, 'uc_tot']:
                 df_chunk.loc[df_chunk.loc[:, (prf_ind, PRF_VAL)].isna().values,
                              (prf_ind, col)] = np.nan
 
@@ -466,7 +573,7 @@ def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean'):
     # ------------------------------
     # Crappier (?) alternative, but that doesn't mess up with the column dtypes
     for ind in range(n_prf):
-        df_chunk.loc[:, (ind, 'w_ps')] = np.nan
+        df_chunk[(ind, 'w_ps')] = np.nan
 
     # Then I can fill it with the appropriate values
     if 'weighted' in method:
@@ -476,56 +583,65 @@ def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean'):
         df_chunk.loc[:, (slice(None), 'w_ps')] = 1.
         # Let us not forget to mask anything that has a NaN value or total error.
         df_chunk.loc[:, (slice(None), 'w_ps')] = df_chunk.loc[:, (slice(None), 'w_ps')].mask(
-            df_chunk.loc[:, (slice(None), 'val')].isna().values, np.nan)
+            df_chunk.loc[:, (slice(None), 'val')].isna().values, np.nan).values
         df_chunk.loc[:, (slice(None), 'w_ps')] = df_chunk.loc[:, (slice(None), 'w_ps')].mask(
-            df_chunk.loc[:, (slice(None), 'uc_tot')].isna().values, np.nan)
+            df_chunk.loc[:, (slice(None), 'uc_tot')].isna().values, np.nan).values
 
     # Combine the Profiles, and compute the Jacobian matrix as well
     if 'arithmetic' in method:
         mode = 'arithmetic'
     elif 'circular' in method:
         mode = 'circular'
-    else:
+    elif method not in ['biglambda']:
         raise DvasError(f'method unknown: {method}')
 
     if 'mean' in method:
         x_ms, G_mat = weighted_mean(df_chunk, binning=binning, mode=mode)
     elif 'delta' in method:
         x_ms, G_mat = delta(df_chunk, binning=binning, mode=mode)
+    elif method == 'biglambda':
+        x_ms, G_mat = biglambda(df_chunk)
     else:
         raise DvasError(f'method unknown: {method}')
+
+    # If I was given no data, deal with it.
+    if len(df_chunk) == 0:
+        return x_ms, None
 
     # Let's get started with the computation of the errors.
     V_mats = {}  # Will store the covariance matrices in this dict
     # Let us now assemble the U matrices, filling all the cross-correlations for the different
     # types of uncertainties
-    for sigma_name in [PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU]:
-        cc_mat = coeffs(
-            np.tile(df_chunk.index.values, (n_prf*len(df_chunk), n_prf)),  # i
-            np.tile(df_chunk.index.values, (n_prf*len(df_chunk), n_prf)).T,  # j
+    for sigma_name in [PRF_UCS, PRF_UCT, PRF_UCU]:
+        cc_mat = corr_coeff_matrix(
             sigma_name,
-            oid_i=np.tile(df_chunk.xs('oid', level=1, axis=1).T.values.ravel(),
-                          (n_prf*len(df_chunk), 1)),
-            oid_j=np.tile(df_chunk.xs('oid', level=1, axis=1).T.values.ravel(),
-                          (n_prf*len(df_chunk), 1)).T,
-            mid_i=np.tile(df_chunk.xs('mid', level=1, axis=1).T.values.ravel(),
-                          (n_prf*len(df_chunk), 1)),
-            mid_j=np.tile(df_chunk.xs('mid', level=1, axis=1).T.values.ravel(),
-                          (n_prf*len(df_chunk), 1)).T,
-            rid_i=np.tile(df_chunk.xs('rid', level=1, axis=1).T.values.ravel(),
-                          (n_prf*len(df_chunk), 1)),
-            rid_j=np.tile(df_chunk.xs('rid', level=1, axis=1).T.values.ravel(),
-                          (n_prf*len(df_chunk), 1)).T,
-            eid_i=np.tile(df_chunk.xs('eid', level=1, axis=1).T.values.ravel(),
-                          (n_prf*len(df_chunk), 1)),
-            eid_j=np.tile(df_chunk.xs('eid', level=1, axis=1).T.values.ravel(),
-                          (n_prf*len(df_chunk), 1)).T,
+            np.tile(df_chunk.index.values, n_prf),  # step_ids
+            # Time-saving trick: make sure we do NOT have an 'object' type !
+            oids=df_chunk.xs('oid', level=1, axis=1).T.values.ravel().astype(int),
+            mids=df_chunk.xs('mid', level=1, axis=1).T.values.ravel().astype(str),
+            rids=df_chunk.xs('rid', level=1, axis=1).T.values.ravel().astype(str),
+            eids=df_chunk.xs('eid', level=1, axis=1).T.values.ravel().astype(str),
         )
 
         # Implement the multiplication. First get the uncertainties ...
         raveled_sigmas = np.array([df_chunk.xs(sigma_name, level=1, axis=1).T.values.ravel()])
         # ... turn them into a masked array ...
         raveled_sigmas = np.ma.masked_invalid(raveled_sigmas)
+
+        # If all the sigmas are NaN's, let's skip the matrix multiplication to save *a lot* of time
+        if raveled_sigmas.mask.all():
+            x_ms.loc[:, sigma_name] = np.nan
+            V_mats[sigma_name] = np.ma.masked_invalid(np.full((len(x_ms), len(x_ms)), np.nan))
+            continue
+
+        # If there are no correlations, I can avoid some potentially large (and time-consuming)
+        # matrix multiplications.
+        if (np.tril(cc_mat, k=-1) == 0).all() and (np.triu(cc_mat, k=+1) == 0).all():
+            variances = (raveled_sigmas**2 * G_mat**2).sum(axis=1).filled(np.nan)
+            x_ms.loc[:, sigma_name] = np.sqrt(variances)
+            V_mats[sigma_name] = np.ma.masked_invalid(np.diag(variances, k=0))
+            continue
+
         # ... and combine them with the correlation coefficients. Mind the mix of Hadamard and dot
         # products to get the correct mix !
         U_mat = np.multiply(cc_mat, np.ma.dot(raveled_sigmas.T, raveled_sigmas))
