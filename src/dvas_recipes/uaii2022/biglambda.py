@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 
 
 @log_func_call(logger)
-def biglambda_tod(prf_tags, mid, tod, suffix='', institution='',
+def biglambda_tod(prf_tags, mid, tods, suffix='', institution='',
                   gph_min=0, gph_bin_size=100, gph_bin_count=350):
     """ Highest-level recipe function responsible for assembling OSCAR profiles, and storing the
     result in a dedicated netCDF.
@@ -45,7 +45,7 @@ def biglambda_tod(prf_tags, mid, tod, suffix='', institution='',
     Args:
         prf_tags (list of str): tag name(s) for the search query into the database.
         mid (str): 'mid' to process.
-        tod (list of str): time-of-days to process.
+        tods (list of str): times-of-day to process (OR).
         suffix (str, optional): name of the netCDF file suffix. Defaults to ''.
         institution (str, optional): for the netCDF eponym field. Defaults to ''.
         gph_min (list, optional): min gph altitude to consider, in m. Defaults to 0.
@@ -54,15 +54,12 @@ def biglambda_tod(prf_tags, mid, tod, suffix='', institution='',
 
     """
 
-    # Make sure the tods are in the search tags
-    prf_tags += tod
-
     db_view = DB.extract_global_view()
     # Second sanity check - make sure the mid is in the DB
     if mid not in db_view.mid.unique().tolist():
         raise DvasRecipesError(f'mid unknown: {mid}')
     else:
-        logger.info('Processing %s %s...', mid, tod)
+        logger.info('Processing %s %s...', mid, tods)
 
     # Get the model name and model description
     mdesc = db_view[db_view.mid == mid].mdl_desc.unique()
@@ -75,7 +72,7 @@ def biglambda_tod(prf_tags, mid, tod, suffix='', institution='',
     mname = mname[0]
 
     # Create the netCDF that will be used to store the data
-    fname = '_'.join([suffix, 'big-lambda', mid, '-'.join([item[4:] for item in tod])]) + '.nc'
+    fname = '_'.join([suffix, 'big-lambda', mid, '-'.join([item[4:] for item in tods])]) + '.nc'
 
     # What is the destination for the nc files ?
     out_path = dvas_path_var.output_path
@@ -108,12 +105,13 @@ def biglambda_tod(prf_tags, mid, tod, suffix='', institution='',
     set_attribute(rootgrp, 'd.Sonde.ModelName', f'{mname}')
     set_attribute(rootgrp, 'd.Sonde.ModelDescription', f'{mdesc}')
 
-    set_attribute(rootgrp, 'd.tod', f'{",".join([item[4:] for item in tod])}')
+    set_attribute(rootgrp, 'd.tod', f'{",".join([item[4:] for item in tods])}')
     set_attribute(rootgrp, 'd.biglambda.gph_min', f'{gph_min} m')
     set_attribute(rootgrp, 'd.biglambda.gph_bin_size', f'{gph_bin_size} m')
 
     # What search query will let me access the data I need ?
-    prf_filt = tools.get_query_filter(tags_in=prf_tags + [TAG_DTA],
+    prf_filt = tools.get_query_filter(tags_in_and=prf_tags + [TAG_DTA],
+                                      tags_in_or=tods,
                                       tags_out=dru.rsid_tags(pop=prf_tags) + [TAG_CWS],
                                       mids=[mid])
 
