@@ -368,7 +368,7 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None):
 
     # Basic sanity check of mid
     if not isinstance(mids, list):
-        raise DvasRecipesError(f'Ouch ! I need a list of mids, not: {mids}')
+        raise DvasRecipesError(f'I need a list of mids, not: {mids}')
 
     # Prepare the search queries
     prf_filt = tools.get_query_filter(tags_in=prf_tags+[eid, rid],
@@ -456,12 +456,12 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None):
 
         # Very well, let us plot all these things.
         # First, plot the profiles themselves
-        ax0.plot(prf_pdf.loc[:, PRF_ALT].values, prf_pdf.loc[:, PRF_VAL].values,
+        ax0.plot(cws_pdf.loc[:, PRF_ALT].values, prf_pdf.loc[:, PRF_VAL].values,
                  lw=0.4, ls='-', drawstyle='steps-mid', c='k', alpha=1,
                  label=mid[0])
         ax0.plot(cws_pdf.loc[:, PRF_ALT].values, cws_pdf.loc[:, PRF_VAL].values,
                  lw=0.4, ls='-', drawstyle='steps-mid', c='darkorchid', alpha=1, label='CWS')
-        ax0.fill_between(prf_pdf.loc[:, PRF_ALT].values,
+        ax0.fill_between(cws_pdf.loc[:, PRF_ALT].values,
                          prfs.get_prms(PRF_VAL).max(axis=1).values,
                          prfs.get_prms(PRF_VAL).min(axis=1).values,
                          facecolor=(0.8, 0.8, 0.8), step='mid', edgecolor='none',
