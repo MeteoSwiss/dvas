@@ -110,7 +110,7 @@ def biglambda_tod(prf_tags, mid, tods, suffix='', institution='',
     set_attribute(rootgrp, 'd.biglambda.gph_bin_size', f'{gph_bin_size} m')
 
     # What search query will let me access the data I need ?
-    prf_filt = tools.get_query_filter(tags_in_and=prf_tags + [TAG_DTA],
+    prf_filt = tools.get_query_filter(tags_in=prf_tags + [TAG_DTA],
                                       tags_in_or=tods,
                                       tags_out=dru.rsid_tags(pop=prf_tags) + [TAG_CWS],
                                       mids=[mid])
