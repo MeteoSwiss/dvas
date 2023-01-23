@@ -1,4 +1,4 @@
-# Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+# Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.
 #
 # Distributed under the terms of the GNU General Public License v3.0 or later.
 #
@@ -104,6 +104,7 @@ rcp_steps:
         anchor_alt: 5000 # Initial (single) altitude to anchor all profiles.
         global_match_var: 'gph' # Variable to match globally
         valid_value_range: [4000, 6000] # If a len(2) list is set, global_match_var values outside the range will be ignored.
+        sync_wrt_mid: (gdp)RS41 # Radiosonde model id against which to synchronize all other profiles.
         crop_pre_gdp: True # It True, profiles will be cropped at the first GDP point.
 
     # Simple plotting step of the complete profiles for all the variables.

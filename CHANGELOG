@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [v0.9.1.dev0]
 ### Added:
+ - [fpavogt, 23.01.2023] Add choice of mid to sync from val
 ### Fixed:
  - [fpavogt, 17.01.2023] Left align ylabels accross suplots (fix #272)
 ### Changed:
