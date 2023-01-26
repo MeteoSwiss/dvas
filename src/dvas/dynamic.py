@@ -12,3 +12,6 @@ Module contents: dvas dynamic variables
 #: bool: whether the DB should be stored in memory, or not.
 # Placing this here for now ... probably there's a better place for it `/`
 DB_IN_MEMORY = False
+
+#: bool: whether the profile data should be stored in the db, or in individual text file on disk.
+DATA_IN_DB = True

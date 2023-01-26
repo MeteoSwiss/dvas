@@ -33,6 +33,7 @@ rcp_params:
         log_mode: 2 # 0 = no logs, 1 = log to file only, 2 = file + screen, 3 = screen only.
         log_lvl: INFO # DEBUG, INFO, WARNING.
         reset_db: True # Whether to reset the DB, or use an existing one.
+        data_in_db: False # Whether to store the data in the db, or in text files on disk
         do_latex: True # True = slow but pretty plots. Requires a working system-wide LaTeX setup!
         plot_fmts:
             - pdf
