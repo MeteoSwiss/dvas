@@ -15,7 +15,7 @@ rcp_paths:
     path_anchors:  # Define useful shortcuts for the other paths
         common_base: &common_base ./
     config_dir_path:
-        base_path: *common
+        base_path: *common_base
         sub_path: config
     orig_data_path:
         base_path: *common_base
