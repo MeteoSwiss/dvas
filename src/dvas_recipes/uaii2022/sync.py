@@ -185,6 +185,9 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var, valid_value_range
     shifts_alt = dts.get_sync_shifts_from_alt(prfs, ref_alt=anchor_alt)
     logger.info('Sync. shifts from alt (%.1f): %s', anchor_alt, shifts_alt)
 
+    if any([item is None for item in shifts_alt]):
+        raise DvasRecipesError('Invalid shift value derived from alt')
+
     # Use these to get synch shifts from the variable
     shifts_val = dts.get_sync_shifts_from_val(prfs, max_shift=20, first_guess=shifts_alt,
                                               valid_value_range=valid_value_range,

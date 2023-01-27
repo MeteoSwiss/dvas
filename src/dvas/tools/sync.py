@@ -82,6 +82,20 @@ def get_sync_shifts_from_alt(prfs, ref_alt=5000.):
     # Extract the altitudes
     alts = prfs.get_prms(PRF_ALT)
 
+    # Add a check to make sure the altitudes actually cover the proper range.
+    # Else, I will derive bad shifts
+    bad_h = (alts.max()-ref_alt) < 0
+    bad_m = (alts.min()-ref_alt) > 0
+    if bad_h.any() or bad_m.any():
+        if bad_h.any():
+            logger.error('Ref. alt. sync impossible (MAX alt too low): %s',
+                         [mid[0] for (ind, mid) in enumerate(prfs.get_info('mid'))
+                          if bad_h.values[ind]])
+        if bad_m.any():
+            logger.error('Ref. alt. sync impossible (MIN alt too high): %s',
+                         [mid[0] for (ind, mid) in enumerate(prfs.get_info('mid'))
+                          if bad_m.values[ind]])
+
     # What is the index of the first profile that best matches the ref_alt ?
     ref_ind_0 = (alts[0]-ref_alt).abs().idxmin()
 
@@ -97,6 +111,9 @@ def get_sync_shifts_from_alt(prfs, ref_alt=5000.):
 
     # Make sure to keep them all positive
     out -= np.min(out)
+
+    out = [val if ~(bad_h | bad_m).values[ind] else None for (ind, val) in enumerate(out)]
+
     # Return the corresponding shifts, not forgetting that the first profile stays where it is.
     return list(out)
 
