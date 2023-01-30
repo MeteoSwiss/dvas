@@ -208,7 +208,7 @@ class Recipe:
 
             # Adjust the input and output paths accordingly
             setattr(path_var, 'output_path', path_var.output_path / fids)
-            setattr(path_var, 'orig_data_path', path_var.orig_data_path / fids)
+            setattr(path_var, 'orig_data_path', path_var.orig_data_path)
 
             rcp_dyn.ALL_FLIGHTS = eids_to_treat
 
