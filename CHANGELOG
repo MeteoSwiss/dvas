@@ -4,16 +4,21 @@ The format is inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [v0.9.2.dev0]
+### Added:
+### Fixed:
+ - [fpavogt, 31.01.2023] Ignore NaNs when unwrapping angles (fix #273)
+### Changed:
+### Deprecated:
+### Removed:
+### Security:
+
 ## [v0.9.1.dev0]
 ### Added:
  - [fpavogt, 26.01.2023] Add option to store profile data on disk instead of the db
  - [fpavogt, 23.01.2023] Add choice of mid to sync from val
 ### Fixed:
  - [fpavogt, 17.01.2023] Left align ylabels accross suplots (fix #272)
-### Changed:
-### Deprecated:
-### Removed:
-### Security:
 
 ## [v0.9.0.dev0]
 ### Added:
