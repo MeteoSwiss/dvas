@@ -62,11 +62,11 @@ class ResampleStrategy(MPStrategyAC):
 
         # Some sanity checks to begin with
         if not isinstance(prfs, list):
-            raise DvasError(f"Ouch ! prfs should be of type list, and not: {type(prfs)}")
+            raise DvasError(f"prfs should be of type list, and not: {type(prfs)}")
         # The following should in principle never happen because the strategy ensures that.
         # If this blows up, then something must have gone really wrong ...
         if np.any([PRF_TDT not in prf.get_index_attr() for prf in prfs]):
-            raise DvasError("Ouch ! I can only resample profiles with a timedelta array ...")
+            raise DvasError("I can only resample profiles with a timedelta array ...")
 
         # Very well, let's start looping and resampling each Profile
         for (prf_ind, prf) in enumerate(prfs):
@@ -89,12 +89,12 @@ class ResampleStrategy(MPStrategyAC):
 
                 if any(bad := (tsteps.diff() < 0)):
 
-                    logger.error('Found %i decreasing timesteps. Cropping them now. (%s)',
-                                 len(bad[bad]), prf.info.src)
+                    logger.warning('Found %i decreasing timesteps. Cropping them now. (%s)',
+                                   len(bad[bad]), prf.info.src)
 
                 elif any(bad := (tsteps.diff() == 0)):
-                    logger.error('Found %i duplicated timesteps. Cropping them now. (%s)',
-                                 len(bad[bad]), prf.info.src)
+                    logger.warning('Found %i duplicated timesteps. Cropping them now. (%s)',
+                                   len(bad[bad]), prf.info.src)
                 else:
                     is_bad = False
 
