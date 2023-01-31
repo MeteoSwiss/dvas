@@ -154,7 +154,11 @@ class ResampleStrategy(MPStrategyAC):
 
             # Unwrap angles if necessary
             if circular:
-                this_data[PRF_VAL] = np.rad2deg(np.unwrap(np.deg2rad(this_data[PRF_VAL])))
+                # Fix 273: ignore NaNs in unwrap, following the suggestion by ecatmur on SO
+                # https://stackoverflow.com/questions/37027295
+                valids = ~this_data[PRF_VAL].isna().values
+                this_data.loc[valids, PRF_VAL] = \
+                    np.rad2deg(np.unwrap(np.deg2rad(this_data.loc[valids, PRF_VAL].values)))
 
             # Duplicate the last point as a "pseudo" new time step.
             # This is to ensure proper interpolation all the way to the very edge of the original
@@ -207,6 +211,14 @@ class ResampleStrategy(MPStrategyAC):
                     # (rather than a sum) for compatibility with process_chunk()
                     x_dx[(0, col)] = this_data.iloc[x_ip1_ind-1][col].values * (omega_vals-1)
                     x_dx[(1, col)] = this_data.iloc[x_ip1_ind][col].values * omega_vals
+
+                    # When I multiply by 0, make sure the NaNs disappear. Else I risk propagating
+                    # it while it is not required. What follows may seem convoluted, but it should
+                    # ensure that the column types do not get messed up in the process.
+                    x_dx.loc[omega_vals-1 == 0, (0, col)] = \
+                        pd.Series([0]).astype(x_dx[(0, col)].dtype).values[0]
+                    x_dx.loc[omega_vals == 0, (1, col)] = \
+                        pd.Series([0]).astype(x_dx[(1, col)].dtype).values[0]
 
             # Deal with the uncertainties, in case I do not have a GDPProfile
             for col in [PRF_UCS, PRF_UCT, PRF_UCU]:

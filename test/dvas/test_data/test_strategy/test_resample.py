@@ -108,9 +108,9 @@ class TestResampleStrategy:
 
         # Prepare some datasets to play with
         info_1 = InfoManager('20201217T0000Z', 1)
-        data_1 = pd.DataFrame({'alt': [10., 15., 20., 35, 35, 42, 45],
-                               'val': [0., 1., 359, 181, 179, 358, 2],
-                               'flg': [0]*7, 'tdt': [0, 1, 1.5, 2.5, 3, 3.5, 4.5]})
+        data_1 = pd.DataFrame({'alt': [10., 15., 20., 35, 35, 42, 45, 50, 55, 60, 70],
+                               'val': [0., 1., 359, 181, 179, 358, 2, 358, 359, np.nan, 10],
+                               'flg': [0]*11, 'tdt': [0, 1, 1.5, 2.5, 3, 3.5, 4.5, 5, 6, 7, 8]})
 
         # Let's build a multiprofile so I can test things out.
         multiprf = MultiRSProfile()
@@ -121,4 +121,6 @@ class TestResampleStrategy:
         # Let's launch the resampling
         out = multiprf.resample(freq='1s', interp_dist=1, inplace=False)
 
-        assert np.array_equal(out[0].data[PRF_VAL].round(10).values, [0, 1, 270, 179, 0])
+        assert np.array_equal(out[0].data[PRF_VAL].round(10).values,
+                              [0, 1, 270, 179, 0, 358, 359, np.nan, 10],
+                              equal_nan=True)
