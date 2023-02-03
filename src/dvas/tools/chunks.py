@@ -491,7 +491,8 @@ def biglambda(df_chunk):
     return chunk_out, jac_mat
 
 
-def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean'):
+def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean',
+                  return_V_mats=True):
     """ Process a DataFrame chunk and propagate the errors.
 
     Args:
@@ -502,6 +503,8 @@ def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean'):
             ['arithmetic mean', 'weighted arithmetic mean', 'circular mean',
             'weighted circular mean', 'arithmetic delta', 'circular delta', 'biglambda'].
             Defaults to 'weighted arithmetic mean'.
+        return_V_mats (bool, optional): if set to False, will not return the correlation matrices.
+           Doing so saves a lot of memory. Defaults to True.
 
     Returns:
         pandas.DataFrame, dict: the processing outcome, including all the errors,
@@ -662,7 +665,10 @@ def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean'):
         x_ms.loc[:, sigma_name] = np.sqrt(V_mat.diagonal().filled(np.nan))
 
         # Keep track of the covariance matrix, in order to return them all to the user.
-        V_mats[sigma_name] = V_mat
+        if return_V_mats:
+            V_mats[sigma_name] = V_mat
+        else:
+            V_mats[sigma_name] = None
 
     # All done
     return x_ms, V_mats

@@ -144,7 +144,7 @@ def biglambda_tod(prf_tags, mid, tods, suffix='', institution='',
 
         # Start processing chunks
         logger.info('Processing the high-resolution chunks for %s ...', var_name)
-        proc_func = functools.partial(process_chunk, method='biglambda')
+        proc_func = functools.partial(process_chunk, method='biglambda', return_V_mats=False)
         if dynamic.N_CPUS == 1:
             proc_chunks = map(proc_func, chunks)
         else:
