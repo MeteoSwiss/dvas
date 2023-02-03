@@ -625,11 +625,9 @@ def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean'):
 
         # Implement the multiplication. First get the uncertainties ...
         raveled_sigmas = np.array([df_chunk.xs(sigma_name, level=1, axis=1).T.values.ravel()])
-        # ... turn them into a masked array ...
-        raveled_sigmas = np.ma.masked_invalid(raveled_sigmas)
 
         # If all the sigmas are NaN's, let's skip the matrix multiplication to save *a lot* of time
-        if raveled_sigmas.mask.all():
+        if np.isnan(raveled_sigmas).all():
             x_ms.loc[:, sigma_name] = np.nan
             V_mats[sigma_name] = np.ma.masked_invalid(np.full((len(x_ms), len(x_ms)), np.nan))
             continue
@@ -644,7 +642,13 @@ def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean'):
 
         # ... and combine them with the correlation coefficients. Mind the mix of Hadamard and dot
         # products to get the correct mix !
-        U_mat = np.multiply(cc_mat, np.ma.dot(raveled_sigmas.T, raveled_sigmas))
+        # Note here that I delay using masked array as long a possible, since these are much slower
+        # to handle.
+        U_mat = np.dot(raveled_sigmas.T, raveled_sigmas)
+        if not (cc_mat == 1).all():
+            U_mat = np.multiply(cc_mat, U_mat)
+
+        U_mat = np.ma.masked_invalid(U_mat)
 
         # Let's compute the full covariance matrix for the merged profile (for the specific
         # error type).
