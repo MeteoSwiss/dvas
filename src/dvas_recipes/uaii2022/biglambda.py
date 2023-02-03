@@ -138,7 +138,8 @@ def biglambda_tod(prf_tags, mid, tods, suffix='', institution='',
         pdf.sort_values((0, PRF_ALT), inplace=True)
 
         # Ready to build some chunks
-        chunks = [pdf.loc[(pdf[(0, PRF_ALT)] >= item) * (pdf[(0, PRF_ALT)] < gph_bins[ind+1])]
+        chunks = [pdf.loc[(pdf.loc[:, (0, PRF_ALT)] >= item) *
+                          (pdf.loc[:, (0, PRF_ALT)] < gph_bins[ind+1])].copy()
                   for (ind, item) in enumerate(gph_bins[:-1])]
 
         # Start processing chunks
@@ -309,5 +310,4 @@ def compute_biglambda(start_with_tags, mids=None, tods=None, **kwargs):
     # Start looping for the computation
     for mid in mids:
         for tod in tods:
-
             biglambda_tod(prf_tags, mid, tod, **kwargs)
