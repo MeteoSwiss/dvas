@@ -104,7 +104,8 @@ def corr_coeff_matrix(sigma_name, step_ids, oids=None, mids=None, rids=None, eid
         else:
             # Ok, I need to check which points share a common value.
             # Let's not forget that we requested 1D arrays ... so we add a dimension to do a .T
-            conds[cond] = np.array([val]) == np.array([val]).T
+            # Save time by adding a copy to the transpose (?)
+            conds[cond] = np.array([val]) == np.array([val]).T.copy()
 
     # If all the point specified are different in some way(s), then the fastest is to
     # initialize a diagonal matrix.
