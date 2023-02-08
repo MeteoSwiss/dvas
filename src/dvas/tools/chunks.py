@@ -492,7 +492,7 @@ def biglambda(df_chunk):
 
 
 def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean',
-                  return_V_mats=True):
+                  return_V_mats=True, cov_mat_max_side=10000):
     """ Process a DataFrame chunk and propagate the errors.
 
     Args:
@@ -505,6 +505,9 @@ def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean',
             Defaults to 'weighted arithmetic mean'.
         return_V_mats (bool, optional): if set to False, will not return the correlation matrices.
            Doing so saves a lot of memory. Defaults to True.
+        cov_mat_max_side (int, optional): maximum size of the covariance matrix, above which it gets
+            split and iterated over. Reduce this value in case of memory issues. Defaults to 10000,
+            i.e. the matrix will never contain more than 10000 * 10000 elements.
 
     Returns:
         pandas.DataFrame, dict: the processing outcome, including all the errors,
@@ -647,26 +650,49 @@ def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean',
         # products to get the correct mix !
         # Note here that I delay using masked array as long a possible, since these are much slower
         # to handle.
-        U_mat = np.dot(raveled_sigmas.T, raveled_sigmas)
-        if not (cc_mat == 1).all():
-            U_mat = np.multiply(cc_mat, U_mat)
 
-        U_mat = np.ma.masked_invalid(U_mat)
+        # Check if I need to break-up the dot products to save memory, or if I can do it all in one
+        # step.
+        split_into = int(np.ceil(len(df_chunk)/cov_mat_max_side))
+        U_mat = np.ma.masked_invalid(np.full(G_mat.T.shape, np.nan))
 
-        # Let's compute the full covariance matrix for the merged profile (for the specific
-        # error type).
-        # This is a square matrix, with the off-axis elements containing the covarience terms
-        # for the merged profile. All these matrices are masked arrays, such that bad values will be
-        # correctly ignored .... unless that is all we have for a given bin.
-        V_mat = np.ma.dot(G_mat, np.ma.dot(U_mat, G_mat.T))
+        # Start looping and splitting as required
+        start_ind = 0
+        for (ind, sigmas) in enumerate(np.array_split(raveled_sigmas, split_into, axis=1)):
+
+            # How far does this sub-array extend ?
+            end_ind = start_ind + sigmas.shape[1]
+
+            # Get the sub U matrix
+            sub_U_mat = np.dot(sigmas.T, raveled_sigmas)
+
+            # Deal with correlation coefficients if required
+            if not (cc_mat[start_ind:end_ind] == 1).all():
+                np.multiply(cc_mat[start_ind:end_ind], sub_U_mat, out=sub_U_mat)
+
+            sub_U_mat = np.ma.masked_invalid(sub_U_mat, copy=False)
+
+            # Let's compute the covariance matrix for the merged profile (for the specific
+            # error type).
+            # This is a square matrix, with the off-axis elements containing the covarience terms
+            # for the merged profile. All these matrices are masked arrays, such that bad values
+            # will be correctly ignored .... unless that is all we have for a given bin.
+            U_mat[start_ind:end_ind] = np.ma.dot(sub_U_mat, G_mat.T)
+
+            # Let's not forget to update the starting index for the next loop
+            start_ind += sigmas.shape[1]
+
+        # Do the second part of the GUG dot product. I won't split this one in chunks.
+        U_mat = np.ma.dot(G_mat, U_mat)
 
         # Assign the propagated uncertainty values to the combined df_chunk, taking care of
         # replacing any masked element with NaNs.
-        x_ms.loc[:, sigma_name] = np.sqrt(V_mat.diagonal().filled(np.nan))
+        x_ms.loc[:, sigma_name] = np.sqrt(U_mat.diagonal().filled(np.nan))
 
         # Keep track of the covariance matrix, in order to return them all to the user.
+        # Unless I am trying to keep the memory use as low as possible.
         if return_V_mats:
-            V_mats[sigma_name] = V_mat
+            V_mats[sigma_name] = U_mat
         else:
             V_mats[sigma_name] = None
 
