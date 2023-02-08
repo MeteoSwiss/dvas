@@ -227,9 +227,12 @@ def biglambda_tod(prf_tags, mid, tods, suffix='', institution='',
 
         # Let us now deal with the region chunks
         for region in ['planetary_boundary_layer', 'troposphere', 'free_troposphere',
-                       'upper_troposphere_lower_stratosphere', 'stratosphere']:
+                       'upper_troposphere_lower_stratosphere',
+                       'stratosphere']:
+
             logger.info('Processing the %s chunk for %s ...', region, var_name)
             flg = f"is_in_{region}"
+
             pdf = prfs.get_prms(
                 [PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCS, PRF_UCT, PRF_UCU, 'uc_tot'],
                 mask_flgs=None, request_flgs=[flg, 'has_valid_cws'],
