@@ -4,14 +4,19 @@ The format is inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [v0.9.2.dev0]
+## [v0.9.3.dev0]
 ### Added:
 ### Fixed:
- - [fpavogt, 31.01.2023] Ignore NaNs when unwrapping angles (fix #273)
+ - [fpavogt, 08.02.2023] Adjust pylint action for pylint 2.16
 ### Changed:
+ - [fpavogt, 08.02.2023] Break-up dot products to keep memory use low
 ### Deprecated:
 ### Removed:
 ### Security:
+
+## [v0.9.2.dev0]
+### Fixed:
+ - [fpavogt, 31.01.2023] Ignore NaNs when unwrapping angles (fix #273)
 
 ## [v0.9.1.dev0]
 ### Added:

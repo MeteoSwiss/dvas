@@ -19,7 +19,10 @@ import argparse
 import glob
 import os
 import re
-from pylint import epylint as lint
+from io import StringIO
+from contextlib import redirect_stderr
+from pylint.lint import Run
+from pylint.reporters.text import TextReporter
 
 
 def main():
@@ -50,16 +53,15 @@ def main():
     if args.restrict is not None:
 
         error_codes = ','.join(args.restrict)
-        pylint_command = '--disable=all --enable='+error_codes
+        pylint_command = ['--disable=all', '--enable=' + error_codes]
 
     # or do I rather want to simply exclude some errors ?
     elif args.exclude is not None:
         error_codes = ','.join(args.exclude)
-        pylint_command = '--disable='+error_codes
+        pylint_command = ['--disable=' + error_codes]
 
     else:  # just run pylint without tweaks
-
-        pylint_command = ''
+        pylint_command = []
 
     # Get a list of all the .py files here and in all the subfolders.
     fn_list = glob.glob(os.path.join('.', '**', '*.py'), recursive=True)
@@ -68,13 +70,13 @@ def main():
     for bad_item in [os.path.join('.', 'build'), os.path.join('.', 'docs')]:
         fn_list = [item for item in fn_list if bad_item not in item]
 
-    # Turn this into a string to feed pylint
-    fn_list = ' '.join(fn_list)
-
-    # Launch pylint with the appropriate options
-    (pylint_stdout, pylint_stderr) = lint.py_run(fn_list + ' ' + pylint_command, return_std=True)
-
-    # Extract the actual messages
+    # Launch pylint with the appropriate options, and get the results back out
+    # https://pylint.pycqa.org/en/v2.16.1/development_guide/api/pylint.html
+    # Let's also make sure to catch the stder
+    pylint_stdout = StringIO()  # Custom open stream
+    reporter = TextReporter(pylint_stdout)
+    with redirect_stderr(StringIO()) as pylint_stderr:
+        Run(pylint_command + fn_list, reporter=reporter, exit=False)
     msgs = pylint_stdout.getvalue()
 
     # fpavogt, 2020-12-09: let's check the error messages, in case something went very wrong ...
@@ -85,7 +87,7 @@ def main():
         print('pylint stderr:')
         print(err_msgs)
 
-        raise Exception('Ouch! The linting crashed ?!')
+        raise RuntimeError('The linting crashed ?!')
 
     # Extract the score ...
     score = re.search(r'\s([\+\-\d\.]+)/10', msgs)[1]
@@ -96,7 +98,8 @@ def main():
     if args.restrict is not None and score < 10:
         # Display the output, so we can learn something from it if needed
         print(msgs)
-        raise Exception('Ouch! Some forbidden pylint error codes are present!')
+        # pylint: disable=broad-exception-raised
+        raise Exception('Some forbidden pylint error codes are present!')
 
     # If I do not have any restricted errors, then simply show the pylint errors without failing.
     print(msgs)
@@ -105,7 +108,8 @@ def main():
     # by a Github Action.
     if args.min_score is not None:
         if score < args.min_score:
-            raise Exception('''Ouch! pylint final score of %.2f is smaller than the specified
+            # pylint: disable=broad-exception-raised
+            raise Exception('''pylint final score of %.2f is smaller than the specified
                                threshold of %.2f !''' % (float(score), args.min_score))
 
 
