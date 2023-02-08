@@ -199,12 +199,12 @@ rcp_steps:
         institution: Federal Office of Meteorology and Climatology - MeteoSwiss
         gph_min: 0 # Minimum gph value to consider, in m.
         gph_bin_size: 100 # Size of the gph bins for the high-resolution Big Lambda profile, in m.
-        gph_bin_count: 340 # Number of bins for the high-resolution Big Lambda profile.
+        gph_bin_count: 350 # Number of bins for the high-resolution Big Lambda profile.
 
     # Plot the deltas as a function of the model id, rather than as a function of flight.
     - fct: uaii2022.plots.dtas_per_mid
       step_id: '11'
-      run: True
+      run: False
       kwargs:
         start_with_tags: # list of tags to identify profiles in the database
           - '08'
