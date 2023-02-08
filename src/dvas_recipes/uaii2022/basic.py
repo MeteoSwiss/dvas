@@ -103,7 +103,7 @@ def flag_phases(prfs):
             max_alt_id = prf.data.index.get_level_values(PRF_ALT).argmax()
             is_descent = prf.data.index.get_level_values(PRF_IDX) > max_alt_id
             if is_descent.any():
-                logger.warning('Cannot identify descent phase: missing metadata (%s)',
+                logger.warning('No burst time found in metadata (%s)',
                                prf.info.src)
                 logger.info(
                     'Points after max alt %.1f [%s] @ %.1f [s] will be flagged as "%s". (%s)',

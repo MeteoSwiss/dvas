@@ -71,7 +71,7 @@ def test_get_sync_shifts_from_alt(prfs):
 
     assert isinstance(out, list)
     assert len(out) == len(prfs)
-    assert out == [0, 1]
+    assert out == [0, None]  # If the value of 5000 m is not covered, return None
 
 
 def test_get_sync_shifts_from_val(prfs):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 
-Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -82,6 +82,20 @@ def get_sync_shifts_from_alt(prfs, ref_alt=5000.):
     # Extract the altitudes
     alts = prfs.get_prms(PRF_ALT)
 
+    # Add a check to make sure the altitudes actually cover the proper range.
+    # Else, I will derive bad shifts
+    bad_h = (alts.max()-ref_alt) < 0
+    bad_m = (alts.min()-ref_alt) > 0
+    if bad_h.any() or bad_m.any():
+        if bad_h.any():
+            logger.error('Ref. alt. sync impossible (MAX alt too low): %s',
+                         [mid[0] for (ind, mid) in enumerate(prfs.get_info('mid'))
+                          if bad_h.values[ind]])
+        if bad_m.any():
+            logger.error('Ref. alt. sync impossible (MIN alt too high): %s',
+                         [mid[0] for (ind, mid) in enumerate(prfs.get_info('mid'))
+                          if bad_m.values[ind]])
+
     # What is the index of the first profile that best matches the ref_alt ?
     ref_ind_0 = (alts[0]-ref_alt).abs().idxmin()
 
@@ -97,12 +111,16 @@ def get_sync_shifts_from_alt(prfs, ref_alt=5000.):
 
     # Make sure to keep them all positive
     out -= np.min(out)
+
+    out = [val if ~(bad_h | bad_m).values[ind] else None for (ind, val) in enumerate(out)]
+
     # Return the corresponding shifts, not forgetting that the first profile stays where it is.
     return list(out)
 
 
 @log_func_call(logger)
-def get_sync_shifts_from_val(prfs, max_shift=100, first_guess=None, valid_value_range=None):
+def get_sync_shifts_from_val(prfs, max_shift=100, first_guess=None, valid_value_range=None,
+                             sync_wrt_mid=None):
     """ Estimates the shifts required to synchronize profiles, such that <abs(val_A-val_B)> is
     minimized.
 
@@ -114,6 +132,8 @@ def get_sync_shifts_from_val(prfs, max_shift=100, first_guess=None, valid_value_
             Defaults to None.
         valid_value_range (list, optional): if set, values outside the range set by this list of
             len(2) will be ignored.
+        sync_wrt_mid (str, optional): if set, will sync all profiles with respect to this one.
+            Defaults to 0 = first profile in the list.
 
     Returns:
         list of int: list of shifts required to synchronize profiles.
@@ -128,6 +148,10 @@ def get_sync_shifts_from_val(prfs, max_shift=100, first_guess=None, valid_value_
         first_guess = [first_guess] * len(prfs)
     if len(first_guess) != len(prfs):
         raise DvasError('first_guess should be the same length as prfs.')
+    if sync_wrt_mid is None:
+        sync_wrt_ind = 0
+    else:
+        sync_wrt_ind = prfs.get_info('mid').index([sync_wrt_mid])
 
     # In what follows, we assume that all the profiles are sampled with a fixed, uniform timestep.
     # Let's raise an error if this is not the case.
@@ -166,7 +190,8 @@ def get_sync_shifts_from_val(prfs, max_shift=100, first_guess=None, valid_value_
     with warnings.catch_warnings():
         warnings.filterwarnings('ignore', r'Mean of empty slice')
         ind = [[np.nanmean(np.abs(1. -
-                           vals.shift(first_guess[0])[0]/vals.shift(first_guess[ind]+shift)[ind]))
+                                  vals.shift(first_guess[sync_wrt_ind])[sync_wrt_ind] /
+                                  vals.shift(first_guess[ind]+shift)[ind]))
                 for ind in range(len(prfs))] for shift in shifts]
 
     ind = np.nanargmin(np.array(ind), axis=0)

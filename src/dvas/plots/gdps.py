@@ -160,6 +160,7 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     altlbl += f' [{cws_prf.var_info[PRF_ALT]["prm_unit"]}]'
     ax2.set_xlabel(pu.fix_txt(altlbl))
 
+    # Here, plot the axis labels as text, so that they are all aligned vertically accross subplots
     ax0.text(-0.1, 0.5, pu.fix_txt(ylbl), ha='left', va='center',
              transform=ax0.transAxes, rotation=90)
     plt.setp(ax0.get_xticklabels(), visible=False)
@@ -218,7 +219,7 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
 
     # Create a gridspec structure
     gs_info = gridspec.GridSpec(5, 1, height_ratios=[1]*5, width_ratios=[1],
-                                left=0.09, right=0.87, bottom=0.08, top=0.95,
+                                left=0.09, right=0.87, bottom=0.1, top=0.95,
                                 wspace=0.5, hspace=0.1)
 
     # Create the axes - one for the profiles, and one for uctot, ucs, uct, ucu
@@ -280,7 +281,7 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     ax3.set_xlabel(pu.fix_txt(altlbl))
 
     # Legends, labels, etc ...
-    for ax in [ax0, ax0b, ax1, ax2, ax3]:
+    for ax in [ax0, ax0b, ax1, ax2]:
         plt.setp(ax.get_xticklabels(), visible=False)
 
     # Crop the plot to the regions with valid ref_altitudes
@@ -409,10 +410,16 @@ def plot_ks_test(df, alpha, unit=None, left_label=None, right_label=None, **kwar
     else:
         unit = ' ['+pu.fix_txt(unit)+']'
 
-    ax1.set_ylabel(r'$m$')
-    ax2.set_ylabel(r'$k^{p,q}_{e,i}$')
-    ax3.set_ylabel(r'$\Delta^{p,q}_{e,i}$' + unit)
-    ax4.set_ylabel(r'$\sigma(\Delta^{p,q}_{e,i})$' + unit)
+    # Include the y-labels as text, to have them left-aligned accross sub-plots
+    ax1.text(-0.075, 0.5, pu.fix_txt(r'$m$'), ha='left', va='center',
+             transform=ax1.transAxes, rotation=90)
+    ax2.text(-0.075, 0.5, pu.fix_txt(r'$k^{p,q}_{e,i}$'), ha='left', va='center',
+             transform=ax2.transAxes, rotation=90)
+    ax3.text(-0.075, 0.5, pu.fix_txt(r'$\Delta^{p,q}_{e,i}$') + unit, ha='left', va='center',
+             transform=ax3.transAxes, rotation=90)
+    ax4.text(-0.075, 0.5, pu.fix_txt(r'$\sigma(\Delta^{p,q}_{e,i})$') + unit,
+             ha='left', va='center',
+             transform=ax4.transAxes, rotation=90)
     ax4.set_xlabel(r'$i$')
 
     ax1.set_ylim((-0.5 + n_bins, -0.5))

@@ -188,6 +188,8 @@ class Recipe:
         rcp_dyn.RECIPE = rcp_data['rcp_name']
         # Set whether we want to reset the DB, or load an existing one
         self._reset_db = rcp_data['rcp_params']['general']['reset_db']
+        # Set whether the Profile Data is stored in the DB, or to disk
+        self._data_in_db = rcp_data['rcp_params']['general']['data_in_db']
 
         # Setup the dvas paths
         for item in rcp_data['rcp_paths'].items():
@@ -206,7 +208,7 @@ class Recipe:
 
             # Adjust the input and output paths accordingly
             setattr(path_var, 'output_path', path_var.output_path / fids)
-            setattr(path_var, 'orig_data_path', path_var.orig_data_path / fids)
+            setattr(path_var, 'orig_data_path', path_var.orig_data_path)
 
             rcp_dyn.ALL_FLIGHTS = eids_to_treat
 
@@ -286,7 +288,7 @@ class Recipe:
         return len(self._steps)
 
     @staticmethod
-    def init_db(reset: bool = True):
+    def init_db(reset: bool = True, data_in_db: bool = True):
         """ Initialize the dvas database, and fetch the original data required for the recipe.
 
         Args:
@@ -296,6 +298,8 @@ class Recipe:
 
         # Here, make sure the DB is stored locally, and not in memory.
         dyn.DB_IN_MEMORY = False
+        # Set whether the Profile data is stored in the DB, or on external text files
+        dyn.DATA_IN_DB = data_in_db
 
         if reset:
             logger.info("Resetting the DB ...")
@@ -356,7 +360,7 @@ class Recipe:
             self._reset_db = False
 
         # First, we setup the dvas database
-        self.init_db(reset=self._reset_db)
+        self.init_db(reset=self._reset_db, data_in_db=self._data_in_db)
 
         # If warranted, find all the flights that need to be processed.
         if rcp_dyn.ALL_FLIGHTS is None:

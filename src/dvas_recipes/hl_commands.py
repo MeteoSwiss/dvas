@@ -117,6 +117,7 @@ def optimize(n_cpus=None, prf_length=7001, chunk_min=50, chunk_max=300, n_chunk=
     # user, and avoid issues when creating the actual one down the line.
     # The down side is that things are about to get a bit manual ...
     dyn.DB_IN_MEMORY = True
+    dyn.DATA_IN_DB = True  # We also make sure to store all the data is this temporary db
     print('\n Setting-up a temporary in-memory dvas database ...')
 
     # Set the config file path, so that we can have a DB initialize with proper parameters.

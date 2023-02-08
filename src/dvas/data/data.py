@@ -404,7 +404,7 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
                     val = val[0]
 
                 # Actually assign the value to each measurement of the profile.
-                out[prf_id].loc[:, item] = val
+                out[prf_id] = out[prf_id].assign(**{f'{item}':val})
 
         # If warranted, pool all the data together
         if pooled:

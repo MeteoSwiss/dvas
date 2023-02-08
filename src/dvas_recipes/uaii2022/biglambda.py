@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 
 
 @log_func_call(logger)
-def biglambda_tod(prf_tags, mid, tod, suffix='', institution='',
+def biglambda_tod(prf_tags, mid, tods, suffix='', institution='',
                   gph_min=0, gph_bin_size=100, gph_bin_count=350):
     """ Highest-level recipe function responsible for assembling OSCAR profiles, and storing the
     result in a dedicated netCDF.
@@ -45,7 +45,7 @@ def biglambda_tod(prf_tags, mid, tod, suffix='', institution='',
     Args:
         prf_tags (list of str): tag name(s) for the search query into the database.
         mid (str): 'mid' to process.
-        tod (list of str): time-of-days to process.
+        tods (list of str): times-of-day to process (OR).
         suffix (str, optional): name of the netCDF file suffix. Defaults to ''.
         institution (str, optional): for the netCDF eponym field. Defaults to ''.
         gph_min (list, optional): min gph altitude to consider, in m. Defaults to 0.
@@ -54,15 +54,12 @@ def biglambda_tod(prf_tags, mid, tod, suffix='', institution='',
 
     """
 
-    # Make sure the tods are in the search tags
-    prf_tags += tod
-
     db_view = DB.extract_global_view()
     # Second sanity check - make sure the mid is in the DB
     if mid not in db_view.mid.unique().tolist():
         raise DvasRecipesError(f'mid unknown: {mid}')
     else:
-        logger.info('Processing %s %s...', mid, tod)
+        logger.info('Processing %s %s...', mid, tods)
 
     # Get the model name and model description
     mdesc = db_view[db_view.mid == mid].mdl_desc.unique()
@@ -75,7 +72,7 @@ def biglambda_tod(prf_tags, mid, tod, suffix='', institution='',
     mname = mname[0]
 
     # Create the netCDF that will be used to store the data
-    fname = '_'.join([suffix, 'big-lambda', mid, '-'.join([item[4:] for item in tod])]) + '.nc'
+    fname = '_'.join([suffix, 'big-lambda', mid, '-'.join([item[4:] for item in tods])]) + '.nc'
 
     # What is the destination for the nc files ?
     out_path = dvas_path_var.output_path
@@ -108,12 +105,13 @@ def biglambda_tod(prf_tags, mid, tod, suffix='', institution='',
     set_attribute(rootgrp, 'd.Sonde.ModelName', f'{mname}')
     set_attribute(rootgrp, 'd.Sonde.ModelDescription', f'{mdesc}')
 
-    set_attribute(rootgrp, 'd.tod', f'{",".join([item[4:] for item in tod])}')
+    set_attribute(rootgrp, 'd.tod', f'{",".join([item[4:] for item in tods])}')
     set_attribute(rootgrp, 'd.biglambda.gph_min', f'{gph_min} m')
     set_attribute(rootgrp, 'd.biglambda.gph_bin_size', f'{gph_bin_size} m')
 
     # What search query will let me access the data I need ?
     prf_filt = tools.get_query_filter(tags_in=prf_tags + [TAG_DTA],
+                                      tags_in_or=tods,
                                       tags_out=dru.rsid_tags(pop=prf_tags) + [TAG_CWS],
                                       mids=[mid])
 
@@ -140,12 +138,13 @@ def biglambda_tod(prf_tags, mid, tod, suffix='', institution='',
         pdf.sort_values((0, PRF_ALT), inplace=True)
 
         # Ready to build some chunks
-        chunks = [pdf.loc[(pdf[(0, PRF_ALT)] >= item) * (pdf[(0, PRF_ALT)] < gph_bins[ind+1])]
+        chunks = [pdf.loc[(pdf.loc[:, (0, PRF_ALT)] >= item) *
+                          (pdf.loc[:, (0, PRF_ALT)] < gph_bins[ind+1])].copy()
                   for (ind, item) in enumerate(gph_bins[:-1])]
 
         # Start processing chunks
         logger.info('Processing the high-resolution chunks for %s ...', var_name)
-        proc_func = functools.partial(process_chunk, method='biglambda')
+        proc_func = functools.partial(process_chunk, method='biglambda', return_V_mats=False)
         if dynamic.N_CPUS == 1:
             proc_chunks = map(proc_func, chunks)
         else:
@@ -228,9 +227,12 @@ def biglambda_tod(prf_tags, mid, tod, suffix='', institution='',
 
         # Let us now deal with the region chunks
         for region in ['planetary_boundary_layer', 'troposphere', 'free_troposphere',
-                       'upper_troposphere_lower_stratosphere', 'stratosphere']:
+                       'upper_troposphere_lower_stratosphere',
+                       'stratosphere']:
+
             logger.info('Processing the %s chunk for %s ...', region, var_name)
             flg = f"is_in_{region}"
+
             pdf = prfs.get_prms(
                 [PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCS, PRF_UCT, PRF_UCU, 'uc_tot'],
                 mask_flgs=None, request_flgs=[flg, 'has_valid_cws'],
@@ -311,5 +313,4 @@ def compute_biglambda(start_with_tags, mids=None, tods=None, **kwargs):
     # Start looping for the computation
     for mid in mids:
         for tod in tods:
-
             biglambda_tod(prf_tags, mid, tod, **kwargs)

@@ -10,6 +10,8 @@ Module contents: Local database management tools
 """
 
 # Import from python packages
+import os
+import pickle
 import logging
 from collections.abc import Iterable
 import pprint
@@ -156,6 +158,9 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                 except (OSError,) as exc:
                     raise DBDirError(f"Error in creating '{self._db.database.parent}' ({exc})") \
                         from exc
+
+        # Keep track of whether the Profile data should be stored in the DB or to disk in text files
+        self._data_in_db = dyn.DATA_IN_DB
 
         # Ready to actually initialize the DB
         self._db.init(file_path, pragmas=pragmas)
@@ -415,17 +420,15 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
                     execute()
 
                 # Delete Data entries
-                Data.delete().\
-                    where(Data.info == info_id).\
-                    execute()
+                if self._data_in_db:
+                    DataIO(Data).delete_from_db(info_id)
+                else:
+                    DataIO(Data).delete_from_disk(info_id)
 
                 # Delete Metadata entries
                 TableMetaData.delete().\
                     where(TableMetaData.info == info_id).\
                     execute()
-
-                # TODO
-                #  Add log
 
             # Insert data (created == True indicate that data are new)
             if (created is True) or (force_write is True):
@@ -490,33 +493,12 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
 
                 # Add Data
                 # --------
-
-                # Create batch index
-                fields = [Data.index, Data.value, Data.info]
-
-                # Create batch data
-                batch_data = zip(
-                    index,
-                    value,
-                    [info_id] * len(value)
-                )
-
-                # Calculate max batch size
-                n_max = floor(SQLITE_MAX_VARIABLE_NUMBER / len(fields))
-
-                # Insert to db
-                # TODO
-                #  Test multithreading in order to speed up data select
-                for batch in chunked(batch_data, n_max):
-                    Data.insert_many(batch, fields=fields).execute()  # noqa pylint: disable=E1120
-
-                # TODO
-                #  Add log
+                if self._data_in_db:
+                    DataIO(Data).insert_in_db(index, value, info_id)
+                else:
+                    DataIO(Data).save_to_disk(index, value, info_id)
 
             else:
-
-                # TODO
-                #  Add log
 
                 pass
 
@@ -571,16 +553,16 @@ class DatabaseManager(metaclass=SingleInstanceMetaClass):
         res = []
         for info_id in info_id_list:
 
-            # TODO
-            #  Consider to implement multithreading in order to speed up data select
             try:
-                qry = (Data.select(Data.index, Data.value).where(Data.info == info_id))
+                if self._data_in_db:
+                    qry = DataIO(Data).get_from_db(info_id)
+                    # 0: index, 1: value
+                    res.append(tuple(unzip(qry.tuples().iterator())))
+                else:
+                    qry = DataIO(Data).get_from_disk(info_id)
+                    # All these tuples are there to match the behavior of the db output exactly
+                    res.append(tuple([tuple(qry[0]), tuple(qry[1])]))
 
-                # 0: index, 1: value
-                res.append(tuple(unzip(qry.tuples().iterator())))
-
-            # TODO
-            #  Detail exception
             except Exception as ex:
                 raise Exception(ex)
 
@@ -1068,3 +1050,80 @@ class DBInsertError(Exception):
 
 class DBDirError(Exception):
     """Exception class for DB directory creating error"""
+
+
+class DataIO():
+    """ Little class dedicated to handling the Data Input-Output, either to/from the DB, or
+    to/from text files writen on disk !
+
+    The existence of this class is questionable, as it may all be coded directly in
+    DatabaseManager().
+    """
+
+    def __init__(self, data):
+        """ """
+
+        self._data = data
+
+    @staticmethod
+    def get_fn(info_id):
+        """ Return the filename (and path) associated to a given info_id on disk. """
+
+        return env_path_var.local_db_path / f'{info_id}.pkl'
+
+    def delete_from_db(self, info_id):
+        """ Delete a data entry initially stored in the DB.
+
+        Args:
+            info_id: id used to tag the data in the DB
+
+        """
+
+        self._data.delete().where(self._data.info == info_id).execute()
+
+    def delete_from_disk(self, info_id):
+        """ Delete a data entry stored in a file on disk. Be robust if the file does not exist. """
+
+        try:
+            os.remove(self.get_fn(info_id))
+            logger.debug('Deleted %s', self.get_fn(info_id))
+
+        except FileNotFoundError:
+            logger.debug('Attempted (and failed) to delete %s', self.get_fn(info_id))
+
+    def insert_in_db(self, index, value, info_id):
+        """ Insert data (composed of a series of index and values)) into the DB, with a specific
+        info_id.
+        """
+        # Create batch index
+        fields = [self._data.index, self._data.value, self._data.info]
+
+        # Create batch data
+        batch_data = zip(index, value, [info_id] * len(value))
+
+        # Calculate max batch size
+        n_max = floor(SQLITE_MAX_VARIABLE_NUMBER / len(fields))
+
+        # Insert to db
+        for batch in chunked(batch_data, n_max):
+            self._data.insert_many(batch, fields=fields).execute()  # noqa pylint: disable=E1120
+
+    def save_to_disk(self, index, value, info_id):
+        """ Save profile data into a custom file, on disk. """
+
+        with open(self.get_fn(info_id), 'wb') as openfile:
+            pickle.dump((index, value), openfile)
+
+    def get_from_db(self, info_id):
+        """ Get data from the DB, given a specific info_id. """
+
+        return (self._data.select(self._data.index,
+                                  self._data.value).where(self._data.info == info_id))
+
+    def get_from_disk(self, info_id):
+        """ Get data stored in a dedicated file, on disk. """
+
+        with open(self.get_fn(info_id), 'rb') as openfile:
+            (index, value) = pickle.load(openfile)
+
+        return (index, value)

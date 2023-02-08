@@ -491,7 +491,8 @@ def biglambda(df_chunk):
     return chunk_out, jac_mat
 
 
-def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean'):
+def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean',
+                  return_V_mats=True, cov_mat_max_side=10000):
     """ Process a DataFrame chunk and propagate the errors.
 
     Args:
@@ -502,6 +503,11 @@ def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean'):
             ['arithmetic mean', 'weighted arithmetic mean', 'circular mean',
             'weighted circular mean', 'arithmetic delta', 'circular delta', 'biglambda'].
             Defaults to 'weighted arithmetic mean'.
+        return_V_mats (bool, optional): if set to False, will not return the correlation matrices.
+           Doing so saves a lot of memory. Defaults to True.
+        cov_mat_max_side (int, optional): maximum size of the covariance matrix, above which it gets
+            split and iterated over. Reduce this value in case of memory issues. Defaults to 10000,
+            i.e. the matrix will never contain more than 10000 * 10000 elements.
 
     Returns:
         pandas.DataFrame, dict: the processing outcome, including all the errors,
@@ -625,11 +631,9 @@ def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean'):
 
         # Implement the multiplication. First get the uncertainties ...
         raveled_sigmas = np.array([df_chunk.xs(sigma_name, level=1, axis=1).T.values.ravel()])
-        # ... turn them into a masked array ...
-        raveled_sigmas = np.ma.masked_invalid(raveled_sigmas)
 
         # If all the sigmas are NaN's, let's skip the matrix multiplication to save *a lot* of time
-        if raveled_sigmas.mask.all():
+        if np.isnan(raveled_sigmas).all():
             x_ms.loc[:, sigma_name] = np.nan
             V_mats[sigma_name] = np.ma.masked_invalid(np.full((len(x_ms), len(x_ms)), np.nan))
             continue
@@ -644,21 +648,53 @@ def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean'):
 
         # ... and combine them with the correlation coefficients. Mind the mix of Hadamard and dot
         # products to get the correct mix !
-        U_mat = np.multiply(cc_mat, np.ma.dot(raveled_sigmas.T, raveled_sigmas))
+        # Note here that I delay using masked array as long a possible, since these are much slower
+        # to handle.
 
-        # Let's compute the full covariance matrix for the merged profile (for the specific
-        # error type).
-        # This is a square matrix, with the off-axis elements containing the covarience terms
-        # for the merged profile. All these matrices are masked arrays, such that bad values will be
-        # correctly ignored .... unless that is all we have for a given bin.
-        V_mat = np.ma.dot(G_mat, np.ma.dot(U_mat, G_mat.T))
+        # Check if I need to break-up the dot products to save memory, or if I can do it all in one
+        # step.
+        split_into = int(np.ceil(len(df_chunk)/cov_mat_max_side))
+        U_mat = np.ma.masked_invalid(np.full(G_mat.T.shape, np.nan))
+
+        # Start looping and splitting as required
+        start_ind = 0
+        for (ind, sigmas) in enumerate(np.array_split(raveled_sigmas, split_into, axis=1)):
+
+            # How far does this sub-array extend ?
+            end_ind = start_ind + sigmas.shape[1]
+
+            # Get the sub U matrix
+            sub_U_mat = np.dot(sigmas.T, raveled_sigmas)
+
+            # Deal with correlation coefficients if required
+            if not (cc_mat[start_ind:end_ind] == 1).all():
+                np.multiply(cc_mat[start_ind:end_ind], sub_U_mat, out=sub_U_mat)
+
+            sub_U_mat = np.ma.masked_invalid(sub_U_mat, copy=False)
+
+            # Let's compute the covariance matrix for the merged profile (for the specific
+            # error type).
+            # This is a square matrix, with the off-axis elements containing the covarience terms
+            # for the merged profile. All these matrices are masked arrays, such that bad values
+            # will be correctly ignored .... unless that is all we have for a given bin.
+            U_mat[start_ind:end_ind] = np.ma.dot(sub_U_mat, G_mat.T)
+
+            # Let's not forget to update the starting index for the next loop
+            start_ind += sigmas.shape[1]
+
+        # Do the second part of the GUG dot product. I won't split this one in chunks.
+        U_mat = np.ma.dot(G_mat, U_mat)
 
         # Assign the propagated uncertainty values to the combined df_chunk, taking care of
         # replacing any masked element with NaNs.
-        x_ms.loc[:, sigma_name] = np.sqrt(V_mat.diagonal().filled(np.nan))
+        x_ms.loc[:, sigma_name] = np.sqrt(U_mat.diagonal().filled(np.nan))
 
         # Keep track of the covariance matrix, in order to return them all to the user.
-        V_mats[sigma_name] = V_mat
+        # Unless I am trying to keep the memory use as low as possible.
+        if return_V_mats:
+            V_mats[sigma_name] = U_mat
+        else:
+            V_mats[sigma_name] = None
 
     # All done
     return x_ms, V_mats

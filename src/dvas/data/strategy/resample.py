@@ -62,11 +62,11 @@ class ResampleStrategy(MPStrategyAC):
 
         # Some sanity checks to begin with
         if not isinstance(prfs, list):
-            raise DvasError(f"Ouch ! prfs should be of type list, and not: {type(prfs)}")
+            raise DvasError(f"prfs should be of type list, and not: {type(prfs)}")
         # The following should in principle never happen because the strategy ensures that.
         # If this blows up, then something must have gone really wrong ...
         if np.any([PRF_TDT not in prf.get_index_attr() for prf in prfs]):
-            raise DvasError("Ouch ! I can only resample profiles with a timedelta array ...")
+            raise DvasError("I can only resample profiles with a timedelta array ...")
 
         # Very well, let's start looping and resampling each Profile
         for (prf_ind, prf) in enumerate(prfs):
@@ -89,12 +89,12 @@ class ResampleStrategy(MPStrategyAC):
 
                 if any(bad := (tsteps.diff() < 0)):
 
-                    logger.error('Found %i decreasing timesteps. Cropping them now. (%s)',
-                                 len(bad[bad]), prf.info.src)
+                    logger.warning('Found %i decreasing timesteps. Cropping them now. (%s)',
+                                   len(bad[bad]), prf.info.src)
 
                 elif any(bad := (tsteps.diff() == 0)):
-                    logger.error('Found %i duplicated timesteps. Cropping them now. (%s)',
-                                 len(bad[bad]), prf.info.src)
+                    logger.warning('Found %i duplicated timesteps. Cropping them now. (%s)',
+                                   len(bad[bad]), prf.info.src)
                 else:
                     is_bad = False
 
@@ -154,7 +154,11 @@ class ResampleStrategy(MPStrategyAC):
 
             # Unwrap angles if necessary
             if circular:
-                this_data[PRF_VAL] = np.rad2deg(np.unwrap(np.deg2rad(this_data[PRF_VAL])))
+                # Fix 273: ignore NaNs in unwrap, following the suggestion by ecatmur on SO
+                # https://stackoverflow.com/questions/37027295
+                valids = ~this_data[PRF_VAL].isna().values
+                this_data.loc[valids, PRF_VAL] = \
+                    np.rad2deg(np.unwrap(np.deg2rad(this_data.loc[valids, PRF_VAL].values)))
 
             # Duplicate the last point as a "pseudo" new time step.
             # This is to ensure proper interpolation all the way to the very edge of the original
@@ -207,6 +211,14 @@ class ResampleStrategy(MPStrategyAC):
                     # (rather than a sum) for compatibility with process_chunk()
                     x_dx[(0, col)] = this_data.iloc[x_ip1_ind-1][col].values * (omega_vals-1)
                     x_dx[(1, col)] = this_data.iloc[x_ip1_ind][col].values * omega_vals
+
+                    # When I multiply by 0, make sure the NaNs disappear. Else I risk propagating
+                    # it while it is not required. What follows may seem convoluted, but it should
+                    # ensure that the column types do not get messed up in the process.
+                    x_dx.loc[omega_vals-1 == 0, (0, col)] = \
+                        pd.Series([0]).astype(x_dx[(0, col)].dtype).values[0]
+                    x_dx.loc[omega_vals == 0, (1, col)] = \
+                        pd.Series([0]).astype(x_dx[(1, col)].dtype).values[0]
 
             # Deal with the uncertainties, in case I do not have a GDPProfile
             for col in [PRF_UCS, PRF_UCT, PRF_UCU]:
