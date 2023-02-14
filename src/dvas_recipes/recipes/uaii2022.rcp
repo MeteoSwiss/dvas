@@ -142,8 +142,8 @@ rcp_steps:
           twilight: 350 # Mean PBL height (twilight) (in gph meters)
           nighttime: 350 # Mean PBL height (night) (in gph meters)
         utls_lims:
-          min: 8000 # UTLS lower limit (in gph meters)
-          max: 18000 # UTLS upper limits (in gph meters)
+          min: 7000 # UTLS lower limit (in gph meters)
+          max: 17000 # UTLS upper limits (in gph meters)
 
     # Export cleaned, resampled, synced, profiles to netCDF
     - fct: uaii2022.export.export_profiles
