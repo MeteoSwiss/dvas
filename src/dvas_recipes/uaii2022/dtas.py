@@ -105,7 +105,7 @@ def compute_deltas(prf_start_with_tags, cws_start_with_tags, do_gdps=False, do_n
 
     # Safety check for the CWS
     if len(cws_prfs) != 1:
-        raise DvasRecipesError(f'Ouch ! I need 1 CWS, but I got {len(cws_prfs)} instead.')
+        raise DvasRecipesError(f'I need 1 CWS, but I got {len(cws_prfs)} instead.')
 
     # Compute the Delta Profiles
     dta_prfs = dtdd.compute(prfs, cws_prfs, circular=dynamic.CURRENT_VAR == 'wdir')
