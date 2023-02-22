@@ -14,7 +14,7 @@ import numpy as np
 
 # Import from dvas
 from dvas.logger import log_func_call
-from dvas.hardcoded import TAG_CWS, TAG_GDP, TAG_DTA, FLG_HASCWS
+from dvas.hardcoded import TAG_CWS, TAG_GDP, FLG_HASCWS
 from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_VAL
 from dvas.hardcoded import FLG_PBL, FLG_FT, FLG_UTLS, FLG_MUS
 from dvas.hardcoded import MTDTA_TROPOPAUSE, MTDTA_PBLH, MTDTA_UTLSMIN, MTDTA_UTLSMAX, MTDTA_MUSMIN

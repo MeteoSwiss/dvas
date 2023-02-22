@@ -20,7 +20,7 @@ from matplotlib import transforms
 from ..logger import log_func_call
 from ..errors import DvasError
 from ..hardcoded import PRF_VAL, PRF_ALT, PRF_TDT, PRF_UCS, PRF_UCT, PRF_UCU
-from ..hardcoded import MTDTA_TROPOPAUSE, MTDTA_PBL, FLG_HASCWS, MTDTA_UTLSMIN, MTDTA_UTLSMAX
+from ..hardcoded import MTDTA_TROPOPAUSE, MTDTA_PBLH, FLG_HASCWS, MTDTA_UTLSMIN, MTDTA_UTLSMAX
 from . import utils as pu
 from ..tools import tools as tt
 
@@ -136,7 +136,7 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
               drawstyle='steps-mid', lw=0.5, ls='-', color='k')
 
     # Display the location of the tropopause and the PBL
-    for (loi, symb) in [(MTDTA_TROPOPAUSE, r'$\prec$'), (MTDTA_PBL, r'$\simeq$'),
+    for (loi, symb) in [(MTDTA_TROPOPAUSE, r'$\prec$'), (MTDTA_PBLH, r'$\simeq$'),
                         (MTDTA_UTLSMIN, r'$\top$'), (MTDTA_UTLSMAX, r'$\bot$')]:
         if loi not in cws_prf[0].info.metadata.keys():
             logger.warning('"%s" not found in CWS metadata.', loi)
