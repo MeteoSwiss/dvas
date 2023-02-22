@@ -239,9 +239,12 @@ def fancy_legend(this_ax, label=None):
 
     """
 
+    if label is not None:
+        label = fix_txt(label)
+
     # Add the legend.
     leg = this_ax.legend(loc='upper left', bbox_to_anchor=(1.01, 1),
-                         title=fix_txt(label), ncol=1, handlelength=1, fancybox=True,
+                         title=label, ncol=1, handlelength=1, fancybox=True,
                          fontsize='small', title_fontsize='small', borderaxespad=0)
 
     # Tweak the thickness of the legen lines as well.
