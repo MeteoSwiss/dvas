@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -16,6 +16,7 @@ from ...database.model import Prm as TableParameter
 #: dict: Default values of labels
 LABEL_VAL_DEF = {
     TableParameter.prm_desc.name: '',
+    TableParameter.prm_cmt.name: '',
     TableParameter.prm_unit.name: '',
 }
 
@@ -25,6 +26,9 @@ PARAMETER_PATTERN_PROP = {
         "type": "string",
     },
     rf"^{TableParameter.prm_desc.name}$": {
+        "type": "string"
+    },
+    rf"^{TableParameter.prm_cmt.name}$": {
         "type": "string"
     },
     rf"^{TableParameter.prm_unit.name}$": {

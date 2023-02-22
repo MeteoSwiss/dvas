@@ -6,7 +6,9 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [v0.9.3.dev0]
 ### Added:
+ - [fpavogt, 22.02.2023] Add new "comment" field to dvas prms (fix #227 wdir info)
 ### Fixed:
+ - [fpavogt, 22.02.2023] Fix #227 (gph AMLS)
  - [fpavogt, 08.02.2023] Adjust pylint action for pylint 2.16
 ### Changed:
  - [fpavogt, 08.02.2023] Break-up dot products to keep memory use low

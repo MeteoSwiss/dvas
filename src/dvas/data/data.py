@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -128,6 +128,7 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
             var_db[res[TableParameter.prm_name.name]]: {
                 TableParameter.prm_name.name: res[TableParameter.prm_name.name],
                 TableParameter.prm_desc.name: res[TableParameter.prm_desc.name],
+                TableParameter.prm_cmt.name: res[TableParameter.prm_cmt.name],
                 TableParameter.prm_unit.name: res[TableParameter.prm_unit.name],
             } for res in qry_res
         }
