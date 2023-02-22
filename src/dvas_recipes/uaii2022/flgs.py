@@ -16,8 +16,8 @@ import numpy as np
 from dvas.logger import log_func_call
 from dvas.hardcoded import TAG_CWS, TAG_GDP, TAG_DTA, FLG_HASCWS
 from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_VAL
-from dvas.hardcoded import FLG_PBL, FLG_TROPO, FLG_FREETROPO, FLG_STRATO, FLG_UTLS
-from dvas.hardcoded import MTDTA_TROPOPAUSE, MTDTA_PBL, MTDTA_UTLSMIN, MTDTA_UTLSMAX
+from dvas.hardcoded import FLG_PBL, FLG_FT, FLG_UTLS, FLG_MUS
+from dvas.hardcoded import MTDTA_TROPOPAUSE, MTDTA_PBLH, MTDTA_UTLSMIN, MTDTA_UTLSMAX, MTDTA_MUSMIN
 from dvas.data.data import MultiRSProfile, MultiGDPProfile, MultiCWSProfile
 from dvas.errors import DBIOError
 
@@ -34,8 +34,8 @@ logger = logging.getLogger(__name__)
 
 @for_each_flight
 @log_func_call(logger, time_it=False)
-def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp', set_pbl_at=None,
-                   utls_lims=None):
+def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp', set_pblh_at=None,
+                   utls_lims=None, set_mus_above=None):
     """ Flag the different regions of interest in the Profiles, e.g. "descent", "FT", "UTLS", ...
 
     Args:
@@ -45,10 +45,10 @@ def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp', set_pbl_at=Non
             Defaults to None.
         temp_var (str, optional): name of the temperature variable, to derive the troposphere
             altitude. Defaults to 'temp'.
-        set_pbl_at (dict, optional): dict with keys corresponding to distinct timeof days, and
-            values in geopotential meters. Defauls to None.
+        set_pbl_at (dict, optional): geopotential height of the PBLH
         utls_lims (dict, optional): dict with 'min' and 'max' keys specifying the UTLS upper and
             lower bounds, in geopotential meters. Defaults to None.
+        set_mus_above (float, optional): geopotential height above which the MUS starts.
 
     """
 
@@ -151,35 +151,35 @@ def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp', set_pbl_at=Non
                     MTDTA_TROPOPAUSE, f"{tropopause_alt:.1f} {tropopause_unit}")
 
                 # Troposphere
-                t_cond = cws_prfs[0].data.index.get_level_values(PRF_ALT).values < tropopause_alt
-                prfs[prf_ind].set_flg(FLG_TROPO, True, index=t_cond)
+                #t_cond = cws_prfs[0].data.index.get_level_values(PRF_ALT).values < tropopause_alt
+                #prfs[prf_ind].set_flg(FLG_TROPO, True, index=t_cond)
                 # Stratosphere
-                s_cond = cws_prfs[0].data.index.get_level_values(PRF_ALT).values > tropopause_alt
-                prfs[prf_ind].set_flg(FLG_STRATO, True, index=s_cond)
+                #s_cond = cws_prfs[0].data.index.get_level_values(PRF_ALT).values > tropopause_alt
+                #prfs[prf_ind].set_flg(FLG_STRATO, True, index=s_cond)
 
                 # PBL
-                if set_pbl_at is not None:
-                    assert isinstance(set_pbl_at, dict), \
-                        f'set_pbl_at should be dict, not: {type(set_pbl_at)}'
+                if set_pblh_at is not None:
+                    assert isinstance(set_pblh_at, dict), \
+                        f'set_pbl_at should be dict, not: {type(set_pblh_at)}'
 
                     # Identify which tod tags are set
-                    pbl_alt = [value for (key, value) in set_pbl_at.items()
+                    pbl_alt = [value for (key, value) in set_pblh_at.items()
                                if prf.has_tag(f'tod:{key}')]
 
                     if len(pbl_alt) > 1:
-                        tods = [key for key in set_pbl_at.keys() if prf.has_tag(key)]
+                        tods = [key for key in set_pblh_at.keys() if prf.has_tag(key)]
                         logger.error('Multiple tods for mid: %s -- %s', prf.info.mid, tods)
 
                     pbl_alt = np.unique(pbl_alt)
                     if len(pbl_alt) == 0:
-                        raise DvasRecipesError(f'No PBL found ... invalid ToD ? {set_pbl_at}')
+                        raise DvasRecipesError(f'No PBL found ... invalid ToD ? {set_pblh_at}')
                     elif len(pbl_alt) > 1:
                         raise DvasRecipesError('Non-unique PBL ... duplicated ToD ?')
                     else:
                         pbl_alt = pbl_alt[0]
 
                     # Add the info the metadata
-                    prfs[prf_ind].info.add_metadata(MTDTA_PBL,  f"{pbl_alt:.1f} m")
+                    prfs[prf_ind].info.add_metadata(MTDTA_PBLH, f"{pbl_alt:.1f} m")
 
                     # Also apply the PBL flags
                     cond = cws_prfs[0].data.index.get_level_values(PRF_ALT).values < pbl_alt
@@ -188,10 +188,10 @@ def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp', set_pbl_at=Non
                     # With a PBL, I can also flag the free troposphere
                     cond = cws_prfs[0].data.index.get_level_values(PRF_ALT).values > pbl_alt
                     cond *= cws_prfs[0].data.index.get_level_values(PRF_ALT).values < tropopause_alt
-                    prfs[prf_ind].set_flg(FLG_FREETROPO, True, index=cond)
+                    prfs[prf_ind].set_flg(FLG_FT, True, index=cond)
                 else:
                     logger.warning('No PBL info provided. No flags set for: %s, %s',
-                                   FLG_PBL, FLG_FREETROPO)
+                                   FLG_PBL, FLG_FT)
 
                 # UTLS
                 if utls_lims is not None:
@@ -211,6 +211,14 @@ def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp', set_pbl_at=Non
                     prfs[prf_ind].set_flg(FLG_UTLS, True, index=cond)
                 else:
                     logger.warning('No UTLS info provided. No flags set for: %s', FLG_UTLS)
+
+                # MUS
+                if set_mus_above is not None:
+                    prfs[prf_ind].info.add_metadata(MTDTA_MUSMIN, f"{set_mus_above:.1f} m")
+                    cond = cws_prfs[0].data.index.get_level_values(PRF_ALT) > set_mus_above
+                    prfs[prf_ind].set_flg(FLG_MUS, True, index=cond)
+                else:
+                    logger.warning('No MUS info provided. No flags set for: %s', FLG_MUS)
 
             # Save it all back into the DB
             prfs.save_to_db(add_tags=[dynamic.CURRENT_STEP_ID],

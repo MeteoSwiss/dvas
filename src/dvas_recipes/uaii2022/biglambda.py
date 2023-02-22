@@ -226,9 +226,7 @@ def biglambda_tod(prf_tags, mid, tods, suffix='', institution='',
         setattr(nprfs_nc, 'units', '')
 
         # Let us now deal with the region chunks
-        for region in ['planetary_boundary_layer', 'troposphere', 'free_troposphere',
-                       'upper_troposphere_lower_stratosphere',
-                       'stratosphere']:
+        for region in ['PBL', 'FT', 'UTLS', 'MUS']:
 
             logger.info('Processing the %s chunk for %s ...', region, var_name)
             flg = f"is_in_{region}"
