@@ -23,7 +23,7 @@ from dvas.data.data import MultiDeltaProfile
 from dvas.dvas import Database as DB
 from dvas.tools.chunks import process_chunk
 from dvas.hardcoded import PRF_ALT, PRF_VAL, PRF_UCS, PRF_UCT, PRF_UCU, PRF_FLG
-from dvas.hardcoded import TAG_DTA, TAG_CWS
+from dvas.hardcoded import TAG_DTA
 
 # Import from dvas_recipes
 from ..errors import DvasRecipesError

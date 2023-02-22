@@ -22,7 +22,7 @@ from dvas.environ import path_var as dvas_path_var
 from dvas.version import VERSION
 from dvas.data.data import MultiRSProfile, MultiGDPProfile, MultiCWSProfile
 from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_IDX
-from dvas.hardcoded import TAG_ORIGINAL, TAG_CLN, TAG_1S, TAG_SYNC, TAG_GDP, TAG_CWS, TAG_DTA
+from dvas.hardcoded import TAG_ORIGINAL, TAG_CLN, TAG_1S, TAG_SYNC, TAG_GDP, TAG_CWS
 
 
 # Import from dvas_recipes
