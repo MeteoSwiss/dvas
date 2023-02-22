@@ -201,15 +201,3 @@ rcp_steps:
         gph_min: 0 # Minimum gph value to consider, in m.
         gph_bin_size: 100 # Size of the gph bins for the high-resolution Big Lambda profile, in m.
         gph_bin_count: 350 # Number of bins for the high-resolution Big Lambda profile.
-
-    # Plot the deltas as a function of the model id, rather than as a function of flight.
-    - fct: uaii2022.plots.dtas_per_mid
-      step_id: '11'
-      run: False
-      kwargs:
-        start_with_tags: # list of tags to identify profiles in the database
-          - '08'
-          #- 'tod:daytime'
-        mids: # List of mid to process. Leave empty to process them all.
-        skip_gdps: False # If True, any 'mid' that contains 'GDP' will be skipped.
-        skip_nongdps: False # If True, any 'mid' that does NOT contain 'GDP' will be skipped.
