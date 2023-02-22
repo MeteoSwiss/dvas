@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -244,11 +244,13 @@ def add_nc_variable(grp, prf):
         if col != 'uc_tot':
             setattr(var_nc, 'long_name', prf.var_info[col]['prm_desc'])
             setattr(var_nc, 'units', prf.var_info[col]['prm_unit'])
+            setattr(var_nc, 'comment', prf.var_info[col]['prm_cmt'])
         else:
             # TODO: here the k-level is hardcoded !!! This is very dangerous !
             setattr(var_nc, 'long_name',
                     f"{prf.var_info[PRF_VAL]['prm_desc']} total uncertainty (k=1)")
             setattr(var_nc, 'units', prf.var_info[PRF_VAL]['prm_unit'])
+            setattr(var_nc, 'comment', 'uc_tot = sqrt(ucs**2 + uct**2 + ucu**2)')
 
         # Specify the flag codes
         if col == PRF_FLG:
