@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 
-Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -17,7 +17,7 @@ import numpy as np
 import pandas as pd
 
 # Import from current package
-from ..logger import log_func_call
+# from ..logger import log_func_call
 from ..errors import DvasError
 from ..hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCS, PRF_UCT, PRF_UCU
 from .tools import fancy_nansum, fancy_bitwise_or, wrap_angle
@@ -27,7 +27,7 @@ from .gdps.correlations import corr_coeff_matrix
 logger = logging.getLogger(__name__)
 
 
-@log_func_call(logger)
+#@log_func_call(logger)
 def merge_bin(wx_ps, binning):
     """ Small utility function to sum individual profiles into bins.
 
@@ -55,7 +55,7 @@ def merge_bin(wx_ps, binning):
     return wx_s
 
 
-@log_func_call(logger)
+#@log_func_call(logger)
 def weighted_mean(df_chunk, binning=1, mode='arithmetic'):
     """ Compute the (respective) weighted mean of the 'tdt', 'val', and 'alt' columns of
     a pd.DataFrame, with weights defined in the 'w_ps' column. Also returns the Jacobian matrix for
@@ -238,7 +238,7 @@ def weighted_mean(df_chunk, binning=1, mode='arithmetic'):
     return chunk_out, jac_mat
 
 
-@log_func_call(logger)
+#@log_func_call(logger)
 def delta(df_chunk, binning=1, mode='arithmetic'):
     """ Compute the delta of the 'tdt', 'val', and 'alt' columns of a pd.DataFrame containing
     exactly 2 Profiles. Also returns the Jacobian matrix for `val` to enable accurate error
