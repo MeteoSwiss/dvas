@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -45,7 +45,7 @@ def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp', set_pblh_at=No
             Defaults to None.
         temp_var (str, optional): name of the temperature variable, to derive the troposphere
             altitude. Defaults to 'temp'.
-        set_pbl_at (dict, optional): geopotential height of the PBLH
+        set_pblh_at (dict, optional): geopotential height of the PBLH
         utls_lims (dict, optional): dict with 'min' and 'max' keys specifying the UTLS upper and
             lower bounds, in geopotential meters. Defaults to None.
         set_mus_above (float, optional): geopotential height above which the MUS starts.
