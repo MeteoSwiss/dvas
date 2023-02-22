@@ -61,16 +61,16 @@ def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp', set_pblh_at=No
 
     # Define the DB query filters that will get me what I want
     cws_filt = tools.get_query_filter(
-        tags_in=cws_tags+[eid, rid, TAG_CWS],
-        tags_out=dru.rsid_tags(pop=cws_tags) + [TAG_GDP, TAG_DTA])
+        tags_in=cws_tags + [eid, rid, TAG_CWS],
+        tags_out=None)
 
     gdp_filt = tools.get_query_filter(
-        tags_in=prf_tags+[eid, rid, TAG_GDP],
-        tags_out=dru.rsid_tags(pop=prf_tags) + [TAG_CWS, TAG_DTA])
+        tags_in=prf_tags + [eid, rid, TAG_GDP],
+        tags_out=None)
 
     nongdp_filt = tools.get_query_filter(
-        tags_in=prf_tags+[eid, rid],
-        tags_out=dru.rsid_tags(pop=prf_tags) + [TAG_GDP, TAG_CWS, TAG_DTA])
+        tags_in=prf_tags + [eid, rid],
+        tags_out=[TAG_GDP, TAG_CWS])
 
     # Step 1: query the temp CWS, so that we can derive the tropopause altitude
     if temp_var not in dynamic.ALL_VARS.keys():
@@ -149,13 +149,6 @@ def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp', set_pblh_at=No
                 # Tropopause
                 prfs[prf_ind].info.add_metadata(
                     MTDTA_TROPOPAUSE, f"{tropopause_alt:.1f} {tropopause_unit}")
-
-                # Troposphere
-                #t_cond = cws_prfs[0].data.index.get_level_values(PRF_ALT).values < tropopause_alt
-                #prfs[prf_ind].set_flg(FLG_TROPO, True, index=t_cond)
-                # Stratosphere
-                #s_cond = cws_prfs[0].data.index.get_level_values(PRF_ALT).values > tropopause_alt
-                #prfs[prf_ind].set_flg(FLG_STRATO, True, index=s_cond)
 
                 # PBL
                 if set_pblh_at is not None:

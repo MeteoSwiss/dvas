@@ -93,9 +93,9 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
 
     # What search query will let me access the data I need ?
     gdp_filt = tools.get_query_filter(tags_in=tags+[eid, rid, TAG_GDP],
-                                      tags_out=dru.rsid_tags(pop=tags))
+                                      tags_out=None)
     cws_filt = tools.get_query_filter(tags_in=[eid, rid, TAG_CWS, dynamic.CURRENT_STEP_ID],
-                                      tags_out=dru.rsid_tags(pop=dynamic.CURRENT_STEP_ID))
+                                      tags_out=None)
 
     # Load the GDP profiles
     gdp_prfs = MultiGDPProfile()

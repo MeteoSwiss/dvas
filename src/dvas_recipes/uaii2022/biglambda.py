@@ -111,9 +111,7 @@ def biglambda_tod(prf_tags, mid, tods, suffix='', institution='',
 
     # What search query will let me access the data I need ?
     prf_filt = tools.get_query_filter(tags_in=prf_tags + [TAG_DTA],
-                                      tags_in_or=tods,
-                                      tags_out=dru.rsid_tags(pop=prf_tags) + [TAG_CWS],
-                                      mids=[mid])
+                                      tags_in_or=tods, tags_out=None, mids=[mid])
 
     # Start looking for all the variables
     for (var_name, var) in dynamic.ALL_VARS.items():

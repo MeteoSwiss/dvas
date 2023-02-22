@@ -318,7 +318,7 @@ def export_profiles(tags: str | list, which: str | list, suffix: str = '', insti
 
         # Assemble the search filter
         filt = tools.get_query_filter(tags_in=tags + [eid, rid, TAG_CWS],
-                                      tags_out=dru.rsid_tags(pop=tags) + [TAG_GDP, TAG_DTA],
+                                      tags_out=None,
                                       )
 
         # Let's keep track of the CWS length, and make sure all the profiles have the same length
@@ -377,7 +377,7 @@ def export_profiles(tags: str | list, which: str | list, suffix: str = '', insti
 
             # Assemble the search filter
             filt = tools.get_query_filter(tags_in=tags + [eid, rid],
-                                          tags_out=dru.rsid_tags(pop=tags) + [TAG_CWS, TAG_DTA],
+                                          tags_out=[TAG_CWS],
                                           oids=[item['oid']])
 
             if item['is_gdp']:

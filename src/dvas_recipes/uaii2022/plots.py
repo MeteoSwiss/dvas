@@ -20,12 +20,11 @@ from dvas.logger import log_func_call
 from dvas.data.data import MultiProfile, MultiGDPProfile, MultiCWSProfile, MultiDeltaProfile
 from dvas.hardcoded import PRF_IDX, PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCU, PRF_UCS, PRF_UCT
 from dvas.hardcoded import TAG_DTA, TAG_GDP, TAG_CWS
-from dvas.hardcoded import MTDTA_PBL, MTDTA_TROPOPAUSE, MTDTA_UTLSMIN, MTDTA_UTLSMAX
+from dvas.hardcoded import MTDTA_PBLH, MTDTA_TROPOPAUSE, MTDTA_UTLSMIN, MTDTA_UTLSMAX
 from dvas.data.data import MultiRSProfile
 from dvas.tools.gdps import correlations as dtgc
 from dvas.plots import utils as dpu
 from dvas.plots import gdps as dpg
-from dvas.plots import dtas as dpd
 from dvas.dvas import Database as DB
 
 # Import from dvas_recipes
@@ -60,7 +59,7 @@ def flight_overview(start_with_tags, label='mid', show=None):
     (fid, eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What search query will let me access the data I need ?
-    filt = tools.get_query_filter(tags_in=tags+[eid, rid], tags_out=dru.rsid_tags(pop=tags))
+    filt = tools.get_query_filter(tags_in=tags + [eid, rid], tags_out=None)
 
     # The plot will have different number of rows depending on the number of variables.
     # Let's define some hardcoded heights, such that the look is always consistent
@@ -251,11 +250,6 @@ def covmat_stats(covmats):
         ax0.plot(np.diff(bins), errors[uc_name], '-', drawstyle='steps-mid',
                  label=rf'{uc_name} ({perc_covelmts_comp[uc_name]:.2f}\%)')
 
-    #ax0.hist([item[1].reshape(-1) for item in errors.items()], bins,
-    #         weights=[np.full(len(valids[valids]), 1/len(valids[valids])**2)],
-    #         label=[rf'{item} ({perc_covelmts_comp[item]:.1f}\%)'
-    #                for item in errors.keys()], histtype='step')
-
     plt.legend()
     ax0.set_xlim((-25, 25))
 
@@ -301,10 +295,10 @@ def inspect_cws(gdp_start_with_tags, cws_start_with_tags):
     (fid, eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What search query will let me access the data I need ?
-    gdp_filt = tools.get_query_filter(tags_in=gdp_tags+[eid, rid, TAG_GDP],
-                                      tags_out=dru.rsid_tags(pop=gdp_tags))
-    cws_filt = tools.get_query_filter(tags_in=cws_tags+[eid, rid, TAG_CWS],
-                                      tags_out=dru.rsid_tags(pop=cws_tags))
+    gdp_filt = tools.get_query_filter(tags_in=gdp_tags + [eid, rid, TAG_GDP],
+                                      tags_out=None)
+    cws_filt = tools.get_query_filter(tags_in=cws_tags + [eid, rid, TAG_CWS],
+                                      tags_out=None)
 
     # Load the GDP profiles
     gdp_prfs = MultiGDPProfile()
@@ -371,16 +365,15 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None):
         raise DvasRecipesError(f'I need a list of mids, not: {mids}')
 
     # Prepare the search queries
-    prf_filt = tools.get_query_filter(tags_in=prf_tags+[eid, rid],
-                                      tags_out=dru.rsid_tags(pop=prf_tags)+[TAG_CWS],
+    prf_filt = tools.get_query_filter(tags_in=prf_tags + [eid, rid],
+                                      tags_out=[TAG_CWS],
                                       mids=mids)
 
-    cws_filt = tools.get_query_filter(tags_in=cws_tags+[eid, rid, TAG_CWS],
-                                      tags_out=dru.rsid_tags(pop=cws_tags))
+    cws_filt = tools.get_query_filter(tags_in=cws_tags + [eid, rid, TAG_CWS],
+                                      tags_out=None)
 
-    dta_filt = tools.get_query_filter(tags_in=dta_tags+[eid, rid, TAG_DTA],
-                                      tags_out=dru.rsid_tags(pop=dta_tags),
-                                      mids=mids)
+    dta_filt = tools.get_query_filter(tags_in=dta_tags + [eid, rid, TAG_DTA],
+                                      tags_out=None, mids=mids)
 
     # Query these different Profiles
     prfs = MultiProfile()
@@ -476,7 +469,7 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None):
                          facecolor=(0.8, 0.8, 0.8), step='mid', edgecolor='none')
 
         # Display the location of the tropopause and the PBL
-        for (loi, symb) in [(MTDTA_TROPOPAUSE, r'$\prec$'), (MTDTA_PBL, r'$\simeq$'),
+        for (loi, symb) in [(MTDTA_TROPOPAUSE, r'$\prec$'), (MTDTA_PBLH, r'$\simeq$'),
                             (MTDTA_UTLSMIN, r'$\top$'), (MTDTA_UTLSMAX, r'$\bot$')]:
             if loi not in prf.info.metadata.keys():
                 logger.warning('"%s" not found in CWS metadata.', loi)

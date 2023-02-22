@@ -160,7 +160,7 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var, valid_value_range
     (_, eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What search query will let me access the data I need ?
-    filt = tools.get_query_filter(tags_in=tags+[eid, rid], tags_out=dru.rsid_tags(pop=tags))
+    filt = tools.get_query_filter(tags_in=tags+[eid, rid], tags_out=None)
 
     # First, extract the RS profiles from the db, for the requested variable
     prfs = MultiRSProfile()
