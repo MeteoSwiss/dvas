@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -39,6 +39,11 @@ from ..errors import SearchError
 
 # Setup the local logger
 logger = logging.getLogger(__name__)
+
+# If some DB debug is required, uncomment the following lines to get all the peewee logs
+#logger2 = logging.getLogger('peewee')
+#logger2.addHandler(logging.StreamHandler())
+#logger2.setLevel(logging.DEBUG)
 
 # Global define
 EID_PAT_COMPILED = re.compile(EID_PAT)
