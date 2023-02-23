@@ -87,7 +87,7 @@ def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp', set_pblh_at=No
     if (_ := len(cws_prfs)) != 1:
         raise DvasRecipesError(f'Found {_} CWS profiles for {temp_var}, but expected exactly 1.')
 
-    _, tropopause_alt, tropopause_tdt = tools.find_tropopause(cws_prfs[0])
+    _, tropopause_alt, tropopause_tdt = tools.find_tropopause(cws_prfs[0], algo='gruan')
     tropopause_unit = cws_prfs.var_info[PRF_ALT]['prm_unit']
     logger.info('Tropopause from CWS: %.2f [%s] @ %s',
                 tropopause_alt, tropopause_unit, tropopause_tdt)
