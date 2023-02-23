@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [v0.9.4.dev0]
 ### Added:
+ - [fpavogt, 23.02.2023] Add first_timestep(.uncertainty) to the CWS netCDFs
  - [fpavogt, 22.02.2023] Add new "comment" field to dvas prms (fix #277 wdir info)
 ### Fixed:
  - [fpavogt, 22.02.2023] Fix #280 (optimize DB queries to avoid superfluous conditions)

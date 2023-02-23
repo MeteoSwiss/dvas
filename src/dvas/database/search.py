@@ -41,9 +41,9 @@ from ..errors import SearchError
 logger = logging.getLogger(__name__)
 
 # If some DB debug is required, uncomment the following lines to get all the peewee logs
-#logger2 = logging.getLogger('peewee')
-#logger2.addHandler(logging.StreamHandler())
-#logger2.setLevel(logging.DEBUG)
+# logger2 = logging.getLogger('peewee')
+# logger2.addHandler(logging.StreamHandler())
+# logger2.setLevel(logging.DEBUG)
 
 # Global define
 EID_PAT_COMPILED = re.compile(EID_PAT)
