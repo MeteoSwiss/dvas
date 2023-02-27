@@ -10,6 +10,7 @@ Module content: high-level GDP recipes for the UAII2022 campaign
 
 # Import from python
 import logging
+from datetime import timedelta
 import numpy as np
 import pandas as pd
 
@@ -19,7 +20,8 @@ from dvas.data.data import MultiRSProfile, MultiGDPProfile
 from dvas.tools.gdps import stats as dtgs
 from dvas.tools.gdps import gdps as dtgg
 from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCS, PRF_UCT, PRF_UCU
-from dvas.hardcoded import TAG_CWS, TAG_GDP, FLG_INCOMPATIBLE, FLG_ISINVALID, MTDTA_SYNOP
+from dvas.hardcoded import TAG_CWS, TAG_GDP, FLG_INCOMPATIBLE, FLG_ISINVALID
+from dvas.hardcoded import MTDTA_SYNOP, MTDTA_FIRST
 from dvas.errors import DBIOError
 
 # Import from dvas_recipes
@@ -93,9 +95,9 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
 
     # What search query will let me access the data I need ?
     gdp_filt = tools.get_query_filter(tags_in=tags+[eid, rid, TAG_GDP],
-                                      tags_out=dru.rsid_tags(pop=tags))
+                                      tags_out=None)
     cws_filt = tools.get_query_filter(tags_in=[eid, rid, TAG_CWS, dynamic.CURRENT_STEP_ID],
-                                      tags_out=dru.rsid_tags(pop=dynamic.CURRENT_STEP_ID))
+                                      tags_out=None)
 
     # Load the GDP profiles
     gdp_prfs = MultiGDPProfile()
@@ -186,6 +188,14 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
     if len(scode) > 1:
         logger.error('Inconsistent synop cloud code between GDPs: %s', scode)
     cws[0].info.add_metadata(f'{MTDTA_SYNOP}', f'{"-".join(scode)}')
+
+    # Let's also add the absolute time of the first step.
+    # Since these need not be equal, take the mean, and store also the standard deviation as uc
+    ftds = np.array([item[f'{MTDTA_FIRST}'] for item in gdp_prfs.get_info('metadata')])
+    dfts_mean = np.mean([item.total_seconds() for item in ftds-ftds[0]])
+    dfts_std = np.std([item.total_seconds() for item in ftds-ftds[0]])
+    cws[0].info.add_metadata(f'{MTDTA_FIRST}', ftds[0] + timedelta(seconds=dfts_mean))
+    cws[0].info.add_metadata(f'{MTDTA_FIRST}.uncertainty', f'{dfts_std} sec (k=1)')
 
     # Take a closer look at the covariance matrices, if required
     if explore_covmats:

@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -539,6 +539,7 @@ class Prm(OneDimArrayConfigManager):
         arg_key_to_dict = {
             TableParameter.prm_name.name: lambda x: f"{x}{FLG_PRM_NAME_SUFFIX}",
             TableParameter.prm_desc.name: lambda x: f"{FLG_PRM_DESC_PREFIX}{x[0].lower()}{x[1:]}",
+            TableParameter.prm_cmt.name: lambda _: '',
             TableParameter.prm_unit.name: lambda _: '',
         }
 

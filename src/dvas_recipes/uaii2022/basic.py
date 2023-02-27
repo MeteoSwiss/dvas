@@ -204,8 +204,7 @@ def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
     (fid, eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What search query will let me access the data I need ?
-    filt = tools.get_query_filter(tags_in=tags + [eid, rid],
-                                  tags_out=dru.rsid_tags(pop=tags))
+    filt = tools.get_query_filter(tags_in=tags + [eid, rid], tags_out=None)
 
     # Let's extract the summary of what the DB contains
     db_view = DB.extract_global_view()

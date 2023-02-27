@@ -4,15 +4,27 @@ The format is inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [v0.9.3.dev0]
+## [v0.9.4.dev0]
 ### Added:
+ - [fpavogt, 23.02.2023] Add first_timestep(.uncertainty) to the CWS netCDFs
+ - [fpavogt, 22.02.2023] Add new "comment" field to dvas prms (fix #277 wdir info)
 ### Fixed:
+ - [fpavogt, 22.02.2023] Fix #280 (optimize DB queries to avoid superfluous conditions)
+ - [fpavogt, 22.02.2023] Fix #278 and #275
+ - [fpavogt, 22.02.2023] Fix #276 (correct UTLS, add MUS, rm troposphere)
+ - [fpavogt, 22.02.2023] Fix #277 (gph AMLS)
  - [fpavogt, 08.02.2023] Adjust pylint action for pylint 2.16
 ### Changed:
  - [fpavogt, 08.02.2023] Break-up dot products to keep memory use low
 ### Deprecated:
 ### Removed:
 ### Security:
+
+## [v0.9.3.dev0]
+### Fixed:
+ - [fpavogt, 08.02.2023] Adjust pylint action for pylint 2.16
+### Changed:
+ - [fpavogt, 08.02.2023] Break-up dot products to keep memory use low
 
 ## [v0.9.2.dev0]
 ### Fixed:

@@ -70,21 +70,20 @@ def compute_deltas(prf_start_with_tags, cws_start_with_tags, do_gdps=False, do_n
         raise DvasRecipesError('incl_gdps and incl_nongdps cannot both be False.')
 
     if do_gdps:
-        tags_out = [TAG_CWS, TAG_DTA]
+        tags_out = [TAG_CWS]
     else:
-        tags_out = [TAG_GDP, TAG_CWS, TAG_DTA]
+        tags_out = [TAG_GDP, TAG_CWS]
 
     if do_nongdps:
-        tags_in = prf_tags+[eid, rid]
+        tags_in = prf_tags + [eid, rid]
     else:
-        tags_in = prf_tags+[eid, rid, TAG_GDP]
+        tags_in = prf_tags + [eid, rid, TAG_GDP]
 
     # What search query will let me access the data I need ?
     prf_filt = tools.get_query_filter(tags_in=tags_in,
-                                      tags_out=dru.rsid_tags(pop=prf_tags) + tags_out)
+                                      tags_out=tags_out)
     cws_filt = tools.get_query_filter(
-        tags_in=cws_tags+[eid, rid, TAG_CWS],
-        tags_out=dru.rsid_tags(pop=cws_tags) + [TAG_GDP, TAG_DTA])
+        tags_in=cws_tags + [eid, rid, TAG_CWS], tags_out=None)
 
     # Load the non GDP profiles as Profiles (and not RSProfiles) since we're about to drop the
     # time axis anyway.
@@ -105,7 +104,7 @@ def compute_deltas(prf_start_with_tags, cws_start_with_tags, do_gdps=False, do_n
 
     # Safety check for the CWS
     if len(cws_prfs) != 1:
-        raise DvasRecipesError(f'Ouch ! I need 1 CWS, but I got {len(cws_prfs)} instead.')
+        raise DvasRecipesError(f'I need 1 CWS, but I got {len(cws_prfs)} instead.')
 
     # Compute the Delta Profiles
     dta_prfs = dtdd.compute(prfs, cws_prfs, circular=dynamic.CURRENT_VAR == 'wdir')

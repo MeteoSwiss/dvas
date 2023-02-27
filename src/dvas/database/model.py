@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -175,6 +175,12 @@ class Prm(MetadataModel):
     prm_desc = TextField(
         null=False, default='',
         constraints=[Check("str_len_max(prm_desc, 256)")]
+    )
+
+    # Parameter comment
+    prm_cmt = TextField(
+        null=False, default='',
+        constraints=[Check("str_len_max(prm_cmt, 256)")]
     )
 
     # Parameter units

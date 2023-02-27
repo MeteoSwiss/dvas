@@ -1146,7 +1146,7 @@ class GetreldtExpr(TerminalLoadExprInterpreter):
             # Raise a critical log message if rounding leads to errors larger than 1/10s of the
             # rounding level.
             if ((errs := (out-out_orig).abs()) >= 1/10**(self._round_lvl+1)).any():
-                msg_lvl = logger.critical
+                msg_lvl = logger.warning
             else:
                 msg_lvl = logger.info
 

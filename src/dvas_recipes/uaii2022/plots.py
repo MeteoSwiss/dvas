@@ -20,12 +20,11 @@ from dvas.logger import log_func_call
 from dvas.data.data import MultiProfile, MultiGDPProfile, MultiCWSProfile, MultiDeltaProfile
 from dvas.hardcoded import PRF_IDX, PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCU, PRF_UCS, PRF_UCT
 from dvas.hardcoded import TAG_DTA, TAG_GDP, TAG_CWS
-from dvas.hardcoded import MTDTA_PBL, MTDTA_TROPOPAUSE, MTDTA_UTLSMIN, MTDTA_UTLSMAX
+from dvas.hardcoded import MTDTA_PBLH, MTDTA_TROPOPAUSE, MTDTA_UTLSMIN, MTDTA_UTLSMAX
 from dvas.data.data import MultiRSProfile
 from dvas.tools.gdps import correlations as dtgc
 from dvas.plots import utils as dpu
 from dvas.plots import gdps as dpg
-from dvas.plots import dtas as dpd
 from dvas.dvas import Database as DB
 
 # Import from dvas_recipes
@@ -60,7 +59,7 @@ def flight_overview(start_with_tags, label='mid', show=None):
     (fid, eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What search query will let me access the data I need ?
-    filt = tools.get_query_filter(tags_in=tags+[eid, rid], tags_out=dru.rsid_tags(pop=tags))
+    filt = tools.get_query_filter(tags_in=tags + [eid, rid], tags_out=None)
 
     # The plot will have different number of rows depending on the number of variables.
     # Let's define some hardcoded heights, such that the look is always consistent
@@ -251,11 +250,6 @@ def covmat_stats(covmats):
         ax0.plot(np.diff(bins), errors[uc_name], '-', drawstyle='steps-mid',
                  label=rf'{uc_name} ({perc_covelmts_comp[uc_name]:.2f}\%)')
 
-    #ax0.hist([item[1].reshape(-1) for item in errors.items()], bins,
-    #         weights=[np.full(len(valids[valids]), 1/len(valids[valids])**2)],
-    #         label=[rf'{item} ({perc_covelmts_comp[item]:.1f}\%)'
-    #                for item in errors.keys()], histtype='step')
-
     plt.legend()
     ax0.set_xlim((-25, 25))
 
@@ -301,10 +295,10 @@ def inspect_cws(gdp_start_with_tags, cws_start_with_tags):
     (fid, eid, rid) = dynamic.CURRENT_FLIGHT
 
     # What search query will let me access the data I need ?
-    gdp_filt = tools.get_query_filter(tags_in=gdp_tags+[eid, rid, TAG_GDP],
-                                      tags_out=dru.rsid_tags(pop=gdp_tags))
-    cws_filt = tools.get_query_filter(tags_in=cws_tags+[eid, rid, TAG_CWS],
-                                      tags_out=dru.rsid_tags(pop=cws_tags))
+    gdp_filt = tools.get_query_filter(tags_in=gdp_tags + [eid, rid, TAG_GDP],
+                                      tags_out=None)
+    cws_filt = tools.get_query_filter(tags_in=cws_tags + [eid, rid, TAG_CWS],
+                                      tags_out=None)
 
     # Load the GDP profiles
     gdp_prfs = MultiGDPProfile()
@@ -371,16 +365,15 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None):
         raise DvasRecipesError(f'I need a list of mids, not: {mids}')
 
     # Prepare the search queries
-    prf_filt = tools.get_query_filter(tags_in=prf_tags+[eid, rid],
-                                      tags_out=dru.rsid_tags(pop=prf_tags)+[TAG_CWS],
+    prf_filt = tools.get_query_filter(tags_in=prf_tags + [eid, rid],
+                                      tags_out=[TAG_CWS],
                                       mids=mids)
 
-    cws_filt = tools.get_query_filter(tags_in=cws_tags+[eid, rid, TAG_CWS],
-                                      tags_out=dru.rsid_tags(pop=cws_tags))
+    cws_filt = tools.get_query_filter(tags_in=cws_tags + [eid, rid, TAG_CWS],
+                                      tags_out=None)
 
-    dta_filt = tools.get_query_filter(tags_in=dta_tags+[eid, rid, TAG_DTA],
-                                      tags_out=dru.rsid_tags(pop=dta_tags),
-                                      mids=mids)
+    dta_filt = tools.get_query_filter(tags_in=dta_tags + [eid, rid, TAG_DTA],
+                                      tags_out=None, mids=mids)
 
     # Query these different Profiles
     prfs = MultiProfile()
@@ -476,7 +469,7 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None):
                          facecolor=(0.8, 0.8, 0.8), step='mid', edgecolor='none')
 
         # Display the location of the tropopause and the PBL
-        for (loi, symb) in [(MTDTA_TROPOPAUSE, r'$\prec$'), (MTDTA_PBL, r'$\simeq$'),
+        for (loi, symb) in [(MTDTA_TROPOPAUSE, r'$\prec$'), (MTDTA_PBLH, r'$\simeq$'),
                             (MTDTA_UTLSMIN, r'$\top$'), (MTDTA_UTLSMAX, r'$\bot$')]:
             if loi not in prf.info.metadata.keys():
                 logger.warning('"%s" not found in CWS metadata.', loi)
@@ -530,63 +523,3 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None):
         fn_suf = dru.fn_suffix(fid=fid, eid=eid, rid=rid, tags=None, mids=mid, pids=[pid],
                                var=dynamic.CURRENT_VAR)
         dpu.fancy_savefig(fig, fn_core='pp', fn_suffix=fn_suf, fn_prefix=dynamic.CURRENT_STEP_ID)
-
-
-@for_each_var
-@log_func_call(logger, time_it=False)
-def dtas_per_mid(start_with_tags, mids=None, skip_gdps=False, skip_nongdps=False):
-    """ Create a plot of delta profiles grouped by mid.
-
-    Args:
-        start_with_tags: which tags to look for in the DB.
-        mids (list, optional): list of 'mid' to process. Defaults to None = all
-        skip_gdps (bool, optional): if True, any mid with 'GDP' in it will be skipped.
-            Defaults to False.
-        skip_nongdps (bool, optional): if True, any mid without 'GDP' will be skipped.
-    """
-
-    # Format the tags
-    tags = dru.format_tags(start_with_tags)
-
-    # Very well, let us first extract the 'mid', if they have not been provided
-    db_view = DB.extract_global_view()
-    if mids is None:
-        mids = db_view.mid.unique().tolist()
-
-    # Basic sanity check of mid
-    if not isinstance(mids, list):
-        raise DvasRecipesError(f'I need a list of mids, not: {mids}')
-
-    # Very well, let's now loop through these, and generate the plot
-    for mid in mids:
-
-        # Second sanity check - make sure the mid is in the DB
-        if mid not in db_view.mid.unique().tolist():
-            raise DvasRecipesError(f'mid unknown: {mid}')
-
-        # If warranted, skip any GDP profile
-        if skip_gdps and '(gdp)' in mid:
-            logger.info('Skipping mid: %s', mid)
-            continue
-
-        if skip_nongdps and '(gdp)' not in mid:
-            logger.info('Skipping mid: %s', mid)
-            continue
-
-        # Prepare the search query
-        dta_filt = tools.get_query_filter(tags_in=tags+[TAG_DTA],
-                                          tags_out=dru.rsid_tags(pop=tags), mids=[mid])
-
-        # Query these DeltaProfiles
-        dta_prfs = MultiDeltaProfile()
-        dta_prfs.load_from_db(dta_filt, dynamic.CURRENT_VAR,
-                              alt_abbr=dynamic.INDEXES[PRF_ALT],
-                              ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
-                              uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
-                              ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],
-                              inplace=True)
-
-        # Plot these deltas
-        fn_suf = dru.fn_suffix(eid=None, rid=None, tags=tags, mids=[mid], var=dynamic.CURRENT_VAR)
-        dpd.dtas(dta_prfs, k_lvl=1, label='mid', show=False,
-                 fn_prefix=dynamic.CURRENT_STEP_ID, fn_suffix=fn_suf)

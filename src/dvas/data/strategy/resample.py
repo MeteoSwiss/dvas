@@ -24,7 +24,7 @@ from ...tools.tools import df_to_chunks, fancy_bitwise_or
 from ...hardcoded import PRF_IDX, PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCS, PRF_UCT, PRF_UCU
 from ...hardcoded import PRF_FLG, FLG_INTERP, TAG_1S
 
-# Steup the logger
+# Setup the logger
 logger = logging.getLogger(__name__)
 
 

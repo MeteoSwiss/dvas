@@ -23,7 +23,7 @@ from dvas.data.data import MultiDeltaProfile
 from dvas.dvas import Database as DB
 from dvas.tools.chunks import process_chunk
 from dvas.hardcoded import PRF_ALT, PRF_VAL, PRF_UCS, PRF_UCT, PRF_UCU, PRF_FLG
-from dvas.hardcoded import TAG_DTA, TAG_CWS
+from dvas.hardcoded import TAG_DTA
 
 # Import from dvas_recipes
 from ..errors import DvasRecipesError
@@ -111,9 +111,7 @@ def biglambda_tod(prf_tags, mid, tods, suffix='', institution='',
 
     # What search query will let me access the data I need ?
     prf_filt = tools.get_query_filter(tags_in=prf_tags + [TAG_DTA],
-                                      tags_in_or=tods,
-                                      tags_out=dru.rsid_tags(pop=prf_tags) + [TAG_CWS],
-                                      mids=[mid])
+                                      tags_in_or=tods, tags_out=None, mids=[mid])
 
     # Start looking for all the variables
     for (var_name, var) in dynamic.ALL_VARS.items():
@@ -226,9 +224,7 @@ def biglambda_tod(prf_tags, mid, tods, suffix='', institution='',
         setattr(nprfs_nc, 'units', '')
 
         # Let us now deal with the region chunks
-        for region in ['planetary_boundary_layer', 'troposphere', 'free_troposphere',
-                       'upper_troposphere_lower_stratosphere',
-                       'stratosphere']:
+        for region in ['PBL', 'FT', 'UTLS', 'MUS']:
 
             logger.info('Processing the %s chunk for %s ...', region, var_name)
             flg = f"is_in_{region}"

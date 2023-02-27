@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -22,7 +22,7 @@ from dvas.environ import path_var as dvas_path_var
 from dvas.version import VERSION
 from dvas.data.data import MultiRSProfile, MultiGDPProfile, MultiCWSProfile
 from dvas.hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_IDX
-from dvas.hardcoded import TAG_ORIGINAL, TAG_CLN, TAG_1S, TAG_SYNC, TAG_GDP, TAG_CWS, TAG_DTA
+from dvas.hardcoded import TAG_ORIGINAL, TAG_CLN, TAG_1S, TAG_SYNC, TAG_GDP, TAG_CWS
 
 
 # Import from dvas_recipes
@@ -244,11 +244,13 @@ def add_nc_variable(grp, prf):
         if col != 'uc_tot':
             setattr(var_nc, 'long_name', prf.var_info[col]['prm_desc'])
             setattr(var_nc, 'units', prf.var_info[col]['prm_unit'])
+            setattr(var_nc, 'comment', prf.var_info[col]['prm_cmt'])
         else:
             # TODO: here the k-level is hardcoded !!! This is very dangerous !
             setattr(var_nc, 'long_name',
                     f"{prf.var_info[PRF_VAL]['prm_desc']} total uncertainty (k=1)")
             setattr(var_nc, 'units', prf.var_info[PRF_VAL]['prm_unit'])
+            setattr(var_nc, 'comment', 'uc_tot = sqrt(ucs**2 + uct**2 + ucu**2)')
 
         # Specify the flag codes
         if col == PRF_FLG:
@@ -316,7 +318,7 @@ def export_profiles(tags: str | list, which: str | list, suffix: str = '', insti
 
         # Assemble the search filter
         filt = tools.get_query_filter(tags_in=tags + [eid, rid, TAG_CWS],
-                                      tags_out=dru.rsid_tags(pop=tags) + [TAG_GDP, TAG_DTA],
+                                      tags_out=None,
                                       )
 
         # Let's keep track of the CWS length, and make sure all the profiles have the same length
@@ -375,7 +377,7 @@ def export_profiles(tags: str | list, which: str | list, suffix: str = '', insti
 
             # Assemble the search filter
             filt = tools.get_query_filter(tags_in=tags + [eid, rid],
-                                          tags_out=dru.rsid_tags(pop=tags) + [TAG_CWS, TAG_DTA],
+                                          tags_out=[TAG_CWS],
                                           oids=[item['oid']])
 
             if item['is_gdp']:

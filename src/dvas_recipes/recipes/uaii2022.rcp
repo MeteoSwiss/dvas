@@ -137,13 +137,14 @@ rcp_steps:
       kwargs:
         prf_tags: '02' # str or list of tags to identify Profiles in the database. If empty, will not touch Profiles
         cws_tags: '04' # str or list of tags to identify Combined Working Standard in the database
-        set_pbl_at:
+        set_pblh_at:
           daytime: 1270 # Mean PBL height (day) (in gph meters)
           twilight: 350 # Mean PBL height (twilight) (in gph meters)
           nighttime: 350 # Mean PBL height (night) (in gph meters)
         utls_lims:
-          min: 8000 # UTLS lower limit (in gph meters)
-          max: 18000 # UTLS upper limits (in gph meters)
+          min: 7000 # UTLS lower limit (in gph meters)
+          max: 17000 # UTLS upper limits (in gph meters)
+        set_mus_above: 17000 # MUS lower limit
 
     # Export cleaned, resampled, synced, profiles to netCDF
     - fct: uaii2022.export.export_profiles
@@ -199,16 +200,4 @@ rcp_steps:
         institution: Federal Office of Meteorology and Climatology - MeteoSwiss
         gph_min: 0 # Minimum gph value to consider, in m.
         gph_bin_size: 100 # Size of the gph bins for the high-resolution Big Lambda profile, in m.
-        gph_bin_count: 340 # Number of bins for the high-resolution Big Lambda profile.
-
-    # Plot the deltas as a function of the model id, rather than as a function of flight.
-    - fct: uaii2022.plots.dtas_per_mid
-      step_id: '11'
-      run: True
-      kwargs:
-        start_with_tags: # list of tags to identify profiles in the database
-          - '08'
-          #- 'tod:daytime'
-        mids: # List of mid to process. Leave empty to process them all.
-        skip_gdps: False # If True, any 'mid' that contains 'GDP' will be skipped.
-        skip_nongdps: False # If True, any 'mid' that does NOT contain 'GDP' will be skipped.
+        gph_bin_count: 350 # Number of bins for the high-resolution Big Lambda profile.

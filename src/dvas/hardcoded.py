@@ -211,29 +211,24 @@ FLG_DESCENT = 'is_descent_data'
 FLG_DESCENT_DESC = 'Descent data'
 
 #: str: Flag name for PBL points
-FLG_PBL = 'is_in_planetary_boundary_layer'
+FLG_PBL = 'is_in_PBL'
 #: str: Flag desc for PBL points
-FLG_PBL_DESC = 'Measurement is inside the planetery boundary layer'
+FLG_PBL_DESC = 'Measurement is in the PBL (i.e. x < PBLH)'
 
 #: str: Flag name for free troposphere points
-FLG_TROPO = 'is_in_troposphere'
+FLG_FT = 'is_in_FT'
 #: str: Flag desc for free troposphere points
-FLG_TROPO_DESC = 'Measurement is inside the troposphere (i.e. x < tropopause)'
-
-#: str: Flag name for free troposphere points
-FLG_FREETROPO = 'is_in_free_troposphere'
-#: str: Flag desc for free troposphere points
-FLG_FREETROPO_DESC = 'Measurement is inside the free troposphere (i.e. x < tropopause and x > PBL)'
-
-#: str: Flag name for stratosphere points
-FLG_STRATO = 'is_in_stratosphere'
-#: str: Flag desc for stratosphere points
-FLG_STRATO_DESC = 'Measurement is inside de stratosphere'
+FLG_FT_DESC = 'Measurement is in the FT (i.e. x < tropopause and x > PBLH)'
 
 #: str: Flag name for UTLS points
-FLG_UTLS = 'is_in_upper_troposphere_lower_stratosphere'
+FLG_UTLS = 'is_in_UTLS'
 #: str: Flag desc for UTLS points
-FLG_UTLS_DESC = 'Measurement is inside the upper-troposphere-lower-stratosphere'
+FLG_UTLS_DESC = 'Measurement is in the UTLS'
+
+#: str: Flag name for MUS points
+FLG_MUS = 'is_in_MUS'
+#: str: Flag desc for MUS points
+FLG_MUS_DESC = 'Measurement is in the MUS'
 
 
 # Metadata special fields
@@ -252,13 +247,16 @@ MTDTA_BURST = 'burst_timestamp'
 MTDTA_TROPOPAUSE = 'dvas_tropopause'
 
 #: str: Metadata field to store the tropopause geopotential height
-MTDTA_PBL = 'dvas_planetary_boundary_layer'
+MTDTA_PBLH = 'dvas_PBLH'
 
 #: str: Metadata field to store the min geopotential height of the UTLS region
-MTDTA_UTLSMIN = 'dvas_utls_min'
+MTDTA_UTLSMIN = 'dvas_UTLS_min'
 
 #: str: Metadata field to store the max geopotential height of the UTLS region
-MTDTA_UTLSMAX = 'dvas_utls_max'
+MTDTA_UTLSMAX = 'dvas_UTLS_max'
+
+#: str: Metadata field to store the max geopotential height of the UTLS region
+MTDTA_MUSMIN = 'dvas_MUS_min'
 
 #: str: Metadata field to store the synop cloud code
 MTDTA_SYNOP = 'synop_clouds'
