@@ -4,6 +4,15 @@ The format is inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [v0.9.5.dev0]
+### Added:
+### Fixed:
+### Changed:
+ - [fpavogt, 13.03.2023] Units of RH are now %RH
+### Deprecated:
+### Removed:
+### Security:
+
 ## [v0.9.4.dev0]
 ### Added:
  - [fpavogt, 23.02.2023] Add first_timestep(.uncertainty) to the CWS netCDFs
@@ -16,9 +25,6 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [fpavogt, 08.02.2023] Adjust pylint action for pylint 2.16
 ### Changed:
  - [fpavogt, 08.02.2023] Break-up dot products to keep memory use low
-### Deprecated:
-### Removed:
-### Security:
 
 ## [v0.9.3.dev0]
 ### Fixed:

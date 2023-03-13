@@ -224,7 +224,7 @@ def covmat_stats(covmats):
 
             msg = 'of the verifiable theoretical covariance matrix elements differ by more than'
             msg = msg + r'10\% of the true value.'
-            logger.error(r'Ouch ! %s \% %s', (tmp, msg))
+            logger.error(r'%s \% %s', (tmp, msg))
 
         errors[uc_name] = np.histogram(errors[uc_name],
                                        bins=bins,
