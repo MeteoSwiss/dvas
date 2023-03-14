@@ -171,6 +171,7 @@ def fix_txt(txt, usetex=None):
     if usetex:
         txt = txt.replace('%', r'{\%}')
         txt = txt.replace('m/s', r'm\,s$^{-1}$')
+        txt = txt.replace('deg', r'$^{\circ}$')
         txt = [item.replace('_', r'\_') if ind % 2 == 0 else item
                for (ind, item) in enumerate(txt.split('$'))]
         txt = '$'.join(txt)

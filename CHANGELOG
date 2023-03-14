@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Added:
 ### Fixed:
 ### Changed:
+ - [fpavogt, 14.03.2023] Units of wdir are now typset properly in LaTeX as $^{\circ}$
  - [fpavogt, 13.03.2023] Units of RH are now %RH
 ### Deprecated:
 ### Removed:
