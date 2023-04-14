@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [v0.9.5.dev0]
 ### Added:
 ### Fixed:
+ - [fpavogt, 14.04.2023] Fix a bug associated to pandas 2.0.0 in fancy_bitwise_or()
 ### Changed:
  - [fpavogt, 14.04.2023] Parameter names are now proper abbreviations (fixes #282)
  - [fpavogt, 14.03.2023] Units of wdir are now typset properly in LaTeX as $^{\circ}$
