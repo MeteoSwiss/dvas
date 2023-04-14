@@ -134,8 +134,8 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
     ylbl0 = r'$\delta_{e,i}$'
     ylbl0 += f' [{dta_prfs.var_info[PRF_VAL]["prm_unit"]}]'
     ylbl1 = r'$\delta_{e,i}/\sigma_{\Omega_{e,i}}$'
-    altlbl = r'gph$_{\rm CWS}$'
-    altlbl += f' [{dta_prfs.var_info[PRF_ALT]["prm_unit"]}]'
+    #altlbl = r'gph$_{\rm CWS}$'
+    altlbl = f'{dta_prfs.var_info[PRF_ALT]["prm_plot"]} [{dta_prfs.var_info[PRF_ALT]["prm_unit"]}]'
 
     # Plot ylabel as text, to have them left aligned accross subplots
     ax0.text(-0.1, 0.5, pu.fix_txt(ylbl0), ha='left', va='center',
@@ -169,7 +169,7 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
         mid_msg = '-'.join(list(mid)[0])
     else:
         mid_msg = None
-    pu.add_var_and_k(ax0, mid=mid_msg, var_name=dta_prfs.var_info[PRF_VAL]['prm_name'], k=k_lvl)
+    pu.add_var_and_k(ax0, mid=mid_msg, var_name=dta_prfs.var_info[PRF_VAL]['prm_plot'], k=k_lvl)
 
     # Save it
     pu.fancy_savefig(fig, fn_core='dtas', **kwargs)

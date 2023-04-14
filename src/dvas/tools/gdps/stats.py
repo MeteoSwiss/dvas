@@ -272,7 +272,7 @@ def gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=None, method='arithmeti
 
             # Is there a unit for the data at hand ?
             try:
-                var_name = gdp_pair.var_info[PRF_VAL]['prm_name']
+                var_name = gdp_pair.var_info[PRF_VAL]['prm_plot']
                 var_unit = gdp_pair.var_info[PRF_VAL]['prm_unit']
             except KeyError:
                 var_name = None

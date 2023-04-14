@@ -170,7 +170,12 @@ class Prm(MetadataModel):
         constraints=[Check(f"re_fullmatch('{PRM_AND_FLG_PRM_PAT}', prm_name)"),
                      Check("str_len_max(prm_name, 64)")]
     )
-
+    # Parameter ame for plots
+    prm_plot = TextField(
+        null=False,
+        #unique=True,
+        constraints=[Check("str_len_max(prm_name, 64)")]
+    )
     # Parameter description
     prm_desc = TextField(
         null=False, default='',

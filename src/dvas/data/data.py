@@ -127,6 +127,7 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
         out = {
             var_db[res[TableParameter.prm_name.name]]: {
                 TableParameter.prm_name.name: res[TableParameter.prm_name.name],
+                TableParameter.prm_plot.name: res[TableParameter.prm_plot.name],
                 TableParameter.prm_desc.name: res[TableParameter.prm_desc.name],
                 TableParameter.prm_cmt.name: res[TableParameter.prm_cmt.name],
                 TableParameter.prm_unit.name: res[TableParameter.prm_unit.name],

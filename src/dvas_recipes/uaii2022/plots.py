@@ -134,7 +134,7 @@ def flight_overview(start_with_tags, label='mid', show=None):
             plt.setp(this_ax.get_xticklabels(), visible=False)
 
         # Set the ylabel:
-        ylbl = rs_prfs.var_info[PRF_VAL]['prm_name']
+        ylbl = rs_prfs.var_info[PRF_VAL]['prm_plot']
         ylbl += f' [{rs_prfs.var_info[PRF_VAL]["prm_unit"]}]'
         # Include the ylabel as text, to have it left-aligned with all other subplots
         this_ax.text(-0.1, 0.5, dpu.fix_txt(ylbl), ha='left', va='center',
@@ -484,10 +484,10 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None):
                      rotation=90, bbox=dict(boxstyle='square', fc="w", ec="none", pad=0.1))
 
         # Set the axis labels
-        ylbl0 = f'{prfs.var_info[PRF_VAL]["prm_name"]} [{prfs.var_info[PRF_VAL]["prm_unit"]}]'
+        ylbl0 = f'{prfs.var_info[PRF_VAL]["prm_plot"]} [{prfs.var_info[PRF_VAL]["prm_unit"]}]'
         ylbl1 = r'$\delta_{e,i}$'
         ylbl1 += f' [{dta_prfs.var_info[PRF_VAL]["prm_unit"]}]'
-        altlbl = dta_prfs.var_info[PRF_ALT]['prm_name']
+        altlbl = dta_prfs.var_info[PRF_ALT]['prm_plot']
         altlbl += f' [{dta_prfs.var_info[PRF_ALT]["prm_unit"]}]'
 
         # Plot ylabels as text, to have them left-aligned accross sub-plots
@@ -517,7 +517,7 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None):
         dpu.add_source(fig)
 
         dpu.add_var_and_k(ax0, mid='+'.join(mid)+rf' \#{pid} ({srn})',
-                          var_name=dta_prfs.var_info[PRF_VAL]['prm_name'], k=None)
+                          var_name=dta_prfs.var_info[PRF_VAL]['prm_plot'], k=None)
 
         # Save it
         fn_suf = dru.fn_suffix(fid=fid, eid=eid, rid=rid, tags=None, mids=mid, pids=[pid],

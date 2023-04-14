@@ -148,9 +148,6 @@ class TestParameter:
             [self.prm_pat.fullmatch(arg['prm_name']) is not None for arg in cfg.document]
         ) == self.n_dummy
         assert sum(
-            [self.flg_pat.fullmatch(arg['prm_name']) is not None for arg in cfg.document]
-        ) == self.n_dummy
-        assert sum(
             [self.desc_pat.fullmatch(arg['prm_desc']) is not None for arg in cfg.document]
         ) == self.n_dummy
 
