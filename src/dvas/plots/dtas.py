@@ -133,7 +133,7 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
     # Set the axis labels
     ylbl0 = r'$\delta_{e,i}$'
     ylbl0 += f' [{dta_prfs.var_info[PRF_VAL]["prm_unit"]}]'
-    ylbl1 = r'$\delta_{e,i}/\sigma_{\Omega_{e,i}}$'
+    ylbl1 = r'$\delta_{e,i}/\sigma(\delta_{e,i})$'
     #altlbl = r'gph$_{\rm CWS}$'
     altlbl = f'{dta_prfs.var_info[PRF_ALT]["prm_plot"]} [{dta_prfs.var_info[PRF_ALT]["prm_unit"]}]'
 

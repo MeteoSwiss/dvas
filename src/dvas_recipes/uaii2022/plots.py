@@ -73,13 +73,13 @@ def flight_overview(start_with_tags, label='mid', show=None):
     fig = plt.figure(figsize=(dpu.WIDTH_TWOCOL, fig_height))
 
     # Use gridspec for a fine control of the figure area.
-    fig_gs = gridspec.GridSpec(len(dynamic.ALL_VARS), 1,
-                               height_ratios=[1]*len(dynamic.ALL_VARS), width_ratios=[1],
+    fig_gs = gridspec.GridSpec(len(dru.cws_vars()), 1,
+                               height_ratios=[1]*len(dru.cws_vars()), width_ratios=[1],
                                left=0.085, right=0.87,
                                bottom=bottom_gap/fig_height, top=1-top_gap/fig_height,
                                wspace=0.05, hspace=plot_gap)
 
-    for (var_ind, var_name) in enumerate(dynamic.ALL_VARS):
+    for (var_ind, var_name) in enumerate(dru.cws_vars()):
 
         # Make x a shared axis if warranted
         if var_ind > 0:
@@ -130,7 +130,7 @@ def flight_overview(start_with_tags, label='mid', show=None):
                          transform=this_ax.transAxes)
 
         # Hide the tick labels except for the bottom-most plot
-        if var_ind < len(dynamic.ALL_VARS)-1:
+        if var_ind < len(dru.cws_vars())-1:
             plt.setp(this_ax.get_xticklabels(), visible=False)
 
         # Set the ylabel:
@@ -273,7 +273,7 @@ def covmat_stats(covmats):
                       fmts=dpu.PLOT_FMTS, show=None)
 
 
-@for_each_var
+@for_each_var()
 @for_each_flight
 @log_func_call(logger, time_it=True)
 def inspect_cws(gdp_start_with_tags, cws_start_with_tags):
@@ -334,7 +334,7 @@ def inspect_cws(gdp_start_with_tags, cws_start_with_tags):
                                           var=dynamic.CURRENT_VAR))
 
 
-@for_each_var
+@for_each_var(incl_wvec=True)
 @for_each_flight
 @log_func_call(logger, time_it=False)
 def participant_preview(prf_tags, cws_tags, dta_tags, mids=None):
@@ -375,20 +375,23 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None):
     dta_filt = tools.get_query_filter(tags_in=dta_tags + [eid, rid, TAG_DTA],
                                       tags_out=None, mids=mids)
 
-    # Query these different Profiles
-    prfs = MultiProfile()
-    prfs.load_from_db(prf_filt, dynamic.CURRENT_VAR, dynamic.INDEXES[PRF_ALT],
-                      inplace=True)
-
-    logger.info('Loaded %i Profiles for mids: %s', len(prfs), prfs.get_info('mid'))
-
-    cws_prfs = MultiCWSProfile()
-    cws_prfs.load_from_db(cws_filt, dynamic.CURRENT_VAR, dynamic.INDEXES[PRF_TDT],
-                          alt_abbr=dynamic.INDEXES[PRF_ALT],
-                          ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
-                          uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
-                          ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],
+    # Query these different Profiles and CWS. These exists only for the CWS variables
+    if dynamic.CURRENT_VAR in dru.cws_vars():
+        prfs = MultiProfile()
+        prfs.load_from_db(prf_filt, dynamic.CURRENT_VAR, dynamic.INDEXES[PRF_ALT],
                           inplace=True)
+
+        logger.info('Loaded %i Profiles for mids: %s', len(prfs), prfs.get_info('mid'))
+
+        cws_prfs = MultiCWSProfile()
+        cws_prfs.load_from_db(cws_filt, dynamic.CURRENT_VAR, dynamic.INDEXES[PRF_TDT],
+                              alt_abbr=dynamic.INDEXES[PRF_ALT],
+                              ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
+                              uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
+                              ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],
+                              inplace=True)
+        logger.info('Loaded %i CWS.', len(prfs))
+
     dta_prfs = MultiDeltaProfile()
     dta_prfs.load_from_db(dta_filt, dynamic.CURRENT_VAR,
                           alt_abbr=dynamic.INDEXES[PRF_ALT],
@@ -399,32 +402,37 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None):
 
     logger.info('Loaded %i DeltaProfiles for mids: %s', len(dta_prfs), dta_prfs.get_info('mid'))
 
-    # Make sure I have the same number of prfs and dta_prfs. Else, it most likely means that some
-    # dta were not computed.
-    if len(dta_prfs) < len(prfs):
-        raise DvasRecipesError('Found less dta_prfs than prfs. ' +
-                               'Have all the DeltaProfiles been computed ?')
+    if dynamic.CURRENT_VAR in dru.cws_vars():
+        # Make sure I have the same number of prfs and dta_prfs. Else, it most likely means that
+        # some dta were not computed.
+        if len(dta_prfs) < len(prfs):
+            raise DvasRecipesError('Found less dta_prfs than prfs. ' +
+                                   'Have all the DeltaProfiles been computed ?')
+        if len(dta_prfs) > len(prfs):
+            raise DvasRecipesError('Found more dta_prfs than prfs.')
 
     # Very well, let's now loop through these, and generate the plot
-    for (p_ind, prf) in enumerate(prfs):
+    for (p_ind, dta) in enumerate(dta_prfs):
 
         # What is the mid of this prf ?
-        mid = prf.info.mid
+        mid = dta.info.mid
         logger.info('Processing mid: %s', mid)
 
-        # Extract the corresponding dta profile
-        dta = dta_prfs[p_ind]
-        # dta_prfs should have the same order as prfs. But let's make sure.
-        if dta.info.mid != mid:
-            raise DvasRecipesError('"mid" mismatch: wrong sort order between prfs and dta_prfs ?')
+        # Extract the corresponding profile
+        if dynamic.CURRENT_VAR in dru.cws_vars():
+            prf = prfs[p_ind]
+            # dta_prfs should have the same order as prfs. But let's make sure.
+            if prf.info.mid != mid:
+                raise DvasRecipesError(
+                    f'"mid" mismatch between prfs and dta_prfs: {prf.info.mid} vs {mid}')
 
-        # Let's make some more sanity checks, to avoid bad surprises ...
-        if len(cws_prfs) != 1:
-            raise DvasRecipesError(f'I got {len(cws_prfs)} != 1 CWS profiles ?!')
+            # Let's make some more sanity checks, to avoid bad surprises ...
+            if len(cws_prfs) != 1:
+                raise DvasRecipesError(f'I got {len(cws_prfs)} != 1 CWS profiles ?!')
 
         # Let's extract the corresponding SRN and PID
-        srn = db_view.srn.values[db_view.oid.values == prfs[p_ind].info.oid][0]
-        pid = db_view.pid.values[db_view.oid.values == prfs[p_ind].info.oid][0]
+        srn = db_view.srn.values[db_view.oid.values == dta_prfs[p_ind].info.oid][0]
+        pid = db_view.pid.values[db_view.oid.values == dta_prfs[p_ind].info.oid][0]
 
         # Start the plotting
         fig = plt.figure(figsize=(dpu.WIDTH_TWOCOL, 5.5))
@@ -439,43 +447,46 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None):
         ax1 = fig.add_subplot(gs_info[1, 0], sharex=ax0)
 
         # Extract the DataFrames
-        prf_pdf = prfs.get_prms([PRF_ALT, PRF_VAL])[p_ind]
-        cws_pdf = cws_prfs.get_prms([PRF_ALT, PRF_VAL, 'uc_tot'])[0]
+        if dynamic.CURRENT_VAR in dru.cws_vars():
+            prf_pdf = prfs.get_prms([PRF_ALT, PRF_VAL])[p_ind]
+            cws_pdf = cws_prfs.get_prms([PRF_ALT, PRF_VAL, 'uc_tot'])[0]
         dta_pdf = dta_prfs.get_prms([PRF_ALT, PRF_VAL, 'uc_tot'])[p_ind]
 
-        # Show the delta = 0 line
-        ax1.plot(cws_pdf.loc[:, PRF_ALT].values, cws_pdf.loc[:, PRF_VAL].values*0,
-                 lw=0.4, ls='-', c='darkorchid')
+        if dynamic.CURRENT_VAR in dru.cws_vars():
+            # Show the delta = 0 line
+            ax1.plot(cws_pdf.loc[:, PRF_ALT].values, cws_pdf.loc[:, PRF_VAL].values*0,
+                     lw=0.4, ls='-', c='darkorchid')
 
-        # Very well, let us plot all these things.
-        # First, plot the profiles themselves
-        ax0.plot(cws_pdf.loc[:, PRF_ALT].values, prf_pdf.loc[:, PRF_VAL].values,
-                 lw=0.4, ls='-', drawstyle='steps-mid', c='k', alpha=1,
-                 label=mid[0])
-        ax0.plot(cws_pdf.loc[:, PRF_ALT].values, cws_pdf.loc[:, PRF_VAL].values,
-                 lw=0.4, ls='-', drawstyle='steps-mid', c='darkorchid', alpha=1, label='CWS')
-        ax0.fill_between(cws_pdf.loc[:, PRF_ALT].values,
-                         prfs.get_prms(PRF_VAL).max(axis=1).values,
-                         prfs.get_prms(PRF_VAL).min(axis=1).values,
-                         facecolor=(0.8, 0.8, 0.8), step='mid', edgecolor='none',
-                         label='All sondes')
+            # Very well, let us plot all these things.
+            # First, plot the profiles themselves
+            ax0.plot(cws_pdf.loc[:, PRF_ALT].values, prf_pdf.loc[:, PRF_VAL].values,
+                     lw=0.4, ls='-', drawstyle='steps-mid', c='k', alpha=1,
+                     label=mid[0])
+            ax0.plot(cws_pdf.loc[:, PRF_ALT].values, cws_pdf.loc[:, PRF_VAL].values,
+                     lw=0.4, ls='-', drawstyle='steps-mid', c='darkorchid', alpha=1, label='CWS')
+            ax0.fill_between(cws_pdf.loc[:, PRF_ALT].values,
+                             prfs.get_prms(PRF_VAL).max(axis=1).values,
+                             prfs.get_prms(PRF_VAL).min(axis=1).values,
+                             facecolor=(0.8, 0.8, 0.8), step='mid', edgecolor='none',
+                             label='All sondes')
 
         # Next plot the uncertainties
         ax1.plot(dta_pdf.loc[:, PRF_ALT], dta_pdf.loc[:, PRF_VAL],
-                 alpha=1, drawstyle='steps-mid', color='k', lw=0.4)
+                 alpha=1, drawstyle='steps-mid', color='k', lw=0.4, label=mid[0])
         ax1.fill_between(dta_pdf.loc[:, PRF_ALT].values,
                          dta_prfs.get_prms(PRF_VAL).max(axis=1).values,
                          dta_prfs.get_prms(PRF_VAL).min(axis=1).values,
-                         facecolor=(0.8, 0.8, 0.8), step='mid', edgecolor='none')
+                         facecolor=(0.8, 0.8, 0.8), step='mid', edgecolor='none',
+                         label='All sondes')
 
         # Display the location of the tropopause and the PBL
         for (loi, symb) in [(MTDTA_TROPOPAUSE, r'$\prec$'), (MTDTA_PBLH, r'$\simeq$'),
                             (MTDTA_UTLSMIN, r'$\top$'), (MTDTA_UTLSMAX, r'$\bot$')]:
-            if loi not in prf.info.metadata.keys():
-                logger.warning('"%s" not found in CWS metadata.', loi)
+            if loi not in dta.info.metadata.keys():
+                logger.warning('"%s" not found in metadata.', loi)
                 continue
 
-            loi_gph = float(prf.info.metadata[loi].split(' ')[0])
+            loi_gph = float(dta.info.metadata[loi].split(' ')[0])
 
             for ax in [ax0, ax1]:
                 ax.axvline(loi_gph, ls=':', lw=1, c='k')
@@ -484,7 +495,7 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None):
                      rotation=90, bbox=dict(boxstyle='square', fc="w", ec="none", pad=0.1))
 
         # Set the axis labels
-        ylbl0 = f'{prfs.var_info[PRF_VAL]["prm_plot"]} [{prfs.var_info[PRF_VAL]["prm_unit"]}]'
+        ylbl0 = r'$x_{e,i}$ ' + f'[{dta_prfs.var_info[PRF_VAL]["prm_unit"]}]'
         ylbl1 = r'$\delta_{e,i}$'
         ylbl1 += f' [{dta_prfs.var_info[PRF_VAL]["prm_unit"]}]'
         altlbl = dta_prfs.var_info[PRF_ALT]['prm_plot']
@@ -509,9 +520,12 @@ def participant_preview(prf_tags, cws_tags, dta_tags, mids=None):
             plt.setp(ax.get_xticklabels(), visible=False)
 
         # Add the legend
-        dpu.fancy_legend(ax0, '')
+        if dynamic.CURRENT_VAR in dru.cws_vars():
+            dpu.fancy_legend(ax0, '')
+        else:
+            dpu.fancy_legend(ax1, '')
         # Add the edt/eid/rid info
-        dpu.add_edt_eid_rid(ax0, prfs)
+        dpu.add_edt_eid_rid(ax0, dta_prfs)
 
         # Add the source for the plot
         dpu.add_source(fig)

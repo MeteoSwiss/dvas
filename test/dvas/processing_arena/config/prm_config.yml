@@ -34,15 +34,14 @@
   prm_unit: 'repls({"pres": "hPa",
                     "alt": "m"}, get(1))'
 
-- prm_name: '(wdir|wspeed)(|(_ucu))'
-  prm_plot: 'cat(repls({"wdir": "Wind dir.", "wspeed": "Wind speed"}, get(1)),
+- prm_name: '(wdir|wspeed|wvec)(|(_ucu))'
+  prm_plot: 'cat(repls({"wdir": "Wind dir.", "wspeed": "Wind speed", "wvec": "Wind vec."}, get(1)),
                  repl({"_ucu": " (ucu))"}, get(2)))'
   # Generate variables from regex generator for wind direction and wind speed.
   prm_desc: 'cat(repls({"wdir": "Wind direction",
-                        "wspeed": "Wind speed"}, get(1)),
+                        "wspeed": "Wind speed", "wvec": "Wind (horizontal) vector"}, get(1)),
                  repl({"_ucu": " un-correlated uncertainty"}, get(2)))'
-  prm_unit: 'repls({"wdir": "deg",
-                    "wspeed": "m/s"}, get(1))'
+  prm_unit: 'repls({"wdir": "deg", "wspeed": "m/s", "wvec": "m/s"}, get(1))'
 
 - prm_name: 'dummytst_(param\d)'
   prm_plot: 'Dummy test prm.'

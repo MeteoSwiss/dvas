@@ -114,3 +114,10 @@ def rsid_tags(pop=None):
         tags_out = [item for item in tags_out if item not in pop]
 
     return tags_out
+
+
+def cws_vars():
+    """ Return the list of variables that are present in CWS. """
+
+    return {var_name: var_content for (var_name, var_content) in dynamic.ALL_VARS.items()
+            if var_name != 'wvec'}

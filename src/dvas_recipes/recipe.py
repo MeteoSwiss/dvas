@@ -68,9 +68,60 @@ def for_each_flight(func):
     return wrapper
 
 
-def for_each_var(func):
+def for_each_var(incl_wdir=True, incl_wspeed=True, incl_wvec=False):
+    """ Parameteric decorator, to enable the looping over different variables, with the option
+    to select different wind elements.
+
+    Args:
+        incl_wdir (bool): whether to include the wdir variable, or not.
+        incl_wspeed (bool): whether to include the wspeed variable, or not.
+        incl_wvec (bool): whether to include the wvec variable, or not.
+
+    """
+
+    def for_each_selected_var(func):
+        """ This function is the actual decorator to be used around recipe step functions that need
+        to be executed sequentially for all the CWS variables.
+
+        Args:
+            func (function): the recipe step function to decorate.
+
+        """
+
+        def wrapper(**kwargs):
+            """ A small wrapper function that loops over dynamic.ALL_VARS and updates the value of
+            dynamic.THIS_VAR before calling the wrapped function (that is assumed will itself call
+            dynamic.THIS_VAR directly).
+
+            Note:
+                This decorator can be used in conjunction with `for_each_flight`.
+
+            Args:
+                **kwargs: keyword arguments of the decorated function, that ought to be defined in
+                    the `.rcp` YAML file by the end user.
+            """
+
+            # Loop through each flight, and apply func as intended, after updating the value of
+            # dynamic.THIS_FLIGHT
+            for var in rcp_dyn.ALL_VARS:
+                # Apply the parameteric choices
+                if var == 'wvec' and not incl_wvec:
+                    continue
+                if var == 'wdir' and not incl_wdir:
+                    continue
+                if var == 'wspeed' and not incl_wspeed:
+                    continue
+                rcp_dyn.CURRENT_VAR = var
+                logger.info('Processing variable: %s', var)
+                func(**kwargs)
+
+        return wrapper
+    return for_each_selected_var
+
+
+def for_each_oscar_var(func):
     """ This function is meant to be used as a decorator around recipe step functions that need to
-    be executed sequentially for all the specified variables.
+    be executed sequentially for all the OSCAR variables.
 
     Args:
         func (function): the recipe step function to decorate.
@@ -93,6 +144,8 @@ def for_each_var(func):
         # Loop through each flight, and apply func as intended, after updating the value of
         # dynamic.THIS_FLIGHT
         for var in rcp_dyn.ALL_VARS:
+            if var in ['wdir', 'speed']:
+                continue
             rcp_dyn.CURRENT_VAR = var
             logger.info('Processing variable: %s', var)
             func(**kwargs)

@@ -73,6 +73,10 @@ rcp_params:
             ucs:
             uct:
             ucu: wspeed_ucu
+        wvec:
+            ucs:
+            uct:
+            ucu: wvec_ucu
 
 # Recipe steps, and associated arguments/parameters
 rcp_steps:

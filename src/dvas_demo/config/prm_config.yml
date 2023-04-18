@@ -22,7 +22,7 @@
 
 - prm_name: 'alt_ref'
   prm_plot: 'CWS geopot. height'
-  prm_desc: ' CWS (reference) geopotential height'
+  prm_desc: 'CWS (reference) geopotential height'
   prm_cmt: 'Geopotential height AMSL derived from CWS'
   prm_unit: 'm'
 
@@ -71,6 +71,13 @@
 - prm_name: 'wspeed(|(_ucu))'
   prm_plot: 'cat("Wind speed", repl({"_ucu": " (ucu)"}, get(1)))'
   prm_desc: 'cat("Wind speed", repl({"_ucu": " un-correlated uncertainty (k=1)"}, get(1)))'
+  prm_cmt: ''
+  prm_unit: 'm/s'
+
+- prm_name: 'wvec(|(_ucu))'
+  prm_plot: 'cat("Wind vec.", repl({"_ucu": " (ucu)"}, get(1)))'
+  prm_desc: 'cat("Wind (horizontal) vector",
+             repl({"_ucu": " un-correlated uncertainty (k=1)"}, get(1)))'
   prm_cmt: ''
   prm_unit: 'm/s'
 

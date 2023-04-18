@@ -181,7 +181,7 @@ def cleanup_steps(prfs, resampling_freq, interp_dist, crop_descent, timeofday=No
         )
 
 
-@for_each_var
+@for_each_var()
 @for_each_flight
 @log_func_call(logger, time_it=True)
 def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):

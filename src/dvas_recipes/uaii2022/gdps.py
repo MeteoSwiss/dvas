@@ -35,7 +35,7 @@ from . import tools, plots
 logger = logging.getLogger(__name__)
 
 
-@for_each_var
+@for_each_var()
 @for_each_flight
 @log_func_call(logger, time_it=True)
 def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='weighted mean',

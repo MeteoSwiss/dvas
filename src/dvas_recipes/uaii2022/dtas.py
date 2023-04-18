@@ -30,7 +30,7 @@ from .. import utils as dru
 logger = logging.getLogger(__name__)
 
 
-@for_each_var
+@for_each_var(incl_wvec=True)
 @for_each_flight
 @log_func_call(logger)
 def compute_deltas(prf_start_with_tags, cws_start_with_tags, do_gdps=False, do_nongdps=True,
@@ -43,7 +43,7 @@ def compute_deltas(prf_start_with_tags, cws_start_with_tags, do_gdps=False, do_n
         cws_start_with_tags (str|list of str): cws tag name(s) for the search into the database.
         do_gdps (bool, optional): if True, will also compute the deltas for GDP profiles
             (ignoring the GDP uncertaintes entirely). Defaults to False.
-        do_nongdps (bool):  if True, will also compute the deltas for the non-GDP profiles.
+        do_nongdps (bool): if True, will also compute the deltas for the non-GDP profiles.
             Default to True.
         save_to_db (bool optional): if True, the deltas will be saved to the DB with the 'delta'
             tag.
@@ -85,29 +85,81 @@ def compute_deltas(prf_start_with_tags, cws_start_with_tags, do_gdps=False, do_n
     cws_filt = tools.get_query_filter(
         tags_in=cws_tags + [eid, rid, TAG_CWS], tags_out=None)
 
-    # Load the non GDP profiles as Profiles (and not RSProfiles) since we're about to drop the
-    # time axis anyway.
-    prfs = MultiProfile()
-    prfs.load_from_db(prf_filt, dynamic.CURRENT_VAR,
-                      alt_abbr=dynamic.INDEXES[PRF_ALT],
-                      inplace=True)
-
-    # Load the CWS
-    cws_prfs = MultiCWSProfile()
-    cws_prfs.load_from_db(cws_filt, dynamic.CURRENT_VAR,
-                          tdt_abbr=dynamic.INDEXES[PRF_TDT],
+    # Deal with the CWS variables
+    if dynamic.CURRENT_VAR in dru.cws_vars():
+        # Load the non GDP profiles as Profiles (and not RSProfiles) since we're about to drop the
+        # time axis anyway.
+        prfs = MultiProfile()
+        prfs.load_from_db(prf_filt, dynamic.CURRENT_VAR,
                           alt_abbr=dynamic.INDEXES[PRF_ALT],
-                          ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
-                          uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
-                          ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],
                           inplace=True)
 
-    # Safety check for the CWS
-    if len(cws_prfs) != 1:
-        raise DvasRecipesError(f'I need 1 CWS, but I got {len(cws_prfs)} instead.')
+        # Load the CWS
+        cws_prfs = MultiCWSProfile()
+        cws_prfs.load_from_db(cws_filt, dynamic.CURRENT_VAR,
+                              tdt_abbr=dynamic.INDEXES[PRF_TDT],
+                              alt_abbr=dynamic.INDEXES[PRF_ALT],
+                              ucs_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucs'],
+                              uct_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['uct'],
+                              ucu_abbr=dynamic.ALL_VARS[dynamic.CURRENT_VAR]['ucu'],
+                              inplace=True)
+
+        dir_prfs = None
+        dir_cws_prfs = None
+
+        # Safety check for the CWS
+        if len(cws_prfs) != 1:
+            raise DvasRecipesError(f'I need 1 CWS, but I got {len(cws_prfs)} instead.')
+
+    elif dynamic.CURRENT_VAR == 'wvec':
+        # Let's deal with the special case of the wind (horizontal) vector
+        # This is to be consistent with OSCAR, and requires dealing with both the wind speed
+        # and the wind direction.
+
+        # WARNING: hardcoded variable name ... !!!
+        prfs = MultiProfile()
+        prfs.load_from_db(prf_filt, 'wspeed',
+                          alt_abbr=dynamic.INDEXES[PRF_ALT],
+                          inplace=True)
+
+        # Load the CWS
+        cws_prfs = MultiCWSProfile()
+        cws_prfs.load_from_db(cws_filt, 'wspeed',
+                              tdt_abbr=dynamic.INDEXES[PRF_TDT],
+                              alt_abbr=dynamic.INDEXES[PRF_ALT],
+                              ucs_abbr=dynamic.ALL_VARS['wspeed']['ucs'],
+                              uct_abbr=dynamic.ALL_VARS['wspeed']['uct'],
+                              ucu_abbr=dynamic.ALL_VARS['wspeed']['ucu'],
+                              inplace=True)
+
+        # Safety check for the CWS
+        if len(cws_prfs) != 1:
+            raise DvasRecipesError(f'I need 1 CWS, but I got {len(cws_prfs)} instead.')
+
+        dir_prfs = MultiProfile()
+        dir_prfs.load_from_db(prf_filt, 'wdir',
+                              alt_abbr=dynamic.INDEXES[PRF_ALT],
+                              inplace=True)
+
+        # Load the CWS
+        dir_cws_prfs = MultiCWSProfile()
+        dir_cws_prfs.load_from_db(cws_filt, 'wdir',
+                                  tdt_abbr=dynamic.INDEXES[PRF_TDT],
+                                  alt_abbr=dynamic.INDEXES[PRF_ALT],
+                                  ucs_abbr=dynamic.ALL_VARS['wdir']['ucs'],
+                                  uct_abbr=dynamic.ALL_VARS['wdir']['uct'],
+                                  ucu_abbr=dynamic.ALL_VARS['wdir']['ucu'],
+                                  inplace=True)
+
+        # Safety check for the CWS
+        if len(dir_cws_prfs) != 1:
+            raise DvasRecipesError(f'I need 1 wdir CWS, but I got {len(dir_cws_prfs)} instead.')
+    else:
+        raise DvasRecipesError(f'Unknown variable: {dynamic.CURRENT_VAR}')
 
     # Compute the Delta Profiles
-    dta_prfs = dtdd.compute(prfs, cws_prfs, circular=dynamic.CURRENT_VAR == 'wdir')
+    dta_prfs = dtdd.compute(prfs, cws_prfs, circular=dynamic.CURRENT_VAR == 'wdir',
+                            dir_prfs=dir_prfs, dir_cwss=dir_cws_prfs)
 
     # Save the Delta profiles to the database.
     if save_to_db:

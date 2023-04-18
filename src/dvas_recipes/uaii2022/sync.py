@@ -227,5 +227,8 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var, valid_value_range
     # Finally, apply the shifts and update the db with the new profiles, not overlooking the fact
     # that for GDPs, I also need to deal with the associated uncertainties.
     for var_name in dynamic.ALL_VARS:
+        # I do not have any wind vector yet ...
+        if var_name == 'wvec':
+            continue
         logger.info('Applying sync shifts for variable: %s', var_name)
         apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp)

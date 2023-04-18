@@ -92,8 +92,8 @@ def set_zone_flags(prf_tags=None, cws_tags=None, temp_var='temp', set_pblh_at=No
     logger.info('Tropopause from CWS: %.2f [%s] @ %s',
                 tropopause_alt, tropopause_unit, tropopause_tdt)
 
-    # For all variables, fetch the CWS to identify the valid regions
-    for var_name in dynamic.ALL_VARS:
+    # For all CWS variables, fetch the CWS to identify the valid regions
+    for var_name in dru.cws_vars():
         logger.info('Flagging zones for variable %s', var_name)
 
         cws_prfs = MultiCWSProfile()
