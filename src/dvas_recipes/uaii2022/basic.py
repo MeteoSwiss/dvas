@@ -181,7 +181,7 @@ def cleanup_steps(prfs, resampling_freq, interp_dist, crop_descent, timeofday=No
         )
 
 
-@for_each_var()
+@for_each_var(incl_latlon=True)
 @for_each_flight
 @log_func_call(logger, time_it=True)
 def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
@@ -276,7 +276,7 @@ def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
 
             nok = val_vs_uc.loc[:, gdp_ind]['uc_tot'] == 0
 
-            if any(~ok) or any(nok):
+            if dynamic.CURRENT_VAR not in ['lat', 'lon'] and (any(~ok) or any(nok)):
                 logger.info('%s: %i/%i val vs uc_tot "NaN" mismatch for %s, flagged as "%s".',
                             '+'.join(gdp.info.mid), len(ok[~ok]), len(ok),
                             dynamic.CURRENT_VAR, FLG_ISINVALID)
@@ -319,7 +319,7 @@ def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
         cleanup_steps(gdp_prfs, **args, timeofday=timeofday, fid=fid)
 
     # Process the non-GDPs, if any
-    if not db_view[this_flight].is_gdp.all():
+    if not db_view[this_flight].is_gdp.all() and dynamic.CURRENT_VAR not in ['lat', 'lon']:
         logger.info('Cleaning non-GDP profiles for flight %s and variable %s',
                     dynamic.CURRENT_FLIGHT,
                     dynamic.CURRENT_VAR)

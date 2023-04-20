@@ -68,7 +68,7 @@ def for_each_flight(func):
     return wrapper
 
 
-def for_each_var(incl_wdir=True, incl_wspeed=True, incl_wvec=False):
+def for_each_var(incl_wdir=True, incl_wspeed=True, incl_wvec=False, incl_latlon=False):
     """ Parameteric decorator, to enable the looping over different variables, with the option
     to select different wind elements.
 
@@ -76,6 +76,8 @@ def for_each_var(incl_wdir=True, incl_wspeed=True, incl_wvec=False):
         incl_wdir (bool): whether to include the wdir variable, or not.
         incl_wspeed (bool): whether to include the wspeed variable, or not.
         incl_wvec (bool): whether to include the wvec variable, or not.
+        incl_latlon (bool): whether to include the lat and lon variables, or not.
+
 
     """
 
@@ -110,6 +112,8 @@ def for_each_var(incl_wdir=True, incl_wspeed=True, incl_wvec=False):
                 if var == 'wdir' and not incl_wdir:
                     continue
                 if var == 'wspeed' and not incl_wspeed:
+                    continue
+                if var in ['lat', 'lon'] and not incl_latlon:
                     continue
                 rcp_dyn.CURRENT_VAR = var
                 logger.info('Processing variable: %s', var)

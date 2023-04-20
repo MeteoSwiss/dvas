@@ -116,8 +116,13 @@ def rsid_tags(pop=None):
     return tags_out
 
 
-def cws_vars():
+def cws_vars(incl_latlon=False):
     """ Return the list of variables that are present in CWS. """
 
+    noncws_vars = ['wvec']
+
+    if not incl_latlon:
+        noncws_vars += ['lat', 'lon']
+
     return {var_name: var_content for (var_name, var_content) in dynamic.ALL_VARS.items()
-            if var_name != 'wvec'}
+            if var_name not in noncws_vars}

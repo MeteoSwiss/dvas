@@ -81,3 +81,14 @@
   prm_cmt: ''
   prm_unit: 'm/s'
 
+- prm_name: 'lat'
+  prm_plot: 'Lat.'
+  prm_desc: 'Latitude'
+  prm_cmt: 'degree North'
+  prm_unit: 'deg N.'
+
+- prm_name: 'lon'
+  prm_plot: 'Lon.'
+  prm_desc: 'Longitude'
+  prm_cmt: 'degree East'
+  prm_unit: 'deg E.'

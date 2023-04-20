@@ -113,7 +113,7 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
     # And now idem for the non-GDPs
     non_gdp_shifts = [item for (ind, item) in enumerate(sync_shifts) if not is_gdp[ind]]
     # Only proceed if some non-GDP profiles were found. This makes pure-GDP flights possible.
-    if len(non_gdp_shifts) > 0:
+    if len(non_gdp_shifts) > 0 and var_name not in ['lat', 'lon']:
         non_gdps = MultiRSProfile()
         non_gdps.load_from_db(f"and_({filt}, not_(tags('{TAG_GDP}')))", var_name,
                               dynamic.INDEXES[PRF_TDT],

@@ -230,3 +230,9 @@ _RS41-GDP_001:
         value: get('wspeed')
     _wspeed_ucu:
         value: get('wspeed_uc_ucor', 'div2')  # Go from K=2 to K=1
+
+    _lat:
+        value: get('lat')
+
+    _lon:
+        value: get('lon')
