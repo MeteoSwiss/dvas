@@ -9,21 +9,27 @@
 # --------------------------------------------------------------------------------------------------
 
 # Legend:
-# - prm_name: parameter name used throughout dvas.
-#   prm_desc: longer description for plots
-#   prm_unit: the associated unit
+# - prm_name: parameter name used throughout dvas, and in the resulting netCDF
+#   prm_plot: parameter name in the dvas plots
+#   prm_desc: longer description for the netcdf
+#   prm_unit: the associated unit, used for plots and netCDF fields
 
 - prm_name: 'time'
+  prm_plot: 'Time'
   prm_desc: 'Time'
   prm_cmt: ''
   prm_unit: 's'
 
 - prm_name: 'alt_ref'
-  prm_desc: 'Reference altitude'
+  prm_plot: 'CWS geopot. height'
+  prm_desc: 'CWS (reference) geopotential height'
   prm_cmt: 'Geopotential height AMSL derived from CWS'
   prm_unit: 'm'
 
 - prm_name: 'gph(|(_uct)|(_ucu))'
+  prm_plot: 'cat("Geopot. height",
+                 repl({"_uct": " (uct)",
+                       "_ucu": " (ucu)"}, get(1)))'
   # Generate variables from regex generator for geopotential height.
   prm_desc: 'cat("Geopotential height AMSL",
                  repl({"_uct": " temporal-correlated uncertainty (k=1)",
@@ -32,6 +38,7 @@
   prm_unit: 'm'
 
 - prm_name: 'temp(|(_ucs)|(_uct)|(_ucu))'
+  prm_plot: 'cat("Temp.", repl({"_ucs": " (ucs))", "_uct": " (uct))", "_ucu": " (ucu)"}, get(1)))'
   # Generate variables from regex generator for temperature.
   prm_desc: 'cat("Temperature", repl({"_ucs": " spatial-correlated uncertainty (k=1)",
                                       "_uct": " temporal-correlated uncertainty (k=1)",
@@ -40,13 +47,15 @@
   prm_unit: 'K'
 
 - prm_name: 'rh(|(_uct)|(_ucu))'
+  prm_plot: 'cat("Rel. hum.", repl({"_uct": " (uct)", "_ucu": " (ucu)"}, get(1)))'
   # Generate variables from regex generator for relative humidity.
   prm_desc: 'cat("Relative humidity", repl({"_uct": " temporal-correlated uncertainty (k=1)",
                                             "_ucu": " un-correlated uncertainty (k=1)"}, get(1)))'
   prm_cmt: ''
-  prm_unit: '%'
+  prm_unit: '%RH'
 
 - prm_name: 'pres(|(_uct)|(_ucu))'
+  prm_plot: 'cat("Press.", repl({"_uct": " (uct)", "_ucu": " (ucu)"}, get(1)))'
   # Generate variables from regex generator for pressure.
   prm_desc: 'cat("Pressure", repl({"_uct": " temporal-correlated uncertainty (k=1)",
                                    "_ucu": " un-correlated uncertainty (k=1)"}, get(1)))'
@@ -54,12 +63,32 @@
   prm_unit: 'hPa'
 
 - prm_name: 'wdir(|(_ucu))'
+  prm_plot: 'cat("Wind dir.", repl({"_ucu": " (ucu)"}, get(1)))'
   prm_desc: 'cat("Wind direction", repl({"_ucu": " un-correlated uncertainty (k=1)"}, get(1)))'
   prm_cmt: '0deg: north, 90deg: east, 180deg: south, 270deg: west'
   prm_unit: 'deg'
 
 - prm_name: 'wspeed(|(_ucu))'
+  prm_plot: 'cat("Wind speed", repl({"_ucu": " (ucu)"}, get(1)))'
   prm_desc: 'cat("Wind speed", repl({"_ucu": " un-correlated uncertainty (k=1)"}, get(1)))'
   prm_cmt: ''
   prm_unit: 'm/s'
 
+- prm_name: 'wvec(|(_ucu))'
+  prm_plot: 'cat("Wind vec.", repl({"_ucu": " (ucu)"}, get(1)))'
+  prm_desc: 'cat("Wind (horizontal) vector",
+             repl({"_ucu": " un-correlated uncertainty (k=1)"}, get(1)))'
+  prm_cmt: ''
+  prm_unit: 'm/s'
+
+- prm_name: 'lat'
+  prm_plot: 'Lat.'
+  prm_desc: 'Latitude'
+  prm_cmt: 'degree North'
+  prm_unit: 'deg N.'
+
+- prm_name: 'lon'
+  prm_plot: 'Lon.'
+  prm_desc: 'Longitude'
+  prm_cmt: 'degree East'
+  prm_unit: 'deg E.'

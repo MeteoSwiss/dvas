@@ -538,6 +538,7 @@ class Prm(OneDimArrayConfigManager):
         # Define mapping
         arg_key_to_dict = {
             TableParameter.prm_name.name: lambda x: f"{x}{FLG_PRM_NAME_SUFFIX}",
+            TableParameter.prm_plot.name: lambda x: f"{FLG_PRM_DESC_PREFIX}{x}",
             TableParameter.prm_desc.name: lambda x: f"{FLG_PRM_DESC_PREFIX}{x[0].lower()}{x[1:]}",
             TableParameter.prm_cmt.name: lambda _: '',
             TableParameter.prm_unit.name: lambda _: '',

@@ -113,7 +113,7 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
     # And now idem for the non-GDPs
     non_gdp_shifts = [item for (ind, item) in enumerate(sync_shifts) if not is_gdp[ind]]
     # Only proceed if some non-GDP profiles were found. This makes pure-GDP flights possible.
-    if len(non_gdp_shifts) > 0:
+    if len(non_gdp_shifts) > 0 and var_name not in ['lat', 'lon']:
         non_gdps = MultiRSProfile()
         non_gdps.load_from_db(f"and_({filt}, not_(tags('{TAG_GDP}')))", var_name,
                               dynamic.INDEXES[PRF_TDT],
@@ -227,5 +227,8 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var, valid_value_range
     # Finally, apply the shifts and update the db with the new profiles, not overlooking the fact
     # that for GDPs, I also need to deal with the associated uncertainties.
     for var_name in dynamic.ALL_VARS:
+        # I do not have any wind vector yet ...
+        if var_name == 'wvec':
+            continue
         logger.info('Applying sync shifts for variable: %s', var_name)
         apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp)

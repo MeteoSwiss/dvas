@@ -153,19 +153,18 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
 
     # Make it look pretty
     # Legends, labels, etc ...
-    ylbl = cws_prf.var_info[PRF_VAL]['prm_name']
-    ylbl += f' [{cws_prf.var_info[PRF_VAL]["prm_unit"]}]'
+    # ylbl = cws_prf.var_info[PRF_VAL]['prm_plot']
+    yunit = f' [{cws_prf.var_info[PRF_VAL]["prm_unit"]}]'
 
-    altlbl = r'gph$_{\rm CWS}$'
-    altlbl += f' [{cws_prf.var_info[PRF_ALT]["prm_unit"]}]'
+    altlbl = f'{cws_prf.var_info[PRF_ALT]["prm_plot"]} [{cws_prf.var_info[PRF_ALT]["prm_unit"]}]'
     ax2.set_xlabel(pu.fix_txt(altlbl))
 
     # Here, plot the axis labels as text, so that they are all aligned vertically accross subplots
-    ax0.text(-0.1, 0.5, pu.fix_txt(ylbl), ha='left', va='center',
+    ax0.text(-0.1, 0.5, pu.fix_txt(r'$x_{e,i}$' + yunit), ha='left', va='center',
              transform=ax0.transAxes, rotation=90)
     plt.setp(ax0.get_xticklabels(), visible=False)
     plt.setp(ax1.get_xticklabels(), visible=False)
-    ax1.text(-0.1, 0.5, pu.fix_txt(r'$\Delta$' + ylbl), ha='left', va='center',
+    ax1.text(-0.1, 0.5, pu.fix_txt(r'$x_{e,i}-\Omega_{e,i}$' + yunit), ha='left', va='center',
              transform=ax1.transAxes, rotation=90)
     ax2.set_ylim((0, 1))
     ax2.set_yticks([])
@@ -187,7 +186,7 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     pu.add_edt_eid_rid(ax0, cws_prf)
 
     # Add the k-level
-    pu.add_var_and_k(ax0, var_name=cws_prf.var_info[PRF_VAL]['prm_name'], k=k_lvl)
+    pu.add_var_and_k(ax0, var_name=cws_prf.var_info[PRF_VAL]['prm_plot'], k=k_lvl)
 
     # Add the source for the plot
     pu.add_source(fig)
@@ -276,8 +275,7 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
               transform=ax0b.transAxes, rotation=90)
 
     # Now make it look pretty
-    altlbl = r'gph$_{\rm CWS}$'
-    altlbl += f' [{cws_prf.var_info[PRF_ALT]["prm_unit"]}]'
+    altlbl = f'{cws_prf.var_info[PRF_ALT]["prm_plot"]} [{cws_prf.var_info[PRF_ALT]["prm_unit"]}]'
     ax3.set_xlabel(pu.fix_txt(altlbl))
 
     # Legends, labels, etc ...
@@ -290,7 +288,7 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     # Add the legend
     pu.fancy_legend(ax0, label)
     # Add the k-level
-    var_msg = f'{cws_prf.var_info[PRF_VAL]["prm_name"]} [{cws_prf.var_info[PRF_VAL]["prm_unit"]}]'
+    var_msg = f'{cws_prf.var_info[PRF_VAL]["prm_plot"]} [{cws_prf.var_info[PRF_VAL]["prm_unit"]}]'
     pu.add_var_and_k(ax0, var_name=var_msg, k=k_lvl)
 
     # Add the edt/eid/rid info

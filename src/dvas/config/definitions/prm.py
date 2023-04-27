@@ -15,6 +15,7 @@ from ...database.model import Prm as TableParameter
 
 #: dict: Default values of labels
 LABEL_VAL_DEF = {
+    TableParameter.prm_plot.name: '',
     TableParameter.prm_desc.name: '',
     TableParameter.prm_cmt.name: '',
     TableParameter.prm_unit.name: '',
@@ -23,6 +24,9 @@ LABEL_VAL_DEF = {
 #: dict: Parameter pattern properties (JSON_SCHEMA)
 PARAMETER_PATTERN_PROP = {
     rf"^{TableParameter.prm_name.name}$": {
+        "type": "string",
+    },
+    rf"^{TableParameter.prm_plot.name}$": {
         "type": "string",
     },
     rf"^{TableParameter.prm_desc.name}$": {

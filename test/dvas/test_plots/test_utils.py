@@ -65,6 +65,7 @@ def test_fix_txt():
     # and any subsequent plot crashes.
     dpu.set_mplstyle('nolatex')
 
+
 def test_wrap_wdir_curve():
     """ Function to test that wind directions plots can be cleanly wrapped. """
 

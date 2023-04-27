@@ -122,3 +122,9 @@ _IMS-100-BETA_002:
         value: get('wspeed')
     _wspeed_ucu:
         value: get('wspeed_uc_ucor')
+
+    _lat:
+        value: get('lat')
+
+    _lon:
+        value: get('lon')

@@ -1,13 +1,16 @@
 # Parameter configuration file
 - prm_name: 'time'
+  prm_plot: 'Time'
   prm_desc: 'Time'
   prm_unit: 's'
 
 - prm_name: 'gph'
+  prm_plot: 'Geopot. height'
   prm_desc: 'Geopotential height'
   prm_unit: 'm'
 
 - prm_name: 'temp(|(_ucs)|(_uct)|(_ucu))'
+  prm_plot: 'cat("Temp.", repl({"_ucs": " (ucs))", "_uct": " (uct)", "_ucu": " (ucu)"}, get(1)))'
   # Generate variables from regex generator for temperature.
   prm_desc: 'cat("Temperature", repl({"_ucs": " spatial-correlated uncertainty",
                                       "_uct": " temporal-correlated uncertainty",
@@ -15,12 +18,15 @@
   prm_unit: 'K'
 
 - prm_name: 'rh(|(_uct)|(_ucu))'
+  prm_plot: 'cat("Rel. hum.", repl({"_uct": " (uct)", "_ucu": " (ucu)"}, get(1)))'
   # Generate variables from regex generator for relative humidity.
   prm_desc: 'cat("Relative humidity", repl({"_uct": " temporal-correlated uncertainty",
                                             "_ucu": " un-correlated uncertainty"}, get(1)))'
   prm_unit: '%'
 
 - prm_name: '(pres|alt)(|(_uct))'
+  prm_plot: 'cat(repls({"pres": "Press.", "alt": "Alt. AMSL"}, get(1)),
+                 repl({"_uct": " (uct)"}, get(2)))'
   # Generate variables from regex generator for pressure and altitude.
   prm_desc: 'cat(repls({"pres": "Pressure",
                         "alt": "Altitude a.m.s.l."}, get(1)),
@@ -28,26 +34,31 @@
   prm_unit: 'repls({"pres": "hPa",
                     "alt": "m"}, get(1))'
 
-- prm_name: '(wdir|wspeed)(|(_ucu))'
+- prm_name: '(wdir|wspeed|wvec)(|(_ucu))'
+  prm_plot: 'cat(repls({"wdir": "Wind dir.", "wspeed": "Wind speed", "wvec": "Wind vec."}, get(1)),
+                 repl({"_ucu": " (ucu))"}, get(2)))'
   # Generate variables from regex generator for wind direction and wind speed.
   prm_desc: 'cat(repls({"wdir": "Wind direction",
-                        "wspeed": "Wind speed"}, get(1)),
+                        "wspeed": "Wind speed", "wvec": "Wind (horizontal) vector"}, get(1)),
                  repl({"_ucu": " un-correlated uncertainty"}, get(2)))'
-  prm_unit: 'repls({"wdir": "deg",
-                    "wspeed": "m/s"}, get(1))'
+  prm_unit: 'repls({"wdir": "deg", "wspeed": "m/s", "wvec": "m/s"}, get(1))'
 
 - prm_name: 'dummytst_(param\d)'
+  prm_plot: 'Dummy test prm.'
   prm_desc: 'get(1)'
   prm_unit: ''
 
 - prm_name: 'ucs1'
+  prm_plot: '(ucs)'
   prm_desc: 'Dummy error'
   prm_unit: 'm'
 
 - prm_name: 'uct1'
+  prm_plot: '(uct)'
   prm_desc: 'Dummy error'
   prm_unit: 'm'
 
 - prm_name: 'ucu1'
+  prm_plot: '(ucu)'
   prm_desc: 'Dummy error'
   prm_unit: 'm'

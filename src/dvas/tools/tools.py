@@ -104,8 +104,12 @@ def fancy_bitwise_or(vals, axis=None):
     """
 
     # Let's make sure I have been given integers, in order to run bitwise operations
-    if not all(pd.api.types.is_integer_dtype(item) for item in vals.dtypes):
-        raise DvasError('Ouch ! I need ints to perform a bitwise OR, but I got:', vals.dtypes)
+    # As of Pandas 2.0.0, vals.dtype is not always iterable... sigh ...
+    cond1 = isinstance(vals, pd.DataFrame) and not all(pd.api.types.is_integer_dtype(item)
+                                                       for item in vals.dtypes)
+    cond2 = isinstance(vals, pd.Series) and not pd.api.types.is_integer_dtype(vals.dtype)
+    if (cond1) or (cond2):
+        raise DvasError('I need ints to perform a bitwise OR, but I got:', vals.dtypes)
 
     # As of #253, dvas will no longer use Int64 for flags ... such that NaNs should be impossible.
     if vals.isna().any(axis=None):

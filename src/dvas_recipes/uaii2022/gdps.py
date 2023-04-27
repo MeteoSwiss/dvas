@@ -35,7 +35,7 @@ from . import tools, plots
 logger = logging.getLogger(__name__)
 
 
-@for_each_var
+@for_each_var(incl_latlon=True)
 @for_each_flight
 @log_func_call(logger, time_it=True)
 def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='weighted mean',
@@ -73,6 +73,10 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
         which_method = 'circular'
     else:
         which_method = 'arithmetic'
+
+    # For lat and lon, force a normal mean, 'cause they have no uncertainties
+    if dynamic.CURRENT_VAR in ['lat', 'lon']:
+        method = 'mean'
 
     if method == 'mean':
         method = ' '.join([which_method, method])
@@ -144,31 +148,41 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
     # Before combining the GDPs with each other, let us assess their consistency.
     # The idea here is to flag any inconsistent measurement, so that they can be ignored during
     # the combination process.
-    logger.info('Identifying incompatibilities between GDPs for variable: %s', dynamic.CURRENT_VAR)
-    incompat = dtgs.gdp_incompatibilities(gdp_prfs, alpha=alpha,
-                                          m_vals=[np.abs(item) for item in m_vals],
-                                          method=f'{which_method} delta',
-                                          do_plot=True,
-                                          n_cpus=dynamic.N_CPUS,
-                                          chunk_size=dynamic.CHUNK_SIZE,
-                                          fn_prefix=dynamic.CURRENT_STEP_ID,
-                                          fn_suffix=dru.fn_suffix(fid=fid, eid=eid, rid=rid,
-                                                                  tags=tags,
-                                                                  var=dynamic.CURRENT_VAR))
+    if dynamic.CURRENT_VAR not in ['lat', 'lon']:
+        logger.info('Identifying incompatibilities between GDPs for variable: %s',
+                    dynamic.CURRENT_VAR)
+        incompat = dtgs.gdp_incompatibilities(gdp_prfs, alpha=alpha,
+                                              m_vals=[np.abs(item) for item in m_vals],
+                                              method=f'{which_method} delta',
+                                              do_plot=True,
+                                              n_cpus=dynamic.N_CPUS,
+                                              chunk_size=dynamic.CHUNK_SIZE,
+                                              fn_prefix=dynamic.CURRENT_STEP_ID,
+                                              fn_suffix=dru.fn_suffix(fid=fid, eid=eid, rid=rid,
+                                                                      tags=tags,
+                                                                      var=dynamic.CURRENT_VAR))
 
-    # Next, we derive "validities" given a specific strategy to assess the different GDP pair
-    # incompatibilities ...
-    # Note how the m_vals used for the combination can differ from the ones used to check the
-    # incompatibilities. This is intended to let people experiment a bit without affecting the final
-    # CWS.
-    valids = dtgs.gdp_validities(incompat,
-                                 m_vals=[item for item in m_vals if item > 0],
-                                 strategy=strategy)
+        # Next, we derive "validities" given a specific strategy to assess the different GDP pair
+        # incompatibilities ...
+        # Note how the m_vals used for the combination can differ from the ones used to check the
+        # incompatibilities. This is intended to let people experiment a bit without affecting the final
+        # CWS.
+        valids = dtgs.gdp_validities(incompat,
+                                     m_vals=[item for item in m_vals if item > 0],
+                                     strategy=strategy)
 
-    # ... and set them using the dvas.hardcoded.FLG_INCOMPATIBLE flag
-    for gdp_prf in gdp_prfs:
-        gdp_prf.set_flg(FLG_INCOMPATIBLE, True,
-                        index=valids[~valids[str(gdp_prf.info.oid)]].index)
+        # ... and set them using the dvas.hardcoded.FLG_INCOMPATIBLE flag
+        for gdp_prf in gdp_prfs:
+            gdp_prf.set_flg(FLG_INCOMPATIBLE, True,
+                            index=valids[~valids[str(gdp_prf.info.oid)]].index)
+
+    else:
+        # Deal with the lat long variables. Since I do not have any uncertainties for them,
+        # I will hardcode the uncorrelated ones to 0. This will play no role in the
+        # calculation of the mean, but will stop the masking of data with no uc_tot.
+
+        for gdp_prf in gdp_prfs:
+            gdp_prf.data.loc[gdp_prf.data.loc[:, PRF_VAL].notna().values, PRF_UCU] = 0
 
     # Let us now create a high-resolution CWS for these synchronized GDPs
     # We shall mask any incompatible value, but also any invalid one (see e.g. #244)
@@ -176,12 +190,17 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
                                 mask_flgs=[FLG_INCOMPATIBLE, FLG_ISINVALID],
                                 chunk_size=dynamic.CHUNK_SIZE, n_cpus=dynamic.N_CPUS)
 
+    if dynamic.CURRENT_VAR in ['lat', 'lon']:
+        import pdb
+        pdb.set_trace()
+
     # Let's tag this CWS in the same way as the GDPs, so I can find them easily together
     cws.add_info_tags(tags)
 
-    # Let's also keep track of important information (fixes #266)
-    cws[0].info.add_metadata('KS_test.alpha_level', f'{alpha}')
-    cws[0].info.add_metadata('KS_test.m_values', f"{','.join([str(val) for val in m_vals])}")
+    if dynamic.CURRENT_VAR not in ['lat', 'lon']:
+        # Let's also keep track of important information (fixes #266)
+        cws[0].info.add_metadata('KS_test.alpha_level', f'{alpha}')
+        cws[0].info.add_metadata('KS_test.m_values', f"{','.join([str(val) for val in m_vals])}")
     # ... including the cloud synop code, which may differ between GDPs
     scode = set(mtdta[MTDTA_SYNOP] for mtdta in gdp_prfs.get_info('metadata')
                 if MTDTA_SYNOP in mtdta.keys())
@@ -198,7 +217,7 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
     cws[0].info.add_metadata(f'{MTDTA_FIRST}.uncertainty', f'{dfts_std} sec (k=1)')
 
     # Take a closer look at the covariance matrices, if required
-    if explore_covmats:
+    if explore_covmats and dynamic.CURRENT_VAR not in ['lat', 'lon']:
         plots.covmat_stats(covmats)
 
     # Let us now hack into this cws the correct tdt, if I have it. And then save it.
