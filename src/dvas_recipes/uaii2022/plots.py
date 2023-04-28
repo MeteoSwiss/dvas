@@ -67,7 +67,7 @@ def flight_overview(start_with_tags, label='mid', show=None):
     bottom_gap = 0.7  # inch
     plot_height = 1.3  # inch
     plot_gap = 0.05  # inch
-    fig_height = (top_gap + bottom_gap + plot_height * len(dynamic.ALL_VARS)) /\
+    fig_height = (top_gap + bottom_gap + plot_height * len(dru.cws_vars())) /\
         (1 - plot_gap * (len(dynamic.ALL_VARS)-1))
 
     fig = plt.figure(figsize=(dpu.WIDTH_TWOCOL, fig_height))
