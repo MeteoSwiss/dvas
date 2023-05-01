@@ -116,6 +116,10 @@ def biglambda_tod(prf_tags, mid, tods, suffix='', institution='',
     # Start looking for all the variables
     for (var_name, var) in dynamic.ALL_VARS.items():
 
+        # Skip the lat lon variables for big lambda
+        if var_name in ['lat', 'lon']:
+            continue
+
         # Load the delta profiles as Profiles (and not RSProfiles) since we're about to drop the
         prfs = MultiDeltaProfile()
         prfs.load_from_db(prf_filt, var_name,
