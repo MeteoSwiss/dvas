@@ -190,10 +190,6 @@ def build_cws(start_with_tags, m_vals=None, strategy='all-or-none',  method='wei
                                 mask_flgs=[FLG_INCOMPATIBLE, FLG_ISINVALID],
                                 chunk_size=dynamic.CHUNK_SIZE, n_cpus=dynamic.N_CPUS)
 
-    if dynamic.CURRENT_VAR in ['lat', 'lon']:
-        import pdb
-        pdb.set_trace()
-
     # Let's tag this CWS in the same way as the GDPs, so I can find them easily together
     cws.add_info_tags(tags)
 
