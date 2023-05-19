@@ -13,11 +13,12 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Security:
 
 ## [v1.0.0]
- - Version boost to reflect readiness.
+### Added:
+ - [fpavogt, 19.05.2023] Ingest SHC info into the profile metadata
 
 ## [v0.9.5.dev0]
 ### Added:
- - [fpavogt, 20.04.2023] Ingest and carry lat/lon data for GDPs and CWS (no uncertainties).
+ - [fpavogt, 20.04.2023] Ingest and carry lat/lon data for GDPs and CWS (no uncertainties)
  - [fpavogt, 18.04.2023] Introduce and deploy "wvec", a new variable for the Wind vector calculations
 ### Fixed:
  - [fpavogt, 14.04.2023] Fix a bug associated to pandas 2.0.0 in fancy_bitwise_or()
