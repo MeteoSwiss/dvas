@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 @log_func_call(logger)
 def get_sync_shifts_from_starttime(prfs):
     """ A routine that estimates the necessary synchronization shifts between profiles based on the
-    GPS start time value.
+    GNSS start time value.
 
     Args:
         prfs (dvas.data.data.MultiRSProfiles): list of Profiles to sync.
