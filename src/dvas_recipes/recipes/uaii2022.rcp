@@ -205,6 +205,18 @@ rcp_steps:
         start_with_tags: # List of tags to identify profiles in the database
           - '08'
         mids: # List of model ids to process. Leave blank to process them all.
+          - ATMS-3710
+          - CF-06-AH
+          - DFM-17
+          - GTH3
+          - iMet-54
+          - iMS-100
+          - M20
+          - PS-B3
+          - RS41
+          - WxR-301D
+          #- (gdp)RS41
+          #- (gdp)iMS-100
         tods: # List of (str|list) of time-of-days to process sequentially.
           #- daytime
           #- [nighttime, twilight]
