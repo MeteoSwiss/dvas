@@ -166,7 +166,7 @@ rcp_steps:
         which: mdp, gdp, cws # list of profiles to export, e.g. mdp, gdp, and/or cws
         tags: '05' # list of tags to identify profiles to export in the DB
         suffix: UAII2022
-        institution: Federal Office of Meteorology and Climatology - MeteoSwiss
+        institution: TBD # Specify who is running this recipe
 
     # GDP vs CWS plotting
     - fct: uaii2022.plots.inspect_cws
@@ -221,7 +221,7 @@ rcp_steps:
           #- daytime
           #- [nighttime, twilight]
         suffix: UAII2022
-        institution: Federal Office of Meteorology and Climatology - MeteoSwiss
+        institution: TBD # Specify who is running this recipe
         gph_min: 0 # Minimum gph value to consider, in m.
         gph_bin_size: 100 # Size of the gph bins for the high-resolution Big Lambda profile, in m.
         gph_bin_count: 350 # Number of bins for the high-resolution Big Lambda profile.
