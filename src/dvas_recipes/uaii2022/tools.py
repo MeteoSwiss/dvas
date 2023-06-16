@@ -116,10 +116,6 @@ def find_tropopause(rs_prf, min_alt=5500, algo='gruan'):
     and all higher levels, COMPUTED FROM ALL SEQUENTIAL LEVEL PAIRS LOCATED WITHIN A GIVEN LEVEL
     INTERVAL) within 2 km do not exceed 2deg/km.
 
-    Todo:
-        - expand the function to look for the 2nd, 3rd, etc ... tropopause(s) ?
-        - define which tropopause algorithm is "best"
-
     """
 
     # Let's make a deepcopy of the DataFrame, to avoid messing up with the user input

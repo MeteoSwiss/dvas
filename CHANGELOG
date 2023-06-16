@@ -15,6 +15,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ## [v1.0.0]
 ### Added:
  - [fpavogt, 19.05.2023] Ingest SHC info into the profile metadata
+ - [fpavogt, 16.06.2023] Update docs for v1.0.0
 
 ## [v0.9.5.dev0]
 ### Added:

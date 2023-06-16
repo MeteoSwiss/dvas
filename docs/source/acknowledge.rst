@@ -8,11 +8,11 @@ Acknowledging dvas
 
    dvas |version| (DOI:)
 
-2. If dvas was useful for your research, please cite the dedicated article:
+2. If dvas was useful for your research, please cite the UAII FInal Report:
 
    .. todo::
 
-      When the time comes, include here the link to the dedicated dvas article.
+      When the time comes, include here the link to the report.
 
 3. dvas relies on external Python libraries that require & deserve to be acknowledged in their own
    right. The following LaTeX blurb is one way to do so:

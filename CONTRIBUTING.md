@@ -1,5 +1,8 @@
 # Contributing to dvas
 
+|:warning: it is not forseen that dvas will be developed or actively maintained beyond 2023-11-30. |
+| --- |
+
 If you have a question  about dvas, [jump here](#asking-a-question).
 If you want to report a bug with dvas, [jump here](#reporting-a-bug).
 

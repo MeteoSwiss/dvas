@@ -6,6 +6,12 @@ Creating dvas recipes
 This page contains information for advanced dvas users that would like to alter existing
 processing recipes, or create their own.
 
+.. warning::
+    The creation of dvas recipes from scratch will not be actively supported beyond 2023-11-30.
+    The information on this page is provided for legacy purposes only. The devs are very much aware
+    that this only scratches the surface of what actually lives under the hood of the core dvas
+    module.
+
 .. hint::
 
     If you plan on coding with dvas, we strongly suggest that you begin by taking a look at the
@@ -17,9 +23,6 @@ Assuming that you have initialized a new dvas processing arena using the ``dvas_
 point, take a look at ``demo_script.py``. This Python script, which we suggest you run from inside
 a Python shell (using ``run demo_script.py``), illustrates the main functions and tools of the core
 dvas sub-package. It is therefore an excellent place to familiarize yourself with the dvas spirit.
-
-
-** AND NOW FOR A BIG PILE OF IMPORTANT INFO THAT NEEDS TO BE SORTED ...**
 
 Naming conventions
 ------------------
