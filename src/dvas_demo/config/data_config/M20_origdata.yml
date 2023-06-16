@@ -24,6 +24,10 @@ _M20:
         first_timestamp: "to_datetime(get('first_timestamp'))"
         launch_timestamp: "to_datetime(get('launch_timestamp'))"
         burst_timestamp: "to_datetime(get('burst_timestamp'))"
+        preflight_shc_rh_sonde: "get('preflight_SHC_rh_sonde')"
+        preflight_shc_rh_ref: "get('preflight_SHC_rh_ref')"
+        preflight_shc_temp_sonde: "get('preflight_SHC_temp_sonde')"
+        preflight_shc_temp_ref: "get('preflight_SHC_temp_ref')"
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter: ';'

@@ -9,7 +9,7 @@ Installation
 
     Include a link to the pypi page in the very next sentence.
 
-dvas will be available on pypi, which should make its installation straightforward.
+dvas is available on pypi, which should make its installation straightforward.
 In a terminal, type:
 
 .. code-block:: python

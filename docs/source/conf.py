@@ -28,8 +28,8 @@ with version_file.open() as fid:
 # -- Project information -----------------------------------------------------
 
 project = 'dvas'
-copyright = '2020-2022, MeteoSwiss'
-author = 'Luca Modolo, Frédéric P.A. Vogt'
+copyright = '2020-2023, MeteoSwiss'
+author = 'Frédéric P.A. Vogt, Luca Modolo'
 version = vers
 
 # -- General configuration ---------------------------------------------------

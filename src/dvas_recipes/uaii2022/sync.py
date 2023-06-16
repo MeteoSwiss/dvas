@@ -194,14 +194,14 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var, valid_value_range
                                               sync_wrt_mid=sync_wrt_mid)
     logger.info('Sync. shifts from "%s": %s', global_match_var, shifts_val)
 
-    # Get shifts from the GPS times
+    # Get shifts from the GNSS times
     try:
-        shifts_gps = dts.get_sync_shifts_from_starttime(prfs)
-        logger.info('Sync. shifts from starttime: %s', shifts_gps)
+        shifts_gnss = dts.get_sync_shifts_from_starttime(prfs)
+        logger.info('Sync. shifts from GNSS starttime: %s', shifts_gnss)
     except DvasError as err:
         logger.critical(err)
 
-    # GPS times have many issues ... let's use gph sync shifts instead.
+    # GNSS times have many issues ... let's use gph sync shifts instead.
     sync_shifts = shifts_val
 
     # Now, let's reset the shift depening on whether we want to crop pre-GDP data, or not

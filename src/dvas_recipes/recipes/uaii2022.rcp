@@ -166,7 +166,7 @@ rcp_steps:
         which: mdp, gdp, cws # list of profiles to export, e.g. mdp, gdp, and/or cws
         tags: '05' # list of tags to identify profiles to export in the DB
         suffix: UAII2022
-        institution: Federal Office of Meteorology and Climatology - MeteoSwiss
+        institution: TBD # Specify who is running this recipe
 
     # GDP vs CWS plotting
     - fct: uaii2022.plots.inspect_cws
@@ -205,11 +205,23 @@ rcp_steps:
         start_with_tags: # List of tags to identify profiles in the database
           - '08'
         mids: # List of model ids to process. Leave blank to process them all.
+          - ATMS-3710
+          - CF-06-AH
+          - DFM-17
+          - GTH3
+          - iMet-54
+          - iMS-100
+          - M20
+          - PS-B3
+          - RS41
+          - WxR-301D
+          #- (gdp)RS41
+          #- (gdp)iMS-100
         tods: # List of (str|list) of time-of-days to process sequentially.
           #- daytime
           #- [nighttime, twilight]
         suffix: UAII2022
-        institution: Federal Office of Meteorology and Climatology - MeteoSwiss
+        institution: TBD # Specify who is running this recipe
         gph_min: 0 # Minimum gph value to consider, in m.
         gph_bin_size: 100 # Size of the gph bins for the high-resolution Big Lambda profile, in m.
         gph_bin_count: 350 # Number of bins for the high-resolution Big Lambda profile.

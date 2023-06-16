@@ -643,7 +643,7 @@ class InfoManagerMetaData(dict):
         This class is used to bypass the missing class Mapping in
         pampy package.
 
-    Todo:
+    Note:
         We do not use pampy anymore as of v0.6. Do we need to do something about this ?
         fpavogt, 01.07.2022
 

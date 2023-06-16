@@ -234,13 +234,13 @@ FLG_MUS_DESC = 'Measurement is in the MUS'
 # Metadata special fields
 # -----------------------
 
-#: str: Metdata field to store the GPS time of the first point in the profile.
+#: str: Metdata field to store the GNSS time of the first point in the profile.
 MTDTA_FIRST = 'first_timestamp'
 
-#: str: Metadata field to store the GPS time of the manufacturer-detected launch.
+#: str: Metadata field to store the GNSS time of the manufacturer-detected launch.
 MTDTA_LAUNCH = 'launch_timestamp'
 
-#: str: Metadata field to store the GPS time of the manufacturer-detected balloon burst.
+#: str: Metadata field to store the GNSS time of the manufacturer-detected balloon burst.
 MTDTA_BURST = 'burst_timestamp'
 
 #: str: Metadata field to store the tropopause geopotential height

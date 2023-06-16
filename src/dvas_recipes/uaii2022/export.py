@@ -373,7 +373,7 @@ def export_profiles(tags: str | list, which: str | list, suffix: str = '', insti
         add_cf_attributes(rootgrp, title=title, institution=institution, comment=comment)
 
         # Now get the data from the DB
-        for (var_name, var) in dru.cws_vars(incl_latlon=(typ=='gdp')).items():
+        for (var_name, var) in dru.cws_vars(incl_latlon=typ == 'gdp').items():
 
             # Assemble the search filter
             filt = tools.get_query_filter(tags_in=tags + [eid, rid],
