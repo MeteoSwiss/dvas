@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -64,7 +64,7 @@ def check_unit(prm_unit, prm_name):
             # Until this changes, let's raise an error if this is not what the user provided.
             # See #192 and data.startegy.data.py for details.
             if prm_unit != 's':
-                msg = 'Ouch ! Only "s" is allowed as the unit of time data.'
+                msg = 'Only "s" is allowed as the unit of time data.'
                 msg += ' See Github error #192 for details.'
                 logger.error(msg)
                 return False
@@ -170,11 +170,22 @@ class Prm(MetadataModel):
         constraints=[Check(f"re_fullmatch('{PRM_AND_FLG_PRM_PAT}', prm_name)"),
                      Check("str_len_max(prm_name, 64)")]
     )
-
+    # Parameter ame for plots
+    prm_plot = TextField(
+        null=False,
+        #unique=True,
+        constraints=[Check("str_len_max(prm_name, 64)")]
+    )
     # Parameter description
     prm_desc = TextField(
         null=False, default='',
         constraints=[Check("str_len_max(prm_desc, 256)")]
+    )
+
+    # Parameter comment
+    prm_cmt = TextField(
+        null=False, default='',
+        constraints=[Check("str_len_max(prm_cmt, 256)")]
     )
 
     # Parameter units

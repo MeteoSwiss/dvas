@@ -37,21 +37,20 @@ setup(
     long_description_content_type="text/markdown",
     python_requires='>=3.10.0',
     install_requires=[
+        "astroid>=2.13",
         "jsonschema",
         "matplotlib",
         "netcdf4",
         'numpy',
         "pandas>=1.3.0",
         "peewee",
-        "pytest",
-        "pytest-data",
         "pytz",
         "ruamel-yaml",
         "scipy",
         "sre_yield",
     ],
     extras_require={
-        'dev': ['sphinx', 'sphinx-rtd-theme', 'plantweb', 'pylint', 'pytest', 'pytest-cov']
+        'dev': ['sphinx', 'sphinx-rtd-theme', 'plantweb', 'pylint', 'pytest', 'pytest-data']
     },
     # Setup entry points to use dvas from a terminal
     entry_points={
@@ -72,7 +71,7 @@ setup(
         'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
-        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
     ],
 
     include_package_data=True,  # So that non .py files make it onto pypi, and then back !

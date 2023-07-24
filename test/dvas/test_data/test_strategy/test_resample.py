@@ -17,6 +17,7 @@ import pandas as pd
 from dvas.data.strategy.data import RSProfile, GDPProfile
 from dvas.data.data import MultiRSProfile, MultiGDPProfile
 from dvas.database.database import InfoManager
+from dvas.hardcoded import FLG_INTERP, PRF_VAL
 
 # Define db_data
 db_data = {
@@ -44,7 +45,7 @@ class TestResampleStrategy:
 
         # Let's build a multiprofile so I can test things out.
         multiprf = MultiRSProfile()
-        multiprf.update({'val': None, 'tdt': None, 'alt': None, 'flg': None},
+        multiprf.update({'val': 'temp', 'tdt': None, 'alt': None, 'flg': None},
                         [RSProfile(info_1, data_1)])
 
         # Let's launch the resampling
@@ -64,7 +65,7 @@ class TestResampleStrategy:
         assert np.unique(np.diff(tdts))[0] == np.timedelta64(1, 's')
 
         # Was the flag applied correctly ?
-        assert all(out.profiles[0].has_flg('interp') == [False, False, True, True, True, False])
+        assert all(out.profiles[0].has_flg(FLG_INTERP) == [False, False, True, True, True, False])
 
     def test_resample_gdp(self):
         """Test rebase method"""
@@ -72,13 +73,13 @@ class TestResampleStrategy:
         # Prepare some datasets to play with
         info_1 = InfoManager('20201217T0000Z', 1)
         data_1 = pd.DataFrame({'alt': [10., 15., 20., 35], 'val': [11., 12., 13., 14],
-                               'flg': [0]*4, 'ucr': [1, 1, 1, 1], 'ucs': [1, 1, 1, 1],
+                               'flg': [0, 1, 2, 8], 'ucs': [1, 1, 1, 1],
                                'uct': [1, 1, 1, 1], 'ucu': [1, 1, 1, 1],
                                'tdt': [0, 1, 1.5, 2.1]})
 
         # Let's build a multiprofile so I can test things out.
         multiprf = MultiGDPProfile()
-        multiprf.update({'val': None, 'tdt': None, 'alt': None, 'flg': None, 'ucr': None,
+        multiprf.update({'val': 'temp', 'tdt': None, 'alt': None, 'flg': None,
                          'ucs': None, 'uct': None, 'ucu': None},
                         [GDPProfile(info_1, data_1)])
 
@@ -96,9 +97,30 @@ class TestResampleStrategy:
 
         # Proper error propagation
         assert all(out.profiles[0].data.loc[2, 'ucu'] == np.sqrt((1-w)**2 + w**2))
-        assert all(out.profiles[0].data.loc[2, 'ucr'] == np.sqrt((1-w)**2 + w**2))
         assert all(out.profiles[0].data.loc[2, 'ucs'] == 1)
         assert all(out.profiles[0].data.loc[2, 'uct'] == 1)
 
         # Was the flag applied correctly ?
-        assert all(out.profiles[0].has_flg('interp') == [False, False, True])
+        assert all(out.profiles[0].has_flg(FLG_INTERP) == [False, False, True])
+
+    def test_resample_wdir(self):
+        """Test resample method for wind direction (i.e. require angular wrapping)"""
+
+        # Prepare some datasets to play with
+        info_1 = InfoManager('20201217T0000Z', 1)
+        data_1 = pd.DataFrame({'alt': [10., 15., 20., 35, 35, 42, 45, 50, 55, 60, 70],
+                               'val': [0., 1., 359, 181, 179, 358, 2, 358, 359, np.nan, 10],
+                               'flg': [0]*11, 'tdt': [0, 1, 1.5, 2.5, 3, 3.5, 4.5, 5, 6, 7, 8]})
+
+        # Let's build a multiprofile so I can test things out.
+        multiprf = MultiRSProfile()
+        multiprf.update({'val': 'wdir',
+                         'tdt': None, 'alt': None, 'flg': None},
+                        [RSProfile(info_1, data_1)])
+
+        # Let's launch the resampling
+        out = multiprf.resample(freq='1s', interp_dist=1, inplace=False)
+
+        assert np.array_equal(out[0].data[PRF_VAL].round(10).values,
+                              [0, 1, 270, 179, 0, 358, 359, np.nan, 10],
+                              equal_nan=True)

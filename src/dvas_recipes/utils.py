@@ -43,10 +43,11 @@ def default_arena_path():
     return Path('.', 'dvas_proc_arena')
 
 
-def fn_suffix(eid=None, rid=None, var=None, mids=None, pids=None, tags=None):
+def fn_suffix(fid=None, eid=None, rid=None, var=None, mids=None, pids=None, tags=None):
     """ Returns the default suffix of filenames given a set of info provided by the user.
 
     Args:
+        fid (str, optional): the flight id
         eid (int, optional): the event id
         rid (int, optional): the rig id
         var (str, optional): the variable name
@@ -59,7 +60,7 @@ def fn_suffix(eid=None, rid=None, var=None, mids=None, pids=None, tags=None):
     """
 
     suffix = ''
-    for item in [eid, rid, var]:
+    for item in [fid, eid, rid, var]:
         if item is not None:
             suffix += '_{}'.format(item.replace(':', ''))
 
@@ -113,3 +114,15 @@ def rsid_tags(pop=None):
         tags_out = [item for item in tags_out if item not in pop]
 
     return tags_out
+
+
+def cws_vars(incl_latlon=False):
+    """ Return the list of variables that are present in CWS. """
+
+    noncws_vars = ['wvec']
+
+    if not incl_latlon:
+        noncws_vars += ['lat', 'lon']
+
+    return {var_name: var_content for (var_name, var_content) in dynamic.ALL_VARS.items()
+            if var_name not in noncws_vars}

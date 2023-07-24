@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -109,11 +109,11 @@ def set_mplstyle(style='base'):
 
     # Else, if this is not a known str, let's be unforgiving.
     if not isinstance(style, str):
-        raise Exception('Ouch ! style type must be one of (str, dict), not: %s' % (type(style)))
+        raise DvasError(f'style type must be one of (str, dict), not: {type(style)}')
 
     if style not in PLOT_STYLES.keys():
-        raise Exception('Ouch! plot style "%s" unknown. Should be one of [%s].'
-                        % (style, ', '.join(PLOT_STYLES.keys())))
+        raise DvasError(f'plot style "{style}" unknown. ' +
+                        f'Should be one of [{", ".join(PLOT_STYLES.keys())}].')
 
     # Then apply which ever alternative style was requested, if we haven't already.
     if style != 'base':
@@ -148,26 +148,30 @@ def add_sec_axis(ax, xvals, new_xvals, offset=-0.1, which='x'):
     elif which == 'y':
         new_ax = ax.secondary_yaxis(offset, functions=(forward, inverse))
     else:
-        raise DvasError('Ouch ! which should be "x" or "y", not: %s' % (which))
+        raise DvasError(f'which should be "x" or "y", not: {which}')
     return new_ax
 
 
-def fix_txt(txt):
+def fix_txt(txt, usetex=None):
     """ Corrects any string for problematic characters before it gets added to a plot. Fixes vary
     depending whether on the chosen plotting style's value of `usetex` in `rcparams`.
 
     Args:
         txt (str): text to cleanup.
+        usetex (bool, optional): if set, allows to override the default settings. Defaults to None.
 
     Returns:
         str: the corrected string.
     """
 
-    usetex = rcParams['text.usetex']
+    if usetex is None:
+        usetex = rcParams['text.usetex']
 
     # First deal with the cases when a proper LaTeX is being used
     if usetex:
         txt = txt.replace('%', r'{\%}')
+        txt = txt.replace('m/s', r'm\,s$^{-1}$')
+        txt = txt.replace('deg', r'$^{\circ}$')
         txt = [item.replace('_', r'\_') if ind % 2 == 0 else item
                for (ind, item) in enumerate(txt.split('$'))]
         txt = '$'.join(txt)
@@ -223,7 +227,7 @@ def cmap_discretize(cmap, n_cols):
                        colors_rgba[i, k_ind]) for i in range(n_cols+1)]
 
     # Return colormap object.
-    return colors.LinearSegmentedColormap(cmap.name + "_%d" % (n_cols), cdict, 1024)
+    return colors.LinearSegmentedColormap(cmap.name + f"_{n_cols}", cdict, 1024)
 
 
 @log_func_call(logger)
@@ -236,9 +240,12 @@ def fancy_legend(this_ax, label=None):
 
     """
 
+    if label is not None:
+        label = fix_txt(label)
+
     # Add the legend.
     leg = this_ax.legend(loc='upper left', bbox_to_anchor=(1.01, 1),
-                         title=fix_txt(label), ncol=1, handlelength=1, fancybox=True,
+                         title=label, ncol=1, handlelength=1, fancybox=True,
                          fontsize='small', title_fontsize='small', borderaxespad=0)
 
     # Tweak the thickness of the legen lines as well.
@@ -264,9 +271,12 @@ def get_edt_eid_rid(prfs):
     edts = [item.strftime('%Y-%m-%d %H:%M %Z') for item in prfs.get_info('edt')]
     eids = prfs.get_info('eid')
     rids = prfs.get_info('rid')
+    # TODO: fids are stored in the metadata ... this is not ideal.
+    fids = [item['fid'] if 'fid' in item.keys() else '???'
+            for item in prfs.get_info(prm='metadata')]
 
     # Format it all nicely for each Profile.
-    info_txt = set('{} ({}, {})'.format(item, eids[ind], rids[ind])
+    info_txt = set(f'{item} ({fids[ind]}, {eids[ind]}, {rids[ind]})'
                    for ind, item in enumerate(edts))
     # Stich the different items together in case I have more than one flight in the list
     info_txt = ' / '.join(info_txt)
@@ -334,9 +344,9 @@ def add_source(fig):
         fig (matplotlib.pyplot.figure): the figure to add the text to.
 
     """
-    msg = r'\it\flushleft Created with\newline dvas v{}'.format(VERSION)
+    msg = r'\it\flushleft Created with dvas v{}'.format(VERSION)
 
-    fig.text(0.01, 0.02, fix_txt(msg), fontsize='xx-small',
+    fig.text(0.01, 0.01, fix_txt(msg), fontsize='small',
              horizontalalignment='left', verticalalignment='bottom')
 
 
@@ -370,7 +380,7 @@ def fancy_savefig(fig, fn_core, fn_prefix=None, fn_suffix=None, fmts=None, show=
 
     # Let us first make sure the destination folder has been set ...
     if env_path_var.output_path is None:
-        raise DvasError('Ouch ! dvas.environ.path_var.output_path is None')
+        raise DvasError('dvas.environ.path_var.output_path is None')
     # ... and that the location exists.
     if not env_path_var.output_path.exists():
         # If not, be bold and create the folder.

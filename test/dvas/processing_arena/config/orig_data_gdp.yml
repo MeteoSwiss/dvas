@@ -19,14 +19,14 @@ _AR-GDP_001:
     _temp:
         value: get('temp')
 
-    _temp_ucr:
-        value: get('temp_uec')
-
     _temp_ucs:
         value: get('temp_usc')
 
     _temp_uct:
         value: get('temp_utc')
+
+    _temp_ucu:
+        value: get('temp_uec')
 
     _gph:
         value: get('alt')
@@ -54,11 +54,11 @@ _BR-GDP_001:
     _temp:
         value: get('temp', 'k2c')
 
-    _temp_ucr:
-        value: get('temp_uec')
-
-    _temo_uct:
+    _temp_uct:
         value: get('temp_utc')
+
+    _temp_ucu:
+        value: get('temp_uec')
 
     _gph:
         value: get('alt')
@@ -86,14 +86,14 @@ _RS41-GDP-BETA_001:
     _temp:
         value: get('temp')
 
-    _temp_ucr:
-        value: get('temp_uc_ncor')
-
     _temp_ucs:
         value: get('temp_uc_scor')
 
     _temp_uct:
         value: get('temp_uc_tcor')
+
+    _temp_ucu:
+        value: get('temp_uc_ncor')
 
     _gph:
         value: get('alt')

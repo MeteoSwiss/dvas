@@ -68,9 +68,64 @@ def for_each_flight(func):
     return wrapper
 
 
-def for_each_var(func):
+def for_each_var(incl_wdir=True, incl_wspeed=True, incl_wvec=False, incl_latlon=False):
+    """ Parameteric decorator, to enable the looping over different variables, with the option
+    to select different wind elements.
+
+    Args:
+        incl_wdir (bool): whether to include the wdir variable, or not.
+        incl_wspeed (bool): whether to include the wspeed variable, or not.
+        incl_wvec (bool): whether to include the wvec variable, or not.
+        incl_latlon (bool): whether to include the lat and lon variables, or not.
+
+
+    """
+
+    def for_each_selected_var(func):
+        """ This function is the actual decorator to be used around recipe step functions that need
+        to be executed sequentially for all the CWS variables.
+
+        Args:
+            func (function): the recipe step function to decorate.
+
+        """
+
+        def wrapper(**kwargs):
+            """ A small wrapper function that loops over dynamic.ALL_VARS and updates the value of
+            dynamic.THIS_VAR before calling the wrapped function (that is assumed will itself call
+            dynamic.THIS_VAR directly).
+
+            Note:
+                This decorator can be used in conjunction with `for_each_flight`.
+
+            Args:
+                **kwargs: keyword arguments of the decorated function, that ought to be defined in
+                    the `.rcp` YAML file by the end user.
+            """
+
+            # Loop through each flight, and apply func as intended, after updating the value of
+            # dynamic.THIS_FLIGHT
+            for var in rcp_dyn.ALL_VARS:
+                # Apply the parameteric choices
+                if var == 'wvec' and not incl_wvec:
+                    continue
+                if var == 'wdir' and not incl_wdir:
+                    continue
+                if var == 'wspeed' and not incl_wspeed:
+                    continue
+                if var in ['lat', 'lon'] and not incl_latlon:
+                    continue
+                rcp_dyn.CURRENT_VAR = var
+                logger.info('Processing variable: %s', var)
+                func(**kwargs)
+
+        return wrapper
+    return for_each_selected_var
+
+
+def for_each_oscar_var(func):
     """ This function is meant to be used as a decorator around recipe step functions that need to
-    be executed sequentially for all the specified variables.
+    be executed sequentially for all the OSCAR variables.
 
     Args:
         func (function): the recipe step function to decorate.
@@ -93,6 +148,8 @@ def for_each_var(func):
         # Loop through each flight, and apply func as intended, after updating the value of
         # dynamic.THIS_FLIGHT
         for var in rcp_dyn.ALL_VARS:
+            if var in ['wdir', 'speed']:
+                continue
             rcp_dyn.CURRENT_VAR = var
             logger.info('Processing variable: %s', var)
             func(**kwargs)
@@ -175,7 +232,6 @@ class Recipe:
             rcp_fn (pathlib.Path): path of the recipe file to initialize.
             eids_to_treat (list, optional): list of ('fid', 'e:eid', 'r:rid') tuples.
                 If None, will process all the flights found in the DB.
-            fid_to_treat (list, optional): list of specific fid to be processed.
             debug (bool, optional): if True, will force-set the logging level to DEBUG.
                 Defaults to False.
 
@@ -186,8 +242,11 @@ class Recipe:
 
         # Set the recipe name
         self._name = rcp_data['rcp_name']
+        rcp_dyn.RECIPE = rcp_data['rcp_name']
         # Set whether we want to reset the DB, or load an existing one
         self._reset_db = rcp_data['rcp_params']['general']['reset_db']
+        # Set whether the Profile Data is stored in the DB, or to disk
+        self._data_in_db = rcp_data['rcp_params']['general']['data_in_db']
 
         # Setup the dvas paths
         for item in rcp_data['rcp_paths'].items():
@@ -203,11 +262,10 @@ class Recipe:
 
             # Get the list of fids, in order to create dedicated folders
             fids = '_'.join([item[0] for item in eids_to_treat])
-            eids_to_treat = [(item[1], item[2]) for item in eids_to_treat]
 
             # Adjust the input and output paths accordingly
             setattr(path_var, 'output_path', path_var.output_path / fids)
-            setattr(path_var, 'orig_data_path', path_var.orig_data_path / fids)
+            setattr(path_var, 'orig_data_path', path_var.orig_data_path)
 
             rcp_dyn.ALL_FLIGHTS = eids_to_treat
 
@@ -287,32 +345,32 @@ class Recipe:
         return len(self._steps)
 
     @staticmethod
-    def init_db(reset: bool = True):
-        """ Initialize the dvas database, and fetch the raw data required for the recipe.
+    def init_db(reset: bool = True, data_in_db: bool = True):
+        """ Initialize the dvas database, and fetch the original data required for the recipe.
 
         Args:
             reset (bool, optional): if True, the DB will be filled from scratch. Else, only new
-                raw data will be ingested. Defaults to True.
+                original data will be ingested. Defaults to True.
         """
 
         # Here, make sure the DB is stored locally, and not in memory.
         dyn.DB_IN_MEMORY = False
+        # Set whether the Profile data is stored in the DB, or on external text files
+        dyn.DATA_IN_DB = data_in_db
 
         if reset:
-            logger.info("Resetting the DB.")
+            logger.info("Resetting the DB ...")
             # Use this command to clear the DB
             DB.refresh_db()
 
         # Init the DB
         DB.init()
 
-        # Fetch the raw data
-        DB.fetch_raw_data([rcp_dyn.INDEXES[PRF_TDT]] +
-                          [rcp_dyn.INDEXES[PRF_ALT]] +
-                          list(rcp_dyn.ALL_VARS) +
-                          [rcp_dyn.ALL_VARS[var][uc] for var in rcp_dyn.ALL_VARS
-                           for uc in rcp_dyn.ALL_VARS[var]],
-                          strict=True)
+        # Fetch the original data
+        DB.fetch_original_data([rcp_dyn.INDEXES[PRF_TDT]] + [rcp_dyn.INDEXES[PRF_ALT]] +
+                               list(rcp_dyn.ALL_VARS) +
+                               [rcp_dyn.ALL_VARS[var][uc] for var in rcp_dyn.ALL_VARS
+                               for uc in rcp_dyn.ALL_VARS[var]], strict=True)
 
     @staticmethod
     def get_all_flights_from_db():
@@ -359,7 +417,7 @@ class Recipe:
             self._reset_db = False
 
         # First, we setup the dvas database
-        self.init_db(reset=self._reset_db)
+        self.init_db(reset=self._reset_db, data_in_db=self._data_in_db)
 
         # If warranted, find all the flights that need to be processed.
         if rcp_dyn.ALL_FLIGHTS is None:

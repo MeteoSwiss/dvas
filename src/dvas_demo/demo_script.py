@@ -20,7 +20,8 @@ from dvas.dvas import Database as DB
 import dvas.plots.utils as dpu
 from dvas.data.data import MultiProfile, MultiRSProfile, MultiGDPProfile
 from dvas.environ import path_var
-from dvas.hardcoded import FLG_INCOMPATIBLE
+from dvas.hardcoded import TAG_ORIGINAL, TAG_1S, TAG_SYNC, TAG_GDP, TAG_CWS
+from dvas.hardcoded import FLG_INCOMPATIBLE, FLG_FT
 from dvas.tools import sync as dts
 from dvas.tools.gdps import gdps as dtgg
 from dvas.tools.gdps import stats as dtgs
@@ -68,10 +69,10 @@ if __name__ == '__main__':
     DB.init()
 
     # Fetch
-    DB.fetch_raw_data(
+    DB.fetch_original_data(
         [
             'time', 'gph', 'gph_uct', 'gph_ucu',
-            'temp', 'temp_flg', 'temp_ucr', 'temp_ucs', 'temp_uct'
+            'temp', 'temp_flg', 'temp_ucs', 'temp_uct'
         ],
         strict=True
     )
@@ -90,30 +91,30 @@ if __name__ == '__main__':
     # For both the RS41 and the RS92, both the GDP and manufacturer data is provided.
 
     # Define some basic search queries
-    filt_gdp = "tags('gdp')"  # Shortcut: 'gdp()'
-    filt_raw = "tags('raw')"  # Shortcut: 'raw()'
-    filt_raw_not = "not_(tags('raw'))"
+    filt_gdp = f"tags('{TAG_GDP}')"  # Shortcut: 'gdp()'
+    filt_orig = f"tags('{TAG_ORIGINAL}')"  # Shortcut: 'original()'
+    filt_orig_not = f"not_(tags('{TAG_ORIGINAL}'))"
     filt_all = "all()"
     filt_dt = "dt('20171024T120000Z', '==')"
 
     # Define some more complex queries
-    filt_raw_dt = f"and_({filt_raw}, {filt_dt})"
-    filt_raw_gdp_dt = f"and_({filt_raw}, {filt_gdp}, {filt_dt})"
+    filt_orig_dt = f"and_({filt_orig}, {filt_dt})"
+    filt_orig_gdp_dt = f"and_({filt_orig}, {filt_gdp}, {filt_dt})"
 
     # Load a series of basic profiles associated to a specific set of search criteria.
     # Each profile consists of a variable and an associated altitude.
     prfs = MultiProfile()
-    prfs.load_from_db(filt_raw, 'temp', 'gph')
+    prfs.load_from_db(filt_orig, 'temp', 'gph')
 
     # Idem for a series of radiosonde profiles, consisting of a variable, an associated timestep,
     # and an altitude.
     rs_prfs = MultiRSProfile()
-    rs_prfs.load_from_db(filt_raw_dt, 'temp', 'time', alt_abbr='gph')
+    rs_prfs.load_from_db(filt_orig_dt, 'temp', 'time', alt_abbr='gph')
 
     # Load GDPs for temperature, including all the errors at hand
     gdp_prfs = MultiGDPProfile()
-    gdp_prfs.load_from_db(filt_raw_gdp_dt, 'temp', tdt_abbr='time', alt_abbr='gph',
-                          ucr_abbr='temp_ucr', ucs_abbr='temp_ucs', uct_abbr='temp_uct',
+    gdp_prfs.load_from_db(filt_orig_gdp_dt, 'temp', tdt_abbr='time', alt_abbr='gph',
+                          ucs_abbr='temp_ucs', uct_abbr='temp_uct',
                           inplace=True)
 
     # ----------------------------------------------------------------------------------------------
@@ -160,19 +161,19 @@ if __name__ == '__main__':
         print(f"  {flg_name}: {item['flg_desc']}")
 
     # To flag specific elements of a given profile, use the internal methods:
-    # Here, 'dummy_flg' is defined in the flg_config.yml parameter file.
-    prfs[0].set_flg('troposphere', True, index=pd.Index([0, 1, 2]))
+    prfs[0].set_flg(FLG_FT, True, index=pd.Index([0, 1, 2]))
 
     # Let's check to see that the data was actually flagged
-    print('\nDid I flag only the first three steps with a "troposphere" flag ?')
-    print(prfs[0].has_flg('troposphere'))
+    print(f'\nDid I flag only the first three steps with a "{FLG_FT}" flag ?')
+    print(prfs[0].has_flg(FLG_FT))
 
     # FLags are used to characterize individual measurments. Tags, on the other hand, are used to
     # characterize entire Profiles. They are useful, for example, to identify if a Profile has been
-    # synchronized (tags: 'sync'), if the data is still raw (tag:'raw'), or if it belongs to a GDP
-    # (tag: 'gdp'). As an example, let's figure out which Profile in rs_prfs belongs to a GDP:
+    # synchronized (tags: TAG_SYNC), if the data is still original (tag: TAG_ORIGINAL),
+    # or if it belongs to a GDP (tag: TAG_GDP). As an example, let's figure out which
+    # Profile in rs_prfs belongs to a GDP:
     print('\nChecking Profile tags:')
-    print(rs_prfs.has_tag('gdp'))
+    print(rs_prfs.has_tag(TAG_GDP))
 
     # We can see that the different GDP profiles that were extracted and loaded (without their
     # uncertainties!) into rs_prfs were indeed correctly tagged:
@@ -181,9 +182,9 @@ if __name__ == '__main__':
     # ----------------------------------------------------------------------------------------------
     print("\n --- BASIC PLOTTING ---")
 
-    # Let us inspect the (raw) GDP profiles with dedicated plots.
+    # Let us inspect the (original) GDP profiles with dedicated plots.
     # Defaults behavior, just adding a prefix to the filename.
-    gdp_prfs.plot(fn_prefix='01-a', show=True)
+    # gdp_prfs.plot(fn_prefix='01-a', show=True)
 
     # Repeat the same plot, but this time with the GDP uncertainties.
     # Set "show" to True to display it on-screen.
@@ -196,7 +197,7 @@ if __name__ == '__main__':
     gdp_prfs_1s = gdp_prfs.resample(freq='1s', inplace=False)
 
     # We can now save the modified Profiles into the database, with a suitable tag to identify them.
-    gdp_prfs_1s.save_to_db(add_tags=['1s'])
+    gdp_prfs_1s.save_to_db(add_tags=[TAG_1S])
 
     # ----------------------------------------------------------------------------------------------
     print("\n --- PROFILE SYNCHRONIZATION ---")
@@ -218,8 +219,8 @@ if __name__ == '__main__':
 
     # Given these shifts, let's compute the new length of the synchronized Profiles.
     # Do it such that no data is actually cropped out, i.e. add NaN/NaT wherever needed.
-    raw_lengths = [len(item.data) for item in gdp_prfs_1s.profiles]
-    sync_length = np.max(np.array(sync_shifts) + np.array(raw_lengths)) - np.min(sync_shifts)
+    original_lengths = [len(item.data) for item in gdp_prfs_1s.profiles]
+    sync_length = np.max(np.array(sync_shifts) + np.array(original_lengths)) - np.min(sync_shifts)
 
     # Once a set of shifts has been identified, they can be applied
     gdp_prfs_1s.rebase(sync_length, shifts=sync_shifts)
@@ -229,8 +230,9 @@ if __name__ == '__main__':
     # synchronization, that step is not immediately visible in the plots.
     print("\nGDP lengths post-synchronization: ", [len(item.data) for item in gdp_prfs_1s])
 
-    # Save the synchronized profiles to the DB, adding the 'sync' tag for easy identification.
-    gdp_prfs_1s.save_to_db(add_tags=['sync'])
+    # Save the synchronized profiles to the DB, adding the synchronization tab for easy
+    # identification.
+    gdp_prfs_1s.save_to_db(add_tags=[TAG_SYNC])
 
     # ----------------------------------------------------------------------------------------------
     print("\n --- ASSEMBLY OF A COMBINED WORKING STANDARD ---")
@@ -239,10 +241,10 @@ if __name__ == '__main__':
     # tools located inside dvas.tools.gdps
 
     # Let us begin by extracting the synchronized GDPs for a specific flight
-    filt_gdp_dt_sync = f"and_(tags('sync'), {filt_gdp}, {filt_dt})"
+    filt_gdp_dt_sync = f"and_(tags('{TAG_SYNC}'), {filt_gdp}, {filt_dt})"
     gdp_prfs = MultiGDPProfile()
     gdp_prfs.load_from_db(filt_gdp_dt_sync, 'temp', tdt_abbr='time', alt_abbr='gph',
-                          ucr_abbr='temp_ucr', ucs_abbr='temp_ucs', uct_abbr='temp_uct',
+                          ucs_abbr='temp_ucs', uct_abbr='temp_uct',
                           inplace=True)
 
     # Before combining the GDPs with each other, let us assess their consistency. This is a two
@@ -251,7 +253,7 @@ if __name__ == '__main__':
     # binning values "m".
     start_time = datetime.now()
     incompat = dtgs.gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=[1, 6],
-                                          do_plot=True, n_cpus=4)
+                                          do_plot=True, n_cpus=4, method='arithmetic delta')
     print(f'GDP mismatch derived in: {(datetime.now()-start_time).total_seconds()}s')
 
     # Next, we derive "validities" given a specific strategy to assess the different GDP pair
@@ -266,9 +268,9 @@ if __name__ == '__main__':
     # Let us now create a high-resolution CWS for these synchronized GDPs, making sure to drop
     # incompatible elements.
     start_time = datetime.now()
-    cws, _ = dtgg.combine(gdp_prfs, binning=1, method='weighted mean',
+    cws, _ = dtgg.combine(gdp_prfs, binning=1, method='weighted arithmetic mean',
                           mask_flgs=FLG_INCOMPATIBLE,
-                          chunk_size=150, n_cpus=8)
+                          chunk_size=150, n_cpus=1)
     print(f'CWS assembled in: {(datetime.now()-start_time).total_seconds()}s')
 
     # We can now inspect the result visually
@@ -281,4 +283,5 @@ if __name__ == '__main__':
     # One should note here that we only save the columns of the CWS DataFrame, and not the 'alt' and
     # 'tdt' indexes. As a result, if one tries to extract the cws from the DB right away, the 'alt'
     # and 'tdt' columns will be filled with NaNs.
-    cws.save_to_db(add_tags=['cws'], rm_tags=['gdp'], prms=['val', 'ucr', 'ucs', 'uct', 'ucu'])
+    cws.save_to_db(add_tags=[TAG_CWS], rm_tags=[TAG_GDP],
+                   prms=['val', 'ucs', 'uct', 'ucu'])

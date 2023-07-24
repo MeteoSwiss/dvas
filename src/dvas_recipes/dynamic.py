@@ -8,6 +8,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
 Module content: dynamic variables, that get modified on the fly by the Recipes.
 """
 
+#: str: name of the dvas recipe
+RECIPE = None
+
 #: list: list of event_id, rig_id pairs identifying all the flights to to be processed. E.g.:
 # [[12345, 1], [12346, 1]]
 ALL_FLIGHTS = None
@@ -16,7 +19,7 @@ ALL_FLIGHTS = None
 CURRENT_FLIGHT = None
 
 #: dict: All variables to be processed by the recipe. Should be set once only, e.g.:
-# {'temp': {'ucr': 'temp_ucr', 'ucs': 'temp_ucs', 'uct': 'temp_uct', 'ucu': None}, 'rh': {...}, ...}
+# {'temp': {'ucs': 'temp_ucs', 'uct': 'temp_uct', 'ucu': None}, 'rh': {...}, ...}
 ALL_VARS = None
 
 #: dict: current variable name to be processed, and associated uncertainties, e.g.: 'temp'

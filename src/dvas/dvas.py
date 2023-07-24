@@ -63,8 +63,8 @@ class Database:
         DatabaseManager().refresh_db()
 
     @staticmethod
-    def fetch_raw_data(search_prms, strict=True):
-        """Fetch new raw data and save to DB
+    def fetch_original_data(search_prms, strict=True):
+        """Fetch new original data and save to DB
 
         Args:
             search_prms (str | list of str): Search parameter value.

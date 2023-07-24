@@ -18,6 +18,7 @@ import pytest
 from dvas.data.strategy.load import LoadRSProfileStrategy, LoadGDPProfileStrategy
 from dvas.data.data import MultiProfile, MultiRSProfile, MultiGDPProfile
 
+
 @pytest.fixture
 def mlt_prf():
     """# Load multiprofile"""
@@ -27,15 +28,17 @@ def mlt_prf():
     mlt_prf.update(data[1], data[0])
     return mlt_prf
 
+
 @pytest.fixture
 def mlt_gdpprf():
     """# Load multiprofile"""
     mlt_gdpprf = MultiGDPProfile()
     prf_stgy = LoadGDPProfileStrategy()
     data = prf_stgy.execute("all()", 'temp', 'time', alt_abbr='gph',
-                            ucr_abbr='ucr1', ucs_abbr='ucs1', uct_abbr='uct1', ucu_abbr='ucu1')
+                            ucs_abbr='ucs1', uct_abbr='uct1', ucu_abbr='ucu1')
     mlt_gdpprf.update(data[1], data[0])
     return mlt_gdpprf
+
 
 # Define db_data
 db_data = {
@@ -51,10 +54,10 @@ db_data = {
                        'tags': ['load_multiprofile', f'e:{ind}'],
                        'metadata': {},
                        'src': ''},
-             } for (ind, dt) in enumerate(['20200101T0000Z', '20200202T0000Z'])
-             for prm in ['temp', 'gph', 'temp_flag', 'time', 'ucr1', 'ucs1',
+              } for (ind, dt) in enumerate(['20200101T0000Z', '20200202T0000Z'])
+             for prm in ['temp', 'gph', 'temp_flag', 'time', 'ucs1',
                          'uct1', 'ucu1']
-            ]
+             ]
 }
 
 
@@ -126,7 +129,7 @@ class TestMultiProfile:
         mlt_gdpprf[0].set_flg('user_qc', False, [0])
         out_nomsk = mlt_gdpprf.get_prms(prm_list='val', mask_flgs='user_qc')
 
-        #Check that data was masked as I expected
+        # Check that data was masked as I expected
         assert np.isnan(out_msk[0]['val'][0])
         assert not np.isnan(out_nomsk[0]['val'][0])
 
@@ -134,6 +137,20 @@ class TestMultiProfile:
         mlt_gdpprf[0].set_flg('user_qc', True, [0])
         out_msk = mlt_gdpprf.get_prms(prm_list='tdt', mask_flgs='user_qc')
         assert pd.isnull(out_msk[0]['tdt'][0])
+
+        # Check that I can also extract metadata
+        out_mtdta = mlt_gdpprf.get_prms(prm_list='val', with_metadata=['oid', 'mid'])
+        assert all(out_mtdta.loc[:, (1, 'mid')] == 'MDL_YT')
+        # Points that are "filled" with NaN in this data frame have no metadata info either
+        assert out_mtdta.loc[3:, (0, 'oid')].isna().all()
+
+        # Check that I can pool all the data instead
+        out_pooled = mlt_gdpprf.get_prms(prm_list='val', with_metadata=['oid', 'mid'], pooled=True)
+        assert out_pooled.shape == (9, 4)
+
+        # Check that I can extract only specific flags
+        out_request_flgs = mlt_gdpprf.get_prms(prm_list='val', request_flgs='user_qc')
+        assert len(out_request_flgs) == 1
 
     def test_rm_info_tags(self, mlt_prf):
         """Test rm_info_tags method"""

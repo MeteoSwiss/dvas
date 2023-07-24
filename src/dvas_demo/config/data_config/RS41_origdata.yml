@@ -110,9 +110,9 @@ _RS41-MCH:
         value: get('Speed')
 
 # ----------------------------------------------------
-# RS41-SG MDP (UAII2022)
+# RS41 MDP (UAII2022)
 # ----------------------------------------------------
-_RS41-SG:
+_RS41:
 
     # -- META DATA ----------------------------------
     edt: "to_datetime(get('event_dt'))"
@@ -125,6 +125,10 @@ _RS41-SG:
         first_timestamp: "to_datetime(get('first_timestamp'))"
         launch_timestamp: "to_datetime(get('launch_timestamp'))"
         burst_timestamp: "to_datetime(get('burst_timestamp'))"
+        preflight_shc_rh_sonde: "get('preflight_SHC_rh_sonde')"
+        preflight_shc_rh_ref: "get('preflight_SHC_rh_ref')"
+        preflight_shc_temp_sonde: "get('preflight_SHC_temp_sonde')"
+        preflight_shc_temp_ref: "get('preflight_SHC_temp_ref')"
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter: ';'
@@ -179,6 +183,7 @@ _RS41-GDP_001:
         launch_timestamp: "to_datetime(get('g.Measurement.StartTime'))"
         burst_timestamp: "to_datetime(get('g.Measurement.BurstpointDatetime'))"
         gruan_tropopause: "get('g.Measurement.TropopauseGeopotHeight')"
+        synop_clouds: "get('g.SurfaceObs.SynopClouds')"
 
     # -- ORIG DATA ----------------------------------
     _time:
@@ -196,12 +201,12 @@ _RS41-GDP_001:
 
     _temp:
         value: get('temp')
-    _temp_ucr:
-        value: get('temp_uc_ucor', 'div2')  # Go from K=2 to K=1
     _temp_ucs:
         value: get('temp_uc_scor', 'div2')  # Go from K=2 to K=1
     _temp_uct:
         value: get('temp_uc_tcor', 'div2')  # Go from K=2 to K=1
+    _temp_ucu:
+        value: get('temp_uc_ucor', 'div2')  # Go from K=2 to K=1
     #_temp_flag:
     #    value: get(0)
     #    csv_use_default: True
@@ -215,10 +220,10 @@ _RS41-GDP_001:
 
     _rh:
         value: get('rh')
-    _rh_ucr:
-        value: get('rh_uc_ucor', 'div2')  # Go from K=2 to K=1
     _rh_uct:
         value: get('rh_uc_tcor', 'div2')  # Go from K=2 to K=1
+    _rh_ucu:
+        value: get('rh_uc_ucor', 'div2')  # Go from K=2 to K=1
 
     _wdir:
         value: get('wdir')
@@ -229,3 +234,9 @@ _RS41-GDP_001:
         value: get('wspeed')
     _wspeed_ucu:
         value: get('wspeed_uc_ucor', 'div2')  # Go from K=2 to K=1
+
+    _lat:
+        value: get('lat')
+
+    _lon:
+        value: get('lon')

@@ -4,14 +4,14 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
-# This file contains the extraction details for the iMet-54-AA MDP files.
+# This file contains the extraction details for the PS-B3 MDP files.
 # It must absolutely have the string 'origdata' in its name, to match the dvas class names.
 # --------------------------------------------------------------------------------------------------
 
 # ----------------------------------------------------
-# iMet-54-AA MDP (UAII2022)
+# PS-B3 MDP (UAII2022)
 # ----------------------------------------------------
-_iMet-54-AA:
+_PS-B3:
 
     # -- META DATA ----------------------------------
     edt: "to_datetime(get('event_dt'))"
@@ -24,37 +24,43 @@ _iMet-54-AA:
         first_timestamp: "to_datetime(get('first_timestamp'))"
         launch_timestamp: "to_datetime(get('launch_timestamp'))"
         burst_timestamp: "to_datetime(get('burst_timestamp'))"
+        preflight_shc_rh_sonde: "get('preflight_SHC_rh_sonde')"
+        preflight_shc_rh_ref: "get('preflight_SHC_rh_ref')"
+        preflight_shc_temp_sonde: "get('preflight_SHC_temp_sonde')"
+        preflight_shc_temp_ref: "get('preflight_SHC_temp_ref')"
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter: ';'
     csv_skip_blank_lines: False
     csv_delim_whitespace: False
-    csv_skiprows: 21
-    csv_skipfooter: 0
+    csv_skipinitialspace: True
+    csv_index_col: False
+    csv_skiprows: 17
+    csv_skipfooter: 1
     csv_encoding:
-    csv_na_values:
+    csv_na_values: 'NaN'
     csv_header: 0
 
     _time:
-        value: get('time', 'rel')
+        value: getreldt('time_stamp', '%Y-%m-%dT%H:%M:%S.%fZ')
 
     _alt_ref:
-        value: get('gph_gnss')
+        value: get('gph_gnss[gpm]')
 
     _gph:
-        value: get('gph_gnss')
+        value: get('gph_gnss[gpm]')
 
     _temp:
-        value: get('temp', 'c2k')
+        value: get('temp[˚C]', 'c2k')
 
     _pres:
-        value: get('press_gnss')
+        value: get('press_gnss[mBar]')
 
     _rh:
-        value: get('rh')
+        value: get('rh[%]')
 
     _wdir:
-        value: get('wind_dir')
+        value: get('wind_dir[˚]')
 
     _wspeed:
-        value: get('wind_speed')
+        value: get('wind_speed[m/s]')

@@ -24,7 +24,7 @@ from ...errors import DvasError
 from .gdps import combine
 from ...plots import gdps as dpg
 from ...plots import utils as dpu
-from ...hardcoded import PRF_VAL, FLG_INCOMPATIBLE, FLG_INVALID
+from ...hardcoded import PRF_VAL, FLG_INCOMPATIBLE, FLG_ISINVALID
 
 # Setup local logger
 logger = logging.getLogger(__name__)
@@ -70,7 +70,7 @@ logger = logging.getLogger(__name__)
 #    return chi_sq
 
 @log_func_call(logger, time_it=True)
-def ks_test(gdp_pair, alpha=0.0027, m_val=1, **kwargs):
+def ks_test(gdp_pair, alpha=0.0027, m_val=1, method='arithmetic delta', **kwargs):
     ''' Runs a ``scipy.stats.kstest()`` two-sided test on the normalized-delta between two
     GDPProfile instances, against a normal distribution.
 
@@ -87,6 +87,7 @@ def ks_test(gdp_pair, alpha=0.0027, m_val=1, **kwargs):
             Defaults to 0.27%=0.0027.
         m_val (int, optional): Binning strength for the Profile delta (Important: the binning is
             performed before running the KS test). Defaults to 1 (=no binning).
+        method (str, optional): 'arithmetic delta' or 'circular delta' (the latter wraps angles)
         **kwargs: mask_flgs and/or n_cpus and/or chunk_size, that will get fed to
             dvas.tools.gdps.gdps.combine().
 
@@ -107,22 +108,22 @@ def ks_test(gdp_pair, alpha=0.0027, m_val=1, **kwargs):
     '''
 
     if not isinstance(m_val, numbers.Integral):
-        raise DvasError(f'Ouch! binning should be an int, not {type(m_val)}')
+        raise DvasError(f'binning should be an int, not {type(m_val)}')
 
     if not isinstance(alpha, float):
-        raise Exception(f'Ouch! alpha should be a float, not {type(alpha)}')
+        raise Exception(f'alpha should be a float, not {type(alpha)}')
 
     if alpha > 1 or alpha < 0:
-        raise Exception(f'Ouch! alpha should be 0<alpha<1, not {alpha}')
+        raise Exception(f'alpha should be 0<alpha<1, not {alpha}')
 
     # How long are the profiles ?
     # len_prf = len(gdp_pair[0].data)
 
     if (tmp1 := len(gdp_pair[1])) != (tmp0 := len(gdp_pair[0])):
-        raise DvasError(f"Ouch ! GDP Profiles have inconsistent lengths: {tmp0} vs {tmp1}")
+        raise DvasError(f"GDP Profiles have inconsistent lengths: {tmp0} vs {tmp1}")
 
     # Compute the profile delta with the specified sampling
-    gdp_delta, _ = combine(gdp_pair, binning=m_val, method='delta', **kwargs)
+    gdp_delta, _ = combine(gdp_pair, binning=m_val, method=method, **kwargs)
 
     # Let's create a DataFrame to keep track of incompatibilities.
     out = pd.DataFrame(np.full((len(gdp_delta[0]), 5), np.nan),
@@ -130,20 +131,6 @@ def ks_test(gdp_pair, alpha=0.0027, m_val=1, **kwargs):
 
     # Assign the first part of the data to it
     out[['Delta_pqei', 'sigma_pqei']] = gdp_delta.get_prms([PRF_VAL, 'uc_tot'])[0]
-
-    # noqa pylint: disable=pointless-string-statement
-    """
-    # ---------- NOT DOING THIS UNTIL #235 and #236 are dealt with properly ----------
-    # Here, in the case of wind dir, let's make sure to wrap the data around.
-    # TODO: remove the hardcoded variable name !
-    #try:
-    #    if gdp_pair.var_info['val']['prm_name'] == 'wdir':
-    #        out.loc[:, ['Delta_pqei']] = out.Delta_pqei.map(wrap_angle)
-    #except KeyError:
-    #    # TODO: this happens when running tests, because the gdp_pair instance is not defined
-    #    # from the DB.
-    #    logger.critical('Unknown parameter name: angular wrapping not applied. Are you sure ?')
-    """
 
     # Compute k_pqei
     out['k_pqei'] = out['Delta_pqei']/out['sigma_pqei']
@@ -163,14 +150,16 @@ def ks_test(gdp_pair, alpha=0.0027, m_val=1, **kwargs):
 
 
 @log_func_call(logger, time_it=True)
-def gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=None, rolling=True,
-                          do_plot=False, fn_prefix=None, fn_suffix=None, **kwargs):
+def gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=None, method='arithmetic delta',
+                          rolling=True, do_plot=False, fn_prefix=None, fn_suffix=None,
+                          **kwargs):
     ''' Runs a series of KS tests to assess the consistency of several GDP profiles.
 
     Args:
         gdp_prfs (dvas.data.data.MultiGDPProfile): synchronized GDP profiles to check.
         alpha (float, optional): The significance level for the KS test. Defaults to 0.27%
         m_vals (ndarray of int, optional): The rolling binning sizes "m". Defaults to None==[1].
+        method (str, optional): 'arithmetic delta' or 'circular delta' (the latter wraps angles).
         rolling (bool, optional): if True and len(m_vals)>1, any incompatibility found
             for a specific m value will be forwarded to the subsequent ones. Else, each m value
             is treated independantly. Defaults to True. If rolling is True, the order of the
@@ -178,7 +167,8 @@ def gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=None, rolling=True,
         do_plot (bool, optional): Whether to create the diagnostic plot, or not. Defaults to False.
         fn_prefix (str, optional): if set, the prefix of the plot filename.
         fn_suffix (str, optional): if set, the suffix of the plot filename.
-        **kwargs: n_cpus and/or chunk_size, that will get fed to dvas.tools.gdps.gdps.combine().
+        **kwargs: n_cpus and/or chunk_size and/or mask_flgs, that will get fed to
+            dvas.tools.gdps.gdps.combine().
 
     Returns:
         pd.DataFrame: the values of Delta_pqei, sigma_pqei, k_pqei, pks_pqei and f_pqei for each
@@ -199,10 +189,10 @@ def gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=None, rolling=True,
     if isinstance(m_vals, int):
         m_vals = [m_vals]
     if not isinstance(m_vals, list):
-        raise DvasError(f'Ouch ! m_vals must be a list, not: {type(m_vals)}')
+        raise DvasError(f'm_vals must be a list, not: {type(m_vals)}')
 
     # If warranted select which flags we want to mask in the rolling process.
-    mask_flgs = [FLG_INVALID]
+    mask_flgs = [FLG_ISINVALID]
     if rolling:
         mask_flgs += [FLG_INCOMPATIBLE]
 
@@ -233,7 +223,7 @@ def gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=None, rolling=True,
         logger.debug('GPD oids: %s', key)
 
         # First make a high-resolution delta ...
-        out = ks_test(gdp_pair, alpha=alpha, m_val=1, mask_flgs=mask_flgs, **kwargs)
+        out = ks_test(gdp_pair, alpha=alpha, m_val=1, mask_flgs=mask_flgs, method=method, **kwargs)
 
         # Drop un-necessary info fromthe High-Kes k_pqei profile
         out = out.drop(labels=['pks_pqei', 'f_pqei'], axis=1)
@@ -250,7 +240,8 @@ def gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=None, rolling=True,
         for m_val in m_vals:
 
             # Run the KS test on it
-            tmp = ks_test(gdp_pair, alpha=alpha, m_val=m_val, mask_flgs=mask_flgs, **kwargs)
+            tmp = ks_test(gdp_pair, alpha=alpha, m_val=m_val, mask_flgs=mask_flgs, method=method,
+                          **kwargs)
 
             # Turn this into a MultiIndex ...
             tmp.columns = pd.MultiIndex.from_tuples([(m_val, item) for item in tmp.columns])
@@ -270,7 +261,8 @@ def gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=None, rolling=True,
             # If requested, flag the bad levels detected using this binning intensity
             if rolling:
                 for gdp in gdp_pair:
-                    gdp.set_flg('incomp', True, index=out[out[(m_val, 'f_pqei')] == 1].index)
+                    gdp.set_flg(FLG_INCOMPATIBLE, True,
+                                index=out[out[(m_val, 'f_pqei')] == 1].index)
 
         # Assign this pair's outcome to the final storage dictionnary
         incompat[key] = out
@@ -280,8 +272,8 @@ def gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=None, rolling=True,
 
             # Is there a unit for the data at hand ?
             try:
-                var_name = gdp_pair.var_info['val']['prm_name']
-                var_unit = gdp_pair.var_info['val']['prm_unit']
+                var_name = gdp_pair.var_info[PRF_VAL]['prm_plot']
+                var_unit = gdp_pair.var_info[PRF_VAL]['prm_unit']
             except KeyError:
                 var_name = None
                 var_unit = None
@@ -290,14 +282,19 @@ def gdp_incompatibilities(gdp_prfs, alpha=0.0027, m_vals=None, rolling=True,
             edt_eid_rid_info = dpu.get_edt_eid_rid(gdp_pair)
 
             # Get the specific pair details
-            pair_info = f'{gdp_pair[0].info.oid}-{gdp_pair[0].info.mid}' + '_vs_' +\
-                        f'{gdp_pair[1].info.oid}-{gdp_pair[1].info.mid}'
+            # Start with the second profile, since the delta does Profile2-Profile1, but
+            # people usually understand the opposite when writing Profile1_vs_Profile2.
+            pair_info = f'{"-".join([f"{item}" for item in gdp_pair[1].info.mid])}_'
+            pair_info += f'[{"-".join([f"{item}" for item in gdp_pair[1].info.oid])}]_minus_'
+            pair_info += f'{"-".join([f"{item}" for item in gdp_pair[0].info.mid])}_'
+            pair_info += f'[{"-".join([f"{item}" for item in gdp_pair[0].info.oid])}]'
 
             fnsuf = pair_info
             if fn_suffix is not None:
                 fnsuf = fn_suffix + '_' + fnsuf
 
-            dpg.plot_ks_test(out, alpha, left_label=edt_eid_rid_info+'_'+pair_info,
+            dpg.plot_ks_test(out, alpha,
+                             left_label=edt_eid_rid_info+' '+pair_info.replace('_', ' '),
                              right_label=var_name, unit=var_unit,
                              fn_prefix=fn_prefix, fn_suffix=fnsuf)
 

@@ -22,9 +22,10 @@ import pandas as pd
 # Import from current package
 from ...logger import log_func_call
 from ...errors import DvasError
-from ...hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
+from ...hardcoded import PRF_TDT, PRF_ALT, PRF_VAL, PRF_FLG, PRF_UCS, PRF_UCT, PRF_UCU
+from ...hardcoded import TOD_VALS, TAG_ORIGINAL, TAG_CLN, TAG_1S, TAG_SYNC
 from ..tools import df_to_chunks
-from .utils import process_chunk
+from ..chunks import process_chunk
 from ...data.data import MultiCWSProfile
 from ...data.strategy.data import CWSProfile
 from ...database.database import InfoManager
@@ -34,19 +35,16 @@ logger = logging.getLogger(__name__)
 
 
 @log_func_call(logger)
-def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_size=150, n_cpus=1):
+def combine(gdp_prfs, binning=1, method='weighted arithmetic mean',
+            mask_flgs=None, chunk_size=150, n_cpus=1):
     ''' Combines and (possibly) rebins GDP profiles, with full error propagation.
-
-    Note:
-
-        This function requires profiles that have been resampled (if applicable) and synchronized
-        beforehand. This implies that the `_idx` index must be identical for all Profiles.
 
     Args:
         gdp_profs (dvas.data.data.MultiGDPProfile): synchronized GDP profiles to combine.
         binning (int, optional): the number of profile steps to put into a bin. Defaults to 1.
         method (str, optional): combination rule. Can be one of
-            ['weighted mean', 'mean', or 'delta']. Defaults to 'weighted mean'.
+            ['weighted arithmetic mean', 'arithmetic mean', weighted circular mean',
+            'circular mean', or 'delta']. Defaults to 'weighted arithmetic mean'.
         mask_flgs (str|list of str, optional): (list of) flag(s) to ignore when combining profiles.
         chunk_size (int, optional): to speed up computation, Profiles get broken up in chunks of
             that length. The larger the chunks, the larger the memory requirements. The smaller the
@@ -57,6 +55,13 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
     Returns:
         (dvas.data.data.MultiCWSProfile, dict): the combined working standard profile, and the
             a dictionnary with the full covariance matrices for the different uncertainty types.
+
+    Note:
+        This function requires profiles that have been resampled (if applicable) and synchronized
+        beforehand. This implies that the `_idx` index must be identical for all Profiles.
+
+
+
     '''
 
     # Some safety checks first of all
@@ -64,7 +69,8 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
         raise DvasError(f'binning must be of type int, not {type(binning)}')
     if binning <= 0:
         raise DvasError('binning must be greater or equal to 1 !')
-    if method not in ['weighted mean', 'mean', 'delta']:
+    if method not in ['weighted arithmetic mean', 'arithmetic mean', 'weighted circular mean',
+                      'circular mean', 'arithmetic delta', 'circular delta']:
         raise DvasError(f'Method {method} unsupported.')
 
     if not isinstance(chunk_size, (int, np.integer)):
@@ -89,8 +95,8 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
 
     # Have all the profiles been synchronized ? Just trigger a warning for now. Maybe users simply
     # did not add the proper tag.
-    if any('sync' not in item for item in gdp_prfs.get_info('tags')):
-        logger.warning('No "sync" tag found. Is this intended ?')
+    if any(TAG_SYNC not in item for item in gdp_prfs.get_info('tags')):
+        logger.warning('No "%s" tag found. Is this intended ?', TAG_SYNC)
 
     # How many gdps do we have ?
     n_prf = len(gdp_prfs)
@@ -128,37 +134,9 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
     # Let's get started for real
     # First, let's extract all the information I (may) need, i.e. the values, errors, and total
     # errors.
-    x_dx = gdp_prfs.get_prms([PRF_ALT, PRF_TDT, PRF_VAL, PRF_FLG, PRF_UCR, PRF_UCS, PRF_UCT,
+    x_dx = gdp_prfs.get_prms([PRF_ALT, PRF_TDT, PRF_VAL, PRF_FLG, PRF_UCS, PRF_UCT,
                               PRF_UCU, 'uc_tot'],
-                             mask_flgs=mask_flgs)
-
-    # I also need to extract some of the metadata required for computing cross-correlations.
-    # Let's add it to the common DataFrame so I can carry it all in one go.
-    for metadata in ['oid', 'mid', 'eid', 'rid']:
-        vals = gdp_prfs.get_info(metadata)
-
-        # Loop through it and assign the values where appropriate
-        for (prf_id, val) in enumerate(vals):
-
-            # If I am being given a list, make sure it has only 1 element. Else complain about it.
-            if isinstance(val, list):
-                if len(val) > 1:
-                    raise DvasError(f"{metadata} for profile #{prf_id} " +
-                                    f"contains more than one value ({val})." +
-                                    " I am too dumb to handle this. So I give up here.")
-
-                val = val[0]
-
-            # Actually assign the value to each measurement of the profile.
-            x_dx.loc[:, (prf_id, metadata)] = val
-
-    # Debug code for the NaN mismatch error
-    # import pdb
-    # pdb.set_trace()
-    # uu = x_dx.loc[:,(0, 'uc_tot')].isna()
-    # vv = x_dx.loc[:,(0, 'val')].isna()
-    # all(vv==uu)
-    # x_dx[vv!=uu]
+                             mask_flgs=mask_flgs, with_metadata=['oid', 'mid', 'eid', 'rid'])
 
     # To drastically reduce memory requirements and speed up the code significantly,
     # we will break the profiles into smaller chunks. In doing so, we avoid having to deal with
@@ -197,17 +175,24 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
     # Re-assemble all the chunks into one DataFrame.
     x_ms = pd.concat(x_ms, axis=0)
 
-    # Almost there. Now we just need to package this into a clean MultiGDPProfile
+    # Almost there. Now we just need to package this into a clean MultiCWSProfile
     # Let's first prepare the info dict
     new_rig_tag = 'r:'+','.join([item.split(':')[1]
                                  for item in np.unique(gdp_prfs.get_info('rid')).tolist()])
     new_evt_tag = 'e:'+','.join([item.split(':')[1]
                                  for item in np.unique(gdp_prfs.get_info('eid')).tolist()])
+    one_or_more_tags = [tag for tag in list(TOD_VALS) + [TAG_1S] if any(gdp_prfs.has_tag(tag))]
+    all_or_nothing_tags = [tag for tag in [TAG_ORIGINAL, TAG_CLN, TAG_SYNC]
+                           if all(gdp_prfs.has_tag(tag))]
+
+    new_fid = ','.join(set(item['fid'] if 'fid' in item.keys() else '???' for item in
+                       gdp_prfs.get_info(prm='metadata')))
 
     new_info = InfoManager(np.unique(gdp_prfs.get_info('edt'))[0],  # dt
                            np.unique(gdp_prfs.get_info('oid')).tolist(),  # oids
-                           tags=[new_rig_tag, new_evt_tag],
+                           tags=[new_rig_tag, new_evt_tag] + one_or_more_tags + all_or_nothing_tags,
                            src=f'dvas combine() [{Path(__file__).name}]')
+    new_info.add_metadata('fid', new_fid)
 
     # Let's create a dedicated Profile for the combined profile.
     # It's no different from a GDP, from the perspective of the errors.
@@ -220,10 +205,10 @@ def combine(gdp_prfs, binning=1, method='weighted mean', mask_flgs=None, chunk_s
     # To finish, let's piece together the covariance matrices
     # Set them up full of NaNs to start
     cov_mats = {uc_name: np.full((len(x_ms), len(x_ms)), np.nan) for uc_name in
-                [PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU]}
+                [PRF_UCS, PRF_UCT, PRF_UCU]}
     # Then fill them up chunk by chunk
     for item in proc_chunks:
-        for uc_name in [PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU]:
+        for uc_name in [PRF_UCS, PRF_UCT, PRF_UCU]:
             cov_mats[uc_name][item[0].index[0]:item[0].index[-1]+1,
                               item[0].index[0]:item[0].index[-1]+1] = \
                 item[1][uc_name].filled(np.nan)

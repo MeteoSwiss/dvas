@@ -16,7 +16,7 @@ import matplotlib.gridspec as gridspec
 
 # import from dvas
 from ..errors import DvasError
-from ..hardcoded import PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
+from ..hardcoded import PRF_VAL, PRF_UCS, PRF_UCT, PRF_UCU
 from ..logger import log_func_call
 from . import utils as pu
 
@@ -34,7 +34,7 @@ def multiprf(prfs, index='alt', label='mid', uc=None, k_lvl=1, rel_to=None, expo
             Defaults to 'alt'.
         label (str, optional): name of the label for each curve, that will be fed to
             `prfs.get_info(label)`. Defaults to 'mid'.
-        uc (str, optional): which uncertainty to plot, if any. Can be one of  ['ucr', 'ucs', 'uct',
+        uc (str, optional): which uncertainty to plot, if any. Can be one of  ['ucs', 'uct',
             'ucu', 'uc_tot']. Defaults to None.
         k_lvl (int|float, optional): k-level for the uncertainty, if uc is not None. Defaults to 1.
         rel_to (int, optional): if set, will plot the differences with respect to prfs[rel_to].
@@ -50,26 +50,25 @@ def multiprf(prfs, index='alt', label='mid', uc=None, k_lvl=1, rel_to=None, expo
     """
 
     # Some sanity checks
-    if uc not in [None, 'uc_tot', PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU]:
-        raise DvasError('Ouch ! Unknown uc name: {}'.format(uc))
+    if uc not in [None, 'uc_tot', PRF_UCS, PRF_UCT, PRF_UCU]:
+        raise DvasError('Unknown uc name: {uc}')
 
     if not isinstance(k_lvl, (float, int)):
-        raise DvasError(
-            'Ouch ! Bad type for k_lvl. Needed int| float - got: {}'.format(type(k_lvl)))
+        raise DvasError(f'Bad type for k_lvl. Needed int| float - got: {type(k_lvl)}')
 
     if rel_to is not None:
         if not isinstance(rel_to, int):
-            raise DvasError('Ouch ! rel_to should be of type int, not: {}'.format(type(rel_to)))
+            raise DvasError(f'rel_to should be of type int, not: {type(rel_to)}')
         if rel_to < 0 or rel_to >= len(prfs):
-            raise DvasError('Ouch ! rel_to must be in range [0, {}]'.format(len(prfs)-1))
+            raise DvasError(f'rel_to must be in range [0, {len(prfs)-1}]')
         if len(set([len(item) for item in prfs])) > 1:
-            raise DvasError('Ouch ! rel_to requires all profiles to have the same length.')
+            raise DvasError('rel_to requires all profiles to have the same length.')
 
     if expose is not None:
         if not isinstance(expose, int):
-            raise DvasError('Ouch ! expose should be of type int, not: {}'.format(type(expose)))
+            raise DvasError(f'expose should be of type int, not: {type(expose)}')
         if expose < 0 or expose >= len(prfs):
-            raise DvasError('Ouch ! expose must be in range [0, {}]'.format(len(prfs)-1))
+            raise DvasError(f'expose must be in range [0, {len(prfs)-1}]')
 
     # Create the figure, with a suitable width.
     fig = plt.figure(figsize=(pu.WIDTH_TWOCOL, 4.0))
@@ -125,11 +124,11 @@ def multiprf(prfs, index='alt', label='mid', uc=None, k_lvl=1, rel_to=None, expo
 
     # Deal with the axes labels
     xlbl = prfs.var_info[index]['prm_name']
-    xlbl += ' [{}]'.format(prfs.var_info[index]['prm_unit'])
+    xlbl += f" [{prfs.var_info[index]['prm_unit']}]"
     ax1.set_xlabel(pu.fix_txt(xlbl))
 
     ylbl = prfs.var_info[PRF_VAL]['prm_name']
-    ylbl += ' [{}]'.format(prfs.var_info[PRF_VAL]['prm_unit'])
+    ylbl += f" [{prfs.var_info[PRF_VAL]['prm_unit']}]"
     if rel_to is not None:
         ylbl = r'$\Delta$' + ylbl
     ax1.set_ylabel(pu.fix_txt(ylbl), labelpad=10)

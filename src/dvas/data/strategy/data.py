@@ -21,15 +21,15 @@ from ...database.model import Flg as TableFlg
 from ...database.database import DatabaseManager, InfoManager
 from ...errors import ProfileError, DvasError
 from ...helper import RequiredAttrMetaClass
-from ...hardcoded import PRF_IDX, PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
+from ...hardcoded import PRF_IDX, PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCS, PRF_UCT, PRF_UCU
 from ...hardcoded import PRF_FLG
 
 # Setup the logger
 logger = logging.getLogger(__name__)
 
 # Define some generic stuff
-INT_TEST = (np.int64, np.int, int, type(pd.NA))
-FLOAT_TEST = (np.float, float) + INT_TEST
+INT_TEST = (np.int_, int)
+FLOAT_TEST = (np.float_, float) + INT_TEST
 TIME_TEST = FLOAT_TEST + (pd.Timedelta, type(pd.NaT))
 
 
@@ -170,8 +170,7 @@ class ProfileAC(metaclass=RequiredAttrMetaClass):
                 # Prepare value
                 assert isinstance(val, pd.Series)
                 if any([ind not in self.data.index for ind in val.index]):
-                    raise DvasError('Ouch ! Bad index {}. Should be {}'.format(val.index,
-                                                                               self.data.index))
+                    raise DvasError(f'Bad index {val.index}. Should be {self.data.index}')
                 value = self._prepare_df(val.to_frame(), cols_key=[item])
 
                 # Update value
@@ -241,13 +240,14 @@ class ProfileAC(metaclass=RequiredAttrMetaClass):
 
             # Test column name. If it is missing, raise an error
             if key not in val.columns:
-                raise ProfileError('Required column not found: %s' % key)
+                raise ProfileError(f'Required column not found: {key}')
 
             # ... to test if they all have the proper type.
             if ~val[key].apply(type).apply(
                     issubclass, args=(cls.DF_COLS_ATTR[key]['test']+(type(None),),)).all():
-                raise ProfileError("Wrong data type for '%s': I need %s but you gave me %s" %
-                                   (key, cls.DF_COLS_ATTR[key]['test'], val[key].dtype))
+                raise ProfileError(
+                    f"Wrong data type for '{key}': I need {cls.DF_COLS_ATTR[key]['test']} " +
+                    f" but you gave me {val[key].dtype}.")
 
             # Convert
             if key in val.columns and cls.DF_COLS_ATTR[key]['type']:
@@ -272,7 +272,7 @@ class Profile(ProfileAC):
     The data is stored in a pandas DataFrame with column labels:
       - 'alt' (float)
       - 'val' (float)
-      - 'flg' (Int64)
+      - 'flg' (int)
 
     The same format is expected as input.
 
@@ -284,9 +284,9 @@ class Profile(ProfileAC):
 
     # The column names for the pandas DataFrame
     DF_COLS_ATTR = {
-        PRF_VAL: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
-        PRF_ALT: {'test': FLOAT_TEST, 'type': np.float, 'index': True},
-        PRF_FLG: {'test': FLOAT_TEST, 'type': 'Int64', 'index': False}
+        PRF_VAL: {'test': FLOAT_TEST, 'type': np.float_, 'index': False},
+        PRF_ALT: {'test': FLOAT_TEST, 'type': np.float_, 'index': True},
+        PRF_FLG: {'test': FLOAT_TEST, 'type': np.int_, 'index': False}
     }
 
     def __init__(self, info, data=None):
@@ -445,7 +445,7 @@ class RSProfile(Profile):
     - 'alt' (float)
     - 'tdt' (timedelta64[ns])
     - 'val' (float)
-    - 'flg' (Int64)
+    - 'flg' (int)
 
     The same format is expected as input.
 
@@ -453,10 +453,10 @@ class RSProfile(Profile):
 
     # The column names for the pandas DataFrame
     DF_COLS_ATTR = {
-        PRF_ALT: {'test': FLOAT_TEST, 'type': np.float, 'index': True},
+        PRF_ALT: {'test': FLOAT_TEST, 'type': np.float_, 'index': True},
         PRF_TDT: {'test': TIME_TEST, 'type': 'timedelta64[ns]', 'index': True},
-        PRF_VAL: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
-        PRF_FLG: {'test': FLOAT_TEST, 'type': 'Int64', 'index': False},
+        PRF_VAL: {'test': FLOAT_TEST, 'type': np.float_, 'index': False},
+        PRF_FLG: {'test': FLOAT_TEST, 'type': np.int_, 'index': False},
     }
 
     @property
@@ -470,10 +470,9 @@ class GDPProfile(RSProfile):
     Requires some measured values, together with their corresponding measurement times since launch,
     altitudes, flags, as well as 4 distinct types uncertainties:
 
-      - 'ucr' : Rig "uncorrelated" uncertainties.
       - 'ucs' : Spatial-correlated uncertainties.
       - 'uct' : Temporal correlated uncertainties.
-      - 'ucu' : True uncorrelated uncertainties.
+      - 'ucu' : Un-correlated uncertainties.
 
     The property "uc_tot" returns the total uncertainty, and is prodvided for convenience.
 
@@ -481,11 +480,10 @@ class GDPProfile(RSProfile):
     - 'alt' (float)
     - 'tdt' (timedelta64[ns])
     - 'val' (float)
-    - 'ucr' (float)
     - 'ucs' (float)
     - 'uct' (float)
     - 'ucu' (float)
-    - 'flg' (Int64)
+    - 'flg' (int)
 
     The same format is expected as input.
 
@@ -495,21 +493,11 @@ class GDPProfile(RSProfile):
     DF_COLS_ATTR = dict(
         **RSProfile.DF_COLS_ATTR,
         **{
-            PRF_UCR: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
-            PRF_UCS: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
-            PRF_UCT: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
-            PRF_UCU: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+            PRF_UCS: {'test': FLOAT_TEST, 'type': np.float_, 'index': False},
+            PRF_UCT: {'test': FLOAT_TEST, 'type': np.float_, 'index': False},
+            PRF_UCU: {'test': FLOAT_TEST, 'type': np.float_, 'index': False},
           }
     )
-
-    @property
-    def ucr(self):
-        """pd.Series: Corresponding data time delta since launch"""
-        return super().__getattr__('ucr')
-
-    @ucr.setter
-    def ucr(self, value):
-        setattr(self, 'ucr', value)
 
     @property
     def ucs(self):
@@ -543,13 +531,12 @@ class GDPProfile(RSProfile):
         """ Computes the total uncertainty from the individual components.
 
         Returns:
-            pd.Series: uc_tot = np.sqrt(uc_r**2 + uc_s**2 + uc_t**2 + uc_u**2)
+            pd.Series: uc_tot = np.sqrt(uc_s**2 + uc_t**2 + uc_u**2)
         """
 
-        out = np.sqrt(self.ucr.fillna(0)**2 + self.ucs.fillna(0)**2 +
-                      self.uct.fillna(0)**2 + self.ucu.fillna(0)**2)
+        out = np.sqrt(self.ucs.fillna(0)**2 + self.uct.fillna(0)**2 + self.ucu.fillna(0)**2)
         # For those cases where all I have is NaN, then return a NaN (and not a 0.)
-        out[self.data[['ucr', 'ucs', 'uct', 'ucu']].isna().all(axis=1)] = np.nan
+        out[self.data[['ucs', 'uct', 'ucu']].isna().all(axis=1)] = np.nan
         # Make sure to give a proper name to the Series
         return out.rename('uc_tot')
 
@@ -568,10 +555,9 @@ class DeltaProfile(GDPProfile):
     DF_COLS_ATTR = dict(
         **Profile.DF_COLS_ATTR,
         **{
-            PRF_UCR: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
-            PRF_UCS: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
-            PRF_UCT: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
-            PRF_UCU: {'test': FLOAT_TEST, 'type': np.float, 'index': False},
+            PRF_UCS: {'test': FLOAT_TEST, 'type': np.float_, 'index': False},
+            PRF_UCT: {'test': FLOAT_TEST, 'type': np.float_, 'index': False},
+            PRF_UCU: {'test': FLOAT_TEST, 'type': np.float_, 'index': False},
           }
     )
 

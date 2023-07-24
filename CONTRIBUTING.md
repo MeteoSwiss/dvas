@@ -1,20 +1,16 @@
 # Contributing to dvas
 
+|:warning: it is not forseen that dvas will be developed or actively maintained beyond 2023-11-30. |
+| --- |
+
 If you have a question  about dvas, [jump here](#asking-a-question).
 If you want to report a bug with dvas, [jump here](#reporting-a-bug).
 
-If you are still reading this, you may actually be considering contributing to the development of dvas. :heart_eyes: :tada:
+If you are still reading this, you may actually be considering contributing to the development of dvas. At this stage, the development of dvas is not forseen beyond 2021-11-30. The project will
+likely be frozen on that date, and kept as-is for legacy purposes.
 
-There are many ways that you can do so, including by:
-- [reporting a bug](#reporting-a-bug)
-- fixing an [known issue](https://github.com/MeteoSwiss-MDA/dvas/issues?q=is%3Aissue+),
-- implementing a new functionality, and/or
-- improving the documentation:
-  * in the code, with better docstrings
-  * in this repository (for example this very file !)
-  * in the website, via the docs `.rst` files
-
-All these contributions are welcome, and what follows should help you get started. Note that contributing to dvas does *not* necessarily require an advanced knowledge of Python and/or Github. Helping us fix typos in the docs, for example, could be an excellent first contribution. Plus, :anger: typos :anger: are the worst !
+Below, we provide some basic elements of the project for the benefit of anyone interested to know
+more about it.
 
 ## Table of contents
 
@@ -37,7 +33,7 @@ The [dvas Github Discussions page](https://github.com/MeteoSwiss-MDA/dvas/discus
 If you find something odd/wrong/broken with dvas, first check if it is a [known issue](https://github.com/MeteoSwiss-MDA/dvas/issues?q=is%3Aissue+). If not, please create a new [Github Issue](https://github.com/MeteoSwiss-MDA/dvas/issues). This is the best way for everyone to keep track of new problems and past solutions.
 
 ## Essential things to know about dvas
-dvas is a Python package composed of two sub-packages: `dvas` lies at its core, with `dvas_recipes` wrapped around it. In practice, dvas also includes a series of parameter and
+dvas is a Python package composed of two sub-packages: `dvas` lies at its core, with `dvas_recipes` wrapped around it. In practice, dvas also includes a series of parameters and
 utilitarian files related to its Github repository, and a dedicated documentation hosted using Github pages.
 
 For the sake of clarity, and to facilitate the code maintenance, we list here (succinctly) a series of key facts about the dvas code and its repository:
@@ -70,7 +66,7 @@ For the sake of clarity, and to facilitate the code maintenance, we list here (s
      [plantuml server](http://www.plantuml.com/plantuml).
 
 4. **Development utilities:**
-   * On Windows, linter and tests can be run locally from terminal with `sh .\.dev_utils\linter_bash.bat`
+   * On Windows, linter and tests can be run locally from a terminal with `sh .\.dev_utils\linter_bash.bat`
      resp. `sh .\.dev_utils\test_bash.bat` commands.
    * There is a script to update the copyright years in all the `.py` files in the repository, that
      can be run as follows:
@@ -171,9 +167,7 @@ For the sake of clarity, and to facilitate the code maintenance, we list here (s
 
 ## Step-by-step guide to contributing
 
-We are currently in the early stages of development of dvas. If you would like to contribute to the code, please contact [frederic.vogt@meteoswiss.ch](mailto:frederic.vogt@meteoswiss.ch).
-
-Until its release, the dvas repository will remain private: branching will thus remain the only way to contribute to the code. To get a local copy of dvas and contribute to its improvement, one can follow the following steps:
+Until its release, the dvas repository remained private: branching was the only way to contribute to the code. To get a local copy of dvas and contribute to its improvement, one could then follow the following steps:
 
 0. Make sure you have git installed. Check that the setup is correct:
 

@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -31,7 +31,7 @@ from .model import InfosObjects as TableInfosObjects
 from .model import InfosTags as TableInfosTags
 from .model import DataSource as TablDataSource
 from .model import Model as TableModel
-from ..hardcoded import TAG_EMPTY, TAG_RAW, TAG_GDP
+from ..hardcoded import TAG_EMPTY, TAG_ORIGINAL, TAG_GDP
 from ..hardcoded import EID_PAT, RID_PAT, TOD_PAT
 from ..helper import TypedProperty as TProp
 from ..helper import check_datetime
@@ -39,6 +39,11 @@ from ..errors import SearchError
 
 # Setup the local logger
 logger = logging.getLogger(__name__)
+
+# If some DB debug is required, uncomment the following lines to get all the peewee logs
+# logger2 = logging.getLogger('peewee')
+# logger2.addHandler(logging.StreamHandler())
+# logger2.setLevel(logging.DEBUG)
 
 # Global define
 EID_PAT_COMPILED = re.compile(EID_PAT)
@@ -136,7 +141,7 @@ class SearchInfoExpr(metaclass=ABCMeta):
             - not_(<expr>): Negation, correspond to all() without <expr>
 
         Shortcut expressions:
-            - raw(): Same as tags('raw')
+            - original(): Same as tags('original')
             - gdp(): Same as tags('gdp')
 
         Raises:
@@ -456,15 +461,15 @@ class ParameterExpr(TerminalSearchInfoExpr):
         return TableParameter.prm_name == self.expression
 
 
-class RawExpr(TerminalSearchInfoExpr):
-    """Raw filter"""
+class OriginalExpr(TerminalSearchInfoExpr):
+    """Original filter"""
 
     def __init__(self):
         pass
 
     def get_filter(self):
         """Implement get_filter method"""
-        return TableTag.tag_name.in_([TAG_RAW])
+        return TableTag.tag_name.in_([TAG_ORIGINAL])
 
 
 class GDPExpr(TerminalSearchInfoExpr):
@@ -544,7 +549,7 @@ class InfoStrategy(SearchStrategyAC):
                 'model_id': MIDExpr, 'mid': MIDExpr,
                 'tags': TagExpr,
                 'prm': ParameterExpr,
-                'raw': RawExpr,
+                'original': OriginalExpr,
                 'gdp': GDPExpr,
             }
         )
@@ -619,7 +624,7 @@ class ObjectStrategy(SearchStrategyAC):
                 'object_id': OIDExpr, 'oid': OIDExpr,
                 'product_id': ProductExpr, 'pid': ProductExpr,
                 'tags': TagExpr,
-                'raw': RawExpr,
+                'original': OriginalExpr,
                 'gdp': GDPExpr,
             }
         )

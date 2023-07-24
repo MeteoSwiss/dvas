@@ -19,7 +19,7 @@ from ..linker import LocalDBLinker
 from ...database.database import InfoManager
 from ...database.model import Data
 from ...errors import LoadError
-from ...hardcoded import FLG_PRM_NAME_SUFFIX
+from ...hardcoded import FLG_PRM_NAME_SUFFIX, PRF_FLG
 
 # Define
 INDEX_NM = Data.index.name
@@ -97,10 +97,14 @@ class LoadStrategyAC(MPStrategyAC):
             raise LoadError(err_msg)
 
         # Add missing columns
-        for i in range(len(data)):
-            for val in kwargs.keys():
+        for (i, _) in enumerate(data):
+            for val in kwargs:
                 if val not in data[i].columns:
-                    data[i][val] = None
+                    # As of #253, flags cannot be NaNs (or None) any longer ...
+                    if val == PRF_FLG:
+                        data[i][val] = 0
+                    else:
+                        data[i][val] = None
 
         return info, data
 
@@ -166,7 +170,7 @@ class LoadGDPProfileStrategy(LoadProfileStrategy):
 
     def execute(
         self, search, val_abbr, tdt_abbr, alt_abbr=None,
-        ucr_abbr=None, ucs_abbr=None, uct_abbr=None, ucu_abbr=None
+        ucs_abbr=None, uct_abbr=None, ucu_abbr=None
     ):
         """Execute strategy method to fetch data from the database.
 
@@ -175,13 +179,11 @@ class LoadGDPProfileStrategy(LoadProfileStrategy):
             val_abbr (str): name of the parameter values to extract
             tdt_abbr (str): name of the time delta parameter to extract.
             alt_abbr (str, optional): name of the altitude parameter to extract. Dafaults to None.
-            ucr_abbr (str, optional): name of the true rig un-correlated uncertainty parameter to
+            ucs_abbr (str, optional): name of the spatial-correlated uncertainty parameter to
                extract. Defaults to None.
-            ucs_abbr (str, optional): name of the true spatial-correlated uncertainty parameter to
+            uct_abbr (str, optional): name of the time-correlated uncertainty parameter to
                extract. Defaults to None.
-            uct_abbr (str, optional): name of the true time-correlated uncertainty parameter to
-               extract. Defaults to None.
-            ucu_abbr (str, optional): name of the true un-correlated uncertainty parameter to
+            ucu_abbr (str, optional): name of the un-correlated uncertainty parameter to
                extract. Defaults to None.
 
         """
@@ -190,7 +192,7 @@ class LoadGDPProfileStrategy(LoadProfileStrategy):
         db_vs_df_keys = self.add_flg_prm(
             {
                 'val': val_abbr, 'tdt': tdt_abbr, 'alt': alt_abbr,
-                'ucr': ucr_abbr, 'ucs': ucs_abbr, 'uct': uct_abbr, 'ucu': ucu_abbr,
+                'ucs': ucs_abbr, 'uct': uct_abbr, 'ucu': ucu_abbr,
             }
         )
 
@@ -207,7 +209,7 @@ class LoadCWSProfileStrategy(LoadProfileStrategy):
     """ Child class to manage the data loading strategy of CWSProfile instances. """
 
     def execute(self, search, val_abbr, tdt_abbr, alt_abbr=None,
-                ucr_abbr=None, ucs_abbr=None, uct_abbr=None, ucu_abbr=None):
+                ucs_abbr=None, uct_abbr=None, ucu_abbr=None):
         """ Execute strategy method to fetch data from the database.
 
         Args:
@@ -215,13 +217,11 @@ class LoadCWSProfileStrategy(LoadProfileStrategy):
             val_abbr (str): name of the parameter values to extract
             tdt_abbr (str): name of the time delta parameter to extract.
             alt_abbr (str, optional): name of the altitude parameter to extract. Dafaults to None.
-            ucr_abbr (str, optional): name of the true rig un-correlated uncertainty parameter to
+            ucs_abbr (str, optional): name of the spatial-correlated uncertainty parameter to
                extract. Defaults to None.
-            ucs_abbr (str, optional): name of the true spatial-correlated uncertainty parameter to
+            uct_abbr (str, optional): name of the time-correlated uncertainty parameter to
                extract. Defaults to None.
-            uct_abbr (str, optional): name of the true time-correlated uncertainty parameter to
-               extract. Defaults to None.
-            ucu_abbr (str, optional): name of the true un-correlated uncertainty parameter to
+            ucu_abbr (str, optional): name of the un-correlated uncertainty parameter to
                extract. Defaults to None.
 
         """
@@ -230,7 +230,7 @@ class LoadCWSProfileStrategy(LoadProfileStrategy):
         db_vs_df_keys = self.add_flg_prm(
             {
                 'val': val_abbr, 'tdt': tdt_abbr, 'alt': alt_abbr,
-                'ucr': ucr_abbr, 'ucs': ucs_abbr, 'uct': uct_abbr, 'ucu': ucu_abbr,
+                'ucs': ucs_abbr, 'uct': uct_abbr, 'ucu': ucu_abbr,
             }
         )
 
@@ -247,20 +247,18 @@ class LoadDeltaProfileStrategy(LoadProfileStrategy):
     """ Child class to manage the data loading strategy of DeltaProfile instances. """
 
     def execute(self, search, val_abbr, alt_abbr=None,
-                ucr_abbr=None, ucs_abbr=None, uct_abbr=None, ucu_abbr=None):
+                ucs_abbr=None, uct_abbr=None, ucu_abbr=None):
         """ Execute strategy method to fetch data from the database.
 
         Args:
             search (str): selection criteria
             val_abbr (str): name of the parameter values to extract
             alt_abbr (str, optional): name of the altitude parameter to extract. Dafaults to None.
-            ucr_abbr (str, optional): name of the true rig un-correlated uncertainty parameter to
+            ucs_abbr (str, optional): name of the spatial-correlated uncertainty parameter to
                extract. Defaults to None.
-            ucs_abbr (str, optional): name of the true spatial-correlated uncertainty parameter to
+            uct_abbr (str, optional): name of the time-correlated uncertainty parameter to
                extract. Defaults to None.
-            uct_abbr (str, optional): name of the true time-correlated uncertainty parameter to
-               extract. Defaults to None.
-            ucu_abbr (str, optional): name of the true un-correlated uncertainty parameter to
+            ucu_abbr (str, optional): name of the un-correlated uncertainty parameter to
                extract. Defaults to None.
 
         """
@@ -269,7 +267,7 @@ class LoadDeltaProfileStrategy(LoadProfileStrategy):
         db_vs_df_keys = self.add_flg_prm(
             {
                 'val': val_abbr, 'alt': alt_abbr,
-                'ucr': ucr_abbr, 'ucs': ucs_abbr, 'uct': uct_abbr, 'ucu': ucu_abbr,
+                'ucs': ucs_abbr, 'uct': uct_abbr, 'ucu': ucu_abbr,
             }
         )
 

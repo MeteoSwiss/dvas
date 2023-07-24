@@ -21,8 +21,10 @@ from dvas.database.model import Prm as TableParameter
 from dvas.database.database import InfoManager, InfoManagerMetaData
 from dvas.database.database import DBInsertError
 from dvas.environ import glob_var
-from dvas.hardcoded import TAG_RAW, TAG_GDP
+from dvas.hardcoded import TAG_ORIGINAL, TAG_GDP
+import dvas.dynamic as dyn
 
+dyn.DATA_IN_DB = True
 
 # Define db_data
 db_data = {
@@ -40,7 +42,7 @@ db_data = {
                 'metadata': {'test_key_str': 'one', 'test_key_num': '1'},
                 'src': ''
             },
-        } for arg_tag in [TAG_RAW, TAG_GDP]
+        } for arg_tag in [TAG_ORIGINAL, TAG_GDP]
     ]
 }
 
@@ -281,7 +283,7 @@ class TestInfoManager:
 
         info_mngr_eq = deepcopy(self.info_mngr)
         info_mngr_gt = InfoManager('20200101T0000Z', [1, 2], tags=['e:2', 'r:1'],
-                                  metadata={}, src='test_sort')
+                                   metadata={}, src='test_sort')
 
         assert info_mngr_eq == self.info_mngr
         assert info_mngr_gt > self.info_mngr

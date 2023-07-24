@@ -4,15 +4,15 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
-# This file contains the extraction details for CF-06AH MDP files.
+# This file contains the extraction details for CF-06-AH MDP files.
 # It must absolutely have the string 'origdata' in its name, to match the dvas class names.
 # --------------------------------------------------------------------------------------------------
 
 # ----------------------------------------------------
-# CF-06AH MDP (UAII2022 format)
+# CF-06-AH MDP (UAII2022 format)
 # ----------------------------------------------------
 
-_CF-06AH:
+_CF-06-AH:
 
     # -- META DATA ----------------------------------
     edt: "to_datetime(get('event_dt'))"
@@ -25,6 +25,10 @@ _CF-06AH:
         first_timestamp: "to_datetime(get('first_timestamp'))"
         launch_timestamp: "to_datetime(get('launch_timestamp'))"
         burst_timestamp: "to_datetime(get('burst_timestamp'))"
+        preflight_shc_rh_sonde: "get('preflight_SHC_rh_sonde')"
+        preflight_shc_rh_ref: "get('preflight_SHC_rh_ref')"
+        preflight_shc_temp_sonde: "get('preflight_SHC_temp_sonde')"
+        preflight_shc_temp_ref: "get('preflight_SHC_temp_ref')"
 
     # -- ORIG DATA ----------------------------------
     csv_delimiter: ';'

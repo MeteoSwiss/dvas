@@ -53,17 +53,17 @@ def gdp_2_prfs(db_init):
     # Prepare some datasets to play with
     info_1 = InfoManager('20210302T0000Z', oids[0], tags=['e:1', 'r:1'])
     data_1 = pd.DataFrame({'alt': [10., 15., 20.], 'val': [10., 20., 30.], 'flg': [1, 1, 1],
-                           'tdt': [1e9, 2e9, 3e9], 'ucr': [1, 1, 1], 'ucs': [1, 1, 1],
+                           'tdt': [1e9, 2e9, 3e9], 'ucs': [1, 1, 1],
                            'uct': [1, 1, 1], 'ucu': [1, 1, 1]})
     info_2 = InfoManager('20210303T0000Z', oids[1], tags=['e:1', 'r:1'])
     data_2 = pd.DataFrame({'alt': [11., 16., 20.1], 'val': [15.2, 21., np.nan], 'flg': [1, 1, 1],
-                           'tdt': [1e9, 2e9, 3e9], 'ucr': [1, 1, 1], 'ucs': [1, 1, 1],
+                           'tdt': [1e9, 2e9, 3e9], 'ucs': [1, 1, 1],
                            'uct': [1, 1, 1], 'ucu': [1, 1, 1]})
 
     # Let's build a multiprofile so I can test things out.
     multiprf = MultiGDPProfile()
     multiprf.update({'val': 'temp', 'tdt': 'time', 'alt': 'gph', 'flg': None,
-                     'ucr': None, 'ucs': None, 'uct': None, 'ucu': None},
+                     'ucs': None, 'uct': None, 'ucu': None},
                     [GDPProfile(info_1, data_1), GDPProfile(info_2, data_2)])
 
     return multiprf
@@ -77,13 +77,13 @@ def gdp_1_prf(db_init):
 
     info_3 = InfoManager('20210302T0000Z', oid, tags=['e:1', 'r:1', 'cws'])
     data_3 = pd.DataFrame({'alt': [10.5, 17., 20.], 'val': [11., 21.1, np.nan], 'flg': [1, 1, 1],
-                           'tdt': [1e9, 2e9, 3e9], 'ucr': [1, 1, 1], 'ucs': [1, 1, 1],
+                           'tdt': [1e9, 2e9, 3e9], 'ucs': [1, 1, 1],
                            'uct': [1, 1, 1], 'ucu': [1, 1, 1]})
 
     # Let's build a multiprofile so I can test things out.
     multiprf = MultiGDPProfile()
     multiprf.update({'val': 'temp', 'tdt': 'time', 'alt': 'gph', 'flg': None,
-                     'ucr': None, 'ucs': None, 'uct': None, 'ucu': None},
+                     'ucs': None, 'uct': None, 'ucu': None},
                     [GDPProfile(info_3, data_3)])
 
     return multiprf

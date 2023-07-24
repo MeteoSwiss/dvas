@@ -6,6 +6,12 @@ Creating dvas recipes
 This page contains information for advanced dvas users that would like to alter existing
 processing recipes, or create their own.
 
+.. warning::
+    The creation of dvas recipes from scratch will not be actively supported beyond 2023-11-30.
+    The information on this page is provided for legacy purposes only. The devs are very much aware
+    that this only scratches the surface of what actually lives under the hood of the core dvas
+    module.
+
 .. hint::
 
     If you plan on coding with dvas, we strongly suggest that you begin by taking a look at the
@@ -18,9 +24,6 @@ point, take a look at ``demo_script.py``. This Python script, which we suggest y
 a Python shell (using ``run demo_script.py``), illustrates the main functions and tools of the core
 dvas sub-package. It is therefore an excellent place to familiarize yourself with the dvas spirit.
 
-
-** AND NOW FOR A BIG PILE OF IMPORTANT INFO THAT NEEDS TO BE SORTED ...**
-
 Naming conventions
 ------------------
 
@@ -28,16 +31,7 @@ Protected tag names
 ...................
 
 The following tag names are used by dvas, and thus protected. They are defined in
-`dvas/config/definitions/tag.py`:
-
-    * ``raw``:
-    * ``gdp``:
-    * ``derived``:
-    * ``empty``:
-    * ``sync``:
-    *  ``1s``:
-    * ``resampled``:
-    * ``delta``:
+`dvas/config/definitions/tag.py`.
 
 Default database variable names
 ...............................
@@ -52,10 +46,9 @@ implemented by defaults. They follow MeteoSwiss conventions:
     * ``pres``: pressure
     * ``wdir``: wind direction
     * ``wspeed``: wind speed
-    * ``xxx_ucr``: rig-uncorrelated uncertainty of xxx
     * ``xxx_ucs``: spatial-correlated uncertainty of xxx
     * ``xxx_uct``: temporal-correlated uncertainty of xxx
-    * ``xxx_ucu``: true uncorrelated uncertainty of xxx
+    * ``xxx_ucu``: un-correlated uncertainty of xxx
 
 Parameter names
 ...............
@@ -66,10 +59,9 @@ names are applicable (as defined in `dvas.hardcoded`):
    * ``val``: primary Profile value
    * ``alt``: altitude
    * ``tdt``: time delta
-   * ``ucr``: rig-uncorrelated uncertainty
    * ``ucs``: spatial-correlated uncertainty
    * ``uct``: temporal-correlated uncertainty
-   * ``ucu``: true uncorrelated uncertainty
+   * ``ucu``: un-correlated uncertainty
    * ``flg``: flags
 
 The following parameters are applicable to their event metadata:

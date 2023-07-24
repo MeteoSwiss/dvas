@@ -48,18 +48,16 @@ def prfs(db_init):
     data_1 = pd.DataFrame({'alt': [4995.2, 5000.1, 5005.3, 5010.9],
                            'val': [0, 10., 20., 30.],
                            'flg': [1, 1, 1, 1], 'tdt': [0, 1, 2, 3],
-                           'ucr': [1, 1, 1, 1], 'ucs': [1, 1, 1, 1],
-                           'uct': [1, 1, 1, 1], 'ucu': [1, 1, 1, 1]})
+                           'ucs': [1, 1, 1, 1], 'uct': [1, 1, 1, 1], 'ucu': [1, 1, 1, 1]})
     info_2 = InfoManager('20210302T0000Z', oids[1], tags=['e:1', 'r:1'])
     data_2 = pd.DataFrame({'alt': [5001.2, 5003.1, 5011.2, 5015.0],
                            'val': [2, 14., 26., np.nan],
                            'flg': [1, 1, 1, 1], 'tdt': [0, 1, 2, 3],
-                           'ucr': [1, 1, 1, 1], 'ucs': [1, 1, 1, 1],
-                           'uct': [1, 1, 1, 1], 'ucu': [1, 1, 1, 1]})
+                           'ucs': [1, 1, 1, 1], 'uct': [1, 1, 1, 1], 'ucu': [1, 1, 1, 1]})
 
     # Let's build a multiprofile so I can test things out.
     multiprf = MultiGDPProfile()
-    multiprf.update({'val': None, 'tdt': None, 'alt': None, 'flg': None, 'ucr': None, 'ucs': None,
+    multiprf.update({'val': None, 'tdt': None, 'alt': None, 'flg': None, 'ucs': None,
                      'uct': None, 'ucu': None},
                     [GDPProfile(info_1, data_1), GDPProfile(info_2, data_2)])
 
@@ -73,7 +71,7 @@ def test_get_sync_shifts_from_alt(prfs):
 
     assert isinstance(out, list)
     assert len(out) == len(prfs)
-    assert out == [0, 1]
+    assert out == [0, None]  # If the value of 5000 m is not covered, return None
 
 
 def test_get_sync_shifts_from_val(prfs):

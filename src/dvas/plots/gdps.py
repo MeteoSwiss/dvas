@@ -13,14 +13,14 @@ Module contents: Plotting functions related to the gruan submodule.
 import logging
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
-import matplotlib.transforms as transforms
+from matplotlib import gridspec
+from matplotlib import transforms
 
 # Import from this package
 from ..logger import log_func_call
 from ..errors import DvasError
-from ..hardcoded import PRF_VAL, PRF_ALT, PRF_TDT, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU
-from ..hardcoded import MTDTA_TROPOPAUSE, MTDTA_PBL
+from ..hardcoded import PRF_VAL, PRF_ALT, PRF_TDT, PRF_UCS, PRF_UCT, PRF_UCU
+from ..hardcoded import MTDTA_TROPOPAUSE, MTDTA_PBLH, FLG_HASCWS, MTDTA_UTLSMIN, MTDTA_UTLSMAX
 from . import utils as pu
 from ..tools import tools as tt
 
@@ -55,29 +55,31 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
                                 left=0.09, right=0.87, bottom=0.1, top=0.93,
                                 wspace=0.5, hspace=0.05)
 
-    # Create the axes - one for the profiles, and one for uctot, ucr, ucs, uct, ucu
+    # Create the axes - one for the profiles, and one for uctot, ucs, uct, ucu
     ax0 = fig.add_subplot(gs_info[0, 0])
     ax1 = fig.add_subplot(gs_info[1, 0], sharex=ax0)
     ax1b = fig.add_subplot(gs_info[2, 0], sharex=ax0)
     ax2 = fig.add_subplot(gs_info[3, 0], sharex=ax0)
 
     # Extract the DataFrames from the MultiGDPProfile instances
-    cws = cws_prf.get_prms([PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU,
+    cws = cws_prf.get_prms([PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCS, PRF_UCT, PRF_UCU,
                             'uc_tot'])[0]
-    gdps = gdp_prfs.get_prms([PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU,
+    gdps = gdp_prfs.get_prms([PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCS, PRF_UCT, PRF_UCU,
                               'uc_tot'])
 
     # Let us make sure that all the profiles are synchronized by checking the profile lengths
     # This is not fool proof, but it is a start. I could also check for the sync tag, but it
     # would be less strict as a check.
     if len(cws) != len(gdps):
-        raise DvasError('Ouch! GDPS and CWS do not have the same lengths. I cannot plot this.')
+        raise DvasError('GDPS and CWS do not have the same lengths. I cannot plot this.')
 
     # Following #245, we no longer make a plot with multiple x-axes ... We just use the alt
     alts = cws[PRF_ALT].values
 
     # What is the sum of the weights of each GDPs (i.e. the sum of 1/uc_tot**2) ?
     wtot = (1/gdps.loc[:, (slice(None), 'uc_tot')]**2).sum(axis=1).values
+    # Hide anything that was not used to compute the CWS (fix #260)
+    wtot[~cws_prf[0].has_flg(FLG_HASCWS)] = np.nan
     limlow = np.zeros_like(wtot)
 
     # Very well, let us plot all these things.
@@ -91,7 +93,7 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
         delta = gdp[PRF_VAL].values-cws[PRF_VAL].values
 
         # TODO: remove the hardcoded reference to the wdir
-        if gdp_prfs.var_info['val']['prm_name'] == 'wdir':
+        if gdp_prfs.var_info[PRF_VAL]['prm_name'] == 'wdir':
             x, y = pu.wrap_wdir_curve(x, y)
             delta = np.array([tt.wrap_angle(item) for item in delta])
 
@@ -109,7 +111,7 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
 
         # Plot the relative contribution of each GDP to the CWS
         limhigh = limlow + (1/gdp.uc_tot**2).values/wtot
-        limhigh[cws.val.isna()] = np.nan
+        limhigh[~cws_prf[0].has_flg(FLG_HASCWS)] = np.nan
         ax2.fill_between(alts, limlow, limhigh, step='mid')
         limlow = limhigh
 
@@ -118,7 +120,7 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     x = alts
     y = cws[PRF_VAL].values
 
-    if gdp_prfs.var_info['val']['prm_name'] == 'wdir':
+    if gdp_prfs.var_info[PRF_VAL]['prm_name'] == 'wdir':
         x, y = pu.wrap_wdir_curve(x, y)
 
     ax0.plot(x, y, color=pu.CLRS['cws_1'], lw=0.5, ls='-', drawstyle='steps-mid',
@@ -134,34 +136,35 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
               drawstyle='steps-mid', lw=0.5, ls='-', color='k')
 
     # Display the location of the tropopause and the PBL
-    for (loi, symb) in [(MTDTA_TROPOPAUSE, r'$\prec$'), (MTDTA_PBL, r'$\simeq$')]:
+    for (loi, symb) in [(MTDTA_TROPOPAUSE, r'$\prec$'), (MTDTA_PBLH, r'$\simeq$'),
+                        (MTDTA_UTLSMIN, r'$\top$'), (MTDTA_UTLSMAX, r'$\bot$')]:
         if loi not in cws_prf[0].info.metadata.keys():
             logger.warning('"%s" not found in CWS metadata.', loi)
             continue
 
-        loi_gph = cws_prf[0].info.metadata[loi]
+        loi_gph = float(cws_prf[0].info.metadata[loi].split(' ')[0])
 
         for ax in [ax0, ax1, ax1b, ax2]:
             ax.axvline(loi_gph, ls=':', lw=1, c='k')
-            trans = transforms.blended_transform_factory(ax.transData, ax.transAxes)
-            ax0.text(loi_gph, 0.95, symb, transform=trans, ha='center', va='top',
-                     rotation=90,
-                     bbox=dict(boxstyle='square', fc="w", ec="none", pad=0.1))
+        trans = transforms.blended_transform_factory(ax0.transData, ax0.transAxes)
+        ax0.text(loi_gph, 0.95, symb, transform=trans, ha='center', va='top',
+                 rotation=90,
+                 bbox=dict(boxstyle='square', fc="w", ec="none", pad=0.1))
 
     # Make it look pretty
     # Legends, labels, etc ...
-    ylbl = cws_prf.var_info[PRF_VAL]['prm_name']
-    ylbl += f' [{cws_prf.var_info[PRF_VAL]["prm_unit"]}]'
+    # ylbl = cws_prf.var_info[PRF_VAL]['prm_plot']
+    yunit = f' [{cws_prf.var_info[PRF_VAL]["prm_unit"]}]'
 
-    altlbl = r'gph$_{\rm CWS}$'
-    altlbl += f' [{cws_prf.var_info[PRF_ALT]["prm_unit"]}]'
+    altlbl = f'{cws_prf.var_info[PRF_ALT]["prm_plot"]} [{cws_prf.var_info[PRF_ALT]["prm_unit"]}]'
     ax2.set_xlabel(pu.fix_txt(altlbl))
 
-    ax0.text(-0.1, 0.5, pu.fix_txt(ylbl), ha='left', va='center',
+    # Here, plot the axis labels as text, so that they are all aligned vertically accross subplots
+    ax0.text(-0.1, 0.5, pu.fix_txt(r'$x_{e,i}$' + yunit), ha='left', va='center',
              transform=ax0.transAxes, rotation=90)
     plt.setp(ax0.get_xticklabels(), visible=False)
     plt.setp(ax1.get_xticklabels(), visible=False)
-    ax1.text(-0.1, 0.5, pu.fix_txt(r'$\Delta$' + ylbl), ha='left', va='center',
+    ax1.text(-0.1, 0.5, pu.fix_txt(r'$x_{e,i}-\Omega_{e,i}$' + yunit), ha='left', va='center',
              transform=ax1.transAxes, rotation=90)
     ax2.set_ylim((0, 1))
     ax2.set_yticks([])
@@ -170,7 +173,7 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     ax1b.axhline(5, ls='--', lw=1, c='k')
     ax1b.text(
         -0.1, 0.5,
-        pu.fix_txt(r'$\frac{\textrm{d}(\text{gph}_{\text{CWS}})}{\textrm{dt}}$ [m\,s$^{-1}$]'),
+        pu.fix_txt(r'$\frac{\textrm{d}(\text{gph})}{\textrm{dt}}$ [m\,s$^{-1}$]'),
         ha='left', va='center', transform=ax1b.transAxes, rotation=90)
 
     # Crop the plot to the regions with valid altitudes
@@ -183,7 +186,7 @@ def gdps_vs_cws(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     pu.add_edt_eid_rid(ax0, cws_prf)
 
     # Add the k-level
-    pu.add_var_and_k(ax0, var_name=cws_prf.var_info[PRF_VAL]['prm_name'], k=k_lvl)
+    pu.add_var_and_k(ax0, var_name=cws_prf.var_info[PRF_VAL]['prm_plot'], k=k_lvl)
 
     # Add the source for the plot
     pu.add_source(fig)
@@ -211,35 +214,34 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     """
 
     # Start the plotting
-    fig = plt.figure(figsize=(pu.WIDTH_TWOCOL, 9))
+    fig = plt.figure(figsize=(pu.WIDTH_TWOCOL, 7.5))
 
     # Create a gridspec structure
-    gs_info = gridspec.GridSpec(6, 1, height_ratios=[1]*6, width_ratios=[1],
+    gs_info = gridspec.GridSpec(5, 1, height_ratios=[1]*5, width_ratios=[1],
                                 left=0.09, right=0.87, bottom=0.1, top=0.95,
                                 wspace=0.5, hspace=0.1)
 
-    # Create the axes - one for the profiles, and one for uctot, ucr, ucs, uct, ucu
+    # Create the axes - one for the profiles, and one for uctot, ucs, uct, ucu
     ax0 = fig.add_subplot(gs_info[0, 0])
     ax0b = fig.add_subplot(gs_info[1, 0], sharex=ax0)
     ax1 = fig.add_subplot(gs_info[2, 0], sharex=ax0)
     ax2 = fig.add_subplot(gs_info[3, 0], sharex=ax0)
     ax3 = fig.add_subplot(gs_info[4, 0], sharex=ax0)
-    ax4 = fig.add_subplot(gs_info[5, 0], sharex=ax0)
     # Keep a list to loop efficiently
-    axs = [ax0, ax1, ax2, ax3, ax4]
+    axs = [ax0, ax1, ax2, ax3]
 
     # Extract the DataFrames from the MultiGDPProfile/MultiCWSProfile instances
-    gdps = gdp_prfs.get_prms([PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU,
+    gdps = gdp_prfs.get_prms([PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCS, PRF_UCT, PRF_UCU,
                               'uc_tot'])
 
-    cws = cws_prf.get_prms([PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU,
+    cws = cws_prf.get_prms([PRF_TDT, PRF_ALT, PRF_VAL, PRF_UCS, PRF_UCT, PRF_UCU,
                             'uc_tot'])[0]
 
     # Let us make sure that all the profiles are synchronized by checking the profile lengths
     # This is not fool proof, but it is a start. I could also check for the sync tag, but it
     # would be less strict as a check.
     if len(cws) != len(gdps):
-        raise DvasError('Ouch! GDPS and CWS do not have the same lengths. I cannot plot this.')
+        raise DvasError('GDPS and CWS do not have the same lengths. I cannot plot this.')
 
     # After #245, give up on the idea of showing multple x-axis., and show the altitude only
     alts = cws[PRF_ALT].values
@@ -249,15 +251,16 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
         gdp = gdps[gdp_ind]
 
         # Finally, plot the individual errors too ...
-        for (uc_ind, uc) in enumerate(['uc_tot', PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU]):
+        for (uc_ind, uc) in enumerate(['uc_tot', PRF_UCS, PRF_UCT, PRF_UCU]):
             axs[uc_ind].plot(alts, k_lvl*gdp[uc].values, drawstyle='steps-mid', lw=0.5,
                              label='|'.join(gdp_prfs.get_info(label)[gdp_ind]))
 
         # Let's also plot the weights (from the GDP combination scheme)
-        ax0b.plot(alts, 1/gdp['uc_tot'].values**2, lw=0.5, drawstyle='steps-mid')
+        ax0b.plot(alts, 1/gdp['uc_tot'].mask(~cws_prf[0].has_flg(FLG_HASCWS).values)**2,
+                  lw=0.5, drawstyle='steps-mid')
 
     # Then also plot the CWS uncertainty
-    for (uc_ind, uc) in enumerate(['uc_tot', PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU]):
+    for (uc_ind, uc) in enumerate(['uc_tot', PRF_UCS, PRF_UCT, PRF_UCU]):
         axs[uc_ind].plot(alts, k_lvl*cws[uc].values, drawstyle='steps-mid', lw=0.75, c='k',
                          zorder=0, label='CWS')
         # Add the y-label, while I'm at it ...
@@ -272,12 +275,11 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
               transform=ax0b.transAxes, rotation=90)
 
     # Now make it look pretty
-    altlbl = r'gph$_{\rm CWS}$'
-    altlbl += f' [{cws_prf.var_info[PRF_ALT]["prm_unit"]}]'
-    ax4.set_xlabel(pu.fix_txt(altlbl))
+    altlbl = f'{cws_prf.var_info[PRF_ALT]["prm_plot"]} [{cws_prf.var_info[PRF_ALT]["prm_unit"]}]'
+    ax3.set_xlabel(pu.fix_txt(altlbl))
 
     # Legends, labels, etc ...
-    for ax in [ax0, ax0b, ax1, ax2, ax3]:
+    for ax in [ax0, ax0b, ax1, ax2]:
         plt.setp(ax.get_xticklabels(), visible=False)
 
     # Crop the plot to the regions with valid ref_altitudes
@@ -286,7 +288,7 @@ def uc_budget(gdp_prfs, cws_prf, k_lvl=1, label='mid', **kwargs):
     # Add the legend
     pu.fancy_legend(ax0, label)
     # Add the k-level
-    var_msg = f'{cws_prf.var_info[PRF_VAL]["prm_name"]} [{cws_prf.var_info[PRF_VAL]["prm_unit"]}]'
+    var_msg = f'{cws_prf.var_info[PRF_VAL]["prm_plot"]} [{cws_prf.var_info[PRF_VAL]["prm_unit"]}]'
     pu.add_var_and_k(ax0, var_name=var_msg, k=k_lvl)
 
     # Add the edt/eid/rid info
@@ -319,9 +321,9 @@ def plot_ks_test(df, alpha, unit=None, left_label=None, right_label=None, **kwar
 
     # Some sanity checks first
     if not isinstance(alpha, float):
-        raise DvasError('Ouch ! alpha must be a float, and not %s' % (type(alpha)))
+        raise DvasError(f'alpha must be a float, and not: {type(alpha)}')
     if not 0 <= alpha <= 1:
-        raise DvasError('Ouch ! alpha={} is invalid. Should be >= 0 and <=1.'.format(alpha))
+        raise DvasError(f'alpha={alpha} is invalid. Should be >= 0 and <=1.')
 
     # How many different binnings do I have ?
     # Note: bin "0" contains the full-resolution delta, and does not count as a used binning for the
@@ -406,10 +408,16 @@ def plot_ks_test(df, alpha, unit=None, left_label=None, right_label=None, **kwar
     else:
         unit = ' ['+pu.fix_txt(unit)+']'
 
-    ax1.set_ylabel(r'$m$')
-    ax2.set_ylabel(r'$k^{p,q}_{e,i}$')
-    ax3.set_ylabel(r'$\Delta^{p,q}_{e,i}$' + unit)
-    ax4.set_ylabel(r'$\sigma(\Delta^{p,q}_{e,i})$' + unit)
+    # Include the y-labels as text, to have them left-aligned accross sub-plots
+    ax1.text(-0.075, 0.5, pu.fix_txt(r'$m$'), ha='left', va='center',
+             transform=ax1.transAxes, rotation=90)
+    ax2.text(-0.075, 0.5, pu.fix_txt(r'$k^{p,q}_{e,i}$'), ha='left', va='center',
+             transform=ax2.transAxes, rotation=90)
+    ax3.text(-0.075, 0.5, pu.fix_txt(r'$\Delta^{p,q}_{e,i}$') + unit, ha='left', va='center',
+             transform=ax3.transAxes, rotation=90)
+    ax4.text(-0.075, 0.5, pu.fix_txt(r'$\sigma(\Delta^{p,q}_{e,i})$') + unit,
+             ha='left', va='center',
+             transform=ax4.transAxes, rotation=90)
     ax4.set_xlabel(r'$i$')
 
     ax1.set_ylim((-0.5 + n_bins, -0.5))

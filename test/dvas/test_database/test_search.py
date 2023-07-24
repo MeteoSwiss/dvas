@@ -14,7 +14,7 @@ import numpy as np
 
 # Import from python packages and modules under test
 from dvas.database.search import SearchInfoExpr
-from dvas.hardcoded import TAG_RAW, TAG_GDP
+from dvas.hardcoded import TAG_ORIGINAL, TAG_GDP, TAG_ORIGINAL
 
 # Define db_data
 db_data = {
@@ -32,7 +32,7 @@ db_data = {
                 'metadata': {'test_key_str': 'one', 'test_key_num': '1'},
                 'src': ''
             },
-        } for arg_tag in [TAG_RAW, TAG_GDP]
+        } for arg_tag in [TAG_ORIGINAL, TAG_GDP]
     ]
 }
 
@@ -112,8 +112,9 @@ def test_search_event_expr_eval(db_init):
         )
     )
 
-    # Test raw()
-    assert SearchInfoExpr.eval("tags('raw')", *args) == SearchInfoExpr.eval("raw()", *args)
+    # Test original()
+    assert SearchInfoExpr.eval(f"tags('{TAG_ORIGINAL}')",
+                               *args) == SearchInfoExpr.eval("original()", *args)
 
     # Test gdp()
-    assert SearchInfoExpr.eval("tags('gdp')", *args) == SearchInfoExpr.eval("gdp()", *args)
+    assert SearchInfoExpr.eval(f"tags('{TAG_GDP}')", *args) == SearchInfoExpr.eval("gdp()", *args)

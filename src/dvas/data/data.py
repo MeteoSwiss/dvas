@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -28,8 +28,8 @@ from ..database.model import Prm as TableParameter
 from ..helper import RequiredAttrMetaClass
 from ..helper import deepcopy
 from ..helper import get_class_public_attr
-from ..errors import DBIOError
-from ..hardcoded import TAG_RAW, PRF_IDX
+from ..errors import DBIOError, DvasError
+from ..hardcoded import TAG_ORIGINAL, PRF_IDX, PRF_FLG, PRF_VAL
 
 # Loading strategies
 load_prf_stgy = LoadProfileStrategy()
@@ -127,7 +127,9 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
         out = {
             var_db[res[TableParameter.prm_name.name]]: {
                 TableParameter.prm_name.name: res[TableParameter.prm_name.name],
+                TableParameter.prm_plot.name: res[TableParameter.prm_plot.name],
                 TableParameter.prm_desc.name: res[TableParameter.prm_desc.name],
+                TableParameter.prm_cmt.name: res[TableParameter.prm_cmt.name],
                 TableParameter.prm_unit.name: res[TableParameter.prm_unit.name],
             } for res in qry_res
         }
@@ -232,7 +234,7 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
                 database. Defaults to None (= save all possible parameters).
 
         Notes:
-            The 'raw' tag will always be removed and the 'derived' tag will
+            The TAG_ORIGINAL will always be removed and the 'derived' tag will
             always be added by default when saving anything into the database.
 
         """
@@ -244,8 +246,8 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
         if add_tags is not None:
             obj.add_info_tags(add_tags)
 
-        # Remove tag RAW
-        rm_tags = [TAG_RAW] if rm_tags is None else rm_tags + [TAG_RAW]
+        # Remove tag ORIGINAL
+        rm_tags = [TAG_ORIGINAL] if rm_tags is None else rm_tags + [TAG_ORIGINAL]
 
         # Remove tags
         obj.rm_info_tags(rm_tags)
@@ -273,8 +275,7 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
         """
 
         # Check input type
-        assert isinstance(data, list), "Was expecting a list, not: %s" % (type(data))
-
+        assert isinstance(data, list), f"Was expecting a list, not: {type(data)}"
         # Test data if not empty
         if data:
 
@@ -308,7 +309,8 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
 
         self.update(db_df_keys, self.profiles + [val])
 
-    def get_prms(self, prm_list=None, mask_flgs=None):
+    def get_prms(self, prm_list=None, mask_flgs=None, request_flgs=None, with_metadata=None,
+                 pooled=False):
         """ Convenience getter to extract specific columns from the DataFrames and/or class
         properties of all the Profile instances.
 
@@ -317,6 +319,12 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
                 Profile DataFrames. Defaults to None (=returns all the columns from the DataFrame).
             mask_flgs (str|list of str, optional): name(s) of the flag(s) to NaN-ify in the
                 extraction process. Defaults to None.
+            request_flgs(str|list of str, optional): if set, will only return points that have these
+                flag values set (AND rule applied, if multiple values are provided).
+            with_metadata (str|list, optional): name of the metadata fields to include in the table.
+                Defaults to None.
+            pooled (bool, optional): if True, all profiles will be gathered together. If False,
+                Profiles are kept distinct using a MultiIndex. Defaults to False.
 
         Returns:
             pd.DataFrame: the requested data as a MultiIndex pandas DataFrame.
@@ -341,6 +349,16 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
             if isinstance(mask_flgs, str):
                 mask_flgs = [mask_flgs]
 
+        if request_flgs is not None:
+            if isinstance(request_flgs, str):
+                request_flgs = [request_flgs]
+
+        if with_metadata is not None:
+            if isinstance(with_metadata, str):
+                with_metadata = [with_metadata]
+        else:
+            with_metadata = []
+
         # Let's prepare the data. First, put all the DataFrames into a list
         out = [pd.concat([getattr(prf, prm) for prm in prm_list], axis=1, ignore_index=False)
                for prf in self.profiles]
@@ -351,7 +369,17 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
         if mask_flgs is not None:
             for flg in mask_flgs:
                 for (p_ind, prf) in enumerate(self.profiles):
-                    out[p_ind][prf.has_flg(flg)] = np.nan
+                    out[p_ind].loc[prf.has_flg(flg), out[p_ind].columns != PRF_FLG] = np.nan
+                    # As of #253, flgs cannot be NaNs, so I treat them separately.
+                    out[p_ind].loc[prf.has_flg(flg), PRF_FLG] = 0
+
+        if request_flgs is not None:
+            for (p_ind, prf) in enumerate(self.profiles):
+                valids = np.array([True] * len(prf))
+                for flg in request_flgs:
+                    valids *= prf.has_flg(flg).values
+
+                out[p_ind] = out[p_ind][valids]
 
         # Drop the superfluous index
         out = [df.reset_index(level=[name for name in df.index.names
@@ -362,11 +390,38 @@ class MultiProfileAC(metaclass=RequiredAttrMetaClass):
         # Drop all the columns I do not want to keep
         out = [df[prm_list] for df in out]
 
+        # I may also have been asked to include some metadata as new columns
+        for item in with_metadata:
+            vals = self.get_info(item)
+
+            # Loop through it and assign the values
+            for (prf_id, val) in enumerate(vals):
+
+                # If I am being given a list, make sure it has only 1 element.
+                if isinstance(val, list):
+                    if len(val) > 1:
+                        raise DvasError(f"Metadata field'{item}' for profile #{prf_id} " +
+                                        f"contains more than one value ({val})." +
+                                        " I am too dumb to handle this. So I give up here.")
+                    val = val[0]
+
+                # Actually assign the value to each measurement of the profile.
+                out[prf_id] = out[prf_id].assign(**{f'{item}':val})
+
+        # If warranted, pool all the data together
+        if pooled:
+            for (df_ind, df) in enumerate(out):
+                out[df_ind]['profile_index'] = df_ind
+
+            out = [pd.concat(out, axis=0)]
+
         # Before I combine everything in one big DataFrame, I need to re-organize the columns
-        # to avoid collisions. Let's group all columns from one profile under its position in the
+        # to avoid collisions.
+        # Let's group all columns from one profile under its position in the
         # list (0,1, ...) using pd.MultiIndex()
         for (df_ind, df) in enumerate(out):
-            out[df_ind].columns = pd.MultiIndex.from_tuples([(df_ind, item) for item in df.columns],
+            out[df_ind].columns = pd.MultiIndex.from_tuples([(df_ind, item)
+                                                             for item in df.columns],
                                                             names=('#', 'prm'))
 
         # Great, I can now bring everything into one large DataFrame
@@ -471,10 +526,18 @@ class MultiRSProfileAC(MultiProfileAC):
             interp_dist(int|float): Distance beyond which to not interpolate, and use NaNs.
                 Defaults to 1s.
 
+        Note:
+            Will unwrap angles if self.var_info[PRF_VAL]['prm_name'] == 'wdir'.
+
         """
 
+        if self.var_info[PRF_VAL]['prm_name'] == 'wdir':
+            circular = True
+        else:
+            circular = False
+
         data = self._resample_stgy.execute(self.profiles, freq=freq, interp_dist=interp_dist,
-                                           chunk_size=chunk_size, n_cpus=n_cpus)
+                                           chunk_size=chunk_size, n_cpus=n_cpus, circular=circular)
         self.update(self.db_variables, data)
 
 

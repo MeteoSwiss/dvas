@@ -16,7 +16,7 @@ import matplotlib.gridspec as gridspec
 
 # Import from this package
 from ..logger import log_func_call
-from ..hardcoded import PRF_VAL, PRF_ALT, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU, TOD_VALS
+from ..hardcoded import PRF_VAL, PRF_ALT, PRF_UCS, PRF_UCT, PRF_UCU, TOD_VALS
 from . import utils as pu
 
 # Setup the local logger
@@ -49,12 +49,12 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
                                 left=0.09, right=0.87, bottom=0.12, top=0.93,
                                 wspace=0.5, hspace=0.1)
 
-    # Create the axes - one for the profiles, and one for uctot, ucr, ucs, uct, ucu
+    # Create the axes - one for the profiles, and one for uctot, ucs, uct, ucu
     ax0 = fig.add_subplot(gs_info[0, 0])
     ax1 = fig.add_subplot(gs_info[1, 0], sharex=ax0)
 
     # Extract the DataFrames from the MultiGDPProfile instances
-    deltas = dta_prfs.get_prms([PRF_ALT, PRF_VAL, PRF_UCR, PRF_UCS, PRF_UCT, PRF_UCU, 'uc_tot'])
+    deltas = dta_prfs.get_prms([PRF_ALT, PRF_VAL, PRF_UCS, PRF_UCT, PRF_UCU, 'uc_tot'])
 
     # What flights are present in the data ?
     flights = set(item + ' ' + dta_prfs.get_info('rid')[ind]
@@ -105,15 +105,21 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
         else:
             # Plot the uncertainties of the CWS ...
             if dta_ind == 0:
-                ax0.fill_between(dta.loc[:, PRF_ALT],
-                                 - k_lvl * dta.loc[:, 'uc_tot'].values,
-                                 + k_lvl * dta.loc[:, 'uc_tot'].values,
-                                 alpha=0.2, step='mid', facecolor='k', edgecolor='none',
-                                 label='CWS')
-            else:
-                if not dta.loc[:, 'uc_tot'].equals(deltas[0].loc[:, 'uc_tot']):
-                    logger.error(
-                        'Inconsistent delta uncertainties will not be reflected in the plot.')
+                # ... or not. Turns out, the CWS uncertainty is not always the same. If one point
+                # is a NaN, then it has a NaN uncertainty, which implies the simple test initially
+                # implemented to check that all the uc are the same does not work.
+                # Rather than doing anything too complicated, let's just avoid showing the CWS
+                # in the plot.
+                pass
+                #ax0.fill_between(dta.loc[:, PRF_ALT],
+                #                 - k_lvl * dta.loc[:, 'uc_tot'].values,
+                #                 + k_lvl * dta.loc[:, 'uc_tot'].values,
+                #                 alpha=0.2, step='mid', facecolor='k', edgecolor='none',
+                #                 label='CWS')
+            #else:
+            #    if not dta.loc[:, 'uc_tot'].equals(deltas[0].loc[:, 'uc_tot']):
+            #        logger.error(
+            #            'Inconsistent delta uncertainties will not be reflected in the plot.')
 
             # ... and the delta curves themsleves
             ax0.plot(dta.loc[:, PRF_ALT].values, dta.loc[:, PRF_VAL].values,
@@ -127,12 +133,15 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
     # Set the axis labels
     ylbl0 = r'$\delta_{e,i}$'
     ylbl0 += f' [{dta_prfs.var_info[PRF_VAL]["prm_unit"]}]'
-    ylbl1 = r'$\delta_{e,i}/\sigma_{\Omega_{e,i}}$'
-    altlbl = r'gph$_{\rm CWS}$'
-    altlbl += f' [{dta_prfs.var_info[PRF_ALT]["prm_unit"]}]'
+    ylbl1 = r'$\delta_{e,i}/\sigma(\delta_{e,i})$'
+    #altlbl = r'gph$_{\rm CWS}$'
+    altlbl = f'{dta_prfs.var_info[PRF_ALT]["prm_plot"]} [{dta_prfs.var_info[PRF_ALT]["prm_unit"]}]'
 
-    ax0.set_ylabel(pu.fix_txt(ylbl0), labelpad=10)
-    ax1.set_ylabel(pu.fix_txt(ylbl1), labelpad=10)
+    # Plot ylabel as text, to have them left aligned accross subplots
+    ax0.text(-0.1, 0.5, pu.fix_txt(ylbl0), ha='left', va='center',
+             transform=ax0.transAxes, rotation=90)
+    ax1.text(-0.1, 0.5, pu.fix_txt(ylbl1), ha='left', va='center',
+             transform=ax1.transAxes, rotation=90)
     ax1.set_xlabel(pu.fix_txt(altlbl))
 
     # Hide certain ticks, and set the limits
@@ -160,7 +169,7 @@ def dtas(dta_prfs, k_lvl=1, label='mid', **kwargs):
         mid_msg = '-'.join(list(mid)[0])
     else:
         mid_msg = None
-    pu.add_var_and_k(ax0, mid=mid_msg, var_name=dta_prfs.var_info[PRF_VAL]['prm_name'], k=k_lvl)
+    pu.add_var_and_k(ax0, mid=mid_msg, var_name=dta_prfs.var_info[PRF_VAL]['prm_plot'], k=k_lvl)
 
     # Save it
     pu.fancy_savefig(fig, fn_core='dtas', **kwargs)

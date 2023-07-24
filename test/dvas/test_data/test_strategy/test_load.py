@@ -96,7 +96,7 @@ class TestLoadGDPProfileStrategy:
         loader_stgy = LoadGDPProfileStrategy()
 
         # Load entry
-        filt = f"tags('load_profile')"
+        filt = "tags('load_profile')"
         res = loader_stgy.execute(
             filt, 'temp', 'time', alt_abbr='gph'
         )
@@ -106,5 +106,5 @@ class TestLoadGDPProfileStrategy:
         assert len(res[0]) > 0
         assert all([(type(arg) == GDPProfile) for arg in res[0]])
         assert all([~arg.flg.isna().all() for arg in res[0]])
-        assert all([arg.ucr.isna().all() for arg in res[0]])
+        assert all([arg.uct.isna().all() for arg in res[0]])
         assert isinstance(res[1], dict)
