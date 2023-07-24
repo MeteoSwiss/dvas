@@ -4,12 +4,7 @@
 dvas |version| |stars| |watch|
 ==============================
 
-|copyright| |license| |github| |pypi| |last-commit| |issues|
-
-.. todo::
-
-    Tags for the latest pypi release and associated DOI should be added when releasing the code
-    for the first time. These should also be added to the :ref:`acknowledge:Acknowledging dvas` page.
+|copyright| |license| |github| |doi| |pypi| |last-commit| |issues|
 
 **Welcome to the dvas documentation !**
 

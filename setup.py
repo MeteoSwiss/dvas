@@ -29,10 +29,15 @@ setup(
     # Tell setuptools packages are under src
     package_dir={"": "src"},
 
-    url="https://github.com/MeteoSwiss/dvas",
+    url="https://meteoswiss.github.io/dvas",
+    project_urls={
+        'Source': 'https://github.com/MeteoSwiss/dvas/',
+        'Changelog': 'https://meteoswiss.github.io/dvas/changelog.html',
+        'Issues': 'https://github.com/MeteoSwiss/dvas/issues'
+    },
     author="MeteoSwiss",
     author_email="",
-    description="Data Visualisation and Analysis Software for meteorological radiosounding",
+    description="Data Visualisation and Analysis Software for the UAII 2022 field campaign",
     long_description=long_description,
     long_description_content_type="text/markdown",
     python_requires='>=3.10.0',
@@ -63,7 +68,7 @@ setup(
         #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         # Indicate who your project is intended for
         'Intended Audience :: Science/Research',
         'Topic :: Scientific/Engineering :: Atmospheric Science',

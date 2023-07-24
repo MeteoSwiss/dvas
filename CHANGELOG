@@ -12,6 +12,15 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Removed:
 ### Security:
 
+## [v1.0.1]
+### Added:
+ - [fpavogt, 24.07.2023] Add DOI & pypi info to docs following first public release
+### Fixed:
+### Changed:
+### Deprecated:
+### Removed:
+### Security:
+
 ## [v1.0.0]
 ### Added:
  - [fpavogt, 24.07.2023] Add new pypi CI action for automated release
