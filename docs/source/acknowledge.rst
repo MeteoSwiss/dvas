@@ -1,3 +1,4 @@
+.. include:: ./substitutions.rst
 
 Acknowledging dvas
 ==================
@@ -6,9 +7,9 @@ Acknowledging dvas
    Ideally, you should also include the Digital Object Identifier (DOI) associated to the specific
    release you have been using:
 
-   dvas |version| (DOI:)
+   dvas |version| |doi|
 
-2. If dvas was useful for your research, please cite the UAII FInal Report:
+2. If dvas was useful for your research, please cite the UAII 2022 Final Report:
 
    .. todo::
 
