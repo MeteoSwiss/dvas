@@ -109,12 +109,12 @@ of all the processing steps and their associated parameters. All these steps ref
 routines and modules from the ``dvas_recipes`` sub-package, that themselves rely on core ``dvas``
 modules and functions.
 
-The ``uaii2022.rcp`` contains all the instructions requried the reprocude the offical data analysis
-of the UAII 2022 field campaign described in the Final Report. This file also contain the different
-parameters associated to the recipe, some of which must be adjusted to reflect your specific setup:
+The ``uaii2022.rcp`` contains all the instructions required the reproduce the official data analysis
+of the UAII 2022 field campaign described in the Final Report. This file also contains the different
+recipe parameters, some of which must be changed to reflect your specific setup:
 
-  1. Adjust ``rcp_paths:orig_data_path:sub_path`` to point to the location where you unpacked the
-  original campaign data. If you followed the instructions above, the line should read:
+  1. Set ``rcp_paths:orig_data_path:sub_path`` to point to the location where you unpacked the
+  campaign data. If you followed the instructions above, the line should read:
 
   .. code-block:: YAML
 
@@ -122,12 +122,20 @@ parameters associated to the recipe, some of which must be adjusted to reflect y
 
   .. hint::
 
-    We strongly recommand to process night and day flights separately, to limit the memory use.
+    We **strongly** recommand to process night and day flights separately to limit the memory use.
 
-  2. [If warranted] Adjust the ``rcp_params:general:chunk_size:`` to the value reported by the
+  2. Set the name of the person/institution running the recipe under
+  ``rcp_params:general:institution``, that will appear in the global attribute ``institution``
+  in the NetCDF files created by dvas:
+
+  .. code-block:: YAML
+
+    institution: &inst_name 'J. Doe, Sirius Cybernetics'
+
+  3. [If warranted] Adjust the ``rcp_params:general:chunk_size:`` to the value reported by the
   ``dvas_optimize`` command.
 
-  3. Uncomment the appropriate time-of-day (``tods``) line under step 10:
+  4. Uncomment the appropriate time-of-day (``tods``) line under step 10:
 
   .. code-block:: YAML
 
@@ -140,7 +148,7 @@ Execution of a dvas recipe
 --------------------------
 
 With a dedicated dvas processing arena in place, and the parameters of the UAII 2022 recipe adjusted
-to your specific system, you should now be able to launch the computations.
+to your specific system, you should now be able to launch the data processing.
 
 To do so, use the ``dvas_run_recipe`` entry point from the command line:
 
