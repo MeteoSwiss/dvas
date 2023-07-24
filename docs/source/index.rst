@@ -33,10 +33,11 @@ dvas is being developed on Github, where you can submit all your
   dvas will be actively maintained up to 2023-11-30, at which point the use of dvas will be
   supported on a best-effort basis only.
 
-The prime dvas responsabilities include the ingestion of Manufacturer Data Products (MDPs) and
-GRUAN Data Products (GDPs) in a dedicated database, the cleanup and synchronization of profiles on
-a flight-by-flight basis, the assembly of Combined Working Standards, and the computation of
-campaign-level statistics, including the so-called :math:`\Lambda_{C,L}` profiles.
+Within the scope of the UAII 2022 field campaign, dvas is responsible for: the ingestion of
+Manufacturer Data Products (MDPs) and GRUAN Data Products (GDPs) in a dedicated database,
+the cleanup and synchronization of these radiosonde profiles on a flight-by-flight basis,
+the assembly of Combined Working measurement Standards (CWSs) from GDPs, and the assembly of the
+so-called :math:`\Lambda_{C,L}` profiles.
 
 The dvas code is composed of two modules:
 
