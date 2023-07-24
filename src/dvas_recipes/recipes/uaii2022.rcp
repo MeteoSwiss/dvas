@@ -30,6 +30,7 @@ rcp_paths:
 # Recipe parameters
 rcp_params:
     general:
+        institution: &inst_name 'Someone, somewhere' # Your name, to be included in the netCDF files.
         log_mode: 2 # 0 = no logs, 1 = log to file only, 2 = file + screen, 3 = screen only.
         log_lvl: INFO # DEBUG, INFO, WARNING.
         reset_db: True # Whether to reset the DB, or use an existing one.
@@ -166,7 +167,7 @@ rcp_steps:
         which: mdp, gdp, cws # list of profiles to export, e.g. mdp, gdp, and/or cws
         tags: '05' # list of tags to identify profiles to export in the DB
         suffix: UAII2022
-        institution: TBD # Specify who is running this recipe
+        institution: *inst_name
 
     # GDP vs CWS plotting
     - fct: uaii2022.plots.inspect_cws
@@ -221,7 +222,7 @@ rcp_steps:
           #- daytime
           #- [nighttime, twilight]
         suffix: UAII2022
-        institution: TBD # Specify who is running this recipe
+        institution: *inst_name
         gph_min: 0 # Minimum gph value to consider, in m.
         gph_bin_size: 100 # Size of the gph bins for the high-resolution Big Lambda profile, in m.
         gph_bin_count: 350 # Number of bins for the high-resolution Big Lambda profile.
