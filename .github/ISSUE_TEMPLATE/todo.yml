@@ -4,7 +4,7 @@ title: "[New Feature]: "
 labels: ["todo"]
 assignees:
 body:
-- type: markdown
+  - type: markdown
     attributes:
       value: |
         This is to keep track of **dev-approved** changes.
