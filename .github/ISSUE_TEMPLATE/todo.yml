@@ -2,7 +2,6 @@ name: New Feature
 description: Keep track of an (approved) new feature of dvas
 title: "[New Feature]: "
 labels: ["todo"]
-assignees:
 body:
   - type: markdown
     attributes:
