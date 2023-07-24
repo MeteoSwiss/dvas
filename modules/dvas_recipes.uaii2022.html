@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>dvas_recipes.uaii2022 package &mdash; dvas  documentation</title>
@@ -11,10 +11,9 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -29,14 +28,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> dvas
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            dvas
           </a>
               <div class="version">
-                0.7.1
+                1.0.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -46,12 +49,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Home</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../running_recipes.html">Running dvas recipes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../creating_recipes.html">Creating dvas recipes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../acknowledge.html">Acknowledging dvas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../license.html">License &amp; Copyright</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/MeteoSwiss-MDA/dvas/blob/develop/CONTRIBUTING.md">Contributing</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/MeteoSwiss-MDA/dvas">Github repository</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../modules.html">Modules</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="dvas.html">dvas package</a></li>
@@ -87,10 +88,10 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../modules.html">Modules</a> &raquo;</li>
-          <li><a href="dvas_recipes.html">dvas_recipes package</a> &raquo;</li>
-      <li>dvas_recipes.uaii2022 package</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../modules.html">Modules</a></li>
+          <li class="breadcrumb-item"><a href="dvas_recipes.html">dvas_recipes package</a></li>
+      <li class="breadcrumb-item active">dvas_recipes.uaii2022 package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/modules/dvas_recipes.uaii2022.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -126,7 +127,7 @@
 <span class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii2022.basic.</span></span><span class="sig-name descname"><span class="pre">flag_phases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii2022.basic.flag_phases" title="Permalink to this definition"></a></dt>
 <dd><p>Flag the different profile phases, i.e. prelaunch, ascent,  and descent.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>prfs</strong> (<em>MultiRSProfile|MultiGDPProfile</em>) – the profiles to flag (individually).</p>
 </dd>
 </dl>
@@ -139,7 +140,7 @@ If no first or launch timestamp is set, the profile is assumed to start at the l
 <p>This function assumes that the profiles have not been shifted in any way (yet) !</p>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><em>MultiRSProfile|MultiGDPProfile</em> – the flagged profiles.</p>
 </dd>
 </dl>
@@ -147,12 +148,12 @@ If no first or launch timestamp is set, the profile is assumed to start at the l
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas_recipes.uaii2022.basic.cleanup_steps">
-<span class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii2022.basic.</span></span><span class="sig-name descname"><span class="pre">cleanup_steps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resampling_freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interp_dist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crop_descent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeofday</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii2022.basic.cleanup_steps" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii2022.basic.</span></span><span class="sig-name descname"><span class="pre">cleanup_steps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resampling_freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interp_dist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crop_descent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeofday</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii2022.basic.cleanup_steps" title="Permalink to this definition"></a></dt>
 <dd><p>Execute a series of cleanup-steps common to GDP and non-GDP profiles. This function is here
 to avoid duplicating code. The cleanup-up profiles are directly saved to the DB with the tag:
 TAG_CLN</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>prfs</strong> (<em>MultiRSProfile|MultiGDPProfile</em>) – the profiles to cleanup.</p></li>
 <li><p><strong>resampling_freq</strong> (<em>str</em>) – time step frequency, to feed <code class="xref py py-func docutils literal notranslate"><span class="pre">pandas.timedelta_range()</span></code>, e.g.
@@ -161,6 +162,7 @@ TAG_CLN</p>
 resampled point is forced to NaN (i.e. “dvas does not interpolate !”)</p></li>
 <li><p><strong>crop_descent</strong> (<em>bool</em>) – if True, and data with the flag “descent” will be cropped out for good.</p></li>
 <li><p><strong>timeofday</strong> (<em>str</em>) – if set, will tag the Profile with this time of day. Defaults to None.</p></li>
+<li><p><strong>fid</strong> (<em>str</em>) – if set, will add the flight id to the profile metadata. Defaults to None.</p></li>
 </ul>
 </dd>
 </dl>
@@ -171,6 +173,52 @@ resampled point is forced to NaN (i.e. “dvas does not interpolate !”)</p></l
 </dd></dl>
 
 </section>
+<section id="module-dvas_recipes.uaii2022.biglambda">
+<span id="dvas-recipes-uaii2022-biglambda-module"></span><h2>dvas_recipes.uaii2022.biglambda module<a class="headerlink" href="#module-dvas_recipes.uaii2022.biglambda" title="Permalink to this heading"></a></h2>
+<p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<p>Module content: high-level OSCAR-related routines for the UAII 2022 recipe</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="dvas_recipes.uaii2022.biglambda.biglambda_tod">
+<span class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii2022.biglambda.</span></span><span class="sig-name descname"><span class="pre">biglambda_tod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prf_tags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tods</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">institution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gph_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gph_bin_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gph_bin_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">350</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii2022.biglambda.biglambda_tod" title="Permalink to this definition"></a></dt>
+<dd><p>Highest-level recipe function responsible for assembling OSCAR profiles, and storing the
+result in a dedicated netCDF.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prf_tags</strong> (<em>list of str</em>) – tag name(s) for the search query into the database.</p></li>
+<li><p><strong>mid</strong> (<em>str</em>) – ‘mid’ to process.</p></li>
+<li><p><strong>tods</strong> (<em>list of str</em>) – times-of-day to process (OR).</p></li>
+<li><p><strong>suffix</strong> (<em>str, optional</em>) – name of the netCDF file suffix. Defaults to ‘’.</p></li>
+<li><p><strong>institution</strong> (<em>str, optional</em>) – for the netCDF eponym field. Defaults to ‘’.</p></li>
+<li><p><strong>gph_min</strong> (<em>list, optional</em>) – min gph altitude to consider, in m. Defaults to 0.</p></li>
+<li><p><strong>gph_bin_size</strong> (<em>int, optional</em>) – gph bin size, in m. Defaults to 100.</p></li>
+<li><p><strong>gph_bin_count</strong> (<em>int, optional</em>) – gph bin count. Defaults to 350.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dvas_recipes.uaii2022.biglambda.compute_biglambda">
+<span class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii2022.biglambda.</span></span><span class="sig-name descname"><span class="pre">compute_biglambda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_with_tags</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tods</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii2022.biglambda.compute_biglambda" title="Permalink to this definition"></a></dt>
+<dd><p>Highest-level recipe function responsible for assembling Big Lambda profiles, and storing
+the result in a dedicated netCDF.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>start_with_tags</strong> (<em>str|list of str</em>) – tag name(s) for the search query into the database.</p></li>
+<li><p><strong>mids</strong> (<em>list, optional</em>) – list of ‘mid’ to process. Defaults to None = all.</p></li>
+<li><p><strong>tods</strong> (<em>list of list|str, optional</em>) – list of time-of-days to process sequentially, e.g.
+[‘daytime’, [‘nighttime’, ‘twilight’]]. Defaults to None=all.</p></li>
+<li><p><strong>**kwargs</strong> (<em>optional</em>) – all fed to biglambda_tod().</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
 <section id="module-dvas_recipes.uaii2022.dtas">
 <span id="dvas-recipes-uaii2022-dtas-module"></span><h2>dvas_recipes.uaii2022.dtas module<a class="headerlink" href="#module-dvas_recipes.uaii2022.dtas" title="Permalink to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
@@ -178,9 +226,92 @@ resampled point is forced to NaN (i.e. “dvas does not interpolate !”)</p></l
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>Module content: high-level delta recipes for the UAII2022 campaign</p>
 </section>
+<section id="module-dvas_recipes.uaii2022.export">
+<span id="dvas-recipes-uaii2022-export-module"></span><h2>dvas_recipes.uaii2022.export module<a class="headerlink" href="#module-dvas_recipes.uaii2022.export" title="Permalink to this heading"></a></h2>
+<p>Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
+<p>SPDX-License-Identifier: GPL-3.0-or-later</p>
+<p>Module content: export recipes for the UAII2022 campaign</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="dvas_recipes.uaii2022.export.get_nc_fname">
+<span class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii2022.export.</span></span><span class="sig-name descname"><span class="pre">get_nc_fname</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">typ</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii2022.export.get_nc_fname" title="Permalink to this definition"></a></dt>
+<dd><p>Assemble the netCDF filename for a given flight/mid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>suffix</strong> (<em>str</em>) – filename suffix.</p></li>
+<li><p><strong>fid</strong> (<em>str</em>) – Flight id.</p></li>
+<li><p><strong>edt</strong> (<em>str</em>) – formatted event datetime, e.g. ‘YYYYMMDDThhmmss’.</p></li>
+<li><p><strong>typ</strong> (<em>str</em>) – ‘cws’, ‘gdp’, or ‘mdp’.</p></li>
+<li><p><strong>mid</strong> (<em>str, optional</em>) – model id. Useless if typ == ‘cws’. Defaults to None.</p></li>
+<li><p><strong>pid</strong> (<em>str, optional</em>) – product id. Useless if typ == ‘cws’. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>str</em> – the netcdf filename</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dvas_recipes.uaii2022.export.add_cf_attributes">
+<span class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii2022.export.</span></span><span class="sig-name descname"><span class="pre">add_cf_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">institution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii2022.export.add_cf_attributes" title="Permalink to this definition"></a></dt>
+<dd><p>” Add global UAII attributes to a netCDF group.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>grp</strong> – netCDF Dataset or group to add the info to.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dvas_recipes.uaii2022.export.set_attribute">
+<span class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii2022.export.</span></span><span class="sig-name descname"><span class="pre">set_attribute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii2022.export.set_attribute" title="Permalink to this definition"></a></dt>
+<dd><p>Safe attribute setting function, with in-built check mecanism in case the attribute already
+exists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>grp</strong> – netCDF Dataset or group</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – attribute name</p></li>
+<li><p><strong>value</strong> – attribute value</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dvas_recipes.uaii2022.export.add_dvas_attributes">
+<span class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii2022.export.</span></span><span class="sig-name descname"><span class="pre">add_dvas_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prf</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii2022.export.add_dvas_attributes" title="Permalink to this definition"></a></dt>
+<dd><p>Add dvas-related Global Attributes to a netCDF file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>grp</strong> – netCDF Dataset or group.</p></li>
+<li><p><strong>prf</strong> – MultiProfile, MultiRSProfile, MultiGDPProfile, MultiCWSProfile of length 1.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dvas_recipes.uaii2022.export.add_nc_variable">
+<span class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii2022.export.</span></span><span class="sig-name descname"><span class="pre">add_nc_variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prf</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii2022.export.add_nc_variable" title="Permalink to this definition"></a></dt>
+<dd><p>Fills a netCDF Dataset with the Profile data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>grp</strong> – netCDF Dataset or group</p></li>
+<li><p><strong>prf</strong> – MultiProfile, MultiRSProfile, MultiGDPProfile, MultiCWSProfile of length 1.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
 <section id="module-dvas_recipes.uaii2022.flgs">
 <span id="dvas-recipes-uaii2022-flgs-module"></span><h2>dvas_recipes.uaii2022.flgs module<a class="headerlink" href="#module-dvas_recipes.uaii2022.flgs" title="Permalink to this heading"></a></h2>
-<p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>Module content: high-level flagging recipes for the UAII2022 campaign</p>
@@ -203,10 +334,11 @@ resampled point is forced to NaN (i.e. “dvas does not interpolate !”)</p></l
 <span class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii2022.plots.</span></span><span class="sig-name descname"><span class="pre">covmat_stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">covmats</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii2022.plots.covmat_stats" title="Permalink to this definition"></a></dt>
 <dd><p>Takes a closer look at the <em>true</em> covariance matrix computed by dvas for a combined profile.</p>
 <p>Looks in particular at the error one does by ignoring it and assuming the combined profile
-uncertainties behave like a ucu, ucr, ucs, or uct types or uncertainties.</p>
+uncertainties behave like a ucu, ucs, or uct types or uncertainties.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>proc_chunks</strong> – the outcome of map(process_chunk, chunks).</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>covmats</strong> (<em>dict</em>) – the outcome of dvas.tools.gdps.combine()[1], i.e. the dict of covariance
+matrices.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -214,16 +346,32 @@ uncertainties behave like a ucu, ucr, ucs, or uct types or uncertainties.</p>
 </section>
 <section id="module-dvas_recipes.uaii2022.sync">
 <span id="dvas-recipes-uaii2022-sync-module"></span><h2>dvas_recipes.uaii2022.sync module<a class="headerlink" href="#module-dvas_recipes.uaii2022.sync" title="Permalink to this heading"></a></h2>
-<p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>Module content: high-level synchronization recipes for the UAII2022 campaign</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="dvas_recipes.uaii2022.sync.adjust_first_timestamp">
+<span class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii2022.sync.</span></span><span class="sig-name descname"><span class="pre">adjust_first_timestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sync_shifts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtdta_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'first_timestamp'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii2022.sync.adjust_first_timestamp" title="Permalink to this definition"></a></dt>
+<dd><p>Apply the sync_shifts to the first_timstamp stored in the metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prfs</strong> – RSProfiles, GDPProfiles, or CWSProfiles.</p></li>
+<li><p><strong>sync_shifts</strong> (<em>list of int</em>) – the sync shifts to apply.</p></li>
+<li><p><strong>mtdta_key</strong> (<em>str, optional</em>) – the metadata key to adjust. Defaults to MTDTA_FIRST.</p></li>
+</ul>
+</dd>
+</dl>
+<p>This routine fixes #256.</p>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas_recipes.uaii2022.sync.apply_sync_shifts">
 <span class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii2022.sync.</span></span><span class="sig-name descname"><span class="pre">apply_sync_shifts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sync_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sync_shifts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_gdp</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii2022.sync.apply_sync_shifts" title="Permalink to this definition"></a></dt>
 <dd><p>Apply shifts to GDP and non-GDP profiles from a given flight, and upload them to the db.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>var_name</strong> (<em>str</em>) – name of variable to sync, e.g. ‘temp’</p></li>
 <li><p><strong>filt</strong> (<em>str</em>) – filtering query for the database.</p></li>
@@ -245,17 +393,20 @@ Convention: row n become row n+shift.</p></li>
 <p>Module content: UAII2022 recipe tools</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas_recipes.uaii2022.tools.get_query_filter">
-<span class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii2022.tools.</span></span><span class="sig-name descname"><span class="pre">get_query_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tags_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#dvas_recipes.uaii2022.tools.get_query_filter" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii2022.tools.</span></span><span class="sig-name descname"><span class="pre">get_query_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tags_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags_in_or</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#dvas_recipes.uaii2022.tools.get_query_filter" title="Permalink to this definition"></a></dt>
 <dd><p>Assembles a str to query the dvas DB, given a list of tags to include and/or exclude.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>tags_in</strong> (<em>list, optional</em>) – list of tags required to be present</p></li>
+<li><p><strong>tags_in</strong> (<em>list, optional</em>) – list of tags required to be present (AND)</p></li>
+<li><p><strong>tags_in_or</strong> (<em>list, optional</em>) – list of tags required to be present (OR)</p></li>
 <li><p><strong>tags_out</strong> (<em>list, optional</em>) – list of tags required to be absent</p></li>
-<li><p><strong>mids</strong> (<em>list, optional</em>) – list of mids required</p></li>
+<li><p><strong>mids</strong> (<em>list, optional</em>) – list of mids required (OR)</p></li>
+<li><p><strong>oids</strong> (<em>list, optional</em>) – list of oids required (OR)</p></li>
+<li><p><strong>tods</strong> (<em>list, optional</em>) – list of times-of-day to look for (OR)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><em>str</em> – the query filter</p>
 </dd>
 </dl>
@@ -266,7 +417,7 @@ Convention: row n become row n+shift.</p></li>
 <span class="sig-prename descclassname"><span class="pre">dvas_recipes.uaii2022.tools.</span></span><span class="sig-name descname"><span class="pre">find_tropopause</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rs_prf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_alt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">algo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gruan'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas_recipes.uaii2022.tools.find_tropopause" title="Permalink to this definition"></a></dt>
 <dd><p>Find the tropopause altitude in a given RSProfile.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>rs_prf</strong> (<em>RSProfile</em>) – the temperature profile from which to derive the tropopause height.</p></li>
 <li><p><strong>min_alt</strong> (<em>int| float, optional</em>) – minimum altitude above which to look for the tropopause.
@@ -275,7 +426,7 @@ Defaults to 5000 m.</p></li>
 Defaults to ‘gruan’. See below for details.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><em>float, float, float</em> – the troposphere index, altitude, and timestep.</p>
 </dd>
 </dl>
@@ -309,13 +460,6 @@ including the RS41. It defines the first tropopause as the lowest level at which
 rate decreases to 2deg/km or less, provided also ALL the MEAN lapse rateS (between this level
 and all higher levels, COMPUTED FROM ALL SEQUENTIAL LEVEL PAIRS LOCATED WITHIN A GIVEN LEVEL
 INTERVAL) within 2 km do not exceed 2deg/km.</p>
-<div class="admonition-todo admonition" id="id1">
-<p class="admonition-title">Todo</p>
-<ul class="simple">
-<li><p>expand the function to look for the 2nd, 3rd, etc … tropopause(s) ?</p></li>
-<li><p>define which tropopause algorithm is “best”</p></li>
-</ul>
-</div>
 </dd></dl>
 
 </section>
@@ -332,7 +476,7 @@ INTERVAL) within 2 km do not exceed 2deg/km.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2022, MeteoSwiss.</p>
+    <p>&#169; Copyright 2020-2023, MeteoSwiss.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

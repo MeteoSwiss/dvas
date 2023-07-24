@@ -32,11 +32,3 @@ dvas.tools.gdps.stats module
    :members:
    :undoc-members:
    :show-inheritance:
-
-dvas.tools.gdps.utils module
-----------------------------
-
-.. automodule:: dvas.tools.gdps.utils
-   :members:
-   :undoc-members:
-   :show-inheritance:

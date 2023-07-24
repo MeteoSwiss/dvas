@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>dvas package &mdash; dvas  documentation</title>
@@ -11,10 +11,9 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -29,14 +28,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> dvas
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            dvas
           </a>
               <div class="version">
-                0.7.1
+                1.0.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -46,12 +49,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Home</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../running_recipes.html">Running dvas recipes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../creating_recipes.html">Creating dvas recipes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../acknowledge.html">Acknowledging dvas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../license.html">License &amp; Copyright</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/MeteoSwiss-MDA/dvas/blob/develop/CONTRIBUTING.md">Contributing</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/MeteoSwiss-MDA/dvas">Github repository</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../modules.html">Modules</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">dvas package</a><ul>
@@ -72,7 +73,10 @@
 <li class="toctree-l4"><a class="reference internal" href="#dvas.dvas.MultiGDPProfile"><code class="docutils literal notranslate"><span class="pre">MultiGDPProfile</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-dvas.dynamic">dvas.dynamic module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-dvas.dynamic">dvas.dynamic module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.dynamic.DATA_IN_DB"><code class="docutils literal notranslate"><span class="pre">DATA_IN_DB</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-dvas.environ">dvas.environ module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.environ.ABCSingleInstanceMeta"><code class="docutils literal notranslate"><span class="pre">ABCSingleInstanceMeta</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.environ.VariableManager"><code class="docutils literal notranslate"><span class="pre">VariableManager</span></code></a></li>
@@ -129,50 +133,63 @@
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.PRF_TDT"><code class="docutils literal notranslate"><span class="pre">PRF_TDT</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.PRF_ALT"><code class="docutils literal notranslate"><span class="pre">PRF_ALT</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.PRF_VAL"><code class="docutils literal notranslate"><span class="pre">PRF_VAL</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.PRF_UCR"><code class="docutils literal notranslate"><span class="pre">PRF_UCR</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.PRF_UCS"><code class="docutils literal notranslate"><span class="pre">PRF_UCS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.PRF_UCT"><code class="docutils literal notranslate"><span class="pre">PRF_UCT</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.PRF_UCU"><code class="docutils literal notranslate"><span class="pre">PRF_UCU</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.PRF_FLG"><code class="docutils literal notranslate"><span class="pre">PRF_FLG</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_NONE"><code class="docutils literal notranslate"><span class="pre">TAG_NONE</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_NONE_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_NONE_DESC</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_RAW"><code class="docutils literal notranslate"><span class="pre">TAG_RAW</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_RAW_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_RAW_DESC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_ORIGINAL"><code class="docutils literal notranslate"><span class="pre">TAG_ORIGINAL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_ORIGINAL_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_ORIGINAL_DESC</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_CLN"><code class="docutils literal notranslate"><span class="pre">TAG_CLN</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_CLN_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_CLN_DESC</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_GDP"><code class="docutils literal notranslate"><span class="pre">TAG_GDP</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_GDP_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_GDP_DESC</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_1S"><code class="docutils literal notranslate"><span class="pre">TAG_1S</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_1S_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_1S_DESC</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_SYNC"><code class="docutils literal notranslate"><span class="pre">TAG_SYNC</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_SYNC_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_SYNC_DESC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_GDP"><code class="docutils literal notranslate"><span class="pre">TAG_GDP</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_GDP_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_GDP_DESC</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_CWS"><code class="docutils literal notranslate"><span class="pre">TAG_CWS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_CWS_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_CWS_DESC</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_DTA"><code class="docutils literal notranslate"><span class="pre">TAG_DTA</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_DTA_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_DTA_DESC</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_EMPTY"><code class="docutils literal notranslate"><span class="pre">TAG_EMPTY</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.TAG_EMPTY_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_EMPTY_DESC</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_EMPTY"><code class="docutils literal notranslate"><span class="pre">FLG_EMPTY</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_EMPTY_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_EMPTY_DESC</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_INVALID"><code class="docutils literal notranslate"><span class="pre">FLG_INVALID</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_INVALID_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_INVALID_DESC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_NOPRF"><code class="docutils literal notranslate"><span class="pre">FLG_NOPRF</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_NOPRF_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_NOPRF_DESC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_ISINVALID"><code class="docutils literal notranslate"><span class="pre">FLG_ISINVALID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_ISINVALID_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_ISINVALID_DESC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_WASINVALID"><code class="docutils literal notranslate"><span class="pre">FLG_WASINVALID</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_WASINVALID_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_WASINVALID_DESC</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_INTERP"><code class="docutils literal notranslate"><span class="pre">FLG_INTERP</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_INTERP_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_INTERP_DESC</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_INCOMPATIBLE"><code class="docutils literal notranslate"><span class="pre">FLG_INCOMPATIBLE</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_INCOMPATIBLE_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_INCOMPATIBLE_DESC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_HASCWS"><code class="docutils literal notranslate"><span class="pre">FLG_HASCWS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_HASCWS_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_HASCWS_DESC</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_PRELAUNCH"><code class="docutils literal notranslate"><span class="pre">FLG_PRELAUNCH</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_PRELAUNCH_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_PRELAUNCH_DESC</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_ASCENT"><code class="docutils literal notranslate"><span class="pre">FLG_ASCENT</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_ASCENT_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_ASCENT_DESC</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_DESCENT"><code class="docutils literal notranslate"><span class="pre">FLG_DESCENT</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_DESCENT_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_DESCENT_DESC</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_HASCWS"><code class="docutils literal notranslate"><span class="pre">FLG_HASCWS</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_HASCWS_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_HASCWS_DESC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_PBL"><code class="docutils literal notranslate"><span class="pre">FLG_PBL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_PBL_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_PBL_DESC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_FT"><code class="docutils literal notranslate"><span class="pre">FLG_FT</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_FT_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_FT_DESC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_UTLS"><code class="docutils literal notranslate"><span class="pre">FLG_UTLS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_UTLS_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_UTLS_DESC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_MUS"><code class="docutils literal notranslate"><span class="pre">FLG_MUS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.FLG_MUS_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_MUS_DESC</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.MTDTA_FIRST"><code class="docutils literal notranslate"><span class="pre">MTDTA_FIRST</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.MTDTA_LAUNCH"><code class="docutils literal notranslate"><span class="pre">MTDTA_LAUNCH</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.MTDTA_BURST"><code class="docutils literal notranslate"><span class="pre">MTDTA_BURST</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.MTDTA_TROPOPAUSE"><code class="docutils literal notranslate"><span class="pre">MTDTA_TROPOPAUSE</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.MTDTA_PBL"><code class="docutils literal notranslate"><span class="pre">MTDTA_PBL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.MTDTA_PBLH"><code class="docutils literal notranslate"><span class="pre">MTDTA_PBLH</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.MTDTA_UTLSMIN"><code class="docutils literal notranslate"><span class="pre">MTDTA_UTLSMIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.MTDTA_UTLSMAX"><code class="docutils literal notranslate"><span class="pre">MTDTA_UTLSMAX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.MTDTA_MUSMIN"><code class="docutils literal notranslate"><span class="pre">MTDTA_MUSMIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dvas.hardcoded.MTDTA_SYNOP"><code class="docutils literal notranslate"><span class="pre">MTDTA_SYNOP</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-dvas.helper">dvas.helper module</a><ul>
@@ -222,9 +239,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../modules.html">Modules</a> &raquo;</li>
-      <li>dvas package</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../modules.html">Modules</a></li>
+      <li class="breadcrumb-item active">dvas package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/modules/dvas.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -646,6 +663,17 @@
 <li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.database.DBCreateError"><code class="docutils literal notranslate"><span class="pre">DBCreateError</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.database.DBInsertError"><code class="docutils literal notranslate"><span class="pre">DBInsertError</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.database.DBDirError"><code class="docutils literal notranslate"><span class="pre">DBDirError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.database.DataIO"><code class="docutils literal notranslate"><span class="pre">DataIO</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.DataIO.__init__"><code class="docutils literal notranslate"><span class="pre">DataIO.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.DataIO.get_fn"><code class="docutils literal notranslate"><span class="pre">DataIO.get_fn()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.DataIO.delete_from_db"><code class="docutils literal notranslate"><span class="pre">DataIO.delete_from_db()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.DataIO.delete_from_disk"><code class="docutils literal notranslate"><span class="pre">DataIO.delete_from_disk()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.DataIO.insert_in_db"><code class="docutils literal notranslate"><span class="pre">DataIO.insert_in_db()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.DataIO.save_to_disk"><code class="docutils literal notranslate"><span class="pre">DataIO.save_to_disk()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.DataIO.get_from_db"><code class="docutils literal notranslate"><span class="pre">DataIO.get_from_db()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.database.DataIO.get_from_disk"><code class="docutils literal notranslate"><span class="pre">DataIO.get_from_disk()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="dvas.database.html#module-dvas.database.explorer">dvas.database.explorer module</a><ul>
@@ -714,7 +742,9 @@
 <li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.model.Prm"><code class="docutils literal notranslate"><span class="pre">Prm</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Prm.prm_id"><code class="docutils literal notranslate"><span class="pre">Prm.prm_id</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Prm.prm_name"><code class="docutils literal notranslate"><span class="pre">Prm.prm_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Prm.prm_plot"><code class="docutils literal notranslate"><span class="pre">Prm.prm_plot</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Prm.prm_desc"><code class="docutils literal notranslate"><span class="pre">Prm.prm_desc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Prm.prm_cmt"><code class="docutils literal notranslate"><span class="pre">Prm.prm_cmt</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Prm.prm_unit"><code class="docutils literal notranslate"><span class="pre">Prm.prm_unit</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Prm.DoesNotExist"><code class="docutils literal notranslate"><span class="pre">Prm.DoesNotExist</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.model.Prm.info"><code class="docutils literal notranslate"><span class="pre">Prm.info</span></code></a></li>
@@ -860,8 +890,8 @@
 <li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.ParameterExpr.get_filter"><code class="docutils literal notranslate"><span class="pre">ParameterExpr.get_filter()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.search.RawExpr"><code class="docutils literal notranslate"><span class="pre">RawExpr</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.RawExpr.get_filter"><code class="docutils literal notranslate"><span class="pre">RawExpr.get_filter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.search.OriginalExpr"><code class="docutils literal notranslate"><span class="pre">OriginalExpr</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="dvas.database.html#dvas.database.search.OriginalExpr.get_filter"><code class="docutils literal notranslate"><span class="pre">OriginalExpr.get_filter()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="dvas.database.html#dvas.database.search.GDPExpr"><code class="docutils literal notranslate"><span class="pre">GDPExpr</span></code></a><ul>
@@ -963,12 +993,19 @@
 <li class="toctree-l4"><a class="reference internal" href="dvas.tools.gdps.html#module-dvas.tools.gdps.correlations">dvas.tools.gdps.correlations module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dvas.tools.gdps.html#module-dvas.tools.gdps.gdps">dvas.tools.gdps.gdps module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dvas.tools.gdps.html#module-dvas.tools.gdps.stats">dvas.tools.gdps.stats module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dvas.tools.gdps.html#module-dvas.tools.gdps.utils">dvas.tools.gdps.utils module</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="dvas.tools.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dvas.tools.html#module-dvas.tools.chunks">dvas.tools.chunks module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dvas.tools.html#dvas.tools.chunks.merge_bin"><code class="docutils literal notranslate"><span class="pre">merge_bin()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.tools.html#dvas.tools.chunks.weighted_mean"><code class="docutils literal notranslate"><span class="pre">weighted_mean()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.tools.html#dvas.tools.chunks.delta"><code class="docutils literal notranslate"><span class="pre">delta()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.tools.html#dvas.tools.chunks.biglambda"><code class="docutils literal notranslate"><span class="pre">biglambda()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="dvas.tools.html#dvas.tools.chunks.process_chunk"><code class="docutils literal notranslate"><span class="pre">process_chunk()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="dvas.tools.html#module-dvas.tools.math">dvas.tools.math module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="dvas.tools.html#dvas.tools.math.crosscorr"><code class="docutils literal notranslate"><span class="pre">crosscorr()</span></code></a></li>
 </ul>
@@ -1014,7 +1051,7 @@
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'INFO'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.dvas.Log.start_log" title="Permalink to this definition"></a></dt>
 <dd><p>Starts the dvas logging.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>mode</strong> (<em>int</em>) – Log output mode.
 0 (No log) | 1 (Log to file only) | 2 (Log to file + console) |
@@ -1054,11 +1091,11 @@ existing metadata.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="dvas.dvas.Database.fetch_raw_data">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch_raw_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search_prms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.dvas.Database.fetch_raw_data" title="Permalink to this definition"></a></dt>
-<dd><p>Fetch new raw data and save to DB</p>
+<dt class="sig sig-object py" id="dvas.dvas.Database.fetch_original_data">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch_original_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search_prms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.dvas.Database.fetch_original_data" title="Permalink to this definition"></a></dt>
+<dd><p>Fetch new original data and save to DB</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>search_prms</strong> (<em>str | list of str</em>) – Search parameter value.</p></li>
 <li><p><strong>strict</strong> (<em>bool, optional</em>) – Search strict. Defaults to True.</p></li>
@@ -1078,7 +1115,7 @@ existing metadata.</p>
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extract_global_view</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dvas.dvas.Database.extract_global_view" title="Permalink to this definition"></a></dt>
 <dd><p>Extract global DB view</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.DataFrame</p>
 </dd>
 </dl>
@@ -1114,6 +1151,17 @@ existing metadata.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>Module contents: dvas dynamic variables</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.dynamic.DATA_IN_DB">
+<span class="sig-prename descclassname"><span class="pre">dvas.dynamic.</span></span><span class="sig-name descname"><span class="pre">DATA_IN_DB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#dvas.dynamic.DATA_IN_DB" title="Permalink to this definition"></a></dt>
+<dd><p>whether the profile data should be stored in the db, or in individual text file on disk.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="module-dvas.environ">
 <span id="dvas-environ-module"></span><h2>dvas.environ module<a class="headerlink" href="#module-dvas.environ" title="Permalink to this heading"></a></h2>
@@ -1170,7 +1218,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-name descname"><span class="pre">orig_data_path</span></span><a class="headerlink" href="#dvas.environ.GlobalPathVariablesManager.orig_data_path" title="Permalink to this definition"></a></dt>
 <dd><p>Original data path. Default to None.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pathlib.Path</p>
 </dd>
 </dl>
@@ -1181,7 +1229,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-name descname"><span class="pre">config_dir_path</span></span><a class="headerlink" href="#dvas.environ.GlobalPathVariablesManager.config_dir_path" title="Permalink to this definition"></a></dt>
 <dd><p>Config dir path. Default to None.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pathlib.Path</p>
 </dd>
 </dl>
@@ -1192,7 +1240,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-name descname"><span class="pre">local_db_path</span></span><a class="headerlink" href="#dvas.environ.GlobalPathVariablesManager.local_db_path" title="Permalink to this definition"></a></dt>
 <dd><p>Local db dir path. Default to None.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pathlib.Path</p>
 </dd>
 </dl>
@@ -1203,7 +1251,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-name descname"><span class="pre">output_path</span></span><a class="headerlink" href="#dvas.environ.GlobalPathVariablesManager.output_path" title="Permalink to this definition"></a></dt>
 <dd><p>DVAS output dir path. Default to None.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pathlib.Path</p>
 </dd>
 </dl>
@@ -1214,7 +1262,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-name descname"><span class="pre">plot_output_path</span></span><a class="headerlink" href="#dvas.environ.GlobalPathVariablesManager.plot_output_path" title="Permalink to this definition"></a></dt>
 <dd><p>DVAS output dir path for plots. Default to None.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pathlib.Path</p>
 </dd>
 </dl>
@@ -1225,7 +1273,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-name descname"><span class="pre">plot_style_path</span></span><a class="headerlink" href="#dvas.environ.GlobalPathVariablesManager.plot_style_path" title="Permalink to this definition"></a></dt>
 <dd><p>Plot styles dir path. Default to ./plot/mpl_styles.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pathlib.Path</p>
 </dd>
 </dl>
@@ -1243,7 +1291,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-name descname"><span class="pre">config_gen_max</span></span><a class="headerlink" href="#dvas.environ.GlobalPackageVariableManager.config_gen_max" title="Permalink to this definition"></a></dt>
 <dd><p>Config regexp generator limit. Default to 2000.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>int</p>
 </dd>
 </dl>
@@ -1254,7 +1302,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-name descname"><span class="pre">csv_file_ext</span></span><a class="headerlink" href="#dvas.environ.GlobalPackageVariableManager.csv_file_ext" title="Permalink to this definition"></a></dt>
 <dd><p>CSV file allowed extensions. Default to [‘csv’, ‘txt’]</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list of str</p>
 </dd>
 </dl>
@@ -1265,7 +1313,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-name descname"><span class="pre">config_file_ext</span></span><a class="headerlink" href="#dvas.environ.GlobalPackageVariableManager.config_file_ext" title="Permalink to this definition"></a></dt>
 <dd><p>Config file allowed extensions. Default to [‘yml’, ‘yaml’]</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list of str</p>
 </dd>
 </dl>
@@ -1276,7 +1324,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-name descname"><span class="pre">flg_file_ext</span></span><a class="headerlink" href="#dvas.environ.GlobalPackageVariableManager.flg_file_ext" title="Permalink to this definition"></a></dt>
 <dd><p>Flag file allowed extensions. Default to [‘flg’]</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list of str</p>
 </dd>
 </dl>
@@ -1287,7 +1335,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-name descname"><span class="pre">eid_pat</span></span><a class="headerlink" href="#dvas.environ.GlobalPackageVariableManager.eid_pat" title="Permalink to this definition"></a></dt>
 <dd><p>Event ID pattern used in InfoManager to extract event tag.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1298,7 +1346,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-name descname"><span class="pre">rid_pat</span></span><a class="headerlink" href="#dvas.environ.GlobalPackageVariableManager.rid_pat" title="Permalink to this definition"></a></dt>
 <dd><p>Rig ID pattern used in InfoManager to extract rig tag.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1309,7 +1357,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-name descname"><span class="pre">tod_pat</span></span><a class="headerlink" href="#dvas.environ.GlobalPackageVariableManager.tod_pat" title="Permalink to this definition"></a></dt>
 <dd><p>TimeOfDay ID pattern used in InfoManager to extract rig tag.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1322,7 +1370,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.environ.</span></span><span class="sig-name descname"><span class="pre">path_var</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;dvas.environ.GlobalPathVariablesManager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#dvas.environ.path_var" title="Permalink to this definition"></a></dt>
 <dd><p>Global variable containing directory path values</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#dvas.environ.GlobalPathVariablesManager" title="dvas.environ.GlobalPathVariablesManager">GlobalPathVariablesManager</a></p>
 </dd>
 </dl>
@@ -1333,7 +1381,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.environ.</span></span><span class="sig-name descname"><span class="pre">glob_var</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;dvas.environ.GlobalPackageVariableManager</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#dvas.environ.glob_var" title="Permalink to this definition"></a></dt>
 <dd><p>Global variable containing global package variables</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#dvas.environ.GlobalPackageVariableManager" title="dvas.environ.GlobalPackageVariableManager">GlobalPackageVariableManager</a></p>
 </dd>
 </dl>
@@ -1491,7 +1539,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PKG_PATH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PosixPath('/home/runner/work/dvas/dvas/src/dvas')</span></em><a class="headerlink" href="#dvas.hardcoded.PKG_PATH" title="Permalink to this definition"></a></dt>
 <dd><p>Package path</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pathlib.Path</p>
 </dd>
 </dl>
@@ -1502,7 +1550,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">MPL_STYLES_PATH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PosixPath('plots/mpl_styles')</span></em><a class="headerlink" href="#dvas.hardcoded.MPL_STYLES_PATH" title="Permalink to this definition"></a></dt>
 <dd><p>Matplotlib plots styles</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pathlib.Path</p>
 </dd>
 </dl>
@@ -1513,7 +1561,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">CONFIG_GEN_LIM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10000</span></em><a class="headerlink" href="#dvas.hardcoded.CONFIG_GEN_LIM" title="Permalink to this definition"></a></dt>
 <dd><p>Config generator limit</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>int</p>
 </dd>
 </dl>
@@ -1524,7 +1572,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">GDP_FILE_EXT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'nc'</span></em><a class="headerlink" href="#dvas.hardcoded.GDP_FILE_EXT" title="Permalink to this definition"></a></dt>
 <dd><p>GDP file extension</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1535,7 +1583,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">CSV_FILE_EXT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['csv',</span> <span class="pre">'txt',</span> <span class="pre">'cor']</span></em><a class="headerlink" href="#dvas.hardcoded.CSV_FILE_EXT" title="Permalink to this definition"></a></dt>
 <dd><p>Data file extension</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list of str</p>
 </dd>
 </dl>
@@ -1546,7 +1594,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_FILE_EXT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['flg']</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_FILE_EXT" title="Permalink to this definition"></a></dt>
 <dd><p>Flag data file extension</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list of str</p>
 </dd>
 </dl>
@@ -1557,7 +1605,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">CONFIG_FILE_EXT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['yml',</span> <span class="pre">'yaml']</span></em><a class="headerlink" href="#dvas.hardcoded.CONFIG_FILE_EXT" title="Permalink to this definition"></a></dt>
 <dd><p>Config file extension</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list of str</p>
 </dd>
 </dl>
@@ -1568,7 +1616,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">EID_PAT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'^e:\\w+$'</span></em><a class="headerlink" href="#dvas.hardcoded.EID_PAT" title="Permalink to this definition"></a></dt>
 <dd><p>Event id regexp pattern</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1579,10 +1627,10 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">EID_LEN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="headerlink" href="#dvas.hardcoded.EID_LEN" title="Permalink to this definition"></a></dt>
 <dd><p>‘ + 6 GRUAN id digits</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>int</p>
 </dd>
-<dt class="field-even">Type</dt>
+<dt class="field-even">Type<span class="colon">:</span></dt>
 <dd class="field-even"><p>Len of the eid tag, comprised of ‘e</p>
 </dd>
 </dl>
@@ -1593,7 +1641,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">RID_PAT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'^r:\\w+$'</span></em><a class="headerlink" href="#dvas.hardcoded.RID_PAT" title="Permalink to this definition"></a></dt>
 <dd><p>Rig id regexp pattern</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1604,7 +1652,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TOD_PAT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'^tod:\\w+$'</span></em><a class="headerlink" href="#dvas.hardcoded.TOD_PAT" title="Permalink to this definition"></a></dt>
 <dd><p>TimeOfDay regexp pattern</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1612,10 +1660,10 @@ When existing the context manager, old values are restored.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.TOD_VALS">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TOD_VALS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'tod:daytime',</span> <span class="pre">'tod:nighttime',</span> <span class="pre">'tod:twilight'}</span></em><a class="headerlink" href="#dvas.hardcoded.TOD_VALS" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TOD_VALS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('tod:daytime',</span> <span class="pre">'tod:nighttime',</span> <span class="pre">'tod:twilight')</span></em><a class="headerlink" href="#dvas.hardcoded.TOD_VALS" title="Permalink to this definition"></a></dt>
 <dd><p>possible values for the TimeOfDay</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>set</p>
 </dd>
 </dl>
@@ -1626,7 +1674,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_PRM_NAME_SUFFIX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'_flag'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_PRM_NAME_SUFFIX" title="Permalink to this definition"></a></dt>
 <dd><p>Suffix used for flag parameter’s name or file’s name</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1637,7 +1685,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_PRM_DESC_PREFIX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Flag</span> <span class="pre">of</span> <span class="pre">'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_PRM_DESC_PREFIX" title="Permalink to this definition"></a></dt>
 <dd><p>Suffix used for flag parameter’s desc</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1648,7 +1696,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">MODEL_PAT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'[a-zA-Z0-9]+(([a-zA-Z0-9])|([\\-\\_\\(\\)]))*[a-zA-Z0-9]'</span></em><a class="headerlink" href="#dvas.hardcoded.MODEL_PAT" title="Permalink to this definition"></a></dt>
 <dd><p>Instrument type pattern (e.g. VAI-RS92, MET_LAB-C50, RS92-GDP_002)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1659,7 +1707,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">CSV_FILE_MDL_PAT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'^([a-zA-Z0-9]+(([a-zA-Z0-9])|([\\-\\_\\(\\)]))*[a-zA-Z0-9])\\.[\\w\\-]+\\.'</span></em><a class="headerlink" href="#dvas.hardcoded.CSV_FILE_MDL_PAT" title="Permalink to this definition"></a></dt>
 <dd><p>CSV file model catching group pattern (e.g RS41.etc…, DFM-17.etc …)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1670,7 +1718,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">GDP_FILE_MDL_PAT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'^[A-Z]{3}\\-[A-Z]{2}\\-\\d{2}\\_\\d\\_([\\w\\-]+\\_\\d{3})\\_\\d{8}T'</span></em><a class="headerlink" href="#dvas.hardcoded.GDP_FILE_MDL_PAT" title="Permalink to this definition"></a></dt>
 <dd><p>GDP file model catching group pattern (e.g PAY-RS-01_2_RS41-GDP-BETA_001_20170712Tetc.nc)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1681,7 +1729,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PRM_PAT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'[a-z0-9]+(([a-z0-9])|([\\_]))*(?:(?&lt;!_flag))'</span></em><a class="headerlink" href="#dvas.hardcoded.PRM_PAT" title="Permalink to this definition"></a></dt>
 <dd><p>Parameter pattern (e.g. tre200s0, uorpros1, uorprosu_r)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1692,7 +1740,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_PRM_PAT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'[a-z0-9]+(([a-z0-9])|([\\_]))*(?:(?&lt;=_flag))'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_PRM_PAT" title="Permalink to this definition"></a></dt>
 <dd><p>Flag parameter pattern (e.g. tre200s0, tre200s0_flag, uorpros1, uorpros1_flag)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1703,7 +1751,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PRM_AND_FLG_PRM_PAT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'(?:(([a-z0-9]+(([a-z0-9])|([\\_]))*(?:(?&lt;!_flag)))|([a-z0-9]+(([a-z0-9])|([\\_]))*(?:(?&lt;=_flag)))))'</span></em><a class="headerlink" href="#dvas.hardcoded.PRM_AND_FLG_PRM_PAT" title="Permalink to this definition"></a></dt>
 <dd><p>Parameter and flag parameter pattern (e.g. tre200s0, tre200s0_flag, uorpros1, uorpros1_flag)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1714,7 +1762,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PRF_IDX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'_idx'</span></em><a class="headerlink" href="#dvas.hardcoded.PRF_IDX" title="Permalink to this definition"></a></dt>
 <dd><p>Name of the integer index for the pandas DataFrame of Profiles, RSProfile, GDPProfiles</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1725,7 +1773,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PRF_TDT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'tdt'</span></em><a class="headerlink" href="#dvas.hardcoded.PRF_TDT" title="Permalink to this definition"></a></dt>
 <dd><p>Name of the time delta index for the pandas DataFrame of RSProfile, GDPProfiles</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1736,7 +1784,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PRF_ALT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'alt'</span></em><a class="headerlink" href="#dvas.hardcoded.PRF_ALT" title="Permalink to this definition"></a></dt>
 <dd><p>Name of the altitude index for the pandas DataFrame of Profiles, RSProfile, GDPProfiles</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1747,18 +1795,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PRF_VAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'val'</span></em><a class="headerlink" href="#dvas.hardcoded.PRF_VAL" title="Permalink to this definition"></a></dt>
 <dd><p>Name of the variable column for the pandas DataFrame of Profiles, RSProfile, GDPProfiles</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.PRF_UCR">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PRF_UCR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ucr'</span></em><a class="headerlink" href="#dvas.hardcoded.PRF_UCR" title="Permalink to this definition"></a></dt>
-<dd><p>Name of the Rig-correlated uncertainty column for the pandas DataFrame of GDPProfiles</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1769,7 +1806,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PRF_UCS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ucs'</span></em><a class="headerlink" href="#dvas.hardcoded.PRF_UCS" title="Permalink to this definition"></a></dt>
 <dd><p>Name of the Spatial-correlated uncertainty column for the pandas DataFrame of GDPProfiles</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1780,7 +1817,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PRF_UCT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'uct'</span></em><a class="headerlink" href="#dvas.hardcoded.PRF_UCT" title="Permalink to this definition"></a></dt>
 <dd><p>Name of the Temporal-correlated uncertainty column for the pandas DataFrame of GDPProfiles</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1791,7 +1828,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PRF_UCU</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ucu'</span></em><a class="headerlink" href="#dvas.hardcoded.PRF_UCU" title="Permalink to this definition"></a></dt>
 <dd><p>Name of the uncorrelated uncertainty column for the pandas DataFrame of GDPProfiles</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1802,7 +1839,7 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">PRF_FLG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'flg'</span></em><a class="headerlink" href="#dvas.hardcoded.PRF_FLG" title="Permalink to this definition"></a></dt>
 <dd><p>Name of the flag column for the pandas DataFrame of Profiles, RSProfile, GDPProfiles</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1811,9 +1848,9 @@ When existing the context manager, old values are restored.</p>
 <dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.TAG_NONE">
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_NONE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_NONE" title="Permalink to this definition"></a></dt>
-<dd><p>Tag’s name for none tag in DB</p>
+<dd><p>Tag name for none tag in DB</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1822,31 +1859,31 @@ When existing the context manager, old values are restored.</p>
 <dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.TAG_NONE_DESC">
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_NONE_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'None'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_NONE_DESC" title="Permalink to this definition"></a></dt>
-<dd><p>Tag’s desc for none tag in DB</p>
+<dd><p>Tag desc for none tag in DB</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.TAG_RAW">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_RAW</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'raw'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_RAW" title="Permalink to this definition"></a></dt>
-<dd><p>Tag’s name for raw profiles</p>
+<dt class="sig sig-object py" id="dvas.hardcoded.TAG_ORIGINAL">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_ORIGINAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'is_original'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_ORIGINAL" title="Permalink to this definition"></a></dt>
+<dd><p>Tag name for original profiles</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.TAG_RAW_DESC">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_RAW_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Raw</span> <span class="pre">profile'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_RAW_DESC" title="Permalink to this definition"></a></dt>
-<dd><p>Tag’s desc for raw profiles</p>
+<dt class="sig sig-object py" id="dvas.hardcoded.TAG_ORIGINAL_DESC">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_ORIGINAL_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Original</span> <span class="pre">profile</span> <span class="pre">unaltered</span> <span class="pre">by</span> <span class="pre">dvas'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_ORIGINAL_DESC" title="Permalink to this definition"></a></dt>
+<dd><p>Tag desc for original profiles</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1854,10 +1891,10 @@ When existing the context manager, old values are restored.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.TAG_CLN">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_CLN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'clean'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_CLN" title="Permalink to this definition"></a></dt>
-<dd><p>Tag’s name for raw profiles</p>
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_CLN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'is_cleaned'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_CLN" title="Permalink to this definition"></a></dt>
+<dd><p>Tag name for cleaned profiles</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1866,31 +1903,9 @@ When existing the context manager, old values are restored.</p>
 <dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.TAG_CLN_DESC">
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_CLN_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Cleaned-up</span> <span class="pre">profile'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_CLN_DESC" title="Permalink to this definition"></a></dt>
-<dd><p>Tag’s desc for raw profiles</p>
+<dd><p>Tag desc for cleaned profiles</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.TAG_GDP">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_GDP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'gdp'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_GDP" title="Permalink to this definition"></a></dt>
-<dd><p>Tag’s name for GDP profiles</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.TAG_GDP_DESC">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_GDP_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'GRUAN</span> <span class="pre">Data</span> <span class="pre">Product'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_GDP_DESC" title="Permalink to this definition"></a></dt>
-<dd><p>Tag’s desc for GDP profiles</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1898,10 +1913,10 @@ When existing the context manager, old values are restored.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.TAG_1S">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_1S</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'1s'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_1S" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_1S</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'is_resampled'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_1S" title="Permalink to this definition"></a></dt>
 <dd><p>Tag name for resampled profiles.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1909,10 +1924,10 @@ When existing the context manager, old values are restored.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.TAG_1S_DESC">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_1S_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Profile</span> <span class="pre">was</span> <span class="pre">resampled</span> <span class="pre">onto</span> <span class="pre">a</span> <span class="pre">regular</span> <span class="pre">time-step</span> <span class="pre">grid'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_1S_DESC" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_1S_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Profile</span> <span class="pre">is</span> <span class="pre">resampled</span> <span class="pre">onto</span> <span class="pre">a</span> <span class="pre">regular</span> <span class="pre">time-step</span> <span class="pre">grid'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_1S_DESC" title="Permalink to this definition"></a></dt>
 <dd><p>Tag  description for resampled profiles.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1920,10 +1935,10 @@ When existing the context manager, old values are restored.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.TAG_SYNC">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_SYNC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'sync'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_SYNC" title="Permalink to this definition"></a></dt>
-<dd><p>Tag’s name for synchronized profile</p>
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_SYNC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'is_synchronized'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_SYNC" title="Permalink to this definition"></a></dt>
+<dd><p>Tag name for synchronized profile</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1932,9 +1947,31 @@ When existing the context manager, old values are restored.</p>
 <dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.TAG_SYNC_DESC">
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_SYNC_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Synchronized</span> <span class="pre">profile'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_SYNC_DESC" title="Permalink to this definition"></a></dt>
-<dd><p>Tag’s desc for synchronized profile</p>
+<dd><p>Tag desc for synchronized profile</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.TAG_GDP">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_GDP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'is_gdp'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_GDP" title="Permalink to this definition"></a></dt>
+<dd><p>Tag name for GDP profiles</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.TAG_GDP_DESC">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_GDP_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'GRUAN</span> <span class="pre">Data</span> <span class="pre">Product'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_GDP_DESC" title="Permalink to this definition"></a></dt>
+<dd><p>Tag desc for GDP profiles</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1942,10 +1979,10 @@ When existing the context manager, old values are restored.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.TAG_CWS">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_CWS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cws'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_CWS" title="Permalink to this definition"></a></dt>
-<dd><p>Tag’s name for combined working standard profile</p>
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_CWS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'is_cws'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_CWS" title="Permalink to this definition"></a></dt>
+<dd><p>Tag name for combined working standard profile</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1954,9 +1991,9 @@ When existing the context manager, old values are restored.</p>
 <dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.TAG_CWS_DESC">
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_CWS_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Combined</span> <span class="pre">working</span> <span class="pre">measurement</span> <span class="pre">standard'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_CWS_DESC" title="Permalink to this definition"></a></dt>
-<dd><p>Tag’s desc for combined working standard profile</p>
+<dd><p>Tag desc for combined working standard profile</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1964,10 +2001,10 @@ When existing the context manager, old values are restored.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.TAG_DTA">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_DTA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dta'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_DTA" title="Permalink to this definition"></a></dt>
-<dd><p>Tag’s name for profile deltas with CWS</p>
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_DTA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'is_delta'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_DTA" title="Permalink to this definition"></a></dt>
+<dd><p>Tag name for profile deltas with CWS</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1976,9 +2013,9 @@ When existing the context manager, old values are restored.</p>
 <dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.TAG_DTA_DESC">
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_DTA_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Profile</span> <span class="pre">minus</span> <span class="pre">CWS'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_DTA_DESC" title="Permalink to this definition"></a></dt>
-<dd><p>Tag’s desc for profile deltas with CWS</p>
+<dd><p>Tag desc for profile deltas with CWS</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1986,10 +2023,10 @@ When existing the context manager, old values are restored.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.TAG_EMPTY">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_EMPTY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'empty'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_EMPTY" title="Permalink to this definition"></a></dt>
-<dd><p>Tag’s name for empty values in raw data</p>
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_EMPTY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'is_empty'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_EMPTY" title="Permalink to this definition"></a></dt>
+<dd><p>Tag name for empty original data</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1998,53 +2035,75 @@ When existing the context manager, old values are restored.</p>
 <dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.TAG_EMPTY_DESC">
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">TAG_EMPTY_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Empty</span> <span class="pre">data'</span></em><a class="headerlink" href="#dvas.hardcoded.TAG_EMPTY_DESC" title="Permalink to this definition"></a></dt>
-<dd><p>Tag’s desc for empty values in raw data</p>
+<dd><p>Tag desc for empty original data</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.FLG_EMPTY">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_EMPTY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'raw_na'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_EMPTY" title="Permalink to this definition"></a></dt>
-<dd><p>Flag’s name for raw NA values</p>
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_NOPRF">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_NOPRF</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'no_original_data'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_NOPRF" title="Permalink to this definition"></a></dt>
+<dd><p>Flag name for when we have no original data (i.e. synced gaps, etc …)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.FLG_EMPTY_DESC">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_EMPTY_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Raw</span> <span class="pre">NA</span> <span class="pre">values'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_EMPTY_DESC" title="Permalink to this definition"></a></dt>
-<dd><p>Flag’s desc for raw NA values</p>
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_NOPRF_DESC">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_NOPRF_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'No</span> <span class="pre">original</span> <span class="pre">data</span> <span class="pre">existing</span> <span class="pre">for</span> <span class="pre">this</span> <span class="pre">point</span> <span class="pre">(i.e.</span> <span class="pre">out</span> <span class="pre">of</span> <span class="pre">bound)'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_NOPRF_DESC" title="Permalink to this definition"></a></dt>
+<dd><p>Flag desc for no data</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.FLG_INVALID">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_INVALID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'invalid'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_INVALID" title="Permalink to this definition"></a></dt>
-<dd><p>Flag’s name for raw NA values</p>
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_ISINVALID">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_ISINVALID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'is_invalid'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_ISINVALID" title="Permalink to this definition"></a></dt>
+<dd><p>Flag name for invalid values</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.FLG_INVALID_DESC">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_INVALID_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Invalid</span> <span class="pre">data'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_INVALID_DESC" title="Permalink to this definition"></a></dt>
-<dd><p>Flag’s desc for raw NA values</p>
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_ISINVALID_DESC">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_ISINVALID_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Invalid</span> <span class="pre">data</span> <span class="pre">(e.g.</span> <span class="pre">NaN</span> <span class="pre">value</span> <span class="pre">for</span> <span class="pre">real</span> <span class="pre">GDP</span> <span class="pre">measurement)'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_ISINVALID_DESC" title="Permalink to this definition"></a></dt>
+<dd><p>Flag desc for invalid values</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_WASINVALID">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_WASINVALID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'was_invalid'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_WASINVALID" title="Permalink to this definition"></a></dt>
+<dd><p>Flag name for invalid values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_WASINVALID_DESC">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_WASINVALID_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Invalid</span> <span class="pre">data</span> <span class="pre">(e.g.</span> <span class="pre">NaN</span> <span class="pre">uct</span> <span class="pre">value</span> <span class="pre">for</span> <span class="pre">real</span> <span class="pre">GDP</span> <span class="pre">gph</span> <span class="pre">measurement)</span> <span class="pre">that</span> <span class="pre">was</span> <span class="pre">corrected</span> <span class="pre">following</span> <span class="pre">official</span> <span class="pre">GRUAN</span> <span class="pre">instructions'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_WASINVALID_DESC" title="Permalink to this definition"></a></dt>
+<dd><p>Flag desc for invalid values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -2052,10 +2111,10 @@ When existing the context manager, old values are restored.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.FLG_INTERP">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_INTERP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'interp'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_INTERP" title="Permalink to this definition"></a></dt>
-<dd><p>Flag’s name for interpolated values</p>
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_INTERP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'is_interpolated'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_INTERP" title="Permalink to this definition"></a></dt>
+<dd><p>Flag name for interpolated values</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -2064,9 +2123,9 @@ When existing the context manager, old values are restored.</p>
 <dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.FLG_INTERP_DESC">
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_INTERP_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Interpolated</span> <span class="pre">values'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_INTERP_DESC" title="Permalink to this definition"></a></dt>
-<dd><p>Flag’s desc for interpolated values</p>
+<dd><p>Flag desc for interpolated values</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -2074,10 +2133,10 @@ When existing the context manager, old values are restored.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.FLG_INCOMPATIBLE">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_INCOMPATIBLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'incomp'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_INCOMPATIBLE" title="Permalink to this definition"></a></dt>
-<dd><p>Flag’s name for resampled values</p>
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_INCOMPATIBLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'is_GDP_incompatible'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_INCOMPATIBLE" title="Permalink to this definition"></a></dt>
+<dd><p>Flag name for resampled values</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -2085,76 +2144,10 @@ When existing the context manager, old values are restored.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.FLG_INCOMPATIBLE_DESC">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_INCOMPATIBLE_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Incompatible</span> <span class="pre">GDP</span> <span class="pre">measurements'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_INCOMPATIBLE_DESC" title="Permalink to this definition"></a></dt>
-<dd><p>Flag’s desc for resampled values</p>
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_INCOMPATIBLE_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'GDPs</span> <span class="pre">are</span> <span class="pre">incompatible</span> <span class="pre">with</span> <span class="pre">one</span> <span class="pre">another'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_INCOMPATIBLE_DESC" title="Permalink to this definition"></a></dt>
+<dd><p>Flag desc for resampled values</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.FLG_PRELAUNCH">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_PRELAUNCH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'prelaunch'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_PRELAUNCH" title="Permalink to this definition"></a></dt>
-<dd><p>Flag’s name for ascent data</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.FLG_PRELAUNCH_DESC">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_PRELAUNCH_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Prelaunch</span> <span class="pre">data'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_PRELAUNCH_DESC" title="Permalink to this definition"></a></dt>
-<dd><p>Flag’s desc for ascent data</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.FLG_ASCENT">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_ASCENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ascent'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_ASCENT" title="Permalink to this definition"></a></dt>
-<dd><p>Flag’s name for ascent data</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.FLG_ASCENT_DESC">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_ASCENT_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Ascent</span> <span class="pre">data'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_ASCENT_DESC" title="Permalink to this definition"></a></dt>
-<dd><p>Flag’s desc for ascent data</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.FLG_DESCENT">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_DESCENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'descent'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_DESCENT" title="Permalink to this definition"></a></dt>
-<dd><p>Flag’s name for descent data</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.FLG_DESCENT_DESC">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_DESCENT_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Descent</span> <span class="pre">data'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_DESCENT_DESC" title="Permalink to this definition"></a></dt>
-<dd><p>Flag’s desc for descent data</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -2162,10 +2155,10 @@ When existing the context manager, old values are restored.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.FLG_HASCWS">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_HASCWS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'has_cws'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_HASCWS" title="Permalink to this definition"></a></dt>
-<dd><p>Flag’s name for regions with valid CWS</p>
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_HASCWS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'has_valid_cws'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_HASCWS" title="Permalink to this definition"></a></dt>
+<dd><p>Flag name for regions with valid CWS</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -2174,9 +2167,163 @@ When existing the context manager, old values are restored.</p>
 <dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.FLG_HASCWS_DESC">
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_HASCWS_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'A</span> <span class="pre">valid</span> <span class="pre">CWS</span> <span class="pre">measure</span> <span class="pre">exists</span> <span class="pre">for</span> <span class="pre">this</span> <span class="pre">measurement</span> <span class="pre">point'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_HASCWS_DESC" title="Permalink to this definition"></a></dt>
-<dd><p>Flag’s desc</p>
+<dd><p>Flag desc</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_PRELAUNCH">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_PRELAUNCH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'is_prelaunch_data'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_PRELAUNCH" title="Permalink to this definition"></a></dt>
+<dd><p>Flag name for ascent data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_PRELAUNCH_DESC">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_PRELAUNCH_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Prelaunch</span> <span class="pre">data'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_PRELAUNCH_DESC" title="Permalink to this definition"></a></dt>
+<dd><p>Flag desc for ascent data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_ASCENT">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_ASCENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'is_ascent_data'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_ASCENT" title="Permalink to this definition"></a></dt>
+<dd><p>Flag name for ascent data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_ASCENT_DESC">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_ASCENT_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Ascent</span> <span class="pre">data'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_ASCENT_DESC" title="Permalink to this definition"></a></dt>
+<dd><p>Flag desc for ascent data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_DESCENT">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_DESCENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'is_descent_data'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_DESCENT" title="Permalink to this definition"></a></dt>
+<dd><p>Flag name for descent data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_DESCENT_DESC">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_DESCENT_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Descent</span> <span class="pre">data'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_DESCENT_DESC" title="Permalink to this definition"></a></dt>
+<dd><p>Flag desc for descent data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_PBL">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_PBL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'is_in_PBL'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_PBL" title="Permalink to this definition"></a></dt>
+<dd><p>Flag name for PBL points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_PBL_DESC">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_PBL_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Measurement</span> <span class="pre">is</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">PBL</span> <span class="pre">(i.e.</span> <span class="pre">x</span> <span class="pre">&lt;</span> <span class="pre">PBLH)'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_PBL_DESC" title="Permalink to this definition"></a></dt>
+<dd><p>Flag desc for PBL points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_FT">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_FT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'is_in_FT'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_FT" title="Permalink to this definition"></a></dt>
+<dd><p>Flag name for free troposphere points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_FT_DESC">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_FT_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Measurement</span> <span class="pre">is</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">FT</span> <span class="pre">(i.e.</span> <span class="pre">x</span> <span class="pre">&lt;</span> <span class="pre">tropopause</span> <span class="pre">and</span> <span class="pre">x</span> <span class="pre">&gt;</span> <span class="pre">PBLH)'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_FT_DESC" title="Permalink to this definition"></a></dt>
+<dd><p>Flag desc for free troposphere points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_UTLS">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_UTLS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'is_in_UTLS'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_UTLS" title="Permalink to this definition"></a></dt>
+<dd><p>Flag name for UTLS points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_UTLS_DESC">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_UTLS_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Measurement</span> <span class="pre">is</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">UTLS'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_UTLS_DESC" title="Permalink to this definition"></a></dt>
+<dd><p>Flag desc for UTLS points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_MUS">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_MUS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'is_in_MUS'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_MUS" title="Permalink to this definition"></a></dt>
+<dd><p>Flag name for MUS points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.FLG_MUS_DESC">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">FLG_MUS_DESC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Measurement</span> <span class="pre">is</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">MUS'</span></em><a class="headerlink" href="#dvas.hardcoded.FLG_MUS_DESC" title="Permalink to this definition"></a></dt>
+<dd><p>Flag desc for MUS points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -2185,9 +2332,9 @@ When existing the context manager, old values are restored.</p>
 <dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.MTDTA_FIRST">
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">MTDTA_FIRST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'first_timestamp'</span></em><a class="headerlink" href="#dvas.hardcoded.MTDTA_FIRST" title="Permalink to this definition"></a></dt>
-<dd><p>Metdata field to store the GPS time of the first point in the profile.</p>
+<dd><p>Metdata field to store the GNSS time of the first point in the profile.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -2196,9 +2343,9 @@ When existing the context manager, old values are restored.</p>
 <dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.MTDTA_LAUNCH">
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">MTDTA_LAUNCH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'launch_timestamp'</span></em><a class="headerlink" href="#dvas.hardcoded.MTDTA_LAUNCH" title="Permalink to this definition"></a></dt>
-<dd><p>Metadata field to store the GPS time of the manufacturer-detected launch.</p>
+<dd><p>Metadata field to store the GNSS time of the manufacturer-detected launch.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -2207,9 +2354,9 @@ When existing the context manager, old values are restored.</p>
 <dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.MTDTA_BURST">
 <span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">MTDTA_BURST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'burst_timestamp'</span></em><a class="headerlink" href="#dvas.hardcoded.MTDTA_BURST" title="Permalink to this definition"></a></dt>
-<dd><p>Metadata field to store the GPS time of the manufacturer-detected balloon burst.</p>
+<dd><p>Metadata field to store the GNSS time of the manufacturer-detected balloon burst.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -2217,21 +2364,65 @@ When existing the context manager, old values are restored.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="dvas.hardcoded.MTDTA_TROPOPAUSE">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">MTDTA_TROPOPAUSE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'tropopause-gph'</span></em><a class="headerlink" href="#dvas.hardcoded.MTDTA_TROPOPAUSE" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">MTDTA_TROPOPAUSE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dvas_tropopause'</span></em><a class="headerlink" href="#dvas.hardcoded.MTDTA_TROPOPAUSE" title="Permalink to this definition"></a></dt>
 <dd><p>Metadata field to store the tropopause geopotential height</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py data">
-<dt class="sig sig-object py" id="dvas.hardcoded.MTDTA_PBL">
-<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">MTDTA_PBL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pbl-gph'</span></em><a class="headerlink" href="#dvas.hardcoded.MTDTA_PBL" title="Permalink to this definition"></a></dt>
-<dd><p>Metadata field to store the planetary boundary layer maximum geopotential height</p>
+<dt class="sig sig-object py" id="dvas.hardcoded.MTDTA_PBLH">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">MTDTA_PBLH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dvas_PBLH'</span></em><a class="headerlink" href="#dvas.hardcoded.MTDTA_PBLH" title="Permalink to this definition"></a></dt>
+<dd><p>Metadata field to store the tropopause geopotential height</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.MTDTA_UTLSMIN">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">MTDTA_UTLSMIN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dvas_UTLS_min'</span></em><a class="headerlink" href="#dvas.hardcoded.MTDTA_UTLSMIN" title="Permalink to this definition"></a></dt>
+<dd><p>Metadata field to store the min geopotential height of the UTLS region</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.MTDTA_UTLSMAX">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">MTDTA_UTLSMAX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dvas_UTLS_max'</span></em><a class="headerlink" href="#dvas.hardcoded.MTDTA_UTLSMAX" title="Permalink to this definition"></a></dt>
+<dd><p>Metadata field to store the max geopotential height of the UTLS region</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.MTDTA_MUSMIN">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">MTDTA_MUSMIN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dvas_MUS_min'</span></em><a class="headerlink" href="#dvas.hardcoded.MTDTA_MUSMIN" title="Permalink to this definition"></a></dt>
+<dd><p>Metadata field to store the max geopotential height of the UTLS region</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="dvas.hardcoded.MTDTA_SYNOP">
+<span class="sig-prename descclassname"><span class="pre">dvas.hardcoded.</span></span><span class="sig-name descname"><span class="pre">MTDTA_SYNOP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'synop_clouds'</span></em><a class="headerlink" href="#dvas.hardcoded.MTDTA_SYNOP" title="Permalink to this definition"></a></dt>
+<dd><p>Metadata field to store the synop cloud code</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -2249,10 +2440,10 @@ When existing the context manager, old values are restored.</p>
 <span class="sig-prename descclassname"><span class="pre">dvas.helper.</span></span><span class="sig-name descname"><span class="pre">camel_to_snake</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.camel_to_snake" title="Permalink to this definition"></a></dt>
 <dd><p>Convert camel case to snake case</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Camel case string</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>str</p>
 </dd>
 </dl>
@@ -2272,7 +2463,7 @@ When existing the context manager, old values are restored.</p>
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">has_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inst</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.SingleInstanceMetaClass.has_instance" title="Permalink to this definition"></a></dt>
 <dd><p>Check if instance</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>inst</strong> (<em>type</em>) – Instance type to check</p>
 </dd>
 </dl>
@@ -2293,7 +2484,7 @@ require special attributes into children.</p>
 <dd><p>Required class attributes.
 key: attribute name, value: required attribute type</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
@@ -2332,7 +2523,7 @@ __call__ method below, when accessing their help.</p>
 <dd><p>Contain the decorated function. Set automatically only
 when class is used as decorated. Default to None.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>callable</p>
 </dd>
 </dl>
@@ -2350,7 +2541,7 @@ when class is used as decorated. Default to None.</p>
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">header_msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.TimeIt.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Constructor.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>header_msg</strong> (<em>str</em>) – User defined elapsed time header. Default to ‘’.</p></li>
 <li><p><strong>logger</strong> (logging.Logger, <cite>optional</cite>) – Print output to log (debug level only).
@@ -2396,7 +2587,7 @@ N. Starkman.</p></li>
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">match</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setter_fct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">getter_fct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_none</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.TypedProperty.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Constructor</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>match</strong> (<em>type or types.UnionType</em>) – Data type(s), used in a isinstance check</p></li>
 <li><p><strong>setter_fct</strong> (callable, <cite>optional</cite>) – Function applied before assign value in setter
@@ -2424,7 +2615,7 @@ Defaults to False.</p></li>
 <span class="sig-prename descclassname"><span class="pre">dvas.helper.</span></span><span class="sig-name descname"><span class="pre">get_by_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">items</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.get_by_path" title="Permalink to this definition"></a></dt>
 <dd><p>Access a nested object in root by item sequence.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> (<em>dict|list|class</em>) – Object to access</p></li>
 <li><p><strong>items</strong> (<em>list|str</em>) – Item sequence. String sequence must be separated
@@ -2432,10 +2623,10 @@ by sep value.</p></li>
 <li><p><strong>sep</strong> (<em>str, optional</em>) – Separator.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><em>object</em> – Nested value</p>
 </dd>
-<dt class="field-odd">Raises</dt>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>Exception associated to lists and dicts.</strong> – </p>
 </dd>
 </dl>
@@ -2455,16 +2646,16 @@ by sep value.</p></li>
 <span class="sig-prename descclassname"><span class="pre">dvas.helper.</span></span><span class="sig-name descname"><span class="pre">check_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exist_ok</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.check_path" title="Permalink to this definition"></a></dt>
 <dd><p>Test and set input argument into pathlib.Path object.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>value</strong> (<em>pathlib.Path, str</em>) – Argument to be tested</p></li>
 <li><p><strong>exist_ok</strong> (<em>bool, optional</em>) – If True check existence. Default to False.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>pathlib.Path</p>
 </dd>
-<dt class="field-odd">Raises</dt>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>TypeError</strong> – In case if path does not exist falls exist_ok is True</p>
 </dd>
 </dl>
@@ -2475,13 +2666,13 @@ by sep value.</p></li>
 <span class="sig-prename descclassname"><span class="pre">dvas.helper.</span></span><span class="sig-name descname"><span class="pre">check_datetime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">utc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.check_datetime" title="Permalink to this definition"></a></dt>
 <dd><p>Test and set input argument into datetime.datetime.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>val</strong> (<em>str | datetime | pd.Timestamp</em>) – Datetime</p></li>
 <li><p><strong>utc</strong> (<em>bool</em>) – Check UTC. Default to True.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>datetime.datetime</p>
 </dd>
 </dl>
@@ -2492,10 +2683,10 @@ by sep value.</p></li>
 <span class="sig-prename descclassname"><span class="pre">dvas.helper.</span></span><span class="sig-name descname"><span class="pre">unzip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.unzip" title="Permalink to this definition"></a></dt>
 <dd><p>Unzip list of tuple</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>val</strong> (<em>list of tuples</em>) – Zipped list</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>list</p>
 </dd>
 </dl>
@@ -2506,10 +2697,10 @@ by sep value.</p></li>
 <span class="sig-prename descclassname"><span class="pre">dvas.helper.</span></span><span class="sig-name descname"><span class="pre">get_dict_len</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.get_dict_len" title="Permalink to this definition"></a></dt>
 <dd><p>Return the length of a dict (recursively)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>val</strong> (<em>dict</em>) – Dict to get length</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>int</p>
 </dd>
 </dl>
@@ -2520,7 +2711,7 @@ by sep value.</p></li>
 <span class="sig-prename descclassname"><span class="pre">dvas.helper.</span></span><span class="sig-name descname"><span class="pre">get_class_public_attr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.helper.get_class_public_attr" title="Permalink to this definition"></a></dt>
 <dd><p>Get public attributes from an object</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
@@ -2580,7 +2771,7 @@ it is formatted using formatException() and appended to the message.</p>
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.logger.DvasFormatter.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Init function.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>colors</strong> (<em>bool, optional</em>) – if True, will add colors to the log message via ANSI codes.
 Defaults to False.</p>
 </dd>
@@ -2592,10 +2783,10 @@ Defaults to False.</p>
 <span class="sig-name descname"><span class="pre">log_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.logger.DvasFormatter.log_msg" title="Permalink to this definition"></a></dt>
 <dd><p>Return the dvas log message canvas, possibly with colors and stuff.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>level</strong> (<em>logging.lvl, optional</em>) – the log level, e.g. logging.INFO, logging.ERROR, …</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><em>DeltaTimeFormatter</em> – the formatted log message canvas.</p>
 </dd>
 </dl>
@@ -2637,7 +2828,7 @@ Log to file only: True|1
 Log to file + console: 2
 Log to console only: 3</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -2648,7 +2839,7 @@ Log to console only: 3</p>
 <span class="sig-name descname"><span class="pre">log_level</span></span><a class="headerlink" href="#dvas.logger.LogManager.log_level" title="Permalink to this definition"></a></dt>
 <dd><p>Log level. Default to ‘INFO’</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -2693,7 +2884,7 @@ Log to console only: 3</p>
 The first part of the message containing the function name is at the ‘INFO’ level.
 The second part of the message containing the argument values is at the ‘DEBUG’ level.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>logger</strong> (<em>str</em>) – one of the loggers defined in dvas_logger.py, e.g.: gruan_logger</p></li>
 <li><p><strong>time_it</strong> (<em>bool, optional</em>) – whether to evaluate the decorated function execution time
@@ -2730,7 +2921,7 @@ See also <a class="reference external" href="https://docs.python.org/3/library/i
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2022, MeteoSwiss.</p>
+    <p>&#169; Copyright 2020-2023, MeteoSwiss.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

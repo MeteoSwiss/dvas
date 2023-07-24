@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>dvas.data.strategy package &mdash; dvas  documentation</title>
@@ -11,10 +11,9 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -29,14 +28,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> dvas
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            dvas
           </a>
               <div class="version">
-                0.7.1
+                1.0.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -46,12 +49,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Home</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../running_recipes.html">Running dvas recipes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../creating_recipes.html">Creating dvas recipes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../acknowledge.html">Acknowledging dvas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../license.html">License &amp; Copyright</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/MeteoSwiss-MDA/dvas/blob/develop/CONTRIBUTING.md">Contributing</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/MeteoSwiss-MDA/dvas">Github repository</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../modules.html">Modules</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="dvas.html">dvas package</a><ul class="current">
@@ -93,11 +94,11 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../modules.html">Modules</a> &raquo;</li>
-          <li><a href="dvas.html">dvas package</a> &raquo;</li>
-          <li><a href="dvas.data.html">dvas.data package</a> &raquo;</li>
-      <li>dvas.data.strategy package</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../modules.html">Modules</a></li>
+          <li class="breadcrumb-item"><a href="dvas.html">dvas package</a></li>
+          <li class="breadcrumb-item"><a href="dvas.data.html">dvas.data package</a></li>
+      <li class="breadcrumb-item active">dvas.data.strategy package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/modules/dvas.data.strategy.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -154,7 +155,7 @@
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#dvas.data.strategy.data.ProfileAC.data" title="Permalink to this definition"></a></dt>
 <dd><p>Data.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.DataFrame</p>
 </dd>
 </dl>
@@ -165,7 +166,7 @@
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">columns</span></span><a class="headerlink" href="#dvas.data.strategy.data.ProfileAC.columns" title="Permalink to this definition"></a></dt>
 <dd><p>DataFrame columns name</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.Index</p>
 </dd>
 </dl>
@@ -176,10 +177,10 @@
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reset_data_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.data.ProfileAC.reset_data_index" title="Permalink to this definition"></a></dt>
 <dd><p>Return the data with reset index</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>val</strong> (<em>pandas.DataFrame</em>) – DataFrame with index to be reset</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>pandas.DataFrame</p>
 </dd>
 </dl>
@@ -190,10 +191,10 @@
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set_data_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.data.ProfileAC.set_data_index" title="Permalink to this definition"></a></dt>
 <dd><p>Return the data with reset index</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>val</strong> (<em>pandas.DataFrame</em>) – DataFrame with index to be reset</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>pandas.DataFrame</p>
 </dd>
 </dl>
@@ -204,7 +205,7 @@
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_index_attr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.data.ProfileAC.get_index_attr" title="Permalink to this definition"></a></dt>
 <dd><p>Get index attributes</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list</p>
 </dd>
 </dl>
@@ -215,7 +216,7 @@
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_col_attr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.data.ProfileAC.get_col_attr" title="Permalink to this definition"></a></dt>
 <dd><p>Get columns attributes</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list</p>
 </dd>
 </dl>
@@ -239,7 +240,7 @@ together with their corresponding altitudes and flags.</p>
 <dt>The data is stored in a pandas DataFrame with column labels:</dt><dd><ul class="simple">
 <li><p>‘alt’ (float)</p></li>
 <li><p>‘val’ (float)</p></li>
-<li><p>‘flg’ (Int64)</p></li>
+<li><p>‘flg’ (int)</p></li>
 </ul>
 </dd>
 </dl>
@@ -261,7 +262,7 @@ together with their corresponding altitudes and flags.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.data.strategy.data.Profile.DF_COLS_ATTR">
-<span class="sig-name descname"><span class="pre">DF_COLS_ATTR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'alt':</span> <span class="pre">{'index':</span> <span class="pre">True,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.missing.NAType'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;},</span> <span class="pre">'flg':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.missing.NAType'&gt;),</span> <span class="pre">'type':</span> <span class="pre">'Int64'},</span> <span class="pre">'val':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.missing.NAType'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;}}</span></em><a class="headerlink" href="#dvas.data.strategy.data.Profile.DF_COLS_ATTR" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">DF_COLS_ATTR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'alt':</span> <span class="pre">{'index':</span> <span class="pre">True,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'numpy.float64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.float64'&gt;},</span> <span class="pre">'flg':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'numpy.float64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;},</span> <span class="pre">'val':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'numpy.float64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.float64'&gt;}}</span></em><a class="headerlink" href="#dvas.data.strategy.data.Profile.DF_COLS_ATTR" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -269,7 +270,7 @@ together with their corresponding altitudes and flags.</p>
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.data.Profile.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Profile Constructor.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>info</strong> (<em>InfoManager</em>) – Data information</p></li>
 <li><p><strong>data</strong> (<em>pd.DataFrame, optional</em>) – The profile values in a pandas DataFrame.
@@ -284,7 +285,7 @@ Default to None.</p></li>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">info</span></span><a class="headerlink" href="#dvas.data.strategy.data.Profile.info" title="Permalink to this definition"></a></dt>
 <dd><p>Corresponding data info</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="dvas.database.html#dvas.database.database.InfoManager" title="dvas.database.database.InfoManager">InfoManager</a></p>
 </dd>
 </dl>
@@ -295,7 +296,7 @@ Default to None.</p></li>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">flg_names</span></span><a class="headerlink" href="#dvas.data.strategy.data.Profile.flg_names" title="Permalink to this definition"></a></dt>
 <dd><p>Flag name, description and bit position.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
@@ -306,7 +307,7 @@ Default to None.</p></li>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">alt</span></span><a class="headerlink" href="#dvas.data.strategy.data.Profile.alt" title="Permalink to this definition"></a></dt>
 <dd><p>Corresponding data altitude</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.Series</p>
 </dd>
 </dl>
@@ -317,7 +318,7 @@ Default to None.</p></li>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">val</span></span><a class="headerlink" href="#dvas.data.strategy.data.Profile.val" title="Permalink to this definition"></a></dt>
 <dd><p>Corresponding data ‘val’</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.Series</p>
 </dd>
 </dl>
@@ -328,7 +329,7 @@ Default to None.</p></li>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">flg</span></span><a class="headerlink" href="#dvas.data.strategy.data.Profile.flg" title="Permalink to this definition"></a></dt>
 <dd><p>Corresponding data ‘flag’</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.Series</p>
 </dd>
 </dl>
@@ -345,7 +346,7 @@ Default to None.</p></li>
 <span class="sig-name descname"><span class="pre">set_flg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.data.Profile.set_flg" title="Permalink to this definition"></a></dt>
 <dd><p>Set flag values to True/False.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>val</strong> (<em>str</em>) – Flag name</p></li>
 <li><p><strong>set_val</strong> (<em>bool</em>) – Turn on/off the flag. Defaults to True.</p></li>
@@ -360,10 +361,10 @@ Default to None.</p></li>
 <span class="sig-name descname"><span class="pre">has_flg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.data.Profile.has_flg" title="Permalink to this definition"></a></dt>
 <dd><p>Check if a specific flag name is set.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>val</strong> (<em>str</em>) – Flag name</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><em>pd.Series</em> – Series of int, with 1’s where the requested flag name is True.</p>
 </dd>
 </dl>
@@ -374,10 +375,10 @@ Default to None.</p></li>
 <span class="sig-name descname"><span class="pre">has_tag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.data.Profile.has_tag" title="Permalink to this definition"></a></dt>
 <dd><p>Check if a specific tag name is set for the Profile.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>val</strong> (<em>str</em>) – Tag name</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><em>bool</em> – True or False</p>
 </dd>
 </dl>
@@ -396,11 +397,11 @@ altitudes, and flags.</p>
 - ‘alt’ (float)
 - ‘tdt’ (timedelta64[ns])
 - ‘val’ (float)
-- ‘flg’ (Int64)</p>
+- ‘flg’ (int)</p>
 <p>The same format is expected as input.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.data.strategy.data.RSProfile.DF_COLS_ATTR">
-<span class="sig-name descname"><span class="pre">DF_COLS_ATTR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'alt':</span> <span class="pre">{'index':</span> <span class="pre">True,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.missing.NAType'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;},</span> <span class="pre">'flg':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.missing.NAType'&gt;),</span> <span class="pre">'type':</span> <span class="pre">'Int64'},</span> <span class="pre">'tdt':</span> <span class="pre">{'index':</span> <span class="pre">True,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.missing.NAType'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.tslibs.timedeltas.Timedelta'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.tslibs.nattype.NaTType'&gt;),</span> <span class="pre">'type':</span> <span class="pre">'timedelta64[ns]'},</span> <span class="pre">'val':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.missing.NAType'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;}}</span></em><a class="headerlink" href="#dvas.data.strategy.data.RSProfile.DF_COLS_ATTR" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">DF_COLS_ATTR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'alt':</span> <span class="pre">{'index':</span> <span class="pre">True,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'numpy.float64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.float64'&gt;},</span> <span class="pre">'flg':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'numpy.float64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;},</span> <span class="pre">'tdt':</span> <span class="pre">{'index':</span> <span class="pre">True,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'numpy.float64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.tslibs.timedeltas.Timedelta'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.tslibs.nattype.NaTType'&gt;),</span> <span class="pre">'type':</span> <span class="pre">'timedelta64[ns]'},</span> <span class="pre">'val':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'numpy.float64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.float64'&gt;}}</span></em><a class="headerlink" href="#dvas.data.strategy.data.RSProfile.DF_COLS_ATTR" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
@@ -408,7 +409,7 @@ altitudes, and flags.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tdt</span></span><a class="headerlink" href="#dvas.data.strategy.data.RSProfile.tdt" title="Permalink to this definition"></a></dt>
 <dd><p>Corresponding data time delta since launch</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.Series</p>
 </dd>
 </dl>
@@ -425,10 +426,9 @@ Requires some measured values, together with their corresponding measurement tim
 altitudes, flags, as well as 4 distinct types uncertainties:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>‘ucr’ : Rig “uncorrelated” uncertainties.</p></li>
 <li><p>‘ucs’ : Spatial-correlated uncertainties.</p></li>
 <li><p>‘uct’ : Temporal correlated uncertainties.</p></li>
-<li><p>‘ucu’ : True uncorrelated uncertainties.</p></li>
+<li><p>‘ucu’ : Un-correlated uncertainties.</p></li>
 </ul>
 </div></blockquote>
 <p>The property “uc_tot” returns the total uncertainty, and is prodvided for convenience.</p>
@@ -436,34 +436,22 @@ altitudes, flags, as well as 4 distinct types uncertainties:</p>
 - ‘alt’ (float)
 - ‘tdt’ (timedelta64[ns])
 - ‘val’ (float)
-- ‘ucr’ (float)
 - ‘ucs’ (float)
 - ‘uct’ (float)
 - ‘ucu’ (float)
-- ‘flg’ (Int64)</p>
+- ‘flg’ (int)</p>
 <p>The same format is expected as input.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.data.strategy.data.GDPProfile.DF_COLS_ATTR">
-<span class="sig-name descname"><span class="pre">DF_COLS_ATTR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'alt':</span> <span class="pre">{'index':</span> <span class="pre">True,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.missing.NAType'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;},</span> <span class="pre">'flg':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.missing.NAType'&gt;),</span> <span class="pre">'type':</span> <span class="pre">'Int64'},</span> <span class="pre">'tdt':</span> <span class="pre">{'index':</span> <span class="pre">True,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.missing.NAType'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.tslibs.timedeltas.Timedelta'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.tslibs.nattype.NaTType'&gt;),</span> <span class="pre">'type':</span> <span class="pre">'timedelta64[ns]'},</span> <span class="pre">'ucr':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.missing.NAType'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;},</span> <span class="pre">'ucs':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.missing.NAType'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;},</span> <span class="pre">'uct':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.missing.NAType'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;},</span> <span class="pre">'ucu':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.missing.NAType'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;},</span> <span class="pre">'val':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.missing.NAType'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;}}</span></em><a class="headerlink" href="#dvas.data.strategy.data.GDPProfile.DF_COLS_ATTR" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">DF_COLS_ATTR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'alt':</span> <span class="pre">{'index':</span> <span class="pre">True,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'numpy.float64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.float64'&gt;},</span> <span class="pre">'flg':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'numpy.float64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;},</span> <span class="pre">'tdt':</span> <span class="pre">{'index':</span> <span class="pre">True,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'numpy.float64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.tslibs.timedeltas.Timedelta'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.tslibs.nattype.NaTType'&gt;),</span> <span class="pre">'type':</span> <span class="pre">'timedelta64[ns]'},</span> <span class="pre">'ucs':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'numpy.float64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.float64'&gt;},</span> <span class="pre">'uct':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'numpy.float64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.float64'&gt;},</span> <span class="pre">'ucu':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'numpy.float64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.float64'&gt;},</span> <span class="pre">'val':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'numpy.float64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.float64'&gt;}}</span></em><a class="headerlink" href="#dvas.data.strategy.data.GDPProfile.DF_COLS_ATTR" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="dvas.data.strategy.data.GDPProfile.ucr">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ucr</span></span><a class="headerlink" href="#dvas.data.strategy.data.GDPProfile.ucr" title="Permalink to this definition"></a></dt>
-<dd><p>Corresponding data time delta since launch</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>pd.Series</p>
-</dd>
-</dl>
-</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="dvas.data.strategy.data.GDPProfile.ucs">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ucs</span></span><a class="headerlink" href="#dvas.data.strategy.data.GDPProfile.ucs" title="Permalink to this definition"></a></dt>
 <dd><p>Corresponding data time delta since launch</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.Series</p>
 </dd>
 </dl>
@@ -474,7 +462,7 @@ altitudes, flags, as well as 4 distinct types uncertainties:</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">uct</span></span><a class="headerlink" href="#dvas.data.strategy.data.GDPProfile.uct" title="Permalink to this definition"></a></dt>
 <dd><p>Corresponding data time delta since launch</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.Series</p>
 </dd>
 </dl>
@@ -485,7 +473,7 @@ altitudes, flags, as well as 4 distinct types uncertainties:</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ucu</span></span><a class="headerlink" href="#dvas.data.strategy.data.GDPProfile.ucu" title="Permalink to this definition"></a></dt>
 <dd><p>Corresponding data time delta since launch</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.Series</p>
 </dd>
 </dl>
@@ -496,8 +484,8 @@ altitudes, flags, as well as 4 distinct types uncertainties:</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">uc_tot</span></span><a class="headerlink" href="#dvas.data.strategy.data.GDPProfile.uc_tot" title="Permalink to this definition"></a></dt>
 <dd><p>Computes the total uncertainty from the individual components.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><em>pd.Series</em> – uc_tot = np.sqrt(uc_r**2 + uc_s**2 + uc_t**2 + uc_u**2)</p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>pd.Series</em> – uc_tot = np.sqrt(uc_s**2 + uc_t**2 + uc_u**2)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -519,7 +507,7 @@ altitudes, flags, as well as 4 distinct types uncertainties:</p>
 <p>Unlike GDPs and CWS, this class no longer contains time delta information.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.data.strategy.data.DeltaProfile.DF_COLS_ATTR">
-<span class="sig-name descname"><span class="pre">DF_COLS_ATTR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'alt':</span> <span class="pre">{'index':</span> <span class="pre">True,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.missing.NAType'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;},</span> <span class="pre">'flg':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.missing.NAType'&gt;),</span> <span class="pre">'type':</span> <span class="pre">'Int64'},</span> <span class="pre">'ucr':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.missing.NAType'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;},</span> <span class="pre">'ucs':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.missing.NAType'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;},</span> <span class="pre">'uct':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.missing.NAType'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;},</span> <span class="pre">'ucu':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.missing.NAType'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;},</span> <span class="pre">'val':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'pandas._libs.missing.NAType'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;}}</span></em><a class="headerlink" href="#dvas.data.strategy.data.DeltaProfile.DF_COLS_ATTR" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">DF_COLS_ATTR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'alt':</span> <span class="pre">{'index':</span> <span class="pre">True,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'numpy.float64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.float64'&gt;},</span> <span class="pre">'flg':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'numpy.float64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;},</span> <span class="pre">'ucs':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'numpy.float64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.float64'&gt;},</span> <span class="pre">'uct':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'numpy.float64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.float64'&gt;},</span> <span class="pre">'ucu':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'numpy.float64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.float64'&gt;},</span> <span class="pre">'val':</span> <span class="pre">{'index':</span> <span class="pre">False,</span> <span class="pre">'test':</span> <span class="pre">(&lt;class</span> <span class="pre">'numpy.float64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'float'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.int64'&gt;,</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;),</span> <span class="pre">'type':</span> <span class="pre">&lt;class</span> <span class="pre">'numpy.float64'&gt;}}</span></em><a class="headerlink" href="#dvas.data.strategy.data.DeltaProfile.DF_COLS_ATTR" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
@@ -554,13 +542,13 @@ altitudes, flags, as well as 4 distinct types uncertainties:</p>
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fetch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.load.LoadStrategyAC.fetch" title="Permalink to this definition"></a></dt>
 <dd><p>A base function that fetches data from the database.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>search</strong> (<em>str</em>) – selection criteria</p></li>
 <li><p><strong>**kwargs</strong> (<em>dict</em>) – Key word parameter to extract.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><em>list of InfoManager</em> – Data related info
 list of pd.DataFrame: Data</p>
 </dd>
@@ -585,7 +573,7 @@ list of pd.DataFrame: Data</p>
 <span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_abbr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt_abbr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.load.LoadProfileStrategy.execute" title="Permalink to this definition"></a></dt>
 <dd><p>Execute strategy method to fetch data from the databse.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>search</strong> (<em>str</em>) – selection criteria</p></li>
 <li><p><strong>val_abbr</strong> (<em>str</em>) – name of the parameter values to extract</p></li>
@@ -608,7 +596,7 @@ list of pd.DataFrame: Data</p>
 <span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_abbr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tdt_abbr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.load.LoadRSProfileStrategy.execute" title="Permalink to this definition"></a></dt>
 <dd><p>Execute strategy method to fetch data from the database.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>search</strong> (<em>str</em>) – selection criteria</p></li>
 <li><p><strong>val_abbr</strong> (<em>str</em>) – name of the parameter values to extract.</p></li>
@@ -628,22 +616,20 @@ list of pd.DataFrame: Data</p>
 <p>Child class to manage the data loading strategy of GDPProfile instances.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.strategy.load.LoadGDPProfileStrategy.execute">
-<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_abbr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tdt_abbr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucr_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucs_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uct_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucu_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.load.LoadGDPProfileStrategy.execute" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_abbr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tdt_abbr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucs_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uct_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucu_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.load.LoadGDPProfileStrategy.execute" title="Permalink to this definition"></a></dt>
 <dd><p>Execute strategy method to fetch data from the database.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>search</strong> (<em>str</em>) – selection criteria</p></li>
 <li><p><strong>val_abbr</strong> (<em>str</em>) – name of the parameter values to extract</p></li>
 <li><p><strong>tdt_abbr</strong> (<em>str</em>) – name of the time delta parameter to extract.</p></li>
 <li><p><strong>alt_abbr</strong> (<em>str, optional</em>) – name of the altitude parameter to extract. Dafaults to None.</p></li>
-<li><p><strong>ucr_abbr</strong> (<em>str, optional</em>) – name of the true rig un-correlated uncertainty parameter to
+<li><p><strong>ucs_abbr</strong> (<em>str, optional</em>) – name of the spatial-correlated uncertainty parameter to
 extract. Defaults to None.</p></li>
-<li><p><strong>ucs_abbr</strong> (<em>str, optional</em>) – name of the true spatial-correlated uncertainty parameter to
+<li><p><strong>uct_abbr</strong> (<em>str, optional</em>) – name of the time-correlated uncertainty parameter to
 extract. Defaults to None.</p></li>
-<li><p><strong>uct_abbr</strong> (<em>str, optional</em>) – name of the true time-correlated uncertainty parameter to
-extract. Defaults to None.</p></li>
-<li><p><strong>ucu_abbr</strong> (<em>str, optional</em>) – name of the true un-correlated uncertainty parameter to
+<li><p><strong>ucu_abbr</strong> (<em>str, optional</em>) – name of the un-correlated uncertainty parameter to
 extract. Defaults to None.</p></li>
 </ul>
 </dd>
@@ -659,22 +645,20 @@ extract. Defaults to None.</p></li>
 <p>Child class to manage the data loading strategy of CWSProfile instances.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.strategy.load.LoadCWSProfileStrategy.execute">
-<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_abbr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tdt_abbr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucr_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucs_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uct_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucu_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.load.LoadCWSProfileStrategy.execute" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_abbr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tdt_abbr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucs_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uct_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucu_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.load.LoadCWSProfileStrategy.execute" title="Permalink to this definition"></a></dt>
 <dd><p>Execute strategy method to fetch data from the database.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>search</strong> (<em>str</em>) – selection criteria</p></li>
 <li><p><strong>val_abbr</strong> (<em>str</em>) – name of the parameter values to extract</p></li>
 <li><p><strong>tdt_abbr</strong> (<em>str</em>) – name of the time delta parameter to extract.</p></li>
 <li><p><strong>alt_abbr</strong> (<em>str, optional</em>) – name of the altitude parameter to extract. Dafaults to None.</p></li>
-<li><p><strong>ucr_abbr</strong> (<em>str, optional</em>) – name of the true rig un-correlated uncertainty parameter to
+<li><p><strong>ucs_abbr</strong> (<em>str, optional</em>) – name of the spatial-correlated uncertainty parameter to
 extract. Defaults to None.</p></li>
-<li><p><strong>ucs_abbr</strong> (<em>str, optional</em>) – name of the true spatial-correlated uncertainty parameter to
+<li><p><strong>uct_abbr</strong> (<em>str, optional</em>) – name of the time-correlated uncertainty parameter to
 extract. Defaults to None.</p></li>
-<li><p><strong>uct_abbr</strong> (<em>str, optional</em>) – name of the true time-correlated uncertainty parameter to
-extract. Defaults to None.</p></li>
-<li><p><strong>ucu_abbr</strong> (<em>str, optional</em>) – name of the true un-correlated uncertainty parameter to
+<li><p><strong>ucu_abbr</strong> (<em>str, optional</em>) – name of the un-correlated uncertainty parameter to
 extract. Defaults to None.</p></li>
 </ul>
 </dd>
@@ -690,21 +674,19 @@ extract. Defaults to None.</p></li>
 <p>Child class to manage the data loading strategy of DeltaProfile instances.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.strategy.load.LoadDeltaProfileStrategy.execute">
-<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_abbr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucr_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucs_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uct_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucu_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.load.LoadDeltaProfileStrategy.execute" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_abbr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucs_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uct_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ucu_abbr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.load.LoadDeltaProfileStrategy.execute" title="Permalink to this definition"></a></dt>
 <dd><p>Execute strategy method to fetch data from the database.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>search</strong> (<em>str</em>) – selection criteria</p></li>
 <li><p><strong>val_abbr</strong> (<em>str</em>) – name of the parameter values to extract</p></li>
 <li><p><strong>alt_abbr</strong> (<em>str, optional</em>) – name of the altitude parameter to extract. Dafaults to None.</p></li>
-<li><p><strong>ucr_abbr</strong> (<em>str, optional</em>) – name of the true rig un-correlated uncertainty parameter to
+<li><p><strong>ucs_abbr</strong> (<em>str, optional</em>) – name of the spatial-correlated uncertainty parameter to
 extract. Defaults to None.</p></li>
-<li><p><strong>ucs_abbr</strong> (<em>str, optional</em>) – name of the true spatial-correlated uncertainty parameter to
+<li><p><strong>uct_abbr</strong> (<em>str, optional</em>) – name of the time-correlated uncertainty parameter to
 extract. Defaults to None.</p></li>
-<li><p><strong>uct_abbr</strong> (<em>str, optional</em>) – name of the true time-correlated uncertainty parameter to
-extract. Defaults to None.</p></li>
-<li><p><strong>ucu_abbr</strong> (<em>str, optional</em>) – name of the true un-correlated uncertainty parameter to
+<li><p><strong>ucu_abbr</strong> (<em>str, optional</em>) – name of the un-correlated uncertainty parameter to
 extract. Defaults to None.</p></li>
 </ul>
 </dd>
@@ -730,7 +712,7 @@ extract. Defaults to None.</p></li>
 <span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.plot.PlotStrategy.execute" title="Permalink to this definition"></a></dt>
 <dd><p>Call the proper plotting method for this strategy.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>prfs</strong> (<em>dict of Profile or RSProfile or GDPprofile</em>) – data to plot</p></li>
 <li><p><strong>**kwargs</strong> – Keyword arguments to be passed down to the plotting function.</p></li>
@@ -751,7 +733,7 @@ extract. Defaults to None.</p></li>
 <span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.plot.RSPlotStrategy.execute" title="Permalink to this definition"></a></dt>
 <dd><p>Call the proper plotting method for this strategy.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>prfs</strong> (<em>dict of Profile or RSProfile or GDPprofile</em>) – data to plot</p></li>
 <li><p><strong>**kwargs</strong> – Keyword arguments to be passed down to the plotting function.</p></li>
@@ -772,7 +754,7 @@ extract. Defaults to None.</p></li>
 <span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.plot.GDPPlotStrategy.execute" title="Permalink to this definition"></a></dt>
 <dd><p>Call the proper plotting method for this strategy.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>prfs</strong> (<em>dict of Profile or RSProfile or GDPprofile</em>) – data to plot</p></li>
 <li><p><strong>**kwargs</strong> – Keyword arguments to be passed down to the plotting function.</p></li>
@@ -800,10 +782,8 @@ extract. Defaults to None.</p></li>
 <span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_lengths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shifts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.rebase.RebaseStrategy.execute" title="Permalink to this definition"></a></dt>
 <dd><p>Rebases Profiles on a DataFrame with a different length, possibly shifting values
 around.</p>
-<p>Any missing data gets filled with NaN/NaT. Any superfulous data is be cropped.
-All non-integer indices get rebased as well (i.e. they are NOT interpolated).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>prfs</strong> (<em>list of dvas.data.strategy.data.Profile|RSProfile|GDPProfile</em>) – Profiles to
 rebase.</p></li>
@@ -814,10 +794,15 @@ If specifiying an int, the same shift will be applied to all Profiles. Else, the
 list should specify a shift for each Profile. Defaults to None.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><em>dvas.data.MultiProfile|MultiRSProfile|MultiGDPProfile</em> – the rebased MultiProfile.</p>
 </dd>
 </dl>
+<p>Any missing data gets filled with NaN/NaT. Any superfulous data is be cropped.
+All non-integer indices get rebased as well (i.e. they are NOT interpolated). Any missing
+data gets flagged with FLG_NOPRF to indicate to it is not associated with any real
+profile measurement. A shift of -n crops the first n points, whereas a shift of +n crops
+the last n points (unless new_lengths is adjusted).</p>
 </dd></dl>
 
 </dd></dl>
@@ -836,16 +821,10 @@ list should specify a shift for each Profile. Defaults to None.</p></li>
 <p>Class to handle the resample strategy for RS and GDPs Profiles.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dvas.data.strategy.resample.ResampleStrategy.execute">
-<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'1s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">150</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cpus</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interp_dist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.resample.ResampleStrategy.execute" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'1s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">150</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cpus</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interp_dist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circular</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.resample.ResampleStrategy.execute" title="Permalink to this definition"></a></dt>
 <dd><p>Implementation of time resampling method for RS and GDP Profiles.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This strategy does NOT treat NaN’s in a special way. This implies that if a NaN is one
-of the two closest original data points from a new location to be interpolated, that
-location will result in a NaN as well.</p>
-</div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>prfs</strong> (<em>list of RSProfiles|GDPProfiles</em>) – GDP Profiles to resample.</p></li>
 <li><p><strong>freq</strong> (<em>str, optional</em>) – see pandas.timedelta_range(). Defaults to ‘1s’.</p></li>
@@ -857,12 +836,20 @@ that length. The larger the chunks, the larger the memory requirements. The smal
 the chunks the more items to process. Defaults to 150.</p></li>
 <li><p><strong>n_cpus</strong> (<em>int|str, optional</em>) – number of cpus to use. Can be a number, or ‘max’. Set to 1
 to disable multiprocessing. Defaults to 1.</p></li>
+<li><p><strong>circular</strong> (<em>bool, optional</em>) – if True, will assume angular values and use np.unwrap()
+before interpolating. Defaults to False.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><em>dvas.data.MultiRSProfile|MultiGDPProfile</em> – the resampled MultiProfile.</p>
 </dd>
 </dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This strategy does NOT treat NaN’s in a special way. This implies that if a NaN is one
+of the two closest original data points from a new location to be interpolated, that
+location will result in a NaN as well.</p>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -884,7 +871,7 @@ to disable multiprocessing. Defaults to 1.</p></li>
 <span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prms</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.save.SaveDataStrategy.execute" title="Permalink to this definition"></a></dt>
 <dd><p>Implementation of save method.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<em>MultiProfile</em>) – the data to save into the database.</p></li>
 <li><p><strong>prms</strong> (<em>list of str</em>) – list of column names to save to the
@@ -913,10 +900,10 @@ database.</p></li>
 <span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.data.strategy.sort.SortProfileStrategy.execute" title="Permalink to this definition"></a></dt>
 <dd><p>Implementation of sort method</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<em>list</em>) – list of Profile</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>list of Profile</p>
 </dd>
 </dl>
@@ -938,7 +925,7 @@ database.</p></li>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2022, MeteoSwiss.</p>
+    <p>&#169; Copyright 2020-2023, MeteoSwiss.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

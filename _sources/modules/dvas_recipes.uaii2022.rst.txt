@@ -17,10 +17,26 @@ dvas\_recipes.uaii2022.basic module
    :undoc-members:
    :show-inheritance:
 
+dvas\_recipes.uaii2022.biglambda module
+---------------------------------------
+
+.. automodule:: dvas_recipes.uaii2022.biglambda
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dvas\_recipes.uaii2022.dtas module
 ----------------------------------
 
 .. automodule:: dvas_recipes.uaii2022.dtas
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+dvas\_recipes.uaii2022.export module
+------------------------------------
+
+.. automodule:: dvas_recipes.uaii2022.export
    :members:
    :undoc-members:
    :show-inheritance:

@@ -18,6 +18,14 @@ Subpackages
 Submodules
 ----------
 
+dvas.tools.chunks module
+------------------------
+
+.. automodule:: dvas.tools.chunks
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 dvas.tools.math module
 ----------------------
 

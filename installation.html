@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Installation &mdash; dvas  documentation</title>
@@ -11,17 +11,16 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Running dvas recipes" href="running_recipes.html" />
-    <link rel="prev" title="dvas 0.7.1" href="index.html" /> 
+    <link rel="prev" title="dvas 1.0.0" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -29,14 +28,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> dvas
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            dvas
           </a>
               <div class="version">
-                0.7.1
+                1.0.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -50,12 +53,10 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="running_recipes.html">Running dvas recipes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="creating_recipes.html">Creating dvas recipes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="acknowledge.html">Acknowledging dvas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">License &amp; Copyright</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/MeteoSwiss-MDA/dvas/blob/develop/CONTRIBUTING.md">Contributing</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/MeteoSwiss-MDA/dvas">Github repository</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="doc_todo.html">Documentation todos</a></li>
@@ -74,8 +75,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Installation</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Installation</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/installation.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -91,13 +92,13 @@
 <p class="admonition-title">Todo</p>
 <p>Include a link to the pypi page in the very next sentence.</p>
 </div>
-<p>dvas will be available on pypi, which should make its installation straightforward.
+<p>dvas is available on pypi, which should make its installation straightforward.
 In a terminal, type:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">dvas</span>
 </pre></div>
 </div>
 <p>And that will take care of things. dvas uses <a class="reference external" href="https://semver.org/">semantic versioning</a>.
-The latest stable version is 0.7.1.</p>
+The latest stable version is 1.0.0.</p>
 <p>The most recent release of dvas is also available for download/cloning from its
 <a class="reference external" href="https://github.com/MeteoSwiss-MDA/dvas/releases/latest/">Github repository</a>, in which case the
 install command becomes:</p>
@@ -114,21 +115,20 @@ install command becomes:</p>
 <p>Furthermore, dvas relies on a few external modules, which will be automatically installed by <code class="docutils literal notranslate"><span class="pre">pip</span></code>
 if required:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">install_requires</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">&quot;astroid&gt;=2.13&quot;</span><span class="p">,</span>
         <span class="s2">&quot;jsonschema&quot;</span><span class="p">,</span>
         <span class="s2">&quot;matplotlib&quot;</span><span class="p">,</span>
         <span class="s2">&quot;netcdf4&quot;</span><span class="p">,</span>
         <span class="s1">&#39;numpy&#39;</span><span class="p">,</span>
         <span class="s2">&quot;pandas&gt;=1.3.0&quot;</span><span class="p">,</span>
         <span class="s2">&quot;peewee&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;pytest&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;pytest-data&quot;</span><span class="p">,</span>
         <span class="s2">&quot;pytz&quot;</span><span class="p">,</span>
         <span class="s2">&quot;ruamel-yaml&quot;</span><span class="p">,</span>
         <span class="s2">&quot;scipy&quot;</span><span class="p">,</span>
         <span class="s2">&quot;sre_yield&quot;</span><span class="p">,</span>
     <span class="p">],</span>
     <span class="n">extras_require</span><span class="o">=</span><span class="p">{</span>
-        <span class="s1">&#39;dev&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;sphinx&#39;</span><span class="p">,</span> <span class="s1">&#39;sphinx-rtd-theme&#39;</span><span class="p">,</span> <span class="s1">&#39;plantweb&#39;</span><span class="p">,</span> <span class="s1">&#39;pylint&#39;</span><span class="p">,</span> <span class="s1">&#39;pytest&#39;</span><span class="p">,</span> <span class="s1">&#39;pytest-cov&#39;</span><span class="p">]</span>
+        <span class="s1">&#39;dev&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;sphinx&#39;</span><span class="p">,</span> <span class="s1">&#39;sphinx-rtd-theme&#39;</span><span class="p">,</span> <span class="s1">&#39;plantweb&#39;</span><span class="p">,</span> <span class="s1">&#39;pylint&#39;</span><span class="p">,</span> <span class="s1">&#39;pytest&#39;</span><span class="p">,</span> <span class="s1">&#39;pytest-data&#39;</span><span class="p">]</span>
     <span class="p">},</span>
 </pre></div>
 </div>
@@ -143,7 +143,7 @@ terminal, type:</p>
 <p>This should return the following information:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>usage: dvas_init_arena [-h] [--path ./a/new/folder/]
 
-DVAS 0.7.1 - Data Visualization and Analysis Software: Initialization entry point.
+DVAS 1.0.0 - Data Visualization and Analysis Software: Initialization entry point.
 
 options:
   -h, --help            show this help message and exit
@@ -161,14 +161,14 @@ For more info: https://MeteoSwiss.github.io/dvas
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="index.html" class="btn btn-neutral float-left" title="dvas 0.7.1" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="dvas 1.0.0" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="running_recipes.html" class="btn btn-neutral float-right" title="Running dvas recipes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2022, MeteoSwiss.</p>
+    <p>&#169; Copyright 2020-2023, MeteoSwiss.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

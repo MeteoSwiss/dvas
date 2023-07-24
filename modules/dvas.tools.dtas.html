@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>dvas.tools.dtas package &mdash; dvas  documentation</title>
@@ -11,10 +11,9 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -29,14 +28,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> dvas
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            dvas
           </a>
               <div class="version">
-                0.7.1
+                1.0.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -46,12 +49,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Home</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../running_recipes.html">Running dvas recipes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../creating_recipes.html">Creating dvas recipes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../acknowledge.html">Acknowledging dvas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../license.html">License &amp; Copyright</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/MeteoSwiss-MDA/dvas/blob/develop/CONTRIBUTING.md">Contributing</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/MeteoSwiss-MDA/dvas">Github repository</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../modules.html">Modules</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="dvas.html">dvas package</a><ul class="current">
@@ -93,11 +94,11 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../modules.html">Modules</a> &raquo;</li>
-          <li><a href="dvas.html">dvas package</a> &raquo;</li>
-          <li><a href="dvas.tools.html">dvas.tools package</a> &raquo;</li>
-      <li>dvas.tools.dtas package</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../modules.html">Modules</a></li>
+          <li class="breadcrumb-item"><a href="dvas.html">dvas package</a></li>
+          <li class="breadcrumb-item"><a href="dvas.tools.html">dvas.tools package</a></li>
+      <li class="breadcrumb-item active">dvas.tools.dtas package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/modules/dvas.tools.dtas.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -124,44 +125,76 @@
 <p>This module contains tools and routines related to deltas between profiles and CWS.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas.tools.dtas.dtas.single_delta">
-<span class="sig-prename descclassname"><span class="pre">dvas.tools.dtas.dtas.</span></span><span class="sig-name descname"><span class="pre">single_delta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cws</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angular_wrap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.dtas.dtas.single_delta" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.dtas.dtas.</span></span><span class="sig-name descname"><span class="pre">single_delta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cws</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circular</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.dtas.dtas.single_delta" title="Permalink to this definition"></a></dt>
 <dd><p>Compute the delta between a (single) error-less Profile|RSProfile and a (single)
 error-full CWS.</p>
 <p>Errors from the CWS are simply passed over to the Delta. Time information is also dropped in the
 process.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>prf</strong> (<em>Profile|RSProfile</em>) – the ‘candidate’ profile.</p></li>
 <li><p><strong>cws</strong> (<em>CWSProfile</em>) – the <cite>reference</cite> Combined Working Standard profile.</p></li>
-<li><p><strong>angular_wrap</strong> (<em>bool, optional</em>) – if True, will wrap delta values in the range [-180;+180[.
+<li><p><strong>circular</strong> (<em>bool, optional</em>) – if True, will wrap delta values in the range [-180;+180[.
 Defaults to False.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><em>DeltaProfile</em> – the delta profile, i.e. <cite>candidate</cite> - <cite>reference</cite>.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="dvas.tools.dtas.dtas.vector_delta">
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.dtas.dtas.</span></span><span class="sig-name descname"><span class="pre">vector_delta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cws</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir_prf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir_cws</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.dtas.dtas.vector_delta" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Compute the modulus of the vector difference between a (single) error-less Profile|RSProfile</dt><dd><p>and a (single) error-full CWS.</p>
+</dd>
+</dl>
+<p>Time information is dropped in the process.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Errors from the CWS are propagated over to the Delta. In doing so, we assume that
+uncertainties are uncorrelated ! This is only correct for the wind.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prf</strong> (<em>Profile|RSProfile</em>) – the ‘candidate’ profile vector amplitude.</p></li>
+<li><p><strong>cws</strong> (<em>CWSProfile</em>) – the <cite>reference</cite> Combined Working Standard profile vector amplitude.</p></li>
+<li><p><strong>dir_prf</strong> (<em>Profile|RSProfile</em>) – the ‘candidate’ profile vector direction.</p></li>
+<li><p><strong>dir_cws</strong> (<em>CWSProfile</em>) – the <cite>reference</cite> Combined Working Standard profile vector direction.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>DeltaProfile</em> – the delta profile, i.e. ||vec{<cite>candidate</cite>} - vec{<cite>reference</cite>}||.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="dvas.tools.dtas.dtas.compute">
-<span class="sig-prename descclassname"><span class="pre">dvas.tools.dtas.dtas.</span></span><span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angular_wrap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.dtas.dtas.compute" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.dtas.dtas.</span></span><span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cwss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circular</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir_prfs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dir_cwss</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.dtas.dtas.compute" title="Permalink to this definition"></a></dt>
 <dd><p>Compute the deltas between many error-less profiles and error-full cws.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>prfs</strong> (<em>MultiProfile|MultiRSProfile</em>) – the <cite>candidate</cite> profiles. Each will be dealt with
 separately,</p></li>
-<li><p><strong>cwss</strong> (<em>MultiGDPProfile</em>) – the <cite>reference</cite> combined working standard profiles. A 1-to-1 pairing
+<li><p><strong>cwss</strong> (<em>MultiCWSProfile</em>) – the <cite>reference</cite> combined working standard profiles. A 1-to-1 pairing
 with prfs is assumed, unless this contains a single profile, in which case the same
 CWS will be subtracted from all the Profiles.
 I.e. len(cwss) == 1 or len(cwss) == len(prfs).</p></li>
-<li><p><strong>angular_wrap</strong> (<em>bool, optional</em>) – if True, will wrap delta values in the range [-180;+180[.
+<li><p><strong>circular</strong> (<em>bool, optional</em>) – if True, will wrap delta values in the range [-180;+180[.
 Defaults to False.</p></li>
+<li><p><strong>dir_prfs</strong> (<em>MultiProfile|MultiRSProfile</em>) – direction profiles, if one wants to compute
+the modulus of the vector difference. Defaults to None.</p></li>
+<li><p><strong>dir_cwss</strong> (<em>MultiCWSProfile</em>) – direction CWS profiles, if one wants to compute the modulus of
+the vector difference. Defaults to None.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><em>MultiDeltaProfile</em> – the DeltaProfiles.</p>
 </dd>
 </dl>
@@ -181,7 +214,7 @@ Defaults to False.</p></li>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2022, MeteoSwiss.</p>
+    <p>&#169; Copyright 2020-2023, MeteoSwiss.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

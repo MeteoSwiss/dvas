@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>dvas.database package &mdash; dvas  documentation</title>
@@ -11,10 +11,9 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -29,14 +28,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> dvas
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            dvas
           </a>
               <div class="version">
-                0.7.1
+                1.0.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -46,12 +49,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../index.html">Home</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../running_recipes.html">Running dvas recipes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../creating_recipes.html">Creating dvas recipes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../acknowledge.html">Acknowledging dvas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../license.html">License &amp; Copyright</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/MeteoSwiss-MDA/dvas/blob/develop/CONTRIBUTING.md">Contributing</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/MeteoSwiss-MDA/dvas">Github repository</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../modules.html">Modules</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="dvas.html">dvas package</a><ul class="current">
@@ -93,10 +94,10 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../modules.html">Modules</a> &raquo;</li>
-          <li><a href="dvas.html">dvas package</a> &raquo;</li>
-      <li>dvas.database package</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../modules.html">Modules</a></li>
+          <li class="breadcrumb-item"><a href="dvas.html">dvas package</a></li>
+      <li class="breadcrumb-item active">dvas.database package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/modules/dvas.database.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -125,7 +126,7 @@
 <span class="sig-prename descclassname"><span class="pre">dvas.database.database.</span></span><span class="sig-name descname"><span class="pre">DB_CACHE_SIZE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10240</span></em><a class="headerlink" href="#dvas.database.database.DB_CACHE_SIZE" title="Permalink to this definition"></a></dt>
 <dd><p>Database cache size in kB</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>int</p>
 </dd>
 </dl>
@@ -136,7 +137,7 @@
 <span class="sig-prename descclassname"><span class="pre">dvas.database.database.</span></span><span class="sig-name descname"><span class="pre">DB_FILE_NM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'local_db.sqlite'</span></em><a class="headerlink" href="#dvas.database.database.DB_FILE_NM" title="Permalink to this definition"></a></dt>
 <dd><p>Local database file name</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -161,7 +162,7 @@
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">db</span></span><a class="headerlink" href="#dvas.database.database.DatabaseManager.db" title="Permalink to this definition"></a></dt>
 <dd><p>Database instance</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>peewee.SqliteDatabase</p>
 </dd>
 </dl>
@@ -179,7 +180,7 @@ metadata.</p>
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_or_none</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_first</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.database.DatabaseManager.get_or_none" title="Permalink to this definition"></a></dt>
 <dd><p>Get from DB</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>table</strong> (<em>peewee.Model</em>)</p></li>
 <li><p><strong>search</strong> (<em>dict</em>) – Keys [‘join_order’, ‘where’]</p></li>
@@ -198,7 +199,7 @@ metadata.</p>
 <p>Must be used in a DB context manager</p>
 <p>Args:</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
@@ -208,7 +209,7 @@ metadata.</p>
 <dt class="sig sig-object py" id="dvas.database.database.DatabaseManager.get_table">
 <span class="sig-name descname"><span class="pre">get_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.database.DatabaseManager.get_table" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>table</strong></p></li>
 <li><p><strong>search</strong> (<em>dict, optional</em>) – key ‘join_order’ must be a list of
@@ -216,7 +217,7 @@ database.database.MetadataModel, <cite>optional</cite>, key ‘where’ a logica
 expression.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><em>dict</em></p>
 </dd>
 </dl>
@@ -227,7 +228,7 @@ expression.</p></li>
 <span class="sig-name descname"><span class="pre">add_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prm_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_write</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.database.DatabaseManager.add_data" title="Permalink to this definition"></a></dt>
 <dd><p>Add profile data to the DB.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>index</strong> (<em>np.array of int</em>) – Data index</p></li>
 <li><p><strong>value</strong> (<em>np.array of float</em>) – Data value</p></li>
@@ -237,7 +238,7 @@ InfoManager.from_dict input args requirements.</p></li>
 <li><p><strong>force_write</strong> (<em>bool, optional</em>) – force rewrite of already save data</p></li>
 </ul>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#dvas.database.database.DBInsertError" title="dvas.database.database.DBInsertError"><strong>DBInsertError</strong></a> – Error while add data</p>
 </dd>
 </dl>
@@ -248,7 +249,7 @@ InfoManager.from_dict input args requirements.</p></li>
 <span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search_expr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prm_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_empty</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.database.DatabaseManager.get_data" title="Permalink to this definition"></a></dt>
 <dd><p>Get data from DB</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>search_expr</strong> (<em>str</em>) – Search expression</p></li>
 <li><p><strong>prm_name</strong> (<em>str</em>) – Parameter name</p></li>
@@ -264,7 +265,7 @@ InfoManager.from_dict input args requirements.</p></li>
 <span class="sig-name descname"><span class="pre">get_flgs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.database.DatabaseManager.get_flgs" title="Permalink to this definition"></a></dt>
 <dd><p>Get config flags</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list</p>
 </dd>
 </dl>
@@ -282,8 +283,8 @@ InfoManager.from_dict input args requirements.</p></li>
 <p>This class is used to bypass the missing class Mapping in
 pampy package.</p>
 </div>
-<div class="admonition-todo admonition" id="id1">
-<p class="admonition-title">Todo</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <p>We do not use pampy anymore as of v0.6. Do we need to do something about this ?
 fpavogt, 01.07.2022</p>
 </div>
@@ -291,7 +292,7 @@ fpavogt, 01.07.2022</p>
 <dt class="sig sig-object py" id="dvas.database.database.InfoManagerMetaData.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.database.InfoManagerMetaData.__init__" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>dict_args</strong> (<em>dict</em>) – keys must be str and values (str, float)</p>
 </dd>
 </dl>
@@ -307,7 +308,7 @@ fpavogt, 01.07.2022</p>
 <span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dict_args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.database.InfoManagerMetaData.update" title="Permalink to this definition"></a></dt>
 <dd><p>Update dict</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>dict_args</strong> (<em>dict</em>) – keys must be str and values (str, float)</p>
 </dd>
 </dl>
@@ -325,7 +326,7 @@ fpavogt, 01.07.2022</p>
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tags</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.database.InfoManager.__init__" title="Permalink to this definition"></a></dt>
 <dd><p>Constructor</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>edt</strong> (<em>str | datetime | pd.Timestamp</em>) – Event datetime (UTC)</p></li>
 <li><p><strong>oid</strong> (<em>int|iterable of int</em>) – Object identifier (snr, pid)</p></li>
@@ -342,7 +343,7 @@ fpavogt, 01.07.2022</p>
 <span class="sig-name descname"><span class="pre">edt</span></span><a class="headerlink" href="#dvas.database.database.InfoManager.edt" title="Permalink to this definition"></a></dt>
 <dd><p>UTC datetime</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>datetime.datetime</p>
 </dd>
 </dl>
@@ -353,7 +354,7 @@ fpavogt, 01.07.2022</p>
 <span class="sig-name descname"><span class="pre">oid</span></span><a class="headerlink" href="#dvas.database.database.InfoManager.oid" title="Permalink to this definition"></a></dt>
 <dd><p>Object id</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>int|iterable of int</p>
 </dd>
 </dl>
@@ -364,7 +365,7 @@ fpavogt, 01.07.2022</p>
 <span class="sig-name descname"><span class="pre">tags</span></span><a class="headerlink" href="#dvas.database.database.InfoManager.tags" title="Permalink to this definition"></a></dt>
 <dd><p>Tags</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str|iterable of str</p>
 </dd>
 </dl>
@@ -375,7 +376,7 @@ fpavogt, 01.07.2022</p>
 <span class="sig-name descname"><span class="pre">metadata</span></span><a class="headerlink" href="#dvas.database.database.InfoManager.metadata" title="Permalink to this definition"></a></dt>
 <dd><p>Metadata</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
@@ -386,7 +387,7 @@ fpavogt, 01.07.2022</p>
 <span class="sig-name descname"><span class="pre">src</span></span><a class="headerlink" href="#dvas.database.database.InfoManager.src" title="Permalink to this definition"></a></dt>
 <dd><p>Data source</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -397,7 +398,7 @@ fpavogt, 01.07.2022</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">eid</span></span><a class="headerlink" href="#dvas.database.database.InfoManager.eid" title="Permalink to this definition"></a></dt>
 <dd><p>Event ID which match 1st corresponding pattern in tags. Defaults to None.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -408,7 +409,7 @@ fpavogt, 01.07.2022</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rid</span></span><a class="headerlink" href="#dvas.database.database.InfoManager.rid" title="Permalink to this definition"></a></dt>
 <dd><p>Rig ID which match 1st corresponding pattern in tags. Defaults to None.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -419,7 +420,7 @@ fpavogt, 01.07.2022</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tod</span></span><a class="headerlink" href="#dvas.database.database.InfoManager.tod" title="Permalink to this definition"></a></dt>
 <dd><p>TimeOfDay tag which match 1st corresponding pattern. Defaults to None.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -430,7 +431,7 @@ fpavogt, 01.07.2022</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mid</span></span><a class="headerlink" href="#dvas.database.database.InfoManager.mid" title="Permalink to this definition"></a></dt>
 <dd><p>Model identifier</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -441,7 +442,7 @@ fpavogt, 01.07.2022</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tags_desc</span></span><a class="headerlink" href="#dvas.database.database.InfoManager.tags_desc" title="Permalink to this definition"></a></dt>
 <dd><p>Tags description</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
@@ -452,7 +453,7 @@ fpavogt, 01.07.2022</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">object</span></span><a class="headerlink" href="#dvas.database.database.InfoManager.object" title="Permalink to this definition"></a></dt>
 <dd><p>Object details</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list of dict</p>
 </dd>
 </dl>
@@ -469,7 +470,7 @@ fpavogt, 01.07.2022</p>
 <span class="sig-name descname"><span class="pre">add_tags</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.database.InfoManager.add_tags" title="Permalink to this definition"></a></dt>
 <dd><p>Add a tag name</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>val</strong> (<em>list of str</em>) – Tag names to add</p>
 </dd>
 </dl>
@@ -480,7 +481,7 @@ fpavogt, 01.07.2022</p>
 <span class="sig-name descname"><span class="pre">rm_tags</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.database.InfoManager.rm_tags" title="Permalink to this definition"></a></dt>
 <dd><p>Remove a tag name</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>val</strong> (<em>list of str</em>) – Tag names to remove</p>
 </dd>
 </dl>
@@ -491,7 +492,7 @@ fpavogt, 01.07.2022</p>
 <span class="sig-name descname"><span class="pre">add_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.database.InfoManager.add_metadata" title="Permalink to this definition"></a></dt>
 <dd><p>Add metadata</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>key</strong> (<em>str</em>) – Metadata key</p></li>
 <li><p><strong>val</strong> (<em>str, float, int, bool</em>) – Associated value</p></li>
@@ -505,7 +506,7 @@ fpavogt, 01.07.2022</p>
 <span class="sig-name descname"><span class="pre">rm_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.database.InfoManager.rm_metadata" title="Permalink to this definition"></a></dt>
 <dd><p>Remove metadata</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – Metadata key to be removed</p>
 </dd>
 </dl>
@@ -516,10 +517,10 @@ fpavogt, 01.07.2022</p>
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.database.InfoManager.sort" title="Permalink to this definition"></a></dt>
 <dd><p>Sort list of InfoManager. Sorting order is set by _get_attr_sort_order().</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>info_list</strong> (<em>iterable of InfoManager</em>) – list to sort</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><em>list</em> – Sorted InfoManager
 tuple: Original list index</p>
 </dd>
@@ -569,6 +570,69 @@ tuple: Original list index</p>
 <em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.database.</span></span><span class="sig-name descname"><span class="pre">DBDirError</span></span><a class="headerlink" href="#dvas.database.database.DBDirError" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 <p>Exception class for DB directory creating error</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dvas.database.database.DataIO">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.database.</span></span><span class="sig-name descname"><span class="pre">DataIO</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.database.DataIO" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Little class dedicated to handling the Data Input-Output, either to/from the DB, or
+to/from text files writen on disk !</p>
+<p>The existence of this class is questionable, as it may all be coded directly in
+DatabaseManager().</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dvas.database.database.DataIO.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.database.DataIO.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dvas.database.database.DataIO.get_fn">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_fn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.database.DataIO.get_fn" title="Permalink to this definition"></a></dt>
+<dd><p>Return the filename (and path) associated to a given info_id on disk.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dvas.database.database.DataIO.delete_from_db">
+<span class="sig-name descname"><span class="pre">delete_from_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.database.DataIO.delete_from_db" title="Permalink to this definition"></a></dt>
+<dd><p>Delete a data entry initially stored in the DB.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>info_id</strong> – id used to tag the data in the DB</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dvas.database.database.DataIO.delete_from_disk">
+<span class="sig-name descname"><span class="pre">delete_from_disk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.database.DataIO.delete_from_disk" title="Permalink to this definition"></a></dt>
+<dd><p>Delete a data entry stored in a file on disk. Be robust if the file does not exist.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dvas.database.database.DataIO.insert_in_db">
+<span class="sig-name descname"><span class="pre">insert_in_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.database.DataIO.insert_in_db" title="Permalink to this definition"></a></dt>
+<dd><p>Insert data (composed of a series of index and values)) into the DB, with a specific
+info_id.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dvas.database.database.DataIO.save_to_disk">
+<span class="sig-name descname"><span class="pre">save_to_disk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.database.DataIO.save_to_disk" title="Permalink to this definition"></a></dt>
+<dd><p>Save profile data into a custom file, on disk.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dvas.database.database.DataIO.get_from_db">
+<span class="sig-name descname"><span class="pre">get_from_db</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.database.DataIO.get_from_db" title="Permalink to this definition"></a></dt>
+<dd><p>Get data from the DB, given a specific info_id.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dvas.database.database.DataIO.get_from_disk">
+<span class="sig-name descname"><span class="pre">get_from_disk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.database.DataIO.get_from_disk" title="Permalink to this definition"></a></dt>
+<dd><p>Get data stored in a dedicated file, on disk.</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -711,7 +775,7 @@ tuple: Original list index</p>
 </section>
 <section id="module-dvas.database.model">
 <span id="dvas-database-model-module"></span><h2>dvas.database.model module<a class="headerlink" href="#module-dvas.database.model" title="Permalink to this heading"></a></h2>
-<p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>Module contents: Database model (ORM uses PeeWee package)</p>
@@ -872,8 +936,18 @@ with isoformat.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="dvas.database.model.Prm.prm_plot">
+<span class="sig-name descname"><span class="pre">prm_plot</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;TextField:</span> <span class="pre">Prm.prm_plot&gt;</span></em><a class="headerlink" href="#dvas.database.model.Prm.prm_plot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="dvas.database.model.Prm.prm_desc">
 <span class="sig-name descname"><span class="pre">prm_desc</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;TextField:</span> <span class="pre">Prm.prm_desc&gt;</span></em><a class="headerlink" href="#dvas.database.model.Prm.prm_desc" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dvas.database.model.Prm.prm_cmt">
+<span class="sig-name descname"><span class="pre">prm_cmt</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;TextField:</span> <span class="pre">Prm.prm_cmt&gt;</span></em><a class="headerlink" href="#dvas.database.model.Prm.prm_cmt" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1023,7 +1097,7 @@ with isoformat.</p>
 <dd><p>Hash of the info attributes. Using a hash allows you to manage
 identical info with varying degrees of work steps.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1158,7 +1232,7 @@ to a profile.</p>
 <span class="sig-name descname"><span class="pre">key_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;TextField:</span> <span class="pre">MetaData.key_name&gt;</span></em><a class="headerlink" href="#dvas.database.model.MetaData.key_name" title="Permalink to this definition"></a></dt>
 <dd><p>Metadata key name</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1169,7 +1243,7 @@ to a profile.</p>
 <span class="sig-name descname"><span class="pre">value_str</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;TextField:</span> <span class="pre">MetaData.value_str&gt;</span></em><a class="headerlink" href="#dvas.database.model.MetaData.value_str" title="Permalink to this definition"></a></dt>
 <dd><p>Metadata key string value</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1180,7 +1254,7 @@ to a profile.</p>
 <span class="sig-name descname"><span class="pre">value_num</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;FloatField:</span> <span class="pre">MetaData.value_num&gt;</span></em><a class="headerlink" href="#dvas.database.model.MetaData.value_num" title="Permalink to this definition"></a></dt>
 <dd><p>Metadata key float value</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
@@ -1191,7 +1265,7 @@ to a profile.</p>
 <span class="sig-name descname"><span class="pre">value_datetime</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;TimestampTZField:</span> <span class="pre">MetaData.value_datetime&gt;</span></em><a class="headerlink" href="#dvas.database.model.MetaData.value_datetime" title="Permalink to this definition"></a></dt>
 <dd><p>Metadata key datetime value</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>datetime.datetime</p>
 </dd>
 </dl>
@@ -1202,7 +1276,7 @@ to a profile.</p>
 <span class="sig-name descname"><span class="pre">info</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;ForeignKeyField:</span> <span class="pre">MetaData.info&gt;</span></em><a class="headerlink" href="#dvas.database.model.MetaData.info" title="Permalink to this definition"></a></dt>
 <dd><p>Link to Info table</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>peewee.Model</p>
 </dd>
 </dl>
@@ -1262,7 +1336,7 @@ to a profile.</p>
 </section>
 <section id="module-dvas.database.search">
 <span id="dvas-database-search-module"></span><h2>dvas.database.search module<a class="headerlink" href="#module-dvas.database.search" title="Permalink to this heading"></a></h2>
-<p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
+<p>Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>Module contents: Local database exploring tools</p>
@@ -1288,7 +1362,7 @@ to a profile.</p>
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prm_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_empty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'id'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.search.SearchInfoExpr.eval" title="Permalink to this definition"></a></dt>
 <dd><p>Evaluate search expression</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>expr</strong> (<em>SearchInfoExpr, str</em>) – Expression to evaluate</p></li>
 <li><p><strong>prm_name</strong> (str, <cite>optional</cite>) – Search parameter. Default to None.</p></li>
@@ -1298,7 +1372,7 @@ to a profile.</p>
 <li><p><strong>recurse</strong> (bool, <cite>optional</cite>) – Search recursively DB content. Default to False.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>List of Info.info_id</p>
 </dd>
 </dl>
@@ -1322,13 +1396,13 @@ to a profile.</p>
 </ul>
 </dd>
 <dt>Shortcut expressions:</dt><dd><ul class="simple">
-<li><p>raw(): Same as tags(‘raw’)</p></li>
+<li><p>original(): Same as tags(‘original’)</p></li>
 <li><p>gdp(): Same as tags(‘gdp’)</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="field-list simple">
-<dt class="field-odd">Raises</dt>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>- SearchError</strong> – Error in search expression</p>
 </dd>
 </dl>
@@ -1339,7 +1413,7 @@ to a profile.</p>
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extract_global_view</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.search.SearchInfoExpr.extract_global_view" title="Permalink to this definition"></a></dt>
 <dd><p>Extract global view from DB</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.DataFrame</p>
 </dd>
 </dl>
@@ -1578,13 +1652,13 @@ the grammar.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="dvas.database.search.RawExpr">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.search.</span></span><span class="sig-name descname"><span class="pre">RawExpr</span></span><a class="headerlink" href="#dvas.database.search.RawExpr" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.database.search.OriginalExpr">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dvas.database.search.</span></span><span class="sig-name descname"><span class="pre">OriginalExpr</span></span><a class="headerlink" href="#dvas.database.search.OriginalExpr" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#dvas.database.search.TerminalSearchInfoExpr" title="dvas.database.search.TerminalSearchInfoExpr"><code class="xref py py-class docutils literal notranslate"><span class="pre">TerminalSearchInfoExpr</span></code></a></p>
-<p>Raw filter</p>
+<p>Original filter</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="dvas.database.search.RawExpr.get_filter">
-<span class="sig-name descname"><span class="pre">get_filter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.search.RawExpr.get_filter" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.database.search.OriginalExpr.get_filter">
+<span class="sig-name descname"><span class="pre">get_filter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dvas.database.search.OriginalExpr.get_filter" title="Permalink to this definition"></a></dt>
 <dd><p>Implement get_filter method</p>
 </dd></dl>
 
@@ -1659,7 +1733,7 @@ the grammar.</p>
 <em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">str_expr_dict</span></span><a class="headerlink" href="#dvas.database.search.SearchStrategyAC.str_expr_dict" title="Permalink to this definition"></a></dt>
 <dd><p>Str equivalent expression</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
@@ -1670,7 +1744,7 @@ the grammar.</p>
 <em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">qry</span></span><a class="headerlink" href="#dvas.database.search.SearchStrategyAC.qry" title="Permalink to this definition"></a></dt>
 <dd><p>Query</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>peewee.ModelSelect</p>
 </dd>
 </dl>
@@ -1681,7 +1755,7 @@ the grammar.</p>
 <em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#dvas.database.search.SearchStrategyAC.id" title="Permalink to this definition"></a></dt>
 <dd><p>Query main table id name</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1692,7 +1766,7 @@ the grammar.</p>
 <em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exclude</span></span><a class="headerlink" href="#dvas.database.search.SearchStrategyAC.exclude" title="Permalink to this definition"></a></dt>
 <dd><p>Field instances which should be excluded from the result dictionary.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list</p>
 </dd>
 </dl>
@@ -1710,7 +1784,7 @@ the grammar.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">str_expr_dict</span></span><a class="headerlink" href="#dvas.database.search.InfoStrategy.str_expr_dict" title="Permalink to this definition"></a></dt>
 <dd><p>Str equivalent expression</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
@@ -1721,7 +1795,7 @@ the grammar.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">qry</span></span><a class="headerlink" href="#dvas.database.search.InfoStrategy.qry" title="Permalink to this definition"></a></dt>
 <dd><p>Query</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>peewee.ModelSelect</p>
 </dd>
 </dl>
@@ -1732,7 +1806,7 @@ the grammar.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#dvas.database.search.InfoStrategy.id" title="Permalink to this definition"></a></dt>
 <dd><p>Query main table id name</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1743,7 +1817,7 @@ the grammar.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exclude</span></span><a class="headerlink" href="#dvas.database.search.InfoStrategy.exclude" title="Permalink to this definition"></a></dt>
 <dd><p>Field instances which should be excluded from the result dictionary.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list</p>
 </dd>
 </dl>
@@ -1761,7 +1835,7 @@ the grammar.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">str_expr_dict</span></span><a class="headerlink" href="#dvas.database.search.PrmStrategy.str_expr_dict" title="Permalink to this definition"></a></dt>
 <dd><p>Str equivalent expression</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
@@ -1772,7 +1846,7 @@ the grammar.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">qry</span></span><a class="headerlink" href="#dvas.database.search.PrmStrategy.qry" title="Permalink to this definition"></a></dt>
 <dd><p>Query</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>peewee.ModelSelect</p>
 </dd>
 </dl>
@@ -1783,7 +1857,7 @@ the grammar.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#dvas.database.search.PrmStrategy.id" title="Permalink to this definition"></a></dt>
 <dd><p>Query main table id name</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1794,7 +1868,7 @@ the grammar.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exclude</span></span><a class="headerlink" href="#dvas.database.search.PrmStrategy.exclude" title="Permalink to this definition"></a></dt>
 <dd><p>Field instances which should be excluded from the result dictionary.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list</p>
 </dd>
 </dl>
@@ -1812,7 +1886,7 @@ the grammar.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">str_expr_dict</span></span><a class="headerlink" href="#dvas.database.search.ObjectStrategy.str_expr_dict" title="Permalink to this definition"></a></dt>
 <dd><p>Str equivalent expression</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
@@ -1823,7 +1897,7 @@ the grammar.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">qry</span></span><a class="headerlink" href="#dvas.database.search.ObjectStrategy.qry" title="Permalink to this definition"></a></dt>
 <dd><p>Query</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>peewee.ModelSelect</p>
 </dd>
 </dl>
@@ -1834,7 +1908,7 @@ the grammar.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#dvas.database.search.ObjectStrategy.id" title="Permalink to this definition"></a></dt>
 <dd><p>Query main table id name</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -1845,7 +1919,7 @@ the grammar.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exclude</span></span><a class="headerlink" href="#dvas.database.search.ObjectStrategy.exclude" title="Permalink to this definition"></a></dt>
 <dd><p>Field instances which should be excluded from the result dictionary.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list</p>
 </dd>
 </dl>
@@ -1867,7 +1941,7 @@ the grammar.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2022, MeteoSwiss.</p>
+    <p>&#169; Copyright 2020-2023, MeteoSwiss.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

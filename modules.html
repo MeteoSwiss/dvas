@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Modules &mdash; dvas  documentation</title>
@@ -11,10 +11,9 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
@@ -29,14 +28,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> dvas
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            dvas
           </a>
               <div class="version">
-                0.7.1
+                1.0.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -46,12 +49,10 @@
 <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="running_recipes.html">Running dvas recipes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="creating_recipes.html">Creating dvas recipes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="acknowledge.html">Acknowledging dvas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">License &amp; Copyright</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/MeteoSwiss-MDA/dvas/blob/develop/CONTRIBUTING.md">Contributing</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/MeteoSwiss-MDA/dvas">Github repository</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Modules</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="modules/dvas.html">dvas package</a></li>
@@ -74,8 +75,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Modules</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Modules</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/modules.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -124,6 +125,7 @@
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.tools.html">dvas.tools package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="modules/dvas.tools.html#subpackages">Subpackages</a></li>
 <li class="toctree-l4"><a class="reference internal" href="modules/dvas.tools.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/dvas.tools.html#module-dvas.tools.chunks">dvas.tools.chunks module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="modules/dvas.tools.html#module-dvas.tools.math">dvas.tools.math module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="modules/dvas.tools.html#module-dvas.tools.sync">dvas.tools.sync module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="modules/dvas.tools.html#module-dvas.tools.tools">dvas.tools.tools module</a></li>
@@ -142,7 +144,7 @@
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.dvas.Database"><code class="docutils literal notranslate"><span class="pre">Database</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="modules/dvas.html#dvas.dvas.Database.init"><code class="docutils literal notranslate"><span class="pre">Database.init()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="modules/dvas.html#dvas.dvas.Database.refresh_db"><code class="docutils literal notranslate"><span class="pre">Database.refresh_db()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="modules/dvas.html#dvas.dvas.Database.fetch_raw_data"><code class="docutils literal notranslate"><span class="pre">Database.fetch_raw_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/dvas.html#dvas.dvas.Database.fetch_original_data"><code class="docutils literal notranslate"><span class="pre">Database.fetch_original_data()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="modules/dvas.html#dvas.dvas.Database.explore"><code class="docutils literal notranslate"><span class="pre">Database.explore()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="modules/dvas.html#dvas.dvas.Database.extract_global_view"><code class="docutils literal notranslate"><span class="pre">Database.extract_global_view()</span></code></a></li>
 </ul>
@@ -152,7 +154,10 @@
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.dvas.MultiGDPProfile"><code class="docutils literal notranslate"><span class="pre">MultiGDPProfile</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="modules/dvas.html#module-dvas.dynamic">dvas.dynamic module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/dvas.html#module-dvas.dynamic">dvas.dynamic module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.dynamic.DATA_IN_DB"><code class="docutils literal notranslate"><span class="pre">DATA_IN_DB</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="modules/dvas.html#module-dvas.environ">dvas.environ module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.environ.ABCSingleInstanceMeta"><code class="docutils literal notranslate"><span class="pre">ABCSingleInstanceMeta</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.environ.VariableManager"><code class="docutils literal notranslate"><span class="pre">VariableManager</span></code></a><ul>
@@ -231,50 +236,63 @@
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.PRF_TDT"><code class="docutils literal notranslate"><span class="pre">PRF_TDT</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.PRF_ALT"><code class="docutils literal notranslate"><span class="pre">PRF_ALT</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.PRF_VAL"><code class="docutils literal notranslate"><span class="pre">PRF_VAL</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.PRF_UCR"><code class="docutils literal notranslate"><span class="pre">PRF_UCR</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.PRF_UCS"><code class="docutils literal notranslate"><span class="pre">PRF_UCS</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.PRF_UCT"><code class="docutils literal notranslate"><span class="pre">PRF_UCT</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.PRF_UCU"><code class="docutils literal notranslate"><span class="pre">PRF_UCU</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.PRF_FLG"><code class="docutils literal notranslate"><span class="pre">PRF_FLG</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.TAG_NONE"><code class="docutils literal notranslate"><span class="pre">TAG_NONE</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.TAG_NONE_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_NONE_DESC</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.TAG_RAW"><code class="docutils literal notranslate"><span class="pre">TAG_RAW</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.TAG_RAW_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_RAW_DESC</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.TAG_ORIGINAL"><code class="docutils literal notranslate"><span class="pre">TAG_ORIGINAL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.TAG_ORIGINAL_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_ORIGINAL_DESC</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.TAG_CLN"><code class="docutils literal notranslate"><span class="pre">TAG_CLN</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.TAG_CLN_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_CLN_DESC</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.TAG_GDP"><code class="docutils literal notranslate"><span class="pre">TAG_GDP</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.TAG_GDP_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_GDP_DESC</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.TAG_1S"><code class="docutils literal notranslate"><span class="pre">TAG_1S</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.TAG_1S_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_1S_DESC</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.TAG_SYNC"><code class="docutils literal notranslate"><span class="pre">TAG_SYNC</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.TAG_SYNC_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_SYNC_DESC</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.TAG_GDP"><code class="docutils literal notranslate"><span class="pre">TAG_GDP</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.TAG_GDP_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_GDP_DESC</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.TAG_CWS"><code class="docutils literal notranslate"><span class="pre">TAG_CWS</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.TAG_CWS_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_CWS_DESC</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.TAG_DTA"><code class="docutils literal notranslate"><span class="pre">TAG_DTA</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.TAG_DTA_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_DTA_DESC</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.TAG_EMPTY"><code class="docutils literal notranslate"><span class="pre">TAG_EMPTY</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.TAG_EMPTY_DESC"><code class="docutils literal notranslate"><span class="pre">TAG_EMPTY_DESC</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_EMPTY"><code class="docutils literal notranslate"><span class="pre">FLG_EMPTY</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_EMPTY_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_EMPTY_DESC</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_INVALID"><code class="docutils literal notranslate"><span class="pre">FLG_INVALID</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_INVALID_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_INVALID_DESC</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_NOPRF"><code class="docutils literal notranslate"><span class="pre">FLG_NOPRF</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_NOPRF_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_NOPRF_DESC</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_ISINVALID"><code class="docutils literal notranslate"><span class="pre">FLG_ISINVALID</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_ISINVALID_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_ISINVALID_DESC</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_WASINVALID"><code class="docutils literal notranslate"><span class="pre">FLG_WASINVALID</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_WASINVALID_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_WASINVALID_DESC</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_INTERP"><code class="docutils literal notranslate"><span class="pre">FLG_INTERP</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_INTERP_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_INTERP_DESC</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_INCOMPATIBLE"><code class="docutils literal notranslate"><span class="pre">FLG_INCOMPATIBLE</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_INCOMPATIBLE_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_INCOMPATIBLE_DESC</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_HASCWS"><code class="docutils literal notranslate"><span class="pre">FLG_HASCWS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_HASCWS_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_HASCWS_DESC</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_PRELAUNCH"><code class="docutils literal notranslate"><span class="pre">FLG_PRELAUNCH</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_PRELAUNCH_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_PRELAUNCH_DESC</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_ASCENT"><code class="docutils literal notranslate"><span class="pre">FLG_ASCENT</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_ASCENT_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_ASCENT_DESC</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_DESCENT"><code class="docutils literal notranslate"><span class="pre">FLG_DESCENT</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_DESCENT_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_DESCENT_DESC</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_HASCWS"><code class="docutils literal notranslate"><span class="pre">FLG_HASCWS</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_HASCWS_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_HASCWS_DESC</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_PBL"><code class="docutils literal notranslate"><span class="pre">FLG_PBL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_PBL_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_PBL_DESC</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_FT"><code class="docutils literal notranslate"><span class="pre">FLG_FT</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_FT_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_FT_DESC</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_UTLS"><code class="docutils literal notranslate"><span class="pre">FLG_UTLS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_UTLS_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_UTLS_DESC</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_MUS"><code class="docutils literal notranslate"><span class="pre">FLG_MUS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.FLG_MUS_DESC"><code class="docutils literal notranslate"><span class="pre">FLG_MUS_DESC</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.MTDTA_FIRST"><code class="docutils literal notranslate"><span class="pre">MTDTA_FIRST</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.MTDTA_LAUNCH"><code class="docutils literal notranslate"><span class="pre">MTDTA_LAUNCH</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.MTDTA_BURST"><code class="docutils literal notranslate"><span class="pre">MTDTA_BURST</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.MTDTA_TROPOPAUSE"><code class="docutils literal notranslate"><span class="pre">MTDTA_TROPOPAUSE</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.MTDTA_PBL"><code class="docutils literal notranslate"><span class="pre">MTDTA_PBL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.MTDTA_PBLH"><code class="docutils literal notranslate"><span class="pre">MTDTA_PBLH</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.MTDTA_UTLSMIN"><code class="docutils literal notranslate"><span class="pre">MTDTA_UTLSMIN</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.MTDTA_UTLSMAX"><code class="docutils literal notranslate"><span class="pre">MTDTA_UTLSMAX</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.MTDTA_MUSMIN"><code class="docutils literal notranslate"><span class="pre">MTDTA_MUSMIN</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dvas.html#dvas.hardcoded.MTDTA_SYNOP"><code class="docutils literal notranslate"><span class="pre">MTDTA_SYNOP</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="modules/dvas.html#module-dvas.helper">dvas.helper module</a><ul>
@@ -350,7 +368,9 @@
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas_recipes.uaii2022.html">dvas_recipes.uaii2022 package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="modules/dvas_recipes.uaii2022.html#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="modules/dvas_recipes.uaii2022.html#module-dvas_recipes.uaii2022.basic">dvas_recipes.uaii2022.basic module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/dvas_recipes.uaii2022.html#module-dvas_recipes.uaii2022.biglambda">dvas_recipes.uaii2022.biglambda module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="modules/dvas_recipes.uaii2022.html#module-dvas_recipes.uaii2022.dtas">dvas_recipes.uaii2022.dtas module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="modules/dvas_recipes.uaii2022.html#module-dvas_recipes.uaii2022.export">dvas_recipes.uaii2022.export module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="modules/dvas_recipes.uaii2022.html#module-dvas_recipes.uaii2022.flgs">dvas_recipes.uaii2022.flgs module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="modules/dvas_recipes.uaii2022.html#module-dvas_recipes.uaii2022.gdps">dvas_recipes.uaii2022.gdps module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="modules/dvas_recipes.uaii2022.html#module-dvas_recipes.uaii2022.plots">dvas_recipes.uaii2022.plots module</a></li>
@@ -362,6 +382,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="modules/dvas_recipes.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="modules/dvas_recipes.html#module-dvas_recipes.dynamic">dvas_recipes.dynamic module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/dvas_recipes.html#dvas_recipes.dynamic.RECIPE"><code class="docutils literal notranslate"><span class="pre">RECIPE</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas_recipes.html#dvas_recipes.dynamic.CURRENT_FLIGHT"><code class="docutils literal notranslate"><span class="pre">CURRENT_FLIGHT</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas_recipes.html#dvas_recipes.dynamic.CURRENT_VAR"><code class="docutils literal notranslate"><span class="pre">CURRENT_VAR</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas_recipes.html#dvas_recipes.dynamic.INDEXES"><code class="docutils literal notranslate"><span class="pre">INDEXES</span></code></a></li>
@@ -387,6 +408,7 @@
 <li class="toctree-l2"><a class="reference internal" href="modules/dvas_recipes.html#module-dvas_recipes.recipe">dvas_recipes.recipe module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas_recipes.html#dvas_recipes.recipe.for_each_flight"><code class="docutils literal notranslate"><span class="pre">for_each_flight()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas_recipes.html#dvas_recipes.recipe.for_each_var"><code class="docutils literal notranslate"><span class="pre">for_each_var()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dvas_recipes.html#dvas_recipes.recipe.for_each_oscar_var"><code class="docutils literal notranslate"><span class="pre">for_each_oscar_var()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas_recipes.html#dvas_recipes.recipe.RecipeStep"><code class="docutils literal notranslate"><span class="pre">RecipeStep</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="modules/dvas_recipes.html#dvas_recipes.recipe.RecipeStep.__init__"><code class="docutils literal notranslate"><span class="pre">RecipeStep.__init__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="modules/dvas_recipes.html#dvas_recipes.recipe.RecipeStep.step_id"><code class="docutils literal notranslate"><span class="pre">RecipeStep.step_id</span></code></a></li>
@@ -413,6 +435,7 @@
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas_recipes.html#dvas_recipes.utils.fn_suffix"><code class="docutils literal notranslate"><span class="pre">fn_suffix()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas_recipes.html#dvas_recipes.utils.format_tags"><code class="docutils literal notranslate"><span class="pre">format_tags()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/dvas_recipes.html#dvas_recipes.utils.rsid_tags"><code class="docutils literal notranslate"><span class="pre">rsid_tags()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/dvas_recipes.html#dvas_recipes.utils.cws_vars"><code class="docutils literal notranslate"><span class="pre">cws_vars()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -432,7 +455,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2022, MeteoSwiss.</p>
+    <p>&#169; Copyright 2020-2023, MeteoSwiss.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

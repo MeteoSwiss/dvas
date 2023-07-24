@@ -24,4 +24,4 @@ If not, see <https://www.gnu.org/licenses/>.
 
 .. rubric:: Copyright
 
-The dvas Copyright (2020-2021) is owned by MeteoSwiss.
+The dvas Copyright (2020-2023) is owned by MeteoSwiss.
