@@ -1,5 +1,5 @@
 
-# dvas: Data Visualization and Analysis Software
+# dvas: Data Visualization and Analysis Software (for the UAII 2022 field campaign)
 
 [![github](https://img.shields.io/github/release/MeteoSwiss-MDA/dvas.svg)](https://github.com/MeteoSwiss/dvas/releases)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8177528.svg)](https://doi.org/10.5281/zenodo.8177528)
