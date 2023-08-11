@@ -16,6 +16,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Added:
  - [fpavogt, 24.07.2023] Add DOI & pypi info to docs following first public release
 ### Fixed:
+ - [fpavogt, 11.08.2023] Fixes #288 [GDP SHC info is now extracted by dvas]
 ### Changed:
  - [fpavogt, 11.08.2023] Request python>=3.11 and pandas>=2.0
  - [fpavogt, 24.07.2023] Change Github Issues to use the new format

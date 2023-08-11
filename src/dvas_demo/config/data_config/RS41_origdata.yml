@@ -184,6 +184,10 @@ _RS41-GDP_001:
         burst_timestamp: "to_datetime(get('g.Measurement.BurstpointDatetime'))"
         gruan_tropopause: "get('g.Measurement.TropopauseGeopotHeight')"
         synop_clouds: "get('g.SurfaceObs.SynopClouds')"
+        preflight_shc_rh_sonde: "get('g.GroundCheck.SHC.SensorRelativeHumidity')"
+        preflight_shc_rh_ref: "get('g.GroundCheck.SHC.RefRelativeHumidity')"
+        preflight_shc_temp_sonde: "get('g.GroundCheck.SHC.SensorTemperature')"
+        preflight_shc_temp_ref: "get('g.GroundCheck.SHC.RefTemperature')"
 
     # -- ORIG DATA ----------------------------------
     _time:

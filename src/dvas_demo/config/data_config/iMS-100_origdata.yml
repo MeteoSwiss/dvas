@@ -81,6 +81,10 @@ _IMS-100-BETA_002:
         launch_timestamp: "to_datetime(get('g.Measurement.StartTime'))"
         burst_timestamp: "to_datetime(get('g.Measurement.BurstpointDatetime'))"
         gruan_tropopause: "get('g.Measurement.TropopauseGeopotHeight')"
+        preflight_shc_rh_sonde: "get('g.GroundCheck.UAII2022-SHC05_001.SensorRelativeHumidity')"
+        preflight_shc_rh_ref: "get('g.GroundCheck.UAII2022-SHC05_001.RefRelativeHumidity')"
+        preflight_shc_temp_sonde: "get('g.GroundCheck.UAII2022-SHC05_001.SensorTemperature')"
+        preflight_shc_temp_ref: "get('g.GroundCheck.UAII2022-SHC05_001.RefTemperature')"
 
     # -- ORIG DATA ----------------------------------
     _time:
