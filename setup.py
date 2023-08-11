@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -12,10 +12,10 @@ from pathlib import Path
 from setuptools import setup, find_packages  # Always prefer setuptools over distutils
 
 # Run the version file
-with open(Path('.') / 'src' / 'dvas' / 'version.py') as fid:
+with open(Path('.') / 'src' / 'dvas' / 'version.py', encoding='utf-8') as fid:
     version = next(line.split("'")[1] for line in fid.readlines() if 'VERSION' in line)
 
-with open("README.md", "r") as fh:
+with open("README.md", "r", encoding='utf-8') as fh:
     long_description = fh.read()
 
 setup(
@@ -47,7 +47,7 @@ setup(
         "matplotlib",
         "netcdf4",
         'numpy',
-        "pandas>=1.3.0",
+        "pandas>=2.0.0",
         "peewee",
         "pytz",
         "ruamel-yaml",
