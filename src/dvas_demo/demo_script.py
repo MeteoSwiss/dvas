@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -72,7 +72,7 @@ if __name__ == '__main__':
     DB.fetch_original_data(
         [
             'time', 'gph', 'gph_uct', 'gph_ucu',
-            'temp', 'temp_flg', 'temp_ucs', 'temp_uct'
+            'temp', 'temp_flag', 'temp_ucs', 'temp_uct'
         ],
         strict=True
     )
@@ -156,9 +156,9 @@ if __name__ == '__main__':
 
     # Flags can be used to mark specific profile elements. The possible flags, for a given
     # Profile, are accessed as follows:
-    print('\nFlag ids and associated meaning:')
+    print('\nFlag names and associated bit position and meaning:')
     for (flg_name, item) in prfs[0].flg_names.items():
-        print(f"  {flg_name}: {item['flg_desc']}")
+        print(f"  {flg_name}: {item['bit_pos']} - {item['flg_desc']}")
 
     # To flag specific elements of a given profile, use the internal methods:
     prfs[0].set_flg(FLG_FT, True, index=pd.Index([0, 1, 2]))
@@ -166,6 +166,11 @@ if __name__ == '__main__':
     # Let's check to see that the data was actually flagged
     print(f'\nDid I flag only the first three steps with a "{FLG_FT}" flag ?')
     print(prfs[0].has_flg(FLG_FT))
+
+    # What about the flags fed manually via a CSV file (... .flg) ?
+    print(
+        '\nIs the user-set "op_error" flag set correctly for the first point (via the .flg file) ?')
+    print(prfs[11].has_flg('op_error'))
 
     # FLags are used to characterize individual measurments. Tags, on the other hand, are used to
     # characterize entire Profiles. They are useful, for example, to identify if a Profile has been

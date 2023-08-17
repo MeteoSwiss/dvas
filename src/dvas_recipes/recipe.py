@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -21,7 +21,7 @@ import numpy as np
 from dvas.environ import path_var
 from dvas.dvas import Log
 from dvas.dvas import Database as DB
-from dvas.hardcoded import PRF_TDT, PRF_ALT
+from dvas.hardcoded import PRF_TDT, PRF_ALT, FLG_PRM_NAME_SUFFIX
 import dvas.plots.utils as dpu
 from dvas import dynamic as dyn
 
@@ -309,9 +309,6 @@ class Recipe:
         if rcp_dyn.N_CPUS is None or rcp_dyn.N_CPUS > cpu_count():
             rcp_dyn.N_CPUS = cpu_count()
 
-        # Store the list of flags to be dropped during analysis
-        rcp_dyn.DROP_FLGS = rcp_data['rcp_params']['general']['drop_flgs']
-
         # Store the index names
         rcp_dyn.INDEXES = rcp_data['rcp_params']['index']
 
@@ -367,10 +364,14 @@ class Recipe:
         DB.init()
 
         # Fetch the original data
-        DB.fetch_original_data([rcp_dyn.INDEXES[PRF_TDT]] + [rcp_dyn.INDEXES[PRF_ALT]] +
-                               list(rcp_dyn.ALL_VARS) +
+        DB.fetch_original_data([rcp_dyn.INDEXES[PRF_TDT]] +  # The reference times
+                               [rcp_dyn.INDEXES[PRF_ALT]] +  # The reference altitudes
+                               list(rcp_dyn.ALL_VARS) +  # All the primary variables
+                               # All the flags associated to the primary variables
+                               [f'{item}{FLG_PRM_NAME_SUFFIX}' for item in rcp_dyn.ALL_VARS] +
+                               # All the necessary uncertainties
                                [rcp_dyn.ALL_VARS[var][uc] for var in rcp_dyn.ALL_VARS
-                               for uc in rcp_dyn.ALL_VARS[var]], strict=True)
+                                for uc in rcp_dyn.ALL_VARS[var]], strict=True)
 
     @staticmethod
     def get_all_flights_from_db():

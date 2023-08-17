@@ -1,4 +1,4 @@
-# Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+# Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.
 #
 # Distributed under the terms of the GNU General Public License v3.0 or later.
 #
@@ -211,6 +211,7 @@ _RS41-GDP_001:
         value: get('temp_uc_tcor', 'div2')  # Go from K=2 to K=1
     _temp_ucu:
         value: get('temp_uc_ucor', 'div2')  # Go from K=2 to K=1
+    # What follows illustrates how one could feed manual flags via a .flg CSV file.
     #_temp_flag:
     #    value: get(0)
     #    csv_use_default: True
