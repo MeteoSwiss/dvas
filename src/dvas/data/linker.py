@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -738,10 +738,10 @@ class FlgGDPHandler(GDPHandler):
 
         # Set read_csv arguments
         # (Add usecols, squeeze and engine arguments)
-        original_csv_read_args.update({'usecols': [field_id], 'squeeze': True, 'engine': 'python'})
+        original_csv_read_args.update({'usecols': [field_id], 'engine': 'python'})
 
         # Read original csv
-        data = pd.read_csv(data_file_path, **original_csv_read_args)
+        data = pd.read_csv(data_file_path, **original_csv_read_args).squeeze("columns")
 
         return data
 
