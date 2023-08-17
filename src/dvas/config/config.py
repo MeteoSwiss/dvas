@@ -270,7 +270,7 @@ class OneLayerConfigManager(ConfigManager):
         else:
             if len(doc_in) == 0:
                 logger.debug('No parameter file found for CLASS_KEY: %s', self.CLASS_KEY)
-                #raise Exception()
+                # raise Exception()
 
             for filepath in doc_in:
                 try:
@@ -1029,7 +1029,7 @@ class ToDatetime(NonTerminalConfigExprInterpreter):
         # Force the timezone to UTC by default
         if out.tzinfo is None:
             out = out.replace(tzinfo=pytz.UTC)
-            logger.error('Setting undefined timezone to UTC for "%s"', out)
+            logger.warning('Setting undefined timezone to UTC for "%s"', out)
 
         return out
 
