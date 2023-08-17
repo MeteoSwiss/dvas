@@ -14,6 +14,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [v1.1.0]
 ### Added:
+ - [fpavogt, 17.08.2023] Enable the ingestion of manual flag files by the uaii2022 recipe
  - [fpavogt, 24.07.2023] Add DOI & pypi info to docs following first public release
 ### Fixed:
  - [fpavogt, 11.08.2023] Fixes #288 [GDP SHC info is now extracted by dvas]

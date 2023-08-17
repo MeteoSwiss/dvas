@@ -106,6 +106,12 @@ rcp_steps:
         resampling_freq: '1s' # Time step to resample onto, with format 'Xs'
         interp_dist: 1 # Distance to the nearest measurement, in s, from which a resampled point is forced to NaN
         crop_descent: True # If True, descent data will be cropped for good. Else, it is simply flagged.
+        # The following option can be used - but it is not recommended.
+        # As long as one uses the gph to synchronize profiles, we need all the variables
+        # to have the same aray length so that the sync is applicable to all. This implies that they
+        # should all be flagged in the same way, so that the cropping is identical for all.
+        # It can absolutely be done, but it is *a lot* easier to simply preface specific lines with
+        # a '#' in the original MDP files to crop them from the analysis without issues.
         # crop_flgs: # List of flag bit ids (set in flg_config.yml) to crop from the profiles
           # - op_error # data affected by operational errors (e.g. wrong surface data)
 
