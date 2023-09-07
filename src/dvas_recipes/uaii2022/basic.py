@@ -154,7 +154,16 @@ def cleanup_steps(prfs, resampling_freq, interp_dist, crop_descent, crop_flgs,
 
     # Crop any prelaunch data
     for (ind, prf) in enumerate(prfs):
-        prfs[ind].data = prf.data.loc[~prf.has_flg(FLG_PRELAUNCH)]
+
+        # Crop pre-flight points, if warranted
+        if prf.has_flg(FLG_PRELAUNCH).any():
+            logger.info('Cropping pre-launch datapoints (%s)', prf.info.src)
+            prfs[ind].data = prf.data.loc[~prf.has_flg(FLG_PRELAUNCH)]
+            # Update the metadata (fixes #295)
+            # Note that we are here BEFORE the resampling takes place. This implies that the
+            # new value of MTDTA_FIRST cannot be computed by counting the number of cropped
+            # time steps. It must be set to have the same value as MTDTA_LAUNCH
+            prfs[ind].info.add_metadata(MTDTA_FIRST, prf.info.metadata[MTDTA_LAUNCH])
 
     # Basic sanity check of the input
     if crop_flgs is None:
