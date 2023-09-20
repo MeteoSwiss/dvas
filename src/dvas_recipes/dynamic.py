@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -40,6 +40,3 @@ CHUNK_SIZE = 150
 
 #: int: number of cpus to use to run the dvas recipe
 N_CPUS = 1
-
-#: list: flags to drop during the analysis
-DROP_FLGS = []

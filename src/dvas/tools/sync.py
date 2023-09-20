@@ -26,9 +26,9 @@ logger = logging.getLogger(__name__)
 
 
 @log_func_call(logger)
-def get_sync_shifts_from_starttime(prfs):
+def get_sync_shifts_from_time(prfs):
     """ A routine that estimates the necessary synchronization shifts between profiles based on the
-    GNSS start time value.
+    measurement times.
 
     Args:
         prfs (dvas.data.data.MultiRSProfiles): list of Profiles to sync.
@@ -42,9 +42,10 @@ def get_sync_shifts_from_starttime(prfs):
         if MTDTA_FIRST not in prf.info.metadata.keys():
             raise DvasError(f"'{MTDTA_FIRST}' not found in metadata for: {prf.info.src}")
 
-    # Extract all the start times, not forgetting to account for any data cropping that may
-    # have taken place since it was loaded (i.e. get the FIRST DATETIME from the metadata,
-    # and add the first time delta - which should be 0 unless descent data was cropped).
+    # Extract all the measurement times of the first profile points, not forgetting to account for
+    # any data cropping that may have taken place since it was loaded (i.e. get the MTDTA_FIRST
+    # from the metadata, and add the first time delta - which should be 0 unless descent data was
+    # cropped).
     start_times = [None if prf.info.metadata[MTDTA_FIRST] is None else
                    prf.info.metadata[MTDTA_FIRST] + prf.data.index.get_level_values(PRF_TDT)[0]
                    for prf in prfs]

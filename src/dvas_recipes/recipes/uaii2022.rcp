@@ -42,8 +42,6 @@ rcp_params:
         plot_show: False
         chunk_size: 200
         n_cpus: # If set, will cap the number of cpus used to run the dvas recipe
-        drop_flgs: # List of flags to drop from the analysis
-            - descent
 
     # Variables to process using the recipe, and associated uncertainties.
     index:
@@ -108,6 +106,14 @@ rcp_steps:
         resampling_freq: '1s' # Time step to resample onto, with format 'Xs'
         interp_dist: 1 # Distance to the nearest measurement, in s, from which a resampled point is forced to NaN
         crop_descent: True # If True, descent data will be cropped for good. Else, it is simply flagged.
+        # The following option can be used - but it is not recommended.
+        # As long as one uses the gph to synchronize profiles, we need all the variables
+        # to have the same array length so that the sync is applicable to all. This implies that they
+        # should all be flagged in the same way, so that the cropping is identical for all.
+        # It can absolutely be done, but it is *a lot* easier to simply preface specific lines with
+        # a '#' in the original MDP files to crop them from the analysis without issues.
+        crop_flgs: # List of flag bit ids (set in flg_config.yml) to crop from the profiles
+          # - op_error # data affected by operational errors (e.g. wrong surface data)
 
     # Profile synchronization on a flight-per-flight basis.
     - fct: uaii2022.sync.sync_flight
@@ -119,6 +125,10 @@ rcp_steps:
         global_match_var: 'gph' # Variable to match globally
         valid_value_range: [4000, 6000] # If a len(2) list is set, global_match_var values outside the range will be ignored.
         sync_wrt_mid: (gdp)RS41 # Radiosonde model id against which to synchronize all other profiles.
+        use_time_for_mids: ['iMet-54'] # mids in this list will ignore gph sync values, and use measurement times instead ...
+        use_time_wrt_mid: '(gdp)iMS-100' # ... with respect to this reference.
+        manual_tweaks: # List of individual cases for which to apply an (additive) correction to the sync shifts derived automatically (via gph or time)
+          - ['F64', 'DFM-17#1', -12] # [fid, 'mid#pid', correction]
         crop_pre_gdp: True # It True, profiles will be cropped at the first GDP point.
 
     # Simple plotting step of the complete profiles for all the variables.
