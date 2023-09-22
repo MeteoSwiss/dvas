@@ -287,7 +287,7 @@ class Recipe:
         Log.start_log(rcp_data['rcp_params']['general']['log_mode'],
                       level=loglvl)
 
-        logger.info('Launching the %s recipe with dvas %s.', self._name, dvas_version)
+        logger.info('Launching the %s recipe with dvas v%s', self._name, dvas_version)
         logger.info('orig_data_path was set to: %s', path_var.orig_data_path)
         logger.info('output_path was set to: %s', path_var.output_path)
 
