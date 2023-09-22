@@ -19,6 +19,7 @@ import numpy as np
 
 # Import from dvas
 from dvas.environ import path_var
+from dvas import __version__ as dvas_version
 from dvas.dvas import Log
 from dvas.dvas import Database as DB
 from dvas.hardcoded import PRF_TDT, PRF_ALT, FLG_PRM_NAME_SUFFIX
@@ -286,7 +287,7 @@ class Recipe:
         Log.start_log(rcp_data['rcp_params']['general']['log_mode'],
                       level=loglvl)
 
-        logger.info('Launching the %s recipe.', self._name)
+        logger.info('Launching the %s recipe with dvas %s.', self._name, dvas_version)
         logger.info('orig_data_path was set to: %s', path_var.orig_data_path)
         logger.info('output_path was set to: %s', path_var.output_path)
 
@@ -428,7 +429,7 @@ class Recipe:
 
         # Raise an error if no flights were specified/foudn in the DB
         if len(rcp_dyn.ALL_FLIGHTS) == 0:
-            raise DvasRecipesError('Ouch ! No flights to process !')
+            raise DvasRecipesError('No flights to process !')
 
         # Now that everything is in place, all that is required at this point is to launch each step
         # one after the other. If warranted, lock the execution of steps until a certain one is
