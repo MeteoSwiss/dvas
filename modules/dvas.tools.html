@@ -11,11 +11,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -35,7 +35,7 @@
             dvas
           </a>
               <div class="version">
-                1.0.0
+                1.1.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -108,13 +108,13 @@
            <div itemprop="articleBody">
              
   <section id="module-dvas.tools">
-<span id="dvas-tools-package"></span><h1>dvas.tools package<a class="headerlink" href="#module-dvas.tools" title="Permalink to this heading"></a></h1>
+<span id="dvas-tools-package"></span><h1>dvas.tools package<a class="headerlink" href="#module-dvas.tools" title="Link to this heading"></a></h1>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>This sub-package includes all the tools required for the dvas data processing.</p>
 <section id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading"></a></h2>
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="dvas.tools.dtas.html">dvas.tools.dtas package</a><ul>
@@ -149,17 +149,17 @@
 </div>
 </section>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 </section>
 <section id="module-dvas.tools.chunks">
-<span id="dvas-tools-chunks-module"></span><h2>dvas.tools.chunks module<a class="headerlink" href="#module-dvas.tools.chunks" title="Permalink to this heading"></a></h2>
+<span id="dvas-tools-chunks-module"></span><h2>dvas.tools.chunks module<a class="headerlink" href="#module-dvas.tools.chunks" title="Link to this heading"></a></h2>
 <p>Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>This module contains GRUAN-related utilities.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas.tools.chunks.merge_bin">
-<span class="sig-prename descclassname"><span class="pre">dvas.tools.chunks.</span></span><span class="sig-name descname"><span class="pre">merge_bin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wx_ps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binning</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.chunks.merge_bin" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.chunks.</span></span><span class="sig-name descname"><span class="pre">merge_bin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wx_ps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binning</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.chunks.merge_bin" title="Link to this definition"></a></dt>
 <dd><p>Small utility function to sum individual profiles into bins.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -176,7 +176,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas.tools.chunks.weighted_mean">
-<span class="sig-prename descclassname"><span class="pre">dvas.tools.chunks.</span></span><span class="sig-name descname"><span class="pre">weighted_mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_chunk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'arithmetic'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.chunks.weighted_mean" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.chunks.</span></span><span class="sig-name descname"><span class="pre">weighted_mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_chunk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'arithmetic'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.chunks.weighted_mean" title="Link to this definition"></a></dt>
 <dd><p>Compute the (respective) weighted mean of the ‘tdt’, ‘val’, and ‘alt’ columns of
 a pd.DataFrame, with weights defined in the ‘w_ps’ column. Also returns the Jacobian matrix for
 <cite>val</cite> to enable accurate error propagation.</p>
@@ -220,7 +220,7 @@ See fancy_nansum() for details.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas.tools.chunks.delta">
-<span class="sig-prename descclassname"><span class="pre">dvas.tools.chunks.</span></span><span class="sig-name descname"><span class="pre">delta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_chunk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'arithmetic'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.chunks.delta" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.chunks.</span></span><span class="sig-name descname"><span class="pre">delta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_chunk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'arithmetic'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.chunks.delta" title="Link to this definition"></a></dt>
 <dd><p>Compute the delta of the ‘tdt’, ‘val’, and ‘alt’ columns of a pd.DataFrame containing
 exactly 2 Profiles. Also returns the Jacobian matrix for <cite>val</cite> to enable accurate error
 propagation.</p>
@@ -269,7 +269,7 @@ column name, i.e.:</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas.tools.chunks.biglambda">
-<span class="sig-prename descclassname"><span class="pre">dvas.tools.chunks.</span></span><span class="sig-name descname"><span class="pre">biglambda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_chunk</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.chunks.biglambda" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.chunks.</span></span><span class="sig-name descname"><span class="pre">biglambda</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_chunk</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.chunks.biglambda" title="Link to this definition"></a></dt>
 <dd><p>Compute the Lambda value (which is the RMS) of the ‘val’ column of a pd.DataFrame containing
 a series of measurements, possibly from distinct profiles and out-of-order.
 Also returns the Jacobian matrix for <cite>val</cite> to enable accurate error propagation.</p>
@@ -302,7 +302,7 @@ column name, i.e.:</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas.tools.chunks.process_chunk">
-<span class="sig-prename descclassname"><span class="pre">dvas.tools.chunks.</span></span><span class="sig-name descname"><span class="pre">process_chunk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_chunk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'weighted</span> <span class="pre">arithmetic</span> <span class="pre">mean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_V_mats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cov_mat_max_side</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.chunks.process_chunk" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.chunks.</span></span><span class="sig-name descname"><span class="pre">process_chunk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_chunk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'weighted</span> <span class="pre">arithmetic</span> <span class="pre">mean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_V_mats</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cov_mat_max_side</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.chunks.process_chunk" title="Link to this definition"></a></dt>
 <dd><p>Process a DataFrame chunk and propagate the errors.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -355,14 +355,14 @@ See fancy_nansum() for details.</p>
 
 </section>
 <section id="module-dvas.tools.math">
-<span id="dvas-tools-math-module"></span><h2>dvas.tools.math module<a class="headerlink" href="#module-dvas.tools.math" title="Permalink to this heading"></a></h2>
+<span id="dvas-tools-math-module"></span><h2>dvas.tools.math module<a class="headerlink" href="#module-dvas.tools.math" title="Link to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>Module contents: Specialized mathematical operation on data</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas.tools.math.crosscorr">
-<span class="sig-prename descclassname"><span class="pre">dvas.tools.math.</span></span><span class="sig-name descname"><span class="pre">crosscorr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datay</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wrap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'kendall'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.math.crosscorr" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.math.</span></span><span class="sig-name descname"><span class="pre">crosscorr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datay</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wrap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'kendall'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.math.crosscorr" title="Link to this definition"></a></dt>
 <dd><p>Lag-N cross correlation.
 If wrap is False, shifted data are filled with NaNs.</p>
 <dl class="field-list simple">
@@ -383,16 +383,16 @@ Default is ‘kendall’</p></li>
 
 </section>
 <section id="module-dvas.tools.sync">
-<span id="dvas-tools-sync-module"></span><h2>dvas.tools.sync module<a class="headerlink" href="#module-dvas.tools.sync" title="Permalink to this heading"></a></h2>
+<span id="dvas-tools-sync-module"></span><h2>dvas.tools.sync module<a class="headerlink" href="#module-dvas.tools.sync" title="Link to this heading"></a></h2>
 <p>Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>This module contains tools to synchronize profiles.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="dvas.tools.sync.get_sync_shifts_from_starttime">
-<span class="sig-prename descclassname"><span class="pre">dvas.tools.sync.</span></span><span class="sig-name descname"><span class="pre">get_sync_shifts_from_starttime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.sync.get_sync_shifts_from_starttime" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="dvas.tools.sync.get_sync_shifts_from_time">
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.sync.</span></span><span class="sig-name descname"><span class="pre">get_sync_shifts_from_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.sync.get_sync_shifts_from_time" title="Link to this definition"></a></dt>
 <dd><p>A routine that estimates the necessary synchronization shifts between profiles based on the
-GNSS start time value.</p>
+measurement times.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>prfs</strong> (<em>dvas.data.data.MultiRSProfiles</em>) – list of Profiles to sync.</p>
@@ -405,7 +405,7 @@ GNSS start time value.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas.tools.sync.get_sync_shifts_from_alt">
-<span class="sig-prename descclassname"><span class="pre">dvas.tools.sync.</span></span><span class="sig-name descname"><span class="pre">get_sync_shifts_from_alt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_alt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5000.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.sync.get_sync_shifts_from_alt" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.sync.</span></span><span class="sig-name descname"><span class="pre">get_sync_shifts_from_alt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_alt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5000.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.sync.get_sync_shifts_from_alt" title="Link to this definition"></a></dt>
 <dd><p>A routine that estimates the shifts required to synchronize profiles, based on the
 the altitude index.</p>
 <p>This is a very crude function that does the sync based on a single altitude, and thus happily
@@ -430,7 +430,7 @@ ignore any drift/stretch of any kind.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas.tools.sync.get_sync_shifts_from_val">
-<span class="sig-prename descclassname"><span class="pre">dvas.tools.sync.</span></span><span class="sig-name descname"><span class="pre">get_sync_shifts_from_val</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_guess</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valid_value_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sync_wrt_mid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.sync.get_sync_shifts_from_val" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.sync.</span></span><span class="sig-name descname"><span class="pre">get_sync_shifts_from_val</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_guess</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valid_value_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sync_wrt_mid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.sync.get_sync_shifts_from_val" title="Link to this definition"></a></dt>
 <dd><p>Estimates the shifts required to synchronize profiles, such that &lt;abs(val_A-val_B)&gt; is
 minimized.</p>
 <dl class="field-list simple">
@@ -460,14 +460,14 @@ Defaults to 0 = first profile in the list.</p></li>
 
 </section>
 <section id="module-dvas.tools.tools">
-<span id="dvas-tools-tools-module"></span><h2>dvas.tools.tools module<a class="headerlink" href="#module-dvas.tools.tools" title="Permalink to this heading"></a></h2>
+<span id="dvas-tools-tools-module"></span><h2>dvas.tools.tools module<a class="headerlink" href="#module-dvas.tools.tools" title="Link to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>This module contains low-level, stand-alone, dvas tools.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas.tools.tools.fancy_nansum">
-<span class="sig-prename descclassname"><span class="pre">dvas.tools.tools.</span></span><span class="sig-name descname"><span class="pre">fancy_nansum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.tools.fancy_nansum" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.tools.</span></span><span class="sig-name descname"><span class="pre">fancy_nansum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.tools.fancy_nansum" title="Link to this definition"></a></dt>
 <dd><p>A custom nansum routine that treats NaNs as zeros, unless the data contains <em>only</em> NaNs,
 if which case it returns a NaN.</p>
 <dl class="field-list simple">
@@ -517,7 +517,7 @@ if which case it returns a NaN.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas.tools.tools.fancy_bitwise_or">
-<span class="sig-prename descclassname"><span class="pre">dvas.tools.tools.</span></span><span class="sig-name descname"><span class="pre">fancy_bitwise_or</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.tools.fancy_bitwise_or" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.tools.</span></span><span class="sig-name descname"><span class="pre">fancy_bitwise_or</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.tools.fancy_bitwise_or" title="Link to this definition"></a></dt>
 <dd><p>A custom bitwise_or routine to combine flags.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -536,7 +536,7 @@ if which case it returns a NaN.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas.tools.tools.df_to_chunks">
-<span class="sig-prename descclassname"><span class="pre">dvas.tools.tools.</span></span><span class="sig-name descname"><span class="pre">df_to_chunks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.tools.df_to_chunks" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.tools.</span></span><span class="sig-name descname"><span class="pre">df_to_chunks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.tools.df_to_chunks" title="Link to this definition"></a></dt>
 <dd><p>A utility function that breaks a Pandas dataframe into chunks of a specified size.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -554,7 +554,7 @@ will be smaller than the other ones.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas.tools.tools.wrap_angle">
-<span class="sig-prename descclassname"><span class="pre">dvas.tools.tools.</span></span><span class="sig-name descname"><span class="pre">wrap_angle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.tools.wrap_angle" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.tools.</span></span><span class="sig-name descname"><span class="pre">wrap_angle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.tools.wrap_angle" title="Link to this definition"></a></dt>
 <dd><p>Given an array of angles (in degrees), wrap them up in the range [-180;180[.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -573,14 +573,14 @@ will be smaller than the other ones.</p></li>
 
 </section>
 <section id="module-dvas.tools.wmo">
-<span id="dvas-tools-wmo-module"></span><h2>dvas.tools.wmo module<a class="headerlink" href="#module-dvas.tools.wmo" title="Permalink to this heading"></a></h2>
+<span id="dvas-tools-wmo-module"></span><h2>dvas.tools.wmo module<a class="headerlink" href="#module-dvas.tools.wmo" title="Link to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>This module contains WMO-related tools.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas.tools.wmo.geom2geopot">
-<span class="sig-prename descclassname"><span class="pre">dvas.tools.wmo.</span></span><span class="sig-name descname"><span class="pre">geom2geopot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.wmo.geom2geopot" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.wmo.</span></span><span class="sig-name descname"><span class="pre">geom2geopot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.wmo.geom2geopot" title="Link to this definition"></a></dt>
 <dd><p>Convert geometric altitudes to geopotential heights.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

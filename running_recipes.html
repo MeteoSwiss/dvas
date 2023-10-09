@@ -11,11 +11,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -35,7 +35,7 @@
             dvas
           </a>
               <div class="version">
-                1.0.0
+                1.1.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -93,12 +93,12 @@
            <div itemprop="articleBody">
              
   <section id="running-dvas-recipes">
-<span id="running"></span><h1>Running dvas recipes<a class="headerlink" href="#running-dvas-recipes" title="Permalink to this heading"></a></h1>
+<span id="running"></span><h1>Running dvas recipes<a class="headerlink" href="#running-dvas-recipes" title="Link to this heading"></a></h1>
 <p>dvas recipes are pre-packaged, pre-configured analysis pipelines, designed to perform
 <strong>specific tasks in a specific order</strong>. Their primary purpose is to allow any official dvas analysis
 to be reproduced by anyone, anywhere.</p>
 <section id="setup-of-a-dvas-processing-arena">
-<h2>Setup of a dvas processing arena<a class="headerlink" href="#setup-of-a-dvas-processing-arena" title="Permalink to this heading"></a></h2>
+<h2>Setup of a dvas processing arena<a class="headerlink" href="#setup-of-a-dvas-processing-arena" title="Link to this heading"></a></h2>
 <p>We will here use the case of the UAII 2022 field campaign, for which a dedicated dvas recipe was
 created. Once dvas has been <a class="reference internal" href="installation.html#install"><span class="std std-ref">installed</span></a>, follow these steps to reproduce the entire
 UAII 2022 field campaign analysis cascade:</p>
@@ -116,7 +116,7 @@ UAII 2022 field campaign analysis cascade:</p>
 <p>Use <code class="docutils literal notranslate"><span class="pre">dvas_init_arena</span> <span class="pre">--help</span></code> to see what options exist:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>usage: dvas_init_arena [-h] [--path ./a/new/folder/]
 
-DVAS 1.0.0 - Data Visualization and Analysis Software: Initialization entry point.
+DVAS 1.1.0 - Data Visualization and Analysis Software: Initialization entry point.
 
 options:
   -h, --help            show this help message and exit
@@ -165,13 +165,13 @@ a processing time of ~2.4 seconds.</p>
 Time to take a closer look at the …</p>
 </section>
 <section id="anatomy-of-the-dvas-processing-arena">
-<h2>Anatomy of the dvas processing arena<a class="headerlink" href="#anatomy-of-the-dvas-processing-arena" title="Permalink to this heading"></a></h2>
+<h2>Anatomy of the dvas processing arena<a class="headerlink" href="#anatomy-of-the-dvas-processing-arena" title="Link to this heading"></a></h2>
 <p>There are 3 main components to a dvas processing arena: the
 <a class="reference internal" href="#original-data"><span class="std std-ref">original data</span></a>,
 the <a class="reference internal" href="#config-data"><span class="std std-ref">database config files</span></a>,
 and the <a class="reference internal" href="#recipe-file"><span class="std std-ref">recipe file</span></a>. Let’s take a closer look at each of these.</p>
 <section id="the-original-data-folder">
-<span id="original-data"></span><h3>The original data folder<a class="headerlink" href="#the-original-data-folder" title="Permalink to this heading"></a></h3>
+<span id="original-data"></span><h3>The original data folder<a class="headerlink" href="#the-original-data-folder" title="Link to this heading"></a></h3>
 <p>This folder contains all the original data to be processed. The actual structuring of subfolders
 inside it does not actually matter to dvas. Note, however, the following restriction:</p>
 <blockquote>
@@ -185,13 +185,13 @@ otherwise present in the original data files.</p></li>
 metadata files - no need to change anything there.</p>
 </section>
 <section id="the-config-folder">
-<span id="config-data"></span><h3>The config folder<a class="headerlink" href="#the-config-folder" title="Permalink to this heading"></a></h3>
+<span id="config-data"></span><h3>The config folder<a class="headerlink" href="#the-config-folder" title="Link to this heading"></a></h3>
 <p>This folder contains all the information required to setup the dvas database, and have it ingest all
 the original data correctly. Modifying these files is only required if one wishes to include
 datasets that differ from those already supported by dvas.</p>
 </section>
 <section id="the-recipe-file">
-<span id="recipe-file"></span><h3>The recipe file<a class="headerlink" href="#the-recipe-file" title="Permalink to this heading"></a></h3>
+<span id="recipe-file"></span><h3>The recipe file<a class="headerlink" href="#the-recipe-file" title="Link to this heading"></a></h3>
 <p>The dvas recipes are described in YAML files with the <code class="docutils literal notranslate"><span class="pre">.rcp</span></code> extension. In there, you will find
 general recipe parameters, including the list of variable names to process, together with the list
 of all the processing steps and their associated parameters. All these steps refer to high-level
@@ -230,7 +230,7 @@ in the NetCDF files created by dvas:</p>
 </section>
 </section>
 <section id="execution-of-a-dvas-recipe">
-<h2>Execution of a dvas recipe<a class="headerlink" href="#execution-of-a-dvas-recipe" title="Permalink to this heading"></a></h2>
+<h2>Execution of a dvas recipe<a class="headerlink" href="#execution-of-a-dvas-recipe" title="Link to this heading"></a></h2>
 <p>With a dedicated dvas processing arena in place, and the parameters of the UAII 2022 recipe adjusted
 to your specific system, you should now be able to launch the data processing.</p>
 <p>To do so, use the <code class="docutils literal notranslate"><span class="pre">dvas_run_recipe</span></code> entry point from the command line:</p>

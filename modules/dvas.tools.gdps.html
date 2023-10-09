@@ -11,11 +11,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -35,7 +35,7 @@
             dvas
           </a>
               <div class="version">
-                1.0.0
+                1.1.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -109,16 +109,16 @@
            <div itemprop="articleBody">
              
   <section id="module-dvas.tools.gdps">
-<span id="dvas-tools-gdps-package"></span><h1>dvas.tools.gdps package<a class="headerlink" href="#module-dvas.tools.gdps" title="Permalink to this heading"></a></h1>
+<span id="dvas-tools-gdps-package"></span><h1>dvas.tools.gdps package<a class="headerlink" href="#module-dvas.tools.gdps" title="Link to this heading"></a></h1>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>This sub-package contains GRUAN-related tools.</p>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 </section>
 <section id="module-dvas.tools.gdps.correlations">
-<span id="dvas-tools-gdps-correlations-module"></span><h2>dvas.tools.gdps.correlations module<a class="headerlink" href="#module-dvas.tools.gdps.correlations" title="Permalink to this heading"></a></h2>
+<span id="dvas-tools-gdps-correlations-module"></span><h2>dvas.tools.gdps.correlations module<a class="headerlink" href="#module-dvas.tools.gdps.correlations" title="Link to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
@@ -126,7 +126,7 @@
 correlation coefficients.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas.tools.gdps.correlations.corr_coeff_matrix">
-<span class="sig-prename descclassname"><span class="pre">dvas.tools.gdps.correlations.</span></span><span class="sig-name descname"><span class="pre">corr_coeff_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sigma_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gdps.correlations.corr_coeff_matrix" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.gdps.correlations.</span></span><span class="sig-name descname"><span class="pre">corr_coeff_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sigma_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_ids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gdps.correlations.corr_coeff_matrix" title="Link to this definition"></a></dt>
 <dd><p>Computes the correlation coefficient(s) between distinct GDP measurement, for a specifc
 uncertainty type.</p>
 <dl class="field-list simple">
@@ -185,14 +185,14 @@ No correlation between distinct radiosonde models.</p>
 
 </section>
 <section id="module-dvas.tools.gdps.gdps">
-<span id="dvas-tools-gdps-gdps-module"></span><h2>dvas.tools.gdps.gdps module<a class="headerlink" href="#module-dvas.tools.gdps.gdps" title="Permalink to this heading"></a></h2>
+<span id="dvas-tools-gdps-gdps-module"></span><h2>dvas.tools.gdps.gdps module<a class="headerlink" href="#module-dvas.tools.gdps.gdps" title="Link to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>This module contains GRUAN-related routines, including correlation rules for GDP uncertainties.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas.tools.gdps.gdps.combine">
-<span class="sig-prename descclassname"><span class="pre">dvas.tools.gdps.gdps.</span></span><span class="sig-name descname"><span class="pre">combine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdp_prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'weighted</span> <span class="pre">arithmetic</span> <span class="pre">mean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_flgs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">150</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cpus</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gdps.gdps.combine" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.gdps.gdps.</span></span><span class="sig-name descname"><span class="pre">combine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdp_prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">binning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'weighted</span> <span class="pre">arithmetic</span> <span class="pre">mean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_flgs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">150</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cpus</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gdps.gdps.combine" title="Link to this definition"></a></dt>
 <dd><p>Combines and (possibly) rebins GDP profiles, with full error propagation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -228,14 +228,14 @@ beforehand. This implies that the <cite>_idx</cite> index must be identical for 
 
 </section>
 <section id="module-dvas.tools.gdps.stats">
-<span id="dvas-tools-gdps-stats-module"></span><h2>dvas.tools.gdps.stats module<a class="headerlink" href="#module-dvas.tools.gdps.stats" title="Permalink to this heading"></a></h2>
+<span id="dvas-tools-gdps-stats-module"></span><h2>dvas.tools.gdps.stats module<a class="headerlink" href="#module-dvas.tools.gdps.stats" title="Link to this heading"></a></h2>
 <p>Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.</p>
 <p>Distributed under the terms of the GNU General Public License v3.0 or later.</p>
 <p>SPDX-License-Identifier: GPL-3.0-or-later</p>
 <p>This module contains statistical routines and tools for handling GDPs.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas.tools.gdps.stats.ks_test">
-<span class="sig-prename descclassname"><span class="pre">dvas.tools.gdps.stats.</span></span><span class="sig-name descname"><span class="pre">ks_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdp_pair</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0027</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'arithmetic</span> <span class="pre">delta'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gdps.stats.ks_test" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.gdps.stats.</span></span><span class="sig-name descname"><span class="pre">ks_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdp_pair</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0027</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'arithmetic</span> <span class="pre">delta'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gdps.stats.ks_test" title="Link to this definition"></a></dt>
 <dd><p>Runs a <code class="docutils literal notranslate"><span class="pre">scipy.stats.kstest()</span></code> two-sided test on the normalized-delta between two
 GDPProfile instances, against a normal distribution.</p>
 <p>The KS test is being run on a level-per-level basis.</p>
@@ -277,7 +277,7 @@ That is: 1 &lt;=&gt; the p-value of the KS test is &lt;= alpha.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas.tools.gdps.stats.gdp_incompatibilities">
-<span class="sig-prename descclassname"><span class="pre">dvas.tools.gdps.stats.</span></span><span class="sig-name descname"><span class="pre">gdp_incompatibilities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdp_prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0027</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_vals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'arithmetic</span> <span class="pre">delta'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rolling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn_suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gdps.stats.gdp_incompatibilities" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.gdps.stats.</span></span><span class="sig-name descname"><span class="pre">gdp_incompatibilities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gdp_prfs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0027</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_vals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'arithmetic</span> <span class="pre">delta'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rolling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn_suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gdps.stats.gdp_incompatibilities" title="Link to this definition"></a></dt>
 <dd><p>Runs a series of KS tests to assess the consistency of several GDP profiles.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -310,7 +310,7 @@ i.e. that the profiles are incompatible.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="dvas.tools.gdps.stats.gdp_validities">
-<span class="sig-prename descclassname"><span class="pre">dvas.tools.gdps.stats.</span></span><span class="sig-name descname"><span class="pre">gdp_validities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">incompat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_vals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strategy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all-or-none'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gdps.stats.gdp_validities" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dvas.tools.gdps.stats.</span></span><span class="sig-name descname"><span class="pre">gdp_validities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">incompat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_vals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strategy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all-or-none'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dvas.tools.gdps.stats.gdp_validities" title="Link to this definition"></a></dt>
 <dd><p>Given GDP incompatibilities, identifies valid measurements (suitable for the assembly of a
 combined working standard) given a specific combination strategy.</p>
 <dl class="simple">

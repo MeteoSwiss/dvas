@@ -11,11 +11,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -35,7 +35,7 @@
             dvas
           </a>
               <div class="version">
-                1.0.0
+                1.1.0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -83,7 +83,7 @@
            <div itemprop="articleBody">
              
   <section id="changelog">
-<h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this heading"></a></h1>
+<h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading"></a></h1>
 <p><a class="reference external" href="https://github.com/MeteoSwiss/dvas"><img alt="last-commit" src="https://img.shields.io/github/last-commit/MeteoSwiss/dvas.svg?colorB=e6c000" /></a> <a class="reference external" href="https://github.com/MeteoSwiss/dvas/issues"><img alt="issues" src="https://img.shields.io/github/issues/MeteoSwiss/dvas.svg?colorB=b4001e" /></a></p>
 <p>The dvas changelog (reproduced below) is stored in the
 <a class="reference external" href="https://github.com/MeteoSwiss-MDA/dvas">code repository</a> on Github.</p>
@@ -93,10 +93,24 @@ The format is inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [v1.x.y]
+## [vX.Y.Z]
 ### Added:
 ### Fixed:
 ### Changed:
+### Deprecated:
+### Removed:
+### Security:
+
+## [v1.1.0]
+### Added:
+ - [fpavogt, 17.08.2023] Enable the ingestion of manual flag files by the uaii2022 recipe
+ - [fpavogt, 24.07.2023] Add DOI &amp; pypi info to docs following first public release
+### Fixed:
+ - [fpavogt, 07.09.2023] Fix #295
+ - [fpavogt, 11.08.2023] Fixes #288 [GDP SHC info is now extracted by dvas]
+### Changed:
+ - [fpavogt, 11.08.2023] Request python&gt;=3.11 and pandas&gt;=2.0
+ - [fpavogt, 24.07.2023] Change Github Issues to use the new format
 ### Deprecated:
 ### Removed:
 ### Security:
