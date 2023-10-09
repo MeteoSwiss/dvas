@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -19,9 +19,10 @@ import numpy as np
 
 # Import from dvas
 from dvas.environ import path_var
+from dvas import __version__ as dvas_version
 from dvas.dvas import Log
 from dvas.dvas import Database as DB
-from dvas.hardcoded import PRF_TDT, PRF_ALT
+from dvas.hardcoded import PRF_TDT, PRF_ALT, FLG_PRM_NAME_SUFFIX
 import dvas.plots.utils as dpu
 from dvas import dynamic as dyn
 
@@ -286,7 +287,7 @@ class Recipe:
         Log.start_log(rcp_data['rcp_params']['general']['log_mode'],
                       level=loglvl)
 
-        logger.info('Launching the %s recipe.', self._name)
+        logger.info('Launching the %s recipe with dvas v%s', self._name, dvas_version)
         logger.info('orig_data_path was set to: %s', path_var.orig_data_path)
         logger.info('output_path was set to: %s', path_var.output_path)
 
@@ -308,9 +309,6 @@ class Recipe:
         rcp_dyn.N_CPUS = rcp_data['rcp_params']['general']['n_cpus']
         if rcp_dyn.N_CPUS is None or rcp_dyn.N_CPUS > cpu_count():
             rcp_dyn.N_CPUS = cpu_count()
-
-        # Store the list of flags to be dropped during analysis
-        rcp_dyn.DROP_FLGS = rcp_data['rcp_params']['general']['drop_flgs']
 
         # Store the index names
         rcp_dyn.INDEXES = rcp_data['rcp_params']['index']
@@ -367,10 +365,14 @@ class Recipe:
         DB.init()
 
         # Fetch the original data
-        DB.fetch_original_data([rcp_dyn.INDEXES[PRF_TDT]] + [rcp_dyn.INDEXES[PRF_ALT]] +
-                               list(rcp_dyn.ALL_VARS) +
+        DB.fetch_original_data([rcp_dyn.INDEXES[PRF_TDT]] +  # The reference times
+                               [rcp_dyn.INDEXES[PRF_ALT]] +  # The reference altitudes
+                               list(rcp_dyn.ALL_VARS) +  # All the primary variables
+                               # All the flags associated to the primary variables
+                               [f'{item}{FLG_PRM_NAME_SUFFIX}' for item in rcp_dyn.ALL_VARS] +
+                               # All the necessary uncertainties
                                [rcp_dyn.ALL_VARS[var][uc] for var in rcp_dyn.ALL_VARS
-                               for uc in rcp_dyn.ALL_VARS[var]], strict=True)
+                                for uc in rcp_dyn.ALL_VARS[var]], strict=True)
 
     @staticmethod
     def get_all_flights_from_db():
@@ -427,7 +429,7 @@ class Recipe:
 
         # Raise an error if no flights were specified/foudn in the DB
         if len(rcp_dyn.ALL_FLIGHTS) == 0:
-            raise DvasRecipesError('Ouch ! No flights to process !')
+            raise DvasRecipesError('No flights to process !')
 
         # Now that everything is in place, all that is required at this point is to launch each step
         # one after the other. If warranted, lock the execution of steps until a certain one is

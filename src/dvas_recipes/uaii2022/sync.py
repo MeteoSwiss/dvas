@@ -19,6 +19,7 @@ from dvas.logger import log_func_call
 from dvas.data.data import MultiRSProfile, MultiGDPProfile
 from dvas.tools import sync as dts
 from dvas.errors import DvasError
+from dvas.dvas import Database as DB
 
 # Import from dvas_recipes
 from ..errors import DvasRecipesError
@@ -131,7 +132,7 @@ def apply_sync_shifts(var_name, filt, sync_length, sync_shifts, is_gdp):
 @for_each_flight
 @log_func_call(logger, time_it=False)
 def sync_flight(start_with_tags, anchor_alt, global_match_var, valid_value_range, sync_wrt_mid,
-                crop_pre_gdp):
+                use_time_for_mids, use_time_wrt_mid, manual_tweaks, crop_pre_gdp):
     """ Highest-level function responsible for synchronizing all the profile from a specific RS
     flight.
 
@@ -148,6 +149,13 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var, valid_value_range
         valid_value_range (list|None): if a len(2) list is provided, values of the global_match_var
             outside this range will be ignored when deriving the global-match synch shifts.
         sync_wrt_mid (str): radiosonde model-id against which to synchronize profiles.
+        use_time_for_mids (list): radiosonde model ids that should ignore the global_match_var and
+            get sync shifts based on their measurement times instead.
+        use_time_wrt_mid (str): radiosonde model-id to be used as a reference to compute time
+            offsets.
+        manual_tweaks (list): list of [fid, 'mid#pid', correction] lists, describing manual sync
+            offset tweaks to apply (in an additive way) to the offsets derived automatically,
+            either via gph or time.
         crop_pre_gdp (bool): if True, any data taken before gdp values excists will be
             cropped.
 
@@ -157,7 +165,10 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var, valid_value_range
     tags = dru.format_tags(start_with_tags)
 
     # Extract the flight info
-    (_, eid, rid) = dynamic.CURRENT_FLIGHT
+    (fid, eid, rid) = dynamic.CURRENT_FLIGHT
+
+    # Also get the global db view, so I can fetch the pids later on ...
+    db_view = DB.extract_global_view()
 
     # What search query will let me access the data I need ?
     filt = tools.get_query_filter(tags_in=tags+[eid, rid], tags_out=None)
@@ -173,6 +184,7 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var, valid_value_range
 
     # Get the Object IDs, so I can keep track of the different profiles and don't mess things up.
     oids = prfs.get_info(prm='oid')
+    mids = prfs.get_info(prm='mid')
 
     # Verify that that event datetime is actually the same for all the profiles. I should only
     # synchronize profiles that have flown together.
@@ -196,13 +208,91 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var, valid_value_range
 
     # Get shifts from the GNSS times
     try:
-        shifts_gnss = dts.get_sync_shifts_from_starttime(prfs)
-        logger.info('Sync. shifts from GNSS starttime: %s', shifts_gnss)
+        shifts_gnss = dts.get_sync_shifts_from_time(prfs)
+        logger.info('Sync. shifts from measurement time: %s', shifts_gnss)
     except DvasError as err:
         logger.critical(err)
+        shifts_gnss = None
 
     # GNSS times have many issues ... let's use gph sync shifts instead.
     sync_shifts = shifts_val
+
+    # In certain situations, the user may want to use the time to sync profiles instead.
+    for mid in use_time_for_mids:
+        # Check if this mid is on this flight - remembering the brackets around.
+        if [mid] not in mids:
+            continue
+        if [use_time_wrt_mid] not in mids:
+            # The reference does not exist - log a critical error and move on
+            logger.critical('Time sync not possible, reference mid not found: %s',
+                            use_time_wrt_mid)
+            continue
+        if len([item for item in mids if item == [use_time_wrt_mid]]) > 1:
+            logger.critical('Time sync not possible, non-unique reference mid: %s',
+                            use_time_wrt_mid)
+            continue
+        if shifts_gnss is None:
+            logger.critical('Time sync not possible for mid %s: gnss_shifts could not be computed.',
+                            mid)
+            continue
+
+        # There can be more than one occurence of the mid in mids. Let's use the oids instead
+        # to identify which sync shift to overwrite
+        inds_to_replace = [ind for (ind, item) in enumerate(mids) if item == [mid]]
+        # One-by-one, replace the gph-derived sync shift with a time-base one, given a certain
+        # reference.
+        for ind in inds_to_replace:
+
+            new_shift = sync_shifts[mids.index([use_time_wrt_mid])] + \
+                shifts_gnss[ind] - shifts_gnss[mids.index([use_time_wrt_mid])]
+
+            if np.abs(new_shift - sync_shifts[ind]) > 10:
+                loglvl = logger.warning
+            else:
+                loglvl = logger.info
+
+            loglvl('%s (#%s) sync "time" vs "gph" shift offset: %i',
+                   mid, db_view[db_view.oid == oids[ind][0]].pid.values[0],
+                   new_shift-sync_shifts[ind])
+
+            # Actually update the shifts
+            sync_shifts[ind] = new_shift
+
+    # Finally, check those cases where a manual correction is fed to us by the user. This should be
+    # used as a last-resort solution to synchronize profiles.
+    if manual_tweaks is not None:
+        for manual_tweak in manual_tweaks:
+
+            # Check if the flight matches
+            if (tweak_fid := manual_tweak[0]) != fid:
+                continue
+            [tweak_mid, tweak_pid] = manual_tweak[1].split('#')
+            tweak_oid = db_view[(db_view.mid == tweak_mid) &
+                                (db_view.pid == tweak_pid) &
+                                (db_view.eid == eid)].oid
+
+            # Does the profile parameters correspond to something in the DB ?
+            if len(tweak_oid) == 0:
+                logger.error('%s (%s) not found for %s: manual sync tweak impossible.',
+                             tweak_mid, tweak_pid, tweak_fid)
+                continue
+            if len(tweak_oid) > 1:
+                logger.error('Multiple oids found !? %s', tweak_oid)
+                logger.error('Manual sync tweak impossible.')
+                continue
+            tweak_oid = tweak_oid.values[0]
+
+            # If the flight matches and the oid is in the DB, then we would expect to have it in
+            # oids of the current flight ...
+            if [tweak_oid] not in oids:
+                logger.error('oid %s not found in current list. Manual sync tweak impossible.',
+                             tweak_oid)
+                continue
+
+            logger.info('Manual sync tweak for %s %s (#%s): %i %+i',
+                        tweak_fid, tweak_mid, tweak_pid,
+                        sync_shifts[oids.index([tweak_oid])], manual_tweak[2])
+            sync_shifts[oids.index([tweak_oid])] += manual_tweak[2]
 
     # Now, let's reset the shift depening on whether we want to crop pre-GDP data, or not
     if crop_pre_gdp:
@@ -218,7 +308,7 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var, valid_value_range
 
     # Keep track of the important info
     logger.info('oids: %s', oids)
-    logger.info('mids: %s', prfs.get_info(prm='mid'))
+    logger.info('mids: %s', mids)
     logger.info('is_gdp: %s', is_gdp)
     logger.info('crop_pre_gdp: %s', crop_pre_gdp)
     logger.info('sync_shifts: %s', sync_shifts)

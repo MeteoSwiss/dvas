@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2022 MeteoSwiss, contributors listed in AUTHORS.
+Copyright (c) 2020-2023 MeteoSwiss, contributors listed in AUTHORS.
 
 Distributed under the terms of the GNU General Public License v3.0 or later.
 
@@ -51,7 +51,7 @@ def prf_summary():
 
 @log_func_call(logger, time_it=False)
 def flag_phases(prfs):
-    """ Flag the different profile phases, i.e. prelaunch, ascent,  and descent.
+    """ Flag the different profile phases, i.e. prelaunch, ascent, and descent.
 
     Args:
         prfs (MultiRSProfile|MultiGDPProfile): the profiles to flag (individually).
@@ -126,7 +126,8 @@ def flag_phases(prfs):
 
 
 @log_func_call(logger, time_it=False)
-def cleanup_steps(prfs, resampling_freq, interp_dist, crop_descent, timeofday=None, fid=None):
+def cleanup_steps(prfs, resampling_freq, interp_dist, crop_descent, crop_flgs,
+                  timeofday=None, fid=None):
     """ Execute a series of cleanup-steps common to GDP and non-GDP profiles. This function is here
     to avoid duplicating code. The cleanup-up profiles are directly saved to the DB with the tag:
     TAG_CLN
@@ -138,6 +139,8 @@ def cleanup_steps(prfs, resampling_freq, interp_dist, crop_descent, timeofday=No
         interp_dist (float|int): distance to the nearest real measurement, in s, beyond which a
             resampled point is forced to NaN (i.e. "dvas does not interpolate !")
         crop_descent (bool): if True, and data with the flag "descent" will be cropped out for good.
+        crop_flgs (list): any data flagged with any one of these flag names will be cropped out for
+            good.
         timeofday (str): if set, will tag the Profile with this time of day. Defaults to None.
         fid (str): if set, will add the flight id to the profile metadata. Defaults to None.
 
@@ -151,12 +154,29 @@ def cleanup_steps(prfs, resampling_freq, interp_dist, crop_descent, timeofday=No
 
     # Crop any prelaunch data
     for (ind, prf) in enumerate(prfs):
-        prfs[ind].data = prf.data.loc[~prf.has_flg(FLG_PRELAUNCH)]
 
-    # Crop the descent data if warranted
-    if crop_descent:
+        # Crop pre-flight points, if warranted
+        if prf.has_flg(FLG_PRELAUNCH).any():
+            logger.info('Cropping pre-launch datapoints (%s)', prf.info.src)
+            prfs[ind].data = prf.data.loc[~prf.has_flg(FLG_PRELAUNCH)]
+            # Update the metadata (fixes #295)
+            # Note that we are here BEFORE the resampling takes place. This implies that the
+            # new value of MTDTA_FIRST cannot be computed by counting the number of cropped
+            # time steps. It must be set to have the same value as MTDTA_LAUNCH
+            prfs[ind].info.add_metadata(MTDTA_FIRST, prf.info.metadata[MTDTA_LAUNCH])
+
+    # Basic sanity check of the input
+    if crop_flgs is None:
+        crop_flgs = []
+    # Fail early if I need to ...
+    assert isinstance(crop_flgs, list)
+    # Include the descent flag is warranted
+    if crop_descent and FLG_DESCENT not in crop_flgs:
+        crop_flgs += [FLG_DESCENT]
+    # Crop the requested flag names
+    for flg_name in crop_flgs:
         for (ind, prf) in enumerate(prfs):
-            prfs[ind].data = prf.data.loc[~prf.has_flg(FLG_DESCENT)]
+            prfs[ind].data = prf.data.loc[~prf.has_flg(flg_name)]
 
     # Add the TimeOfDay tag, if warranted
     if timeofday is not None:
@@ -246,7 +266,7 @@ def cleanup(start_with_tags, fix_gph_uct=None, check_tropopause=False, **args):
         if dynamic.CURRENT_VAR == 'gph' and fix_gph_uct is not None:
             # Safety check
             if not isinstance(fix_gph_uct, list):
-                raise DvasRecipesError(f'Ouch ! fix_gph_uct should be a list, not: {fix_gph_uct}')
+                raise DvasRecipesError(f'fix_gph_uct should be a list, not: {fix_gph_uct}')
 
             # Start looping through the profiles, to identify the ones I need.
             for gdp in gdp_prfs:

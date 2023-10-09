@@ -5,11 +5,7 @@
 Installation
 ============
 
-.. todo::
-
-    Include a link to the pypi page in the very next sentence.
-
-dvas is available on pypi, which should make its installation straightforward.
+dvas is available on |pypi|, which should make its installation straightforward.
 In a terminal, type:
 
 .. code-block:: python
@@ -34,14 +30,14 @@ dvas is compatible with the following python versions:
 
 .. literalinclude:: ../../setup.py
     :language: python
-    :lines: 38
+    :lines: 43
 
 Furthermore, dvas relies on a few external modules, which will be automatically installed by ``pip``
 if required:
 
 .. literalinclude:: ../../setup.py
     :language: python
-    :lines: 39-54
+    :lines: 44-59
 
 Testing the installation
 ------------------------
