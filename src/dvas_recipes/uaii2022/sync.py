@@ -267,12 +267,18 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var, valid_value_range
             if (tweak_fid := manual_tweak[0]) != fid:
                 continue
             [tweak_mid, tweak_pid] = manual_tweak[1].split('#')
-            tweak_oid = db_view[(db_view.mid == tweak_mid) & (db_view.pid == tweak_pid)].oid
+            tweak_oid = db_view[(db_view.mid == tweak_mid) &
+                                (db_view.pid == tweak_pid) &
+                                (db_view.eid == eid)].oid
 
             # Does the profile parameters correspond to something in the DB ?
             if len(tweak_oid) == 0:
-                logger.error('%s (%s) not found for %s: manual sync tweaks impossible.',
+                logger.error('%s (%s) not found for %s: manual sync tweak impossible.',
                              tweak_mid, tweak_pid, tweak_fid)
+                continue
+            if len(tweak_oid) > 1:
+                logger.error('Multiple oids found !? %s', tweak_oid)
+                logger.error('Manual sync tweak impossible.')
                 continue
             tweak_oid = tweak_oid.values[0]
 
