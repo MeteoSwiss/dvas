@@ -276,7 +276,7 @@ def sync_flight(start_with_tags, anchor_alt, global_match_var, valid_value_range
                 logger.error('%s (%s) not found for %s: manual sync tweak impossible.',
                              tweak_mid, tweak_pid, tweak_fid)
                 continue
-            if len(tweak_oid) > 2:
+            if len(tweak_oid) > 1:
                 logger.error('Multiple oids found !? %s', tweak_oid)
                 logger.error('Manual sync tweak impossible.')
                 continue
