@@ -2,7 +2,6 @@ include LICENSE
 include AUTHORS
 include README
 include CHANGELOG
-graft src/dvas/plot/mpl_styles
+graft src/dvas/plots/mpl_styles
 graft src/dvas_recipes/recipes
-graft dvas_demo/config
-graft dvas_demo/data
+graft src/dvas_demo/config
