@@ -36,32 +36,29 @@ UAII 2022 field campaign analysis cascade:
       c) the official dvas recipe file for the UAII 2022 field campaign: ``uaii22.rcp``.
 
 
-  2. Fetch the flight data to be processed from the UAII 2022 Supplementary Material, and unpack it
-  not too far away:
-
-  .. todo::
-
-    Specify where the data can be downloaded from and how to unpack it.
-
+  2. Fetch the flight data to be processed from the UAII 2022 Supplementary Material,
+     and unpack it not too far away. To be specific, you need to download and extract the
+     *organized_flight_data_for_dvas_input.tar.gz* element of the
+     `dataset on Zenodo <https://doi.org/10.5281/zenodo.10160683>`_.
 
   3. Verify how well dvas runs on your machine with the dedicated entry point:
 
-  .. code-block:: none
+    .. code-block:: none
 
-    cd dvas_proc_arena
-    dvas_optimize
+      cd dvas_proc_arena
+      dvas_optimize
 
-  This command will process some mock data repeatedly, to explore which ``chunk_size`` value
-  provides the best performance. For certain costly operations, dvas can break profiles into chunks
-  to reduce the memory consumption (by keeping the size of the correlation matrices small). If the
-  chunks are too small, however, the performances will degrade because there aren't enough cores to
-  process them all efficiently.
+    This command will process some mock data repeatedly, to explore which ``chunk_size`` value
+    provides the best performance. For certain costly operations, dvas can break profiles into chunks
+    to reduce the memory consumption (by keeping the size of the correlation matrices small). If the
+    chunks are too small, however, the performances will degrade because there aren't enough cores to
+    process them all efficiently.
 
-  For example, on a 2021 MacBook Pro (16-inch) with 64 GB of RAM and an Apple M1 Max CPU with
-  10-cores, we find that a chunk size of ~150-200 works best, with a processing time (reported by
-  ``dvas_optimize``) of ~1.1 seconds. By comparison, on a 2019 MacBook Pro (16-inch) with 32 GB
-  of RAM and a 2.3 GHz 8-core Intel Core i9 CPU, we find the same ideal chunk size of ~150, but with
-  a processing time of ~2.4 seconds.
+    For example, on a 2021 MacBook Pro (16-inch) with 64 GB of RAM and an Apple M1 Max CPU with
+    10-cores, we find that a chunk size of ~150-200 works best, with a processing time (reported by
+    ``dvas_optimize``) of ~1.1 seconds. By comparison, on a 2019 MacBook Pro (16-inch) with 32 GB
+    of RAM and a 2.3 GHz 8-core Intel Core i9 CPU, we find the same ideal chunk size of ~150, but with
+    a processing time of ~2.4 seconds.
 
 You now have all the elements required to run the dvas recipe for the UAII 2022 field camapign.
 Time to take a closer look at the ...
