@@ -33,11 +33,11 @@ jobs:
     steps:
       # Checkout our repository
       - name: Checkout current repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       # Also check out the live docs, placing it into a pseudo "build" folder for the docs
       - name: Checkout live docs
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
             repository: MeteoSwiss-MDA/dvas
             ref: gh-pages
@@ -56,7 +56,7 @@ jobs:
 
       # Set up Python
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
       # The following should be temporary ... right now, the default goes to 3.9, but many wheels
       # are still missing for this version.
         with:
