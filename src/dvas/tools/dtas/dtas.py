@@ -232,6 +232,7 @@ def compute(prfs, cwss, circular=False, dir_prfs=None, dir_cwss=None):
 
     # Now let's make a list of CWSProfile that I can use in a loop
     cws_prfs = [prf for prf in cwss]
+    dir_cws_prfs = []
     if do_vector:
         dir_cws_prfs = [prf for prf in dir_cwss]
 

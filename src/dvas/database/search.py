@@ -35,7 +35,7 @@ from ..hardcoded import TAG_EMPTY, TAG_ORIGINAL, TAG_GDP
 from ..hardcoded import EID_PAT, RID_PAT, TOD_PAT
 from ..helper import TypedProperty as TProp
 from ..helper import check_datetime
-from ..errors import SearchError
+from ..errors import SearchError, DvasError
 
 # Setup the local logger
 logger = logging.getLogger(__name__)
@@ -101,6 +101,9 @@ class SearchInfoExpr(metaclass=ABCMeta):
 
         elif method == 'obj':
             stgy = ObjectStrategy()
+
+        else:
+            raise DvasError(f"Unknown stgy: {stgy}")
 
         cls._str_expr_dict = stgy.str_expr_dict
         cls._qry = stgy.qry

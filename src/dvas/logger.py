@@ -184,6 +184,8 @@ class LogManager:
                         apply_dvas_formatter(self.get_console_handler(), colors=True)]
         elif self.log_mode == 3:
             handlers = [apply_dvas_formatter(self.get_console_handler(), colors=True)]
+        else:
+            return  # Skip init
 
         # Add handler to all logger
         for name in LOGGER_NAMES:
