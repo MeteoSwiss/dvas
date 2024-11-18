@@ -47,7 +47,7 @@ setup(
         "matplotlib",
         "netcdf4",
         'numpy<2.0',
-        "pandas>=2.0.0",
+        "pandas>=2.0.0, <2.2",
         "peewee",
         "pytz",
         "ruamel-yaml",
