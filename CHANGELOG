@@ -12,6 +12,17 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Removed:
 ### Security:
 
+## [v1.2.0]
+### Added:
+ - [fpavogt, 18.11.2024] Add missing links to the docs.
+### Fixed:
+ - [fpavogt, 07.09.2023] Fix #298 (correct typos in MANIFEST.in)
+### Changed:
+ - [fpavogt, 11.08.2023] Request Python <3.12 and numpy<2.0
+### Deprecated:
+### Removed:
+### Security:
+
 ## [v1.1.0]
 ### Added:
  - [fpavogt, 17.08.2023] Enable the ingestion of manual flag files by the uaii2022 recipe
@@ -20,11 +31,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
  - [fpavogt, 07.09.2023] Fix #295
  - [fpavogt, 11.08.2023] Fixes #288 [GDP SHC info is now extracted by dvas]
 ### Changed:
- - [fpavogt, 11.08.2023] Request python>=3.11 and pandas>=2.0
+ - [fpavogt, 11.08.2023] Request python>=3.10 and pandas>=2.0
  - [fpavogt, 24.07.2023] Change Github Issues to use the new format
-### Deprecated:
-### Removed:
-### Security:
 
 ## [v1.0.0]
 ### Added:
