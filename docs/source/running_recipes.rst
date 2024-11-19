@@ -152,11 +152,21 @@ To do so, use the ``dvas_run_recipe`` entry point from the command line:
   .. code-block:: none
 
     cd dvas_proc_arena
-    dvas_run_recipe uaii22.rcp uaii2022_fid-eid-rid-edt_day.csv -s '00' -e '00'
+    dvas_run_recipe uaii22.rcp uaii2022_fid-eid-rid-edt_day.csv -s '00' -e '10'
 
 
 This will trigger the ``uaii2022.rcp`` recipe, for the flights specified in the
 ``uaii2022_fid-eid-rid-edt_day.csv`` file [#f1]_, starting with step ``00`` and ending with step ``10``.
+
+.. hint::
+
+  Before launching the full processing, you may want to try running the first step only, with
+  ``dvas_run_recipe uaii22.rcp uaii2022_fid-eid-rid-edt_day.csv -s '00' -e '00'``
+
+.. warning::
+
+  Under Windows, you may need to skip the ``' '`` quotes around the step ids (see `this post
+  <https://stackoverflow.com/questions/13168666>`_ on StackOverflow).
 
 .. warning::
 
