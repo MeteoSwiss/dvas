@@ -14,11 +14,13 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [v1.2.0]
 ### Added:
- - [fpavogt, 18.11.2024] Add missing links to the docs.
+ - [fpavogt, 18.11.2024] Add missing links to the docs
 ### Fixed:
- - [fpavogt, 07.09.2023] Fix #298 (correct typos in MANIFEST.in)
+ - [fpavogt, 18.11.2024] Fix #298 (correct typos in MANIFEST.in)
+ - [fpavogt, 19.11.2024] Fix #299 (force utf-8 encoding for config files)
 ### Changed:
- - [fpavogt, 11.08.2023] Request Python <3.12 and numpy<2.0
+ - [fpavogt, 18.11.2024] Request Python <3.12 and numpy<2.0
+ - [fpavogt, 19.11.2024] Misc. docs updates
 ### Deprecated:
 ### Removed:
 ### Security:
