@@ -26,34 +26,17 @@ jobs:
     steps:
     # Checkout the repository
     - name: Checkout current repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     # Setup python
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
-
-    # Check the python/conda setup
-    # Powershell syntax adapted from:
-    # https://stackoverflow.com/questions/63805/equivalent-of-nix-which-command-in-powershell
-    # Answer from: petrsnd
-    - name: Check the setup (I)
-      if: matrix.os == 'windows-latest'
-      run: |
-        Get-Command python | Select-Object -ExpandProperty Definition
-        echo $CONDA
-
-    - name: Check the setup (II)
-      if: matrix.os != 'windows-latest'
-      run: |
-        which python
-        which conda
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-
 
     # Here, let's install our module to make sure all the dependencies specified in setup.py are
     # also installed

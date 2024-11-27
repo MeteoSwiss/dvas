@@ -35,7 +35,7 @@ rcp_params:
         log_lvl: INFO # DEBUG, INFO, WARNING.
         reset_db: True # Whether to reset the DB, or use an existing one.
         data_in_db: False # Whether to store the data in the db, or in text files on disk
-        do_latex: True # True = slow but pretty plots. Requires a working system-wide LaTeX setup!
+        do_latex: False # True = slow but pretty plots. Requires a working system-wide LaTeX setup!
         plot_fmts:
             - pdf
             - png

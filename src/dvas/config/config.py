@@ -300,7 +300,7 @@ class OneLayerConfigManager(ConfigManager):
                 assert yaml_doc.exists(), f"Missing file {yaml_doc}"
 
                 # Load yaml
-                with yaml_doc.open() as fid:
+                with yaml_doc.open(encoding='utf-8') as fid:
                     document = YAML().load(fid)
 
             # Load as string

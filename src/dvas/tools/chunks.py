@@ -600,6 +600,8 @@ def process_chunk(df_chunk, binning=1, method='weighted arithmetic mean',
         mode = 'circular'
     elif method not in ['biglambda']:
         raise DvasError(f'method unknown: {method}')
+    else:
+        mode = None  # This never gets used, but must be defined for pylint E0606
 
     if 'mean' in method:
         x_ms, G_mat = weighted_mean(df_chunk, binning=binning, mode=mode)
