@@ -49,7 +49,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#setup-of-a-dvas-processing-arena">Setup of a dvas processing arena</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#anatomy-of-the-dvas-processing-arena">Anatomy of the dvas processing arena</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#the-original-data-folder">The original data folder</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#the-config-folder">The config folder</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-configs-folder">The configs folder</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#the-recipe-file">The recipe file</a></li>
 </ul>
 </li>
@@ -112,7 +112,7 @@ UAII 2022 field campaign analysis cascade:</p>
 <p>Use <code class="docutils literal notranslate"><span class="pre">dvas_init_arena</span> <span class="pre">--help</span></code> to see what options exist:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>usage: dvas_init_arena [-h] [--path ./a/new/folder/]
 
-DVAS 1.2.0 - Data Visualization and Analysis Software: Initialization entry point.
+DVAS 1.2.1 - Data Visualization and Analysis Software: Initialization entry point.
 
 options:
   -h, --help            show this help message and exit
@@ -164,7 +164,7 @@ Time to take a closer look at the …</p>
 <h2>Anatomy of the dvas processing arena<a class="headerlink" href="#anatomy-of-the-dvas-processing-arena" title="Link to this heading"></a></h2>
 <p>There are 3 main components to a dvas processing arena: the
 <a class="reference internal" href="#original-data"><span class="std std-ref">original data</span></a>,
-the <a class="reference internal" href="#config-data"><span class="std std-ref">database config files</span></a>,
+the <a class="reference internal" href="#config-data"><span class="std std-ref">database configs files</span></a>,
 and the <a class="reference internal" href="#recipe-file"><span class="std std-ref">recipe file</span></a>. Let’s take a closer look at each of these.</p>
 <section id="the-original-data-folder">
 <span id="original-data"></span><h3>The original data folder<a class="headerlink" href="#the-original-data-folder" title="Link to this heading"></a></h3>
@@ -180,8 +180,8 @@ otherwise present in the original data files.</p></li>
 <p>The data folder included in the UAII 2022 Supplementary Material already contains all the necessary
 metadata files - no need to change anything there.</p>
 </section>
-<section id="the-config-folder">
-<span id="config-data"></span><h3>The config folder<a class="headerlink" href="#the-config-folder" title="Link to this heading"></a></h3>
+<section id="the-configs-folder">
+<span id="config-data"></span><h3>The configs folder<a class="headerlink" href="#the-configs-folder" title="Link to this heading"></a></h3>
 <p>This folder contains all the information required to setup the dvas database, and have it ingest all
 the original data correctly. Modifying these files is only required if one wishes to include
 datasets that differ from those already supported by dvas.</p>
