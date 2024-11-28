@@ -68,7 +68,7 @@ Anatomy of the dvas processing arena
 
 There are 3 main components to a dvas processing arena: the
 :ref:`original data <original_data>`,
-the :ref:`database config files <config_data>`,
+the :ref:`database configs files <config_data>`,
 and the :ref:`recipe file <recipe_file>`. Let's take a closer look at each of these.
 
 .. _original_data:
@@ -88,7 +88,7 @@ metadata files - no need to change anything there.
 
 .. _config_data:
 
-The config folder
+The configs folder
 .................
 
 This folder contains all the information required to setup the dvas database, and have it ingest all
