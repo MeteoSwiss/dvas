@@ -41,7 +41,7 @@ if __name__ == '__main__':
     # Init paths
     # WARNING: to set an "absolute" path, make sure to preface it with "/", e.g.:
     # path_var.orig_data_path = Path('/Users', 'jdoe', 'dvas_devdata')
-    path_var.config_dir_path = demo_file_path.parent / 'config'
+    path_var.config_dir_path = demo_file_path.parent / '..' / 'dvas_recipes' / 'configs'
     path_var.orig_data_path = demo_file_path.parent / 'data'
     path_var.local_db_path = demo_file_path.parent / 'db'
     path_var.output_path = demo_file_path.parent / 'output'

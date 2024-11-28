@@ -34,7 +34,7 @@ from dvas.hardcoded import TAG_SYNC
 
 # Import from dvas recipes
 from .errors import DvasRecipesError
-from .utils import default_arena_path, demo_storage_path, recipe_storage_path
+from .utils import default_arena_path, configs_storage_path, recipe_storage_path
 from .recipe import Recipe
 
 # Setup the local logger
@@ -70,8 +70,7 @@ def init_arena(arena_path=None):
         arena_path = Path(arena_path)
 
     # Very well, setup the config files for the dvas database initialization
-    shutil.copytree(demo_storage_path(), arena_path,
-                    ignore=shutil.ignore_patterns('db', 'output', 'data', '*.py'),
+    shutil.copytree(configs_storage_path(), arena_path / 'configs', ignore=None,
                     dirs_exist_ok=False)
 
     # And also copy the dvas recipes, in case the user wants to use these
@@ -122,7 +121,7 @@ def optimize(n_cpus=None, prf_length=7001, chunk_min=50, chunk_max=300, n_chunk=
 
     # Set the config file path, so that we can have a DB initialize with proper parameters.
     # Point towards the core dvas file, so that this can be run from anywhere.
-    setattr(path_var, 'config_dir_path', demo_storage_path() / 'config')
+    setattr(path_var, 'config_dir_path', configs_storage_path())
 
     # Actually create the database
     db_mngr = DatabaseManager()

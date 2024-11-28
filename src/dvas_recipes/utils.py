@@ -22,6 +22,14 @@ def demo_storage_path():
     return Path(__file__).resolve(strict=True).parent / '..' / 'dvas_demo'
 
 
+def configs_storage_path():
+    """ Returns the absolute path to the stored dvas configs locations, from where the dvas default
+    config files can be copied locally.
+
+    """
+    return Path(__file__).resolve(strict=True).parent / 'configs'
+
+
 def recipe_storage_path():
     """ Returns the absolute path to the stored dvas recipes location, from where they can be
     copied locally.

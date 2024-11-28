@@ -16,7 +16,7 @@ rcp_paths:
         common_base: &common_base ./
     config_dir_path:
         base_path: *common_base
-        sub_path: config
+        sub_path: configs
     orig_data_path:
         base_path: *common_base
         sub_path: ../import

@@ -4,4 +4,4 @@ include README
 include CHANGELOG
 graft src/dvas/plots/mpl_styles
 graft src/dvas_recipes/recipes
-graft src/dvas_demo/config
+graft src/dvas_recipes/configs
