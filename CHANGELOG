@@ -12,6 +12,15 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Removed:
 ### Security:
 
+## [v1.2.1]
+### Added:
+### Fixed:
+ - [fpavogt, 28.11.2024] Fix #302 (change location of config files)
+### Changed:
+### Deprecated:
+### Removed:
+### Security:
+
 ## [v1.2.0]
 ### Added:
  - [fpavogt, 18.11.2024] Add missing links to the docs
@@ -21,9 +30,6 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Changed:
  - [fpavogt, 18.11.2024] Request Python <3.12 and numpy<2.0
  - [fpavogt, 19.11.2024] Misc. docs updates
-### Deprecated:
-### Removed:
-### Security:
 
 ## [v1.1.0]
 ### Added:
