@@ -89,7 +89,7 @@ metadata files - no need to change anything there.
 .. _config_data:
 
 The configs folder
-.................
+..................
 
 This folder contains all the information required to setup the dvas database, and have it ingest all
 the original data correctly. Modifying these files is only required if one wishes to include
