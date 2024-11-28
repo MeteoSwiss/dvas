@@ -1,21 +1,21 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Running dvas recipes &mdash; dvas  documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
   
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -34,9 +34,6 @@
           <a href="index.html" class="icon icon-home">
             dvas
           </a>
-              <div class="version">
-                1.1.0
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -65,7 +62,6 @@
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/MeteoSwiss-MDA/dvas">Github repository</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="doc_todo.html">Documentation todos</a></li>
 </ul>
 
         </div>
@@ -116,7 +112,7 @@ UAII 2022 field campaign analysis cascade:</p>
 <p>Use <code class="docutils literal notranslate"><span class="pre">dvas_init_arena</span> <span class="pre">--help</span></code> to see what options exist:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>usage: dvas_init_arena [-h] [--path ./a/new/folder/]
 
-DVAS 1.1.0 - Data Visualization and Analysis Software: Initialization entry point.
+DVAS 1.2.0 - Data Visualization and Analysis Software: Initialization entry point.
 
 options:
   -h, --help            show this help message and exit
@@ -137,16 +133,15 @@ For more info: https://MeteoSwiss.github.io/dvas
 </ol>
 </div></blockquote>
 </div></blockquote>
-<p>2. Fetch the flight data to be processed from the UAII 2022 Supplementary Material, and unpack it
-not too far away:</p>
-<div class="admonition-todo admonition" id="id1">
-<p class="admonition-title">Todo</p>
-<p>Specify where the data can be downloaded from and how to unpack it.</p>
-</div>
-<ol class="arabic simple" start="3">
+<ol class="arabic simple" start="2">
+<li><p>Fetch the flight data to be processed from the UAII 2022 Supplementary Material,
+and unpack it not too far away. To be specific, you need to download and extract the
+<em>organized_flight_data_for_dvas_input.tar.gz</em> element of the
+<a class="reference external" href="https://doi.org/10.5281/zenodo.10160683">dataset on Zenodo</a>.</p></li>
 <li><p>Verify how well dvas runs on your machine with the dedicated entry point:</p></li>
 </ol>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd dvas_proc_arena
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd dvas_proc_arena
 dvas_optimize
 </pre></div>
 </div>
@@ -160,6 +155,7 @@ process them all efficiently.</p>
 <code class="docutils literal notranslate"><span class="pre">dvas_optimize</span></code>) of ~1.1 seconds. By comparison, on a 2019 MacBook Pro (16-inch) with 32 GB
 of RAM and a 2.3 GHz 8-core Intel Core i9 CPU, we find the same ideal chunk size of ~150, but with
 a processing time of ~2.4 seconds.</p>
+</div></blockquote>
 </div></blockquote>
 <p>You now have all the elements required to run the dvas recipe for the UAII 2022 field camapign.
 Time to take a closer look at the …</p>
@@ -236,12 +232,21 @@ to your specific system, you should now be able to launch the data processing.</
 <p>To do so, use the <code class="docutils literal notranslate"><span class="pre">dvas_run_recipe</span></code> entry point from the command line:</p>
 <blockquote>
 <div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd dvas_proc_arena
-dvas_run_recipe uaii22.rcp uaii2022_fid-eid-rid-edt_day.csv -s &#39;00&#39; -e &#39;00&#39;
+dvas_run_recipe uaii22.rcp uaii2022_fid-eid-rid-edt_day.csv -s &#39;00&#39; -e &#39;10&#39;
 </pre></div>
 </div>
 </div></blockquote>
 <p>This will trigger the <code class="docutils literal notranslate"><span class="pre">uaii2022.rcp</span></code> recipe, for the flights specified in the
-<code class="docutils literal notranslate"><span class="pre">uaii2022_fid-eid-rid-edt_day.csv</span></code> file <a class="footnote-reference brackets" href="#f1" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, starting with step <code class="docutils literal notranslate"><span class="pre">00</span></code> and ending with step <code class="docutils literal notranslate"><span class="pre">10</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">uaii2022_fid-eid-rid-edt_day.csv</span></code> file <a class="footnote-reference brackets" href="#f1" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, starting with step <code class="docutils literal notranslate"><span class="pre">00</span></code> and ending with step <code class="docutils literal notranslate"><span class="pre">10</span></code>.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Before launching the full processing, you may want to try running the first step only, with
+<code class="docutils literal notranslate"><span class="pre">dvas_run_recipe</span> <span class="pre">uaii22.rcp</span> <span class="pre">uaii2022_fid-eid-rid-edt_day.csv</span> <span class="pre">-s</span> <span class="pre">'00'</span> <span class="pre">-e</span> <span class="pre">'00'</span></code></p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Under Windows, you may need to skip the <code class="docutils literal notranslate"><span class="pre">'</span> <span class="pre">'</span></code> quotes around the step ids (see <a class="reference external" href="https://stackoverflow.com/questions/13168666">this post</a> on StackOverflow).</p>
+</div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Be aware that running the entire UAII 2022 field campaign analysis takes a long time. On a
@@ -250,8 +255,8 @@ dvas_run_recipe uaii22.rcp uaii2022_fid-eid-rid-edt_day.csv -s &#39;00&#39; -e &
 </div>
 <p class="rubric">Footnotes</p>
 <aside class="footnote-list brackets">
-<aside class="footnote brackets" id="f1" role="note">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">1</a><span class="fn-bracket">]</span></span>
+<aside class="footnote brackets" id="f1" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
 <p>See <a class="reference external" href="https://github.com/MeteoSwiss/dvas/issues/243">this issue</a> for a discussion of why this file is required.</p>
 </aside>
 </aside>

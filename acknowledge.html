@@ -1,21 +1,21 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Acknowledging dvas &mdash; dvas  documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
   
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -34,9 +34,6 @@
           <a href="index.html" class="icon icon-home">
             dvas
           </a>
-              <div class="version">
-                1.1.0
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -55,7 +52,6 @@
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/MeteoSwiss-MDA/dvas">Github repository</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
-<li class="toctree-l1"><a class="reference internal" href="doc_todo.html">Documentation todos</a></li>
 </ul>
 
         </div>
@@ -88,18 +84,16 @@
 <li><p>Only use lower case letters when mentioning dvas, and always include the version number.
 Ideally, you should also include the Digital Object Identifier (DOI) associated to the specific
 release you have been using:</p>
-<p>dvas 1.1.0 <a class="reference external" href="https://zenodo.org/badge/latestdoi/260424764"><img alt="doi" src="https://zenodo.org/badge/260424764.svg" /></a></p>
+<p>dvas 1.2.0 <a class="reference external" href="https://zenodo.org/badge/latestdoi/260424764"><img alt="doi" src="https://zenodo.org/badge/260424764.svg" /></a></p>
 </li>
 <li><p>If dvas was useful for your research, please cite the UAII 2022 Final Report:</p>
-<div class="admonition-todo admonition" id="id1">
-<p class="admonition-title">Todo</p>
-<p>When the time comes, include here the link to the report.</p>
-</div>
+<p>Dirksen et al., <em>Report of WMO’s 2022 Upper-Air Instrument Intercomparison Campaign</em>,
+World Meteorological Organization IOM No. 143 (2024); <a class="reference external" href="https://library.wmo.int/idurl/4/68808">Permalink</a></p>
 </li>
 <li><p>dvas relies on external Python libraries that require &amp; deserve to be acknowledged in their own
 right. The following LaTeX blurb is one way to do so:</p>
-<div class="highlight-latex notranslate"><div class="highlight"><pre><span></span>This research has made use of <span class="k">\textit</span><span class="nb">{</span>dvas vX.Y.Z<span class="nb">}</span> <span class="k">\citep</span><span class="na">[DOI:][]</span><span class="nb">{</span>TBD<span class="nb">}</span>
-Python package. <span class="k">\textit</span><span class="nb">{</span>dvas<span class="nb">}</span> relies on the following Python packages:
+<div class="highlight-latex notranslate"><div class="highlight"><pre><span></span>This research has made use of <span class="k">\textit</span><span class="nb">{</span>dvas v1.1.0<span class="nb">}</span> <span class="k">\citep</span><span class="na">[DOI:10.5281/zenodo.8177527][]</span>
+<span class="nb">{</span>Vogt2023<span class="nb">}</span> Python package. <span class="k">\textit</span><span class="nb">{</span>dvas<span class="nb">}</span> relies on the following Python packages:
 <span class="k">\textsc</span><span class="nb">{</span>matplotlib<span class="nb">}</span> <span class="k">\citep</span><span class="nb">{</span>Hunter2007<span class="nb">}</span>, <span class="k">\textit</span><span class="nb">{</span>numpy<span class="nb">}</span> <span class="k">\citep</span><span class="nb">{</span>Oliphant2006, Van2011<span class="nb">}</span>,
 <span class="k">\textsc</span><span class="nb">{</span>pandas<span class="nb">}</span> <span class="k">\citep</span><span class="nb">{</span>McKinney2010,reback2020<span class="nb">}</span>
 <span class="k">\textit</span><span class="nb">{</span>scipy<span class="nb">}</span> <span class="k">\citep</span><span class="nb">{</span>Virtanen2020<span class="nb">}</span>, and <span class="k">\textit</span><span class="nb">{</span>statsmodels<span class="nb">}</span> <span class="k">\citep</span><span class="nb">{</span>Seabold2010<span class="nb">}</span>.
@@ -184,6 +178,19 @@ Python package. <span class="k">\textit</span><span class="nb">{</span>dvas<span
   pages     = <span class="nb">{</span>261--272<span class="nb">}</span>,
   adsurl    = <span class="nb">{</span>https://rdcu.be/b08Wh<span class="nb">}</span>,
   doi       = <span class="nb">{</span>https://doi.org/10.1038/s41592-019-0686-2<span class="nb">}</span>,
+<span class="nb">}</span>
+
+@software<span class="nb">{</span>Vogt2023,
+  title = <span class="nb">{{{</span>MeteoSwiss<span class="nb">}}</span>/Dvas: <span class="nb">{{</span>UAII<span class="nb">}}</span> 2022 Official Release<span class="nb">}</span>,
+  shorttitle = <span class="nb">{{{</span>MeteoSwiss<span class="nb">}}</span>/Dvas<span class="nb">}</span>,
+  author = <span class="nb">{</span>Vogt, Frédéric P. A. and <span class="nb">{</span>modolol<span class="nb">}</span> and Romanens, Gonzague<span class="nb">}</span>,
+  date = <span class="nb">{</span>2023-10-09<span class="nb">}</span>,
+  doi = <span class="nb">{</span>10.5281/zenodo.8421793<span class="nb">}</span>,
+  abstract = <span class="nb">{</span>This is the second public release of dvas (v1.1.0), that was used to process
+    the data acquired during the UAII 2022 field campaign as presented in the campaign&#39;s
+    Final Report.<span class="nb">}</span>,
+  organization = <span class="nb">{</span>Zenodo<span class="nb">}</span>,
+  version = <span class="nb">{</span>v1.1.0<span class="nb">}</span>
 <span class="nb">}</span>
 </pre></div>
 </div>

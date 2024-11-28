@@ -17,8 +17,8 @@ run dvas.
 
 .. note::
   These pages focus on the technical aspects of dvas. For an exhaustive description of the
-  its physics/statistics capabilities and performances, please refer to the Final Report of the
-  UAII 2022.
+  its physics/statistics capabilities and performances, please refer to the `Final Report of the
+  UAII 2022 <https://library.wmo.int/idurl/4/68808>`_.
 
 dvas is being developed on Github, where you can submit all your
 `questions <https://github.com/MeteoSwiss/dvas/discussions>`_ and
@@ -28,11 +28,11 @@ dvas is being developed on Github, where you can submit all your
   dvas will be actively maintained up to 2023-11-30, at which point the use of dvas will be
   supported on a best-effort basis only.
 
-Within the scope of the UAII 2022 field campaign, dvas is responsible for: the ingestion of
-Manufacturer Data Products (MDPs) and GRUAN Data Products (GDPs) in a dedicated database,
-the cleanup and synchronization of these radiosonde profiles on a flight-by-flight basis,
-the assembly of Combined Working measurement Standards (CWSs) from GDPs, and the assembly of the
-so-called :math:`\Lambda_{C,L}` profiles.
+Within the scope of the UAII 2022 field campaign, dvas is responsible for:
+  - the ingestion of Manufacturer Data Products (MDPs) and GRUAN Data Products (GDPs) in a dedicated database,
+  - the cleanup and synchronization of these radiosonde profiles on a flight-by-flight basis,
+  - the assembly of Combined Working measurement Standards (CWSs) from GDPs, and
+  - the assembly of the so-called :math:`\Lambda_{C,L}` profiles.
 
 The dvas code is composed of two modules:
 
@@ -65,4 +65,3 @@ analysis need only to :ref:`run the corresponding recipe <running>`.
     changelog
     Github repository <https://github.com/MeteoSwiss-MDA/dvas>
     modules
-    doc_todo

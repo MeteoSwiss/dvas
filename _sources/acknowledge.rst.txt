@@ -11,17 +11,16 @@ Acknowledging dvas
 
 2. If dvas was useful for your research, please cite the UAII 2022 Final Report:
 
-   .. todo::
-
-      When the time comes, include here the link to the report.
+   Dirksen et al., *Report of WMO's 2022 Upper-Air Instrument Intercomparison Campaign*,
+   World Meteorological Organization IOM No. 143 (2024); `Permalink <https://library.wmo.int/idurl/4/68808>`_
 
 3. dvas relies on external Python libraries that require & deserve to be acknowledged in their own
    right. The following LaTeX blurb is one way to do so:
 
    .. code-block:: latex
 
-        This research has made use of \textit{dvas vX.Y.Z} \citep[DOI:][]{TBD}
-        Python package. \textit{dvas} relies on the following Python packages:
+        This research has made use of \textit{dvas v1.1.0} \citep[DOI:10.5281/zenodo.8177527][]
+        {Vogt2023} Python package. \textit{dvas} relies on the following Python packages:
         \textsc{matplotlib} \citep{Hunter2007}, \textit{numpy} \citep{Oliphant2006, Van2011},
         \textsc{pandas} \citep{McKinney2010,reback2020}
         \textit{scipy} \citep{Virtanen2020}, and \textit{statsmodels} \citep{Seabold2010}.
@@ -106,4 +105,17 @@ Acknowledging dvas
           pages     = {261--272},
           adsurl    = {https://rdcu.be/b08Wh},
           doi       = {https://doi.org/10.1038/s41592-019-0686-2},
+        }
+
+        @software{Vogt2023,
+          title = {{{MeteoSwiss}}/Dvas: {{UAII}} 2022 Official Release},
+          shorttitle = {{{MeteoSwiss}}/Dvas},
+          author = {Vogt, Frédéric P. A. and {modolol} and Romanens, Gonzague},
+          date = {2023-10-09},
+          doi = {10.5281/zenodo.8421793},
+          abstract = {This is the second public release of dvas (v1.1.0), that was used to process
+            the data acquired during the UAII 2022 field campaign as presented in the campaign's
+            Final Report.},
+          organization = {Zenodo},
+          version = {v1.1.0}
         }
